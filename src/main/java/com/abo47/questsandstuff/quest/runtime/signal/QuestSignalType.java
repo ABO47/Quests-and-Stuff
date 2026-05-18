@@ -1,0 +1,24 @@
+package com.abo47.questsandstuff.quest.runtime.signal;
+
+public enum QuestSignalType {
+    TICK,
+    ITEM_COLLECTED,
+    INVENTORY_CHANGED,
+    ITEM_INTERACT,
+    ITEM_USED,
+    ITEM_CRAFTED,
+    ENTITY_KILLED,
+    ADVANCEMENT,
+    DIMENSION_CHANGED,
+    BLOCK_INTERACT,
+    ENTITY_INTERACT,
+    BIOME_ENTER,
+    STRUCTURE_ENTER,
+    XP_CHANGE,
+    XP_SNAPSHOT,
+    STAT_CHANGE,
+    LOCATION_TICK,
+    MANUAL_ITEM_SUBMIT,
+    MANUAL_XP_SUBMIT,
+    MANUAL_CHECK
+}

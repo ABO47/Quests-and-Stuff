@@ -1,0 +1,212 @@
+package com.abo47.questsandstuff.client.tablet.theme;
+
+import java.util.List;
+
+final class UiThemeCatalog {
+    private UiThemeCatalog() {
+    }
+
+    static List<BuiltInTheme> builtIns() {
+        return List.of(
+                new BuiltInTheme("aurora", "Aurora", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF13212B"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF20313B"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF2D4550"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF5D7E8B"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FF86CFE8"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFE9F7FF"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFB4D0DC"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF7F9CAB"},
+                        {UiThemeManager.UI_SUCCESS, "#FF67D68B"},
+                        {UiThemeManager.UI_WARNING, "#FFE7C15F"},
+                        {UiThemeManager.UI_ERROR, "#FFE06D72"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF55BFE8"}
+                }),
+                new BuiltInTheme("ember", "Ember", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF1F2023"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF2C3031"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF3D3C36"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF7A6D5A"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFE0A24A"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFFFF2DC"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFD1BFA3"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF9A8A75"},
+                        {UiThemeManager.UI_SUCCESS, "#FF75C97B"},
+                        {UiThemeManager.UI_WARNING, "#FFE0A24A"},
+                        {UiThemeManager.UI_ERROR, "#FFE06B5C"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF68A9D8"}
+                }),
+                new BuiltInTheme("verdant", "Verdant", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF14251F"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF20352B"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF2B4938"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF64846E"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FF95D37B"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF1FFE9"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC0D8B8"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF88A085"},
+                        {UiThemeManager.UI_SUCCESS, "#FF79D981"},
+                        {UiThemeManager.UI_WARNING, "#FFE3C765"},
+                        {UiThemeManager.UI_ERROR, "#FFDF7068"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF6BBAD8"}
+                }),
+                new BuiltInTheme("roseglass", "Roseglass", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF211B27"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF302838"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF46384D"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF826E8C"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFE39CC7"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFFFEFF7"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFD7BED0"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FFA78CA0"},
+                        {UiThemeManager.UI_SUCCESS, "#FF73D28A"},
+                        {UiThemeManager.UI_WARNING, "#FFE1BE64"},
+                        {UiThemeManager.UI_ERROR, "#FFE46E80"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF75C6E6"}
+                }),
+                new BuiltInTheme("celestial_mint", "Celestial Mint", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF151A20"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF202832"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF293542"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF536474"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FF67D8C7"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFEAFBF7"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFB7D9D0"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF7D9A95"},
+                        {UiThemeManager.UI_SUCCESS, "#FF6FD18B"},
+                        {UiThemeManager.UI_WARNING, "#FFE3C45D"},
+                        {UiThemeManager.UI_ERROR, "#FFE06B7D"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF7AB7FF"}
+                }),
+                new BuiltInTheme("tidepool", "Tidepool", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF10231F"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF1C332F"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF284941"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF5F847A"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FF5BD3D1"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFE9FFF9"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFB3D7CE"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF7CA196"},
+                        {UiThemeManager.UI_SUCCESS, "#FF72D889"},
+                        {UiThemeManager.UI_WARNING, "#FFE7B85C"},
+                        {UiThemeManager.UI_ERROR, "#FFE56B72"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF62A8EA"}
+                }),
+                new BuiltInTheme("sakura_grove", "Sakura Grove", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF211F24"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF302C34"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF403849"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF7B6E7C"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFFF9DB7"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFFFF1F5"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFDCC3CC"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FFA48E99"},
+                        {UiThemeManager.UI_SUCCESS, "#FF73CF9A"},
+                        {UiThemeManager.UI_WARNING, "#FFE0C260"},
+                        {UiThemeManager.UI_ERROR, "#FFE56B82"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF77BDE8"}
+                }),
+                new BuiltInTheme("copper_circuit", "Copper Circuit", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF1D211F"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF2A312D"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF35433B"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF6B7F70"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFCE8B5F"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF3F8EE"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC7D4C3"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF8E9F92"},
+                        {UiThemeManager.UI_SUCCESS, "#FF72D17F"},
+                        {UiThemeManager.UI_WARNING, "#FFE1AE5C"},
+                        {UiThemeManager.UI_ERROR, "#FFE06A63"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF65C8CB"}
+                }),
+                new BuiltInTheme("prism_slate", "Prism Slate", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF191B22"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF252A32"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF323944"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF657180"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFA6D96A"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF0F7FF"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC5D3DE"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF8D9CAB"},
+                        {UiThemeManager.UI_SUCCESS, "#FF69D48A"},
+                        {UiThemeManager.UI_WARNING, "#FFE7C25D"},
+                        {UiThemeManager.UI_ERROR, "#FFE06D70"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF8EBAFF"}
+                }),
+                new BuiltInTheme("solar_ink", "Solar Ink", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF181B1B"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF252B2A"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF313B39"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF64736E"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFFFC857"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF7FAF2"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC9D2CB"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF929E98"},
+                        {UiThemeManager.UI_SUCCESS, "#FF6DD18B"},
+                        {UiThemeManager.UI_WARNING, "#FFFFC857"},
+                        {UiThemeManager.UI_ERROR, "#FFE66B6B"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF63C7E6"}
+                }),
+                new BuiltInTheme("harbor_ember", "Harbor Ember", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF181E23"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF24303A"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF30414A"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF617783"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFFFA35C"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF0F8FA"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC2D4DA"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF899CA5"},
+                        {UiThemeManager.UI_SUCCESS, "#FF70D48A"},
+                        {UiThemeManager.UI_WARNING, "#FFFFB85C"},
+                        {UiThemeManager.UI_ERROR, "#FFE46D68"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF64C6DA"}
+                }),
+                new BuiltInTheme("wisteria_dawn", "Wisteria Dawn", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF1F1D24"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF2D2935"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF3B3446"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF756C86"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFB9A7FF"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF4F0FF"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFC9C0D8"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF948AA5"},
+                        {UiThemeManager.UI_SUCCESS, "#FF72D39B"},
+                        {UiThemeManager.UI_WARNING, "#FFE3C765"},
+                        {UiThemeManager.UI_ERROR, "#FFE46D7D"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF75C7D8"}
+                }),
+                new BuiltInTheme("pine_frost", "Pine Frost", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF121E1F"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF1E3031"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF2A4141"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF5E7F7C"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFA5D86A"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFEFFFFE"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFBCDADB"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF83A0A1"},
+                        {UiThemeManager.UI_SUCCESS, "#FF7CD983"},
+                        {UiThemeManager.UI_WARNING, "#FFE6C45F"},
+                        {UiThemeManager.UI_ERROR, "#FFE06D76"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF61C1E8"}
+                }),
+                new BuiltInTheme("ruby_graphite", "Ruby Graphite", new String[][]{
+                        {UiThemeManager.UI_SURFACE_BASE, "#FF1E1F22"},
+                        {UiThemeManager.UI_SURFACE_PANEL, "#FF2B2D31"},
+                        {UiThemeManager.UI_SURFACE_PANEL_ALT, "#FF393B42"},
+                        {UiThemeManager.UI_BORDER_BASE, "#FF72747E"},
+                        {UiThemeManager.UI_BORDER_ACCENT, "#FFE85D75"},
+                        {UiThemeManager.UI_TEXT_PRIMARY, "#FFF7F3F4"},
+                        {UiThemeManager.UI_TEXT_SECONDARY, "#FFD4C8CC"},
+                        {UiThemeManager.UI_TEXT_MUTED, "#FF9B9198"},
+                        {UiThemeManager.UI_SUCCESS, "#FF70D58D"},
+                        {UiThemeManager.UI_WARNING, "#FFE4BD5C"},
+                        {UiThemeManager.UI_ERROR, "#FFE85D75"},
+                        {UiThemeManager.UI_INTERACTIVE, "#FF71C8E8"}
+                })
+        );
+    }
+
+    record BuiltInTheme(String id, String name, String[][] colors) {
+    }
+}

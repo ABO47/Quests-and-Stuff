@@ -1,0 +1,53 @@
+package com.abo47.questsandstuff.client.tablet.controls;
+
+import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.network.chat.Component;
+
+import java.util.function.Consumer;
+
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+
+public final class ActionButtons {
+    private ActionButtons() {
+    }
+
+    public static void iconAction(WidgetGroup parent, int x, int y, int width, String icon, String text, int color, Consumer<ClickData> callback) {
+        iconAction(parent, x, y, width, 16, icon, text, color, null, callback);
+    }
+
+    public static void iconAction(WidgetGroup parent, int x, int y, int width, int height, String icon, String text, int color, Component[] tooltips, Consumer<ClickData> callback) {
+        parent.addWidget(Surfaces.panel(x, y, width, height, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE));
+        int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, height - 4));
+        parent.addWidget(new ImageWidget(x + 3, y + Math.max(0, (height - iconSize) / 2), iconSize, iconSize, UiIconAtlas.iconTexture(icon)));
+        parent.addWidget(label(x + iconSize + 6, y + Math.max(2, (height - 8) / 2 + 1), text, color));
+        var hit = flatHitButton(x, y, width, height, callback);
+        hit.setHoverTexture(Surfaces.bordered(withAlpha(color, 45), ModColors.BORDER_ACCENT));
+        hit.setClickedTexture(Surfaces.fill(withAlpha(color, 80)));
+        if (tooltips != null) {
+            hit.setHoverTooltips(tooltips);
+        }
+        parent.addWidget(hit);
+    }
+
+    public static void iconRow(WidgetGroup parent, int x, int y, int height, int gap, IconAction... actions) {
+        int cursorX = x;
+        for (IconAction action : actions) {
+            iconAction(parent, cursorX, y, action.width(), height, action.icon(), action.text(), action.color(), action.tooltips(), action.callback());
+            cursorX += action.width() + gap;
+        }
+    }
+
+    public record IconAction(String icon, String text, int width, int color, Component[] tooltips, Consumer<ClickData> callback) {
+        public IconAction(String icon, String text, int width, int color, Consumer<ClickData> callback) {
+            this(icon, text, width, color, null, callback);
+        }
+    }
+}

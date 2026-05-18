@@ -1,0 +1,103 @@
+package com.abo47.questsandstuff.client.chapter;
+
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+final class ChapterListMetrics {
+    private ChapterListMetrics() {
+    }
+
+    static List<String> filteredGroups(List<String> groups, String queryText) {
+        String chapterQuery = SearchFilter.normalize(queryText);
+        List<String> chapterGroups = new ArrayList<>();
+        for (String group : groups) {
+            if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+                continue;
+            }
+            if (!SearchFilter.matches(chapterQuery, group)) {
+                continue;
+            }
+            chapterGroups.add(group);
+        }
+        return chapterGroups;
+    }
+
+    static void addScrollBar(WidgetGroup chapterList, TabletUiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
+        int trackAlpha = state.chapterScrollDragging ? 190 : 130;
+        int knobH = Math.max(18, (int) ((float) trackH * ((float) trackH / (float) Math.max(trackH, totalHeight))));
+        state.chapterScrollKnobH = knobH;
+        chapterList.addWidget(new DragScrollBarWidget(
+                trackX,
+                trackY,
+                TabletUiFactory.CHAPTER_SCROLL_W,
+                trackH,
+                () -> state.chapterScroll,
+                () -> state.chapterScrollMax,
+                () -> knobH,
+                value -> state.chapterScroll = value,
+                () -> state.chapterScrollDragging,
+                dragging -> state.chapterScrollDragging = dragging,
+                refresh,
+                TabletUiFactory.withAlpha(ModColors.BORDER_BASE, trackAlpha),
+                TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 220),
+                TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 255)
+        ));
+    }
+
+    static void rememberEmpty(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, int baseCardX) {
+        state.chapterScroll = 0;
+        state.chapterScrollMax = 0;
+        state.chapterScrollKnobH = 18;
+        state.chapterListOriginX = listOriginX;
+        state.chapterListOriginY = listOriginY;
+        state.chapterListWidth = listW;
+        state.chapterListHeight = listH;
+        state.chapterRowStartY = listOriginY + 8;
+        state.chapterCardHitLeft = listOriginX + baseCardX;
+        state.chapterCardHitRight = listOriginX + Math.max(16, listW - 8) - 3;
+        state.chapterCardHitTop = listOriginY + 6;
+        state.chapterCardHitBottom = listOriginY + listH - 6;
+    }
+
+    static void remember(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, Layout layout, int trackY, int trackH) {
+        state.chapterListOriginX = listOriginX;
+        state.chapterListOriginY = listOriginY;
+        state.chapterListWidth = listW;
+        state.chapterListHeight = listH;
+        state.chapterScrollTrackX = listOriginX + layout.trackX();
+        state.chapterScrollTrackY = listOriginY + trackY;
+        state.chapterScrollTrackH = trackH;
+        state.chapterScrollKnobH = 18;
+        state.chapterRowStartY = listOriginY + 8;
+        state.chapterCardHitLeft = listOriginX + layout.cardX();
+        state.chapterCardHitRight = listOriginX + layout.cardX() + layout.cardW();
+        state.chapterCardHitTop = listOriginY + 6;
+        state.chapterCardHitBottom = listOriginY + listH - 6;
+    }
+
+    record Layout(int trackX, int cardX, int cardW, int iconX) {
+        static Layout create(int listW, boolean collapsed, boolean showScrollBar) {
+            int trackX;
+            int cardX;
+            int cardW;
+            if (showScrollBar) {
+                trackX = listW - TabletUiFactory.CHAPTER_SCROLL_W - 2;
+                cardX = 4;
+                cardW = Math.max(collapsed ? 16 : 96, trackX - cardX - 3);
+            } else {
+                trackX = listW + 1;
+                cardW = Math.max(collapsed ? 16 : 96, listW - 8);
+                cardW = Math.min(cardW, Math.max(1, listW - 2));
+                cardX = Math.max(1, (listW - cardW) / 2);
+            }
+            return new Layout(trackX, cardX, cardW, cardX + 2);
+        }
+    }
+}

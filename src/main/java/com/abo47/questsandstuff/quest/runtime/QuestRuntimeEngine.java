@@ -1,0 +1,244 @@
+package com.abo47.questsandstuff.quest.runtime;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
+import com.abo47.questsandstuff.quest.model.task.QuestTasks;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.progress.CompletableQuestService;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
+import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
+import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
+import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardApplier;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
+import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+public final class QuestRuntimeEngine {
+    private final QuestDefinitionStore definitionStore;
+    private final QuestProgressSavedData progressData;
+    private final QuestSyncService syncService;
+    private final CompletableQuestService completableQuests = new CompletableQuestService();
+    private final QuestRewardClaims rewardClaims;
+    private final QuestSignalProgression signalProgression;
+    private final QuestManualSubmissions manualSubmissions;
+    private final QuestProgressAdminActions progressAdmin;
+    private QuestRuntimeIndex index;
+
+    public QuestRuntimeEngine(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, QuestSyncService syncService, QuestPerformanceTracker performanceTracker) {
+        this.definitionStore = definitionStore;
+        this.progressData = progressData;
+        this.syncService = syncService;
+        this.rewardClaims = new QuestRewardClaims(definitionStore, progressData, syncService);
+        this.signalProgression = new QuestSignalProgression(definitionStore, progressData, syncService, performanceTracker, this);
+        this.manualSubmissions = new QuestManualSubmissions(definitionStore, progressData, syncService, this);
+        this.progressAdmin = new QuestProgressAdminActions(definitionStore, progressData, syncService, this);
+        QuestTasks.bootstrapDefaults();
+        QuestRewards.bootstrapDefaults();
+        TeamProgressProviders.installHooks(this::onTeamMembershipChanged);
+        rebuildIndex();
+    }
+
+    public void rebuildIndex() {
+        this.index = new QuestRuntimeIndex(definitionStore.quests());
+    }
+
+    public void preparePlayerForFullSync(ServerPlayer player) {
+        if (player == null || progressData == null) {
+            return;
+        }
+
+        Set<String> changedQuestIds = new HashSet<>();
+        PlayerQuestState state = progressData.state(player.getUUID());
+        reconcileUnlocks(player, player.getUUID(), state, changedQuestIds, player.server.getTickCount(), false);
+        if (!changedQuestIds.isEmpty()) {
+            progressData.setDirty();
+        }
+    }
+
+    public void preparePlayersForFullSync(List<ServerPlayer> players) {
+        if (players == null || players.isEmpty()) {
+            return;
+        }
+        for (ServerPlayer player : players) {
+            preparePlayerForFullSync(player);
+        }
+    }
+
+    public void clearQuestProgress(String questId) {
+        String normalized = questId == null ? "" : questId.trim();
+        if (normalized.isBlank() || progressData == null) {
+            return;
+        }
+        boolean changed = false;
+        for (PlayerQuestState state : progressData.states().values()) {
+            changed |= state.quests().remove(normalized) != null;
+        }
+        if (changed) {
+            progressData.setDirty();
+        }
+    }
+
+    public void onSignal(QuestSignal signal) {
+        signalProgression.onSignal(signal, index);
+    }
+
+    public void claimReward(ServerPlayer player, String questId, String rewardId) {
+        claimReward(player, questId, rewardId, List.of());
+    }
+
+    public void claimReward(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+        rewardClaims.claimReward(player, questId, rewardId, selectedRewardIds);
+    }
+
+    public void claimAvailableRewards(ServerPlayer player, String questId) {
+        rewardClaims.claimAvailableRewards(player, questId);
+    }
+
+    public void claimAllRewards(ServerPlayer player, String questId) {
+        rewardClaims.claimAllRewards(player, questId);
+    }
+
+    public void completeQuest(ServerPlayer player, String questId) {
+        progressAdmin.completeQuest(player, questId);
+    }
+
+    public void resetQuest(ServerPlayer player, String questId) {
+        progressAdmin.resetQuest(player, questId);
+    }
+
+    public void resetAll(ServerPlayer player) {
+        progressAdmin.resetAll(player);
+    }
+
+    public void togglePin(ServerPlayer player, String questId) {
+        progressAdmin.togglePin(player, questId);
+    }
+
+    public void runManualTask(ServerPlayer player, String taskKey) {
+        onSignal(QuestSignal.of(QuestSignalType.MANUAL_CHECK, player, taskKey, 1, player.blockPosition()));
+    }
+
+    public void submitManualItemTask(ServerPlayer player, String questId, String taskId) {
+        manualSubmissions.submitItemTask(player, questId, taskId);
+    }
+
+    public void submitManualXpTask(ServerPlayer player, String questId, String taskId) {
+        manualSubmissions.submitXpTask(player, questId, taskId);
+    }
+
+    public boolean hasQuest(String questId) {
+        return definitionStore.quests().containsKey(questId);
+    }
+
+    public Set<String> questIds() {
+        return definitionStore.quests().keySet();
+    }
+
+    public boolean isQuestCompleted(UUID playerId, String questId) {
+        return progressData.state(playerId).quest(questId).completed();
+    }
+
+    public Set<String> trackedStatTaskTargets() {
+        return index.trackedStatTaskTargets();
+    }
+
+    boolean recomputeCompletion(ServerPlayer actor, UUID ownerId, PlayerQuestState state, String questId, long serverTick, boolean announce) {
+        QuestDefinition definition = definitionStore.quests().get(questId);
+        if (definition == null) {
+            return false;
+        }
+
+        QuestProgressState progress = state.quest(questId);
+
+        boolean complete = false;
+        if (!definition.tasks().isEmpty()) {
+            complete = true;
+            for (Map.Entry<String, QuestTaskDefinition> task : definition.tasks().entrySet()) {
+                if (!QuestCompletionRules.isTaskComplete(definition, progress, task.getKey(), task.getValue())) {
+                    complete = false;
+                    break;
+                }
+            }
+        }
+
+        boolean justCompleted = complete && !progress.completed();
+        if (justCompleted) {
+            progress.setCompleted(true, serverTick);
+            if (announce) {
+                ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
+                if (owner != null) {
+                    syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
+                }
+            }
+            if (definition.settings().autoClaimRewards()) {
+                ServerPlayer rewardTarget = actor.server.getPlayerList().getPlayer(ownerId);
+                if (rewardTarget != null) {
+                    QuestRewardApplier.autoClaimNonSelectableRewards(rewardTarget, definition, progress, serverTick, syncService);
+                }
+            }
+        }
+        return justCompleted;
+    }
+
+    void ensureUnlocks(ServerPlayer actor, UUID ownerId, PlayerQuestState state, Set<String> changedQuestIds, long tick) {
+        reconcileUnlocks(actor, ownerId, state, changedQuestIds, tick, true);
+    }
+
+    private void reconcileUnlocks(ServerPlayer actor, UUID ownerId, PlayerQuestState state, Set<String> changedQuestIds, long tick, boolean announce) {
+        int passes = Math.max(1, definitionStore.quests().size());
+        for (int pass = 0; pass < passes; pass++) {
+            boolean changedThisPass = false;
+            for (QuestDefinition definition : definitionStore.quests().values()) {
+                QuestProgressState progress = state.quest(definition.id());
+                boolean shouldBeUnlocked = shouldBeUnlocked(state, definition, progress);
+                if (progress.unlocked() == shouldBeUnlocked) {
+                    continue;
+                }
+
+                progress.setUnlocked(shouldBeUnlocked);
+                changedQuestIds.add(definition.id());
+                changedThisPass = true;
+
+                if (shouldBeUnlocked) {
+                    completableQuests.initializeUnlockTasks(actor, ownerId, definition, progress);
+                    if (recomputeCompletion(actor, ownerId, state, definition.id(), tick, false)) {
+                        changedQuestIds.add(definition.id());
+                    }
+                    if (announce && syncService != null) {
+                        ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
+                        if (owner != null) {
+                            syncService.sendQuestEvent(owner, "quest_unlocked", definition.id(), "");
+                        }
+                    }
+                }
+            }
+
+            if (!changedThisPass) {
+                return;
+            }
+        }
+    }
+
+    private boolean shouldBeUnlocked(PlayerQuestState state, QuestDefinition definition, QuestProgressState progress) {
+        return completableQuests.shouldBeUnlocked(state, definition, progress);
+    }
+
+    private void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+        QuestTeamProgressReconciler.onTeamMembershipChanged(level, changedPlayer, definitionStore, progressData, syncService);
+    }
+
+    public boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition) {
+        return QuestVisibilityRules.isVisibleFor(state, definition);
+    }
+}

@@ -1,0 +1,45 @@
+package com.abo47.questsandstuff.quest.persistence.quest;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class QuestDefinitionFilesTest {
+    @TempDir
+    Path root;
+
+    @Test
+    void jsonFilesWalksQuestFoldersRecursively() throws Exception {
+        Files.createDirectories(root.resolve("chapter"));
+        Path one = root.resolve("chapter").resolve("one.json");
+        Path two = root.resolve("two.JSON");
+        Files.writeString(one, "{}");
+        Files.writeString(two, "{}");
+        Files.writeString(root.resolve("ignored.tmp"), "{}");
+
+        assertEquals(Set.of(one, two), Set.copyOf(QuestDefinitionFiles.jsonFiles(root)));
+    }
+
+    @Test
+    void deleteStaleJsonFilesPrunesEmptyParents() throws Exception {
+        Path nested = root.resolve("chapter");
+        Files.createDirectories(nested);
+        Path keep = root.resolve("keep.json").toAbsolutePath().normalize();
+        Path stale = nested.resolve("stale.json").toAbsolutePath().normalize();
+        Files.writeString(keep, "{}");
+        Files.writeString(stale, "{}");
+
+        assertEquals(Set.of(stale), Set.copyOf(QuestDefinitionFiles.deleteStaleJsonFiles(root, Set.of(keep))));
+
+        assertTrue(Files.exists(keep));
+        assertFalse(Files.exists(stale));
+        assertFalse(Files.exists(nested));
+    }
+}

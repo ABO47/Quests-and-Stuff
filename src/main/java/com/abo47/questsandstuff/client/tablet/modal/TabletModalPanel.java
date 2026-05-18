@@ -1,0 +1,144 @@
+package com.abo47.questsandstuff.client.tablet.modal;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasEntityPickerActions;
+import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.player.Player;
+
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+
+public final class TabletModalPanel {
+    private TabletModalPanel() {
+    }
+
+    public static void rebuildChapterModal(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
+        ModalPanelRouter.rebuildChapterModal(overlay, state, player, refresh);
+    }
+
+    public static void addModalClose(WidgetGroup modal, int x, int y, int size, TabletUiState state, Runnable refresh) {
+        int closeX = x + 1;
+        int closeY = Math.max(0, y - 3);
+        Runnable close = () -> {
+            QuestsAndStuffMod.debugLog("[QnS:UI] modal close click");
+            state.iconSearchFocused = false;
+            closeAll(state);
+            refresh.run();
+        };
+        modal.addWidget(closeIconButton(closeX, closeY, size, size, click -> close.run()));
+    }
+
+    public static boolean acceptPickerDoubleClick(TabletUiState state, String key) {
+        String safeKey = key == null ? "" : key;
+        long now = System.currentTimeMillis();
+        boolean accepted = !safeKey.isBlank()
+                && safeKey.equals(state.pickerLastClickKey)
+                && now - state.pickerLastClickAtMs <= 350L;
+        state.pickerLastClickKey = safeKey;
+        state.pickerLastClickAtMs = now;
+        return accepted;
+    }
+
+    static void runAssetBackgroundAction(Player player, TabletUiState state, String background) {
+        AssetPickerApplyActions.run(player, state, background);
+    }
+
+    static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
+        return CanvasEntityPickerActions.run(player, state, target, pickedItem);
+    }
+
+    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        WidgetGroup base = panel(x, y, w, h, withAlpha(ModColors.INTERACTIVE, 120), ModColors.BORDER_ACCENT);
+        parent.addWidget(base);
+        var texture = UiIconAtlas.iconTexture(iconName);
+        if (texture != null) {
+            int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, Math.min(w - 4, h - 4)));
+            int iconX = x + (w - iconSize) / 2;
+            int iconY = y + (h - iconSize) / 2;
+            parent.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, texture));
+        }
+        ButtonWidget hit = flatHitButton(x, y, w, h, callback);
+        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        parent.addWidget(hit);
+    }
+
+    static Component[] iconTooltip(String entry) {
+        if (entry == null || entry.isBlank()) {
+            return new Component[]{Component.translatable("ui.questsandstuff.icon.unknown").withStyle(ChatFormatting.RED)};
+        }
+        if (entry.startsWith("#")) {
+            return new Component[]{
+                    Component.translatable("ui.questsandstuff.icon.item_tag").withStyle(ChatFormatting.AQUA),
+                    Component.literal(entry).withStyle(ChatFormatting.GRAY)
+            };
+        }
+        String entityId = EntityPreviewRenderer.entityId(entry);
+        if (!entityId.isBlank()) {
+            return new Component[]{
+                    Component.literal(EntityPreviewRenderer.entityDisplayName(entityId)).withStyle(ChatFormatting.WHITE),
+                    Component.literal(entry).withStyle(ChatFormatting.DARK_GRAY)
+            };
+        }
+        ResourceLocation id = ResourceLocation.tryParse(entry);
+        if (id != null) {
+            Item item = BuiltInRegistries.ITEM.get(id);
+            if (item != null) {
+                return new Component[]{
+                        item.getDescription().copy().withStyle(ChatFormatting.WHITE),
+                        Component.literal(entry).withStyle(ChatFormatting.DARK_GRAY)
+                };
+            }
+        }
+        return new Component[]{Component.literal(entry).withStyle(ChatFormatting.GRAY)};
+    }
+
+    static String fileNameFromRelativePath(String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) {
+            return "";
+        }
+        int slash = relativePath.lastIndexOf('/');
+        return slash >= 0 ? relativePath.substring(slash + 1) : relativePath;
+    }
+
+    static String parentRelativePath(String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) {
+            return "";
+        }
+        int slash = relativePath.lastIndexOf('/');
+        return slash >= 0 ? relativePath.substring(0, slash) : "";
+    }
+
+    static int currentColorPickerValue(TabletUiState state, String target) {
+        return ColorPickerApplyActions.currentValue(state, target);
+    }
+
+    static void applyColorPickerValue(Player player, TabletUiState state, String target, int color) {
+        ColorPickerApplyActions.apply(player, state, target, color);
+    }
+
+    static String tr(String key, Object... args) {
+        return I18n.get(key, args);
+    }
+
+}

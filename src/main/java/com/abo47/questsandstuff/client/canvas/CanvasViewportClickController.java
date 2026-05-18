@@ -1,0 +1,228 @@
+package com.abo47.questsandstuff.client.canvas;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
+import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
+import java.util.Map;
+
+final class CanvasViewportClickController {
+    private CanvasViewportClickController() {
+    }
+
+    static boolean mouseClicked(
+            CanvasViewport canvasViewport,
+            TabletUiState state,
+            Player player,
+            Runnable refresher,
+            List<QuestCardLayout> cards,
+            Map<String, QuestCardLayout> byQuestId,
+            CanvasInlineTextEditor textEditor,
+            CanvasElementTransformController elementTransforms,
+            CanvasSelectionTransformController selectionTransforms,
+            double mouseX,
+            double mouseY,
+            int button
+    ) {
+        if (!canvasViewport.isMouseOverElement(mouseX, mouseY)) {
+            return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+        }
+        int localX = (int) Math.round(mouseX - canvasViewport.getPositionX());
+        int localY = (int) Math.round(mouseY - canvasViewport.getPositionY());
+
+        if (EntityMotionEditor.isMainCanvasOpen(state)) {
+            if (EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {
+                canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+                return true;
+            }
+            if (button == 0 || button == 1) {
+                EntityMotionEditor.close(state);
+                refresher.run();
+                return true;
+            }
+        }
+
+        if (button == 2) {
+            state.draggingCanvas = true;
+            state.dragCurrentX = localX;
+            state.dragCurrentY = localY;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas pan start button=middle x={} y={} locked={} zoom={}", localX, localY, state.gridCanvasLocked, state.canvasZoom);
+            return true;
+        }
+
+        if (!state.pendingQuestRenameId.isBlank()) {
+            boolean handledByEditor = canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+            if (handledByEditor) {
+                return true;
+            }
+            if (button == 0 || button == 1) {
+                EditorCommandClient.cancelQuestRename(state);
+                refresher.run();
+                return true;
+            }
+        }
+
+        if (state.contextMenuOpen) {
+            if (button == 0 && TabletUiFactory.isContextMenuHit(state, localX, localY)) {
+                if (CanvasContextMenuController.clickContextMenu(canvasViewport, state, localX, localY)) {
+                    refresher.run();
+                    return true;
+                }
+                return true;
+            }
+            if (button == 0 || button == 1) {
+                CanvasViewportContextRouter.closeContextMenu(state);
+                refresher.run();
+                return true;
+            }
+        }
+
+        boolean textMenuHit = state.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY);
+        boolean textEditorHit = state.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
+        if (state.canvasTextMenuOpen && !textMenuHit && !textEditorHit) {
+            state.canvasTextMenuOpen = false;
+            state.canvasTextMenuTarget = "";
+            state.canvasTextFontSizeSliderTarget = "";
+            state.canvasTextFontSizeSliderDragging = false;
+            state.canvasTextFontSizeSliderDragTarget = "";
+            refresher.run();
+        }
+
+        if (state.canvasTextEditOpen && button == 0) {
+            CanvasTextLayer editingText = textEditor.activeText();
+            boolean transformHandleHit = editingText != null
+                    && (CanvasRenderer.isCanvasTextResizeHandleHit(state, editingText, localX, localY)
+                    || CanvasRenderer.isCanvasTextRotateHandleHit(state, editingText, localX, localY));
+            if (transformHandleHit) {
+                textEditor.close("transform_start");
+            } else {
+                if (textEditorHit) {
+                    int cursor = editingText == null ? state.canvasTextEditDraft.length() : CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
+                    state.canvasTextEditCursor = cursor;
+                    if (!canvasViewport.shiftDown()) {
+                        state.canvasTextSelectionAnchor = cursor;
+                    }
+                    state.selectingCanvasTextRange = true;
+                    canvasViewport.setFocus(true);
+                    refresher.run();
+                    return true;
+                }
+                if (textMenuHit) {
+                    canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+                    return true;
+                }
+                textEditor.close("outside_click");
+                refresher.run();
+                if (state.mouseMode != CanvasMouseMode.DRAG_CANVAS) {
+                    return true;
+                }
+            }
+        }
+        if (textMenuHit) {
+            canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+            return true;
+        }
+
+        if (CanvasMinimapController.handleClick(state, localX, localY)) {
+            refresher.run();
+            return true;
+        }
+
+        QuestCardLayout hit = TabletUiFactory.hitTestCard(cards, localX, localY);
+        CanvasImageLayer imageHit = state.canEdit ? CanvasRenderer.hitTestCanvasImage(state, localX, localY) : null;
+        if (imageHit == null && state.canEdit) {
+            imageHit = CanvasRenderer.hitTestSelectedCanvasImageControls(state, localX, localY);
+        }
+        CanvasTextLayer textHit = state.canEdit ? CanvasRenderer.hitTestCanvasText(state, localX, localY) : null;
+        if (textHit == null && state.canEdit) {
+            textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
+        }
+        if (hit != null && imageHit != null && !CanvasRenderer.isImageAboveQuest(state, TabletUiFactory.selectedGroupName(state), imageHit.id(), hit.questId())) {
+            imageHit = null;
+        }
+        if (hit != null && textHit != null && !CanvasRenderer.isTextAboveQuest(state, TabletUiFactory.selectedGroupName(state), textHit.id(), hit.questId())) {
+            textHit = null;
+        }
+        if (imageHit != null && textHit != null && !CanvasRenderer.isTextAboveImage(state, TabletUiFactory.selectedGroupName(state), textHit.id(), imageHit.id())) {
+            textHit = null;
+        } else if (imageHit != null && textHit != null) {
+            imageHit = null;
+        }
+        if (state.canEdit && button == 1) {
+            CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit);
+            return true;
+        }
+
+        if (!state.canEdit) {
+            if (hit != null) {
+                state.selectedQuestIds.clear();
+                state.selectedQuestIds.add(hit.questId());
+                state.lastJumpQuest = hit.questId();
+                if (button == 0) {
+                    QuestDetailsWindow.open(state, hit.questId());
+                }
+                refresher.run();
+                return true;
+            }
+            return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+        }
+
+        if (CanvasConnectionClickActions.handleQuickConnect(state, player, refresher, hit, button)) {
+            return true;
+        }
+
+        if (CanvasConnectionClickActions.handlePendingConnect(state, player, refresher, hit, button)) {
+            return true;
+        }
+
+        if (state.mouseMode == CanvasMouseMode.ADD_QUEST && button == 0) {
+            if (hit == null) {
+                CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
+                int logicalX = TabletUiFactory.snapToGrid(state, anchor.x);
+                int logicalY = TabletUiFactory.snapToGrid(state, anchor.y);
+                CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
+                        state,
+                        logicalX,
+                        logicalY,
+                        CanvasGeometry.slotLogicalWidth(state, 1.0f),
+                        CanvasGeometry.slotLogicalHeight(state, 1.0f)
+                );
+                TabletUiFactory.addQuestAt(player, state, clamped.x, clamped.y, "");
+                refresher.run();
+            }
+            return true;
+        }
+
+        if (state.mouseMode == CanvasMouseMode.CONNECT_QUESTS) {
+            return CanvasConnectionClickActions.handleConnectMode(canvasViewport, state, player, refresher, hit, button);
+        }
+
+        if (state.mouseMode == CanvasMouseMode.DRAG_CANVAS) {
+            state.draggingCanvas = true;
+            state.dragCurrentX = localX;
+            state.dragCurrentY = localY;
+            return true;
+        }
+
+        if (state.mouseMode == CanvasMouseMode.SELECT_MOVE) {
+            CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit);
+            return true;
+        }
+
+        return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+    }
+}

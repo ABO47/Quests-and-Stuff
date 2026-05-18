@@ -1,0 +1,58 @@
+package com.abo47.questsandstuff.network.editor;
+
+import com.abo47.questsandstuff.quest.QuestServices;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
+
+public record C2SEditorGroupPacket(String action, String group, String value, int offset) {
+    public static C2SEditorGroupPacket decode(FriendlyByteBuf buf) {
+        return new C2SEditorGroupPacket(buf.readUtf(), buf.readUtf(), buf.readUtf(), buf.readVarInt());
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(action == null ? "" : action);
+        buf.writeUtf(group == null ? "" : group);
+        buf.writeUtf(value == null ? "" : value);
+        buf.writeVarInt(offset);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
+        ServerPlayer player = context.getSender();
+        if (player != null) {
+            context.enqueueWork(() -> {
+                var editor = QuestServices.editor(player.server);
+                switch (action == null ? "" : action) {
+                    case "create" -> editor.createGroup(player, group);
+                    case "delete" -> editor.deleteGroup(player, group);
+                    case "move" -> editor.moveGroup(player, group, offset);
+                    case "move_to" -> editor.moveGroupToIndex(player, group, offset);
+                    case "rename" -> editor.renameGroup(player, group, value);
+                    case "set_icon" -> editor.setGroupIcon(player, group, value);
+                    case "set_background" -> editor.setGroupBackground(player, group, value);
+                    case "set_canvas_background" -> editor.setGroupCanvasBackground(player, group, value);
+                    case "set_text_align" -> editor.setGroupTextAlign(player, group, value);
+                    case "set_text_color" -> {
+                        try {
+                            editor.setGroupTextColor(player, group, Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    case "set_text_style" -> editor.setGroupTextStyle(player, group, value);
+                    case "set_text_size" -> {
+                        try {
+                            editor.setGroupTextSize(player, group, Integer.parseInt(value));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    default -> {
+                    }
+                }
+            });
+        }
+        context.setPacketHandled(true);
+    }
+}

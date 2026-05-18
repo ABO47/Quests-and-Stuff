@@ -1,0 +1,281 @@
+package com.abo47.questsandstuff.client.canvas.viewport;
+
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
+
+import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
+import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
+
+public final class CanvasInlineTextEditor {
+    private final WidgetGroup viewport;
+    private final TabletUiState state;
+    private final Runnable refresh;
+
+    public CanvasInlineTextEditor(WidgetGroup viewport, TabletUiState state, Runnable refresh) {
+        this.viewport = viewport;
+        this.state = state;
+        this.refresh = refresh == null ? () -> {
+        } : refresh;
+    }
+
+    public boolean isEditorHit(int localX, int localY) {
+        CanvasTextLayer text = activeText();
+        if (text == null) {
+            return false;
+        }
+        int w = Math.max(24, Math.round(text.w() * CanvasRenderer.clampZoom(state.canvasZoom)));
+        int h = Math.max(14, Math.round(text.h() * CanvasRenderer.clampZoom(state.canvasZoom)));
+        double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, localX, localY);
+        return local[0] >= 0 && local[0] <= w && local[1] >= 0 && local[1] <= h;
+    }
+
+    public boolean isMenuHit(int localX, int localY) {
+        if (state.canvasTextFontSizeSliderDragging) {
+            return true;
+        }
+        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+            return false;
+        }
+        String group = TabletUiFactory.selectedGroupName(state);
+        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.canvasTextMenuTarget);
+        if (text == null) {
+            return false;
+        }
+        int[] bounds = CanvasRenderer.canvasTextMenuBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), 8);
+        if (inside(localX, localY, bounds)) {
+            return true;
+        }
+        if (text.id().equals(state.canvasTextFontSizeSliderTarget)) {
+            return inside(localX, localY, CanvasRenderer.canvasTextFontSizeSliderBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), 8));
+        }
+        return false;
+    }
+
+    private static boolean inside(int localX, int localY, int[] bounds) {
+        return localX >= bounds[0] && localX <= bounds[0] + bounds[2]
+                && localY >= bounds[1] && localY <= bounds[1] + bounds[3];
+    }
+
+    public void begin(CanvasTextLayer text) {
+        state.canvasTextEditOpen = true;
+        state.canvasTextEditTarget = text.id();
+        state.canvasTextEditDraft = text.text();
+        state.canvasTextEditCursor = state.canvasTextEditDraft.length();
+        state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
+        state.selectingCanvasTextRange = false;
+        state.canvasTextMenuOpen = true;
+        state.canvasTextMenuTarget = text.id();
+        state.selectedCanvasTextId = text.id();
+        state.selectedCanvasTextIds.clear();
+        state.selectedCanvasTextIds.add(text.id());
+        state.selectedCanvasImageId = "";
+        state.selectedCanvasImageIds.clear();
+        state.selectedQuestIds.clear();
+        state.draggingCanvasText = false;
+        state.resizingCanvasText = false;
+        state.rotatingCanvasText = false;
+        viewport.setFocus(true);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit start id={}", text.id());
+    }
+
+    public void close(String reason) {
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit close id={} reason={} length={}", state.canvasTextEditTarget, reason, state.canvasTextEditDraft.length());
+        state.canvasTextEditOpen = false;
+        state.canvasTextEditTarget = "";
+        state.canvasTextEditCursor = 0;
+        state.canvasTextSelectionAnchor = 0;
+        state.selectingCanvasTextRange = false;
+    }
+
+    public CanvasTextLayer activeText() {
+        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+            return null;
+        }
+        return CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextEditTarget);
+    }
+
+    public boolean handleKeyPressed(int keyCode) {
+        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+            return false;
+        }
+        if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
+            state.canvasTextSelectionAnchor = 0;
+            state.canvasTextEditCursor = state.canvasTextEditDraft.length();
+            refresh.run();
+            return true;
+        }
+        if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_C) {
+            copySelection();
+            return true;
+        }
+        if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_X) {
+            if (copySelection() && deleteSelection()) {
+                refresh.run();
+            }
+            return true;
+        }
+        if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_V) {
+            String clip = Minecraft.getInstance().keyboardHandler.getClipboard();
+            if (clip != null && !clip.isEmpty()) {
+                insert(clip.replace("\r\n", "\n").replace('\r', '\n'));
+                refresh.run();
+            }
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            close("escape");
+            refresh.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            insert("\n");
+            refresh.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            if (deleteSelection()) {
+                refresh.run();
+            } else {
+                int cursor = clampedCursor();
+                if (cursor > 0) {
+                    replaceRange(cursor - 1, cursor, "");
+                    refresh.run();
+                }
+            }
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_DELETE) {
+            if (deleteSelection()) {
+                refresh.run();
+            } else {
+                int cursor = clampedCursor();
+                if (cursor < state.canvasTextEditDraft.length()) {
+                    replaceRange(cursor, cursor + 1, "");
+                    refresh.run();
+                }
+            }
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            moveCursor(Math.max(0, clampedCursor() - 1), isShiftDown());
+            refresh.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            moveCursor(Math.min(state.canvasTextEditDraft.length(), clampedCursor() + 1), isShiftDown());
+            refresh.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_HOME) {
+            moveCursor(0, isShiftDown());
+            refresh.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_END) {
+            moveCursor(state.canvasTextEditDraft.length(), isShiftDown());
+            refresh.run();
+            return true;
+        }
+        return true;
+    }
+
+    public boolean handleCharTyped(char codePoint) {
+        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+            return false;
+        }
+        if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
+            return true;
+        }
+        insert(String.valueOf(codePoint));
+        refresh.run();
+        return true;
+    }
+
+    public boolean dragSelectionTo(int localX, int localY) {
+        if (!state.selectingCanvasTextRange || !state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+            return false;
+        }
+        CanvasTextLayer editingText = activeText();
+        if (editingText != null) {
+            state.canvasTextEditCursor = CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
+            refresh.run();
+        }
+        return true;
+    }
+
+    public boolean finishSelectionDrag() {
+        if (!state.selectingCanvasTextRange) {
+            return false;
+        }
+        state.selectingCanvasTextRange = false;
+        refresh.run();
+        return true;
+    }
+
+    public void moveCursor(int cursor, boolean extendSelection) {
+        state.canvasTextEditCursor = Math.max(0, Math.min(cursor, state.canvasTextEditDraft.length()));
+        if (!extendSelection) {
+            state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
+        }
+    }
+
+    public boolean deleteSelection() {
+        if (!CanvasRenderer.hasTextSelection(state)) {
+            return false;
+        }
+        replaceRange(CanvasRenderer.textSelectionStart(state), CanvasRenderer.textSelectionEnd(state), "");
+        return true;
+    }
+
+    public boolean copySelection() {
+        if (!CanvasRenderer.hasTextSelection(state)) {
+            return false;
+        }
+        int start = CanvasRenderer.textSelectionStart(state);
+        int end = CanvasRenderer.textSelectionEnd(state);
+        String value = state.canvasTextEditDraft.substring(start, end);
+        Minecraft.getInstance().keyboardHandler.setClipboard(value);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit copy range={}..{} length={}", start, end, value.length());
+        return true;
+    }
+
+    public void insert(String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        int start = CanvasRenderer.textSelectionStart(state);
+        int end = CanvasRenderer.textSelectionEnd(state);
+        int nextLength = state.canvasTextEditDraft.length() - Math.max(0, end - start) + value.length();
+        if (nextLength > 2048) {
+            value = value.substring(0, Math.max(0, 2048 - (state.canvasTextEditDraft.length() - Math.max(0, end - start))));
+        }
+        if (!value.isEmpty()) {
+            replaceRange(start, end, value);
+        }
+    }
+
+    private int clampedCursor() {
+        state.canvasTextEditCursor = Math.max(0, Math.min(state.canvasTextEditCursor, state.canvasTextEditDraft.length()));
+        return state.canvasTextEditCursor;
+    }
+
+    private void replaceRange(int start, int end, String replacement) {
+        int safeStart = Math.max(0, Math.min(start, state.canvasTextEditDraft.length()));
+        int safeEnd = Math.max(safeStart, Math.min(end, state.canvasTextEditDraft.length()));
+        String value = replacement == null ? "" : replacement;
+        state.canvasTextEditDraft = state.canvasTextEditDraft.substring(0, safeStart) + value + state.canvasTextEditDraft.substring(safeEnd);
+        state.canvasTextEditCursor = safeStart + value.length();
+        state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
+        String group = TabletUiFactory.selectedGroupName(state);
+        String id = state.canvasTextEditTarget;
+        CanvasRenderer.updateCanvasText(state, group, id, text -> text.replaceTextRange(safeStart, safeEnd, value));
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
+    }
+}
