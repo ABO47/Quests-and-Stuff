@@ -27,7 +27,7 @@ public final class QuestVocabulary {
     public static final String CLAIM = "ui.questsandstuff.quest.claim";
     public static final String CLAIM_ALL_REWARDS = "ui.questsandstuff.quest.claim_all_rewards";
     public static final String CLAIMED = "ui.questsandstuff.quest.claimed";
-    public static final String COMMAND_REWARD = "ui.questsandstuff.quest.command_reward";
+    public static final String ENTER_COMMAND = "ui.questsandstuff.quest.enter_command";
     public static final String EDIT_COMMAND_REWARD = "ui.questsandstuff.quest.edit_command_reward";
     public static final String MARK_REQUIREMENT_DONE = "ui.questsandstuff.quest.mark_requirement_done";
     public static final String RENAME_REQUIREMENT = "ui.questsandstuff.quest.rename_requirement";

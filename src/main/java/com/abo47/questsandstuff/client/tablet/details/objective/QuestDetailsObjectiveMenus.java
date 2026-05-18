@@ -205,14 +205,18 @@ public final class QuestDetailsObjectiveMenus {
         }
         int w = 232;
         int h = 72;
+        int pad = 8;
+        int buttonW = 82;
+        int buttonH = 16;
+        int buttonY = 48;
         int x = Math.max(4, Math.min(state.questDetailsContextX, modalW - w - 4));
         int y = Math.max(4, Math.min(state.questDetailsContextY, modalH - h - 4));
         WidgetGroup popup = panel(x, y, w, h, withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT);
-        popup.addWidget(label(8, 6, QuestVocabulary.text(QuestVocabulary.COMMAND_REWARD), ModColors.TEXT_PRIMARY));
+        popup.addWidget(label(pad, 6, QuestVocabulary.text(QuestVocabulary.ENTER_COMMAND), ModColors.TEXT_PRIMARY));
         TextFieldWidget commandField = StyledTextFields.commitField(
-                8,
+                pad,
                 24,
-                w - 16,
+                w - pad * 2,
                 16,
                 () -> state.questDetailsCommandRewardCommand,
                 value -> state.questDetailsCommandRewardCommand = value == null ? "" : value,
@@ -235,11 +239,11 @@ public final class QuestDetailsObjectiveMenus {
         commandField.setMaxStringLength(256);
         StyledTextFields.applyStandardStyle(commandField, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
         popup.addWidget(commandField);
-        ActionButtons.iconAction(popup, 8, 48, 82, "add", QuestVocabulary.text(QuestVocabulary.COMMON_SAVE), ModColors.SUCCESS, click -> {
+        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", QuestVocabulary.text(QuestVocabulary.COMMON_SAVE), ModColors.SUCCESS, null, click -> {
             commitCommandReward(player, state);
             refresh.run();
         });
-        ActionButtons.iconAction(popup, 98, 48, 82, "close", QuestVocabulary.text(QuestVocabulary.COMMON_CANCEL), ModColors.ERROR, click -> {
+        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", QuestVocabulary.text(QuestVocabulary.COMMON_CANCEL), ModColors.ERROR, null, click -> {
             closeCommandRewardEditor(state);
             refresh.run();
         });
