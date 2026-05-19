@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -57,7 +58,9 @@ final class CanvasMinimapOverlay {
             return;
         }
 
-        boolean closing = isAnimating(state) && state.minimapCollapsed && !state.minimapAnimationFromCollapsed;
+        boolean closing = UiAnimationProgress.running(state.minimapAnimationStartMs, ANIMATION_MS)
+                && state.minimapCollapsed
+                && !state.minimapAnimationFromCollapsed;
         if (hitLayout.collapsed() && !closing) {
             canvasViewport.addWidget(minimapWidget(canvasViewport, state, CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false), hitLayout, null));
             return;
@@ -92,7 +95,12 @@ final class CanvasMinimapOverlay {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
-                float openProgress = openProgress(state);
+                float openProgress = UiAnimationProgress.openProgress(
+                        !state.minimapCollapsed,
+                        state.minimapAnimationFromCollapsed,
+                        state.minimapAnimationStartMs,
+                        ANIMATION_MS
+                );
                 drawPanel(graphics, originX, originY, layout, collapsedLayout, openProgress, mouseX, mouseY);
                 if (snapshot != null && openProgress > 0.02f) {
                     int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * openProgress));
@@ -256,9 +264,9 @@ final class CanvasMinimapOverlay {
             int mouseY
     ) {
         int handleX = originX + layout.toggleX();
-        int handleY = originY + interpolate(collapsedLayout.toggleY(), layout.toggleY(), openProgress);
+        int handleY = originY + UiAnimationProgress.interpolate(collapsedLayout.toggleY(), layout.toggleY(), openProgress);
         int handleW = layout.toggleW();
-        int handleH = interpolate(collapsedLayout.toggleH(), layout.toggleH(), openProgress);
+        int handleH = UiAnimationProgress.interpolate(collapsedLayout.toggleH(), layout.toggleH(), openProgress);
         int visibleBodyW = Math.round((layout.panelW() - layout.toggleW()) * openProgress);
         if (visibleBodyW > 0) {
             int bodyX = handleX - visibleBodyW;
@@ -382,27 +390,6 @@ final class CanvasMinimapOverlay {
         state.minimapWorldMinY = projection.world().minY();
         state.minimapWorldWidth = projection.world().width();
         state.minimapWorldHeight = projection.world().height();
-    }
-
-    private static boolean isAnimating(TabletUiState state) {
-        return state.minimapAnimationStartMs > 0L && System.currentTimeMillis() - state.minimapAnimationStartMs < ANIMATION_MS;
-    }
-
-    private static float openProgress(TabletUiState state) {
-        if (!isAnimating(state)) {
-            return state.minimapCollapsed ? 0.0f : 1.0f;
-        }
-        float t = (System.currentTimeMillis() - state.minimapAnimationStartMs) / (float) ANIMATION_MS;
-        t = Math.max(0.0f, Math.min(1.0f, t));
-        float eased = t * t * (3.0f - 2.0f * t);
-        if (state.minimapAnimationFromCollapsed) {
-            return eased;
-        }
-        return 1.0f - eased;
-    }
-
-    private static int interpolate(int from, int to, float progress) {
-        return Math.round(from + (to - from) * progress);
     }
 
     private static int clamp(int value, int min, int max) {

@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -85,6 +86,7 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < actions.size()) {
             ContextAction action = actions.get(actionIndex);
+            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;

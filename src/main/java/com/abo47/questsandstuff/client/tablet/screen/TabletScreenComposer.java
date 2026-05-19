@@ -65,7 +65,7 @@ public final class TabletScreenComposer {
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, CANVAS_H) {
             @Override
-    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, state);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
                 drawCanvasPanelOutlines(graphics, this, state);

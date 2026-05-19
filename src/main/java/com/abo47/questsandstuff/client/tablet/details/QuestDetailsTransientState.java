@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestDetailsTransientState {
@@ -8,6 +9,7 @@ public final class QuestDetailsTransientState {
 
     public static void openContext(TabletUiState state, String kind, String id, int x, int y) {
         state.questDetailsContextOpen = true;
+        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
         state.questDetailsContextKind = kind == null ? "" : kind;
         state.questDetailsContextId = id == null ? "" : id;
         state.questDetailsContextX = x;
@@ -29,6 +31,7 @@ public final class QuestDetailsTransientState {
 
     public static void openTypePicker(TabletUiState state, String kind, String targetId) {
         state.questDetailsTypePickerOpen = true;
+        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
         state.questDetailsTypePickerKind = kind == null ? "" : kind;
         state.questDetailsTypePickerTargetId = targetId == null ? "" : targetId;
         state.questDetailsTypePickerX = state.questDetailsContextX;

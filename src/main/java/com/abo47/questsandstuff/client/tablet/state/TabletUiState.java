@@ -193,6 +193,8 @@ public class TabletUiState {
     public int contextMenuWidthPx;
     public int contextMenuHeightPx;
     public String contextDeleteConfirmKey = "";
+    public long contextMenuAnimationStartMs;
+    public String contextMenuAnimationKey = "";
     public String contextQuestId = "";
     public String contextEdgeSource = "";
     public String contextEdgeTarget = "";

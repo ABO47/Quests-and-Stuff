@@ -67,7 +67,7 @@ public final class QuestDetailsObjectiveMenus {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(state.questDetailsTypePickerX, modalW - menuW - 4));
         int my = Math.max(4, Math.min(state.questDetailsTypePickerY, modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, action -> refresh.run());
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run());
         modal.addWidget(menu);
     }
 
@@ -95,7 +95,7 @@ public final class QuestDetailsObjectiveMenus {
         state.questDetailsContextY = y;
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }

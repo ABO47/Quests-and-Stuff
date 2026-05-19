@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.context;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -25,6 +26,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
+            TabletUiState state,
             Consumer<ContextAction> afterAction
     ) {
         int safeVisibleRows = Math.max(1, Math.min(visibleRows, Math.max(1, actions.size())));
@@ -38,6 +40,7 @@ public final class ContextMenuPanel {
             ContextAction action = actions.get(i);
             int rowY = 4 + (i - safeStart) * CONTEXT_ROW_H;
             addWindowsContextRow(menu, rowY, rowWidth, action.label(), action.icon(), click -> {
+                ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
                 action.action().run();
                 if (afterAction != null) {
                     afterAction.accept(action);
@@ -47,7 +50,7 @@ public final class ContextMenuPanel {
         if (needsScroll) {
             addScrollbar(menu, actions.size(), safeVisibleRows, safeStart, w);
         }
-        return menu;
+        return ContextMenuAnimation.wrap(menu, state, ContextMenuAnimation.DEFAULT_KEY);
     }
 
     public static int heightForRows(int visibleRows) {

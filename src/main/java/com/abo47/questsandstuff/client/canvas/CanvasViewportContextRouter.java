@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -44,6 +45,7 @@ final class CanvasViewportContextRouter {
         state.contextPointerLogicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.contextPointerLogicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
         state.contextMenuOpen = true;
+        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
         EntityMotionEditor.close(state);
         state.contextMenuX = localX;
         state.contextMenuY = localY;
