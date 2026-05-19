@@ -29,11 +29,11 @@ final class MainCanvasToolsMenu {
 
     static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {
         toolsMenu.clearAllWidgets();
-        boolean visible = state.toolsMenuOpen;
+        boolean visible = ToolMenuAnimation.mainVisible(state);
         toolsMenu.setVisible(visible);
-        toolsMenu.setActive(visible);
+        toolsMenu.setActive(ToolMenuAnimation.mainInteractive(state));
         if (!visible) {
-            closeTrackedMenu(state);
+            ToolMenuAnimation.finishMain(state);
             return;
         }
 
@@ -48,6 +48,7 @@ final class MainCanvasToolsMenu {
         int menuX = canvasX + toolsX - 1;
         int menuY = CANVAS_Y + topY + headerH + 6;
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
+        menu.setActive(ToolMenuAnimation.mainInteractive(state));
 
         menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
 
@@ -191,13 +192,6 @@ final class MainCanvasToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs));
-    }
-
-    private static void closeTrackedMenu(TabletUiState state) {
-        state.toolsMenuW = 0;
-        state.toolsMenuH = 0;
-        state.toolsGridSizeMenuOpen = false;
-        state.toolsGridOpacityMenuOpen = false;
+        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
     }
 }

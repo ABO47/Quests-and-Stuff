@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardControlle
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -84,6 +85,14 @@ public final class CanvasViewport extends WidgetGroup {
     @Override
     public void drawOverlay(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> super.drawOverlay(graphics, mouseX, mouseY, partialTicks));
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (CanvasMinimapController.finishAnimationIfDone(state)) {
+            refreshCanvas();
+        }
     }
 
     @Override

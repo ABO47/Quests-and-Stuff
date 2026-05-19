@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
 import javax.annotation.Nonnull;
+import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
 public final class VerticalRevealWidget extends WidgetGroup {
@@ -13,11 +14,13 @@ public final class VerticalRevealWidget extends WidgetGroup {
 
     private final long fallbackStartMs = System.currentTimeMillis();
     private final LongSupplier startMsSupplier;
+    private final BooleanSupplier openingSupplier;
     private final long durationMs;
 
-    private VerticalRevealWidget(WidgetGroup content, LongSupplier startMsSupplier, long durationMs) {
+    private VerticalRevealWidget(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, long durationMs) {
         super(content.getSelfPositionX(), content.getSelfPositionY(), content.getSizeWidth(), content.getSizeHeight());
         this.startMsSupplier = startMsSupplier;
+        this.openingSupplier = openingSupplier == null ? () -> true : openingSupplier;
         this.durationMs = durationMs;
         content.setSelfPosition(0, 0);
         addWidget(content);
@@ -27,11 +30,23 @@ public final class VerticalRevealWidget extends WidgetGroup {
         return wrap(content, () -> startMs, SHEET_OPEN_MS);
     }
 
+    public static WidgetGroup sheet(WidgetGroup content, long startMs, BooleanSupplier openingSupplier) {
+        return wrap(content, () -> startMs, openingSupplier, SHEET_OPEN_MS);
+    }
+
     public static WidgetGroup wrap(WidgetGroup content, LongSupplier startMsSupplier, long durationMs) {
+        return wrap(content, startMsSupplier, () -> true, durationMs);
+    }
+
+    public static WidgetGroup wrap(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, long durationMs) {
         if (content == null) {
             return new WidgetGroup(0, 0, 1, 1);
         }
-        return new VerticalRevealWidget(content, startMsSupplier, durationMs);
+        return new VerticalRevealWidget(content, startMsSupplier, openingSupplier, durationMs);
+    }
+
+    public static boolean sheetRunning(long startMs) {
+        return UiAnimationProgress.running(startMs, SHEET_OPEN_MS);
     }
 
     @Override
@@ -51,6 +66,9 @@ public final class VerticalRevealWidget extends WidgetGroup {
 
     private void drawSheet(GuiGraphics graphics, Runnable draw) {
         int visibleH = visibleHeight();
+        if (visibleH <= 0) {
+            return;
+        }
         if (visibleH >= getSizeHeight()) {
             draw.run();
             return;
@@ -68,8 +86,9 @@ public final class VerticalRevealWidget extends WidgetGroup {
 
     private int visibleHeight() {
         long startMs = startMs();
-        float progress = UiAnimationProgress.openProgress(true, true, startMs, durationMs);
-        return Math.max(1, UiAnimationProgress.interpolate(1, getSizeHeight(), progress));
+        boolean opening = openingSupplier.getAsBoolean();
+        float progress = UiAnimationProgress.openProgress(opening, opening, startMs, durationMs);
+        return UiAnimationProgress.interpolate(0, getSizeHeight(), progress);
     }
 
     private long startMs() {

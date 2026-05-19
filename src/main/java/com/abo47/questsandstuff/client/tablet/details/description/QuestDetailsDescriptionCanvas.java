@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -92,7 +93,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             state.questDetailsPanStartY = (int) Math.round(mouseY);
             state.questDetailsPanStartScroll = state.questDetailsDescScroll;
             QuestDetailsTransientState.closeContext(state);
-            state.questDetailsToolsOpen = false;
+            ToolMenuAnimation.closeQuestDetails(state);
             return true;
         }
         if (!state.canEdit || !state.questDetailsEditMode) {
@@ -134,7 +135,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
                     state.questDetailsContextX,
                     state.questDetailsContextY
             );
-            state.questDetailsToolsOpen = false;
+            ToolMenuAnimation.closeQuestDetails(state);
             EntityMotionEditor.close(state);
             refresh.run();
             return true;

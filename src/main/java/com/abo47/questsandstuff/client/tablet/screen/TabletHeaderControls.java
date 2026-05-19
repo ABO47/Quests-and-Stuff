@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -97,14 +98,7 @@ final class TabletHeaderControls {
         int toolsW = headerH;
         WidgetGroup toolsBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
         ButtonWidget toolsHit = flatHitButton(0, 0, toolsW, headerH, click -> {
-            state.toolsMenuOpen = !state.toolsMenuOpen;
-            if (!state.toolsMenuOpen) {
-                state.toolsGridSizeMenuOpen = false;
-                state.toolsGridOpacityMenuOpen = false;
-            } else {
-                state.toolsMenuAnimationStartMs = System.currentTimeMillis();
-            }
-            QuestsAndStuffMod.debugLog("[QnS:UI] tools menu toggle open={}", state.toolsMenuOpen);
+            ToolMenuAnimation.toggleMain(state);
             refresh.run();
         });
         toolsHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
@@ -254,9 +248,7 @@ final class TabletHeaderControls {
             refresh.run();
             return;
         }
-        state.toolsMenuOpen = false;
-        state.toolsGridSizeMenuOpen = false;
-        state.toolsGridOpacityMenuOpen = false;
+        ToolMenuAnimation.closeMain(state);
         state.contextMenuOpen = false;
         state.chapterMenuOpen = false;
         state.assetContextOpen = false;

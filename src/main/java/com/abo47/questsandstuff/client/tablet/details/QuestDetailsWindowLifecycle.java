@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -101,6 +102,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsScreenX = state.questDetailsX;
         state.questDetailsScreenY = state.questDetailsY;
         QuestDetailsTransientState.closeFloatingPopups(state);
+        ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsDraggingSplitter = false;
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
@@ -149,6 +151,7 @@ final class QuestDetailsWindowLifecycle {
 
     private static void resetOpenTransientState(TabletUiState state) {
         QuestDetailsTransientState.closeFloatingPopups(state);
+        ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsTextStyleOpen = false;
         state.questDetailsTextLastClickId = "";
         state.questDetailsTextLastClickAtMs = 0L;

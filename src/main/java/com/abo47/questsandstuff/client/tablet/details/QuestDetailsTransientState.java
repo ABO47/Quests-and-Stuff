@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 
 public final class QuestDetailsTransientState {
     private QuestDetailsTransientState() {
@@ -100,8 +101,8 @@ public final class QuestDetailsTransientState {
             closeContext(state);
             changed = true;
         }
-        if (state.questDetailsToolsOpen) {
-            state.questDetailsToolsOpen = false;
+        if (state.questDetailsToolsOpen || state.questDetailsToolsClosing) {
+            ToolMenuAnimation.closeQuestDetails(state);
             changed = true;
         }
         return changed;

@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class QuestDetailsLayerWidget extends WidgetGroup {
@@ -23,6 +24,9 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     public void updateScreen() {
         super.updateScreen();
         if (QuestDetailsWindow.finishCloseIfDone(state)) {
+            refresh.run();
+        }
+        if (ToolMenuAnimation.finishClosingIfDone(state)) {
             refresh.run();
         }
     }

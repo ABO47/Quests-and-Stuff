@@ -26,7 +26,7 @@ final class QuestDetailsToolsMenu {
     }
 
     static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, String questId, int buttonX, int buttonY, int headerH, int toolSlot) {
-        if (!state.questDetailsToolsOpen) {
+        if (!ToolMenuAnimation.questDetailsVisible(state)) {
             return;
         }
         final int menuPad = 1;
@@ -41,6 +41,7 @@ final class QuestDetailsToolsMenu {
         int slotX = menuPad;
         int y = menuPad;
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
+        menu.setActive(ToolMenuAnimation.questDetailsInteractive(state));
 
         menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
 
@@ -173,6 +174,6 @@ final class QuestDetailsToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs));
+        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
     }
 }

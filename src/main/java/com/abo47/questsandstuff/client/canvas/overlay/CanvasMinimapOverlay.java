@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
@@ -39,7 +40,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selected
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 final class CanvasMinimapOverlay {
-    private static final long ANIMATION_MS = 180L;
     private static final int MIN_QUEST_SIZE = 4;
     private static final int MIN_ELEMENT_SIZE = 2;
 
@@ -60,10 +60,7 @@ final class CanvasMinimapOverlay {
         }
 
         boolean animationsEnabled = QuestsAndStuffConfig.minimapAnimationsEnabled();
-        boolean closing = animationsEnabled
-                && UiAnimationProgress.running(state.minimapAnimationStartMs, ANIMATION_MS)
-                && state.minimapCollapsed
-                && !state.minimapAnimationFromCollapsed;
+        boolean closing = CanvasMinimapController.isClosingAnimationRunning(state);
         if (hitLayout.collapsed() && !closing) {
             canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false), hitLayout, null));
             return;
@@ -125,7 +122,7 @@ final class CanvasMinimapOverlay {
                 !state.minimapCollapsed,
                 state.minimapAnimationFromCollapsed,
                 state.minimapAnimationStartMs,
-                ANIMATION_MS
+                CanvasMinimapController.ANIMATION_MS
         );
     }
 

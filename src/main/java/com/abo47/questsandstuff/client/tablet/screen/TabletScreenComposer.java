@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuLayerWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -97,7 +98,7 @@ public final class TabletScreenComposer {
 
         TabletHeaderControls headers = TabletHeaderControls.create(state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
-        WidgetGroup toolsMenu = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
+        WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
 
         refresh[0] = () -> {

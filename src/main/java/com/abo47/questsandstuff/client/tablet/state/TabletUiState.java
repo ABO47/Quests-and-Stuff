@@ -77,6 +77,7 @@ public class TabletUiState {
     public boolean showImportPanel;
     public boolean showAdvancedTools;
     public boolean toolsMenuOpen;
+    public boolean toolsMenuClosing;
     public String toolsSearch = "";
     public boolean toolsSearchFocused;
     public int toolsMenuX;
@@ -253,6 +254,7 @@ public class TabletUiState {
     public int questDetailsSplitterStartWidth;
     public boolean questDetailsEditMode = true;
     public boolean questDetailsToolsOpen;
+    public boolean questDetailsToolsClosing;
     public boolean questDetailsGridEnabled;
     public boolean questDetailsGridSnapLocked;
     public boolean questDetailsCenterSnapXEnabled;

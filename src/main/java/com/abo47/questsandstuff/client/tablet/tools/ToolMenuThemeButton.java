@@ -22,8 +22,8 @@ final class ToolMenuThemeButton {
         addIcon(menu, x, y, size, "themes", ModColors.INTERACTIVE);
         ButtonWidget hit = hit(x, y, size, new Component[]{Component.literal("Themes")}, () -> {
             ModalOpenActions.openThemePicker(state);
-            state.toolsMenuOpen = false;
-            state.questDetailsToolsOpen = false;
+            ToolMenuAnimation.closeMain(state);
+            ToolMenuAnimation.closeQuestDetails(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] theme picker open");
             refresh.run();
         });
