@@ -168,6 +168,15 @@ public final class TabletSettingsModal {
                         QuestsAndStuffConfig::setMinimapAnimationsEnabled,
                         false,
                         true
+                ),
+                new SettingOption(
+                        "questWindowAnimations",
+                        "ui.questsandstuff.settings.quest_window_animations",
+                        "ui.questsandstuff.settings.quest_window_animations_desc",
+                        QuestsAndStuffConfig::questWindowAnimationSettingEnabled,
+                        QuestsAndStuffConfig::setQuestWindowAnimationsEnabled,
+                        false,
+                        true
                 )
         );
     }

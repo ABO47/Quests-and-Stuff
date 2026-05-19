@@ -10,6 +10,7 @@ public final class QuestsAndStuffConfig {
     public static final ForgeConfigSpec.BooleanValue CONTEXT_MENU_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue TOOLS_MENU_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue MINIMAP_ANIMATIONS;
+    public static final ForgeConfigSpec.BooleanValue QUEST_WINDOW_ANIMATIONS;
 
     static {
         ForgeConfigSpec.Builder commonBuilder = new ForgeConfigSpec.Builder();
@@ -37,6 +38,9 @@ public final class QuestsAndStuffConfig {
         MINIMAP_ANIMATIONS = clientBuilder
                 .comment("Enable minimap expand and collapse animations.")
                 .define("minimapAnimations", true);
+        QUEST_WINDOW_ANIMATIONS = clientBuilder
+                .comment("Enable quest details window source-origin open animations.")
+                .define("questWindowAnimations", true);
         clientBuilder.pop();
 
         CLIENT_SPEC = clientBuilder.build();
@@ -95,6 +99,18 @@ public final class QuestsAndStuffConfig {
 
     public static void setMinimapAnimationsEnabled(boolean enabled) {
         setClientBoolean(MINIMAP_ANIMATIONS, enabled);
+    }
+
+    public static boolean questWindowAnimationSettingEnabled() {
+        return QUEST_WINDOW_ANIMATIONS.get();
+    }
+
+    public static boolean questWindowAnimationsEnabled() {
+        return UI_ANIMATIONS.get() && QUEST_WINDOW_ANIMATIONS.get();
+    }
+
+    public static void setQuestWindowAnimationsEnabled(boolean enabled) {
+        setClientBoolean(QUEST_WINDOW_ANIMATIONS, enabled);
     }
 
     private static void setClientBoolean(ForgeConfigSpec.BooleanValue value, boolean enabled) {

@@ -15,6 +15,14 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void open(TabletUiState state, String questId) {
+        open(state, questId, false, 0, 0, 0, 0);
+    }
+
+    static void openAtSource(TabletUiState state, String questId, int sourceX, int sourceY, int sourceW, int sourceH) {
+        open(state, questId, true, sourceX, sourceY, sourceW, sourceH);
+    }
+
+    private static void open(TabletUiState state, String questId, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
@@ -22,13 +30,20 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsQuestId = questId.trim();
         state.questDetailsEditMode = state.canEdit;
         resetOpenTransientState(state);
+        startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
         QuestDetailsDescriptionModel.applyToolsToState(state, QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetailsQuestId)));
         CompoundTag quest = ClientQuestCache.quest(state.questDetailsQuestId);
         state.pendingQuestRenameId = "";
         state.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetailsTitleFocused = false;
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details open quest={}", state.questDetailsQuestId);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details open quest={} source={} x={} y={} w={} h={}",
+                state.questDetailsQuestId,
+                state.questDetailsAnimationHasSource,
+                state.questDetailsAnimationSourceX,
+                state.questDetailsAnimationSourceY,
+                state.questDetailsAnimationSourceW,
+                state.questDetailsAnimationSourceH);
     }
 
     static void close(TabletUiState state) {
@@ -63,6 +78,7 @@ final class QuestDetailsWindowLifecycle {
             state.pendingQuestRenameId = "";
             state.questTitleDraft = "";
         }
+        clearOpenAnimation(state);
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
@@ -111,6 +127,25 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextColorTextId = "";
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
+    }
+
+    private static void startOpenAnimation(TabletUiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
+        boolean validSource = hasSource && sourceW > 0 && sourceH > 0;
+        state.questDetailsAnimationStartMs = System.currentTimeMillis();
+        state.questDetailsAnimationHasSource = validSource;
+        state.questDetailsAnimationSourceX = validSource ? sourceX : 0;
+        state.questDetailsAnimationSourceY = validSource ? sourceY : 0;
+        state.questDetailsAnimationSourceW = validSource ? sourceW : 0;
+        state.questDetailsAnimationSourceH = validSource ? sourceH : 0;
+    }
+
+    private static void clearOpenAnimation(TabletUiState state) {
+        state.questDetailsAnimationStartMs = 0L;
+        state.questDetailsAnimationHasSource = false;
+        state.questDetailsAnimationSourceX = 0;
+        state.questDetailsAnimationSourceY = 0;
+        state.questDetailsAnimationSourceW = 0;
+        state.questDetailsAnimationSourceH = 0;
     }
 
     private static void clearSelectionState(TabletUiState state) {

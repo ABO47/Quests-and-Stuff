@@ -239,6 +239,12 @@ public class TabletUiState {
     public int questDetailsScreenY;
     public int questDetailsW;
     public int questDetailsH;
+    public long questDetailsAnimationStartMs;
+    public boolean questDetailsAnimationHasSource;
+    public int questDetailsAnimationSourceX;
+    public int questDetailsAnimationSourceY;
+    public int questDetailsAnimationSourceW;
+    public int questDetailsAnimationSourceH;
     public int questDetailsLeftPanelWidth = 168;
     public boolean questDetailsDraggingSplitter;
     public boolean questDetailsSplitterLocked;

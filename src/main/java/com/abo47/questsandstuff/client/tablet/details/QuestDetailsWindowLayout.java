@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -49,7 +51,7 @@ final class QuestDetailsWindowLayout {
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
         rememberFrame(state, frame);
         addDimLayer(layer);
-        WidgetGroup modal = addModal(layer, frame);
+        WidgetGroup modal = addModal(layer, state, frame);
         state.questDetailsScreenX = modal.getPositionX();
         state.questDetailsScreenY = modal.getPositionY();
 
@@ -85,11 +87,31 @@ final class QuestDetailsWindowLayout {
         layer.addWidget(dim);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, QuestDetailsWindowFrame frame) {
+    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h());
         modal.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
-        layer.addWidget(modal);
+        if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            layer.addWidget(SourceOriginRevealWidget.window(
+                    modal,
+                    () -> state.questDetailsAnimationStartMs,
+                    () -> sourceRect(state)
+            ));
+        } else {
+            layer.addWidget(modal);
+        }
         return modal;
+    }
+
+    private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
+        if (!state.questDetailsAnimationHasSource) {
+            return null;
+        }
+        return new SourceOriginRevealWidget.SourceRect(
+                state.questDetailsAnimationSourceX,
+                state.questDetailsAnimationSourceY,
+                state.questDetailsAnimationSourceW,
+                state.questDetailsAnimationSourceH
+        );
     }
 
     private static void addObjectivePanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW) {
