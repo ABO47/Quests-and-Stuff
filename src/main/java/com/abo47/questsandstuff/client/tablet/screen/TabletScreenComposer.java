@@ -228,7 +228,19 @@ public final class TabletScreenComposer {
         WidgetGroup splitter = new ChapterSplitterWidget(state, refresh[0]);
         splitterRef[0] = splitter;
 
-        root.addWidgets(rootMaskTop, rootMaskLeft, rootMaskRight, rootMaskBottom, chapterPanel, splitter, canvasPanel, chapterMenuOverlay, toolsMenu, questDetailsLayer, modalLayer);
+        root.addWidgets(
+                rootMaskTop,
+                rootMaskLeft,
+                rootMaskRight,
+                rootMaskBottom,
+                chapterPanel,
+                splitter,
+                canvasPanel,
+                chapterMenuOverlay,
+                toolsMenu,
+                questDetailsLayer,
+                modalLayer
+        );
         refresh[0].run();
         return root;
     }

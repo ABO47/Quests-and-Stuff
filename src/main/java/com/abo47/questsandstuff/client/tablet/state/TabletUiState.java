@@ -28,6 +28,7 @@ public class TabletUiState {
     public int chapterPanelWidth = 168;
     public int chapterPanelLastExpandedWidth = 168;
     public boolean draggingChapterSplitter;
+    public boolean chapterSplitterDragMoved;
     public boolean chapterSplitterLocked;
     public int chapterSplitterDragStartX;
     public int chapterSplitterStartWidth;
