@@ -7,10 +7,13 @@ public final class ModalStateQueries {
     }
 
     public static boolean anyOpen(TabletUiState state) {
-        return activeType(state) != ModalWindowManager.ModalType.NONE;
+        return state != null && (state.modalWindowClosing || activeType(state) != ModalWindowManager.ModalType.NONE);
     }
 
     public static ModalWindowManager.ModalType activeType(TabletUiState state) {
+        if (state == null) {
+            return ModalWindowManager.ModalType.NONE;
+        }
         if (state.iconPickerOpen) {
             return ModalWindowManager.ModalType.ICON_PICKER;
         }

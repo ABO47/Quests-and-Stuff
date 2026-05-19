@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.panel;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletBiomePickerModal;
@@ -11,11 +13,13 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
+
+import javax.annotation.Nonnull;
 
 public final class ModalPanelRouter {
     private ModalPanelRouter() {
@@ -23,7 +27,7 @@ public final class ModalPanelRouter {
 
     public static void rebuildChapterModal(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
         overlay.clearAllWidgets();
-        if (!ModalStateQueries.anyOpen(state)) {
+        if (!ModalStateQueries.anyOpen(state) && !state.modalWindowClosing) {
             return;
         }
         TextFieldWidget iconSearchField = null;
@@ -35,8 +39,16 @@ public final class ModalPanelRouter {
         int h = Math.min(260, overlay.getSize().height - 32);
         int mx = (overlay.getSize().width - w) / 2;
         int my = (overlay.getSize().height - h) / 2;
-        WidgetGroup dim = new WidgetGroup(0, 0, overlay.getSize().width, overlay.getSize().height);
-        dim.setBackground(Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 140)));
+        WidgetGroup dim = new WidgetGroup(0, 0, overlay.getSize().width, overlay.getSize().height) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int alpha = dimAlpha(state);
+                if (alpha <= 0) {
+                    return;
+                }
+                graphics.fill(getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + getSizeHeight(), TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, alpha));
+            }
+        };
         overlay.addWidget(dim);
         WidgetGroup modal = TabletUiFactory.panel(mx, my, w, h, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT);
         if (state.iconPickerOpen) {
@@ -56,8 +68,40 @@ public final class ModalPanelRouter {
         } else if (state.settingsPanelOpen) {
             TabletSettingsModal.rebuild(modal, state, refresh, w, h);
         }
-        overlay.addWidget(modal);
-        restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, lootTableSearchField, entityVariantSearchField);
+        modal.setActive(!state.modalWindowClosing);
+        if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
+            overlay.addWidget(SourceOriginRevealWidget.window(
+                    modal,
+                    () -> state.modalWindowAnimationStartMs,
+                    () -> !state.modalWindowClosing,
+                    () -> sourceRect(state)
+            ));
+        } else {
+            overlay.addWidget(modal);
+        }
+        if (!state.modalWindowClosing) {
+            restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, lootTableSearchField, entityVariantSearchField);
+        }
+    }
+
+    private static int dimAlpha(TabletUiState state) {
+        if (!QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
+            return 140;
+        }
+        float amount = SourceOriginRevealWidget.windowOpenAmount(state.modalWindowAnimationStartMs, !state.modalWindowClosing);
+        return Math.round(140 * amount);
+    }
+
+    private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
+        if (!state.modalWindowAnimationHasSource) {
+            return null;
+        }
+        return new SourceOriginRevealWidget.SourceRect(
+                state.modalWindowAnimationSourceX,
+                state.modalWindowAnimationSourceY,
+                state.modalWindowAnimationSourceW,
+                state.modalWindowAnimationSourceH
+        );
     }
 
     private static void restoreSearchFocus(

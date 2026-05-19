@@ -106,6 +106,16 @@ public class TabletUiState {
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
+    public boolean modalWindowClosing;
+    public long modalWindowAnimationStartMs;
+    public boolean modalWindowAnimationHasSource;
+    public int modalWindowAnimationSourceX;
+    public int modalWindowAnimationSourceY;
+    public int modalWindowAnimationSourceW;
+    public int modalWindowAnimationSourceH;
+    public int modalWindowLastPointerX;
+    public int modalWindowLastPointerY;
+    public long modalWindowLastPointerAtMs;
     public int themeScroll;
     public boolean themeScrollDragging;
     public int settingsTab;

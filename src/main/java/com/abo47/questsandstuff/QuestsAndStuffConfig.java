@@ -11,6 +11,7 @@ public final class QuestsAndStuffConfig {
     public static final ForgeConfigSpec.BooleanValue TOOLS_MENU_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue MINIMAP_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue QUEST_WINDOW_ANIMATIONS;
+    public static final ForgeConfigSpec.BooleanValue POPUP_WINDOW_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue CONNECTION_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue CHAPTER_SWITCH_ANIMATIONS;
 
@@ -43,6 +44,9 @@ public final class QuestsAndStuffConfig {
         QUEST_WINDOW_ANIMATIONS = clientBuilder
                 .comment("Enable quest details window source-origin open animations.")
                 .define("questWindowAnimations", true);
+        POPUP_WINDOW_ANIMATIONS = clientBuilder
+                .comment("Enable picker, settings, and other popup window open and close animations.")
+                .define("popupWindowAnimations", true);
         CONNECTION_ANIMATIONS = clientBuilder
                 .comment("Enable prerequisite connection draw animations.")
                 .define("connectionAnimations", true);
@@ -119,6 +123,18 @@ public final class QuestsAndStuffConfig {
 
     public static void setQuestWindowAnimationsEnabled(boolean enabled) {
         setClientBoolean(QUEST_WINDOW_ANIMATIONS, enabled);
+    }
+
+    public static boolean popupWindowAnimationSettingEnabled() {
+        return POPUP_WINDOW_ANIMATIONS.get();
+    }
+
+    public static boolean popupWindowAnimationsEnabled() {
+        return UI_ANIMATIONS.get() && POPUP_WINDOW_ANIMATIONS.get();
+    }
+
+    public static void setPopupWindowAnimationsEnabled(boolean enabled) {
+        setClientBoolean(POPUP_WINDOW_ANIMATIONS, enabled);
     }
 
     public static boolean connectionAnimationSettingEnabled() {

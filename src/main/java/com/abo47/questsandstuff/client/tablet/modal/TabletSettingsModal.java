@@ -179,6 +179,15 @@ public final class TabletSettingsModal {
                         true
                 ),
                 new SettingOption(
+                        "popupWindowAnimations",
+                        "ui.questsandstuff.settings.popup_window_animations",
+                        "ui.questsandstuff.settings.popup_window_animations_desc",
+                        QuestsAndStuffConfig::popupWindowAnimationSettingEnabled,
+                        QuestsAndStuffConfig::setPopupWindowAnimationsEnabled,
+                        false,
+                        true
+                ),
+                new SettingOption(
                         "connectionAnimations",
                         "ui.questsandstuff.settings.connection_animations",
                         "ui.questsandstuff.settings.connection_animations_desc",

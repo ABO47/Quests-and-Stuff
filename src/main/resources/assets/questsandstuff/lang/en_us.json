@@ -111,6 +111,8 @@
   "ui.questsandstuff.settings.empty": "No settings found",
   "ui.questsandstuff.settings.minimap_animations": "Minimap Animations",
   "ui.questsandstuff.settings.minimap_animations_desc": "Animate minimap expand and collapse.",
+  "ui.questsandstuff.settings.popup_window_animations": "Popup Window Animations",
+  "ui.questsandstuff.settings.popup_window_animations_desc": "Animate picker, settings, and other popup windows when they open or close.",
   "ui.questsandstuff.settings.quest_window_animations": "Quest Window Animations",
   "ui.questsandstuff.settings.quest_window_animations_desc": "Open quest windows from the clicked quest card.",
   "ui.questsandstuff.settings.requires_global": "Also requires UI Animations to be enabled.",

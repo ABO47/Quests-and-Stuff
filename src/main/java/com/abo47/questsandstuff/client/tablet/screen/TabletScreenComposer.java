@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.chapter.ChapterPanelInteractionWid
 import com.abo47.questsandstuff.client.tablet.chapter.ChapterSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -86,11 +87,11 @@ public final class TabletScreenComposer {
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), CHAPTER_H - chapterListY - contentInset - 1);
         chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
-        WidgetGroup modalLayer = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
         Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
+        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
         CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), CANVAS_H - initialTop - contentInset * 2, state, player);

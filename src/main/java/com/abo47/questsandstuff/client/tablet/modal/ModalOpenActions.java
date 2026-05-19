@@ -11,7 +11,7 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestDetailsIconPicker(TabletUiState state, String target) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
@@ -20,7 +20,7 @@ public final class ModalOpenActions {
     }
 
     public static void openChapterIconPicker(TabletUiState state, String chapter) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalChapterTarget = chapter == null ? "" : chapter;
         state.modalQuestTarget = "";
         resetIconPicker(state);
@@ -28,7 +28,7 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestIconPicker(TabletUiState state, String questId) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalChapterTarget = "";
         state.modalQuestTarget = questId == null ? "" : questId;
         resetIconPicker(state);
@@ -36,7 +36,7 @@ public final class ModalOpenActions {
     }
 
     public static void openBiomePicker(TabletUiState state, String target) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
@@ -48,7 +48,7 @@ public final class ModalOpenActions {
     }
 
     public static void openLootTablePicker(TabletUiState state, String target) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
@@ -60,7 +60,7 @@ public final class ModalOpenActions {
     }
 
     public static void openColorPicker(TabletUiState state, String target, int color) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.colorPickerTarget = target == null ? "" : target;
         state.colorDraft = color;
         state.colorHexDraft = SearchFieldController.toHexColor(color);
@@ -72,14 +72,14 @@ public final class ModalOpenActions {
     }
 
     public static void openThemePicker(TabletUiState state) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.themeScrollDragging = false;
         state.contextDeleteConfirmKey = "";
         openModal(state, ModalWindowManager.ModalType.THEME_PICKER);
     }
 
     public static void openSettingsPanel(TabletUiState state) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.settingsTab = 0;
         state.settingsScroll = 0;
         state.settingsScrollDragging = false;
@@ -92,7 +92,7 @@ public final class ModalOpenActions {
     }
 
     public static void openAssetPicker(TabletUiState state, String target, String selectedAsset) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.questDetailsAssetPickTarget = target == null ? "" : target;
         resetAssetPicker(state);
         state.assetSelected = selectedAsset == null ? "" : selectedAsset;
@@ -100,7 +100,7 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
@@ -114,7 +114,7 @@ public final class ModalOpenActions {
     }
 
     public static void openChapterBackgroundPicker(TabletUiState state, String chapter, String currentBackground) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalChapterTarget = chapter == null ? "" : chapter;
         state.modalQuestTarget = "";
         state.modalCanvasBackgroundTarget = "";
@@ -124,7 +124,7 @@ public final class ModalOpenActions {
     }
 
     public static void openCanvasBackgroundPicker(TabletUiState state, String group, String currentBackground) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalCanvasBackgroundTarget = group == null ? "" : group;
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
@@ -136,7 +136,7 @@ public final class ModalOpenActions {
     }
 
     public static void openCanvasImagePicker(TabletUiState state, String group, int logicalX, int logicalY) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalCanvasImageTarget = group == null ? "" : group;
         state.modalCanvasEntityTarget = "";
         state.modalCanvasBackgroundTarget = "";
@@ -150,7 +150,7 @@ public final class ModalOpenActions {
     }
 
     public static void openCanvasEntityPicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.modalCanvasEntityTarget = target == null ? "" : target;
         state.modalCanvasImageTarget = "";
         state.modalCanvasBackgroundTarget = "";
@@ -163,7 +163,7 @@ public final class ModalOpenActions {
     }
 
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
-        ModalCloseActions.closeAll(state);
+        closeBeforeOpen(state);
         state.entityVariantTarget = target == null ? "" : target;
         state.entityVariantSelected = EntityPreviewRenderer.entityVariant(icon == null ? "" : icon);
         state.entityVariantFolder = "";
@@ -192,5 +192,9 @@ public final class ModalOpenActions {
         state.assetSearchFocused = false;
         state.assetGridScroll = 0;
         state.assetGridScrollDragging = false;
+    }
+
+    private static void closeBeforeOpen(TabletUiState state) {
+        ModalCloseActions.closeAllImmediately(state);
     }
 }
