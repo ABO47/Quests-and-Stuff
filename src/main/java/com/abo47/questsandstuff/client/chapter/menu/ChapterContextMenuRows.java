@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.chapter.menu;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -34,8 +33,6 @@ public final class ChapterContextMenuRows {
                 "delete",
                 click -> runMenuAction(state, () -> ChapterContextMenuActions.delete(player, state, target, refresh)));
         rowY += ChapterContextMenuLayout.ROW_STEP;
-        ContextMenuSystem.addSeparator(menu, rowY, rowW);
-        rowY += ChapterContextMenuLayout.SEPARATOR_GAP;
 
         TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.change_icon"), "icon",
                 click -> runMenuAction(state, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
@@ -67,8 +64,6 @@ public final class ChapterContextMenuRows {
         TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.text_style"), "style",
                 click -> runMenuAction(state, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
         rowY += ChapterContextMenuLayout.ROW_STEP;
-        ContextMenuSystem.addSeparator(menu, rowY, rowW);
-        rowY += ChapterContextMenuLayout.SEPARATOR_GAP;
         TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.move_up"), "up",
                 click -> runMenuAction(state, () -> ChapterContextMenuActions.move(player, state, target, -1, refresh)));
         rowY += ChapterContextMenuLayout.ROW_STEP;
@@ -106,7 +101,7 @@ public final class ChapterContextMenuRows {
             ChapterContextMenuActions.delete(player, state, target, refresh);
             return true;
         }
-        rowY += ChapterContextMenuLayout.ROW_STEP + ChapterContextMenuLayout.SEPARATOR_GAP;
+        rowY += ChapterContextMenuLayout.ROW_STEP;
 
         if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
             ChapterContextMenuActions.changeIcon(state, target, refresh);
@@ -152,7 +147,7 @@ public final class ChapterContextMenuRows {
             ChapterContextMenuActions.textStyle(state, target, refresh);
             return true;
         }
-        rowY += ChapterContextMenuLayout.ROW_STEP + ChapterContextMenuLayout.SEPARATOR_GAP;
+        rowY += ChapterContextMenuLayout.ROW_STEP;
 
         if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
             ChapterContextMenuActions.move(player, state, target, -1, refresh);
