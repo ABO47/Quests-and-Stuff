@@ -218,6 +218,8 @@ def sanitizedUiIconSvgDir = layout.buildDirectory.dir('generated/sanitized-ui-ic
 def uiTextureSvgDir = layout.projectDirectory.dir('art/source-textures')
 def uiTextureDir = layout.projectDirectory.dir('src/main/resources/assets/questsandstuff/textures/gui')
 def sanitizedUiTextureSvgDir = layout.buildDirectory.dir('generated/sanitized-ui-texture-svgs')
+def modLogoSvgFile = layout.projectDirectory.file('art/source-logo/questsandstuff.svg')
+def modLogoPngDir = layout.projectDirectory.dir('src/main/resources')
 
 tasks.register('generateUiIconPngs') {
     group = 'assets'
@@ -317,9 +319,32 @@ tasks.register('generateUiTexturePngs') {
     }
 }
 
+tasks.register('generateModLogoPng') {
+    group = 'assets'
+    description = 'Rasterizes the mod logo SVG into the Forge logo PNG.'
+    dependsOn(tasks.named('assetToolsClasses'))
+
+    inputs.file(modLogoSvgFile).withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.property('modLogoSize', providers.gradleProperty('modLogoSize').orElse('512'))
+    outputs.file(modLogoPngDir.file('questsandstuff.png'))
+
+    doLast {
+        def logoSize = providers.gradleProperty('modLogoSize').orElse('512').get()
+        def outputDir = modLogoPngDir.asFile
+        outputDir.mkdirs()
+
+        javaexec {
+            classpath = sourceSets.assetTools.runtimeClasspath
+            mainClass = 'com.abo47.questsandstuff.tools.SvgIconRasterizer'
+            args logoSize, outputDir.absolutePath, modLogoSvgFile.asFile.absolutePath
+        }
+    }
+}
+
 tasks.named('processResources', ProcessResources).configure {
     dependsOn(tasks.named('generateUiIconPngs'))
     dependsOn(tasks.named('generateUiTexturePngs'))
+    dependsOn(tasks.named('generateModLogoPng'))
 }
 
 tasks.configureEach {
@@ -329,5 +354,6 @@ tasks.configureEach {
     if (name.startsWith('prepareRun')) {
         dependsOn(tasks.named('generateUiIconPngs'))
         dependsOn(tasks.named('generateUiTexturePngs'))
+        dependsOn(tasks.named('generateModLogoPng'))
     }
 }
