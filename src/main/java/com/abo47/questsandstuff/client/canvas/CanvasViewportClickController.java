@@ -138,7 +138,7 @@ final class CanvasViewportClickController {
         }
 
         if (CanvasMinimapController.handleClick(state, localX, localY)) {
-            refresher.run();
+            canvasViewport.refreshCanvas();
             return true;
         }
 

@@ -88,6 +88,7 @@ public final class TabletScreenComposer {
         WidgetGroup modalLayer = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
+        Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
 
         int initialTop = CANVAS_TOP_H_COMPACT;
@@ -197,14 +198,16 @@ public final class TabletScreenComposer {
             TabletUiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
             refreshChapterViews[0].run();
             TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
-            TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
+            refreshCanvas[0].run();
         };
+        refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
             TabletUiPerfProfiler.profile("ui.rebuildChapterList", () -> ChapterPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
             TabletUiPerfProfiler.profile("ui.rebuildChapterMenu", () -> ChapterPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
         };
         root.setRefresher(refresh[0]);
         canvasViewport.setRefresher(refresh[0]);
+        canvasViewport.setCanvasRefresher(refreshCanvas[0]);
         setActiveTabletState(state);
         setActiveTabletRefresh(refresh[0]);
         root.setModalLayer(modalLayer);

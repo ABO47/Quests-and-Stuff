@@ -21,6 +21,7 @@ public final class CanvasViewport extends WidgetGroup {
     private final TabletUiState state;
     private final Player player;
     private Runnable refresher = () -> {};
+    private Runnable canvasRefresher = () -> {};
     private List<QuestCardLayout> cards = List.of();
     private Map<String, QuestCardLayout> byQuestId = Map.of();
     private final CanvasInlineTextEditor textEditor;
@@ -38,6 +39,10 @@ public final class CanvasViewport extends WidgetGroup {
 
     public void setRefresher(Runnable refresher) {
         this.refresher = refresher == null ? () -> {} : refresher;
+    }
+
+    public void setCanvasRefresher(Runnable canvasRefresher) {
+        this.canvasRefresher = canvasRefresher == null ? () -> {} : canvasRefresher;
     }
 
     public void updateCardCache(List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
@@ -59,6 +64,10 @@ public final class CanvasViewport extends WidgetGroup {
 
     public void refresh() {
         refresher.run();
+    }
+
+    public void refreshCanvas() {
+        canvasRefresher.run();
     }
 
     @Override

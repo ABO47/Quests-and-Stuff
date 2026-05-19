@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportZoom;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -42,6 +43,11 @@ final class CanvasViewportInputController {
         int localX = (int) Math.round(mouseX - viewport.getPositionX());
         int localY = (int) Math.round(mouseY - viewport.getPositionY());
 
+        if (CanvasMinimapController.handleDrag(state, localX, localY)) {
+            viewport.refreshCanvas();
+            return true;
+        }
+
         if (EntityMotionEditor.isMainCanvasOpen(state) && (EntityMotionEditor.isDragging(state) || EntityMotionEditor.isMainCanvasHit(state, localX, localY))) {
             if (viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY)) {
                 refresher.run();
@@ -64,43 +70,43 @@ final class CanvasViewportInputController {
             state.canvasOffsetY += dy;
             state.dragCurrentX = localX;
             state.dragCurrentY = localY;
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
         if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
             elementTransforms.updateImageTransform(localX, localY, cards);
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             elementTransforms.updateTextTransform(localX, localY, cards);
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
         if (state.draggingSelection) {
             selectionTransforms.updateDrag(localX, localY, cards, byQuestId);
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
         if (state.resizingSelection) {
             selectionTransforms.updateResize(localX, localY);
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
         if (state.rotatingSelection) {
             selectionTransforms.updateRotate(localX, localY, byQuestId);
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
         if (state.boxSelecting) {
             state.boxCurrentX = localX;
             state.boxCurrentY = localY;
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
@@ -124,6 +130,10 @@ final class CanvasViewportInputController {
         }
         int localX = (int) Math.round(mouseX - viewport.getPositionX());
         int localY = (int) Math.round(mouseY - viewport.getPositionY());
+        if (CanvasMinimapController.finishDrag(state)) {
+            viewport.refreshCanvas();
+            return true;
+        }
         if (EntityMotionEditor.isMainCanvasOpen(state) && (EntityMotionEditor.isDragging(state) || EntityMotionEditor.isMainCanvasHit(state, localX, localY))) {
             if (viewport.callSuperMouseReleased(mouseX, mouseY, button)) {
                 refresher.run();
@@ -132,7 +142,7 @@ final class CanvasViewportInputController {
         }
         if (state.draggingCanvas) {
             state.draggingCanvas = false;
-            refresher.run();
+            viewport.refreshCanvas();
             return true;
         }
 
@@ -239,11 +249,14 @@ final class CanvasViewportInputController {
             refresher.run();
             return true;
         }
+        if (CanvasMinimapController.isPanelHit(state, localX, localY)) {
+            return true;
+        }
         if (state.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY)) {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             return true;
         }
-        CanvasViewportZoom.zoomAt(state, refresher, localX, localY, wheelDelta);
+        CanvasViewportZoom.zoomAt(state, viewport::refreshCanvas, localX, localY, wheelDelta);
         return true;
     }
 }

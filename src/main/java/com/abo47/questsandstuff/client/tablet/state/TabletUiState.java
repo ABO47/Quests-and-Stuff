@@ -439,6 +439,17 @@ public class TabletUiState {
     public int rotateStartBoundsTop;
     public int rotateStartBoundsRight;
     public int rotateStartBoundsBottom;
+    public boolean draggingMinimap;
+    public long minimapAnimationStartMs;
+    public boolean minimapAnimationFromCollapsed;
+    public int minimapPanelX;
+    public int minimapPanelY;
+    public int minimapPanelW;
+    public int minimapPanelH;
+    public int minimapToggleX;
+    public int minimapToggleY;
+    public int minimapToggleW;
+    public int minimapToggleH;
     public int minimapX;
     public int minimapY;
     public int minimapW;
