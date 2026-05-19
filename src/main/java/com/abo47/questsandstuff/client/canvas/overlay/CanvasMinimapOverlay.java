@@ -42,6 +42,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
     private static final int MIN_ELEMENT_SIZE = 2;
+    private static final float BODY_REVEAL_START = 0.48f;
 
     private CanvasMinimapOverlay() {
     }
@@ -97,9 +98,11 @@ final class CanvasMinimapOverlay {
                 int originX = getPositionX();
                 int originY = getPositionY();
                 float openProgress = minimapOpenProgress(state, animationsEnabled);
-                drawPanel(graphics, originX, originY, layout, collapsedLayout, openProgress, mouseX, mouseY);
-                if (snapshot != null && openProgress > 0.02f) {
-                    int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * openProgress));
+                float holderProgress = stagedProgress(openProgress, 0.0f, BODY_REVEAL_START);
+                float bodyProgress = stagedProgress(openProgress, BODY_REVEAL_START, 1.0f);
+                drawPanel(graphics, originX, originY, layout, collapsedLayout, holderProgress, bodyProgress, mouseX, mouseY);
+                if (snapshot != null && bodyProgress > 0.02f) {
+                    int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * bodyProgress));
                     int clipX = layout.toggleX() - clipW;
                     CanvasViewportScissor.draw(
                             graphics,
@@ -267,15 +270,16 @@ final class CanvasMinimapOverlay {
             int originY,
             CanvasMinimapGeometry.Layout layout,
             CanvasMinimapGeometry.Layout collapsedLayout,
-            float openProgress,
+            float holderProgress,
+            float bodyProgress,
             int mouseX,
             int mouseY
     ) {
         int handleX = originX + layout.toggleX();
-        int handleY = originY + UiAnimationProgress.interpolate(collapsedLayout.toggleY(), layout.toggleY(), openProgress);
+        int handleY = originY + UiAnimationProgress.interpolate(collapsedLayout.toggleY(), layout.toggleY(), holderProgress);
         int handleW = layout.toggleW();
-        int handleH = UiAnimationProgress.interpolate(collapsedLayout.toggleH(), layout.toggleH(), openProgress);
-        int visibleBodyW = Math.round((layout.panelW() - layout.toggleW()) * openProgress);
+        int handleH = UiAnimationProgress.interpolate(collapsedLayout.toggleH(), layout.toggleH(), holderProgress);
+        int visibleBodyW = Math.round((layout.panelW() - layout.toggleW()) * bodyProgress);
         if (visibleBodyW > 0) {
             int bodyX = handleX - visibleBodyW;
             int bodyY = originY + layout.panelY();
@@ -286,6 +290,15 @@ final class CanvasMinimapOverlay {
             graphics.fill(bodyX, bodyY, bodyX + 1, bodyY + bodyH, withAlpha(ModColors.BORDER_BASE, 150));
         }
         drawHandle(graphics, handleX, handleY, handleW, handleH, mouseX, mouseY);
+    }
+
+    private static float stagedProgress(float progress, float start, float end) {
+        if (end <= start) {
+            return progress >= end ? 1.0f : 0.0f;
+        }
+        float staged = (progress - start) / (end - start);
+        staged = Math.max(0.0f, Math.min(1.0f, staged));
+        return staged * staged * (3.0f - 2.0f * staged);
     }
 
     private static void drawSnapshot(GuiGraphics graphics, MiniSnapshot snapshot, int originX, int originY) {
