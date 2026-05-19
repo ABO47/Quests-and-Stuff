@@ -1,14 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.context;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.animation.VerticalRevealWidget;
+import com.abo47.questsandstuff.client.tablet.animation.ContextMenuPopWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class ContextMenuAnimation {
     public static final String DEFAULT_KEY = "context";
     public static final String CHAPTER_KEY = "chapter";
-    private static final long OPEN_MS = 110L;
 
     private ContextMenuAnimation() {
     }
@@ -26,7 +25,7 @@ public final class ContextMenuAnimation {
         }
         long fallbackStartMs = System.currentTimeMillis();
         String safeKey = key == null ? "" : key;
-        return VerticalRevealWidget.wrap(content, () -> effectiveStartMs(state, safeKey, fallbackStartMs), OPEN_MS);
+        return ContextMenuPopWidget.menu(content, () -> effectiveStartMs(state, safeKey, fallbackStartMs));
     }
 
     public static void start(TabletUiState state, String key) {
@@ -41,7 +40,7 @@ public final class ContextMenuAnimation {
         if (state == null) {
             return;
         }
-        state.contextMenuAnimationStartMs = System.currentTimeMillis() - OPEN_MS;
+        state.contextMenuAnimationStartMs = System.currentTimeMillis() - ContextMenuPopWidget.durationMs();
         state.contextMenuAnimationKey = key == null ? "" : key;
     }
 

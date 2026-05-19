@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.animation.VerticalRevealWidget;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -192,6 +192,6 @@ final class MainCanvasToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
     }
 }

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.tools;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.animation.VerticalRevealWidget;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class ToolMenuAnimation {
@@ -163,7 +163,7 @@ public final class ToolMenuAnimation {
 
     private static boolean closingFinished(TabletUiState state) {
         return !QuestsAndStuffConfig.toolsMenuAnimationsEnabled()
-                || !VerticalRevealWidget.sheetRunning(state.toolsMenuAnimationStartMs);
+                || !AnchoredMenuRevealWidget.running(state.toolsMenuAnimationStartMs);
     }
 
     private static void start(TabletUiState state) {

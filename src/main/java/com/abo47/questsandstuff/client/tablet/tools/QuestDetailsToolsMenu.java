@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.tools;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.animation.VerticalRevealWidget;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
@@ -174,6 +174,6 @@ final class QuestDetailsToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(VerticalRevealWidget.sheet(menu, state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
     }
 }
