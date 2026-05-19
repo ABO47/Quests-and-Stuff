@@ -35,22 +35,23 @@ final class QuestDetailsWindowLayout {
 
     static void rebuild(WidgetGroup layer, TabletUiState state, Player player, Runnable refresh) {
         layer.clearAllWidgets();
-        layer.setVisible(state.questDetailsOpen);
-        layer.setActive(state.questDetailsOpen);
-        if (!state.questDetailsOpen) {
+        boolean visible = QuestDetailsWindow.isVisible(state);
+        layer.setVisible(visible);
+        layer.setActive(visible);
+        if (!visible) {
             return;
         }
 
         String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
         CompoundTag quest = ClientQuestCache.quests().get(questId);
         if (questId.isBlank() || quest == null) {
-            QuestDetailsWindowLifecycle.close(state);
+            QuestDetailsWindowLifecycle.finishClose(state);
             return;
         }
 
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
         rememberFrame(state, frame);
-        addDimLayer(layer);
+        addDimLayer(layer, state);
         WidgetGroup modal = addModal(layer, state, frame);
         state.questDetailsScreenX = modal.getPositionX();
         state.questDetailsScreenY = modal.getPositionY();
@@ -81,10 +82,26 @@ final class QuestDetailsWindowLayout {
         state.questDetailsH = frame.h();
     }
 
-    private static void addDimLayer(WidgetGroup layer) {
-        WidgetGroup dim = new WidgetGroup(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
-        dim.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 120)));
+    private static void addDimLayer(WidgetGroup layer, TabletUiState state) {
+        WidgetGroup dim = new WidgetGroup(0, 0, layer.getSizeWidth(), layer.getSizeHeight()) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int alpha = dimAlpha(state);
+                if (alpha <= 0) {
+                    return;
+                }
+                graphics.fill(getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
+            }
+        };
         layer.addWidget(dim);
+    }
+
+    private static int dimAlpha(TabletUiState state) {
+        if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            return 120;
+        }
+        float amount = SourceOriginRevealWidget.windowOpenAmount(state.questDetailsAnimationStartMs, !state.questDetailsClosing);
+        return Math.round(120 * amount);
     }
 
     private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
@@ -94,6 +111,7 @@ final class QuestDetailsWindowLayout {
             layer.addWidget(SourceOriginRevealWidget.window(
                     modal,
                     () -> state.questDetailsAnimationStartMs,
+                    () -> !state.questDetailsClosing,
                     () -> sourceRect(state)
             ));
         } else {

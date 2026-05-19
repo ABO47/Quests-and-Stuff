@@ -20,9 +20,20 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (QuestDetailsWindow.finishCloseIfDone(state)) {
+            refresh.run();
+        }
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseClicked(mouseX, mouseY, button);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         boolean detailsContextWasOpen = state.questDetailsContextOpen;
         boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
@@ -66,8 +77,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         return true;
@@ -75,8 +89,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseReleased(mouseX, mouseY, button);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         super.mouseReleased(mouseX, mouseY, button);
         return true;
@@ -84,8 +101,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         return true;
@@ -93,8 +113,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         super.keyPressed(keyCode, scanCode, modifiers);
         return true;
@@ -102,8 +125,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (!state.questDetailsOpen) {
+        if (!QuestDetailsWindow.isVisible(state)) {
             return super.charTyped(codePoint, modifiers);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
         }
         super.charTyped(codePoint, modifiers);
         return true;

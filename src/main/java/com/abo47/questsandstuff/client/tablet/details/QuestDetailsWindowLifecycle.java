@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -26,6 +28,7 @@ final class QuestDetailsWindowLifecycle {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
+        state.questDetailsClosing = false;
         state.questDetailsOpen = true;
         state.questDetailsQuestId = questId.trim();
         state.questDetailsEditMode = state.canEdit;
@@ -47,9 +50,54 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void close(TabletUiState state) {
+        if (state == null || state.questDetailsClosing || !state.questDetailsOpen) {
+            return;
+        }
+        String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
+        applyCloseTransientState(state, closingQuestId);
+        if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            finishClose(state);
+            return;
+        }
+        state.questDetailsOpen = false;
+        state.questDetailsClosing = true;
+        state.questDetailsAnimationStartMs = System.currentTimeMillis();
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details close start quest={} source={} x={} y={} w={} h={}",
+                closingQuestId,
+                state.questDetailsAnimationHasSource,
+                state.questDetailsAnimationSourceX,
+                state.questDetailsAnimationSourceY,
+                state.questDetailsAnimationSourceW,
+                state.questDetailsAnimationSourceH);
+    }
+
+    static boolean finishCloseIfDone(TabletUiState state) {
+        if (state == null || !state.questDetailsClosing) {
+            return false;
+        }
+        if (QuestsAndStuffConfig.questWindowAnimationsEnabled()
+                && SourceOriginRevealWidget.windowRunning(state.questDetailsAnimationStartMs)) {
+            return false;
+        }
+        String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
+        finishClose(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details close finish quest={}", closingQuestId);
+        return true;
+    }
+
+    static void finishClose(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
         String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
         state.questDetailsOpen = false;
+        state.questDetailsClosing = false;
         state.questDetailsQuestId = "";
+        applyCloseTransientState(state, closingQuestId);
+        clearOpenAnimation(state);
+    }
+
+    private static void applyCloseTransientState(TabletUiState state, String closingQuestId) {
         state.questDetailsScreenX = state.questDetailsX;
         state.questDetailsScreenY = state.questDetailsY;
         QuestDetailsTransientState.closeFloatingPopups(state);
@@ -78,7 +126,6 @@ final class QuestDetailsWindowLifecycle {
             state.pendingQuestRenameId = "";
             state.questTitleDraft = "";
         }
-        clearOpenAnimation(state);
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {

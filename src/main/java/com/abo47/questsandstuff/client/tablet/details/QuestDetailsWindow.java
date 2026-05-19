@@ -29,6 +29,18 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLayout.rebuild(layer, state, player, refresh);
     }
 
+    public static boolean isVisible(TabletUiState state) {
+        return state != null && (state.questDetailsOpen || state.questDetailsClosing);
+    }
+
+    public static boolean isInteractive(TabletUiState state) {
+        return state != null && state.questDetailsOpen && !state.questDetailsClosing;
+    }
+
+    public static boolean finishCloseIfDone(TabletUiState state) {
+        return QuestDetailsWindowLifecycle.finishCloseIfDone(state);
+    }
+
     public static boolean isInside(TabletUiState state, double mouseX, double mouseY) {
         return QuestDetailsWindowHitTest.isInside(state, mouseX, mouseY);
     }

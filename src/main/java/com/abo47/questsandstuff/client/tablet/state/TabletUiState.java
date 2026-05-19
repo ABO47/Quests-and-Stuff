@@ -232,6 +232,7 @@ public class TabletUiState {
     public String pendingQuestRenameId = "";
     public String questTitleDraft = "";
     public boolean questDetailsOpen;
+    public boolean questDetailsClosing;
     public String questDetailsQuestId = "";
     public int questDetailsX;
     public int questDetailsY;

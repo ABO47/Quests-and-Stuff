@@ -18,12 +18,34 @@ public final class UiAnimationProgress {
     }
 
     public static float easedProgress(long startMs, long durationMs, long nowMs) {
+        float t = linearProgress(startMs, durationMs, nowMs);
+        return t * t * (3.0f - 2.0f * t);
+    }
+
+    public static float cubicOutProgress(long startMs, long durationMs) {
+        return cubicOutProgress(startMs, durationMs, System.currentTimeMillis());
+    }
+
+    public static float cubicOutProgress(long startMs, long durationMs, long nowMs) {
+        return cubicOut(linearProgress(startMs, durationMs, nowMs));
+    }
+
+    public static float linearProgress(long startMs, long durationMs) {
+        return linearProgress(startMs, durationMs, System.currentTimeMillis());
+    }
+
+    public static float linearProgress(long startMs, long durationMs, long nowMs) {
         if (durationMs <= 0L) {
             return 1.0f;
         }
         float t = (nowMs - startMs) / (float) durationMs;
-        t = Math.max(0.0f, Math.min(1.0f, t));
-        return t * t * (3.0f - 2.0f * t);
+        return Math.max(0.0f, Math.min(1.0f, t));
+    }
+
+    public static float cubicOut(float progress) {
+        float t = Math.max(0.0f, Math.min(1.0f, progress));
+        float inverse = 1.0f - t;
+        return 1.0f - inverse * inverse * inverse;
     }
 
     public static float openProgress(boolean open, boolean animationFromClosed, long startMs, long durationMs) {

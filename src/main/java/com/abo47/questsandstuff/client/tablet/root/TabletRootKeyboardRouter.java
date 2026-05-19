@@ -97,6 +97,9 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean keyPressedForFrontWindow(TabletRootWidget root, TabletUiState state, WidgetGroup frontWindowLayer, CanvasViewport canvasViewport, Runnable refresher, int keyCode, int scanCode, int modifiers) {
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
         if (!TabletRootWindowController.isTextInputActive(state, root)
                 && TabletShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, root.isCtrlDown(), root.isShiftDown())) {
             refresher.run();

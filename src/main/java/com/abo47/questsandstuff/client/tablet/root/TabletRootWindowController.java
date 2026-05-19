@@ -23,6 +23,9 @@ public final class TabletRootWindowController {
             ModalCloseActions.closeAll(state);
             return true;
         }
+        if (state.questDetailsClosing) {
+            return true;
+        }
         if (state.questDetailsOpen) {
             if (closeQuestDetailsFrontState(state)) {
                 return true;
