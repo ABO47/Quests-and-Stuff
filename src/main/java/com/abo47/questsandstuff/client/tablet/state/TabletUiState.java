@@ -47,6 +47,9 @@ public class TabletUiState {
     public String connectSourceQuestId = "";
     public final Set<String> connectSourceQuestIds = new java.util.LinkedHashSet<>();
     public final Map<String, Long> canvasConnectionAnimationStarts = new HashMap<>();
+    public String canvasChapterSwitchGroup = "";
+    public long canvasChapterSwitchAnimationStartMs;
+    public int canvasChapterSwitchDirection = 1;
     public String quickConnectSourceQuestId = "";
     public boolean canEdit;
     public boolean editorAvailable;

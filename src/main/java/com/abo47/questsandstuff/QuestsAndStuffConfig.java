@@ -12,6 +12,7 @@ public final class QuestsAndStuffConfig {
     public static final ForgeConfigSpec.BooleanValue MINIMAP_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue QUEST_WINDOW_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue CONNECTION_ANIMATIONS;
+    public static final ForgeConfigSpec.BooleanValue CHAPTER_SWITCH_ANIMATIONS;
 
     static {
         ForgeConfigSpec.Builder commonBuilder = new ForgeConfigSpec.Builder();
@@ -45,6 +46,9 @@ public final class QuestsAndStuffConfig {
         CONNECTION_ANIMATIONS = clientBuilder
                 .comment("Enable prerequisite connection draw animations.")
                 .define("connectionAnimations", true);
+        CHAPTER_SWITCH_ANIMATIONS = clientBuilder
+                .comment("Enable canvas slide and fade animations when switching chapters.")
+                .define("chapterSwitchAnimations", true);
         clientBuilder.pop();
 
         CLIENT_SPEC = clientBuilder.build();
@@ -127,6 +131,18 @@ public final class QuestsAndStuffConfig {
 
     public static void setConnectionAnimationsEnabled(boolean enabled) {
         setClientBoolean(CONNECTION_ANIMATIONS, enabled);
+    }
+
+    public static boolean chapterSwitchAnimationSettingEnabled() {
+        return CHAPTER_SWITCH_ANIMATIONS.get();
+    }
+
+    public static boolean chapterSwitchAnimationsEnabled() {
+        return UI_ANIMATIONS.get() && CHAPTER_SWITCH_ANIMATIONS.get();
+    }
+
+    public static void setChapterSwitchAnimationsEnabled(boolean enabled) {
+        setClientBoolean(CHAPTER_SWITCH_ANIMATIONS, enabled);
     }
 
     private static void setClientBoolean(ForgeConfigSpec.BooleanValue value, boolean enabled) {

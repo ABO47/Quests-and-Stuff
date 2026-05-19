@@ -100,6 +100,8 @@
   "ui.questsandstuff.tools.snap_to_grid": "Snap to Grid",
   "ui.questsandstuff.settings.button": "Tablet Settings",
   "ui.questsandstuff.settings.button_tooltip": "Configure client UI options",
+  "ui.questsandstuff.settings.chapter_switch_animations": "Chapter Switch Animations",
+  "ui.questsandstuff.settings.chapter_switch_animations_desc": "Lightly slide and fade canvas content when changing chapters.",
   "ui.questsandstuff.settings.connection_animations": "Connection Animations",
   "ui.questsandstuff.settings.connection_animations_desc": "Draw new prerequisite connections from source to target.",
   "ui.questsandstuff.settings.context_menu_animations": "Context Menu Animations",

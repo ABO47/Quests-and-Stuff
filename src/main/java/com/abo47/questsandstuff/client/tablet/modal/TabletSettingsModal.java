@@ -186,6 +186,15 @@ public final class TabletSettingsModal {
                         QuestsAndStuffConfig::setConnectionAnimationsEnabled,
                         false,
                         true
+                ),
+                new SettingOption(
+                        "chapterSwitchAnimations",
+                        "ui.questsandstuff.settings.chapter_switch_animations",
+                        "ui.questsandstuff.settings.chapter_switch_animations_desc",
+                        QuestsAndStuffConfig::chapterSwitchAnimationSettingEnabled,
+                        QuestsAndStuffConfig::setChapterSwitchAnimationsEnabled,
+                        false,
+                        true
                 )
         );
     }

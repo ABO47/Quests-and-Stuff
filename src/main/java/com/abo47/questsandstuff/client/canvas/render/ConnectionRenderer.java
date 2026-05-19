@@ -222,30 +222,6 @@ public final class ConnectionRenderer {
         });
     }
 
-    public static void renderConnectionAnimationOverlay(WidgetGroup canvasViewport, TabletUiState state, Map<String, QuestCardLayout> byQuestId) {
-        if (canvasViewport == null || state == null || byQuestId == null || state.canvasConnectionAnimationStarts.isEmpty()) {
-            return;
-        }
-        canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                long now = System.currentTimeMillis();
-                int originX = getPositionX();
-                int originY = getPositionY();
-                for (String edgeId : List.copyOf(state.canvasConnectionAnimationStarts.keySet())) {
-                    CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, edgeId, now);
-                    if (!animation.running()) {
-                        continue;
-                    }
-                    QuestCardLayout target = byQuestId.get(CanvasConnectionAnimation.targetQuestId(edgeId));
-                    if (target != null) {
-                        drawTargetGlow(graphics, originX, originY, target, animation.progress());
-                    }
-                }
-            }
-        });
-    }
-
     public static List<CanvasPoint> connectionPath(TabletUiState state, int originX, int originY, int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
         if (direct) {
             return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
@@ -334,25 +310,6 @@ public final class ConnectionRenderer {
             drawTexturedChevron(graphics, chevronColor, placement.x(), placement.y(), placement.dirX(), placement.dirY(), glyphW, glyphH);
         }
         setChevronTextureFilter(GL11.GL_NEAREST);
-    }
-
-    private static void drawTargetGlow(GuiGraphics graphics, int originX, int originY, QuestCardLayout target, float progress) {
-        float glowProgress = Math.max(0.0f, Math.min(1.0f, (progress - 0.56f) / 0.44f));
-        if (glowProgress <= 0.0f) {
-            return;
-        }
-        int pad = 2 + Math.round(2.0f * glowProgress);
-        int x = originX + target.x() - pad;
-        int y = originY + target.y() - pad;
-        int w = target.width() + pad * 2;
-        int h = target.height() + pad * 2;
-        int fill = withAlpha(ModColors.SUCCESS, Math.round(20.0f * glowProgress));
-        int border = withAlpha(ModColors.SUCCESS, Math.round(160.0f * glowProgress));
-        int soft = withAlpha(ModColors.INTERACTIVE, Math.round(55.0f * glowProgress));
-
-        graphics.renderOutline(x - 1, y - 1, w + 2, h + 2, soft);
-        graphics.fill(x, y, x + w, y + h, fill);
-        graphics.renderOutline(x, y, w, h, border);
     }
 
     private static double pathLength(List<CanvasPoint> path) {

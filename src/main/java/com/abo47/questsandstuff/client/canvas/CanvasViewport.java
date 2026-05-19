@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
@@ -93,6 +94,7 @@ public final class CanvasViewport extends WidgetGroup {
         super.updateScreen();
         boolean animationFinished = CanvasMinimapController.finishAnimationIfDone(state);
         animationFinished |= CanvasConnectionAnimation.finishIfDone(state);
+        animationFinished |= CanvasChapterSwitchAnimation.finishIfDone(state);
         if (animationFinished) {
             refreshCanvas();
         }
