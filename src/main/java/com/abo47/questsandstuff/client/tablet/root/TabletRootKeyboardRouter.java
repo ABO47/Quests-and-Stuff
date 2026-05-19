@@ -11,7 +11,6 @@ import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import org.lwjgl.glfw.GLFW;
 
@@ -34,17 +33,11 @@ final class TabletRootKeyboardRouter {
             int modifiers
     ) {
         if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !TabletRootWindowController.isTextInputActive(state, root)) {
-            TabletClientHooks.rememberActiveWindow(state);
-            TabletClientHooks.suppressNextOpenClick();
-            Minecraft.getInstance().setScreen(null);
+            TabletClientHooks.closeQuestTabletUi(state, true, "keybind");
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && TabletRootWindowController.closeFrontmostWindow(state)) {
-            refresher.run();
-            return true;
-        }
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && TabletShortcutActions.cancelTransient(state)) {
-            refresher.run();
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            TabletClientHooks.closeQuestTabletUi(state, false, "escape");
             return true;
         }
         if (root.isAnyModalOpen()) {
