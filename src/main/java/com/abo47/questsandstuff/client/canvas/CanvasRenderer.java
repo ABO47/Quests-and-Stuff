@@ -88,6 +88,7 @@ public final class CanvasRenderer {
         }
         ConnectionRenderer.renderPrerequisiteConnections(canvasViewport, state, visibleCards, byQuestId);
         CanvasSceneRenderer.renderCanvasElements(canvasViewport, state, canvasViewport.player(), canvasViewport::refresh, visibleCards, viewportW, viewportH);
+        ConnectionRenderer.renderConnectionAnimationOverlay(canvasViewport, state, byQuestId);
         CanvasSelectionRenderer.renderAlignmentGuides(canvasViewport, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {

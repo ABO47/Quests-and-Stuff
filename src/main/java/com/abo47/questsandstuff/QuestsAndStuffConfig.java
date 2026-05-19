@@ -11,6 +11,7 @@ public final class QuestsAndStuffConfig {
     public static final ForgeConfigSpec.BooleanValue TOOLS_MENU_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue MINIMAP_ANIMATIONS;
     public static final ForgeConfigSpec.BooleanValue QUEST_WINDOW_ANIMATIONS;
+    public static final ForgeConfigSpec.BooleanValue CONNECTION_ANIMATIONS;
 
     static {
         ForgeConfigSpec.Builder commonBuilder = new ForgeConfigSpec.Builder();
@@ -41,6 +42,9 @@ public final class QuestsAndStuffConfig {
         QUEST_WINDOW_ANIMATIONS = clientBuilder
                 .comment("Enable quest details window source-origin open animations.")
                 .define("questWindowAnimations", true);
+        CONNECTION_ANIMATIONS = clientBuilder
+                .comment("Enable prerequisite connection draw animations.")
+                .define("connectionAnimations", true);
         clientBuilder.pop();
 
         CLIENT_SPEC = clientBuilder.build();
@@ -111,6 +115,18 @@ public final class QuestsAndStuffConfig {
 
     public static void setQuestWindowAnimationsEnabled(boolean enabled) {
         setClientBoolean(QUEST_WINDOW_ANIMATIONS, enabled);
+    }
+
+    public static boolean connectionAnimationSettingEnabled() {
+        return CONNECTION_ANIMATIONS.get();
+    }
+
+    public static boolean connectionAnimationsEnabled() {
+        return UI_ANIMATIONS.get() && CONNECTION_ANIMATIONS.get();
+    }
+
+    public static void setConnectionAnimationsEnabled(boolean enabled) {
+        setClientBoolean(CONNECTION_ANIMATIONS, enabled);
     }
 
     private static void setClientBoolean(ForgeConfigSpec.BooleanValue value, boolean enabled) {

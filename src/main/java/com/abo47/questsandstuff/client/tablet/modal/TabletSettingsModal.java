@@ -177,6 +177,15 @@ public final class TabletSettingsModal {
                         QuestsAndStuffConfig::setQuestWindowAnimationsEnabled,
                         false,
                         true
+                ),
+                new SettingOption(
+                        "connectionAnimations",
+                        "ui.questsandstuff.settings.connection_animations",
+                        "ui.questsandstuff.settings.connection_animations_desc",
+                        QuestsAndStuffConfig::connectionAnimationSettingEnabled,
+                        QuestsAndStuffConfig::setConnectionAnimationsEnabled,
+                        false,
+                        true
                 )
         );
     }
