@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletColorPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletEntityVariantModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletIconPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -52,6 +53,8 @@ public final class ModalPanelRouter {
             TabletThemePickerModal.rebuild(modal, state, refresh, w, h);
         } else if (state.entityVariantPickerOpen) {
             entityVariantSearchField = TabletEntityVariantModal.rebuild(modal, state, player, refresh, w, h);
+        } else if (state.settingsPanelOpen) {
+            TabletSettingsModal.rebuild(modal, state, refresh, w, h);
         }
         overlay.addWidget(modal);
         restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, lootTableSearchField, entityVariantSearchField);

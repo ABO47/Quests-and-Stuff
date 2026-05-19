@@ -83,6 +83,7 @@ public class TabletUiState {
     public int toolsMenuY;
     public int toolsMenuW;
     public int toolsMenuH;
+    public long toolsMenuAnimationStartMs;
     public boolean toolsGridSizeMenuOpen;
     public boolean toolsGridOpacityMenuOpen;
     public String toolsGridOpacityDraft = "50";
@@ -98,8 +99,12 @@ public class TabletUiState {
     public boolean lootTablePickerOpen;
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
+    public boolean settingsPanelOpen;
     public int themeScroll;
     public boolean themeScrollDragging;
+    public int settingsTab;
+    public int settingsScroll;
+    public boolean settingsScrollDragging;
     public String modalChapterTarget = "";
     public String modalQuestTarget = "";
     public String modalCanvasBackgroundTarget = "";

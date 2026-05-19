@@ -32,6 +32,9 @@ public final class ModalStateQueries {
         if (state.entityVariantPickerOpen) {
             return ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER;
         }
+        if (state.settingsPanelOpen) {
+            return ModalWindowManager.ModalType.SETTINGS_PANEL;
+        }
         return ModalWindowManager.ModalType.NONE;
     }
 }

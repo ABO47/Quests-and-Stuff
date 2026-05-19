@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.canvas.overlay;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -58,11 +59,13 @@ final class CanvasMinimapOverlay {
             return;
         }
 
-        boolean closing = UiAnimationProgress.running(state.minimapAnimationStartMs, ANIMATION_MS)
+        boolean animationsEnabled = QuestsAndStuffConfig.minimapAnimationsEnabled();
+        boolean closing = animationsEnabled
+                && UiAnimationProgress.running(state.minimapAnimationStartMs, ANIMATION_MS)
                 && state.minimapCollapsed
                 && !state.minimapAnimationFromCollapsed;
         if (hitLayout.collapsed() && !closing) {
-            canvasViewport.addWidget(minimapWidget(canvasViewport, state, CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false), hitLayout, null));
+            canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false), hitLayout, null));
             return;
         }
 
@@ -80,12 +83,13 @@ final class CanvasMinimapOverlay {
 
         MiniSnapshot snapshot = snapshot(state, group, visibleCards, byQuestId, images, texts, projection);
         CanvasMinimapGeometry.Layout collapsedLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), true);
-        canvasViewport.addWidget(minimapWidget(canvasViewport, state, layout, collapsedLayout, snapshot));
+        canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, layout, collapsedLayout, snapshot));
     }
 
     private static WidgetGroup minimapWidget(
             CanvasViewport canvasViewport,
             TabletUiState state,
+            boolean animationsEnabled,
             CanvasMinimapGeometry.Layout layout,
             CanvasMinimapGeometry.Layout collapsedLayout,
             MiniSnapshot snapshot
@@ -95,12 +99,7 @@ final class CanvasMinimapOverlay {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
-                float openProgress = UiAnimationProgress.openProgress(
-                        !state.minimapCollapsed,
-                        state.minimapAnimationFromCollapsed,
-                        state.minimapAnimationStartMs,
-                        ANIMATION_MS
-                );
+                float openProgress = minimapOpenProgress(state, animationsEnabled);
                 drawPanel(graphics, originX, originY, layout, collapsedLayout, openProgress, mouseX, mouseY);
                 if (snapshot != null && openProgress > 0.02f) {
                     int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * openProgress));
@@ -116,6 +115,18 @@ final class CanvasMinimapOverlay {
                 }
             }
         };
+    }
+
+    private static float minimapOpenProgress(TabletUiState state, boolean animationsEnabled) {
+        if (!animationsEnabled) {
+            return state.minimapCollapsed ? 0.0f : 1.0f;
+        }
+        return UiAnimationProgress.openProgress(
+                !state.minimapCollapsed,
+                state.minimapAnimationFromCollapsed,
+                state.minimapAnimationStartMs,
+                ANIMATION_MS
+        );
     }
 
     private static MiniSnapshot snapshot(

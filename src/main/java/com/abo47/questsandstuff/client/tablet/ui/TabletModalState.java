@@ -15,6 +15,7 @@ public final class TabletModalState {
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
+        state.settingsPanelOpen = flags.settingsOpen();
     }
 
     public static void openModal(TabletUiState state, ModalWindowManager.ModalType type) {
@@ -59,5 +60,6 @@ public final class TabletModalState {
         state.colorPaletteContextValue = Integer.MIN_VALUE;
         state.colorPaletteScrollDragging = false;
         state.themeScrollDragging = false;
+        state.settingsScrollDragging = false;
     }
 }

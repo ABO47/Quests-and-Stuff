@@ -78,6 +78,15 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.THEME_PICKER);
     }
 
+    public static void openSettingsPanel(TabletUiState state) {
+        ModalCloseActions.closeAll(state);
+        state.settingsTab = 0;
+        state.settingsScroll = 0;
+        state.settingsScrollDragging = false;
+        state.contextDeleteConfirmKey = "";
+        openModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL);
+    }
+
     public static void openAssetPicker(TabletUiState state, String target) {
         openAssetPicker(state, target, "");
     }
