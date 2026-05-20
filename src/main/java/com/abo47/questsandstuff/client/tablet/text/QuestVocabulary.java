@@ -56,8 +56,9 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_ENTITY = "ui.questsandstuff.context.change_entity";
     public static final String CONTEXT_CHANGE_ICON = "ui.questsandstuff.context.change_icon";
     public static final String CONTEXT_CHANGE_IMAGE = "ui.questsandstuff.context.change_image";
+    public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
-    public static final String CONTEXT_COMPLETION_SOUND = "ui.questsandstuff.context.completion_sound";
+    public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
     public static final String CONTEXT_CONNECTION_COLOR = "ui.questsandstuff.context.connection_color";
     public static final String CONTEXT_COPY = "ui.questsandstuff.context.copy";
     public static final String CONTEXT_EDIT_MOTION = "ui.questsandstuff.context.edit_motion";

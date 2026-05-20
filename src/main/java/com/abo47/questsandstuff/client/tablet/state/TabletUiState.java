@@ -245,7 +245,7 @@ public class TabletUiState {
     public String createQuestTitle = "";
     public int createQuestLogicalX;
     public int createQuestLogicalY;
-    public String pendingQuestRenameId = "";
+    public String pendingQuestTitleChangeId = "";
     public String questTitleDraft = "";
     public boolean questDetailsOpen;
     public boolean questDetailsClosing;

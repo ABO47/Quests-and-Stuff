@@ -203,7 +203,7 @@ public final class CanvasSelectionRenderer {
             TabletUiState state,
             List<QuestCardLayout> cards
     ) {
-        if (!state.canEdit || state.selectedQuestIds.size() <= 1 || !state.pendingQuestRenameId.isBlank()) {
+        if (!state.canEdit || state.selectedQuestIds.size() <= 1 || !state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
@@ -236,7 +236,7 @@ public final class CanvasSelectionRenderer {
             int maxH,
             TabletUiState state
     ) {
-        if (!state.canEdit || !state.selectionBoundsVisible || state.pendingQuestRenameId != null && !state.pendingQuestRenameId.isBlank()) {
+        if (!state.canEdit || !state.selectionBoundsVisible || state.pendingQuestTitleChangeId != null && !state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         if (state.selectedQuestIds.isEmpty() && CanvasRenderer.totalCanvasSelectionCount(state) == 1) {

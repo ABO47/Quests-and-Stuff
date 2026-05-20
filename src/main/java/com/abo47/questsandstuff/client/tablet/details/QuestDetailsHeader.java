@@ -84,7 +84,7 @@ final class QuestDetailsHeader {
     private static void addQuestTitleField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h) {
         CompoundTag quest = ClientQuestCache.quest(questId);
         String title = quest == null ? "" : quest.getString("title");
-        if (!state.questDetailsTitleFocused || !questId.equals(state.pendingQuestRenameId)) {
+        if (!state.questDetailsTitleFocused || !questId.equals(state.pendingQuestTitleChangeId)) {
             state.questTitleDraft = title;
         }
         InlineRenameField titleField = new InlineRenameField(
@@ -100,20 +100,20 @@ final class QuestDetailsHeader {
                     refresh.run();
                 },
                 () -> {
-                    state.pendingQuestRenameId = "";
+                    state.pendingQuestTitleChangeId = "";
                     state.questTitleDraft = title;
                     state.questDetailsTitleFocused = false;
                     refresh.run();
                 },
                 () -> {
-                    if (questId.equals(state.pendingQuestRenameId)) {
+                    if (questId.equals(state.pendingQuestTitleChangeId)) {
                         commitQuestTitle(player, state, questId);
                         refresh.run();
                     }
                 },
                 focused -> {
-                    if (focused && !questId.equals(state.pendingQuestRenameId)) {
-                        state.pendingQuestRenameId = questId;
+                    if (focused && !questId.equals(state.pendingQuestTitleChangeId)) {
+                        state.pendingQuestTitleChangeId = questId;
                         state.questTitleDraft = title;
                     }
                     state.questDetailsTitleFocused = focused;
@@ -123,7 +123,7 @@ final class QuestDetailsHeader {
         titleField.setCurrentString(titleDraft(state));
         titleField.setMaxStringLength(80);
         titleField.setBordered(false);
-        boolean editing = state.questDetailsTitleFocused && questId.equals(state.pendingQuestRenameId);
+        boolean editing = state.questDetailsTitleFocused && questId.equals(state.pendingQuestTitleChangeId);
         boolean framed = state.canEdit && state.questDetailsEditMode;
         titleField.setBackground(framed
                 ? Surfaces.bordered(ModColors.SURFACE_BASE, editing ? ModColors.INTERACTIVE : ModColors.BORDER_BASE)
@@ -156,7 +156,7 @@ final class QuestDetailsHeader {
         if (player != null && !title.equals(oldTitle)) {
             EditorCommandClient.updateQuestDisplay(player, questId, title, quest.getString("subtitle"));
         }
-        state.pendingQuestRenameId = "";
+        state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = title;
     }
 

@@ -83,7 +83,7 @@ final class QuestDetailsWindowActions {
             return true;
         }
         if (!questId.isBlank()) {
-            EditorCommandClient.beginQuestRename(state, questId);
+            EditorCommandClient.beginQuestTitleChange(state, questId);
             state.questDetailsTitleFocused = true;
             return true;
         }

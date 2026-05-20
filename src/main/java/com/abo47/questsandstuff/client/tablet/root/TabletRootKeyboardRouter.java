@@ -139,7 +139,7 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
-        if (!state.pendingQuestRenameId.isBlank() && EditorCommandClient.commitQuestRename(root.resolvePlayer(), state)) {
+        if (!state.pendingQuestTitleChangeId.isBlank() && EditorCommandClient.commitQuestTitleChange(root.resolvePlayer(), state)) {
             refresher.run();
             return true;
         }

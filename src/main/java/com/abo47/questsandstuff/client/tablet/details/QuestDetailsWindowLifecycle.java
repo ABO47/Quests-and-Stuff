@@ -38,7 +38,7 @@ final class QuestDetailsWindowLifecycle {
         EntityMotionEditor.close(state);
         QuestDetailsDescriptionModel.applyToolsToState(state, QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetailsQuestId)));
         CompoundTag quest = ClientQuestCache.quest(state.questDetailsQuestId);
-        state.pendingQuestRenameId = "";
+        state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetailsTitleFocused = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details open quest={} source={} x={} y={} w={} h={}",
@@ -124,8 +124,8 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextColorTextId = "";
         EntityMotionEditor.close(state);
         state.questDetailsTitleFocused = false;
-        if (closingQuestId.equals(state.pendingQuestRenameId)) {
-            state.pendingQuestRenameId = "";
+        if (closingQuestId.equals(state.pendingQuestTitleChangeId)) {
+            state.pendingQuestTitleChangeId = "";
             state.questTitleDraft = "";
         }
     }

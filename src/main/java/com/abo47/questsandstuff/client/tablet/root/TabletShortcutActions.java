@@ -100,7 +100,7 @@ final class TabletShortcutActions {
             return QuestDetailsWindow.beginSelectedRename(state);
         }
         if (state.selectedQuestIds.size() == 1) {
-            EditorCommandClient.beginQuestRename(state, state.selectedQuestIds.iterator().next());
+            EditorCommandClient.beginQuestTitleChange(state, state.selectedQuestIds.iterator().next());
             return true;
         }
         if (state.selectedQuestIds.isEmpty() && CanvasRenderer.selectedCanvasImageIds(state).isEmpty()

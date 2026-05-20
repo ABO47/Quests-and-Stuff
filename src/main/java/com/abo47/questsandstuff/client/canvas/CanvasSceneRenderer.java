@@ -171,7 +171,7 @@ final class CanvasSceneRenderer {
         renderQuestIcon(canvasViewport, card);
         renderSearchState(canvasViewport, state, card);
         renderHiddenEditState(canvasViewport, state, card);
-        if (state.canEdit && card.questId().equals(state.pendingQuestRenameId)) {
+        if (state.canEdit && card.questId().equals(state.pendingQuestTitleChangeId)) {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
@@ -189,10 +189,10 @@ final class CanvasSceneRenderer {
         InlineRenameField field = new InlineRenameField(x, y, fieldW, fieldH, () -> state.questTitleDraft, value -> {
             state.questTitleDraft = value == null ? "" : value;
         }, () -> {
-            EditorCommandClient.commitQuestRename(player, state);
+            EditorCommandClient.commitQuestTitleChange(player, state);
             refresh.run();
         }, () -> {
-            EditorCommandClient.cancelQuestRename(state);
+            EditorCommandClient.cancelQuestTitleChange(state);
             refresh.run();
         }, null, null);
         field.setClientSideWidget();

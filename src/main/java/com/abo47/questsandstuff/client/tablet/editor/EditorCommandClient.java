@@ -116,16 +116,16 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.addQuestAt(player, state, logicalX, logicalY, title);
     }
 
-    public static void beginQuestRename(TabletUiState state, String questId) {
-        EditorQuestCommandClient.beginQuestRename(state, questId);
+    public static void beginQuestTitleChange(TabletUiState state, String questId) {
+        EditorQuestCommandClient.beginQuestTitleChange(state, questId);
     }
 
-    public static void cancelQuestRename(TabletUiState state) {
-        EditorQuestCommandClient.cancelQuestRename(state);
+    public static void cancelQuestTitleChange(TabletUiState state) {
+        EditorQuestCommandClient.cancelQuestTitleChange(state);
     }
 
-    public static boolean commitQuestRename(Player player, TabletUiState state) {
-        return EditorQuestCommandClient.commitQuestRename(player, state);
+    public static boolean commitQuestTitleChange(Player player, TabletUiState state) {
+        return EditorQuestCommandClient.commitQuestTitleChange(player, state);
     }
 
     public static void putQuestTaskJson(Player player, String questId, String taskJson) {
