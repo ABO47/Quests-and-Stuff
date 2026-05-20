@@ -63,20 +63,23 @@ final class QuestSyncPayloadBuilder {
                 continue;
             }
             QuestProgressState progress = playerState.quest(questId);
-            questsTag.put(questId, questTag(definition, progress));
+            questsTag.put(questId, questTag(definition, progress, false));
         }
 
         return questsTag;
     }
 
     CompoundTag editorQuestPayload(QuestDefinition definition) {
-        return questTag(definition, null);
+        return questTag(definition, null, true);
     }
 
-    private static CompoundTag questTag(QuestDefinition definition, QuestProgressState progress) {
+    private static CompoundTag questTag(QuestDefinition definition, QuestProgressState progress, boolean includeDescription) {
         CompoundTag questTag = new CompoundTag();
         questTag.putString("title", definition.display().title());
         questTag.putString("subtitle", definition.display().subtitle());
+        if (includeDescription) {
+            questTag.put("description", descriptionTag(definition));
+        }
         questTag.putString("icon", definition.display().icon());
         questTag.putString("icon_background", definition.display().iconBackground());
         questTag.putString("completion_sound", definition.display().completionSound());
@@ -100,6 +103,14 @@ final class QuestSyncPayloadBuilder {
         questTag.put("hidden_connections", hiddenConnectionsTag(definition));
         questTag.put("groups", chapterViewsTag(definition));
         return questTag;
+    }
+
+    private static ListTag descriptionTag(QuestDefinition definition) {
+        ListTag lines = new ListTag();
+        for (String line : definition.display().description()) {
+            lines.add(StringTag.valueOf(line));
+        }
+        return lines;
     }
 
     private static ListTag prerequisitesTag(QuestDefinition definition) {

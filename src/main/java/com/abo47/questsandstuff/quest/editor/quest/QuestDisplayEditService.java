@@ -19,7 +19,8 @@ public final class QuestDisplayEditService {
     }
 
     public void updateQuestDisplay(ServerPlayer player, String questId, String title, String subtitle) {
-        QuestDefinition source = service.definitionStore().quests().get(questId);
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition source = service.definitionStore().quests().get(normalizedQuestId);
         if (source == null) {
             return;
         }
@@ -40,7 +41,8 @@ public final class QuestDisplayEditService {
     }
 
     public void updateQuestDescription(ServerPlayer player, String questId, List<String> description) {
-        QuestDefinition source = service.definitionStore().quests().get(questId);
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition source = service.definitionStore().quests().get(normalizedQuestId);
         if (source == null) {
             return;
         }
@@ -139,6 +141,7 @@ public final class QuestDisplayEditService {
 
     private void updateQuest(ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
         service.definitionStore().upsert(updated);
+        service.definitionStore().saveNow(updated.id());
         session.currentQuest = updated.id();
         service.postMutation(player);
         service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", updated);

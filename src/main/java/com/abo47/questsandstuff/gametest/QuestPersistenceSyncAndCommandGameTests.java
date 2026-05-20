@@ -226,6 +226,110 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void questDetailsDescriptionWritesJsonImmediately(GameTestHelper helper) {
+        QuestDefinitionStore store = null;
+        try {
+            Path root = Files.createTempDirectory("qas_desc_save_");
+            String questId = "details/persist";
+            store = new QuestDefinitionStore(root);
+            store.upsert(quest(questId));
+
+            QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
+            QuestPerformanceTracker perf = new QuestPerformanceTracker();
+            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            EditorSessionService editor = new EditorSessionService(store, engine, sync);
+            ServerPlayer player = detachedPlayer(helper);
+
+            String meta = "@qas_desc_meta:{background:\"default\",bg_opacity:60,canvas_locked:0b,center_x:1b,center_y:1b,grid:1b,grid_opacity:50,object_snap:0b,snap:1b}";
+            String text = "@qas_desc_text:{align:\"left\",color:-1443841,font_size:9,h:32,id:\"txt_0001\",rotation:0,spans:[],style:\"normal\",text:\"Saved detail\",w:112,x:96,y:0}";
+            editor.updateQuestDescription(player, questId, List.of(meta, text));
+
+            Path saved = root.resolve("quests").resolve("main").resolve("details_persist.json");
+            if (!Files.exists(saved)) {
+                throw new GameTestAssertException("Quest details edit should write its quest JSON immediately");
+            }
+            String raw = Files.readString(saved, StandardCharsets.UTF_8);
+            if (!raw.contains("@qas_desc_meta") || !raw.contains("Saved detail")) {
+                throw new GameTestAssertException("Quest details description should be stored in the quest JSON");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Quest details save test setup failed: " + e.getMessage());
+        } finally {
+            if (store != null) {
+                store.shutdown();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void editorMutationIncludesQuestDetailsDescription(GameTestHelper helper) {
+        QuestDefinitionStore store = null;
+        try {
+            Path root = Files.createTempDirectory("qas_desc_sync_");
+            store = new QuestDefinitionStore(root);
+            QuestDefinition source = quest("details/sync");
+            String detailLine = "@qas_desc_text:{align:\"left\",color:-1443841,font_size:9,h:32,id:\"txt_0001\",rotation:0,spans:[],style:\"normal\",text:\"Synced detail\",w:112,x:96,y:0}";
+            QuestDefinition withDescription = new QuestDefinition(
+                    source.schema(),
+                    source.id(),
+                    new QuestDisplay(
+                            source.display().title(),
+                            source.display().subtitle(),
+                            List.of(detailLine),
+                            source.display().groups(),
+                            source.display().icon(),
+                            source.display().iconBackground(),
+                            source.display().completionSound(),
+                            source.display().visualHidden()
+                    ),
+                    source.settings(),
+                    source.prerequisites(),
+                    source.connectionColors(),
+                    source.connectionModes(),
+                    source.hiddenConnections(),
+                    source.tasks(),
+                    source.rewards()
+            );
+            store.upsert(withDescription);
+
+            QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
+            QuestPerformanceTracker perf = new QuestPerformanceTracker();
+            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            sync.setEditorVisibilityPredicate(ignored -> true);
+            ServerPlayer player = detachedPlayer(helper);
+            List<Object> packets = Collections.synchronizedList(new ArrayList<>());
+            QuestNetwork.setTestPacketSink((target, packet) -> {
+                if (target != null && target.getUUID().equals(player.getUUID())) {
+                    packets.add(packet);
+                }
+            });
+
+            sync.broadcastEditorMutation(List.of(player), "update", withDescription);
+
+            List<S2CEditorMutationPacket> mutations = packetsOf(packets, S2CEditorMutationPacket.class);
+            if (mutations.size() != 1) {
+                throw new GameTestAssertException("Expected one editor mutation packet with quest details");
+            }
+            ListTag lines = mutations.get(0).questTag().getList("description", net.minecraft.nbt.Tag.TAG_STRING);
+            if (lines.isEmpty() || !detailLine.equals(lines.getString(0))) {
+                throw new GameTestAssertException("Editor mutation should carry quest details description lines");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Quest details mutation test setup failed: " + e.getMessage());
+        } finally {
+            QuestNetwork.clearTestPacketSink();
+            if (store != null) {
+                store.shutdown();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void syncSupportsChunkingDeltaAndReconnect(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {

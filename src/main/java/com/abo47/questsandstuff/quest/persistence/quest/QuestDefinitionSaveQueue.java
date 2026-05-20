@@ -51,6 +51,14 @@ final class QuestDefinitionSaveQueue {
         delayedSaves.put(questId, saveExecutor.schedule(() -> saveSnapshot(questId, snapshot), 600, TimeUnit.MILLISECONDS));
     }
 
+    void saveNow(String questId, QuestDefinition definition) {
+        cancel(questId);
+        if (definition == null) {
+            return;
+        }
+        saveSnapshot(questId, cloneDefinition(definition));
+    }
+
     void saveAll(Map<String, QuestDefinition> snapshot) {
         for (String questId : snapshot.keySet()) {
             cancel(questId);
