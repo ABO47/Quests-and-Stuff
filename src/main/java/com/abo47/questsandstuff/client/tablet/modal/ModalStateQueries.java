@@ -26,6 +26,9 @@ public final class ModalStateQueries {
         if (state.lootTablePickerOpen) {
             return ModalWindowManager.ModalType.LOOT_TABLE_PICKER;
         }
+        if (state.itemInventoryPickerOpen) {
+            return ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER;
+        }
         if (state.colorPickerOpen) {
             return ModalWindowManager.ModalType.COLOR_PICKER;
         }

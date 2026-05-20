@@ -18,6 +18,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextW = 0;
         state.questDetailsContextH = 0;
         closeTypePicker(state);
+        closeItemSourcePicker(state);
         closeCommandRewardEditor(state);
         closeObjectiveRename(state);
         state.contextDeleteConfirmKey = "";
@@ -37,12 +38,26 @@ public final class QuestDetailsTransientState {
         state.questDetailsTypePickerTargetId = targetId == null ? "" : targetId;
         state.questDetailsTypePickerX = state.questDetailsContextX;
         state.questDetailsTypePickerY = state.questDetailsContextY;
+        closeItemSourcePicker(state);
     }
 
     public static void closeTypePicker(TabletUiState state) {
         state.questDetailsTypePickerOpen = false;
         state.questDetailsTypePickerKind = "";
         state.questDetailsTypePickerTargetId = "";
+    }
+
+    public static void openItemSourcePicker(TabletUiState state, String target) {
+        state.questDetailsItemSourcePickerOpen = true;
+        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        state.questDetailsItemSourcePickerTarget = target == null ? "" : target;
+        state.questDetailsItemSourcePickerX = state.questDetailsTypePickerX;
+        state.questDetailsItemSourcePickerY = state.questDetailsTypePickerY;
+    }
+
+    public static void closeItemSourcePicker(TabletUiState state) {
+        state.questDetailsItemSourcePickerOpen = false;
+        state.questDetailsItemSourcePickerTarget = "";
     }
 
     public static void openCommandRewardEditor(TabletUiState state, String questId, String id, String command, String title, String icon) {
@@ -53,6 +68,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsCommandRewardTitle = title == null || title.isBlank() ? "Command" : title;
         state.questDetailsCommandRewardIcon = icon == null || icon.isBlank() ? "minecraft:command_block" : icon;
         closeTypePicker(state);
+        closeItemSourcePicker(state);
         closeContext(state);
     }
 
@@ -63,6 +79,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsObjectiveRenameId = id == null ? "" : id;
         state.questDetailsObjectiveRenameDraft = draft == null ? "" : draft;
         closeTypePicker(state);
+        closeItemSourcePicker(state);
         closeContext(state);
     }
 
@@ -87,6 +104,10 @@ public final class QuestDetailsTransientState {
         boolean changed = false;
         if (state.questDetailsTypePickerOpen) {
             closeTypePicker(state);
+            changed = true;
+        }
+        if (state.questDetailsItemSourcePickerOpen) {
+            closeItemSourcePicker(state);
             changed = true;
         }
         if (state.questDetailsCommandRewardEditorOpen) {

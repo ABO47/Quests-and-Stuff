@@ -8,6 +8,7 @@ public final class ModalWindowManager {
         ASSET_PICKER,
         BIOME_PICKER,
         LOOT_TABLE_PICKER,
+        ITEM_INVENTORY_PICKER,
         COLOR_PICKER,
         THEME_PICKER,
         ENTITY_VARIANT_PICKER,
@@ -46,22 +47,23 @@ public final class ModalWindowManager {
 
     public static ModalFlags open(ModalType type) {
         return switch (type) {
-            case ICON_PICKER -> new ModalFlags(true, false, false, false, false, false, false, false);
-            case ASSET_PICKER -> new ModalFlags(false, true, false, false, false, false, false, false);
-            case BIOME_PICKER -> new ModalFlags(false, false, true, false, false, false, false, false);
-            case LOOT_TABLE_PICKER -> new ModalFlags(false, false, false, true, false, false, false, false);
-            case COLOR_PICKER -> new ModalFlags(false, false, false, false, true, false, false, false);
-            case THEME_PICKER -> new ModalFlags(false, false, false, false, false, true, false, false);
-            case ENTITY_VARIANT_PICKER -> new ModalFlags(false, false, false, false, false, false, true, false);
-            case SETTINGS_PANEL -> new ModalFlags(false, false, false, false, false, false, false, true);
-            default -> new ModalFlags(false, false, false, false, false, false, false, false);
+            case ICON_PICKER -> new ModalFlags(true, false, false, false, false, false, false, false, false);
+            case ASSET_PICKER -> new ModalFlags(false, true, false, false, false, false, false, false, false);
+            case BIOME_PICKER -> new ModalFlags(false, false, true, false, false, false, false, false, false);
+            case LOOT_TABLE_PICKER -> new ModalFlags(false, false, false, true, false, false, false, false, false);
+            case ITEM_INVENTORY_PICKER -> new ModalFlags(false, false, false, false, true, false, false, false, false);
+            case COLOR_PICKER -> new ModalFlags(false, false, false, false, false, true, false, false, false);
+            case THEME_PICKER -> new ModalFlags(false, false, false, false, false, false, true, false, false);
+            case ENTITY_VARIANT_PICKER -> new ModalFlags(false, false, false, false, false, false, false, true, false);
+            case SETTINGS_PANEL -> new ModalFlags(false, false, false, false, false, false, false, false, true);
+            default -> new ModalFlags(false, false, false, false, false, false, false, false, false);
         };
     }
 
     public static ModalFlags closeAll() {
-        return new ModalFlags(false, false, false, false, false, false, false, false);
+        return new ModalFlags(false, false, false, false, false, false, false, false, false);
     }
 
-    public record ModalFlags(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean lootTableOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen, boolean settingsOpen) {
+    public record ModalFlags(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean lootTableOpen, boolean itemInventoryOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen, boolean settingsOpen) {
     }
 }

@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
 
 public final class QuestDetailsObjectivesPanel {
@@ -41,6 +42,10 @@ public final class QuestDetailsObjectivesPanel {
 
     public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         QuestObjectiveEditActions.applyLootTablePick(player, state, lootTable);
+    }
+
+    public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+        QuestObjectiveEditActions.applyInventoryItemPick(player, state, stack);
     }
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {

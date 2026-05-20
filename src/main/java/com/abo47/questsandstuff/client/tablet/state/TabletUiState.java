@@ -103,6 +103,7 @@ public class TabletUiState {
     public boolean assetPickerOpen;
     public boolean biomePickerOpen;
     public boolean lootTablePickerOpen;
+    public boolean itemInventoryPickerOpen;
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
@@ -149,6 +150,10 @@ public class TabletUiState {
     public boolean lootTableSearchFocused;
     public int lootTableScroll;
     public boolean lootTableScrollDragging;
+    public String itemInventorySearch = "";
+    public boolean itemInventorySearchFocused;
+    public int itemInventoryScroll;
+    public boolean itemInventoryScrollDragging;
     public String assetSelected = "";
     public String assetBrowseDir = "";
     public String assetSearch = "";
@@ -299,6 +304,10 @@ public class TabletUiState {
     public int questDetailsTypePickerX;
     public int questDetailsTypePickerY;
     public String questDetailsTypePickerTargetId = "";
+    public boolean questDetailsItemSourcePickerOpen;
+    public String questDetailsItemSourcePickerTarget = "";
+    public int questDetailsItemSourcePickerX;
+    public int questDetailsItemSourcePickerY;
     public String questDetailsPickTarget = "";
     public String questDetailsAssetPickTarget = "";
     public boolean questDetailsCommandRewardEditorOpen;

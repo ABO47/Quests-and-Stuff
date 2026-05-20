@@ -73,6 +73,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyLootTablePick(player, state, lootTable);
     }
 
+    public static void applyInventoryItemPick(Player player, TabletUiState state, net.minecraft.world.item.ItemStack stack) {
+        QuestDetailsWindowActions.applyInventoryItemPick(player, state, stack);
+    }
+
     public static void applyAssetPick(Player player, TabletUiState state, String asset) {
         QuestDetailsWindowActions.applyAssetPick(player, state, asset);
     }
@@ -127,6 +131,10 @@ public final class QuestDetailsWindow {
 
     public static void openLootTablePicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openLootTablePicker(state, target);
+    }
+
+    public static void openItemInventoryPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openItemInventoryPicker(state, target);
     }
 
     public static void openAssetPicker(TabletUiState state, String target) {

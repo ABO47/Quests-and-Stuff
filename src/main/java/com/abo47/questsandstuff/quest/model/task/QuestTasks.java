@@ -36,7 +36,6 @@ public final class QuestTasks {
         }
         register(new QuestTaskType<>(id("kill_entity"), SimpleQuestTaskDefinition.codec(id("kill_entity"), QuestSignalType.ENTITY_KILLED), "kill_entity_widget"));
         register(new QuestTaskType<>(id("item"), GatherItemQuestTaskDefinition.codec(id("item")), "item_widget"));
-        register(new QuestTaskType<>(id("gather_item"), GatherItemQuestTaskDefinition.codec(id("gather_item")), "gather_item_widget"));
         register(new QuestTaskType<>(id("advancement"), SimpleQuestTaskDefinition.codec(id("advancement"), QuestSignalType.ADVANCEMENT), "advancement_widget"));
         register(new QuestTaskType<>(id("recipe"), SimpleQuestTaskDefinition.codec(id("recipe"), QuestSignalType.ITEM_CRAFTED), "recipe_widget"));
         register(new QuestTaskType<>(id("structure"), SimpleQuestTaskDefinition.codec(id("structure"), QuestSignalType.STRUCTURE_ENTER), "structure_widget"));

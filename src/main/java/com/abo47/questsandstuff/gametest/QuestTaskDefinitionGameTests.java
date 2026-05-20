@@ -47,12 +47,12 @@ public final class QuestTaskDefinitionGameTests {
         requirePositive(simple("entity", "entity_interact", "minecraft:villager"),
                 signal(QuestSignalType.ENTITY_INTERACT, "minecraft:villager", 1), current);
 
-        QuestTaskDefinition gatherAutomatic = task("gather_auto", "gather_item", "minecraft:oak_log", Map.of());
+        QuestTaskDefinition gatherAutomatic = task("gather_auto", "item", "minecraft:oak_log", Map.of());
         requirePositive(gatherAutomatic, signal(QuestSignalType.ITEM_COLLECTED, "minecraft:oak_log", 4), current);
         assertPickupSnapshotDoesNotDoubleCount();
-        QuestTaskDefinition gatherManual = task("gather_manual", "gather_item", "minecraft:oak_log", Map.of("collection_mode", "manual"));
+        QuestTaskDefinition gatherManual = task("gather_manual", "item", "minecraft:oak_log", Map.of("collection_mode", "manual"));
         requirePositive(gatherManual, signal(QuestSignalType.MANUAL_ITEM_SUBMIT, "minecraft:oak_log", 2), current);
-        QuestTaskDefinition gatherConsume = task("gather_consume", "gather_item", "minecraft:oak_log", Map.of("collection_mode", "consume"));
+        QuestTaskDefinition gatherConsume = task("gather_consume", "item", "minecraft:oak_log", Map.of("collection_mode", "consume"));
         requirePositive(gatherConsume, signal(QuestSignalType.MANUAL_ITEM_SUBMIT, "minecraft:oak_log", 2), current);
 
         requirePositive(simple("item_interact", "item_interact", "minecraft:book"),
@@ -91,7 +91,7 @@ public final class QuestTaskDefinitionGameTests {
 
         for (String requiredType : List.of(
                 "advancement", "biome", "block_interact", "changed_dimension", "check", "composite", "dummy",
-                "entity_interact", "gather_item", "item_interact", "item_use", "kill_entity",
+                "entity_interact", "item_interact", "item_use", "kill_entity",
                 "location", "recipe", "stat", "structure", "xp"
         )) {
             if (QuestTasks.get(id(requiredType)) == null) {

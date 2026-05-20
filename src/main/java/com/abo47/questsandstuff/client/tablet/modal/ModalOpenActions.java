@@ -59,6 +59,18 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
     }
 
+    public static void openItemInventoryPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.itemInventorySearch = "";
+        state.itemInventoryScroll = 0;
+        state.itemInventoryScrollDragging = false;
+        state.itemInventorySearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER);
+    }
+
     public static void openColorPicker(TabletUiState state, String target, int color) {
         closeBeforeOpen(state);
         state.colorPickerTarget = target == null ? "" : target;

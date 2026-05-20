@@ -188,7 +188,7 @@ public final class QuestRewardAndTeamGameTests {
             provider.setMembers(List.of(a, b));
 
             Map<String, QuestTaskDefinition> tasks = Map.of(
-                    "check", task("check", "gather_item", 10, "minecraft:stone", Map.of("collection_mode", "automatic"))
+                    "check", task("check", "item", 10, "minecraft:stone", Map.of("collection_mode", "automatic"))
             );
             Map<String, QuestRewardDefinition> rewards = Map.of(
                     "r1", reward("r1", "xp", 1, "", false, Map.of())
