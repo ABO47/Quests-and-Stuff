@@ -2,11 +2,14 @@ package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.network.QuestNetwork;
 import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
@@ -31,6 +34,7 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
@@ -259,6 +263,38 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             if (store != null) {
                 store.shutdown();
             }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void questDetailsDescriptionKeepsMultilineTextFormatting(GameTestHelper helper) {
+        String poem = "First line\nSecond line\nThird line";
+        CanvasTextLayer layer = new CanvasTextLayer("poem", poem, 12, 16, 112, 32, 0, "center", "bold", -1);
+        CompoundTag quest = new CompoundTag();
+        ListTag description = new ListTag();
+        description.add(StringTag.valueOf("@qas_desc_text:" + CanvasLayerNbt.textToTag(layer)));
+        quest.put("description", description);
+
+        QuestDetailsDescriptionModel decoded = QuestDetailsDescriptionModel.decode(quest);
+        List<String> encoded = QuestDetailsDescriptionModel.encode(decoded);
+        CompoundTag roundTripQuest = new CompoundTag();
+        ListTag roundTripDescription = new ListTag();
+        for (String line : encoded) {
+            roundTripDescription.add(StringTag.valueOf(line));
+        }
+        roundTripQuest.put("description", roundTripDescription);
+
+        CanvasTextLayer roundTrip = QuestDetailsDescriptionModel.decode(roundTripQuest).text("poem");
+        if (roundTrip == null) {
+            throw new GameTestAssertException("Quest details text should survive description encode/decode");
+        }
+        if (!poem.equals(roundTrip.text())) {
+            throw new GameTestAssertException("Quest details multiline text should keep newline characters");
+        }
+        if (!"center".equals(roundTrip.align()) || !"bold".equals(roundTrip.style())) {
+            throw new GameTestAssertException("Quest details text formatting should survive description encode/decode");
         }
         helper.succeed();
     }

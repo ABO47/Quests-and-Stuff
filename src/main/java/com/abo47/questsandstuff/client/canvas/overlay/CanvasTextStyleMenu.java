@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.FontSizeSliderWidget;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -150,13 +151,13 @@ public final class CanvasTextStyleMenu {
         addFontSizeControl(floating, state, logScope, text, sizeX, sizeY, btnW, 16, refresh);
         parent.addWidget(floating);
         if (text.id().equals(textFontSizeSliderTarget(state, logScope))) {
-            addFontSizePopover(parent, state, logScope, text, x + sizeX, y + sizeY + 16 + FONT_SIZE_SLIDER_POPOVER_GAP, btnW, value -> updateText.accept(text.withFontSize(value)), refresh);
+            addFontSizePopover(parent, state, logScope, text, x + sizeX, y + sizeY + 16 + FONT_SIZE_SLIDER_POPOVER_GAP, btnW, value -> updateText.accept(CanvasTextRenderer.fitTextHeight(text.withFontSize(value))), refresh);
         }
     }
 
     private static void updateStyle(TabletUiState state, String logScope, CanvasTextLayer oldText, CanvasTextLayer next, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
         markStyleInteraction(state, logScope);
-        updateText.accept(next);
+        updateText.accept(CanvasTextRenderer.fitTextHeight(next));
         keepQuestDetailsStyleMenuOpen(state, logScope, next.id());
         QuestsAndStuffMod.debugLog("[QnS:UI] {} text style id={}", logScope, oldText.id());
         refresh.run();
