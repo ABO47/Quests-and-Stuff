@@ -7,12 +7,14 @@ import com.abo47.questsandstuff.client.tablet.chapter.ChapterPanelInteractionWid
 import com.abo47.questsandstuff.client.tablet.chapter.ChapterSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuLayerWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,7 +67,7 @@ public final class TabletScreenComposer {
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, CANVAS_H) {
             @Override
-    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, state);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
                 drawCanvasPanelOutlines(graphics, this, state);
@@ -85,10 +87,11 @@ public final class TabletScreenComposer {
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), CHAPTER_H - chapterListY - contentInset - 1);
         chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
-        WidgetGroup modalLayer = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
+        Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
+        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
         CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), CANVAS_H - initialTop - contentInset * 2, state, player);
@@ -96,7 +99,7 @@ public final class TabletScreenComposer {
 
         TabletHeaderControls headers = TabletHeaderControls.create(state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
-        WidgetGroup toolsMenu = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
+        WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
 
         refresh[0] = () -> {
@@ -197,14 +200,16 @@ public final class TabletScreenComposer {
             TabletUiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
             refreshChapterViews[0].run();
             TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
-            TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
+            refreshCanvas[0].run();
         };
+        refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
             TabletUiPerfProfiler.profile("ui.rebuildChapterList", () -> ChapterPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
             TabletUiPerfProfiler.profile("ui.rebuildChapterMenu", () -> ChapterPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
         };
         root.setRefresher(refresh[0]);
         canvasViewport.setRefresher(refresh[0]);
+        canvasViewport.setCanvasRefresher(refreshCanvas[0]);
         setActiveTabletState(state);
         setActiveTabletRefresh(refresh[0]);
         root.setModalLayer(modalLayer);
@@ -224,7 +229,19 @@ public final class TabletScreenComposer {
         WidgetGroup splitter = new ChapterSplitterWidget(state, refresh[0]);
         splitterRef[0] = splitter;
 
-        root.addWidgets(rootMaskTop, rootMaskLeft, rootMaskRight, rootMaskBottom, chapterPanel, splitter, canvasPanel, chapterMenuOverlay, toolsMenu, questDetailsLayer, modalLayer);
+        root.addWidgets(
+                rootMaskTop,
+                rootMaskLeft,
+                rootMaskRight,
+                rootMaskBottom,
+                chapterPanel,
+                splitter,
+                canvasPanel,
+                chapterMenuOverlay,
+                toolsMenu,
+                questDetailsLayer,
+                modalLayer
+        );
         refresh[0].run();
         return root;
     }

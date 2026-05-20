@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -34,6 +35,7 @@ final class CanvasConnectionClickActions {
             return true;
         }
         String sourceQuestId = state.quickConnectSourceQuestId;
+        CanvasConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
         TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
         state.quickConnectSourceQuestId = hit.questId();
         state.selectedQuestIds.clear();
@@ -66,6 +68,7 @@ final class CanvasConnectionClickActions {
                 continue;
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect prerequisite={} quest={}", sourceQuestId, hit.questId());
+            CanvasConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
             TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
             connected++;
         }
@@ -104,6 +107,9 @@ final class CanvasConnectionClickActions {
         }
         for (String sourceQuestId : List.copyOf(state.connectSourceQuestIds)) {
             if (!sourceQuestId.equals(hit.questId())) {
+                if (addPrerequisite) {
+                    CanvasConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
+                }
                 TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, addPrerequisite);
             }
         }

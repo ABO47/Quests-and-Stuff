@@ -7,10 +7,13 @@ public final class ModalStateQueries {
     }
 
     public static boolean anyOpen(TabletUiState state) {
-        return activeType(state) != ModalWindowManager.ModalType.NONE;
+        return state != null && (state.modalWindowClosing || activeType(state) != ModalWindowManager.ModalType.NONE);
     }
 
     public static ModalWindowManager.ModalType activeType(TabletUiState state) {
+        if (state == null) {
+            return ModalWindowManager.ModalType.NONE;
+        }
         if (state.iconPickerOpen) {
             return ModalWindowManager.ModalType.ICON_PICKER;
         }
@@ -31,6 +34,9 @@ public final class ModalStateQueries {
         }
         if (state.entityVariantPickerOpen) {
             return ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER;
+        }
+        if (state.settingsPanelOpen) {
+            return ModalWindowManager.ModalType.SETTINGS_PANEL;
         }
         return ModalWindowManager.ModalType.NONE;
     }

@@ -116,6 +116,7 @@ public final class QuestContentEditService {
 
     private void updateQuest(ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
         service.definitionStore().upsert(updated);
+        service.definitionStore().saveNow(updated.id());
         session.currentQuest = updated.id();
         service.postMutation(player);
         service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", updated);

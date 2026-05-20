@@ -26,6 +26,7 @@ public final class QuestServerReloadListener implements PreparableReloadListener
                     if (QuestsAndStuffMod.SERVER_REF == null) {
                         return;
                     }
+                    QuestServices.definitions(QuestsAndStuffMod.SERVER_REF).saveAll();
                     QuestServices.definitions(QuestsAndStuffMod.SERVER_REF).load();
                     QuestServices.engine(QuestsAndStuffMod.SERVER_REF).rebuildIndex();
                     var players = QuestsAndStuffMod.SERVER_REF.getPlayerList().getPlayers();

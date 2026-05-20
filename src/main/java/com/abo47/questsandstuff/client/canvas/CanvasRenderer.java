@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.canvas.layer.CanvasElementStore;
+import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -42,6 +43,7 @@ public final class CanvasRenderer {
     public static void rebuildQuestCanvas(CanvasViewport canvasViewport, TabletUiState state) {
         canvasViewport.clearAllWidgets();
         state.canvasZoom = clampZoom(state.canvasZoom);
+        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroupName(state));
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.quests().entrySet());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
@@ -86,9 +88,10 @@ public final class CanvasRenderer {
         if (state.canEdit && state.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasViewport, state, contentX, contentY, contentW, contentH);
         }
-        ConnectionRenderer.renderPrerequisiteConnections(canvasViewport, state, visibleCards, byQuestId);
-        CanvasSceneRenderer.renderCanvasElements(canvasViewport, state, canvasViewport.player(), canvasViewport::refresh, visibleCards, viewportW, viewportH);
-        CanvasSelectionRenderer.renderAlignmentGuides(canvasViewport, state);
+        WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
+        ConnectionRenderer.renderPrerequisiteConnections(canvasContent, state, visibleCards, byQuestId);
+        CanvasSceneRenderer.renderCanvasElements(canvasContent, state, canvasViewport.player(), canvasViewport::refresh, visibleCards, viewportW, viewportH);
+        CanvasSelectionRenderer.renderAlignmentGuides(canvasContent, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {
             state.contextMenuOpen = false;
@@ -100,9 +103,10 @@ public final class CanvasRenderer {
             int minY = Math.min(state.boxStartY, state.boxCurrentY);
             int boxW = Math.max(1, Math.abs(state.boxCurrentX - state.boxStartX));
             int boxH = Math.max(1, Math.abs(state.boxCurrentY - state.boxStartY));
-            canvasViewport.addWidget(panel(minX, minY, boxW, boxH, withAlpha(ModColors.INTERACTIVE, 48), ModColors.INTERACTIVE));
+            canvasContent.addWidget(panel(minX, minY, boxW, boxH, withAlpha(ModColors.INTERACTIVE, 48), ModColors.INTERACTIVE));
         }
-        CanvasSelectionRenderer.renderSelectionOverlay(canvasViewport, state, visibleCards);
+        CanvasSelectionRenderer.renderSelectionOverlay(canvasContent, state, visibleCards);
+        canvasViewport.addWidget(CanvasChapterSwitchAnimation.wrap(state, canvasContent));
         renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
         canvasViewport.updateCardCache(visibleCards, byQuestId);
     }

@@ -5,12 +5,16 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
@@ -31,35 +35,39 @@ final class QuestDetailsHeader {
         int toolsX = closeX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         boolean showEditor = state.editorAvailable;
         int editorX = showEditor ? toolsX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE : toolsX;
-        int nextX = (showEditor ? editorX : toolsX) - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
+        int settingsX = (showEditor ? editorX : toolsX) - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
+        int nextX = settingsX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int previousX = nextX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int titleW = Math.max(24, previousX - QuestDetailsWindow.HEADER_GAP - viewportX);
         addQuestTitleField(canvasPanel, state, player, refresh, questId, viewportX, QuestDetailsWindow.TOP_Y, titleW, QuestDetailsWindow.HEADER_H);
         addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", ModColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, -1);
-            state.questDetailsToolsOpen = false;
+            ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });
         addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", ModColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, 1);
-            state.questDetailsToolsOpen = false;
+            ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });
         addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetailsToolsOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.questDetailsToolsOpen, click -> {
-            state.questDetailsToolsOpen = !state.questDetailsToolsOpen;
+            ToolMenuAnimation.toggleQuestDetails(state);
             QuestDetailsTransientState.closeContext(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details tools toggle open={}", state.questDetailsToolsOpen);
             refresh.run();
         });
+        addHeaderIconButton(canvasPanel, settingsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "settings-2", state.settingsPanelOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.settingsPanelOpen, new Component[]{
+                Component.translatable("ui.questsandstuff.settings.button"),
+                Component.translatable("ui.questsandstuff.settings.button_tooltip")
+        }, click -> toggleSettingsPanel(state, refresh));
         if (showEditor) {
             addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetailsEditMode ? ModColors.SUCCESS : ModColors.ERROR, state.questDetailsEditMode, click -> {
                 if (!state.canEdit) {
                     return;
                 }
                 state.questDetailsEditMode = !state.questDetailsEditMode;
-                state.questDetailsToolsOpen = false;
+                ToolMenuAnimation.finishQuestDetails(state);
                 QuestDetailsTransientState.closeContext(state);
                 state.questDetailsTextStyleOpen = false;
                 refresh.run();
@@ -153,6 +161,10 @@ final class QuestDetailsHeader {
     }
 
     private static void addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        addHeaderIconButton(parent, x, y, w, h, icon, color, active, null, callback);
+    }
+
+    private static void addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, Component[] tooltips, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         int fill = active ? withAlpha(color, 38) : ModColors.SURFACE_PANEL_ALT;
         parent.addWidget(panel(x, y, w, h, fill, active ? color : ModColors.BORDER_BASE));
         int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, Math.min(w, h) - 4));
@@ -160,6 +172,24 @@ final class QuestDetailsHeader {
         var hit = flatHitButton(x, y, w, h, callback);
         hit.setHoverTexture(Surfaces.bordered(withAlpha(color, 66), ModColors.BORDER_ACCENT));
         hit.setClickedTexture(Surfaces.fill(withAlpha(color, 90)));
+        if (tooltips != null) {
+            hit.setHoverTooltips(tooltips);
+        }
         parent.addWidget(hit);
+    }
+
+    private static void toggleSettingsPanel(TabletUiState state, Runnable refresh) {
+        if (state.settingsPanelOpen) {
+            ModalCloseActions.closeAll(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details settings toggle open=false");
+            refresh.run();
+            return;
+        }
+        ToolMenuAnimation.closeQuestDetails(state);
+        state.questDetailsTextStyleOpen = false;
+        QuestDetailsTransientState.closeContext(state);
+        ModalOpenActions.openSettingsPanel(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details settings toggle open=true");
+        refresh.run();
     }
 }

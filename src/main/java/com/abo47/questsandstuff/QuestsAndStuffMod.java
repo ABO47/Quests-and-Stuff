@@ -59,7 +59,9 @@ public class QuestsAndStuffMod {
             .build());
 
     public QuestsAndStuffMod(FMLJavaModLoadingContext modLoadingContext) {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, QuestsAndStuffConfig.COMMON_SPEC);
+        ModLoadingContext loadingContext = ModLoadingContext.get();
+        loadingContext.registerConfig(ModConfig.Type.COMMON, QuestsAndStuffConfig.COMMON_SPEC);
+        loadingContext.registerConfig(ModConfig.Type.CLIENT, QuestsAndStuffConfig.CLIENT_SPEC);
 
         IEventBus modBus = modLoadingContext.getModEventBus();
         ITEMS.register(modBus);

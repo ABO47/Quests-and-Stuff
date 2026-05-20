@@ -267,6 +267,12 @@ public final class QuestDefinitionStore {
         saveQueue.markDirty(questId, definition);
     }
 
+    public void saveNow(String questId) {
+        String canonicalId = normalizeQuestId(questId);
+        QuestDefinition definition = quests.get(canonicalId);
+        saveQueue.saveNow(canonicalId, definition);
+    }
+
     public void saveAll() {
         saveQueue.saveAll(snapshot());
         chapters.save();

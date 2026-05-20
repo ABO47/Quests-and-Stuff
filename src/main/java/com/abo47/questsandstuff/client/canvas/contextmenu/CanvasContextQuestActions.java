@@ -51,7 +51,7 @@ final class CanvasContextQuestActions {
             }));
         }
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, () -> {
-            QuestDetailsWindow.open(state, state.contextQuestId);
+            openQuestDetails(canvasViewport, state);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
@@ -105,6 +105,29 @@ final class CanvasContextQuestActions {
                 canvasViewport::refresh
         );
         addQuestLayerActions(actions, canvasViewport, state, selectedGroup);
+    }
+
+    private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {
+        QuestCardLayout card = canvasViewport.cardLookup().get(state.contextQuestId);
+        if (card == null) {
+            QuestDetailsWindow.openAtSource(
+                    state,
+                    state.contextQuestId,
+                    canvasViewport.getPositionX() + state.contextMenuX,
+                    canvasViewport.getPositionY() + state.contextMenuY,
+                    1,
+                    1
+            );
+            return;
+        }
+        QuestDetailsWindow.openAtSource(
+                state,
+                state.contextQuestId,
+                canvasViewport.getPositionX() + card.x(),
+                canvasViewport.getPositionY() + card.y(),
+                card.width(),
+                card.height()
+        );
     }
 
     private static void addQuestPrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

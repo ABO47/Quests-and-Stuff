@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.tools;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
@@ -24,7 +26,7 @@ final class QuestDetailsToolsMenu {
     }
 
     static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, String questId, int buttonX, int buttonY, int headerH, int toolSlot) {
-        if (!state.questDetailsToolsOpen) {
+        if (!ToolMenuAnimation.questDetailsVisible(state)) {
             return;
         }
         final int menuPad = 1;
@@ -36,23 +38,27 @@ final class QuestDetailsToolsMenu {
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = buttonX - 1;
         int menuY = buttonY + headerH + 6;
-        int slotX = menuX + menuPad;
-        int y = menuY + menuPad;
+        int slotX = menuPad;
+        int y = menuPad;
+        WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
+        menu.setActive(ToolMenuAnimation.questDetailsInteractive(state));
 
-        toolsMenu.addWidget(panel(menuX, menuY, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
 
         if (!editTools) {
-            addReadOnlyTools(toolsMenu, state, player, questId, refresh, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            addReadOnlyTools(menu, state, player, questId, refresh, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            addAnimatedMenu(toolsMenu, state, menu);
             return;
         }
 
-        ToolMenuRows rows = ToolMenuRows.at(toolsMenu, slotX, y, toolSlot, toolGap, toolButtonBorder);
+        ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
         addEditRows(rows, state, player, refresh, questId);
 
-        addQuestAutoClaimToggle(toolsMenu, state, player, refresh, questId, slotX, rows.y(), toolSlot, toolButtonBorder);
+        addQuestAutoClaimToggle(menu, state, player, refresh, questId, slotX, rows.y(), toolSlot, toolButtonBorder);
         rows.advancePastCustomRow();
 
-        ToolMenuThemeButton.add(toolsMenu, state, refresh, slotX, rows.y(), toolSlot, toolButtonBorder);
+        ToolMenuThemeButton.add(menu, state, refresh, slotX, rows.y(), toolSlot, toolButtonBorder);
+        addAnimatedMenu(toolsMenu, state, menu);
     }
 
     private static void addEditRows(ToolMenuRows rows, TabletUiState state, Player player, Runnable refresh, String questId) {
@@ -161,5 +167,13 @@ final class QuestDetailsToolsMenu {
         addQuestAutoClaimToggle(menu, state, player, refresh, questId, x, y, toolSlot, border);
         y += toolSlot + toolGap;
         ToolMenuThemeButton.add(menu, state, refresh, x, y, toolSlot, border);
+    }
+
+    private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {
+        if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
+            toolsMenu.addWidget(menu);
+            return;
+        }
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
     }
 }

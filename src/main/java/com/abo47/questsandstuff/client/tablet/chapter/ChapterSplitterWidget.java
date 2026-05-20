@@ -17,16 +17,19 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class ChapterSplitterWidget extends WidgetGroup {
+    private static final int DRAG_THRESHOLD_PX = 3;
+    private static final long HOVER_PULSE_MS = 900L;
+
     private final TabletUiState state;
     private final Runnable refresh;
-    private long lastLeftClickAtMs;
+    private boolean hoverActive;
+    private long hoverPulseStartMs;
 
     public ChapterSplitterWidget(TabletUiState state, Runnable refresh) {
         super(0, CHAPTER_Y, SPLITTER_W, CHAPTER_H);
@@ -36,18 +39,19 @@ public final class ChapterSplitterWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        boolean hovered = !state.chapterSplitterLocked && (state.draggingChapterSplitter || isMouseOverElement(mouseX, mouseY));
-        TabletResizeCursor.update(hovered);
+        boolean hovered = state.draggingChapterSplitter || isMouseOverElement(mouseX, mouseY);
+        boolean resizeHovered = hovered && !state.chapterSplitterLocked;
+        TabletResizeCursor.update(resizeHovered);
+        updateHoverPulse(hovered);
 
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();
         int height = getSizeHeight();
-        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, 96) : ModColors.SURFACE_BASE;
-        int border = hovered ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
+        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha()) : ModColors.SURFACE_BASE;
         graphics.fill(left, top, left + width, top + height, fill);
-        graphics.fill(left, top, left + width, top + 1, border);
-        graphics.fill(left, top + height - 1, left + width, top + height, border);
+        graphics.fill(left, top, left + width, top + 1, ModColors.BORDER_BASE);
+        graphics.fill(left, top + height - 1, left + width, top + height, ModColors.BORDER_BASE);
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }
@@ -57,19 +61,8 @@ public final class ChapterSplitterWidget extends WidgetGroup {
         if (button != 0 || !isMouseOverElement(mouseX, mouseY)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        long now = System.currentTimeMillis();
-        if (now - lastLeftClickAtMs <= 250L) {
-            toggleCollapsed();
-            lastLeftClickAtMs = 0L;
-            return true;
-        }
-        lastLeftClickAtMs = now;
-        if (state.chapterSplitterLocked) {
-            state.draggingChapterSplitter = false;
-            TabletResizeCursor.update(false);
-            return true;
-        }
         state.draggingChapterSplitter = true;
+        state.chapterSplitterDragMoved = false;
         state.chapterSplitterDragStartX = (int) Math.round(mouseX);
         state.chapterSplitterStartWidth = chapterPanelWidth(state);
         return true;
@@ -78,7 +71,6 @@ public final class ChapterSplitterWidget extends WidgetGroup {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (state.chapterSplitterLocked) {
-            state.draggingChapterSplitter = false;
             TabletResizeCursor.update(false);
             return true;
         }
@@ -86,6 +78,10 @@ public final class ChapterSplitterWidget extends WidgetGroup {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
         int dx = (int) Math.round(mouseX) - state.chapterSplitterDragStartX;
+        if (!state.chapterSplitterDragMoved && Math.abs(dx) <= DRAG_THRESHOLD_PX) {
+            return true;
+        }
+        state.chapterSplitterDragMoved = true;
         int nextWidth = state.chapterSplitterStartWidth + dx;
         if (nextWidth <= CHAPTER_W_ICON_SNAP) {
             nextWidth = CHAPTER_W_ICON;
@@ -105,7 +101,13 @@ public final class ChapterSplitterWidget extends WidgetGroup {
         if (!state.draggingChapterSplitter) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
+        boolean dragged = state.chapterSplitterDragMoved;
         state.draggingChapterSplitter = false;
+        state.chapterSplitterDragMoved = false;
+        if (!dragged) {
+            toggleCollapsed();
+            return true;
+        }
         state.chapterPanelWidth = chapterPanelWidth(state);
         state.chapterPanelCollapsed = isChapterPanelCollapsed(state);
         persistUiState(state);
@@ -116,6 +118,7 @@ public final class ChapterSplitterWidget extends WidgetGroup {
 
     private void toggleCollapsed() {
         state.draggingChapterSplitter = false;
+        state.chapterSplitterDragMoved = false;
         if (isChapterPanelCollapsed(state)) {
             int expandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelLastExpandedWidth));
             state.chapterPanelWidth = expandedWidth;
@@ -128,5 +131,19 @@ public final class ChapterSplitterWidget extends WidgetGroup {
         persistUiState(state);
         TabletResizeCursor.update(false);
         refresh.run();
+    }
+
+    private void updateHoverPulse(boolean hovered) {
+        if (hovered && !hoverActive) {
+            hoverPulseStartMs = System.currentTimeMillis();
+        }
+        hoverActive = hovered;
+    }
+
+    private int hoverPulseAlpha() {
+        long elapsed = Math.max(0L, System.currentTimeMillis() - hoverPulseStartMs);
+        double phase = (elapsed % HOVER_PULSE_MS) / (double) HOVER_PULSE_MS;
+        double wave = 0.5D + Math.sin(phase * Math.PI * 2.0D) * 0.5D;
+        return 56 + (int) Math.round(wave * 62.0D);
     }
 }

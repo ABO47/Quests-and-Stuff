@@ -42,7 +42,14 @@ final class CanvasSelectMoveClickActions {
             state.canvasLastClickedQuestId = hit.questId();
             state.canvasLastQuestClickAtMs = now;
             if (doubleClick && button == 0) {
-                QuestDetailsWindow.open(state, hit.questId());
+                QuestDetailsWindow.openAtSource(
+                        state,
+                        hit.questId(),
+                        canvasViewport.getPositionX() + hit.x(),
+                        canvasViewport.getPositionY() + hit.y(),
+                        hit.width(),
+                        hit.height()
+                );
                 refresher.run();
                 return;
             }

@@ -24,6 +24,7 @@ public final class QuestDetailsDescriptionModel {
     private static final String META_PREFIX = "@qas_desc_meta:";
     private static final String TEXT_PREFIX = "@qas_desc_text:";
     private static final String IMAGE_PREFIX = "@qas_desc_image:";
+    private static final int MAX_TEXT_LENGTH = 2048;
 
     final Map<String, CanvasTextLayer> texts = new HashMap<>();
     final Map<String, CanvasImageLayer> images = new HashMap<>();
@@ -120,7 +121,7 @@ public final class QuestDetailsDescriptionModel {
             if (key.startsWith(ORDER_TEXT)) {
                 CanvasTextLayer text = model.texts.get(key.substring(ORDER_TEXT.length()));
                 if (text != null) {
-                    lines.add(TEXT_PREFIX + CanvasLayerNbt.textToTag(text.withText(limit(text.text(), 160))).toString());
+                    lines.add(TEXT_PREFIX + CanvasLayerNbt.textToTag(text.withText(limit(text.text(), MAX_TEXT_LENGTH))).toString());
                 }
             } else if (key.startsWith(ORDER_IMAGE)) {
                 CanvasImageLayer image = model.images.get(key.substring(ORDER_IMAGE.length()));
@@ -172,7 +173,7 @@ public final class QuestDetailsDescriptionModel {
     }
 
     public static String limit(String value, int max) {
-        String safe = value == null ? "" : value.replace('\r', ' ').replace('\n', ' ');
+        String safe = value == null ? "" : value.replace("\r\n", "\n").replace('\r', '\n');
         return safe.length() <= max ? safe : safe.substring(0, max);
     }
 

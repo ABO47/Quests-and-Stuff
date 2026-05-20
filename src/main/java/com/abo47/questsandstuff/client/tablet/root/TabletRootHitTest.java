@@ -73,7 +73,7 @@ public final class TabletRootHitTest {
     }
 
     public static boolean isToolsMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
-        if (!state.toolsMenuOpen || state.toolsMenuW <= 0 || state.toolsMenuH <= 0) {
+        if ((!state.toolsMenuOpen && !state.toolsMenuClosing) || state.toolsMenuW <= 0 || state.toolsMenuH <= 0) {
             return false;
         }
         int localX = (int) Math.round(mouseX - rootX);

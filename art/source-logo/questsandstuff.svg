@@ -1,0 +1,35 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="96" fill="#1D2730"/>
+
+  <ellipse cx="270" cy="424" rx="142" ry="30" fill="#0C1116" opacity="0.58"/>
+
+  <g transform="translate(256 256) rotate(-7) skewX(-4) scale(1 0.92) translate(-256 -256)">
+    <rect x="150" y="112" width="240" height="320" rx="28" fill="#111820" opacity="0.78"/>
+    <rect x="142" y="104" width="240" height="320" rx="28" fill="#2C4050"/>
+
+    <rect x="136" y="96" width="240" height="320" rx="28" fill="#4B6A84"/>
+    <rect x="148" y="108" width="216" height="296" rx="20" fill="#22313D"/>
+
+    <rect
+      x="168"
+      y="128"
+      width="176"
+      height="256"
+      rx="12"
+      stroke="#53A6E8"
+      stroke-width="6"
+    />
+
+    <path
+      d="M220 178 L292 256 L220 334"
+      stroke="#B7CFDF"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <rect x="196" y="154" width="48" height="48" rx="8" fill="#53A6E8"/>
+    <rect x="268" y="232" width="48" height="48" rx="8" fill="#53A6E8"/>
+    <rect x="196" y="310" width="48" height="48" rx="8" fill="#53A6E8"/>
+  </g>
+</svg>

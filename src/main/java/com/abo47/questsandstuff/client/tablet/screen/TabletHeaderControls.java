@@ -3,9 +3,12 @@ package com.abo47.questsandstuff.client.tablet.screen;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -24,6 +27,9 @@ final class TabletHeaderControls {
     private final WidgetGroup toolsBg;
     private final ButtonWidget toolsHit;
     private final HeaderIconWidget toolsIconWidget;
+    private final WidgetGroup settingsBg;
+    private final ButtonWidget settingsHit;
+    private final HeaderIconWidget settingsIconWidget;
     private final WidgetGroup editorBg;
     private final ButtonWidget editorHit;
     private final HeaderIconWidget editorIconWidget;
@@ -36,6 +42,9 @@ final class TabletHeaderControls {
             WidgetGroup toolsBg,
             ButtonWidget toolsHit,
             HeaderIconWidget toolsIconWidget,
+            WidgetGroup settingsBg,
+            ButtonWidget settingsHit,
+            HeaderIconWidget settingsIconWidget,
             WidgetGroup editorBg,
             ButtonWidget editorHit,
             HeaderIconWidget editorIconWidget
@@ -46,6 +55,9 @@ final class TabletHeaderControls {
         this.toolsBg = toolsBg;
         this.toolsHit = toolsHit;
         this.toolsIconWidget = toolsIconWidget;
+        this.settingsBg = settingsBg;
+        this.settingsHit = settingsHit;
+        this.settingsIconWidget = settingsIconWidget;
         this.editorBg = editorBg;
         this.editorHit = editorHit;
         this.editorIconWidget = editorIconWidget;
@@ -86,11 +98,7 @@ final class TabletHeaderControls {
         int toolsW = headerH;
         WidgetGroup toolsBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
         ButtonWidget toolsHit = flatHitButton(0, 0, toolsW, headerH, click -> {
-            state.toolsMenuOpen = !state.toolsMenuOpen;
-            if (!state.toolsMenuOpen) {
-                state.toolsGridSizeMenuOpen = false;
-                state.toolsGridOpacityMenuOpen = false;
-            }
+            ToolMenuAnimation.toggleMain(state);
             refresh.run();
         });
         toolsHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
@@ -98,6 +106,11 @@ final class TabletHeaderControls {
 
         int headerIconSize = Math.max(8, headerH - 4);
         HeaderIconWidget toolsIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "tools.png");
+        WidgetGroup settingsBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
+        ButtonWidget settingsHit = flatHitButton(0, 0, toolsW, headerH, click -> toggleSettingsPanel(state, refresh));
+        settingsHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        settingsHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        HeaderIconWidget settingsIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "settings-2.png");
         WidgetGroup editorBg = panel(0, 0, toolsW, headerH, withAlpha(ModColors.SURFACE_PANEL_ALT, 164), ModColors.BORDER_BASE);
         ButtonWidget editorHit = flatHitButton(0, 0, toolsW, headerH, click -> {
             if (!state.editorAvailable) {
@@ -116,7 +129,7 @@ final class TabletHeaderControls {
         editorHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget editorIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "editor.png");
 
-        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, editorBg, editorHit, editorIconWidget);
+        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, editorBg, editorHit, editorIconWidget);
     }
 
     TextFieldWidget chapterSearchField() {
@@ -141,6 +154,7 @@ final class TabletHeaderControls {
         searchField.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
         toolsBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
+        settingsBg.setBackground(Surfaces.bordered(state.settingsPanelOpen ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, state.settingsPanelOpen ? ModColors.SUCCESS : ModColors.BORDER_BASE));
         editorBg.setBackground(Surfaces.bordered(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }
 
@@ -155,8 +169,9 @@ final class TabletHeaderControls {
         boolean showEditorToggle = state.editorAvailable;
         boolean showToolsButton = true;
         int editorX = showEditorToggle ? toolsX - topGap - toolsW : toolsX;
+        int settingsX = showEditorToggle ? editorX - topGap - toolsW : toolsX - topGap - toolsW;
         int searchX = headerX;
-        int searchEnd = showEditorToggle ? editorX - topGap : toolsX - topGap;
+        int searchEnd = settingsX - topGap;
         int searchW = Math.max(60, searchEnd - searchX);
         canvasHeaderSurface.setSelfPosition(headerX, topY);
         canvasHeaderSurface.setSize(headerW, headerH);
@@ -181,6 +196,23 @@ final class TabletHeaderControls {
         editorIconWidget.setVisible(showEditorToggle);
         editorIconWidget.setActive(false);
 
+        settingsBg.setSelfPosition(settingsX, topY);
+        settingsBg.setSize(toolsW, headerH);
+        settingsHit.setSelfPosition(settingsX, topY);
+        settingsHit.setSize(toolsW, headerH);
+        settingsHit.setHoverTooltips(new Component[]{
+                Component.translatable("ui.questsandstuff.settings.button"),
+                Component.translatable("ui.questsandstuff.settings.button_tooltip")
+        });
+        int settingsIconSize = settingsIconWidget.getSize().width;
+        settingsIconWidget.setSelfPosition(settingsX + (toolsW - settingsIconSize) / 2, topY + (headerH - settingsIconSize) / 2);
+        settingsBg.setVisible(true);
+        settingsBg.setActive(true);
+        settingsHit.setVisible(true);
+        settingsHit.setActive(true);
+        settingsIconWidget.setVisible(true);
+        settingsIconWidget.setActive(false);
+
         toolsBg.setSelfPosition(toolsX, topY);
         toolsBg.setSize(toolsW, headerH);
         toolsHit.setSelfPosition(toolsX, topY);
@@ -198,12 +230,31 @@ final class TabletHeaderControls {
     void addToCanvas(WidgetGroup canvasPanel) {
         canvasPanel.addWidget(canvasHeaderSurface);
         canvasPanel.addWidget(searchField);
+        canvasPanel.addWidget(settingsBg);
+        canvasPanel.addWidget(settingsHit);
+        canvasPanel.addWidget(settingsIconWidget);
         canvasPanel.addWidget(editorBg);
         canvasPanel.addWidget(editorHit);
         canvasPanel.addWidget(editorIconWidget);
         canvasPanel.addWidget(toolsBg);
         canvasPanel.addWidget(toolsHit);
         canvasPanel.addWidget(toolsIconWidget);
+    }
+
+    private static void toggleSettingsPanel(TabletUiState state, Runnable refresh) {
+        if (state.settingsPanelOpen) {
+            ModalCloseActions.closeAll(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] settings panel toggle open=false");
+            refresh.run();
+            return;
+        }
+        ToolMenuAnimation.closeMain(state);
+        state.contextMenuOpen = false;
+        state.chapterMenuOpen = false;
+        state.assetContextOpen = false;
+        ModalOpenActions.openSettingsPanel(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] settings panel toggle open=true");
+        refresh.run();
     }
 
     private static void configureSearchField(TextFieldWidget field) {

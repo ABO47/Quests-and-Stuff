@@ -2,8 +2,11 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
+import com.abo47.questsandstuff.client.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -21,6 +24,7 @@ public final class CanvasViewport extends WidgetGroup {
     private final TabletUiState state;
     private final Player player;
     private Runnable refresher = () -> {};
+    private Runnable canvasRefresher = () -> {};
     private List<QuestCardLayout> cards = List.of();
     private Map<String, QuestCardLayout> byQuestId = Map.of();
     private final CanvasInlineTextEditor textEditor;
@@ -38,6 +42,10 @@ public final class CanvasViewport extends WidgetGroup {
 
     public void setRefresher(Runnable refresher) {
         this.refresher = refresher == null ? () -> {} : refresher;
+    }
+
+    public void setCanvasRefresher(Runnable canvasRefresher) {
+        this.canvasRefresher = canvasRefresher == null ? () -> {} : canvasRefresher;
     }
 
     public void updateCardCache(List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
@@ -61,6 +69,10 @@ public final class CanvasViewport extends WidgetGroup {
         refresher.run();
     }
 
+    public void refreshCanvas() {
+        canvasRefresher.run();
+    }
+
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         drawBackgroundTexture(graphics, mouseX, mouseY);
@@ -75,6 +87,17 @@ public final class CanvasViewport extends WidgetGroup {
     @Override
     public void drawOverlay(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> super.drawOverlay(graphics, mouseX, mouseY, partialTicks));
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        boolean animationFinished = CanvasMinimapController.finishAnimationIfDone(state);
+        animationFinished |= CanvasConnectionAnimation.finishIfDone(state);
+        animationFinished |= CanvasChapterSwitchAnimation.finishIfDone(state);
+        if (animationFinished) {
+            refreshCanvas();
+        }
     }
 
     @Override

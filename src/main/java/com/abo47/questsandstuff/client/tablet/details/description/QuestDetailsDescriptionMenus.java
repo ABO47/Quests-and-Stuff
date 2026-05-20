@@ -93,7 +93,7 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetailsContextY = my;
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }

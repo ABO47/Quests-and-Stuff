@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -275,7 +276,7 @@ public final class CanvasInlineTextEditor {
         state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
         String group = TabletUiFactory.selectedGroupName(state);
         String id = state.canvasTextEditTarget;
-        CanvasRenderer.updateCanvasText(state, group, id, text -> text.replaceTextRange(safeStart, safeEnd, value));
+        CanvasRenderer.updateCanvasText(state, group, id, text -> CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value)));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
     }
 }

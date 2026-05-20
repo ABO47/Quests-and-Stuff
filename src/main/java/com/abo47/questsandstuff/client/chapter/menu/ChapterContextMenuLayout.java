@@ -24,7 +24,6 @@ public record ChapterContextMenuLayout(
 ) {
     public static final int ROW_TOP_PAD = 4;
     public static final int ROW_STEP = TabletUiFactory.CONTEXT_ROW_H;
-    public static final int SEPARATOR_GAP = 4;
 
     public static ChapterContextMenuLayout resolve(TabletUiState state, int availableW, int availableH) {
         String target = resolveTarget(state);
@@ -116,9 +115,8 @@ public record ChapterContextMenuLayout(
     }
 
     private static int height(boolean hasTarget, int rowCount) {
-        int separatorCount = hasTarget ? 2 : 0;
         int bottomPad = 4;
-        int lastRowY = ROW_TOP_PAD + (rowCount - 1) * ROW_STEP + separatorCount * SEPARATOR_GAP;
+        int lastRowY = ROW_TOP_PAD + (rowCount - 1) * ROW_STEP;
         return lastRowY + TabletUiFactory.CONTEXT_ROW_H + bottomPad;
     }
 

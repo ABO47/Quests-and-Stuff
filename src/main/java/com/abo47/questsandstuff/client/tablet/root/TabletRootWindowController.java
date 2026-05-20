@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -21,6 +22,9 @@ public final class TabletRootWindowController {
     public static boolean closeFrontmostWindow(TabletUiState state) {
         if (isAnyModalOpen(state)) {
             ModalCloseActions.closeAll(state);
+            return true;
+        }
+        if (state.questDetailsClosing) {
             return true;
         }
         if (state.questDetailsOpen) {
@@ -71,10 +75,8 @@ public final class TabletRootWindowController {
             state.contextDeleteConfirmKey = "";
             return true;
         }
-        if (state.toolsMenuOpen || state.toolsGridSizeMenuOpen || state.toolsGridOpacityMenuOpen) {
-            state.toolsMenuOpen = false;
-            state.toolsGridSizeMenuOpen = false;
-            state.toolsGridOpacityMenuOpen = false;
+        if (state.toolsMenuOpen || state.toolsMenuClosing || state.toolsGridSizeMenuOpen || state.toolsGridOpacityMenuOpen) {
+            ToolMenuAnimation.closeMain(state);
             return true;
         }
         if (!state.pendingQuestRenameId.isBlank()) {

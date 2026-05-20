@@ -138,7 +138,7 @@ final class CanvasViewportClickController {
         }
 
         if (CanvasMinimapController.handleClick(state, localX, localY)) {
-            refresher.run();
+            canvasViewport.refreshCanvas();
             return true;
         }
 
@@ -173,7 +173,14 @@ final class CanvasViewportClickController {
                 state.selectedQuestIds.add(hit.questId());
                 state.lastJumpQuest = hit.questId();
                 if (button == 0) {
-                    QuestDetailsWindow.open(state, hit.questId());
+                    QuestDetailsWindow.openAtSource(
+                            state,
+                            hit.questId(),
+                            canvasViewport.getPositionX() + hit.x(),
+                            canvasViewport.getPositionY() + hit.y(),
+                            hit.width(),
+                            hit.height()
+                    );
                 }
                 refresher.run();
                 return true;

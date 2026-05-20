@@ -45,7 +45,7 @@ final class CanvasContextMenuRenderer {
         state.contextMenuWidthPx = menuW;
         state.contextMenuHeightPx = menuH;
 
-        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenuScroll, visibleRows, ModColors.BORDER_BASE, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenuScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 state.contextMenuOpen = false;
                 state.contextMenuRows = 0;

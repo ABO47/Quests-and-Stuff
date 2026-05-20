@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -112,6 +113,6 @@ public final class TabletRootWidget extends WidgetGroup {
     }
 
     boolean isFrontWindowOpen() {
-        return state.questDetailsOpen && frontWindowLayer != null;
+        return QuestDetailsWindow.isVisible(state) && frontWindowLayer != null;
     }
 }

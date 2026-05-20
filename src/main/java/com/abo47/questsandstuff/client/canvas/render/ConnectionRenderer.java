@@ -42,7 +42,7 @@ public final class ConnectionRenderer {
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return sourceQuestId + "->" + targetQuestId;
+        return CanvasConnectionAnimation.edgeKey(sourceQuestId, targetQuestId);
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
@@ -147,13 +147,14 @@ public final class ConnectionRenderer {
                     continue;
                 }
 
-                String edgeId = prerequisiteId + "->" + quest.questId();
+                String edgeId = edgeKey(prerequisiteId, quest.questId());
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
                 boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId());
 
                 lines.add(new ConnectionLine(
+                        edgeId,
                         prerequisite.x(),
                         prerequisite.y(),
                         prerequisite.width(),
@@ -182,7 +183,26 @@ public final class ConnectionRenderer {
             for (String sourceQuestId : pendingSources) {
                 QuestCardLayout source = byQuestId.get(sourceQuestId);
                 if (source != null) {
-                    lines.add(new ConnectionLine(source.x(), source.y(), source.width(), source.height(), source.x(), source.y(), source.width(), source.height(), source.centerX(), source.centerY(), source.centerX(), source.centerY(), false, true, ModColors.TEXT_SECONDARY, false, 245));
+                    lines.add(new ConnectionLine(
+                            "",
+                            source.x(),
+                            source.y(),
+                            source.width(),
+                            source.height(),
+                            source.x(),
+                            source.y(),
+                            source.width(),
+                            source.height(),
+                            source.centerX(),
+                            source.centerY(),
+                            source.centerX(),
+                            source.centerY(),
+                            false,
+                            true,
+                            ModColors.TEXT_SECONDARY,
+                            false,
+                            245
+                    ));
                 }
             }
         }
@@ -194,8 +214,9 @@ public final class ConnectionRenderer {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
+                long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY);
+                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now);
                 }
             }
         });
@@ -221,7 +242,7 @@ public final class ConnectionRenderer {
         );
     }
 
-    private static void drawConnection(GuiGraphics graphics, int originX, int originY, TabletUiState state, ConnectionLine line, int mouseX, int mouseY) {
+    private static void drawConnection(GuiGraphics graphics, int originX, int originY, TabletUiState state, ConnectionLine line, int mouseX, int mouseY, long now) {
         int startX = originX + line.startX();
         int startY = originY + line.startY();
         int endX = originX + line.endX();
@@ -238,6 +259,12 @@ public final class ConnectionRenderer {
         }
         int alpha = line.hidden() && isHoveringEndpoint(originX, originY, line, mouseX, mouseY) ? 245 : line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
+        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.edgeId(), now);
+        if (animation.running()) {
+            int animatedAlpha = Math.min(255, Math.round(alpha * (0.58f + 0.42f * animation.progress())));
+            drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress());
+            return;
+        }
         drawTexturedChevrons(graphics, path, line.color(), alpha);
     }
 
@@ -257,6 +284,10 @@ public final class ConnectionRenderer {
     }
 
     private static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha) {
+        drawTexturedChevrons(graphics, path, color, alpha, 1.0f);
+    }
+
+    private static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float progress) {
         int glyphW = 5;
         int glyphH = 9;
         double spacing = Math.max(1.0, glyphW - 1.0);
@@ -267,9 +298,10 @@ public final class ConnectionRenderer {
         if (totalLength < glyphW) {
             return;
         }
+        double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, progress)));
         int phase = 0;
         setChevronTextureFilter(GL11.GL_LINEAR);
-        for (double distance = glyphW / 2.0; distance < totalLength; distance += spacing) {
+        for (double distance = glyphW / 2.0; distance < Math.min(totalLength, visibleLength); distance += spacing) {
             ChevronPlacement placement = chevronAtDistance(path, distance);
             if (placement == null) {
                 continue;
@@ -355,6 +387,7 @@ public final class ConnectionRenderer {
     }
 
     private record ConnectionLine(
+            String edgeId,
             int sourceX,
             int sourceY,
             int sourceW,

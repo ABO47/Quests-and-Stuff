@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -169,6 +170,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (state.canEdit) {
             String menuTarget = hit == null || hit.isBlank() ? "" : hit;
             state.chapterMenuOpen = true;
+            ContextMenuAnimation.start(state, ContextMenuAnimation.CHAPTER_KEY);
             state.chapterMenuOpenedByClick = true;
             state.chapterMenuTarget = menuTarget;
             state.chapterMenuX = CHAPTER_X + localX;

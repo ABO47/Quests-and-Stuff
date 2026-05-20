@@ -45,6 +45,7 @@ public final class TabletUiStatePersistence {
             state.canvasBgOpacityIndex = readInt(root, "canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             state.canvasBgOpacityPercent = readInt(root, "canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             state.canvasZoom = readFloat(root, "canvas_zoom", state.canvasZoom);
+            state.minimapCollapsed = readBoolean(root, "minimap_collapsed", state.minimapCollapsed);
             state.selectedGroup = readString(root, "last_selected_group", state.selectedGroup);
             state.chapterPanelWidth = readInt(root, "chapter_panel_width", state.chapterPanelWidth);
             state.chapterPanelCollapsed = readBoolean(root, "chapter_panel_collapsed", state.chapterPanelCollapsed);
@@ -82,6 +83,7 @@ public final class TabletUiStatePersistence {
             root.addProperty("canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             root.addProperty("canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             root.addProperty("canvas_zoom", state.canvasZoom);
+            root.addProperty("minimap_collapsed", state.minimapCollapsed);
             root.addProperty("last_selected_group", state.selectedGroup == null ? "" : state.selectedGroup);
             root.addProperty("chapter_panel_width", chapterPanelWidth(state));
             root.addProperty("chapter_panel_collapsed", isChapterPanelCollapsed(state));

@@ -25,11 +25,7 @@ public final class CanvasOverlayController {
             int contentW,
             int contentH
     ) {
-        state.minimapX = 0;
-        state.minimapY = 0;
-        state.minimapW = 0;
-        state.minimapH = 0;
-
+        CanvasMinimapOverlay.render(canvasViewport, state, visibleCards, byQuestId);
         CanvasContextMenuController.renderCanvasContextMenu(canvasViewport, state);
         CanvasTextStyleMenu.render(canvasViewport, state, canvasViewport::refresh);
         EntityMotionEditor.renderMainCanvas(canvasViewport, state, canvasViewport.player(), canvasViewport::refresh);

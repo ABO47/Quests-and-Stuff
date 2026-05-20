@@ -1,10 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -15,29 +18,91 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void open(TabletUiState state, String questId) {
+        open(state, questId, false, 0, 0, 0, 0);
+    }
+
+    static void openAtSource(TabletUiState state, String questId, int sourceX, int sourceY, int sourceW, int sourceH) {
+        open(state, questId, true, sourceX, sourceY, sourceW, sourceH);
+    }
+
+    private static void open(TabletUiState state, String questId, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
+        state.questDetailsClosing = false;
         state.questDetailsOpen = true;
         state.questDetailsQuestId = questId.trim();
         state.questDetailsEditMode = state.canEdit;
         resetOpenTransientState(state);
+        startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
         QuestDetailsDescriptionModel.applyToolsToState(state, QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetailsQuestId)));
         CompoundTag quest = ClientQuestCache.quest(state.questDetailsQuestId);
         state.pendingQuestRenameId = "";
         state.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetailsTitleFocused = false;
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details open quest={}", state.questDetailsQuestId);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details open quest={} source={} x={} y={} w={} h={}",
+                state.questDetailsQuestId,
+                state.questDetailsAnimationHasSource,
+                state.questDetailsAnimationSourceX,
+                state.questDetailsAnimationSourceY,
+                state.questDetailsAnimationSourceW,
+                state.questDetailsAnimationSourceH);
     }
 
     static void close(TabletUiState state) {
+        if (state == null || state.questDetailsClosing || !state.questDetailsOpen) {
+            return;
+        }
+        String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
+        applyCloseTransientState(state, closingQuestId);
+        if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            finishClose(state);
+            return;
+        }
+        state.questDetailsOpen = false;
+        state.questDetailsClosing = true;
+        state.questDetailsAnimationStartMs = System.currentTimeMillis();
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details close start quest={} source={} x={} y={} w={} h={}",
+                closingQuestId,
+                state.questDetailsAnimationHasSource,
+                state.questDetailsAnimationSourceX,
+                state.questDetailsAnimationSourceY,
+                state.questDetailsAnimationSourceW,
+                state.questDetailsAnimationSourceH);
+    }
+
+    static boolean finishCloseIfDone(TabletUiState state) {
+        if (state == null || !state.questDetailsClosing) {
+            return false;
+        }
+        if (QuestsAndStuffConfig.questWindowAnimationsEnabled()
+                && SourceOriginRevealWidget.windowRunning(state.questDetailsAnimationStartMs)) {
+            return false;
+        }
+        String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
+        finishClose(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details close finish quest={}", closingQuestId);
+        return true;
+    }
+
+    static void finishClose(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
         String closingQuestId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId;
         state.questDetailsOpen = false;
+        state.questDetailsClosing = false;
         state.questDetailsQuestId = "";
+        applyCloseTransientState(state, closingQuestId);
+        clearOpenAnimation(state);
+    }
+
+    private static void applyCloseTransientState(TabletUiState state, String closingQuestId) {
         state.questDetailsScreenX = state.questDetailsX;
         state.questDetailsScreenY = state.questDetailsY;
         QuestDetailsTransientState.closeFloatingPopups(state);
+        ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsDraggingSplitter = false;
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
@@ -86,6 +151,7 @@ final class QuestDetailsWindowLifecycle {
 
     private static void resetOpenTransientState(TabletUiState state) {
         QuestDetailsTransientState.closeFloatingPopups(state);
+        ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsTextStyleOpen = false;
         state.questDetailsTextLastClickId = "";
         state.questDetailsTextLastClickAtMs = 0L;
@@ -111,6 +177,25 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextColorTextId = "";
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
+    }
+
+    private static void startOpenAnimation(TabletUiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
+        boolean validSource = hasSource && sourceW > 0 && sourceH > 0;
+        state.questDetailsAnimationStartMs = System.currentTimeMillis();
+        state.questDetailsAnimationHasSource = validSource;
+        state.questDetailsAnimationSourceX = validSource ? sourceX : 0;
+        state.questDetailsAnimationSourceY = validSource ? sourceY : 0;
+        state.questDetailsAnimationSourceW = validSource ? sourceW : 0;
+        state.questDetailsAnimationSourceH = validSource ? sourceH : 0;
+    }
+
+    private static void clearOpenAnimation(TabletUiState state) {
+        state.questDetailsAnimationStartMs = 0L;
+        state.questDetailsAnimationHasSource = false;
+        state.questDetailsAnimationSourceX = 0;
+        state.questDetailsAnimationSourceY = 0;
+        state.questDetailsAnimationSourceW = 0;
+        state.questDetailsAnimationSourceH = 0;
     }
 
     private static void clearSelectionState(TabletUiState state) {

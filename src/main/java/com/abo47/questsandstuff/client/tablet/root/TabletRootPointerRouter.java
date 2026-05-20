@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveDr
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class TabletRootPointerRouter {
@@ -12,6 +13,7 @@ final class TabletRootPointerRouter {
     }
 
     static boolean mouseClicked(TabletRootWidget root, TabletUiState state, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, Runnable refresher, MouseClickDelegate selfClick, double mouseX, double mouseY, int button) {
+        TabletModalState.rememberPointerSource(state, localRootX(root, mouseX), localRootY(root, mouseY));
         if (root.isAnyModalOpen()) {
             if (modalLayer != null) {
                 modalLayer.mouseClicked(mouseX, mouseY, button);

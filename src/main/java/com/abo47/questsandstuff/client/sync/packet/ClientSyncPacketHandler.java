@@ -26,6 +26,7 @@ public final class ClientSyncPacketHandler {
 
     public static void handleDescription(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
         ClientQuestCache.acceptDescriptionChunk(sequence, chunkIndex, chunkCount, payload);
+        TabletUiFactory.refreshActiveTablet();
     }
 
     public static void handleDisplayCache(long sequence, CompoundTag payload) {

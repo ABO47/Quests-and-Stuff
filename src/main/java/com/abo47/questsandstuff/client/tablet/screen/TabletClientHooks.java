@@ -100,6 +100,15 @@ public final class TabletClientHooks {
         suppressNextOpenClick = true;
     }
 
+    public static void closeQuestTabletUi(TabletUiState state, boolean suppressOpenClick, String reason) {
+        rememberActiveWindow(state);
+        if (suppressOpenClick) {
+            suppressNextOpenClick();
+        }
+        Minecraft.getInstance().setScreen(null);
+        QuestsAndStuffMod.debugLog("[QnS:UI] close ui reason={}", reason == null || reason.isBlank() ? "unknown" : reason);
+    }
+
     @Mod.EventBusSubscriber(modid = QuestsAndStuffMod.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static final class ForgeEvents {
     private ForgeEvents() {

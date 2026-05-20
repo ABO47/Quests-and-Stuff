@@ -105,6 +105,29 @@ public final class CanvasTextRenderer {
         }
     }
 
+    public static CanvasTextLayer fitTextHeight(CanvasTextLayer text) {
+        if (text == null) {
+            return null;
+        }
+        int preferred = preferredTextHeight(text, text.w());
+        return preferred > text.h() ? text.resizeTo(text.w(), preferred) : text;
+    }
+
+    public static int preferredTextHeight(CanvasTextLayer text, int width) {
+        if (text == null) {
+            return 14;
+        }
+        var font = Minecraft.getInstance().font;
+        float scale = fontScale(text);
+        int layoutW = layoutSize(Math.max(1, width), scale);
+        int pad = 3;
+        int textW = Math.max(1, layoutW - pad * 2);
+        String value = text.text() == null ? "" : text.text();
+        List<LineRun> lines = buildWrappedTextLines(text, value, textW, font);
+        int layoutH = pad * 2 + Math.max(1, lines.size()) * Math.max(1, font.lineHeight);
+        return Math.max(14, Math.round(layoutH * scale));
+    }
+
     public static int textSelectionStart(TabletUiState state) {
         return Math.max(0, Math.min(state.canvasTextEditCursor, state.canvasTextSelectionAnchor));
     }
@@ -254,7 +277,7 @@ public final class CanvasTextRenderer {
         if (!editing && value.isBlank()) {
             value = "Text";
         }
-        List<LineRun> lines = buildWrappedTextLines(value, textW, font);
+        List<LineRun> lines = buildWrappedTextLines(text, value, textW, font);
         if (lines.size() > maxLines) {
             lines = new ArrayList<>(lines.subList(0, maxLines));
         }
@@ -273,7 +296,7 @@ public final class CanvasTextRenderer {
             for (int i = 0; i < line.value().length(); i++) {
                 char c = line.value().charAt(i);
                 int index = line.start() + i;
-                int cw = Math.max(1, font.width(String.valueOf(c)) + (isBoldStyle(text.styleAt(index)) ? 1 : 0));
+                int cw = styledCharWidth(text, index, c, font);
                 glyphs.add(new TextGlyph(index, c, cx, y, cw));
                 cursors.add(new CursorPoint(index + 1, cx + cw, y));
                 cx += cw;
@@ -290,12 +313,12 @@ public final class CanvasTextRenderer {
         int width = 0;
         for (int i = 0; i < line.value().length(); i++) {
             int index = line.start() + i;
-            width += Math.max(1, font.width(String.valueOf(line.value().charAt(i))) + (isBoldStyle(text.styleAt(index)) ? 1 : 0));
+            width += styledCharWidth(text, index, line.value().charAt(i), font);
         }
         return width;
     }
 
-    private static List<LineRun> buildWrappedTextLines(String value, int maxWidth, net.minecraft.client.gui.Font font) {
+    private static List<LineRun> buildWrappedTextLines(CanvasTextLayer text, String value, int maxWidth, net.minecraft.client.gui.Font font) {
         List<LineRun> lines = new ArrayList<>();
         int width = Math.max(1, maxWidth);
         String safeValue = value == null ? "" : value;
@@ -307,15 +330,24 @@ public final class CanvasTextRenderer {
                 lines.add(new LineRun(globalIndex, "", 0));
             } else {
                 int local = 0;
+                int lineStart = 0;
+                int lineWidth = 0;
                 while (local < paragraph.length()) {
-                    String remaining = paragraph.substring(local);
-                    String piece = font.plainSubstrByWidth(remaining, width);
-                    if (piece.isEmpty()) {
-                        piece = remaining.substring(0, 1);
+                    char c = paragraph.charAt(local);
+                    int charWidth = styledCharWidth(text, globalIndex + local, c, font);
+                    if (lineWidth > 0 && lineWidth + charWidth > width) {
+                        String piece = paragraph.substring(lineStart, local);
+                        lines.add(new LineRun(globalIndex + lineStart, piece, lineWidth));
+                        lineStart = local;
+                        lineWidth = 0;
+                        continue;
                     }
-                    int start = globalIndex + local;
-                    lines.add(new LineRun(start, piece, font.width(piece)));
-                    local += piece.length();
+                    lineWidth += charWidth;
+                    local++;
+                }
+                if (lineStart < paragraph.length()) {
+                    String piece = paragraph.substring(lineStart);
+                    lines.add(new LineRun(globalIndex + lineStart, piece, lineWidth));
                 }
             }
             globalIndex += paragraph.length();
@@ -327,6 +359,10 @@ public final class CanvasTextRenderer {
             lines.add(new LineRun(0, "", 0));
         }
         return lines;
+    }
+
+    private static int styledCharWidth(CanvasTextLayer text, int index, char value, net.minecraft.client.gui.Font font) {
+        return Math.max(1, font.width(String.valueOf(value)) + (isBoldStyle(text.styleAt(index)) ? 1 : 0));
     }
 
     private static int cursorAtLocalPoint(CanvasTextLayer text, int w, int h, double localX, double localY) {

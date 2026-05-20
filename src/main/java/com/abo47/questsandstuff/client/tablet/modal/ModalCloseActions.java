@@ -11,6 +11,10 @@ public final class ModalCloseActions {
         TabletModalState.closeAllModals(state);
     }
 
+    public static void closeAllImmediately(TabletUiState state) {
+        TabletModalState.closeAllModalsImmediately(state);
+    }
+
     public static void closeColorPicker(TabletUiState state) {
         TabletModalState.closeAllModals(state);
     }

@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.chapter;
 
 import com.abo47.questsandstuff.client.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.chapter.menu.ChapterContextMenuRows;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -22,7 +23,7 @@ public final class ChapterContextMenu {
         state.chapterMenuY = layout.menuY();
         WidgetGroup menu = TabletUiFactory.panel(layout.menuX(), layout.menuY(), layout.menuW(), layout.menuH(), TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_BASE);
         ChapterContextMenuRows.addRows(menu, layout, state, player, refresh);
-        overlay.addWidget(menu);
+        overlay.addWidget(ContextMenuAnimation.wrap(menu, state, ContextMenuAnimation.CHAPTER_KEY));
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
