@@ -1,19 +1,33 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.ItemStack;
 
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;
+    private final ItemStack stack;
 
     public DisplayIconWidget(int x, int y, int width, int height, String iconId) {
         super(x, y, width, height);
         this.iconId = iconId == null ? "" : iconId;
+        this.stack = ItemStack.EMPTY;
+    }
+
+    public DisplayIconWidget(int x, int y, int width, int height, ItemStack stack) {
+        super(x, y, width, height);
+        this.iconId = "";
+        this.stack = stack == null ? ItemStack.EMPTY : stack.copy();
     }
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        if (!stack.isEmpty()) {
+            new ItemStackTexture(stack).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            return;
+        }
         String entityId = EntityPreviewRenderer.entityId(iconId);
         if (!entityId.isBlank()) {
             int yaw = EntityPreviewRenderer.entityYaw(iconId);

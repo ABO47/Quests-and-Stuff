@@ -15,6 +15,8 @@ import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -26,14 +28,10 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
-    private static final int TILE_W = 24;
-    private static final int TILE_H = 26;
-    private static final int SLOT = 18;
+    private static final int TILE = 18;
 
     private TabletItemInventoryPickerModal() {
     }
@@ -61,9 +59,9 @@ public final class TabletItemInventoryPickerModal {
                 gridY,
                 gridW,
                 gridH,
-                TILE_W,
-                TILE_H,
-                2,
+                TILE,
+                TILE,
+                0,
                 6,
                 6,
                 entries,
@@ -82,21 +80,16 @@ public final class TabletItemInventoryPickerModal {
     }
 
     private static void renderStackTile(WidgetGroup surface, TabletUiState state, Player player, Runnable refresh, ItemStack stack, int x, int y) {
-        surface.addWidget(new ImageWidget(x + 3, y, SLOT, SLOT, SlotWidget.ITEM_SLOT_TEXTURE));
-        surface.addWidget(new ImageWidget(x + 4, y + 1, 16, 16, new ItemStackTexture(stack.copy())));
-        if (stack.hasTag()) {
-            WidgetGroup nbtMark = panel(x + 17, y + 1, 5, 5, withAlpha(ModColors.WARNING, 230), ModColors.WARNING);
-            surface.addWidget(nbtMark);
-        }
-        if (stack.getCount() > 1) {
-            surface.addWidget(label(x + 4, y + 18, Integer.toString(Math.min(99, stack.getCount())), ModColors.TEXT_SECONDARY));
-        }
-        ButtonWidget hit = flatHitButton(x, y, TILE_W, TILE_H, click -> {
+        surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
+        ItemStack preview = stack.copy();
+        preview.setCount(1);
+        surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ItemStackTexture(preview)));
+        ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             QuestDetailsWindow.applyInventoryItemPick(player, state, stack);
             closeAll(state);
             refresh.run();
         });
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         hit.setHoverTooltips(tooltip(stack));
         surface.addWidget(hit);
@@ -121,14 +114,12 @@ public final class TabletItemInventoryPickerModal {
     }
 
     private static Component[] tooltip(ItemStack stack) {
-        List<Component> lines = new ArrayList<>();
+        List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
         String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-        lines.add(stack.getHoverName().copy().withStyle(ChatFormatting.WHITE));
         lines.add(Component.literal(id).withStyle(ChatFormatting.DARK_GRAY));
-        lines.add(Component.literal("x" + stack.getCount()).withStyle(ChatFormatting.GRAY));
         String summary = nbtSummary(stack);
         if (!summary.isBlank()) {
-            lines.add(Component.literal(summary).withStyle(ChatFormatting.GOLD));
+            lines.add(Component.literal("NBT: " + summary).withStyle(ChatFormatting.GOLD));
         }
         return lines.toArray(Component[]::new);
     }

@@ -13,14 +13,16 @@ import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
-import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 
 final class QuestObjectiveInlineFields {
+    private static final String TITLE_ELLIPSIS = "..";
+
     private QuestObjectiveInlineFields() {
     }
 
@@ -29,8 +31,7 @@ final class QuestObjectiveInlineFields {
         int doneW = renaming ? 12 : 0;
         int fieldW = Math.max(18, rightX - x - doneW - (renaming ? 3 : 0));
         if (!renaming) {
-            int maxChars = Math.max(4, fieldW / 7);
-            parent.addWidget(label(x, y + 3, crop(QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), maxChars), ModColors.TEXT_PRIMARY));
+            parent.addWidget(label(x, y + 3, fitText(QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), fieldW), ModColors.TEXT_PRIMARY));
             return;
         }
         InlineRenameField field = new InlineRenameField(
@@ -83,11 +84,13 @@ final class QuestObjectiveInlineFields {
             return;
         }
         if (!state.canEdit || !state.questDetailsEditMode) {
-            parent.addWidget(label(x - (task ? 18 : 0), y + 3, task ? count + "/" + amount : Integer.toString(amount), ModColors.TEXT_PRIMARY));
+            parent.addWidget(label(x - (task ? 24 : 0), y + 3, task ? count + " / " + amount : Integer.toString(amount), ModColors.TEXT_PRIMARY));
             return;
         }
         if (task) {
-            parent.addWidget(label(x - 20, y + 3, count + "/", ModColors.TEXT_MUTED));
+            String progress = count + " /";
+            int progressW = Minecraft.getInstance().font.width(progress);
+            parent.addWidget(label(x - progressW - 6, y + 3, progress, ModColors.TEXT_MUTED));
         }
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
         TextFieldWidget field = StyledTextFields.numberField(
@@ -175,5 +178,14 @@ final class QuestObjectiveInlineFields {
 
     private static String sanitizeObjectiveTitle(String value) {
         return value == null ? "" : value.replace('\n', ' ').replace('\r', ' ');
+    }
+
+    static String fitText(String value, int width) {
+        String text = value == null ? "" : value;
+        int available = Math.max(12, width);
+        if (Minecraft.getInstance().font.width(text) <= available) {
+            return text;
+        }
+        return Minecraft.getInstance().font.plainSubstrByWidth(text, Math.max(1, available - Minecraft.getInstance().font.width(TITLE_ELLIPSIS))) + TITLE_ELLIPSIS;
     }
 }

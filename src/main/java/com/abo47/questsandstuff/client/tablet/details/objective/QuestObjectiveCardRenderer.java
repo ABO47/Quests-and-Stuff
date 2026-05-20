@@ -5,14 +5,29 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 final class QuestObjectiveCardRenderer {
@@ -22,10 +37,10 @@ final class QuestObjectiveCardRenderer {
     static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, List<QuestDetailsObjectiveEntry> entries, int listY, int listBottom) {
         parent.addWidget(cardPanel(state, player, refresh, questId, entries, "requirements", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom));
         String icon = QuestObjectiveDisplayText.taskIcon(entry.json());
-        addObjectiveIcon(parent, icon, x + 8, y + 8);
-        addIconChangeHit(parent, state, refresh, questId, entry.id(), true, x + 8, y + 8);
+        addObjectiveIcon(parent, entry.json(), icon, x + 8, y + 8);
+        addIconHoverHit(parent, state, refresh, questId, entry.id(), true, entry.json(), icon, x + 8, y + 8);
         boolean renaming = QuestObjectiveInlineFields.isRenamingObjective(state, questId, entry.id(), true);
-        QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, entry, true, x + 30, y + 8, renaming ? x + w - 8 : x + w - 38);
+        QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, entry, true, x + 30, y + 8, renaming ? x + w - 8 : taskTitleRightX(entry, x, w));
         if (!renaming) {
             QuestObjectiveInlineFields.renderAmountField(parent, state, player, refresh, questId, entry, x + w - 34, y + 9, 30, true);
         }
@@ -34,30 +49,56 @@ final class QuestObjectiveCardRenderer {
     static void renderRewardCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, List<QuestDetailsObjectiveEntry> entries, int listY, int listBottom) {
         parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom));
         String icon = QuestObjectiveDisplayText.rewardIcon(entry.json());
-        addObjectiveIcon(parent, icon, x + 8, y + 8);
-        addIconChangeHit(parent, state, refresh, questId, entry.id(), false, x + 8, y + 8);
+        addObjectiveIcon(parent, entry.json(), icon, x + 8, y + 8);
+        addIconHoverHit(parent, state, refresh, questId, entry.id(), false, entry.json(), icon, x + 8, y + 8);
         boolean renaming = QuestObjectiveInlineFields.isRenamingObjective(state, questId, entry.id(), false);
         if (!renaming && QuestObjectiveLootTableRewardEditor.isLootTable(entry.json())) {
-            QuestObjectiveLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, x + 30, y + 8, x + w - 38);
+            QuestObjectiveLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, x + 30, y + 8, rewardTitleRightX(entry, x, w));
         } else {
-            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, entry, false, x + 30, y + 8, renaming ? x + w - 8 : x + w - 38);
+            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, entry, false, x + 30, y + 8, renaming ? x + w - 8 : rewardTitleRightX(entry, x, w));
         }
         if (!renaming) {
             QuestObjectiveInlineFields.renderAmountField(parent, state, player, refresh, questId, entry, x + w - 34, y + 9, 30, false);
         }
     }
 
-    private static void addObjectiveIcon(WidgetGroup parent, String icon, int x, int y) {
+    private static void addObjectiveIcon(WidgetGroup parent, JsonObject json, String icon, int x, int y) {
+        ItemStack stack = itemStackIcon(json);
+        if (!stack.isEmpty()) {
+            parent.addWidget(new DisplayIconWidget(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, stack));
+            return;
+        }
         parent.addWidget(new DisplayIconWidget(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, icon));
     }
 
-    private static void addIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String questId, String id, boolean task, int x, int y) {
-        if (!state.canEdit || !state.questDetailsEditMode) {
-            return;
+    private static int taskTitleRightX(QuestDetailsObjectiveEntry entry, int x, int w) {
+        if (!QuestObjectiveDisplayText.usesAmountField(entry.json(), true)) {
+            return x + w - 8;
         }
-        EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, QuestDetailsObjectivesPanel.ICON, () -> {
+        if (QuestObjectiveDisplayText.isManualTask(entry.json())) {
+            return x + w - 58;
+        }
+        int count = Math.max(0, entry.tag().getInt("count"));
+        int countTextW = Minecraft.getInstance().font.width(count + " /");
+        return x + w - 34 - countTextW - 6;
+    }
+
+    private static int rewardTitleRightX(QuestDetailsObjectiveEntry entry, int x, int w) {
+        return QuestObjectiveDisplayText.usesAmountField(entry.json(), false) ? x + w - 40 : x + w - 8;
+    }
+
+    private static void addIconHoverHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String questId, String id, boolean task, JsonObject json, String icon, int x, int y) {
+        var hit = flatHitButton(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, click -> {
+            if (!state.canEdit || !state.questDetailsEditMode) {
+                return;
+            }
+            state.contextDeleteConfirmKey = "";
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, id) : ModalTargets.rewardIcon(questId, id));
+            refresh.run();
         });
+        hit.setHoverTexture(EntityIconControls.iconHoverTexture());
+        hit.setHoverTooltips(iconTooltip(json, icon));
+        parent.addWidget(hit);
     }
 
     private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom) {
@@ -106,5 +147,71 @@ final class QuestObjectiveCardRenderer {
             card.addWidget(fill);
         }
         return card;
+    }
+
+    private static ItemStack itemStackIcon(JsonObject json) {
+        String itemId = QuestObjectiveJsons.firstPresent(json, "item", "fallback_item");
+        if (hasCustomIcon(json, itemId)) {
+            return ItemStack.EMPTY;
+        }
+        String nbt = QuestObjectiveJsons.asString(json, "nbt", "");
+        if (nbt.isBlank()) {
+            return ItemStack.EMPTY;
+        }
+        ResourceLocation id = ResourceLocation.tryParse(itemId);
+        if (id == null) {
+            return ItemStack.EMPTY;
+        }
+        Item item = BuiltInRegistries.ITEM.get(id);
+        if (item == Items.AIR && !"minecraft:air".equals(itemId)) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack stack = new ItemStack(item);
+        try {
+            stack.setTag(TagParser.parseTag(nbt));
+        } catch (Exception ignored) {
+            return ItemStack.EMPTY;
+        }
+        return stack;
+    }
+
+    private static boolean hasCustomIcon(JsonObject json, String itemId) {
+        String icon = QuestObjectiveJsons.asString(json, "icon", "");
+        if (icon.isBlank()) {
+            return false;
+        }
+        return !icon.equals(itemId) && !icon.equals(QuestObjectiveJsons.asString(json, "fallback_item", ""));
+    }
+
+    private static Component[] iconTooltip(JsonObject json, String icon) {
+        ItemStack stack = itemStackIcon(json);
+        if (stack.isEmpty()) {
+            return TabletModalPanel.iconTooltip(icon);
+        }
+        List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        lines.add(Component.literal(itemId).withStyle(ChatFormatting.DARK_GRAY));
+        String summary = nbtSummary(stack);
+        if (!summary.isBlank()) {
+            lines.add(Component.literal("NBT: " + summary).withStyle(ChatFormatting.GOLD));
+        }
+        return lines.toArray(Component[]::new);
+    }
+
+    private static String nbtSummary(ItemStack stack) {
+        if (stack == null || !stack.hasTag()) {
+            return "";
+        }
+        CompoundTag tag = stack.getTag();
+        if (tag == null || tag.isEmpty()) {
+            return "";
+        }
+        List<String> keys = new ArrayList<>(tag.getAllKeys());
+        int limit = Math.min(3, keys.size());
+        String summary = String.join(", ", keys.subList(0, limit));
+        if (keys.size() > limit) {
+            summary += ", ...";
+        }
+        return summary;
     }
 }

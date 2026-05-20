@@ -83,7 +83,7 @@ public final class TabletModalPanel {
         parent.addWidget(hit);
     }
 
-    static Component[] iconTooltip(String entry) {
+    public static Component[] iconTooltip(String entry) {
         if (entry == null || entry.isBlank()) {
             return new Component[]{Component.translatable("ui.questsandstuff.icon.unknown").withStyle(ChatFormatting.RED)};
         }
