@@ -1,6 +1,6 @@
 # Quests and Stuff
 
-Quests and Stuff is a questing mod that I originally created for private use, but I eventually wanted something I could use in a modpack that I plan to publish someday (I’m lying, I’ll probably never finish making it). The existing questing mods either don’t have the features I want or use restrictive licenses that won’t allow me to publish my modpack outside specific platforms.
+Quests and Stuff is a questing mod that I originally created for private use, but I eventually wanted something I could use in a modpack that I plan to publish someday (I’m lying, I’ll probably never finish making it). The existing questing mods either don’t have the features I want or use restrictive licenses that won’t allow me to publish my modpack outside specific platforms, so I made my own.
 
 ### Main Canvas
 
