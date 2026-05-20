@@ -1,6 +1,6 @@
 # Quests and Stuff
 
-Quests and Stuff is a questing mod that I originally created for private use, but I eventually wanted something I could use in a modpack that I plan to publish someday (I’m lying, I’ll probably never finish making it). The existing questing mods either don’t have the features I want or use restrictive licenses that won’t allow me to publish my modpacks outside specific platforms.
+Quests and Stuff is a questing mod that I originally created for private use, but I eventually wanted something I could use in a modpack that I plan to publish someday (I’m lying, I’ll probably never finish making it). The existing questing mods either don’t have the features I want or use restrictive licenses that won’t allow me to publish my modpack outside specific platforms.
 
 ### Main Canvas
 
@@ -42,8 +42,10 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - UI for the remaining requirement types
 - UI for the remaining reward types
 
-## Feature Plans
+## TODO
 
+- custom quest card backgrounds
+- custom quest card shapes
 - Blueprint system for reusable quest layouts
 - Import and export for quest packs
 - Custom quest completion HUD
