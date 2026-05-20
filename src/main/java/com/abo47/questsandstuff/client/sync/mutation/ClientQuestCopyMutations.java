@@ -21,7 +21,7 @@ public final class ClientQuestCopyMutations {
         if (sourceId.isBlank() || targetId.isBlank() || normalizedGroup.isBlank()) {
             return;
         }
-        CompoundTag source = ClientQuestState.QUESTS.get(sourceId);
+        CompoundTag source = ClientQuestState.mutableQuest(sourceId);
         if (source == null) {
             return;
         }
@@ -58,7 +58,7 @@ public final class ClientQuestCopyMutations {
         groups.put(normalizedGroup, groupTag);
         quest.put("groups", groups);
 
-        ClientQuestState.QUESTS.put(targetId, quest);
+        ClientQuestState.putQuest(targetId, quest);
     }
 
     public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
@@ -100,7 +100,7 @@ public final class ClientQuestCopyMutations {
         groups.put(normalizedGroup, groupTag);
         quest.put("groups", groups);
 
-        ClientQuestState.QUESTS.put(targetId, quest);
+        ClientQuestState.putQuest(targetId, quest);
     }
 
     public static void remapCopiedQuestPrerequisitesLocal(Map<String, String> copiedIds, Map<String, CompoundTag> snapshots) {
@@ -113,13 +113,13 @@ public final class ClientQuestCopyMutations {
             if (sourceId.isBlank() || targetId.isBlank()) {
                 continue;
             }
-            CompoundTag target = ClientQuestState.QUESTS.get(targetId);
+            CompoundTag target = ClientQuestState.mutableQuest(targetId);
             if (target == null) {
                 continue;
             }
             CompoundTag source = snapshots == null ? null : snapshots.get(sourceId);
             if (source == null) {
-                source = ClientQuestState.QUESTS.get(sourceId);
+                source = ClientQuestState.mutableQuest(sourceId);
             }
             if (source == null) {
                 continue;

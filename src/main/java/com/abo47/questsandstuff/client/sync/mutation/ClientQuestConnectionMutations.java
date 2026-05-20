@@ -17,8 +17,8 @@ final class ClientQuestConnectionMutations {
         if (normalizedQuest.isBlank() || normalizedPrerequisite.isBlank() || normalizedQuest.equals(normalizedPrerequisite)) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(normalizedQuest);
-        if (quest == null || !ClientQuestState.QUESTS.containsKey(normalizedPrerequisite)) {
+        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
+        if (quest == null || !ClientQuestState.containsQuest(normalizedPrerequisite)) {
             return;
         }
         ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
@@ -81,10 +81,10 @@ final class ClientQuestConnectionMutations {
     }
 
     static void removeQuestReferences(String questId) {
-        for (CompoundTag quest : ClientQuestState.QUESTS.values()) {
+        ClientQuestState.forEachQuest(quest -> {
             ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
             if (prerequisites.isEmpty()) {
-                continue;
+                return;
             }
             ListTag filtered = new ListTag();
             boolean changed = false;
@@ -100,7 +100,7 @@ final class ClientQuestConnectionMutations {
                 quest.put(QuestDefinition.PREREQUISITES_FIELD, filtered);
                 removeConnectionMetadata(quest, questId);
             }
-        }
+        });
     }
 
     static void refreshLocalUnlockState(CompoundTag quest) {
@@ -116,7 +116,7 @@ final class ClientQuestConnectionMutations {
         }
 
         for (int i = 0; i < prerequisites.size(); i++) {
-            CompoundTag prerequisite = ClientQuestState.QUESTS.get(prerequisites.getString(i));
+            CompoundTag prerequisite = ClientQuestState.mutableQuest(prerequisites.getString(i));
             if (prerequisite == null || !prerequisite.getBoolean("completed")) {
                 quest.putBoolean("unlocked", false);
                 return;
@@ -131,7 +131,7 @@ final class ClientQuestConnectionMutations {
         if (normalizedQuest.isBlank() || normalizedPrerequisite.isBlank()) {
             return null;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(normalizedQuest);
+        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
         return quest == null ? null : new ConnectionTarget(quest, normalizedPrerequisite);
     }
 

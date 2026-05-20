@@ -12,14 +12,14 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class ClientChapterState {
-    public static final List<String> GROUP_ORDER = new ArrayList<>();
-    public static final Map<String, String> GROUP_ICONS = new HashMap<>();
-    public static final Map<String, String> GROUP_BACKGROUNDS = new HashMap<>();
-    public static final Map<String, String> GROUP_CANVAS_BACKGROUNDS = new HashMap<>();
-    public static final Map<String, String> GROUP_TEXT_ALIGN = new HashMap<>();
-    public static final Map<String, Integer> GROUP_TEXT_COLOR = new HashMap<>();
-    public static final Map<String, String> GROUP_TEXT_STYLE = new HashMap<>();
-    public static final Map<String, Integer> GROUP_TEXT_SIZE = new HashMap<>();
+    private static final List<String> GROUP_ORDER = new ArrayList<>();
+    private static final Map<String, String> GROUP_ICONS = new HashMap<>();
+    private static final Map<String, String> GROUP_BACKGROUNDS = new HashMap<>();
+    private static final Map<String, String> GROUP_CANVAS_BACKGROUNDS = new HashMap<>();
+    private static final Map<String, String> GROUP_TEXT_ALIGN = new HashMap<>();
+    private static final Map<String, Integer> GROUP_TEXT_COLOR = new HashMap<>();
+    private static final Map<String, String> GROUP_TEXT_STYLE = new HashMap<>();
+    private static final Map<String, Integer> GROUP_TEXT_SIZE = new HashMap<>();
 
     private ClientChapterState() {
     }
@@ -61,32 +61,165 @@ public final class ClientChapterState {
         return List.copyOf(GROUP_ORDER);
     }
 
+    public static boolean containsGroup(String group) {
+        return GROUP_ORDER.contains(normalizeGroup(group));
+    }
+
+    public static boolean addGroup(String group) {
+        String normalized = normalizeGroup(group);
+        if (normalized.isBlank() || GROUP_ORDER.contains(normalized)) {
+            return false;
+        }
+        GROUP_ORDER.add(normalized);
+        GROUP_ICONS.putIfAbsent(normalized, "");
+        GROUP_BACKGROUNDS.putIfAbsent(normalized, "default");
+        GROUP_CANVAS_BACKGROUNDS.putIfAbsent(normalized, "default");
+        GROUP_TEXT_ALIGN.putIfAbsent(normalized, "center");
+        GROUP_TEXT_COLOR.putIfAbsent(normalized, 0xFFFFFFFF);
+        GROUP_TEXT_STYLE.putIfAbsent(normalized, "normal");
+        GROUP_TEXT_SIZE.putIfAbsent(normalized, CanvasTextLayer.DEFAULT_FONT_SIZE);
+        return true;
+    }
+
+    public static boolean renameGroup(String from, String to) {
+        String source = normalizeGroup(from);
+        String target = normalizeGroup(to);
+        if (source.isBlank() || target.isBlank() || source.equals(target)) {
+            return false;
+        }
+        int index = GROUP_ORDER.indexOf(source);
+        if (index < 0 || GROUP_ORDER.contains(target)) {
+            return false;
+        }
+        GROUP_ORDER.set(index, target);
+        moveStringProp(GROUP_ICONS, source, target, "");
+        moveStringProp(GROUP_BACKGROUNDS, source, target, "default");
+        moveStringProp(GROUP_CANVAS_BACKGROUNDS, source, target, "default");
+        moveStringProp(GROUP_TEXT_ALIGN, source, target, "center");
+        moveStringProp(GROUP_TEXT_STYLE, source, target, "normal");
+        Integer color = GROUP_TEXT_COLOR.remove(source);
+        GROUP_TEXT_COLOR.put(target, color == null ? 0xFFFFFFFF : color);
+        Integer textSize = GROUP_TEXT_SIZE.remove(source);
+        GROUP_TEXT_SIZE.put(target, textSize == null ? CanvasTextLayer.DEFAULT_FONT_SIZE : textSize);
+        return true;
+    }
+
+    public static boolean removeGroup(String group) {
+        String normalized = normalizeGroup(group);
+        if (normalized.isBlank() || !GROUP_ORDER.remove(normalized)) {
+            return false;
+        }
+        GROUP_ICONS.remove(normalized);
+        GROUP_BACKGROUNDS.remove(normalized);
+        GROUP_CANVAS_BACKGROUNDS.remove(normalized);
+        GROUP_TEXT_ALIGN.remove(normalized);
+        GROUP_TEXT_COLOR.remove(normalized);
+        GROUP_TEXT_STYLE.remove(normalized);
+        GROUP_TEXT_SIZE.remove(normalized);
+        return true;
+    }
+
+    public static void moveGroup(String group, int offset) {
+        String normalized = normalizeGroup(group);
+        if (normalized.isBlank() || offset == 0) {
+            return;
+        }
+        int index = GROUP_ORDER.indexOf(normalized);
+        if (index < 0) {
+            return;
+        }
+        int next = Math.max(0, Math.min(GROUP_ORDER.size() - 1, index + offset));
+        moveGroupIndex(index, next, normalized);
+    }
+
+    public static void moveGroupToIndex(String group, int targetIndex) {
+        String normalized = normalizeGroup(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        int index = GROUP_ORDER.indexOf(normalized);
+        if (index < 0) {
+            return;
+        }
+        int next = Math.max(0, Math.min(GROUP_ORDER.size() - 1, targetIndex));
+        moveGroupIndex(index, next, normalized);
+    }
+
     public static String groupIcon(String group) {
-        return GROUP_ICONS.getOrDefault(group, "");
+        return GROUP_ICONS.getOrDefault(normalizeGroup(group), "");
     }
 
     public static String groupBackground(String group) {
-        return GROUP_BACKGROUNDS.getOrDefault(group, "default");
+        return GROUP_BACKGROUNDS.getOrDefault(normalizeGroup(group), "default");
     }
 
     public static String groupCanvasBackground(String group) {
-        return GROUP_CANVAS_BACKGROUNDS.getOrDefault(group, "default");
+        return GROUP_CANVAS_BACKGROUNDS.getOrDefault(normalizeGroup(group), "default");
     }
 
     public static String groupTextAlign(String group) {
-        return GROUP_TEXT_ALIGN.getOrDefault(group, "center");
+        return GROUP_TEXT_ALIGN.getOrDefault(normalizeGroup(group), "center");
     }
 
     public static int groupTextColor(String group) {
-        return GROUP_TEXT_COLOR.getOrDefault(group, 0xFFFFFFFF);
+        return GROUP_TEXT_COLOR.getOrDefault(normalizeGroup(group), 0xFFFFFFFF);
     }
 
     public static String groupTextStyle(String group) {
-        return GROUP_TEXT_STYLE.getOrDefault(group, "normal");
+        return GROUP_TEXT_STYLE.getOrDefault(normalizeGroup(group), "normal");
     }
 
     public static int groupTextSize(String group) {
-        return GROUP_TEXT_SIZE.getOrDefault(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
+        return GROUP_TEXT_SIZE.getOrDefault(normalizeGroup(group), CanvasTextLayer.DEFAULT_FONT_SIZE);
+    }
+
+    public static void setGroupIcon(String group, String icon) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_ICONS.put(normalized, icon == null ? "" : icon.trim());
+        }
+    }
+
+    public static void setGroupBackground(String group, String background) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_BACKGROUNDS.put(normalized, background == null || background.isBlank() ? "default" : background.trim());
+        }
+    }
+
+    public static void setGroupCanvasBackground(String group, String background) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_CANVAS_BACKGROUNDS.put(normalized, background == null || background.isBlank() ? "default" : background.trim());
+        }
+    }
+
+    public static void setGroupTextAlign(String group, String align) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_TEXT_ALIGN.put(normalized, normalizeTextAlign(align));
+        }
+    }
+
+    public static void setGroupTextColor(String group, int color) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_TEXT_COLOR.put(normalized, color);
+        }
+    }
+
+    public static void setGroupTextStyle(String group, String style) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_TEXT_STYLE.put(normalized, normalizeTextStyle(style));
+        }
+    }
+
+    public static void setGroupTextSize(String group, int size) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_TEXT_SIZE.put(normalized, clampTextSize(size));
+        }
     }
 
     public static String normalizeGroup(String value) {
@@ -107,5 +240,18 @@ public final class ClientChapterState {
 
     public static int clampTextSize(int value) {
         return Math.max(CanvasTextLayer.MIN_FONT_SIZE, Math.min(18, value));
+    }
+
+    private static void moveGroupIndex(int index, int next, String group) {
+        if (next == index) {
+            return;
+        }
+        GROUP_ORDER.remove(index);
+        GROUP_ORDER.add(next, group);
+    }
+
+    private static void moveStringProp(Map<String, String> props, String source, String target, String fallback) {
+        String value = props.remove(source);
+        props.put(target, value == null ? fallback : value);
     }
 }
