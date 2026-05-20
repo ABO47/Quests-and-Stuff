@@ -37,7 +37,7 @@ final class CanvasViewportInputController {
             double dragX,
             double dragY
     ) {
-        if (!state.pendingQuestRenameId.isBlank()) {
+        if (!state.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
         int localX = (int) Math.round(mouseX - viewport.getPositionX());
@@ -125,7 +125,7 @@ final class CanvasViewportInputController {
             double mouseY,
             int button
     ) {
-        if (!state.pendingQuestRenameId.isBlank()) {
+        if (!state.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseReleased(mouseX, mouseY, button);
         }
         int localX = (int) Math.round(mouseX - viewport.getPositionX());

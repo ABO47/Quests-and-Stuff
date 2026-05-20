@@ -64,13 +64,13 @@ final class CanvasViewportClickController {
             return true;
         }
 
-        if (!state.pendingQuestRenameId.isBlank()) {
+        if (!state.pendingQuestTitleChangeId.isBlank()) {
             boolean handledByEditor = canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
             if (handledByEditor) {
                 return true;
             }
             if (button == 0 || button == 1) {
-                EditorCommandClient.cancelQuestRename(state);
+                EditorCommandClient.cancelQuestTitleChange(state);
                 refresher.run();
                 return true;
             }

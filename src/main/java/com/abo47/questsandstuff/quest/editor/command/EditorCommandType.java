@@ -14,7 +14,7 @@ public enum EditorCommandType {
     QUEST_AUTO_CLAIM("quest_auto_claim"),
     QUEST_HIDDEN_MODE("quest_hidden_mode"),
     QUEST_VISUAL_HIDDEN("quest_visual_hidden"),
-    QUEST_COMPLETION_SOUND("quest_completion_sound"),
+    QUEST_CHANGE_COMPLETION_SOUND("quest_change_completion_sound"),
     DESCRIPTION_PUT("description_put"),
     CONNECTION_COLOR("connection_color"),
     CONNECTION_MODE("connection_mode"),

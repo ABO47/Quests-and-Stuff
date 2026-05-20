@@ -26,7 +26,7 @@ public final class AssetPickerApplyActions {
             EditorCommandClient.setQuestCompletionSound(player, soundTarget, background);
             state.modalQuestCompletionSoundTarget = "";
             state.assetBrowseDir = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest completion sound picked quest={} asset={}", soundTarget, background);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest change completion sound picked quest={} asset={}", soundTarget, background);
             return;
         }
         String detailsTarget = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget.trim();

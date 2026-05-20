@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
@@ -56,10 +57,10 @@ final class CanvasContextQuestActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.rename_title"), "rename", ModColors.INTERACTIVE, () -> {
-            EditorCommandClient.beginQuestRename(state, state.contextQuestId);
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_TITLE), "rename", ModColors.INTERACTIVE, () -> {
+            EditorCommandClient.beginQuestTitleChange(state, state.contextQuestId);
             state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=rename_quest quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
         QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextQuestId);
@@ -80,10 +81,10 @@ final class CanvasContextQuestActions {
         CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
         addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.completion_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
             String sound = questTag.getString("completion_sound");
             ModalOpenActions.openQuestCompletionSoundPicker(state, state.contextQuestId, sound);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_asset_picker quest={} sound={}", state.contextQuestId, state.assetSelected);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_sound quest={} sound={}", state.contextQuestId, state.assetSelected);
             canvasViewport.refresh();
         }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {

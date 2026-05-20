@@ -74,7 +74,7 @@ final class EditorQuestCommandClient {
         ClientQuestCache.setQuestCompletionSoundLocal(normalizedQuestId, normalizedSound);
         CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
         payload.putString("sound", normalizedSound);
-        EditorCommandSender.run(player, "quest_completion_sound", payload,
+        EditorCommandSender.run(player, "quest_change_completion_sound", payload,
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, normalizedQuestId, normalizedSound));
     }
 
@@ -117,7 +117,7 @@ final class EditorQuestCommandClient {
         state.lastJumpQuest = predictedId;
     }
 
-    static void beginQuestRename(TabletUiState state, String questId) {
+    static void beginQuestTitleChange(TabletUiState state, String questId) {
         if (questId == null || questId.isBlank()) {
             return;
         }
@@ -125,28 +125,28 @@ final class EditorQuestCommandClient {
         if (quest == null) {
             return;
         }
-        state.pendingQuestRenameId = questId;
+        state.pendingQuestTitleChangeId = questId;
         state.questTitleDraft = quest.getString("title");
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest rename begin id={} title={}", questId, state.questTitleDraft);
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questTitleDraft);
     }
 
-    static void cancelQuestRename(TabletUiState state) {
-        if (state.pendingQuestRenameId.isBlank()) {
+    static void cancelQuestTitleChange(TabletUiState state) {
+        if (state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest rename cancel id={}", state.pendingQuestRenameId);
-        state.pendingQuestRenameId = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change cancel id={}", state.pendingQuestTitleChangeId);
+        state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = "";
     }
 
-    static boolean commitQuestRename(Player player, TabletUiState state) {
-        String questId = state.pendingQuestRenameId;
+    static boolean commitQuestTitleChange(Player player, TabletUiState state) {
+        String questId = state.pendingQuestTitleChangeId;
         if (questId.isBlank()) {
             return false;
         }
         CompoundTag quest = ClientQuestCache.quests().get(questId);
         if (quest == null) {
-            cancelQuestRename(state);
+            cancelQuestTitleChange(state);
             return false;
         }
         String oldTitle = quest.getString("title");
@@ -154,9 +154,9 @@ final class EditorQuestCommandClient {
         String title = sanitizeQuestTitle(state.questTitleDraft, oldTitle);
         if (!title.equals(oldTitle)) {
             runQuestDisplayAction(player, questId, title, subtitle);
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest rename commit id={} from={} to={}", questId, oldTitle, title);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest title change commit id={} from={} to={}", questId, oldTitle, title);
         }
-        state.pendingQuestRenameId = "";
+        state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = "";
         return true;
     }

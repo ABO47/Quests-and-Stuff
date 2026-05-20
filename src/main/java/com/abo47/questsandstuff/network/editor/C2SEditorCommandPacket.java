@@ -109,7 +109,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestVisualHidden(player, payload.getString("quest"), payload.getBoolean("hidden"));
                     return;
                 }
-                if (command.type() == EditorCommandType.QUEST_COMPLETION_SOUND) {
+                if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND) {
                     editor.setQuestCompletionSound(player, payload.getString("quest"), payload.getString("sound"));
                     return;
                 }

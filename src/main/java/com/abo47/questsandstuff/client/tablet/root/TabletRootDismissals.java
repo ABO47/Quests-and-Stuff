@@ -37,10 +37,10 @@ final class TabletRootDismissals {
             state.pendingChapterRename = "";
             changed = true;
         }
-        if (!state.pendingQuestRenameId.isBlank()
+        if (!state.pendingQuestTitleChangeId.isBlank()
                 && !QuestDetailsWindow.isInside(state, mouseX, mouseY)
                 && !TabletRootHitTest.isInsideCanvasViewport(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)) {
-            EditorCommandClient.cancelQuestRename(state);
+            EditorCommandClient.cancelQuestTitleChange(state);
             changed = true;
         }
         if (clickState.chapterMenuWasOpen() && state.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {

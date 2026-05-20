@@ -79,8 +79,8 @@ public final class TabletRootWindowController {
             ToolMenuAnimation.closeMain(state);
             return true;
         }
-        if (!state.pendingQuestRenameId.isBlank()) {
-            EditorCommandClient.cancelQuestRename(state);
+        if (!state.pendingQuestTitleChangeId.isBlank()) {
+            EditorCommandClient.cancelQuestTitleChange(state);
             return true;
         }
         if (!state.pendingChapterRename.isBlank()) {
@@ -105,7 +105,7 @@ public final class TabletRootWindowController {
                 || state.questDetailsObjectiveRenameOpen
                 || state.canvasTextEditOpen
                 || !state.questDetailsTextEditTarget.isBlank()
-                || !state.pendingQuestRenameId.isBlank()
+                || !state.pendingQuestTitleChangeId.isBlank()
                 || !state.pendingChapterRename.isBlank()
                 || state.createQuestModalOpen
                 || root != null && hasFocusedTextField(root);
@@ -137,10 +137,10 @@ public final class TabletRootWindowController {
             state.questDetailsTextEditDraft = "";
             changed = true;
         }
-        if (state.questDetailsTitleFocused || state.questDetailsQuestId.equals(state.pendingQuestRenameId)) {
+        if (state.questDetailsTitleFocused || state.questDetailsQuestId.equals(state.pendingQuestTitleChangeId)) {
             state.questDetailsTitleFocused = false;
-            if (state.questDetailsQuestId.equals(state.pendingQuestRenameId)) {
-                state.pendingQuestRenameId = "";
+            if (state.questDetailsQuestId.equals(state.pendingQuestTitleChangeId)) {
+                state.pendingQuestTitleChangeId = "";
                 state.questTitleDraft = "";
             }
             changed = true;
