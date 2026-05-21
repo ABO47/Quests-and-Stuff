@@ -19,6 +19,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextH = 0;
         closeTypePicker(state);
         closeItemSourcePicker(state);
+        closeXpPicker(state);
         closeCommandRewardEditor(state);
         closeObjectiveRename(state);
         state.contextDeleteConfirmKey = "";
@@ -39,6 +40,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsTypePickerX = state.questDetailsContextX;
         state.questDetailsTypePickerY = state.questDetailsContextY;
         closeItemSourcePicker(state);
+        closeXpPicker(state);
     }
 
     public static void closeTypePicker(TabletUiState state) {
@@ -60,6 +62,28 @@ public final class QuestDetailsTransientState {
         state.questDetailsItemSourcePickerTarget = "";
     }
 
+    public static void openXpPicker(TabletUiState state, String questId, String id, boolean task) {
+        state.questDetailsXpPickerOpen = true;
+        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        state.questDetailsXpPickerQuestId = questId == null ? "" : questId;
+        state.questDetailsXpPickerEntryId = id == null ? "" : id;
+        state.questDetailsXpPickerTask = task;
+        state.questDetailsXpPickerX = state.questDetailsTypePickerOpen ? state.questDetailsTypePickerX : state.questDetailsContextX;
+        state.questDetailsXpPickerY = state.questDetailsTypePickerOpen ? state.questDetailsTypePickerY : state.questDetailsContextY;
+        closeTypePicker(state);
+        closeItemSourcePicker(state);
+        closeCommandRewardEditor(state);
+        closeObjectiveRename(state);
+        closeContext(state);
+    }
+
+    public static void closeXpPicker(TabletUiState state) {
+        state.questDetailsXpPickerOpen = false;
+        state.questDetailsXpPickerTask = false;
+        state.questDetailsXpPickerQuestId = "";
+        state.questDetailsXpPickerEntryId = "";
+    }
+
     public static void openCommandRewardEditor(TabletUiState state, String questId, String id, String command, String title, String icon) {
         state.questDetailsCommandRewardEditorOpen = true;
         state.questDetailsCommandRewardQuestId = questId == null ? "" : questId;
@@ -69,6 +93,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsCommandRewardIcon = icon == null || icon.isBlank() ? "minecraft:command_block" : icon;
         closeTypePicker(state);
         closeItemSourcePicker(state);
+        closeXpPicker(state);
         closeContext(state);
     }
 
@@ -80,6 +105,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsObjectiveRenameDraft = draft == null ? "" : draft;
         closeTypePicker(state);
         closeItemSourcePicker(state);
+        closeXpPicker(state);
         closeContext(state);
     }
 
@@ -108,6 +134,10 @@ public final class QuestDetailsTransientState {
         }
         if (state.questDetailsItemSourcePickerOpen) {
             closeItemSourcePicker(state);
+            changed = true;
+        }
+        if (state.questDetailsXpPickerOpen) {
+            closeXpPicker(state);
             changed = true;
         }
         if (state.questDetailsCommandRewardEditorOpen) {

@@ -259,6 +259,11 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskEntity(questId, id, type));
             return;
         }
+        if ("xp".equals(typePath)) {
+            QuestDetailsTransientState.openXpPicker(state, questId, id, true);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp requirement picker open quest={} task={} add={}", questId, id, add);
+            return;
+        }
         if ("item_use".equals(typePath) || "item_interact".equals(typePath) || "item_interaction".equals(typePath)) {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskSimpleIcon(questId, id, type));
             return;
@@ -279,6 +284,11 @@ public final class QuestObjectiveEditActions {
         if ("loot_table".equals(typePath) || "loot".equals(typePath)) {
             QuestDetailsWindow.openLootTablePicker(state, ModalTargets.rewardLootTable(questId, id, type));
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details loot table picker open quest={} reward={} type={} add={}", questId, id, typePath, add);
+            return;
+        }
+        if ("xp".equals(typePath)) {
+            QuestDetailsTransientState.openXpPicker(state, questId, id, false);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp reward picker open quest={} reward={} add={}", questId, id, add);
             return;
         }
         EditorCommandClient.putQuestRewardJson(player, questId, QuestObjectiveJsons.defaultReward(id, typePath).toString());

@@ -35,6 +35,10 @@ final class QuestObjectiveDisplayText {
 
     static String taskIcon(JsonObject json) {
         String explicitIcon = QuestObjectiveJsons.asString(json, "icon", "");
+        String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
+        if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
+            return QuestObjectiveJsons.XP_CARD_ICON;
+        }
         if (!explicitIcon.isBlank()) {
             return explicitIcon;
         }
@@ -42,7 +46,6 @@ final class QuestObjectiveDisplayText {
         if (!tag.isBlank()) {
             return "#" + tag;
         }
-        String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         String target = QuestObjectiveJsons.asString(json, "target", "");
         if (isEntityTask(path) && !target.isBlank()) {
             return EntityPreviewRenderer.entityAsset(target);
@@ -52,6 +55,10 @@ final class QuestObjectiveDisplayText {
 
     static String rewardIcon(JsonObject json) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
+        String explicitIcon = QuestObjectiveJsons.asString(json, "icon", "");
+        if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
+            return QuestObjectiveJsons.XP_CARD_ICON;
+        }
         if ("loot_table".equals(path) || "loot".equals(path)) {
             return QuestObjectiveJsons.firstPresent(json, "icon", "minecraft:chest");
         }
@@ -107,6 +114,12 @@ final class QuestObjectiveDisplayText {
     static boolean isManualTask(JsonObject json) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         return "check".equals(path) || "dummy".equals(path);
+    }
+
+    static boolean isManualXpTask(JsonObject json) {
+        String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
+        String collection = QuestObjectiveJsons.asString(json, "collection", "automatic");
+        return "xp".equals(path) && ("manual".equals(collection) || "consume".equals(collection));
     }
 
     static boolean usesAmountField(JsonObject json, boolean task) {

@@ -37,6 +37,7 @@ public final class QuestDetailsObjectiveMenus {
     public static void renderTypePicker(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
         renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
         renderItemSourcePicker(modal, state, refresh, modalW, modalH);
+        QuestObjectiveXpEditor.render(modal, state, player, refresh, modalW, modalH);
         if (!state.questDetailsTypePickerOpen || !state.canEdit || !state.questDetailsEditMode) {
             return;
         }
@@ -159,6 +160,16 @@ public final class QuestDetailsObjectiveMenus {
             state.contextDeleteConfirmKey = "";
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, true);
         }));
+        CompoundTag requirementTag = ClientQuestCache.quest(questId)
+                .getCompound("tasks")
+                .getCompound(contextId);
+        JsonObject requirementJson = parseObjectiveJson(requirementTag.getString("json"));
+        if (QuestObjectiveXpEditor.isXp(requirementJson)) {
+            actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestDetailsTransientState.openXpPicker(state, questId, contextId, true);
+            }));
+        }
         actions.add(ContextActions.moveUp(() -> {
             state.contextDeleteConfirmKey = "";
             EditorCommandClient.moveQuestTask(player, questId, contextId, -1);
@@ -188,6 +199,12 @@ public final class QuestDetailsObjectiveMenus {
             actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
+            }));
+        }
+        if (QuestObjectiveXpEditor.isXp(rewardJson)) {
+            actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestDetailsTransientState.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
