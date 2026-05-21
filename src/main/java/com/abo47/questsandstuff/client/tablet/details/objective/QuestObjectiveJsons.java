@@ -103,9 +103,6 @@ final class QuestObjectiveJsons {
             json.addProperty("command", "say Quest reward");
             json.addProperty("title", "Command");
             json.addProperty("icon", "minecraft:command_block");
-        } else if ("selectable".equals(typePath)) {
-            json.addProperty("amount", 1);
-            json.add("rewards", new JsonObject());
         }
         return json;
     }

@@ -91,7 +91,6 @@ public final class QuestVocabulary {
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
-    public static final String TYPE_SELECTABLE = "ui.questsandstuff.quest.type.selectable";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_XP = "ui.questsandstuff.quest.type.xp";

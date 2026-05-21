@@ -29,12 +29,12 @@ public final class QuestRewards {
         if (!TYPES.isEmpty()) {
             return;
         }
-        register(new QuestRewardType<>(id("item"), ItemQuestRewardDefinition.codec(id("item")), "item_tile"));
-        register(new QuestRewardType<>(id("xp"), XpQuestRewardDefinition.codec(id("xp")), "xp_tile"));
-        register(new QuestRewardType<>(id("loot_table"), LootTableQuestRewardDefinition.codec(id("loot_table")), "loot_table_tile"));
-        register(new QuestRewardType<>(id("loot"), LootTableQuestRewardDefinition.codec(id("loot")), "loot_tile"));
-        register(new QuestRewardType<>(id("command"), CommandQuestRewardDefinition.codec(id("command")), "command_tile"));
-        register(new QuestRewardType<>(id("selectable"), SelectableQuestRewardDefinition.codec(id("selectable")), "selectable_tile"));
+        register(new QuestRewardType<>(id("item"), ItemQuestRewardDefinition.codec(id("item"))));
+        register(new QuestRewardType<>(id("xp"), XpQuestRewardDefinition.codec(id("xp"))));
+        register(new QuestRewardType<>(id("loot_table"), LootTableQuestRewardDefinition.codec(id("loot_table"))));
+        register(new QuestRewardType<>(id("loot"), LootTableQuestRewardDefinition.codec(id("loot"))));
+        register(new QuestRewardType<>(id("command"), CommandQuestRewardDefinition.codec(id("command"))));
+        register(new QuestRewardType<>(id("selectable"), SelectableQuestRewardDefinition.codec(id("selectable"))));
     }
 
     public static void register(QuestRewardType<? extends QuestRewardDefinition> type) {
@@ -55,6 +55,6 @@ public final class QuestRewards {
     }
 
     private static QuestRewardType<UnsupportedQuestRewardDefinition> unsupported(ResourceLocation id) {
-        return new QuestRewardType<>(id, UnsupportedQuestRewardDefinition.codec(id), "unsupported_reward_tile");
+        return new QuestRewardType<>(id, UnsupportedQuestRewardDefinition.codec(id));
     }
 }
