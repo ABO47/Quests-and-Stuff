@@ -30,14 +30,18 @@ final class CanvasContextMenuRenderer {
             state.contextDeleteConfirmKey = "";
             return;
         }
-        state.contextMenuRows = actions.size();
+        int rowCount = ContextMenuPanel.rowActionCount(actions);
+        state.contextMenuRows = rowCount;
 
         int menuW = CanvasContextMenuSupport.contextMenuWidth(actions, canvasViewport.getSize().width);
         int maxVisibleRows = CanvasContextMenuSupport.maxContextVisibleRows(canvasViewport);
-        int visibleRows = Math.max(1, Math.min(actions.size(), maxVisibleRows));
-        state.contextMenuScrollMax = Math.max(0, actions.size() - visibleRows);
+        int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, maxVisibleRows);
+        while (visibleRows > 0 && ContextMenuPanel.heightFor(actions, visibleRows) > canvasViewport.getSize().height - 8) {
+            visibleRows--;
+        }
+        state.contextMenuScrollMax = Math.max(0, rowCount - visibleRows);
         state.contextMenuScroll = ScrollController.clamp(state.contextMenuScroll, state.contextMenuScrollMax);
-        int menuH = ContextMenuPanel.heightForRows(visibleRows);
+        int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int menuX = Math.max(4, Math.min(state.contextMenuX, canvasViewport.getSize().width - menuW - 4));
         int menuY = Math.max(4, Math.min(state.contextMenuY, canvasViewport.getSize().height - menuH - 4));
         state.contextMenuX = menuX;

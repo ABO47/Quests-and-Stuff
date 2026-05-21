@@ -19,8 +19,12 @@ public final class ContextActions {
         return action(label, "rename", ModColors.INTERACTIVE, action);
     }
 
+    public static ContextAction promotedRename(String label, Runnable action) {
+        return promoted(label, "rename", ModColors.INTERACTIVE, action);
+    }
+
     public static ContextAction changeIcon(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, action);
+        return promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction changeVariant(Runnable action) {
@@ -40,12 +44,12 @@ public final class ContextActions {
     }
 
     public static ContextAction copy(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_COPY), "copy", ModColors.INTERACTIVE, action);
+        return promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_COPY), "copy", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction delete(TabletUiState state, String key, String label, Runnable deleteAction) {
         boolean confirming = key != null && key.equals(state.contextDeleteConfirmKey);
-        return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ModColors.ERROR, confirming, () -> {
+        return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ModColors.ERROR, confirming, true, () -> {
             if (confirmDeleteClick(state, key)) {
                 deleteAction.run();
             }
@@ -63,6 +67,10 @@ public final class ContextActions {
 
     public static ContextAction action(String label, String icon, int color, Runnable action) {
         return new ContextAction(label, icon, color, action);
+    }
+
+    public static ContextAction promoted(String label, String icon, int color, Runnable action) {
+        return new ContextAction(label, icon, color, true, true, action);
     }
 
     public static ContextAction stayOpen(String label, String icon, int color, Runnable action) {

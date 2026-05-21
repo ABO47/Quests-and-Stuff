@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -12,7 +12,6 @@ import com.abo47.questsandstuff.network.QuestNetwork;
 import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.runtime.C2SManualXpSubmitPacket;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -47,17 +46,15 @@ final class QuestObjectiveActionWidgets {
         boolean done = count >= amount;
         int iconSize = 12;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
-        parent.addWidget(new ImageWidget(iconX, y + 1, iconSize, iconSize, UiIconAtlas.iconTexture("send-horizontal")));
         if (done) {
+            parent.addWidget(IconOnlyButton.icon(iconX, y + 1, iconSize, "send-horizontal", ModColors.TEXT_MUTED));
             return;
         }
-        var hit = TabletUiFactory.flatHitButton(iconX, y + 1, iconSize, iconSize, click -> {
+        var hit = IconOnlyButton.create(iconX, y + 1, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
             QuestNetwork.sendToServer(new C2SManualXpSubmitPacket(questId, entry.id()));
             refresh.run();
         });
-        hit.setHoverTooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.SUBMIT_XP_REQUIREMENT)});
-        hit.setHoverTexture(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
-        parent.addWidget(hit);
+        parent.addWidget(hit.tooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.SUBMIT_XP_REQUIREMENT)}));
     }
 
     static void renderProgress(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {

@@ -27,7 +27,7 @@ final class CanvasContextGlobalActions {
             }));
         }
         if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.copy"), "copy", ModColors.INTERACTIVE, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.copy"), "copy", ModColors.INTERACTIVE, true, true, () -> {
                 CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=copy target={} selected={}", state.contextMenuTarget, state.selectedQuestIds.size());
                 canvasViewport.refresh();
@@ -45,7 +45,7 @@ final class CanvasContextGlobalActions {
             boolean confirmingDelete = deleteKey.equals(state.contextDeleteConfirmKey);
             String deleteFallback = CanvasContextMenuController.tr("ui.questsandstuff.context.delete");
             String deleteLabel = pendingDeleteLabel(state, deleteKey, deleteFallback);
-            actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, confirmingDelete, () -> {
+            actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, confirmingDelete, true, () -> {
                 if (!confirmDeleteClick(state, deleteKey)) {
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=delete_arm target={}", state.contextMenuTarget);
                     canvasViewport.refresh();

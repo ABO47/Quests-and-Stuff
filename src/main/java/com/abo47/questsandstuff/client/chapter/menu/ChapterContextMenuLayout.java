@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.chapter.menu;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
@@ -42,13 +43,8 @@ public record ChapterContextMenuLayout(
         String target = resolveTarget(state);
         boolean hasTarget = target != null && !target.isBlank();
         List<String> labels = new ArrayList<>();
-        if (hasTarget) {
-            labels.add(tr("ui.questsandstuff.menu.rename"));
-        }
         labels.add(tr("ui.questsandstuff.menu.new_chapter"));
         if (hasTarget) {
-            labels.add(TabletUiFactory.pendingDeleteLabel(state, deleteKey(target), tr("ui.questsandstuff.menu.delete")));
-            labels.add(tr("ui.questsandstuff.menu.change_icon"));
             boolean entityIcon = isEntityChapterIcon(target);
             if (entityIcon && hasEntityVariants(target)) {
                 labels.add("Change variant");
@@ -115,9 +111,9 @@ public record ChapterContextMenuLayout(
     }
 
     private static int height(boolean hasTarget, int rowCount) {
-        int bottomPad = 4;
-        int lastRowY = ROW_TOP_PAD + (rowCount - 1) * ROW_STEP;
-        return lastRowY + TabletUiFactory.CONTEXT_ROW_H + bottomPad;
+        int promotedCount = hasTarget ? 3 : 0;
+        int rowActionCount = Math.max(0, rowCount - promotedCount);
+        return ContextMenuPanel.heightForCounts(promotedCount, rowActionCount, rowActionCount);
     }
 
     private static String tr(String key, Object... args) {

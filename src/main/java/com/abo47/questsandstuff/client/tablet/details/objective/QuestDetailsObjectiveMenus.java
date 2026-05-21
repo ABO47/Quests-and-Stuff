@@ -91,14 +91,14 @@ public final class QuestDetailsObjectiveMenus {
             return;
         }
         int menuW = 140;
-        int menuH = ContextMenuPanel.heightForRows(actions.size());
+        int menuH = ContextMenuPanel.heightFor(actions, ContextMenuPanel.rowActionCount(actions));
         int x = Math.max(4, Math.min(state.questDetailsContextX, state.questDetailsW - menuW - 4));
         int y = Math.max(4, Math.min(state.questDetailsContextY, state.questDetailsH - menuH - 4));
         state.questDetailsContextX = x;
         state.questDetailsContextY = y;
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, ContextMenuPanel.rowActionCount(actions), ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }
@@ -156,7 +156,7 @@ public final class QuestDetailsObjectiveMenus {
             state.contextDeleteConfirmKey = "";
             openTypePicker(state, "requirement_change", contextId);
         }));
-        actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.RENAME_REQUIREMENT), () -> {
+        actions.add(ContextActions.promotedRename(QuestVocabulary.text(QuestVocabulary.RENAME_REQUIREMENT), () -> {
             state.contextDeleteConfirmKey = "";
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, true);
         }));
@@ -217,7 +217,7 @@ public final class QuestDetailsObjectiveMenus {
             state.contextDeleteConfirmKey = "";
             openTypePicker(state, "reward_change", contextId);
         }));
-        actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.RENAME_REWARD), () -> {
+        actions.add(ContextActions.promotedRename(QuestVocabulary.text(QuestVocabulary.RENAME_REWARD), () -> {
             state.contextDeleteConfirmKey = "";
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, false);
         }));

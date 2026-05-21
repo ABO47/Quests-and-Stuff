@@ -1,11 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.chapter.ChapterPanel;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 
 public final class TabletRootHitTest {
     private TabletRootHitTest() {
@@ -39,26 +37,11 @@ public final class TabletRootHitTest {
         if (!state.chapterMenuOpen) {
             return false;
         }
-        String target = state.chapterMenuTarget.isBlank() ? EditorCommandClient.selectedGroupName(state) : state.chapterMenuTarget;
-        boolean hasTarget = target != null && !target.isBlank();
-        int overlayW = TabletUiFactory.ROOT_W;
-        int overlayH = TabletUiFactory.ROOT_H;
-        int menuW = ChapterPanel.chapterMenuWidth(state, overlayW);
-        int rowCount = hasTarget ? 10 : 1;
-        int separatorCount = hasTarget ? 2 : 0;
-        int rowTopPad = 4;
-        int rowH = TabletUiFactory.CONTEXT_ROW_H;
-        int rowStep = TabletUiFactory.CONTEXT_ROW_H;
-        int separatorGap = 4;
-        int bottomPad = 4;
-        int lastRowY = rowTopPad + (rowCount - 1) * rowStep + separatorCount * separatorGap;
-        int menuH = lastRowY + rowH + bottomPad;
-        int menuX = Math.max(4, Math.min(state.chapterMenuX, overlayW - menuW - 4));
-        int menuY = Math.max(4, Math.min(state.chapterMenuY, overlayH - menuH - 4));
-        int absMenuX = rootX + menuX;
-        int absMenuY = rootY + menuY;
-        return mouseX >= absMenuX && mouseX <= absMenuX + menuW
-                && mouseY >= absMenuY && mouseY <= absMenuY + menuH;
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.ROOT_W, TabletUiFactory.ROOT_H);
+        int absMenuX = rootX + layout.menuX();
+        int absMenuY = rootY + layout.menuY();
+        return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()
+                && mouseY >= absMenuY && mouseY <= absMenuY + layout.menuH();
     }
 
     public static boolean isCanvasContextMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {

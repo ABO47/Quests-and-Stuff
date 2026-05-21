@@ -86,14 +86,14 @@ public final class QuestDetailsDescriptionMenus {
             return;
         }
         int menuW = 124;
-        int menuH = ContextMenuPanel.heightForRows(actions.size());
+        int menuH = ContextMenuPanel.heightFor(actions, ContextMenuPanel.rowActionCount(actions));
         int mx = Math.max(4, Math.min(state.questDetailsContextX, state.questDetailsW - menuW - 4));
         int my = Math.max(4, Math.min(state.questDetailsContextY, state.questDetailsH - menuH - 4));
         state.questDetailsContextX = mx;
         state.questDetailsContextY = my;
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, ContextMenuPanel.rowActionCount(actions), ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }
