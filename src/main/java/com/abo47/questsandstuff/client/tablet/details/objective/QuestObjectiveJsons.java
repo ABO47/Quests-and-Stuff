@@ -31,6 +31,17 @@ final class QuestObjectiveJsons {
         }
     }
 
+    static boolean asBoolean(JsonObject json, String key, boolean fallback) {
+        if (json == null || !json.has(key) || json.get(key).isJsonNull()) {
+            return fallback;
+        }
+        try {
+            return json.get(key).getAsBoolean();
+        } catch (Exception ignored) {
+            return fallback;
+        }
+    }
+
     static String firstPresent(JsonObject json, String... keys) {
         for (String key : keys) {
             String value = asString(json, key, "");

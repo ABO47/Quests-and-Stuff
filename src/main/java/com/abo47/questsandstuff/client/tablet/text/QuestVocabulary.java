@@ -53,7 +53,6 @@ public final class QuestVocabulary {
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
-    public static final String ADD_TO_SELECTABLE_REWARD = "ui.questsandstuff.quest.add_to_selectable_reward";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
     public static final String EDIT_XP = "ui.questsandstuff.quest.edit_xp";
     public static final String XP_LEVELS = "ui.questsandstuff.quest.xp.levels";

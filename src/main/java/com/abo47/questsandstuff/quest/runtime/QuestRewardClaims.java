@@ -141,8 +141,9 @@ final class QuestRewardClaims {
     }
 
     private static boolean isSingletonSelectable(QuestRewardDefinition reward) {
-        return reward instanceof SelectableQuestRewardDefinition selectable
-                && selectable.safeAmount() == 1
-                && selectable.rewards().size() == 1;
+        if (reward instanceof SelectableQuestRewardDefinition selectable) {
+            return selectable.safeAmount() == 1 && selectable.rewards().size() == 1;
+        }
+        return reward != null && reward.selectable();
     }
 }

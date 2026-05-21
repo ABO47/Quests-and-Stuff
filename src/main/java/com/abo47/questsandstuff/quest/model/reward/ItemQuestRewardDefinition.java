@@ -17,10 +17,15 @@ public record ItemQuestRewardDefinition(
         int amount,
         String nbt,
         String title,
-        String icon
+        String icon,
+        boolean selectable
 ) implements QuestRewardDefinition {
     public ItemQuestRewardDefinition(String id, ResourceLocation type, ResourceLocation item, int amount, String nbt) {
-        this(id, type, item, amount, nbt, "", "");
+        this(id, type, item, amount, nbt, "", "", false);
+    }
+
+    public ItemQuestRewardDefinition(String id, ResourceLocation type, ResourceLocation item, int amount, String nbt, String title, String icon) {
+        this(id, type, item, amount, nbt, title, icon, false);
     }
 
     public static Codec<ItemQuestRewardDefinition> codec(ResourceLocation type) {
@@ -30,8 +35,9 @@ public record ItemQuestRewardDefinition(
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(ItemQuestRewardDefinition::amount),
                 Codec.STRING.fieldOf("nbt").orElse("").forGetter(ItemQuestRewardDefinition::nbt),
                 Codec.STRING.fieldOf("title").orElse("").forGetter(ItemQuestRewardDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(ItemQuestRewardDefinition::icon)
-        ).apply(instance, (id, item, amount, nbt, title, icon) -> new ItemQuestRewardDefinition(id, type, item, amount, nbt, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(ItemQuestRewardDefinition::icon),
+                Codec.BOOL.fieldOf("selectable").orElse(false).forGetter(ItemQuestRewardDefinition::selectable)
+        ).apply(instance, (id, item, amount, nbt, title, icon, selectable) -> new ItemQuestRewardDefinition(id, type, item, amount, nbt, title, icon, selectable)));
     }
 
     public ItemQuestRewardDefinition {

@@ -18,14 +18,19 @@ public record LootTableQuestRewardDefinition(
         ResourceLocation type,
         ResourceLocation lootTable,
         String title,
-        String icon
+        String icon,
+        boolean selectable
 ) implements QuestRewardDefinition {
     public LootTableQuestRewardDefinition(String id, ResourceLocation type, ResourceLocation lootTable, ResourceLocation fallbackItem, int amount) {
-        this(id, type, lootTable, "", "");
+        this(id, type, lootTable, "", "", false);
+    }
+
+    public LootTableQuestRewardDefinition(String id, ResourceLocation type, ResourceLocation lootTable, String title, String icon) {
+        this(id, type, lootTable, title, icon, false);
     }
 
     public LootTableQuestRewardDefinition(String id, ResourceLocation type, ResourceLocation lootTable, ResourceLocation fallbackItem, int amount, String title, String icon) {
-        this(id, type, lootTable, title, icon);
+        this(id, type, lootTable, title, icon, false);
     }
 
     public static Codec<LootTableQuestRewardDefinition> codec(ResourceLocation type) {
@@ -33,8 +38,9 @@ public record LootTableQuestRewardDefinition(
                 Codec.STRING.fieldOf("id").forGetter(LootTableQuestRewardDefinition::id),
                 ResourceLocation.CODEC.fieldOf("loot_table").forGetter(LootTableQuestRewardDefinition::lootTable),
                 Codec.STRING.fieldOf("title").orElse("").forGetter(LootTableQuestRewardDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(LootTableQuestRewardDefinition::icon)
-        ).apply(instance, (id, lootTable, title, icon) -> new LootTableQuestRewardDefinition(id, type, lootTable, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(LootTableQuestRewardDefinition::icon),
+                Codec.BOOL.fieldOf("selectable").orElse(false).forGetter(LootTableQuestRewardDefinition::selectable)
+        ).apply(instance, (id, lootTable, title, icon, selectable) -> new LootTableQuestRewardDefinition(id, type, lootTable, title, icon, selectable)));
     }
 
     public LootTableQuestRewardDefinition {

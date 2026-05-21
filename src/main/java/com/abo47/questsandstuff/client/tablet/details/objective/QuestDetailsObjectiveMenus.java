@@ -212,12 +212,6 @@ public final class QuestDetailsObjectiveMenus {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));
-            for (QuestObjectiveSelectableRewards.SelectableGroup group : QuestObjectiveSelectableRewards.selectableGroups(questId, contextId)) {
-                actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.ADD_TO_SELECTABLE_REWARD, group.name()), "add", ModColors.INTERACTIVE, () -> {
-                    state.contextDeleteConfirmKey = "";
-                    QuestObjectiveSelectableRewards.addToSelectable(player, questId, contextId, group.id());
-                }));
-            }
         }
         actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CHANGE_REWARD), () -> {
             state.contextDeleteConfirmKey = "";
