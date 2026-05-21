@@ -18,7 +18,9 @@ public final class TabletModalState {
         state.iconPickerOpen = flags.iconOpen();
         state.assetPickerOpen = flags.assetOpen();
         state.biomePickerOpen = flags.biomeOpen();
+        state.dimensionPickerOpen = flags.dimensionOpen();
         state.lootTablePickerOpen = flags.lootTableOpen();
+        state.itemInventoryPickerOpen = flags.itemInventoryOpen();
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
@@ -153,8 +155,12 @@ public final class TabletModalState {
         state.iconEntityMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
+        state.dimensionSearchFocused = false;
+        state.dimensionScrollDragging = false;
         state.lootTableSearchFocused = false;
         state.lootTableScrollDragging = false;
+        state.itemInventorySearchFocused = false;
+        state.itemInventoryScrollDragging = false;
         state.pickerLastClickKey = "";
         state.pickerLastClickAtMs = 0L;
         state.colorPaletteContextOpen = false;
@@ -174,8 +180,12 @@ public final class TabletModalState {
         state.iconSearchFocused = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
+        state.dimensionSearchFocused = false;
+        state.dimensionScrollDragging = false;
         state.lootTableSearchFocused = false;
         state.lootTableScrollDragging = false;
+        state.itemInventorySearchFocused = false;
+        state.itemInventoryScrollDragging = false;
         state.entityVariantSearchFocused = false;
         state.entityVariantScrollDragging = false;
         state.pickerLastClickKey = "";

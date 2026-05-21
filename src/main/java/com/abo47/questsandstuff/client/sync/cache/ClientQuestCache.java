@@ -79,18 +79,15 @@ public final class ClientQuestCache {
     }
 
     public static CompoundTag quest(String questId) {
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
-        return quest == null ? new CompoundTag() : quest.copy();
+        return ClientQuestState.questCopy(questId);
     }
 
     public static CompoundTag questTasks(String questId) {
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
-        return quest == null ? new CompoundTag() : quest.getCompound("tasks").copy();
+        return ClientQuestState.questSectionCopy(questId, "tasks");
     }
 
     public static CompoundTag questRewards(String questId) {
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
-        return quest == null ? new CompoundTag() : quest.getCompound("rewards").copy();
+        return ClientQuestState.questSectionCopy(questId, "rewards");
     }
 
     public static Set<String> pinned() {
@@ -275,6 +272,10 @@ public final class ClientQuestCache {
 
     public static void resetQuestProgressLocal(String questId) {
         ClientQuestLocalMutations.resetQuestProgressLocal(questId);
+    }
+
+    public static void setQuestClaimedLocal(String questId, boolean claimed) {
+        ClientQuestLocalMutations.setQuestClaimedLocal(questId, claimed);
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {

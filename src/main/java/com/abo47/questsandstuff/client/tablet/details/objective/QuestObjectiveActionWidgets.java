@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -37,12 +39,13 @@ final class QuestObjectiveActionWidgets {
         parent.addWidget(hit);
     }
 
-    static void renderProgress(WidgetGroup section, Player player, String questId, CompoundTag quest, int x, int y, int w, int h) {
+    static void renderProgress(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         int barW = w;
         float progressValue = Math.max(0.0f, Math.min(1.0f, quest.getFloat("progress")));
         int progress = Math.max(0, Math.min(barW, Math.round(barW * progressValue)));
-        boolean claimable = quest.getBoolean("completed") && !quest.getBoolean("claimed");
-        boolean claimed = quest.getBoolean("claimed");
+        boolean locallyClaimed = state != null && questId.equals(state.questDetailsClaimedOverrideQuestId);
+        boolean claimed = quest.getBoolean("claimed") || locallyClaimed;
+        boolean claimable = quest.getBoolean("completed") && !claimed;
         section.addWidget(TabletUiFactory.panel(x, y, barW, h, ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         if (progress > 0) {
             WidgetGroup fill = new WidgetGroup(x + 1, y + 1, Math.max(1, progress - 2), Math.max(1, h - 2));
@@ -58,7 +61,19 @@ final class QuestObjectiveActionWidgets {
         progressLabel.setColor(claimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY);
         section.addWidget(progressLabel);
         if (claimable) {
-            var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> QuestDetailsWindow.claimAll(player, questId));
+            var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> {
+                boolean hasSelectableReward = QuestObjectiveSelectableRewards.hasSelectableReward(quest);
+                QuestDetailsWindow.claimAll(player, questId);
+                boolean claimedSelectable = QuestObjectiveSelectableRewards.claimSelected(player, state, questId);
+                boolean selectableSelectionsComplete = QuestObjectiveSelectableRewards.allSelectableRewardsSelected(quest, state);
+                if (!hasSelectableReward || (claimedSelectable && selectableSelectionsComplete)) {
+                    if (state != null) {
+                        state.questDetailsClaimedOverrideQuestId = questId;
+                    }
+                    ClientQuestCache.setQuestClaimedLocal(questId, true);
+                }
+                refresh.run();
+            });
             hit.setHoverTooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.CLAIM_ALL_REWARDS)});
             hit.setHoverTexture(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
             hit.setClickedTexture(Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SUCCESS, 80)));

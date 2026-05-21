@@ -67,6 +67,9 @@ final class QuestObjectiveDisplayText {
         if ("biome".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "target", "")));
         }
+        if ("location".equals(path)) {
+            return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));
+        }
         if ("kill_entity".equals(path)) {
             String entityId = QuestObjectiveJsons.asString(json, "target", "");
             String entityName = EntityPreviewRenderer.entityDisplayName(entityId);
@@ -109,9 +112,9 @@ final class QuestObjectiveDisplayText {
     static boolean usesAmountField(JsonObject json, boolean task) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         if (task) {
-            return !isManualTask(json) && !"biome".equals(path);
+            return !isManualTask(json) && !"biome".equals(path) && !"location".equals(path);
         }
-        return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path);
+        return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }
 
     static String manualTarget(JsonObject json, String fallback) {

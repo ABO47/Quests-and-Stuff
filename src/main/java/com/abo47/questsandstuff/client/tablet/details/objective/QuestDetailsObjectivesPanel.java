@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
 
 public final class QuestDetailsObjectivesPanel {
@@ -19,7 +20,7 @@ public final class QuestDetailsObjectivesPanel {
     }
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
-        QuestObjectiveActionWidgets.renderProgress(modal, player, questId, quest, x, y, w, HEADER_H);
+        QuestObjectiveActionWidgets.renderProgress(modal, state, player, refresh, questId, quest, x, y, w, HEADER_H);
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
@@ -39,8 +40,16 @@ public final class QuestDetailsObjectivesPanel {
         QuestObjectiveEditActions.applyBiomePick(player, state, biome);
     }
 
+    public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        QuestObjectiveEditActions.applyDimensionPick(player, state, dimension);
+    }
+
     public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         QuestObjectiveEditActions.applyLootTablePick(player, state, lootTable);
+    }
+
+    public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+        QuestObjectiveEditActions.applyInventoryItemPick(player, state, stack);
     }
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {

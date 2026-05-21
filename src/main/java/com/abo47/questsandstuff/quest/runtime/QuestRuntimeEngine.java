@@ -101,6 +101,10 @@ public final class QuestRuntimeEngine {
         rewardClaims.claimReward(player, questId, rewardId, selectedRewardIds);
     }
 
+    public void claimSelectedRewardAndAvailableRewards(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+        rewardClaims.claimSelectedRewardAndAvailableRewards(player, questId, rewardId, selectedRewardIds);
+    }
+
     public void claimAvailableRewards(ServerPlayer player, String questId) {
         rewardClaims.claimAvailableRewards(player, questId);
     }

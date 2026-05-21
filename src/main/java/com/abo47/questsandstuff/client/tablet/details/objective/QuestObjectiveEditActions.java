@@ -10,8 +10,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public final class QuestObjectiveEditActions {
     private QuestObjectiveEditActions() {
@@ -79,6 +81,28 @@ public final class QuestObjectiveEditActions {
         state.questDetailsPickTarget = "";
     }
 
+    static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || stack == null || stack.isEmpty()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskInventoryItem()) {
+            return;
+        }
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        JsonObject json = new JsonObject();
+        json.addProperty("id", parsed.entryId());
+        json.addProperty("type", parsed.type());
+        json.addProperty("item", itemId);
+        json.addProperty("amount", 1);
+        json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+        json.addProperty("collection", "automatic");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+    }
+
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || biome == null || biome.isBlank()) {
@@ -92,6 +116,24 @@ public final class QuestObjectiveEditActions {
         EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
+    }
+
+    static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || dimension == null || dimension.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskDimension()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.defaultTask(parsed.entryId(), "location");
+        json.addProperty("type", parsed.type());
+        json.addProperty("dimension", dimension.trim());
+        json.addProperty("icon", "minecraft:compass");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details dimension picked quest={} task={} dimension={}", parsed.questId(), parsed.entryId(), dimension.trim());
     }
 
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
@@ -201,12 +243,16 @@ public final class QuestObjectiveEditActions {
     }
 
     private static void beginTask(Player player, TabletUiState state, String questId, String id, String type, String typePath, boolean add) {
-        if ("item".equals(typePath) || "gather_item".equals(typePath)) {
-            QuestDetailsWindow.openIconPicker(state, ModalTargets.taskItem(questId, id, type));
+        if ("item".equals(typePath)) {
+            QuestDetailsTransientState.openItemSourcePicker(state, ModalTargets.taskItem(questId, id, type));
             return;
         }
         if ("biome".equals(typePath)) {
             QuestDetailsWindow.openBiomePicker(state, ModalTargets.taskBiome(questId, id, type));
+            return;
+        }
+        if ("location".equals(typePath)) {
+            QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
         }
         if ("kill_entity".equals(typePath)) {

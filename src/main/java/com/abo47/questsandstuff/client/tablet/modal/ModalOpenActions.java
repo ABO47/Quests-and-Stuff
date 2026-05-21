@@ -47,6 +47,18 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.BIOME_PICKER);
     }
 
+    public static void openDimensionPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.dimensionSearch = "";
+        state.dimensionScroll = 0;
+        state.dimensionScrollDragging = false;
+        state.dimensionSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.DIMENSION_PICKER);
+    }
+
     public static void openLootTablePicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";
@@ -57,6 +69,18 @@ public final class ModalOpenActions {
         state.lootTableScrollDragging = false;
         state.lootTableSearchFocused = false;
         openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
+    }
+
+    public static void openItemInventoryPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.itemInventorySearch = "";
+        state.itemInventoryScroll = 0;
+        state.itemInventoryScrollDragging = false;
+        state.itemInventorySearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER);
     }
 
     public static void openColorPicker(TabletUiState state, String target, int color) {

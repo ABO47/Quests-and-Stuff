@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 final class QuestDetailsWindowActions {
@@ -32,8 +33,16 @@ final class QuestDetailsWindowActions {
         QuestDetailsObjectivesPanel.applyBiomePick(player, state, biome);
     }
 
+    static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        QuestDetailsObjectivesPanel.applyDimensionPick(player, state, dimension);
+    }
+
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         QuestDetailsObjectivesPanel.applyLootTablePick(player, state, lootTable);
+    }
+
+    static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+        QuestDetailsObjectivesPanel.applyInventoryItemPick(player, state, stack);
     }
 
     static void applyAssetPick(Player player, TabletUiState state, String asset) {
@@ -154,8 +163,16 @@ final class QuestDetailsWindowActions {
         ModalOpenActions.openBiomePicker(state, target);
     }
 
+    static void openDimensionPicker(TabletUiState state, String target) {
+        ModalOpenActions.openDimensionPicker(state, target);
+    }
+
     static void openLootTablePicker(TabletUiState state, String target) {
         ModalOpenActions.openLootTablePicker(state, target);
+    }
+
+    static void openItemInventoryPicker(TabletUiState state, String target) {
+        ModalOpenActions.openItemInventoryPicker(state, target);
     }
 
     static void openAssetPicker(TabletUiState state, String target) {

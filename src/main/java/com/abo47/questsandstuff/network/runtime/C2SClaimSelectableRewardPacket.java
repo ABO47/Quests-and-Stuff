@@ -34,7 +34,8 @@ public record C2SClaimSelectableRewardPacket(String questId, String rewardId, Li
         NetworkEvent.Context context = contextSupplier.get();
         ServerPlayer player = context.getSender();
         if (player != null) {
-            context.enqueueWork(() -> QuestServices.engine(player.server).claimReward(player, questId, rewardId, selectedRewardIds));
+            context.enqueueWork(() -> QuestServices.engine(player.server)
+                    .claimSelectedRewardAndAvailableRewards(player, questId == null ? "" : questId, rewardId, selectedRewardIds));
         }
         context.setPacketHandled(true);
     }

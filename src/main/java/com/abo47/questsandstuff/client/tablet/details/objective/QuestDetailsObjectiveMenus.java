@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -35,6 +36,7 @@ public final class QuestDetailsObjectiveMenus {
 
     public static void renderTypePicker(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
         renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
+        renderItemSourcePicker(modal, state, refresh, modalW, modalH);
         if (!state.questDetailsTypePickerOpen || !state.canEdit || !state.questDetailsEditMode) {
             return;
         }
@@ -104,6 +106,35 @@ public final class QuestDetailsObjectiveMenus {
         modal.addWidget(menu);
     }
 
+    private static void renderItemSourcePicker(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
+        if (!state.questDetailsItemSourcePickerOpen || !state.canEdit || !state.questDetailsEditMode) {
+            return;
+        }
+        String target = state.questDetailsItemSourcePickerTarget == null ? "" : state.questDetailsItemSourcePickerTarget;
+        if (target.isBlank()) {
+            QuestDetailsTransientState.closeItemSourcePicker(state);
+            return;
+        }
+        List<ContextAction> actions = new ArrayList<>();
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.PICK_ITEM), "icon", ModColors.INTERACTIVE, () -> {
+            state.contextDeleteConfirmKey = "";
+            QuestDetailsTransientState.closeItemSourcePicker(state);
+            QuestDetailsWindow.openIconPicker(state, target);
+        }));
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.FROM_INVENTORY), "open", ModColors.INTERACTIVE, () -> {
+            state.contextDeleteConfirmKey = "";
+            QuestDetailsTransientState.closeItemSourcePicker(state);
+            QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
+        }));
+        int rowCount = actions.size();
+        int menuW = 132;
+        int menuH = ContextMenuPanel.heightForRows(rowCount);
+        int mx = Math.max(4, Math.min(state.questDetailsItemSourcePickerX, modalW - menuW - 4));
+        int my = Math.max(4, Math.min(state.questDetailsItemSourcePickerY, modalH - menuH - 4));
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run());
+        modal.addWidget(menu);
+    }
+
     private static void addCreateActions(List<ContextAction> actions, TabletUiState state, String kind) {
         if (kind.startsWith("requirement")) {
             actions.add(ContextActions.add(QuestVocabulary.text(QuestVocabulary.ADD_REQUIREMENT), () -> {
@@ -152,11 +183,24 @@ public final class QuestDetailsObjectiveMenus {
                 .getCompound("rewards")
                 .getCompound(contextId);
         JsonObject rewardJson = parseObjectiveJson(rewardTag.getString("json"));
+        boolean selectable = QuestObjectiveSelectableRewards.isSelectable(rewardJson);
         if ("command".equals(QuestObjectiveJsons.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
             actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
+        }
+        if (!selectable) {
+            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "claim_all", ModColors.INTERACTIVE, () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
+            }));
+            for (QuestObjectiveSelectableRewards.SelectableGroup group : QuestObjectiveSelectableRewards.selectableGroups(questId, contextId)) {
+                actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.ADD_TO_SELECTABLE_REWARD, group.name()), "add", ModColors.INTERACTIVE, () -> {
+                    state.contextDeleteConfirmKey = "";
+                    QuestObjectiveSelectableRewards.addToSelectable(player, questId, contextId, group.id());
+                }));
+            }
         }
         actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CHANGE_REWARD), () -> {
             state.contextDeleteConfirmKey = "";
@@ -278,5 +322,13 @@ public final class QuestDetailsObjectiveMenus {
         } catch (Exception ignored) {
             return new JsonObject();
         }
+    }
+
+    private static String inventoryTarget(String target) {
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskItem()) {
+            return target;
+        }
+        return ModalTargets.taskInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
     }
 }

@@ -87,24 +87,18 @@ public final class ClientQuestLocalMutations {
     }
 
     public static int completedCount() {
-        int count = 0;
-        for (CompoundTag quest : ClientQuestState.QUESTS.values()) {
-            if (quest.getBoolean("completed")) {
-                count++;
-            }
-        }
-        return count;
+        return ClientQuestState.completedCount();
     }
 
     public static int totalCount() {
-        return ClientQuestState.QUESTS.size();
+        return ClientQuestState.totalCount();
     }
 
     public static void setQuestDisplayLocal(String questId, String title, String subtitle) {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -120,7 +114,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -139,7 +133,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -151,7 +145,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -162,7 +156,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank() || hiddenMode == null || hiddenMode.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId.trim());
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -173,7 +167,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId.trim());
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -184,7 +178,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId.trim());
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -197,7 +191,7 @@ public final class ClientQuestLocalMutations {
         if (normalized.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(normalized);
+        CompoundTag quest = ClientQuestState.mutableQuest(normalized);
         if (quest == null) {
             return;
         }
@@ -212,9 +206,19 @@ public final class ClientQuestLocalMutations {
             task.putInt("count", 0);
             tasks.put(taskId, task);
         }
-        for (CompoundTag other : ClientQuestState.QUESTS.values()) {
-            ClientQuestConnectionMutations.refreshLocalUnlockState(other);
+        ClientQuestState.forEachQuest(ClientQuestConnectionMutations::refreshLocalUnlockState);
+    }
+
+    public static void setQuestClaimedLocal(String questId, boolean claimed) {
+        String normalized = questId == null ? "" : questId.trim();
+        if (normalized.isBlank()) {
+            return;
         }
+        CompoundTag quest = ClientQuestState.mutableQuest(normalized);
+        if (quest == null) {
+            return;
+        }
+        quest.putBoolean("claimed", claimed);
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
@@ -296,7 +300,7 @@ public final class ClientQuestLocalMutations {
         groups.put(normalizedGroup, groupTag);
         quest.put("groups", groups);
 
-        ClientQuestState.QUESTS.put(normalizedQuest, quest);
+        ClientQuestState.putQuest(normalizedQuest, quest);
     }
 
     public static void copyQuestLocal(String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
@@ -313,10 +317,10 @@ public final class ClientQuestLocalMutations {
 
     public static void removeQuestLocal(String questId) {
         String normalized = questId == null ? "" : questId.trim();
-        if (normalized.isBlank() || ClientQuestState.QUESTS.remove(normalized) == null) {
+        if (normalized.isBlank() || !ClientQuestState.removeQuest(normalized)) {
             return;
         }
-        ClientQuestState.PINNED.remove(normalized);
+        ClientQuestState.removePinned(normalized);
         ClientQuestConnectionMutations.removeQuestReferences(normalized);
     }
 
@@ -325,7 +329,7 @@ public final class ClientQuestLocalMutations {
         if (normalizedQuest.isBlank() || jsonValue == null || jsonValue.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(normalizedQuest);
+        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
         if (quest == null) {
             return;
         }
@@ -363,7 +367,7 @@ public final class ClientQuestLocalMutations {
         if (questId == null || questId.isBlank() || group == null || group.isBlank()) {
             return null;
         }
-        CompoundTag quest = ClientQuestState.QUESTS.get(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
         if (quest == null) {
             return null;
         }

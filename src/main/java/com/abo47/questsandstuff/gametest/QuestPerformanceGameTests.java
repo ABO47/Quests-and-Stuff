@@ -122,7 +122,7 @@ public final class QuestPerformanceGameTests {
 
     private static QuestDefinition quest(String id, String targetItem) {
         Map<String, QuestTaskDefinition> tasks = Map.of(
-                "collect", QuestGameTestDefinitions.task("collect", "gather_item", 12, targetItem, Map.of("collection_mode", "automatic"))
+                "collect", QuestGameTestDefinitions.task("collect", "item", 12, targetItem, Map.of("collection_mode", "automatic"))
         );
         Map<String, QuestRewardDefinition> rewards = Map.of(
                 "reward", QuestGameTestDefinitions.reward("reward", "xp", 1, "", false, Map.of())

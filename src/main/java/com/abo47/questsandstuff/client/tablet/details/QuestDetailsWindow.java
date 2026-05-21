@@ -69,8 +69,16 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyBiomePick(player, state, biome);
     }
 
+    public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        QuestDetailsWindowActions.applyDimensionPick(player, state, dimension);
+    }
+
     public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         QuestDetailsWindowActions.applyLootTablePick(player, state, lootTable);
+    }
+
+    public static void applyInventoryItemPick(Player player, TabletUiState state, net.minecraft.world.item.ItemStack stack) {
+        QuestDetailsWindowActions.applyInventoryItemPick(player, state, stack);
     }
 
     public static void applyAssetPick(Player player, TabletUiState state, String asset) {
@@ -125,8 +133,16 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.openBiomePicker(state, target);
     }
 
+    public static void openDimensionPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openDimensionPicker(state, target);
+    }
+
     public static void openLootTablePicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openLootTablePicker(state, target);
+    }
+
+    public static void openItemInventoryPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openItemInventoryPicker(state, target);
     }
 
     public static void openAssetPicker(TabletUiState state, String target) {

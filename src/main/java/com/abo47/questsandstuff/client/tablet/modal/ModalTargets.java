@@ -2,7 +2,9 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 public final class ModalTargets {
     public static final String TASK_ITEM = "task_item";
+    public static final String TASK_INVENTORY_ITEM = "task_inventory_item";
     public static final String TASK_BIOME = "task_biome";
+    public static final String TASK_DIMENSION = "task_dimension";
     public static final String TASK_ENTITY = "task_entity";
     public static final String TASK_SIMPLE_ICON = "task_simple_icon";
     public static final String TASK_ICON = "task_icon";
@@ -45,8 +47,16 @@ public final class ModalTargets {
         return of(TASK_ITEM, questId, taskId, type);
     }
 
+    public static String taskInventoryItem(String questId, String taskId, String type) {
+        return of(TASK_INVENTORY_ITEM, questId, taskId, type);
+    }
+
     public static String taskBiome(String questId, String taskId, String type) {
         return of(TASK_BIOME, questId, taskId, type);
+    }
+
+    public static String taskDimension(String questId, String taskId, String type) {
+        return of(TASK_DIMENSION, questId, taskId, type);
     }
 
     public static String taskEntity(String questId, String taskId, String type) {

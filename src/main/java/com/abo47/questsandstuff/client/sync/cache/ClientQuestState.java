@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public final class ClientQuestState {
-    public static final Map<String, CompoundTag> QUESTS = new HashMap<>();
-    public static final Set<String> PINNED = new TreeSet<>();
+    private static final Map<String, CompoundTag> QUESTS = new HashMap<>();
+    private static final Set<String> PINNED = new TreeSet<>();
 
     private ClientQuestState() {
     }
@@ -18,6 +20,62 @@ public final class ClientQuestState {
     public static void reset() {
         QUESTS.clear();
         PINNED.clear();
+    }
+
+    public static void clearQuests() {
+        QUESTS.clear();
+    }
+
+    public static void putQuest(String questId, CompoundTag quest) {
+        String normalized = normalizeQuestId(questId);
+        if (normalized.isBlank() || quest == null) {
+            return;
+        }
+        QUESTS.put(normalized, quest.copy());
+    }
+
+    public static CompoundTag questCopy(String questId) {
+        CompoundTag quest = QUESTS.get(normalizeQuestId(questId));
+        return quest == null ? new CompoundTag() : quest.copy();
+    }
+
+    public static CompoundTag questSectionCopy(String questId, String section) {
+        CompoundTag quest = QUESTS.get(normalizeQuestId(questId));
+        return quest == null || section == null ? new CompoundTag() : quest.getCompound(section).copy();
+    }
+
+    public static CompoundTag mutableQuest(String questId) {
+        return QUESTS.get(normalizeQuestId(questId));
+    }
+
+    public static CompoundTag mutableQuestOrCreate(String questId) {
+        String normalized = normalizeQuestId(questId);
+        if (normalized.isBlank()) {
+            return new CompoundTag();
+        }
+        return QUESTS.computeIfAbsent(normalized, ignored -> new CompoundTag());
+    }
+
+    public static boolean containsQuest(String questId) {
+        return QUESTS.containsKey(normalizeQuestId(questId));
+    }
+
+    public static boolean removeQuest(String questId) {
+        return QUESTS.remove(normalizeQuestId(questId)) != null;
+    }
+
+    public static void forEachQuest(Consumer<CompoundTag> consumer) {
+        if (consumer == null) {
+            return;
+        }
+        QUESTS.values().forEach(consumer);
+    }
+
+    public static void forEachQuestEntry(BiConsumer<String, CompoundTag> consumer) {
+        if (consumer == null) {
+            return;
+        }
+        QUESTS.forEach(consumer);
     }
 
     public static Map<String, CompoundTag> questSnapshot() {
@@ -29,7 +87,24 @@ public final class ClientQuestState {
     }
 
     public static Set<String> pinnedSnapshot() {
-        return Collections.unmodifiableSet(PINNED);
+        return Collections.unmodifiableSet(new TreeSet<>(PINNED));
+    }
+
+    public static void setPinned(Iterable<String> questIds) {
+        PINNED.clear();
+        if (questIds == null) {
+            return;
+        }
+        for (String questId : questIds) {
+            String normalized = normalizeQuestId(questId);
+            if (!normalized.isBlank()) {
+                PINNED.add(normalized);
+            }
+        }
+    }
+
+    public static void removePinned(String questId) {
+        PINNED.remove(normalizeQuestId(questId));
     }
 
     public static int completedCount() {
@@ -44,5 +119,9 @@ public final class ClientQuestState {
 
     public static int totalCount() {
         return QUESTS.size();
+    }
+
+    private static String normalizeQuestId(String questId) {
+        return questId == null ? "" : questId.trim();
     }
 }

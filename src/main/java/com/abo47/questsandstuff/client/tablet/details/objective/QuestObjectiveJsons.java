@@ -78,7 +78,7 @@ final class QuestObjectiveJsons {
             json.addProperty("icon", "manual_check");
             return json;
         }
-        if ("item".equals(typePath) || "gather_item".equals(typePath)) {
+        if ("item".equals(typePath)) {
             JsonObject json = base(id, type);
             json.addProperty("item", "minecraft:stone");
             json.addProperty("amount", 1);

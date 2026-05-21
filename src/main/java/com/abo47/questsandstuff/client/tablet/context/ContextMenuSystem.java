@@ -154,12 +154,35 @@ public final class ContextMenuSystem {
     }
 
     private static String contextIconFileKey(String icon) {
-        return switch (icon == null ? "" : icon.trim().toLowerCase(Locale.ROOT)) {
+        String clean = icon == null ? "" : icon.trim().toLowerCase(Locale.ROOT);
+        if (!isSafeAtlasKey(clean)) {
+            return "style";
+        }
+        return switch (clean) {
             case "up" -> "move_up";
             case "down" -> "move_down";
             case "eye_off" -> "eye-off";
             case "audio_lines" -> "audio-lines";
-            default -> icon == null ? "" : icon.trim().toLowerCase(Locale.ROOT);
+            default -> clean;
         };
+    }
+
+    private static boolean isSafeAtlasKey(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            boolean allowed = (c >= 'a' && c <= 'z')
+                    || (c >= '0' && c <= '9')
+                    || c == '/'
+                    || c == '.'
+                    || c == '_'
+                    || c == '-';
+            if (!allowed) {
+                return false;
+            }
+        }
+        return true;
     }
 }

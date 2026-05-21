@@ -37,13 +37,21 @@ public final class QuestVocabulary {
     public static final String ANY_NAMED_ITEM = "ui.questsandstuff.quest.any_named_item";
     public static final String BIOME_FALLBACK = "ui.questsandstuff.quest.biome_fallback";
     public static final String CHOOSE_BIOME = "ui.questsandstuff.quest.choose_biome";
+    public static final String CHOOSE_DIMENSION = "ui.questsandstuff.quest.choose_dimension";
     public static final String CHOOSE_LOOT_TABLE = "ui.questsandstuff.quest.choose_loot_table";
+    public static final String CHOOSE_INVENTORY_ITEM = "ui.questsandstuff.quest.choose_inventory_item";
+    public static final String FROM_INVENTORY = "ui.questsandstuff.quest.from_inventory";
     public static final String KILL_ENTITY = "ui.questsandstuff.quest.kill_entity";
     public static final String KILL_ENTITY_NAMED = "ui.questsandstuff.quest.kill_entity_named";
     public static final String NO_BIOME_FOLDERS = "ui.questsandstuff.quest.no_biome_folders";
     public static final String NO_BIOMES = "ui.questsandstuff.quest.no_biomes";
+    public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
+    public static final String NO_INVENTORY_ITEMS = "ui.questsandstuff.quest.no_inventory_items";
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
+    public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
+    public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
+    public static final String ADD_TO_SELECTABLE_REWARD = "ui.questsandstuff.quest.add_to_selectable_reward";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
 
     public static final String CONTEXT_ADD_ENTITY = "ui.questsandstuff.context.add_entity";
@@ -83,7 +91,9 @@ public final class QuestVocabulary {
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
+    public static final String TYPE_SELECTABLE = "ui.questsandstuff.quest.type.selectable";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
+    public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_XP = "ui.questsandstuff.quest.type.xp";
 
     private QuestVocabulary() {

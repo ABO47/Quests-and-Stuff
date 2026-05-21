@@ -27,8 +27,16 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_ITEM);
         }
 
+        public boolean isTaskInventoryItem() {
+            return is(ModalTargets.TASK_INVENTORY_ITEM);
+        }
+
         public boolean isTaskBiome() {
             return is(ModalTargets.TASK_BIOME);
+        }
+
+        public boolean isTaskDimension() {
+            return is(ModalTargets.TASK_DIMENSION);
         }
 
         public boolean isTaskEntity() {

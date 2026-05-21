@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.quest.runtime;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.reward.SelectableQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
@@ -25,29 +26,29 @@ final class QuestRewardClaims {
         this.syncService = syncService;
     }
 
-    void claimReward(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+    boolean claimReward(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
         QuestDefinition definition = definitionStore.quests().get(questId);
         if (definition == null) {
-            return;
+            return false;
         }
 
         QuestRewardDefinition reward = definition.rewards().get(rewardId);
         if (reward == null) {
-            return;
+            return false;
         }
 
         PlayerQuestState state = progressData.state(player.getUUID());
         QuestProgressState questState = state.quest(questId);
         if (!questState.completed() && !definition.tasks().isEmpty()) {
-            return;
+            return false;
         }
         if (questState.claimedRewards().contains(rewardId)) {
-            return;
+            return false;
         }
 
         if (reward.selectable()) {
             if (!reward.isSelectableClaimValid(selectedRewardIds)) {
-                return;
+                return false;
             }
             reward.grantSelected(player, selectedRewardIds);
         } else {
@@ -61,6 +62,14 @@ final class QuestRewardClaims {
 
         Set<String> changed = Set.of(questId);
         player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changed));
+        return true;
+    }
+
+    void claimSelectedRewardAndAvailableRewards(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+        claimAvailableRewards(player, questId);
+        if (claimReward(player, questId, rewardId, selectedRewardIds) || isAlreadyClaimedValidSingletonChoice(player, questId, rewardId, selectedRewardIds)) {
+            markUnselectedSingletonSelectableRewardsClaimed(player, questId, rewardId);
+        }
     }
 
     void claimAvailableRewards(ServerPlayer player, String questId) {
@@ -89,5 +98,51 @@ final class QuestRewardClaims {
         for (String id : new ArrayList<>(definitionStore.quests().keySet())) {
             claimAvailableRewards(player, id);
         }
+    }
+
+    private void markUnselectedSingletonSelectableRewardsClaimed(ServerPlayer player, String questId, String selectedRewardId) {
+        QuestDefinition definition = definitionStore.quests().get(questId);
+        if (definition == null || !isSingletonSelectable(definition.rewards().get(selectedRewardId))) {
+            return;
+        }
+        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        boolean changed = false;
+        for (String rewardId : definition.rewards().keySet()) {
+            if (rewardId.equals(selectedRewardId) || questState.claimedRewards().contains(rewardId)) {
+                continue;
+            }
+            QuestRewardDefinition reward = definition.rewards().get(rewardId);
+            if (!isSingletonSelectable(reward)) {
+                continue;
+            }
+            questState.claimedRewards().add(rewardId);
+            changed = true;
+        }
+        if (!changed) {
+            return;
+        }
+        QuestRewardApplier.maybeResetRepeatable(definition, questState, player.server.getTickCount());
+        progressData.setDirty();
+        Set<String> changedQuests = Set.of(questId);
+        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changedQuests));
+    }
+
+    private boolean isAlreadyClaimedValidSingletonChoice(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+        QuestDefinition definition = definitionStore.quests().get(questId);
+        if (definition == null) {
+            return false;
+        }
+        QuestRewardDefinition reward = definition.rewards().get(rewardId);
+        if (!isSingletonSelectable(reward) || !reward.isSelectableClaimValid(selectedRewardIds)) {
+            return false;
+        }
+        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        return questState.claimedRewards().contains(rewardId);
+    }
+
+    private static boolean isSingletonSelectable(QuestRewardDefinition reward) {
+        return reward instanceof SelectableQuestRewardDefinition selectable
+                && selectable.safeAmount() == 1
+                && selectable.rewards().size() == 1;
     }
 }

@@ -32,7 +32,7 @@ final class QuestGameTestDefinitions {
     static QuestTaskDefinition task(String id, String type, int goal, String target, Map<String, String> args) {
         ResourceLocation taskType = id(type);
         String path = taskType.getPath();
-        if ("item".equals(path) || "gather_item".equals(path)) {
+        if ("item".equals(path)) {
             return new GatherItemQuestTaskDefinition(id, taskType, item(target), args.getOrDefault("nbt", ""), goal, CollectionMode.fromWire(args.get("collection_mode")));
         }
         if ("xp".equals(path)) {

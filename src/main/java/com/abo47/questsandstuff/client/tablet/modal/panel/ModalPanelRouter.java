@@ -6,8 +6,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletBiomePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletColorPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletDimensionPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletEntityVariantModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletIconPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
@@ -33,7 +35,9 @@ public final class ModalPanelRouter {
         TextFieldWidget iconSearchField = null;
         TextFieldWidget assetSearchField = null;
         TextFieldWidget biomeSearchField = null;
+        TextFieldWidget dimensionSearchField = null;
         TextFieldWidget lootTableSearchField = null;
+        TextFieldWidget itemInventorySearchField = null;
         TextFieldWidget entityVariantSearchField = null;
         int w = Math.min(432, overlay.getSize().width - 32);
         int h = Math.min(260, overlay.getSize().height - 32);
@@ -57,8 +61,12 @@ public final class ModalPanelRouter {
             assetSearchField = TabletAssetPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.biomePickerOpen) {
             biomeSearchField = TabletBiomePickerModal.rebuild(modal, state, player, refresh, w, h);
+        } else if (state.dimensionPickerOpen) {
+            dimensionSearchField = TabletDimensionPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.lootTablePickerOpen) {
             lootTableSearchField = TabletLootTablePickerModal.rebuild(modal, state, player, refresh, w, h);
+        } else if (state.itemInventoryPickerOpen) {
+            itemInventorySearchField = TabletItemInventoryPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.colorPickerOpen) {
             TabletColorPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.themePickerOpen) {
@@ -80,7 +88,7 @@ public final class ModalPanelRouter {
             overlay.addWidget(modal);
         }
         if (!state.modalWindowClosing) {
-            restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, lootTableSearchField, entityVariantSearchField);
+            restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, dimensionSearchField, lootTableSearchField, itemInventorySearchField, entityVariantSearchField);
         }
     }
 
@@ -109,7 +117,9 @@ public final class ModalPanelRouter {
             TextFieldWidget iconSearchField,
             TextFieldWidget assetSearchField,
             TextFieldWidget biomeSearchField,
+            TextFieldWidget dimensionSearchField,
             TextFieldWidget lootTableSearchField,
+            TextFieldWidget itemInventorySearchField,
             TextFieldWidget entityVariantSearchField
     ) {
         if (iconSearchField != null && state.iconSearchFocused) {
@@ -121,8 +131,14 @@ public final class ModalPanelRouter {
         if (biomeSearchField != null && state.biomeSearchFocused) {
             biomeSearchField.setFocus(true);
         }
+        if (dimensionSearchField != null && state.dimensionSearchFocused) {
+            dimensionSearchField.setFocus(true);
+        }
         if (lootTableSearchField != null && state.lootTableSearchFocused) {
             lootTableSearchField.setFocus(true);
+        }
+        if (itemInventorySearchField != null && state.itemInventorySearchFocused) {
+            itemInventorySearchField.setFocus(true);
         }
         if (entityVariantSearchField != null && state.entityVariantSearchFocused) {
             entityVariantSearchField.setFocus(true);

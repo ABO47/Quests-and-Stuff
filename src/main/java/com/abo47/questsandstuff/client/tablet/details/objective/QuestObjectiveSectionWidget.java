@@ -25,7 +25,7 @@ final class QuestObjectiveSectionWidget {
 
     static void renderRequirements(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestDetailsObjectiveEntry> tasks = QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
-        WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "requirements", tasks, QuestDetailsObjectivesPanel.TITLE_H, 4);
+        WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "requirements", tasks, QuestDetailsObjectivesPanel.TITLE_H, 4, false);
         section.addWidget(label(8, 6, QuestVocabulary.requirements(), ModColors.TEXT_PRIMARY));
         renderCards(section, state, player, refresh, questId, tasks, w, h, QuestDetailsObjectivesPanel.TITLE_H, true);
         modal.addWidget(section);
@@ -33,13 +33,15 @@ final class QuestObjectiveSectionWidget {
 
     static void renderRewards(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
-        WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", rewards, QuestDetailsObjectivesPanel.TITLE_H, 4);
+        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, state.canEdit && state.questDetailsEditMode);
+        boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetailsClaimedOverrideQuestId);
+        WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestDetailsObjectivesPanel.TITLE_H, 4, rewardsClaimed);
         section.addWidget(label(8, 6, QuestVocabulary.rewards(), ModColors.TEXT_PRIMARY));
-        renderCards(section, state, player, refresh, questId, rewards, w, h, QuestDetailsObjectivesPanel.TITLE_H, false);
+        renderCards(section, state, player, refresh, questId, displayRewards, w, h, QuestDetailsObjectivesPanel.TITLE_H, false, rewardsClaimed);
         modal.addWidget(section);
     }
 
-    private static WidgetGroup sectionWidget(TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h, String kind, List<QuestDetailsObjectiveEntry> entries, int listY, int bottomPad) {
+    private static WidgetGroup sectionWidget(TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h, String kind, List<QuestDetailsObjectiveEntry> entries, int listY, int bottomPad, boolean rewardsClaimed) {
         WidgetGroup section = new WidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
@@ -66,6 +68,16 @@ final class QuestObjectiveSectionWidget {
                 String id = hitEntryId(state, entries, kind, listY, h - bottomPad, ly);
                 if (button == 0 && state.canEdit && state.questDetailsEditMode && !id.isBlank() && isCardBodyHit(lx, w)) {
                     QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
+                    refresh.run();
+                    return true;
+                }
+                if (button == 0
+                        && "rewards".equals(kind)
+                        && !state.questDetailsEditMode
+                        && !rewardsClaimed
+                        && !id.isBlank()
+                        && QuestObjectiveSelectableRewards.isSelectableChoiceId(id)) {
+                    QuestObjectiveSelectableRewards.selectChoice(state, id);
                     refresh.run();
                     return true;
                 }
@@ -100,6 +112,10 @@ final class QuestObjectiveSectionWidget {
     }
 
     private static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, int w, int h, int listY, boolean requirements) {
+        renderCards(section, state, player, refresh, questId, entries, w, h, listY, requirements, false);
+    }
+
+    private static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, int w, int h, int listY, boolean requirements, boolean rewardsClaimed) {
         int visibleH = Math.max(1, h - listY - 4);
         int maxStart = scrollMax(entries, visibleH);
         if (requirements) {
@@ -131,7 +147,7 @@ final class QuestObjectiveSectionWidget {
                 if (requirements) {
                     QuestObjectiveCardRenderer.renderTaskCard(list, state, player, refresh, questId, entry, 6, y, cardW, entries, listY, h - 4);
                 } else {
-                    QuestObjectiveCardRenderer.renderRewardCard(list, state, player, refresh, questId, entry, 6, y, cardW, entries, listY, h - 4);
+                    QuestObjectiveCardRenderer.renderRewardCard(list, state, player, refresh, questId, entry, 6, y, cardW, entries, listY, h - 4, rewardsClaimed);
                 }
             }
             y += QuestDetailsObjectivesPanel.CARD_H + QuestDetailsObjectivesPanel.CARD_GAP;

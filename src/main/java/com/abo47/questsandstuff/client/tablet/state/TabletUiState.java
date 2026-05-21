@@ -102,7 +102,9 @@ public class TabletUiState {
     public boolean iconPickerOpen;
     public boolean assetPickerOpen;
     public boolean biomePickerOpen;
+    public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
+    public boolean itemInventoryPickerOpen;
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
@@ -145,10 +147,18 @@ public class TabletUiState {
     public boolean biomeSearchFocused;
     public int biomeScroll;
     public boolean biomeScrollDragging;
+    public String dimensionSearch = "";
+    public boolean dimensionSearchFocused;
+    public int dimensionScroll;
+    public boolean dimensionScrollDragging;
     public String lootTableSearch = "";
     public boolean lootTableSearchFocused;
     public int lootTableScroll;
     public boolean lootTableScrollDragging;
+    public String itemInventorySearch = "";
+    public boolean itemInventorySearchFocused;
+    public int itemInventoryScroll;
+    public boolean itemInventoryScrollDragging;
     public String assetSelected = "";
     public String assetBrowseDir = "";
     public String assetSearch = "";
@@ -268,6 +278,7 @@ public class TabletUiState {
     public int questDetailsSplitterDragStartX;
     public int questDetailsSplitterStartWidth;
     public boolean questDetailsEditMode = true;
+    public String questDetailsClaimedOverrideQuestId = "";
     public boolean questDetailsToolsOpen;
     public boolean questDetailsToolsClosing;
     public boolean questDetailsGridEnabled;
@@ -299,6 +310,10 @@ public class TabletUiState {
     public int questDetailsTypePickerX;
     public int questDetailsTypePickerY;
     public String questDetailsTypePickerTargetId = "";
+    public boolean questDetailsItemSourcePickerOpen;
+    public String questDetailsItemSourcePickerTarget = "";
+    public int questDetailsItemSourcePickerX;
+    public int questDetailsItemSourcePickerY;
     public String questDetailsPickTarget = "";
     public String questDetailsAssetPickTarget = "";
     public boolean questDetailsCommandRewardEditorOpen;
@@ -312,6 +327,7 @@ public class TabletUiState {
     public String questDetailsObjectiveRenameQuestId = "";
     public String questDetailsObjectiveRenameId = "";
     public String questDetailsObjectiveRenameDraft = "";
+    public final Map<String, String> questDetailsSelectableRewardChoices = new HashMap<>();
     public String questDetailsSelectedObjectiveKind = "";
     public String questDetailsSelectedObjectiveId = "";
     public boolean questDetailsObjectiveDragPending;
