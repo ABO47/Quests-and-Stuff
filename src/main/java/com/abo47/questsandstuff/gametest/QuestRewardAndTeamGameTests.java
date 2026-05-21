@@ -119,6 +119,75 @@ public final class QuestRewardAndTeamGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void selectableClaimAlsoClaimsNormalRewards(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "selectable_claim_normal");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            Map<String, QuestRewardDefinition> rewards = new LinkedHashMap<>();
+            rewards.put("normal_item", reward("normal_item", "item", 3, "minecraft:apple", false, Map.of()));
+            rewards.put("selector_a", reward("selector_a", "selectable", 1, "", true, Map.of(
+                    "pick_count", "1",
+                    "choices", "sel_a"
+            )));
+            rewards.put("selector_b", reward("selector_b", "selectable", 1, "", true, Map.of(
+                    "pick_count", "1",
+                    "choices", "sel_b"
+            )));
+
+            QuestDefinition definition = quest("test/selectable_claim_normal", QuestSettings.DEFAULT, Map.of(), rewards, Set.of());
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            int applesBefore = countItems(player, "minecraft:apple");
+            int carrotsBefore = countItems(player, "minecraft:carrot");
+            bundle.engine.claimSelectedRewardAndAvailableRewards(player, definition.id(), "selector_a", List.of("sel_a"));
+
+            var state = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (countItems(player, "minecraft:apple") - applesBefore != 3) {
+                throw new GameTestAssertException("Selectable claim should also grant normal item rewards");
+            }
+            if (countItems(player, "minecraft:carrot") - carrotsBefore != 1) {
+                throw new GameTestAssertException("Selectable claim should grant the selected child reward");
+            }
+            if (!state.claimedRewards().contains("normal_item") || !state.claimedRewards().contains("selector_a")) {
+                throw new GameTestAssertException("Selectable claim should mark normal and selected rewards claimed");
+            }
+            if (!state.claimedRewards().contains("selector_b")) {
+                throw new GameTestAssertException("Unselected one-choice selectable rewards should be marked skipped");
+            }
+            if (!state.claimedRewards().containsAll(rewards.keySet())) {
+                throw new GameTestAssertException("All reward ids should be claimed after one singleton selectable reward is picked");
+            }
+
+            QuestDefinition stuckDefinition = quest("test/selectable_claim_stuck", QuestSettings.DEFAULT, Map.of(), rewards, Set.of());
+            bundle.store.upsert(stuckDefinition);
+            bundle.engine.rebuildIndex();
+            var stuckState = bundle.progressData.state(player.getUUID()).quest(stuckDefinition.id());
+            stuckState.claimedRewards().add("normal_item");
+            stuckState.claimedRewards().add("selector_a");
+
+            int carrotsBeforeRetry = countItems(player, "minecraft:carrot");
+            bundle.engine.claimSelectedRewardAndAvailableRewards(player, stuckDefinition.id(), "selector_a", List.of("sel_a"));
+            if (countItems(player, "minecraft:carrot") != carrotsBeforeRetry) {
+                throw new GameTestAssertException("Retrying a stuck selectable claim should not grant the selected reward twice");
+            }
+            if (!stuckState.claimedRewards().containsAll(rewards.keySet())) {
+                throw new GameTestAssertException("Retrying a stuck selectable claim should mark skipped singleton choices claimed");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void repeatableAutoClaimResetsQuestState(GameTestHelper helper) {
         Bundle bundle = null;
         try {

@@ -76,6 +76,10 @@ final class UiThemeState {
         iconRoles.put("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("manual_check", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("biome", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("orbit", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("scissors", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("context_orbit", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("context_scissors", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_background", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_image", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("context_reset_zoom", UiThemeManager.ROLE_ICON_DEFAULT);

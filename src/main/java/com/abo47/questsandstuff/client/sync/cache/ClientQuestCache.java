@@ -274,6 +274,10 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.resetQuestProgressLocal(questId);
     }
 
+    public static void setQuestClaimedLocal(String questId, boolean claimed) {
+        ClientQuestLocalMutations.setQuestClaimedLocal(questId, claimed);
+    }
+
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
         ClientQuestLocalMutations.putQuestTaskJsonLocal(questId, taskJson);
     }

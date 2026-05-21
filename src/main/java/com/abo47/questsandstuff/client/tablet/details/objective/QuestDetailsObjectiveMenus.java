@@ -183,11 +183,24 @@ public final class QuestDetailsObjectiveMenus {
                 .getCompound("rewards")
                 .getCompound(contextId);
         JsonObject rewardJson = parseObjectiveJson(rewardTag.getString("json"));
+        boolean selectable = QuestObjectiveSelectableRewards.isSelectable(rewardJson);
         if ("command".equals(QuestObjectiveJsons.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
             actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
+        }
+        if (!selectable) {
+            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "claim_all", ModColors.INTERACTIVE, () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
+            }));
+            for (QuestObjectiveSelectableRewards.SelectableGroup group : QuestObjectiveSelectableRewards.selectableGroups(questId, contextId)) {
+                actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.ADD_TO_SELECTABLE_REWARD, group.name()), "add", ModColors.INTERACTIVE, () -> {
+                    state.contextDeleteConfirmKey = "";
+                    QuestObjectiveSelectableRewards.addToSelectable(player, questId, contextId, group.id());
+                }));
+            }
         }
         actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CHANGE_REWARD), () -> {
             state.contextDeleteConfirmKey = "";

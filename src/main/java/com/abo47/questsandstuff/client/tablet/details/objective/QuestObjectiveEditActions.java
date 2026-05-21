@@ -118,6 +118,24 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
     }
 
+    static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || dimension == null || dimension.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskDimension()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.defaultTask(parsed.entryId(), "location");
+        json.addProperty("type", parsed.type());
+        json.addProperty("dimension", dimension.trim());
+        json.addProperty("icon", "minecraft:compass");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details dimension picked quest={} task={} dimension={}", parsed.questId(), parsed.entryId(), dimension.trim());
+    }
+
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || lootTable == null || lootTable.isBlank()) {
@@ -231,6 +249,10 @@ public final class QuestObjectiveEditActions {
         }
         if ("biome".equals(typePath)) {
             QuestDetailsWindow.openBiomePicker(state, ModalTargets.taskBiome(questId, id, type));
+            return;
+        }
+        if ("location".equals(typePath)) {
+            QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
         }
         if ("kill_entity".equals(typePath)) {

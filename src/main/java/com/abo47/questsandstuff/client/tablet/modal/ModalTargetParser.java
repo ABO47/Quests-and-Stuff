@@ -35,6 +35,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_BIOME);
         }
 
+        public boolean isTaskDimension() {
+            return is(ModalTargets.TASK_DIMENSION);
+        }
+
         public boolean isTaskEntity() {
             return is(ModalTargets.TASK_ENTITY);
         }

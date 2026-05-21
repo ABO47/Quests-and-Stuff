@@ -209,6 +209,18 @@ public final class ClientQuestLocalMutations {
         ClientQuestState.forEachQuest(ClientQuestConnectionMutations::refreshLocalUnlockState);
     }
 
+    public static void setQuestClaimedLocal(String questId, boolean claimed) {
+        String normalized = questId == null ? "" : questId.trim();
+        if (normalized.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(normalized);
+        if (quest == null) {
+            return;
+        }
+        quest.putBoolean("claimed", claimed);
+    }
+
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
         putObjectiveJsonLocal(questId, taskJson, "tasks");
     }

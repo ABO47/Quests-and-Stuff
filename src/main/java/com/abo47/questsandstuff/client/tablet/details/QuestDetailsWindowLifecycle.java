@@ -177,6 +177,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextColorTextId = "";
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
+        state.questDetailsClaimedOverrideQuestId = "";
     }
 
     private static void startOpenAnimation(TabletUiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
@@ -199,6 +200,9 @@ final class QuestDetailsWindowLifecycle {
     }
 
     private static void clearSelectionState(TabletUiState state) {
+        state.questDetailsSelectedObjectiveKind = "";
+        state.questDetailsSelectedObjectiveId = "";
+        state.questDetailsSelectableRewardChoices.clear();
         state.questDetailsSelectedTextId = "";
         state.questDetailsSelectedImageId = "";
         state.questDetailsSelectedTextIds.clear();

@@ -27,11 +27,15 @@ final class QuestObjectiveInlineFields {
     }
 
     static void renderObjectiveTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, boolean task, int x, int y, int rightX) {
+        renderObjectiveTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, ModColors.TEXT_PRIMARY);
+    }
+
+    static void renderObjectiveTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, boolean task, int x, int y, int rightX, int color) {
         boolean renaming = isRenamingObjective(state, questId, entry.id(), task);
         int doneW = renaming ? 12 : 0;
         int fieldW = Math.max(18, rightX - x - doneW - (renaming ? 3 : 0));
         if (!renaming) {
-            parent.addWidget(label(x, y + 3, fitText(QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), fieldW), ModColors.TEXT_PRIMARY));
+            parent.addWidget(label(x, y + 3, fitText(QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), fieldW), color));
             return;
         }
         InlineRenameField field = new InlineRenameField(
@@ -160,6 +164,8 @@ final class QuestObjectiveInlineFields {
         next.addProperty("amount", parsed);
         if (task) {
             EditorCommandClient.putQuestTaskJson(player, questId, next.toString());
+        } else if (QuestObjectiveSelectableRewards.commitDisplayAmount(player, questId, entry.id(), parsed)) {
+            return;
         } else {
             EditorCommandClient.putQuestRewardJson(player, questId, next.toString());
         }

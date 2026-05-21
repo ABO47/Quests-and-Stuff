@@ -13,7 +13,8 @@ final class QuestObjectiveTypeCatalog {
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ACQUIRE_ITEM, "item", "icon"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_KILL_ENTITY, "kill_entity", "kill_entity"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_MANUAL_CHECK, "check", "manual_check"),
-                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_BIOME, "biome", "biome")
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_BIOME, "biome", "biome"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_LOCATION, "location", "orbit")
         );
     }
 

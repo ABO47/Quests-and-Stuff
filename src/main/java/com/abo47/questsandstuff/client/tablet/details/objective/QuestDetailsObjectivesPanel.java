@@ -20,7 +20,7 @@ public final class QuestDetailsObjectivesPanel {
     }
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
-        QuestObjectiveActionWidgets.renderProgress(modal, player, questId, quest, x, y, w, HEADER_H);
+        QuestObjectiveActionWidgets.renderProgress(modal, state, player, refresh, questId, quest, x, y, w, HEADER_H);
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
@@ -38,6 +38,10 @@ public final class QuestDetailsObjectivesPanel {
 
     public static void applyBiomePick(Player player, TabletUiState state, String biome) {
         QuestObjectiveEditActions.applyBiomePick(player, state, biome);
+    }
+
+    public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+        QuestObjectiveEditActions.applyDimensionPick(player, state, dimension);
     }
 
     public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {

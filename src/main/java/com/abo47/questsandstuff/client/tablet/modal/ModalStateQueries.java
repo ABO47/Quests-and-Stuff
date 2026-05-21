@@ -23,6 +23,9 @@ public final class ModalStateQueries {
         if (state.biomePickerOpen) {
             return ModalWindowManager.ModalType.BIOME_PICKER;
         }
+        if (state.dimensionPickerOpen) {
+            return ModalWindowManager.ModalType.DIMENSION_PICKER;
+        }
         if (state.lootTablePickerOpen) {
             return ModalWindowManager.ModalType.LOOT_TABLE_PICKER;
         }
