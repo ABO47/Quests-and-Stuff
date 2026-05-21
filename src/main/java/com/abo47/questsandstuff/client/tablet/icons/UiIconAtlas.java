@@ -23,7 +23,7 @@ public final class UiIconAtlas {
 
     public static ResourceLocation icon(String fileName) {
         String clean = normalizeFileName(fileName);
-        if (clean.isBlank()) {
+        if (clean.isBlank() || !isValidIconPath(clean)) {
             return null;
         }
         ResourceLocation cached = ICON_ID_CACHE.get(clean);
@@ -43,7 +43,7 @@ public final class UiIconAtlas {
 
     public static ResourceTexture iconTexture(String fileName) {
         String clean = normalizeFileName(fileName);
-        if (clean.isBlank()) {
+        if (clean.isBlank() || !isValidIconPath(clean)) {
             return null;
         }
         ResourceTexture cached = ICON_TEXTURE_CACHE.get(clean);
@@ -70,6 +70,26 @@ public final class UiIconAtlas {
 
     private static String normalizeFileName(String fileName) {
         return fileName == null ? "" : fileName.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private static boolean isValidIconPath(String value) {
+        String clean = value.endsWith(".png") ? value.substring(0, value.length() - 4) : value;
+        if (clean.isBlank()) {
+            return false;
+        }
+        for (int i = 0; i < clean.length(); i++) {
+            char c = clean.charAt(i);
+            if ((c >= 'a' && c <= 'z')
+                    || (c >= '0' && c <= '9')
+                    || c == '/'
+                    || c == '.'
+                    || c == '_'
+                    || c == '-') {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     private static List<String> candidates(String clean) {

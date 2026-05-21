@@ -41,6 +41,12 @@ public final class ContextMenuSystem {
         menu.addWidget(hit);
     }
 
+    public static void addContextIcon(WidgetGroup menu, int x, int y, String icon) {
+        if (!addAtlasIcon(menu, x, y, icon)) {
+            menu.addWidget(drawContextIcon(x, y + 2, icon));
+        }
+    }
+
     public static void addSeparator(WidgetGroup menu, int y, int width) {
         WidgetGroup sep = new WidgetGroup(4, y + 1, width, 1);
         sep.setBackground(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.BORDER_BASE, 120)));
@@ -153,7 +159,7 @@ public final class ContextMenuSystem {
         return button;
     }
 
-    private static String contextIconFileKey(String icon) {
+    public static String contextIconFileKey(String icon) {
         String clean = icon == null ? "" : icon.trim().toLowerCase(Locale.ROOT);
         if (!isSafeAtlasKey(clean)) {
             return "style";

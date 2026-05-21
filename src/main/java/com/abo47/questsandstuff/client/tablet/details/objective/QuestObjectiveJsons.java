@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 
 final class QuestObjectiveJsons {
     static final String MOD = "questsandstuff:";
+    static final String XP_CARD_ICON = "minecraft:experience_bottle";
 
     private QuestObjectiveJsons() {
     }
@@ -25,6 +26,17 @@ final class QuestObjectiveJsons {
         }
         try {
             return json.get(key).getAsString();
+        } catch (Exception ignored) {
+            return fallback;
+        }
+    }
+
+    static boolean asBoolean(JsonObject json, String key, boolean fallback) {
+        if (json == null || !json.has(key) || json.get(key).isJsonNull()) {
+            return fallback;
+        }
+        try {
+            return json.get(key).getAsBoolean();
         } catch (Exception ignored) {
             return fallback;
         }
@@ -56,6 +68,7 @@ final class QuestObjectiveJsons {
             json.addProperty("amount", 1);
             json.addProperty("mode", "points");
             json.addProperty("collection", "automatic");
+            json.addProperty("icon", XP_CARD_ICON);
             return json;
         }
         if ("stat".equals(typePath)) {
@@ -95,6 +108,7 @@ final class QuestObjectiveJsons {
         if ("xp".equals(typePath)) {
             json.addProperty("amount", 1);
             json.addProperty("mode", "points");
+            json.addProperty("icon", XP_CARD_ICON);
         } else if ("loot_table".equals(typePath) || "loot".equals(typePath)) {
             json.addProperty("loot_table", "minecraft:chests/simple_dungeon");
             json.addProperty("title", "Simple dungeon");
@@ -103,9 +117,6 @@ final class QuestObjectiveJsons {
             json.addProperty("command", "say Quest reward");
             json.addProperty("title", "Command");
             json.addProperty("icon", "minecraft:command_block");
-        } else if ("selectable".equals(typePath)) {
-            json.addProperty("amount", 1);
-            json.add("rewards", new JsonObject());
         }
         return json;
     }
@@ -149,7 +160,7 @@ final class QuestObjectiveJsons {
             case "entity_interact", "entity_interaction" -> "minecraft:lead";
             case "item_interact", "item_interaction", "item_use" -> "minecraft:stick";
             case "changed_dimension" -> "minecraft:obsidian";
-            case "xp" -> "minecraft:experience_bottle";
+            case "xp" -> XP_CARD_ICON;
             case "stat" -> "minecraft:paper";
             case "location" -> "minecraft:compass";
             default -> "minecraft:book";
@@ -158,7 +169,7 @@ final class QuestObjectiveJsons {
 
     static String rewardFallback(String typePath) {
         return switch (typePath) {
-            case "xp" -> "minecraft:experience_bottle";
+            case "xp" -> XP_CARD_ICON;
             case "loot", "loot_table" -> "minecraft:chest";
             case "command" -> "minecraft:command_block";
             case "selectable" -> "minecraft:bundle";

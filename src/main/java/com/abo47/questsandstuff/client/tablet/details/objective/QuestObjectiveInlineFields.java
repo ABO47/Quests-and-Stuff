@@ -87,6 +87,10 @@ final class QuestObjectiveInlineFields {
         if (!QuestObjectiveDisplayText.usesAmountField(entry.json(), task)) {
             return;
         }
+        if (task && QuestObjectiveDisplayText.isManualXpTask(entry.json()) && (!state.canEdit || !state.questDetailsEditMode)) {
+            QuestObjectiveActionWidgets.renderManualXpButton(parent, player, refresh, questId, entry, x, y, w, count, amount);
+            return;
+        }
         if (!state.canEdit || !state.questDetailsEditMode) {
             parent.addWidget(label(x - (task ? 24 : 0), y + 3, task ? count + " / " + amount : Integer.toString(amount), ModColors.TEXT_PRIMARY));
             return;

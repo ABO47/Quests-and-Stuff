@@ -1,170 +1,80 @@
 package com.abo47.questsandstuff.client.chapter.menu;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ChapterContextMenuRows {
     private ChapterContextMenuRows() {
     }
 
-    public static void addRows(WidgetGroup menu, ChapterContextMenuLayout layout, TabletUiState state, Player player, Runnable refresh) {
-        int rowY = ChapterContextMenuLayout.ROW_TOP_PAD;
+    public static List<ContextAction> actions(ChapterContextMenuLayout layout, TabletUiState state, Player player, Runnable refresh) {
+        List<ContextAction> actions = new ArrayList<>();
         String target = layout.target();
-        int rowW = layout.menuW() - 8;
         if (layout.hasTarget()) {
-            TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.rename"), "rename",
-                    click -> runMenuAction(state, () -> ChapterContextMenuActions.rename(state, target, refresh)));
-            rowY += ChapterContextMenuLayout.ROW_STEP;
+            actions.add(ContextActions.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
         }
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.new_chapter"), "add",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.addChapter(state, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
+        actions.add(ContextActions.add(tr("ui.questsandstuff.menu.new_chapter"), () -> ChapterContextMenuActions.addChapter(state, refresh)));
         if (!layout.hasTarget()) {
-            return;
+            return actions;
         }
 
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW,
-                TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete")),
-                "delete",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.delete(player, state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.change_icon"), "icon",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
+        String deleteLabel = TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete"));
+        actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, false, true, () -> ChapterContextMenuActions.delete(player, state, target, refresh)));
+        actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
         if (layout.entityVariants()) {
-            TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, "Change variant", "variant",
-                    click -> runMenuAction(state, () -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
-            rowY += ChapterContextMenuLayout.ROW_STEP;
+            actions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
         }
         if (layout.entityIcon()) {
-            TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, "Edit motion", "motion",
-                    click -> runMenuAction(state, () -> ChapterContextMenuActions.editMotion(state, target, refresh)));
-            rowY += ChapterContextMenuLayout.ROW_STEP;
+            actions.add(ContextActions.editMotion(() -> ChapterContextMenuActions.editMotion(state, target, refresh)));
         }
 
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW,
+        actions.add(new ContextAction(
                 EntityIconControls.pendingRemoveIconLabel(state, ChapterContextMenuLayout.removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon")),
                 "delete",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.removeIcon(player, state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.change_card_bg"), "background",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW,
+                ModColors.WARNING,
+                false,
+                () -> ChapterContextMenuActions.removeIcon(player, state, target, refresh)
+        ));
+        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
+        actions.add(new ContextAction(
                 TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg")),
                 "delete",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.removeBackground(player, state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.text_style"), "style",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.move_up"), "up",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.move(player, state, target, -1, refresh)));
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-        TabletUiFactory.addWindowsContextRow(menu, rowY, rowW, tr("ui.questsandstuff.menu.move_down"), "down",
-                click -> runMenuAction(state, () -> ChapterContextMenuActions.move(player, state, target, 1, refresh)));
+                ModColors.WARNING,
+                false,
+                () -> ChapterContextMenuActions.removeBackground(player, state, target, refresh)
+        ));
+        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
+        actions.add(ContextActions.moveUp(() -> ChapterContextMenuActions.move(player, state, target, -1, refresh)));
+        actions.add(ContextActions.moveDown(() -> ChapterContextMenuActions.move(player, state, target, 1, refresh)));
+        return actions;
     }
 
     public static boolean click(ChapterContextMenuLayout layout, TabletUiState state, Player player, Runnable refresh, int x, int y) {
-        if (!layout.contains(x, y)) {
-            return false;
-        }
-        ContextMenuAnimation.finish(state, ContextMenuAnimation.CHAPTER_KEY);
-        int relY = layout.relativeY(y);
-        int rowY = ChapterContextMenuLayout.ROW_TOP_PAD;
-        String target = layout.target();
-        if (layout.hasTarget()) {
-            if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-                ChapterContextMenuActions.rename(state, target, refresh);
-                return true;
-            }
-            rowY += ChapterContextMenuLayout.ROW_STEP;
-        }
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.addChapter(state, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (!layout.hasTarget()) {
-            return true;
-        }
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.delete(player, state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.changeIcon(state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (layout.entityVariants() && ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.changeVariant(state, target, refresh);
-            return true;
-        }
-        if (layout.entityVariants()) {
-            rowY += ChapterContextMenuLayout.ROW_STEP;
-        }
-
-        if (layout.entityIcon() && ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.editMotion(state, target, refresh);
-            return true;
-        }
-        if (layout.entityIcon()) {
-            rowY += ChapterContextMenuLayout.ROW_STEP;
-        }
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.removeIcon(player, state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.changeBackground(state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.removeBackground(player, state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.textStyle(state, target, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.move(player, state, target, -1, refresh);
-            return true;
-        }
-        rowY += ChapterContextMenuLayout.ROW_STEP;
-
-        if (ChapterContextMenuLayout.isContextRowHit(relY, rowY)) {
-            ChapterContextMenuActions.move(player, state, target, 1, refresh);
-            return true;
-        }
-        return true;
-    }
-
-    private static void runMenuAction(TabletUiState state, Runnable action) {
-        ContextMenuAnimation.finish(state, ContextMenuAnimation.CHAPTER_KEY);
-        action.run();
+        List<ContextAction> actions = actions(layout, state, player, refresh);
+        return ContextMenuPanel.click(
+                actions,
+                0,
+                ContextMenuPanel.rowActionCount(actions),
+                layout.menuX(),
+                layout.menuY(),
+                layout.menuW(),
+                x,
+                y,
+                state,
+                null,
+                ContextMenuAnimation.CHAPTER_KEY
+        );
     }
 
     private static String tr(String key, Object... args) {

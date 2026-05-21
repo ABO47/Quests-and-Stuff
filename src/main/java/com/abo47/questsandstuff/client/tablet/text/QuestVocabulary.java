@@ -11,6 +11,7 @@ public final class QuestVocabulary {
     public static final String COMMON_OK = "ui.questsandstuff.common.ok";
     public static final String COMMON_SAVE = "ui.questsandstuff.common.save";
     public static final String COMMON_UNKNOWN = "ui.questsandstuff.common.unknown";
+    public static final String COMMON_USE = "ui.questsandstuff.common.use";
 
     public static final String REQUIREMENT = "ui.questsandstuff.quest.requirement";
     public static final String REQUIREMENTS = "ui.questsandstuff.quest.requirements";
@@ -30,6 +31,7 @@ public final class QuestVocabulary {
     public static final String ENTER_COMMAND = "ui.questsandstuff.quest.enter_command";
     public static final String EDIT_COMMAND_REWARD = "ui.questsandstuff.quest.edit_command_reward";
     public static final String MARK_REQUIREMENT_DONE = "ui.questsandstuff.quest.mark_requirement_done";
+    public static final String SUBMIT_XP_REQUIREMENT = "ui.questsandstuff.quest.submit_xp_requirement";
     public static final String RENAME_REQUIREMENT = "ui.questsandstuff.quest.rename_requirement";
     public static final String RENAME_REWARD = "ui.questsandstuff.quest.rename_reward";
 
@@ -51,8 +53,16 @@ public final class QuestVocabulary {
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
-    public static final String ADD_TO_SELECTABLE_REWARD = "ui.questsandstuff.quest.add_to_selectable_reward";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
+    public static final String EDIT_XP = "ui.questsandstuff.quest.edit_xp";
+    public static final String XP_LEVELS = "ui.questsandstuff.quest.xp.levels";
+    public static final String XP_LEVELS_AUTOMATIC = "ui.questsandstuff.quest.xp.levels_automatic";
+    public static final String XP_LEVELS_CONSUME = "ui.questsandstuff.quest.xp.levels_consume";
+    public static final String XP_LEVELS_MANUAL = "ui.questsandstuff.quest.xp.levels_manual";
+    public static final String XP_POINTS = "ui.questsandstuff.quest.xp.points";
+    public static final String XP_POINTS_AUTOMATIC = "ui.questsandstuff.quest.xp.points_automatic";
+    public static final String XP_POINTS_CONSUME = "ui.questsandstuff.quest.xp.points_consume";
+    public static final String XP_POINTS_MANUAL = "ui.questsandstuff.quest.xp.points_manual";
 
     public static final String CONTEXT_ADD_ENTITY = "ui.questsandstuff.context.add_entity";
     public static final String CONTEXT_ADD_IMAGE = "ui.questsandstuff.context.add_image";
@@ -91,7 +101,6 @@ public final class QuestVocabulary {
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
-    public static final String TYPE_SELECTABLE = "ui.questsandstuff.quest.type.selectable";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_XP = "ui.questsandstuff.quest.type.xp";

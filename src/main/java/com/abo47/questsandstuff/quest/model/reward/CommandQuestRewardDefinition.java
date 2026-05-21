@@ -10,10 +10,15 @@ public record CommandQuestRewardDefinition(
         ResourceLocation type,
         String command,
         String title,
-        String icon
+        String icon,
+        boolean selectable
 ) implements QuestRewardDefinition {
     public CommandQuestRewardDefinition(String id, ResourceLocation type, String command) {
-        this(id, type, command, "Command", "minecraft:command_block");
+        this(id, type, command, "Command", "minecraft:command_block", false);
+    }
+
+    public CommandQuestRewardDefinition(String id, ResourceLocation type, String command, String title, String icon) {
+        this(id, type, command, title, icon, false);
     }
 
     public CommandQuestRewardDefinition {
@@ -27,8 +32,9 @@ public record CommandQuestRewardDefinition(
                 Codec.STRING.fieldOf("id").forGetter(CommandQuestRewardDefinition::id),
                 Codec.STRING.fieldOf("command").forGetter(CommandQuestRewardDefinition::command),
                 Codec.STRING.fieldOf("title").orElse("Command").forGetter(CommandQuestRewardDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("minecraft:command_block").forGetter(CommandQuestRewardDefinition::icon)
-        ).apply(instance, (id, command, title, icon) -> new CommandQuestRewardDefinition(id, type, command, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("minecraft:command_block").forGetter(CommandQuestRewardDefinition::icon),
+                Codec.BOOL.fieldOf("selectable").orElse(false).forGetter(CommandQuestRewardDefinition::selectable)
+        ).apply(instance, (id, command, title, icon, selectable) -> new CommandQuestRewardDefinition(id, type, command, title, icon, selectable)));
     }
 
     @Override

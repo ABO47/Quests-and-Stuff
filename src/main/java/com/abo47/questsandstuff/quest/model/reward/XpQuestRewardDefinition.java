@@ -12,10 +12,15 @@ public record XpQuestRewardDefinition(
         int amount,
         XpMode mode,
         String title,
-        String icon
+        String icon,
+        boolean selectable
 ) implements QuestRewardDefinition {
     public XpQuestRewardDefinition(String id, ResourceLocation type, int amount, XpMode mode) {
-        this(id, type, amount, mode, "", "");
+        this(id, type, amount, mode, "", "", false);
+    }
+
+    public XpQuestRewardDefinition(String id, ResourceLocation type, int amount, XpMode mode, String title, String icon) {
+        this(id, type, amount, mode, title, icon, false);
     }
 
     public static Codec<XpQuestRewardDefinition> codec(ResourceLocation type) {
@@ -24,8 +29,9 @@ public record XpQuestRewardDefinition(
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(XpQuestRewardDefinition::amount),
                 XpMode.CODEC.fieldOf("mode").orElse(XpMode.POINTS).forGetter(XpQuestRewardDefinition::mode),
                 Codec.STRING.fieldOf("title").orElse("").forGetter(XpQuestRewardDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(XpQuestRewardDefinition::icon)
-        ).apply(instance, (id, amount, mode, title, icon) -> new XpQuestRewardDefinition(id, type, amount, mode, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(XpQuestRewardDefinition::icon),
+                Codec.BOOL.fieldOf("selectable").orElse(false).forGetter(XpQuestRewardDefinition::selectable)
+        ).apply(instance, (id, amount, mode, title, icon, selectable) -> new XpQuestRewardDefinition(id, type, amount, mode, title, icon, selectable)));
     }
 
     public XpQuestRewardDefinition {

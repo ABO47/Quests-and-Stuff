@@ -33,10 +33,13 @@ public interface QuestRewardDefinition {
     void grant(ServerPlayer player);
 
     default boolean isSelectableClaimValid(List<String> selectedRewardIds) {
-        return false;
+        return selectable() && (selectedRewardIds == null || selectedRewardIds.isEmpty());
     }
 
     default void grantSelected(ServerPlayer player, List<String> selectedRewardIds) {
+        if (isSelectableClaimValid(selectedRewardIds)) {
+            grant(player);
+        }
     }
 
     default QuestRewardDefinition copyForQuest(Map<String, String> copiedQuestIds) {

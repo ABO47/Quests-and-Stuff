@@ -16,18 +16,21 @@ import java.util.List;
 import java.util.Map;
 
 final class QuestObjectiveSelectableRewards {
-    private static final String SELECTABLE_TYPE = QuestObjectiveJsons.MOD + "selectable";
     private static final String CHOICE_SEPARATOR = "\u001F";
 
     private QuestObjectiveSelectableRewards() {
     }
 
     static boolean isSelectable(JsonObject json) {
+        return QuestObjectiveJsons.asBoolean(json, "selectable", false) || isSelectableWrapper(json);
+    }
+
+    private static boolean isSelectableWrapper(JsonObject json) {
         return "selectable".equals(QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", "")));
     }
 
     static JsonObject displayJson(JsonObject json) {
-        if (!isSelectable(json)) {
+        if (!isSelectableWrapper(json)) {
             return json;
         }
         JsonElement rewards = json.get("rewards");
@@ -48,7 +51,7 @@ final class QuestObjectiveSelectableRewards {
         }
         List<QuestDetailsObjectiveEntry> displayEntries = new ArrayList<>();
         for (QuestDetailsObjectiveEntry entry : entries) {
-            if (!isSelectable(entry.json())) {
+            if (!isSelectableWrapper(entry.json())) {
                 displayEntries.add(entry);
                 continue;
             }
@@ -121,56 +124,27 @@ final class QuestObjectiveSelectableRewards {
         return choiceId.equals(state.questDetailsSelectableRewardChoices.get(groupId));
     }
 
-    static List<SelectableGroup> selectableGroups(String questId, String excludeId) {
-        CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
-        List<SelectableGroup> groups = new ArrayList<>();
-        for (String id : rewards.getAllKeys()) {
-            if (id.equals(excludeId)) {
-                continue;
-            }
-            JsonObject json = QuestObjectiveJsons.read(rewards.getCompound(id).getString("json"));
-            if (isSelectable(json)) {
-                String name = QuestObjectiveDisplayText.displayName(json, QuestObjectiveJsons.asString(json, "type", SELECTABLE_TYPE));
-                groups.add(new SelectableGroup(id, name.isBlank() ? id : name));
-            }
-        }
-        return groups;
-    }
-
     static void makeSelectable(Player player, String questId, String rewardId) {
         CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
         JsonObject reward = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
         if (isSelectable(reward)) {
             return;
         }
-        JsonObject selectable = selectableBase(rewardId, reward);
-        JsonObject choices = selectable.getAsJsonObject("rewards");
-        String choiceId = uniqueChoiceId(choices, rewardId);
-        choices.add(choiceId, childReward(reward, choiceId));
-        EditorCommandClient.putQuestRewardJson(player, questId, selectable.toString());
-        QuestsAndStuffMod.debugLog("[QnS:UI] reward made selectable quest={} reward={} choice={}", questId, rewardId, choiceId);
-    }
-
-    static void addToSelectable(Player player, String questId, String rewardId, String groupId) {
-        if (rewardId.equals(groupId)) {
-            return;
-        }
-        CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
-        JsonObject reward = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
-        JsonObject group = QuestObjectiveJsons.read(rewards.getCompound(groupId).getString("json"));
-        if (isSelectable(reward) || !isSelectable(group)) {
-            return;
-        }
-        JsonObject choices = rewardsObject(group);
-        String choiceId = uniqueChoiceId(choices, rewardId);
-        choices.add(choiceId, childReward(reward, choiceId));
-        EditorCommandClient.putQuestRewardJson(player, questId, group.toString());
-        EditorCommandClient.removeQuestReward(player, questId, rewardId);
-        QuestsAndStuffMod.debugLog("[QnS:UI] reward added to selectable quest={} reward={} group={} choice={}", questId, rewardId, groupId, choiceId);
+        reward.addProperty("selectable", true);
+        EditorCommandClient.putQuestRewardJson(player, questId, reward.toString());
+        QuestsAndStuffMod.debugLog("[QnS:UI] reward marked selectable quest={} reward={}", questId, rewardId);
     }
 
     static boolean claimSingleChoice(Player player, String questId, String rewardId, JsonObject selectable) {
-        if (!isSelectable(selectable) || QuestObjectiveDisplayText.amount(selectable) != 1) {
+        if (!isSelectable(selectable)) {
+            return false;
+        }
+        if (!isSelectableWrapper(selectable)) {
+            QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of()));
+            QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward claimed quest={} reward={}", questId, rewardId);
+            return true;
+        }
+        if (QuestObjectiveDisplayText.amount(selectable) != 1) {
             return false;
         }
         JsonElement rewards = selectable.get("rewards");
@@ -240,6 +214,12 @@ final class QuestObjectiveSelectableRewards {
                 continue;
             }
             hasSelectable = true;
+            if (!isSelectableWrapper(json)) {
+                if (rewardId.equals(state.questDetailsSelectedObjectiveId)) {
+                    return true;
+                }
+                continue;
+            }
             String choiceId = selectedChoiceForGroup(state, rewardId);
             if (choiceId.isBlank() || !choiceExists(json, choiceId)) {
                 continue;
@@ -270,7 +250,13 @@ final class QuestObjectiveSelectableRewards {
     }
 
     private static boolean isSingletonSelectable(JsonObject json) {
-        if (!isSelectable(json) || QuestObjectiveDisplayText.amount(json) != 1) {
+        if (!isSelectable(json)) {
+            return false;
+        }
+        if (!isSelectableWrapper(json)) {
+            return true;
+        }
+        if (QuestObjectiveDisplayText.amount(json) != 1) {
             return false;
         }
         JsonElement rewards = json.get("rewards");
@@ -332,7 +318,7 @@ final class QuestObjectiveSelectableRewards {
         }
         CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
         JsonObject selectable = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
-        if (!isSelectable(selectable)) {
+        if (!isSelectableWrapper(selectable)) {
             return false;
         }
         JsonElement choicesElement = selectable.get("rewards");
@@ -353,43 +339,5 @@ final class QuestObjectiveSelectableRewards {
 
     private static String choiceEntryId(String groupId, String choiceId) {
         return groupId + CHOICE_SEPARATOR + choiceId;
-    }
-
-    private static JsonObject selectableBase(String id, JsonObject displaySource) {
-        JsonObject json = displaySource == null ? new JsonObject() : displaySource.deepCopy();
-        json.addProperty("id", id);
-        json.addProperty("type", SELECTABLE_TYPE);
-        json.addProperty("amount", 1);
-        json.add("rewards", new JsonObject());
-        return json;
-    }
-
-    private static JsonObject rewardsObject(JsonObject selectable) {
-        JsonElement rewards = selectable.get("rewards");
-        if (rewards != null && rewards.isJsonObject()) {
-            return rewards.getAsJsonObject();
-        }
-        JsonObject object = new JsonObject();
-        selectable.add("rewards", object);
-        return object;
-    }
-
-    private static JsonObject childReward(JsonObject reward, String id) {
-        JsonObject child = reward.deepCopy();
-        child.addProperty("id", id);
-        return child;
-    }
-
-    private static String uniqueChoiceId(JsonObject choices, String baseId) {
-        String clean = baseId == null || baseId.isBlank() ? "choice" : baseId.trim();
-        String id = "choice_" + clean;
-        int suffix = 2;
-        while (choices.has(id)) {
-            id = "choice_" + clean + "_" + suffix++;
-        }
-        return id;
-    }
-
-    record SelectableGroup(String id, String name) {
     }
 }

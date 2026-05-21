@@ -314,6 +314,12 @@ public class TabletUiState {
     public String questDetailsItemSourcePickerTarget = "";
     public int questDetailsItemSourcePickerX;
     public int questDetailsItemSourcePickerY;
+    public boolean questDetailsXpPickerOpen;
+    public boolean questDetailsXpPickerTask;
+    public String questDetailsXpPickerQuestId = "";
+    public String questDetailsXpPickerEntryId = "";
+    public int questDetailsXpPickerX;
+    public int questDetailsXpPickerY;
     public String questDetailsPickTarget = "";
     public String questDetailsAssetPickTarget = "";
     public boolean questDetailsCommandRewardEditorOpen;

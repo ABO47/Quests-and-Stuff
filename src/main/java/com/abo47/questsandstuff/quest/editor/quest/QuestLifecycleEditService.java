@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,15 +86,34 @@ public final class QuestLifecycleEditService {
     }
 
     public void removeQuest(ServerPlayer player, String questId) {
-        if (!service.definitionStore().quests().containsKey(questId)) {
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        if (!service.definitionStore().quests().containsKey(normalizedQuestId)) {
             return;
         }
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        service.definitionStore().remove(questId);
+        int removedReferences = removeQuestReferences(normalizedQuestId);
+        service.definitionStore().remove(normalizedQuestId);
         service.normalizeQuestSelection(session);
         service.postMutation(player);
-        service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "remove", questId, null);
+        QuestsAndStuffMod.debugLog("[QnS:Editor] remove quest id={} removed_prerequisite_references={}", normalizedQuestId, removedReferences);
+        service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "remove", normalizedQuestId, null);
+    }
+
+    private int removeQuestReferences(String removedQuestId) {
+        int removedReferences = 0;
+        for (QuestDefinition definition : new ArrayList<>(service.definitionStore().quests().values())) {
+            if (definition == null || removedQuestId.equals(definition.id()) || !definition.prerequisites().contains(removedQuestId)) {
+                continue;
+            }
+            QuestDefinition next = QuestDefinitionEdits.withoutPrerequisite(definition, removedQuestId);
+            if (next == definition) {
+                continue;
+            }
+            service.definitionStore().upsert(next);
+            removedReferences++;
+        }
+        return removedReferences;
     }
 
     public void openGroup(ServerPlayer player, String groupName) {

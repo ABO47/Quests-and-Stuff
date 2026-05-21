@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -9,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.network.QuestNetwork;
 import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.network.runtime.C2SManualXpSubmitPacket;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
@@ -37,6 +39,22 @@ final class QuestObjectiveActionWidgets {
         hit.setHoverTooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.MARK_REQUIREMENT_DONE)});
         hit.setHoverTexture(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
         parent.addWidget(hit);
+    }
+
+    static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, int count, int amount) {
+        parent.addWidget(TabletUiFactory.label(x - 42, y + 3, count + " / " + amount, ModColors.TEXT_PRIMARY));
+        boolean done = count >= amount;
+        int iconSize = 12;
+        int iconX = x + Math.max(0, (w - iconSize) / 2);
+        if (done) {
+            parent.addWidget(IconOnlyButton.icon(iconX, y + 1, iconSize, "send-horizontal", ModColors.TEXT_MUTED));
+            return;
+        }
+        var hit = IconOnlyButton.create(iconX, y + 1, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
+            QuestNetwork.sendToServer(new C2SManualXpSubmitPacket(questId, entry.id()));
+            refresh.run();
+        });
+        parent.addWidget(hit.tooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.SUBMIT_XP_REQUIREMENT)}));
     }
 
     static void renderProgress(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {

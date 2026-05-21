@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -28,7 +29,7 @@ public final class CanvasContextMenuSupport {
 
     public static int contextMenuWidth(List<ContextAction> actions, int maxAvailableWidth) {
         List<String> labels = new ArrayList<>();
-        for (ContextAction action : actions) {
+        for (ContextAction action : ContextMenuPanel.rowActions(actions)) {
             labels.add(action.label());
         }
         return ContextMenuSystem.preferredMenuWidth(labels, 82, Math.max(82, Math.min(156, maxAvailableWidth - 8)));
@@ -39,7 +40,7 @@ public final class CanvasContextMenuSupport {
     }
 
     public static int contextMenuHeight(int visibleRows) {
-        return 8 + visibleRows * CONTEXT_ROW_H;
+        return ContextMenuPanel.heightForRows(visibleRows);
     }
 
     public static int maxContextVisibleRows(CanvasViewport canvasViewport) {
@@ -66,8 +67,10 @@ public final class CanvasContextMenuSupport {
         }
 
         int maxVisibleRows = maxContextVisibleRows(canvasViewport);
-        int visibleRows = Math.max(1, Math.min(actions.size(), maxVisibleRows));
-        int scrollMax = Math.max(0, actions.size() - visibleRows);
+        List<ContextAction> promoted = ContextMenuPanel.promotedActions(actions);
+        List<ContextAction> rows = ContextMenuPanel.rowActions(actions);
+        int visibleRows = ContextMenuPanel.safeVisibleRows(rows.size(), maxVisibleRows);
+        int scrollMax = Math.max(0, rows.size() - visibleRows);
         int scroll = ScrollController.clamp(state.contextMenuScroll, scrollMax);
         boolean needsScroll = scrollMax > 0;
         int menuW = contextMenuWidth(actions, canvasViewport.getSize().width);
@@ -75,17 +78,22 @@ public final class CanvasContextMenuSupport {
 
         int relX = x - state.contextMenuX;
         int relY = y - state.contextMenuY;
-        if (relY < 4 || relY >= 4 + visibleRows * CONTEXT_ROW_H) {
+        if (handlePromotedClick(promoted, relX, relY, menuW, state)) {
+            return true;
+        }
+
+        int rowTop = ContextMenuPanel.rowTop(promoted);
+        if (relY < rowTop || relY >= rowTop + visibleRows * CONTEXT_ROW_H) {
             return true;
         }
         if (relX < 4 || relX > 4 + rowWidth) {
             return true;
         }
 
-        int row = (relY - 4) / CONTEXT_ROW_H;
+        int row = (relY - rowTop) / CONTEXT_ROW_H;
         int actionIndex = scroll + row;
-        if (actionIndex >= 0 && actionIndex < actions.size()) {
-            ContextAction action = actions.get(actionIndex);
+        if (actionIndex >= 0 && actionIndex < rows.size()) {
+            ContextAction action = rows.get(actionIndex);
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
@@ -97,6 +105,33 @@ public final class CanvasContextMenuSupport {
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
         state.contextDeleteConfirmKey = "";
+        return true;
+    }
+
+    private static boolean handlePromotedClick(List<ContextAction> promoted, int relX, int relY, int menuW, TabletUiState state) {
+        if (promoted.isEmpty() || relY < 4 || relY >= 4 + ContextMenuPanel.PROMOTED_BAR_H) {
+            return false;
+        }
+        int visible = ContextMenuPanel.visiblePromotedCount(promoted, menuW);
+        int y = 4 + Math.max(0, (ContextMenuPanel.PROMOTED_BAR_H - ContextMenuPanel.PROMOTED_BUTTON) / 2);
+        for (int i = 0; i < visible; i++) {
+            int buttonX = ContextMenuPanel.promotedButtonX(menuW, visible, i);
+            if (relX < buttonX || relX >= buttonX + ContextMenuPanel.PROMOTED_BUTTON || relY < y || relY >= y + ContextMenuPanel.PROMOTED_BUTTON) {
+                continue;
+            }
+            ContextAction action = promoted.get(i);
+            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
+            action.action().run();
+            if (!action.closeAfterClick()) {
+                return true;
+            }
+            state.contextMenuOpen = false;
+            state.contextMenuRows = 0;
+            state.contextMenuScroll = 0;
+            state.contextMenuScrollMax = 0;
+            state.contextDeleteConfirmKey = "";
+            return true;
+        }
         return true;
     }
 
