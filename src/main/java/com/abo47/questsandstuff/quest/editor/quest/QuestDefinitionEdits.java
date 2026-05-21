@@ -78,6 +78,16 @@ public final class QuestDefinitionEdits {
         );
     }
 
+    public static QuestDefinition withoutPrerequisite(QuestDefinition definition, String prerequisiteId) {
+        String normalizedPrerequisite = normalizeQuestId(prerequisiteId);
+        if (definition == null || normalizedPrerequisite.isBlank() || !definition.prerequisites().contains(normalizedPrerequisite)) {
+            return definition;
+        }
+        Set<String> prerequisites = new HashSet<>(definition.prerequisites());
+        prerequisites.remove(normalizedPrerequisite);
+        return withPrerequisites(definition, prerequisites);
+    }
+
     public static QuestDefinition withDisplay(QuestDefinition definition, QuestDisplay display) {
         Set<String> prerequisites = definition.prerequisites();
         return new QuestDefinition(
