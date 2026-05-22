@@ -19,7 +19,7 @@ public final class WindowChrome {
         IGuiTexture glyph = UiIconAtlas.iconTexture(icon);
         IGuiTexture iconTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
             graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, ModColors.elevatedSurface());
-            drawBorder(graphics, (int) x0, (int) y0, width, height, ModColors.subtleBorder());
+            drawBorder(graphics, (int) x0, (int) y0, width, height, ModColors.BORDER_BASE);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
 
