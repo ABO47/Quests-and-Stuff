@@ -57,7 +57,8 @@ final class QuestDetailsHeader {
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });
-        addHeaderIconButton(canvasPanel, settingsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "settings-2", state.settingsPanelOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.settingsPanelOpen, new Component[]{
+        boolean settingsActive = settingsActive(state);
+        addHeaderIconButton(canvasPanel, settingsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "settings-2", settingsActive ? ModColors.SUCCESS : ModColors.INTERACTIVE, settingsActive, new Component[]{
                 Component.translatable("ui.questsandstuff.settings.button"),
                 Component.translatable("ui.questsandstuff.settings.button_tooltip")
         }, click -> toggleSettingsPanel(state, refresh));
@@ -179,7 +180,7 @@ final class QuestDetailsHeader {
     }
 
     private static void toggleSettingsPanel(TabletUiState state, Runnable refresh) {
-        if (state.settingsPanelOpen) {
+        if (settingsActive(state)) {
             ModalCloseActions.closeAll(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details settings toggle open=false");
             refresh.run();
@@ -191,5 +192,9 @@ final class QuestDetailsHeader {
         ModalOpenActions.openSettingsPanel(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details settings toggle open=true");
         refresh.run();
+    }
+
+    private static boolean settingsActive(TabletUiState state) {
+        return state.settingsPanelOpen && !state.modalWindowClosing;
     }
 }

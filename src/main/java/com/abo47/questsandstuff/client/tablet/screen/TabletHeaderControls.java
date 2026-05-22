@@ -154,7 +154,8 @@ final class TabletHeaderControls {
         searchField.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
         toolsBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
-        settingsBg.setBackground(Surfaces.bordered(state.settingsPanelOpen ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, state.settingsPanelOpen ? ModColors.SUCCESS : ModColors.BORDER_BASE));
+        boolean settingsActive = settingsActive(state);
+        settingsBg.setBackground(Surfaces.bordered(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE));
         editorBg.setBackground(Surfaces.bordered(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }
 
@@ -242,7 +243,7 @@ final class TabletHeaderControls {
     }
 
     private static void toggleSettingsPanel(TabletUiState state, Runnable refresh) {
-        if (state.settingsPanelOpen) {
+        if (settingsActive(state)) {
             ModalCloseActions.closeAll(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] settings panel toggle open=false");
             refresh.run();
@@ -255,6 +256,10 @@ final class TabletHeaderControls {
         ModalOpenActions.openSettingsPanel(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] settings panel toggle open=true");
         refresh.run();
+    }
+
+    private static boolean settingsActive(TabletUiState state) {
+        return state.settingsPanelOpen && !state.modalWindowClosing;
     }
 
     private static void configureSearchField(TextFieldWidget field) {
