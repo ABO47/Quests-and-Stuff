@@ -11,6 +11,10 @@ on:
         description: "Git tag to create or update. Leave blank to use v<version>."
         required: false
         default: ""
+      changelog:
+        description: "Changelog file. Leave blank to use changelogs/<version>.md."
+        required: false
+        default: ""
       draft:
         description: "Create the GitHub release as a draft."
         required: true
@@ -24,6 +28,9 @@ on:
 
 permissions:
   contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   release:
@@ -49,6 +56,7 @@ jobs:
         env:
           INPUT_VERSION: ${{ inputs.version }}
           INPUT_TAG: ${{ inputs.tag }}
+          INPUT_CHANGELOG: ${{ inputs.changelog }}
         run: |
           set -euo pipefail
 
@@ -66,8 +74,19 @@ jobs:
             tag="v${version}"
           fi
 
+          changelog="$INPUT_CHANGELOG"
+          if [ -z "$changelog" ]; then
+            changelog="changelogs/${version}.md"
+          fi
+          if [ ! -f "$changelog" ]; then
+            echo "Changelog file not found: $changelog" >&2
+            echo "Create changelogs/${version}.md or provide a changelog path when running the workflow." >&2
+            exit 1
+          fi
+
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "changelog_path=$changelog" >> "$GITHUB_OUTPUT"
           echo "release_name=Quests and Stuff ${version}" >> "$GITHUB_OUTPUT"
 
       - name: Build both loaders
@@ -119,7 +138,8 @@ jobs:
           name: ${{ steps.meta.outputs.release_name }}
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
-          generate_release_notes: true
+          body_path: ${{ steps.meta.outputs.changelog_path }}
+          generate_release_notes: false
           files: |
             release/*.jar
         env:
