@@ -2,10 +2,10 @@ package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.command.QuestCommands;
+import com.abo47.questsandstuff.forge.runtime.signal.ForgeQuestEventBridge;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestServerReloadListener;
-import com.abo47.questsandstuff.quest.runtime.signal.ForgeQuestEventBridge;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;

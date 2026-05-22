@@ -34,6 +34,12 @@ dependencies {
     modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") {
         transitive = false
     }
+    modRuntimeOnly("io.github.llamalad7:mixinextras-forge:${mixinextras_version}") {
+        transitive = false
+    }
+    forgeRuntimeLibrary("io.github.llamalad7:mixinextras-common:${mixinextras_version}") {
+        transitive = false
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {

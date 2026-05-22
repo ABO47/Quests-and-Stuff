@@ -1,6 +1,9 @@
-package com.abo47.questsandstuff.quest.runtime.signal;
+package com.abo47.questsandstuff.forge.runtime.signal;
 
 import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
