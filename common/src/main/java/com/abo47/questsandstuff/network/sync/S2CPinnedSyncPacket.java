@@ -1,0 +1,32 @@
+package com.abo47.questsandstuff.network.sync;
+
+import com.abo47.questsandstuff.network.QuestPacketContext;
+
+import net.minecraft.network.FriendlyByteBuf;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public record S2CPinnedSyncPacket(long sequence, List<String> pinned) {
+    public static S2CPinnedSyncPacket decode(FriendlyByteBuf buf) {
+        long sequence = buf.readLong();
+        int size = buf.readVarInt();
+        List<String> pinned = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            pinned.add(buf.readUtf());
+        }
+        return new S2CPinnedSyncPacket(sequence, pinned);
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeLong(sequence);
+        buf.writeVarInt(pinned.size());
+        for (String id : pinned) {
+            buf.writeUtf(id);
+        }
+    }
+
+    public void handle(QuestPacketContext context) {
+        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handlePinned(sequence, pinned));
+    }
+}
