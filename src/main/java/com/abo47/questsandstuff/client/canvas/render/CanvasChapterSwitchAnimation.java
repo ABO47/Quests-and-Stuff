@@ -1,21 +1,19 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public final class CanvasChapterSwitchAnimation {
-    private static final long DURATION_MS = 230L;
-    private static final float START_ALPHA = 0.74f;
-    private static final float START_SCALE = 0.985f;
-    private static final float SLIDE_PX = 5.0f;
+    private static final long DURATION_MS = 190L;
+    private static final int START_VEIL_ALPHA = 82;
+    private static final int START_ACCENT_ALPHA = 190;
 
     private CanvasChapterSwitchAnimation() {
     }
@@ -37,7 +35,6 @@ public final class CanvasChapterSwitchAnimation {
             return;
         }
 
-        state.canvasChapterSwitchDirection = direction(previous, next);
         state.canvasChapterSwitchAnimationStartMs = System.currentTimeMillis();
     }
 
@@ -48,7 +45,7 @@ public final class CanvasChapterSwitchAnimation {
         if (!UiAnimationProgress.running(state.canvasChapterSwitchAnimationStartMs, DURATION_MS)) {
             return content;
         }
-        return new SlideFadeWidget(content, state.canvasChapterSwitchAnimationStartMs, state.canvasChapterSwitchDirection);
+        return new SoftChapterFadeWidget(content, state.canvasChapterSwitchAnimationStartMs);
     }
 
     public static boolean finishIfDone(TabletUiState state) {
@@ -68,28 +65,16 @@ public final class CanvasChapterSwitchAnimation {
         state.canvasChapterSwitchDirection = 1;
     }
 
-    private static int direction(String previous, String next) {
-        List<String> groups = ClientQuestCache.groupOrder();
-        int previousIndex = groups.indexOf(previous);
-        int nextIndex = groups.indexOf(next);
-        if (previousIndex >= 0 && nextIndex >= 0 && previousIndex != nextIndex) {
-            return nextIndex > previousIndex ? 1 : -1;
-        }
-        return next.compareToIgnoreCase(previous) >= 0 ? 1 : -1;
-    }
-
     private static String normalize(String value) {
         return value == null ? "" : value.trim();
     }
 
-    private static final class SlideFadeWidget extends WidgetGroup {
+    private static final class SoftChapterFadeWidget extends WidgetGroup {
         private final long startMs;
-        private final int direction;
 
-        private SlideFadeWidget(WidgetGroup content, long startMs, int direction) {
+        private SoftChapterFadeWidget(WidgetGroup content, long startMs) {
             super(content.getSelfPositionX(), content.getSelfPositionY(), content.getSizeWidth(), content.getSizeHeight());
             this.startMs = startMs;
-            this.direction = direction < 0 ? -1 : 1;
             content.setSelfPosition(0, 0);
             addWidget(content);
         }
@@ -101,43 +86,39 @@ public final class CanvasChapterSwitchAnimation {
 
         @Override
         public void drawInForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            drawAnimated(graphics, () -> drawWidgetsForeground(graphics, mouseX, mouseY, partialTicks));
+            drawWidgetsForeground(graphics, mouseX, mouseY, partialTicks);
+            drawVeil(graphics);
         }
 
         @Override
         public void drawOverlay(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            drawAnimated(graphics, () -> super.drawOverlay(graphics, mouseX, mouseY, partialTicks));
+            super.drawOverlay(graphics, mouseX, mouseY, partialTicks);
         }
 
         private void drawAnimated(GuiGraphics graphics, Runnable draw) {
-            if (!UiAnimationProgress.running(startMs, DURATION_MS)) {
-                draw.run();
-                return;
-            }
-
-            float progress = smootherProgress(startMs);
-            float alpha = UiAnimationProgress.interpolate(START_ALPHA, 1.0f, progress);
-            float scale = UiAnimationProgress.interpolate(START_SCALE, 1.0f, progress);
-            float offsetY = direction * SLIDE_PX * (1.0f - progress);
-            float centerX = getPositionX() + getSizeWidth() / 2.0f;
-            float centerY = getPositionY() + getSizeHeight() / 2.0f;
-
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0f, offsetY, 0.0f);
-            graphics.pose().translate(centerX, centerY, 0.0f);
-            graphics.pose().scale(scale, scale, 1.0f);
-            graphics.pose().translate(-centerX, -centerY, 0.0f);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
             draw.run();
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            graphics.pose().popPose();
         }
 
-        private float smootherProgress(long animationStartMs) {
-            float t = UiAnimationProgress.linearProgress(animationStartMs, DURATION_MS);
-            return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+        private void drawVeil(GuiGraphics graphics) {
+            if (!UiAnimationProgress.running(startMs, DURATION_MS)) {
+                return;
+            }
+            float progress = UiAnimationProgress.cubicOutProgress(startMs, DURATION_MS);
+            int alpha = UiAnimationProgress.interpolate(START_VEIL_ALPHA, 0, progress);
+            int accentAlpha = UiAnimationProgress.interpolate(START_ACCENT_ALPHA, 0, progress);
+            int x = getPositionX();
+            int y = getPositionY();
+            int w = getSizeWidth();
+            int h = getSizeHeight();
+            if (alpha > 0) {
+                graphics.fill(x, y, x + w, y + h, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, alpha));
+            }
+            if (accentAlpha > 0) {
+                int accent = UiThemeTokens.withAlpha(ModColors.INTERACTIVE, accentAlpha);
+                graphics.renderOutline(x, y, w, h, accent);
+                graphics.fill(x + 1, y + 1, x + Math.max(1, w - 1), y + 2, accent);
+                graphics.fill(x + 1, y + Math.max(1, h - 2), x + Math.max(1, w - 1), y + Math.max(1, h - 1), accent);
+            }
         }
     }
 }
