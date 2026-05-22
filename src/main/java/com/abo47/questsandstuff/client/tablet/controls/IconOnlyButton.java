@@ -2,9 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -26,7 +24,7 @@ public final class IconOnlyButton extends ButtonWidget {
 
     private IconOnlyButton(int x, int y, int size, ResourceLocation icon, int normalColor, int hoverColor, Consumer<ClickData> callback) {
         super(x, y, size, size, Surfaces.fill(0x00000000), callback);
-        this.iconSize = Math.min(TabletUiFactory.ACTION_ICON_SIZE, Math.max(8, size - 4));
+        this.iconSize = Math.max(8, size - 2);
         this.normalColor = normalColor;
         this.hoverColor = hoverColor;
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> drawingHover ? this.hoverColor : this.normalColor);
@@ -64,10 +62,6 @@ public final class IconOnlyButton extends ButtonWidget {
         drawingHover = isMouseOverElement(mouseX, mouseY) && isActive();
         super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         Position pos = getPosition();
-        if (drawingHover) {
-            graphics.fill(pos.x, pos.y, pos.x + getSizeWidth(), pos.y + getSizeHeight(), ModColors.hoverFill(hoverColor));
-            graphics.renderOutline(pos.x, pos.y, getSizeWidth(), getSizeHeight(), ModColors.focusBorder());
-        }
         int iconX = pos.x + Math.max(0, (getSizeWidth() - iconSize) / 2);
         int iconY = pos.y + Math.max(0, (getSizeHeight() - iconSize) / 2);
         iconTexture.draw(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize);

@@ -23,34 +23,32 @@ final class QuestObjectiveActionWidgets {
     }
 
     static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, QuestDetailsObjectiveEntry entry, int x, int y, int w, boolean done) {
-        String label = QuestVocabulary.text(QuestVocabulary.COMMON_OK);
-        int fill = done ? TabletUiFactory.withAlpha(ModColors.SUCCESS, 80) : TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 120);
-        int border = done ? ModColors.SUCCESS : ModColors.BORDER_BASE;
-        parent.addWidget(TabletUiFactory.panel(x, y, w, 14, fill, border));
-        parent.addWidget(TabletUiFactory.label(x + Math.max(2, (w - Minecraft.getInstance().font.width(label)) / 2), y + 3, label, done ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY));
+        int iconSize = 16;
+        int iconX = x + Math.max(0, (w - iconSize) / 2);
+        int iconY = y - 1;
         if (done) {
+            parent.addWidget(IconOnlyButton.icon(iconX, iconY, iconSize, "send-horizontal", ModColors.TEXT_MUTED));
             return;
         }
-        var hit = TabletUiFactory.flatHitButton(x, y, w, 14, click -> {
+        var hit = IconOnlyButton.create(iconX, iconY, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
             String taskKey = QuestObjectiveDisplayText.manualTarget(entry.json(), entry.id());
             QuestNetwork.sendToServer(new C2SManualTaskPacket(taskKey));
             refresh.run();
         });
-        hit.setHoverTooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.MARK_REQUIREMENT_DONE)});
-        hit.setHoverTexture(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
-        parent.addWidget(hit);
+        parent.addWidget(hit.tooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.MARK_REQUIREMENT_DONE)}));
     }
 
     static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, int count, int amount) {
         parent.addWidget(TabletUiFactory.label(x - 42, y + 3, count + " / " + amount, ModColors.TEXT_PRIMARY));
         boolean done = count >= amount;
-        int iconSize = 12;
+        int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
+        int iconY = y - 1;
         if (done) {
-            parent.addWidget(IconOnlyButton.icon(iconX, y + 1, iconSize, "send-horizontal", ModColors.TEXT_MUTED));
+            parent.addWidget(IconOnlyButton.icon(iconX, iconY, iconSize, "send-horizontal", ModColors.TEXT_MUTED));
             return;
         }
-        var hit = IconOnlyButton.create(iconX, y + 1, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
+        var hit = IconOnlyButton.create(iconX, iconY, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
             QuestNetwork.sendToServer(new C2SManualXpSubmitPacket(questId, entry.id()));
             refresh.run();
         });
