@@ -32,9 +32,11 @@ public final class TabletSettingsModal {
     private static final int ROW_INSET = 4;
     private static final int SWITCH_GAP = 8;
     private static final int TAB_ANIMATIONS = 0;
-    private static final int TAB_DEBUG = 1;
+    private static final int TAB_THEMES = 1;
+    private static final int TAB_DEBUG = 2;
     private static final List<SettingTab> TABS = List.of(
             new SettingTab(TAB_ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations"),
+            new SettingTab(TAB_THEMES, "themes", "ui.questsandstuff.settings.tab_themes"),
             new SettingTab(TAB_DEBUG, "debug", "ui.questsandstuff.settings.tab_debug")
     );
 
@@ -49,6 +51,19 @@ public final class TabletSettingsModal {
         int listX = PAD;
         int listW = Math.max(32, w - PAD * 2);
         int listH = Math.max(1, h - LIST_Y - PAD);
+        if (state.settingsTab == TAB_THEMES) {
+            TabletThemePickerModal.addSettingsThemeList(
+                    modal,
+                    state,
+                    refresh,
+                    listX,
+                    LIST_Y,
+                    listW,
+                    listH,
+                    TabletModalPanel.tr("ui.questsandstuff.settings.themes_empty")
+            );
+            return;
+        }
         PickerListPanel.add(
                 modal,
                 listX,
@@ -71,7 +86,10 @@ public final class TabletSettingsModal {
     }
 
     private static int activeTab(int tab) {
-        return tab == TAB_DEBUG ? TAB_DEBUG : TAB_ANIMATIONS;
+        if (tab == TAB_THEMES || tab == TAB_DEBUG) {
+            return tab;
+        }
+        return TAB_ANIMATIONS;
     }
 
     private static void addTabs(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
@@ -105,6 +123,8 @@ public final class TabletSettingsModal {
             state.settingsTab = tab.id();
             state.settingsScroll = 0;
             state.settingsScrollDragging = false;
+            state.themeScroll = 0;
+            state.themeScrollDragging = false;
             QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
             refresh.run();
         });

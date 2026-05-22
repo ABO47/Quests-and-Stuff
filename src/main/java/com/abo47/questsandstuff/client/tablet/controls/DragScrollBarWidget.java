@@ -23,6 +23,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
     private final int trackColor;
     private final int knobColor;
     private final int activeKnobColor;
+    private final int knobVisualWidth;
 
     public DragScrollBarWidget(
             int x,
@@ -40,6 +41,42 @@ public final class DragScrollBarWidget extends WidgetGroup {
             int knobColor,
             int activeKnobColor
     ) {
+        this(
+                x,
+                y,
+                width,
+                height,
+                valueSupplier,
+                maxSupplier,
+                knobHeightSupplier,
+                valueConsumer,
+                draggingSupplier,
+                draggingConsumer,
+                refresh,
+                trackColor,
+                knobColor,
+                activeKnobColor,
+                width
+        );
+    }
+
+    public DragScrollBarWidget(
+            int x,
+            int y,
+            int width,
+            int height,
+            IntSupplier valueSupplier,
+            IntSupplier maxSupplier,
+            IntSupplier knobHeightSupplier,
+            IntConsumer valueConsumer,
+            BooleanSupplier draggingSupplier,
+            Consumer<Boolean> draggingConsumer,
+            Runnable refresh,
+            int trackColor,
+            int knobColor,
+            int activeKnobColor,
+            int knobVisualWidth
+    ) {
         super(x, y, width, height);
         this.valueSupplier = valueSupplier;
         this.maxSupplier = maxSupplier;
@@ -51,6 +88,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
         this.trackColor = trackColor;
         this.knobColor = knobColor;
         this.activeKnobColor = activeKnobColor;
+        this.knobVisualWidth = Math.max(1, Math.min(width, knobVisualWidth));
     }
 
     @Override
@@ -68,7 +106,9 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
         int span = Math.max(0, h - knobH);
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
-        graphics.fill(x, knobY, x + w, knobY + knobH, draggingSupplier.getAsBoolean() ? activeKnobColor : knobColor);
+        int knobW = Math.min(w, knobVisualWidth);
+        int knobX = x + Math.max(0, (w - knobW) / 2);
+        graphics.fill(knobX, knobY, knobX + knobW, knobY + knobH, draggingSupplier.getAsBoolean() ? activeKnobColor : knobColor);
     }
 
     @Override

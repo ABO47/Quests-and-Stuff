@@ -9,6 +9,8 @@ import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
@@ -64,40 +66,29 @@ public final class TabletAssetPickerModal {
                 preview.addWidget(new ImageWidget(8 + Math.max(0, (areaW - drawW) / 2), 48, drawW, drawH, texture));
             }
         }
-        preview.addWidget(button(8, h - 70, leftW - 16, 12, TabletModalPanel.tr("ui.questsandstuff.common.use"), ModColors.SURFACE_PANEL, ModColors.SUCCESS, click -> {
-            if (!state.assetSelected.isBlank()) {
-                TabletModalPanel.runAssetBackgroundAction(player, state, state.assetSelected);
-                closeAll(state);
-                refresh.run();
-            }
-        }));
         modal.addWidget(preview);
 
         int controlsY = 2;
         int controlsH = 16;
-        int backW = 16;
-        int backX = rightX + rightW - backW - 22;
-        int searchW = Math.max(40, backX - rightX - 3);
+        int backY = 1;
+        int backSize = 18;
+        int backX = rightX + rightW - backSize - 22;
+        boolean canGoBack = !dir.isBlank();
+        int searchW = canGoBack ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
         TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.assetSearch, 80, value -> {
             state.assetSearch = SearchFilter.normalize(value);
             state.assetGridScroll = 0;
             refresh.run();
         }, focused -> state.assetSearchFocused = focused);
 
-        WidgetGroup back = panel(backX, controlsY, backW, controlsH, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE);
-        var backIcon = UiIconAtlas.iconTexture("back");
-        if (backIcon != null) {
-            back.addWidget(new ImageWidget(2, 2, 12, 12, backIcon));
-        }
-        modal.addWidget(back);
-        modal.addWidget(flatHitButton(backX, controlsY, backW, controlsH, click -> {
-            if (!dir.isBlank()) {
+        if (canGoBack) {
+            modal.addWidget(WindowChrome.iconButton(backX, backY, backSize, backSize, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
                 state.assetGridScroll = 0;
                 state.assetContextOpen = false;
                 refresh.run();
-            }
-        }));
+            }));
+        }
 
         int listY = 22;
         int listH = h - 48;

@@ -36,8 +36,9 @@ public final class EntityVariantModal {
         int rightW = w - 174;
         int controlsY = 2;
         int controlsH = 16;
-        int backW = 16;
-        int backX = rightX + rightW - backW - 22;
+        int backY = 1;
+        int backSize = 18;
+        int backX = rightX + rightW - backSize - 22;
         int searchW = model.browsingFolder() ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
         TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.entityVariantSearch, 80, value -> {
             state.entityVariantSearch = SearchFilter.normalize(value);
@@ -46,7 +47,7 @@ public final class EntityVariantModal {
         }, focused -> state.entityVariantSearchFocused = focused);
 
         if (model.browsingFolder()) {
-            EntityVariantTiles.addBackButton(modal, backX, controlsY, backW, controlsH, () -> {
+            EntityVariantTiles.addBackButton(modal, backX, backY, backSize, backSize, () -> {
                 state.entityVariantFolder = "";
                 state.entityVariantSearch = "";
                 state.entityVariantScroll = 0;

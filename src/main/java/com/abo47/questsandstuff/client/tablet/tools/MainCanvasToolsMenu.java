@@ -41,7 +41,7 @@ final class MainCanvasToolsMenu {
         final int menuPad = 1;
         final int toolGap = 2;
         final boolean editTools = state.canEdit;
-        final int toolCount = editTools ? 10 : 2;
+        final int toolCount = editTools ? 9 : 1;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -63,7 +63,6 @@ final class MainCanvasToolsMenu {
 
         ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
         addEditRows(rows, state, player, refresh);
-        ToolMenuThemeButton.add(menu, state, refresh, slotX, rows.y(), toolSlot, toolButtonBorder);
 
         state.toolsGridSizeMenuOpen = false;
         state.toolsGridOpacityMenuOpen = false;
@@ -177,7 +176,6 @@ final class MainCanvasToolsMenu {
                     persistUiState(state);
                     refresh.run();
                 });
-        ToolMenuThemeButton.add(menu, state, refresh, x, y + toolSlot + toolGap, toolSlot, border);
     }
 
     private static void rememberBounds(TabletUiState state, int menuX, int menuY, int menuW, int menuH) {

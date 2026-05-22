@@ -92,6 +92,9 @@ final class QuestObjectiveSectionWidget {
 
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+                if (isObjectiveScrollDragging(state, kind)) {
+                    return super.mouseDragged(getPositionX() + scrollbarX(w), mouseY, button, dragX, dragY);
+                }
                 int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h);
                 if (QuestObjectiveListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, h - bottomPad, ly, mouseX, mouseY, button)) {
                     return true;
@@ -101,14 +104,25 @@ final class QuestObjectiveSectionWidget {
 
             @Override
             public boolean mouseReleased(double mouseX, double mouseY, int button) {
+                if (isObjectiveScrollDragging(state, kind)) {
+                    return super.mouseReleased(getPositionX() + scrollbarX(w), mouseY, button);
+                }
                 if (QuestObjectiveListInteractions.handleRelease(player, state, refresh, questId, entries, kind)) {
                     return true;
                 }
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        section.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        section.setBackground(Surfaces.insetPanel());
         return section;
+    }
+
+    private static boolean isObjectiveScrollDragging(TabletUiState state, String kind) {
+        return "requirements".equals(kind) ? state.questDetailsReqScrollDragging : state.questDetailsRewardScrollDragging;
+    }
+
+    private static int scrollbarX(int sectionW) {
+        return Math.max(0, sectionW - DragScrollBarWidget.RESERVED_WIDTH / 2);
     }
 
     private static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, int w, int h, int listY, boolean requirements) {
@@ -124,7 +138,8 @@ final class QuestObjectiveSectionWidget {
             state.questDetailsRewardScroll = ScrollController.clamp(state.questDetailsRewardScroll, maxStart);
         }
         String kind = requirements ? "requirements" : "rewards";
-        WidgetGroup list = clippedList(0, listY, w, visibleH, state, player, refresh, questId, entries, kind, listY, h - 4);
+        int listW = maxStart > 0 ? w - DragScrollBarWidget.RESERVED_WIDTH : w;
+        WidgetGroup list = clippedList(0, listY, listW, visibleH, state, player, refresh, questId, entries, kind, listY, h - 4);
         section.addWidget(list);
         int scroll = requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
         if (entries.isEmpty()) {
@@ -245,7 +260,7 @@ final class QuestObjectiveSectionWidget {
         section.addWidget(new DragScrollBarWidget(
                 w - DragScrollBarWidget.RESERVED_WIDTH,
                 y,
-                DragScrollBarWidget.WIDTH,
+                DragScrollBarWidget.RESERVED_WIDTH,
                 h,
                 () -> requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll,
                 () -> maxStart,
@@ -266,9 +281,10 @@ final class QuestObjectiveSectionWidget {
                     }
                 },
                 refresh,
-                withAlpha(ModColors.BORDER_BASE, 180),
-                withAlpha(ModColors.INTERACTIVE, 180),
-                ModColors.BORDER_ACCENT
+                ModColors.scrollTrack(requirements ? state.questDetailsReqScrollDragging : state.questDetailsRewardScrollDragging),
+                ModColors.scrollThumb(false),
+                ModColors.scrollThumb(true),
+                DragScrollBarWidget.WIDTH
         ));
     }
 

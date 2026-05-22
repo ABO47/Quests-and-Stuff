@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.defaultCanvasBgOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyCanvasBgOpacityPercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.defaultGridOpacityPercent;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
@@ -50,7 +50,7 @@ final class TabletScreenBootstrap {
         state.gridSizeIndex = clampGridSizeIndex(state.gridSizeIndex);
         state.gridOpacityPercent = defaultGridOpacityPercent(state);
         state.toolsGridOpacityDraft = Integer.toString(state.gridOpacityPercent);
-        state.canvasBgOpacityPercent = defaultCanvasBgOpacityPercent(state);
+        applyCanvasBgOpacityPercent(state, state.canvasBgOpacityPercent);
         syncCanvasStateFromCache(state);
         TabletClientHooks.restoreRememberedWindow(state);
         return state;

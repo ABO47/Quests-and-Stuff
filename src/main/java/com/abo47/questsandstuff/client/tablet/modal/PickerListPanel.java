@@ -50,7 +50,7 @@ final class PickerListPanel {
                 return true;
             }
         };
-        list.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE));
+        list.setBackground(Surfaces.bordered(withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder()));
         modal.addWidget(list);
 
         if (entries.isEmpty()) {
@@ -82,9 +82,9 @@ final class PickerListPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    withAlpha(ModColors.SURFACE_BASE, 155),
-                    withAlpha(ModColors.INTERACTIVE, 210),
-                    withAlpha(ModColors.INTERACTIVE, 255)
+                    ModColors.scrollTrack(scroll.dragging()),
+                    ModColors.scrollThumb(false),
+                    ModColors.scrollThumb(true)
             ));
         }
         return list;

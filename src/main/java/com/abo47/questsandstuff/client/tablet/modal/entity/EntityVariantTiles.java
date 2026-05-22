@@ -11,6 +11,8 @@ import com.abo47.questsandstuff.client.tablet.modal.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -21,7 +23,6 @@ import javax.annotation.Nonnull;
 import java.util.Locale;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
@@ -45,7 +46,7 @@ final class EntityVariantTiles {
         WidgetGroup preview = panel(PAD, 22, LEFT_W, h - 48, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
         preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), ModColors.TEXT_PRIMARY));
-        preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 122)) {
+        preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 98)) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 EntityPreviewRenderer.renderEntityAsset(
@@ -61,22 +62,11 @@ final class EntityVariantTiles {
                 );
             }
         });
-        preview.addWidget(button(8, h - 70, LEFT_W - 16, 12, "Use", ModColors.SURFACE_PANEL, ModColors.SUCCESS, click -> {
-            EntityVariantApplyActions.apply(player, state, model.target(), model.selected());
-            closeAll(state);
-            refresh.run();
-        }));
         modal.addWidget(preview);
     }
 
     static void addBackButton(WidgetGroup modal, int x, int y, int w, int h, Runnable action) {
-        WidgetGroup back = panel(x, y, w, h, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE);
-        var backIcon = UiIconAtlas.iconTexture("back");
-        if (backIcon != null) {
-            back.addWidget(new ImageWidget(2, 2, 12, 12, backIcon));
-        }
-        modal.addWidget(back);
-        modal.addWidget(flatHitButton(x, y, w, h, click -> action.run()));
+        modal.addWidget(WindowChrome.iconButton(x, y, w, h, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
     }
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {

@@ -48,19 +48,20 @@ final class TabletWidgets {
 
     static ButtonWidget button(int x, int y, int w, int h, String text, int baseColor, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         GuiTextureGroup base = new GuiTextureGroup(
-                Surfaces.bordered(baseColor, ModColors.BORDER_BASE),
+                Surfaces.bordered(baseColor, ModColors.subtleBorder()),
                 new TextTexture(text)
         );
         GuiTextureGroup active = new GuiTextureGroup(
-                Surfaces.bordered(activeColor, ModColors.BORDER_ACCENT),
+                Surfaces.controlPressed(activeColor),
                 new TextTexture(text)
         );
         ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
         button.setHoverTexture(new GuiTextureGroup(
-                Surfaces.bordered(withAlpha(activeColor, 110), ModColors.BORDER_ACCENT),
+                Surfaces.controlHover(activeColor),
                 new TextTexture(text)
         ));
         button.setClickedTexture(active);
+        button.setClientSideWidget();
         return button;
     }
 

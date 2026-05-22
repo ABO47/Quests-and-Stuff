@@ -32,7 +32,7 @@ final class QuestDetailsToolsMenu {
         final int menuPad = 1;
         final int toolGap = 2;
         final boolean editTools = state.canEdit && state.questDetailsEditMode;
-        final int toolCount = editTools ? 11 : 3;
+        final int toolCount = editTools ? 10 : 2;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -57,7 +57,6 @@ final class QuestDetailsToolsMenu {
         addQuestAutoClaimToggle(menu, state, player, refresh, questId, slotX, rows.y(), toolSlot, toolButtonBorder);
         rows.advancePastCustomRow();
 
-        ToolMenuThemeButton.add(menu, state, refresh, slotX, rows.y(), toolSlot, toolButtonBorder);
         addAnimatedMenu(toolsMenu, state, menu);
     }
 
@@ -165,8 +164,6 @@ final class QuestDetailsToolsMenu {
                 });
         y += toolSlot + toolGap;
         addQuestAutoClaimToggle(menu, state, player, refresh, questId, x, y, toolSlot, border);
-        y += toolSlot + toolGap;
-        ToolMenuThemeButton.add(menu, state, refresh, x, y, toolSlot, border);
     }
 
     private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {

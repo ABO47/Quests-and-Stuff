@@ -99,7 +99,7 @@ public final class UiThemeManager {
                 active.addProperty("theme", normalized);
                 UiThemeFiles.writeString(UiThemeFiles.ACTIVE_THEME_FILE, GSON.toJson(active));
                 state = UiThemeJsonCodec.loadUiThemeState(themePath);
-                applyUiPalette(state.uiColors);
+                applyUiPalette(state);
                 initialized = true;
                 lastCheckMs = System.currentTimeMillis();
                 activeFileMtime = UiThemeFiles.safeMtime(UiThemeFiles.ACTIVE_THEME_FILE);
@@ -142,7 +142,7 @@ public final class UiThemeManager {
             }
 
             state = UiThemeJsonCodec.loadUiThemeState(themePath);
-            applyUiPalette(state.uiColors);
+            applyUiPalette(state);
             initialized = true;
             activeFileMtime = currentActiveMtime;
             themeFileMtime = currentThemeMtime;
@@ -151,7 +151,8 @@ public final class UiThemeManager {
         }
     }
 
-    private static void applyUiPalette(Map<String, Integer> uiColors) {
+    private static void applyUiPalette(UiThemeState state) {
+        Map<String, Integer> uiColors = state.uiColors;
         ModColors.SURFACE_BASE = uiColors.getOrDefault(UI_SURFACE_BASE, ModColors.DEFAULT_SURFACE_BASE);
         ModColors.SURFACE_PANEL = uiColors.getOrDefault(UI_SURFACE_PANEL, ModColors.DEFAULT_SURFACE_PANEL);
         ModColors.SURFACE_PANEL_ALT = uiColors.getOrDefault(UI_SURFACE_PANEL_ALT, ModColors.DEFAULT_SURFACE_PANEL_ALT);
@@ -164,6 +165,16 @@ public final class UiThemeManager {
         ModColors.WARNING = uiColors.getOrDefault(UI_WARNING, ModColors.DEFAULT_WARNING);
         ModColors.ERROR = uiColors.getOrDefault(UI_ERROR, ModColors.DEFAULT_ERROR);
         ModColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, ModColors.DEFAULT_INTERACTIVE);
+        int scrollTrack = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_TRACK, ModColors.DEFAULT_SCROLL_TRACK);
+        int scrollThumb = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_THUMB, ModColors.DEFAULT_SCROLL_THUMB);
+        if (scrollTrack == ModColors.DEFAULT_SCROLL_TRACK && ModColors.BORDER_BASE != ModColors.DEFAULT_BORDER_BASE) {
+            scrollTrack = ModColors.BORDER_BASE;
+        }
+        if (scrollThumb == ModColors.DEFAULT_SCROLL_THUMB && ModColors.INTERACTIVE != ModColors.DEFAULT_INTERACTIVE) {
+            scrollThumb = ModColors.INTERACTIVE;
+        }
+        ModColors.SCROLL_TRACK = scrollTrack;
+        ModColors.SCROLL_THUMB = scrollThumb;
     }
 
     public record ThemeInfo(String id, String label, int panel, int panelAlt, int accent, int success, int text) {

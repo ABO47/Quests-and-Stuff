@@ -97,8 +97,8 @@ final class CanvasSceneRenderer {
         addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, gutterFill);
 
         int alphaPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
-        int alpha = Math.max(0, Math.min(220, (255 * alphaPercent) / 100));
-        int background = withAlpha(ModColors.SURFACE_BASE, Math.min(190, alpha));
+        int alpha = Math.max(0, Math.min(255, (255 * alphaPercent) / 100));
+        int background = withAlpha(ModColors.SURFACE_BASE, alpha);
         addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, background);
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
         if (canvasBackground != null) {

@@ -3,7 +3,6 @@ package com.abo47.questsandstuff.client.tablet.controls;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -25,7 +24,7 @@ public final class IconOnlyButton extends ButtonWidget {
 
     private IconOnlyButton(int x, int y, int size, ResourceLocation icon, int normalColor, int hoverColor, Consumer<ClickData> callback) {
         super(x, y, size, size, Surfaces.fill(0x00000000), callback);
-        this.iconSize = Math.min(TabletUiFactory.ACTION_ICON_SIZE, Math.max(8, size - 4));
+        this.iconSize = Math.max(8, size - 2);
         this.normalColor = normalColor;
         this.hoverColor = hoverColor;
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> drawingHover ? this.hoverColor : this.normalColor);

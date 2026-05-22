@@ -30,7 +30,6 @@ final class ChapterListMetrics {
     }
 
     static void addScrollBar(WidgetGroup chapterList, TabletUiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
-        int trackAlpha = state.chapterScrollDragging ? 190 : 130;
         int knobH = Math.max(18, (int) ((float) trackH * ((float) trackH / (float) Math.max(trackH, totalHeight))));
         state.chapterScrollKnobH = knobH;
         chapterList.addWidget(new DragScrollBarWidget(
@@ -45,9 +44,9 @@ final class ChapterListMetrics {
                 () -> state.chapterScrollDragging,
                 dragging -> state.chapterScrollDragging = dragging,
                 refresh,
-                TabletUiFactory.withAlpha(ModColors.BORDER_BASE, trackAlpha),
-                TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 220),
-                TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 255)
+                ModColors.scrollTrack(state.chapterScrollDragging),
+                ModColors.scrollThumb(false),
+                ModColors.scrollThumb(true)
         ));
     }
 

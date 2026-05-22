@@ -37,6 +37,6 @@ public final class ModalShell {
     }
 
     public static WidgetGroup bodyPanel(int x, int y, int w, int h) {
-        return Surfaces.panel(x, y, w, h, com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE);
+        return Surfaces.panel(x, y, w, h, com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder());
     }
 }

@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -22,6 +23,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelLighting;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
 
 public final class ModalPanelRouter {
     private ModalPanelRouter() {
@@ -54,7 +58,15 @@ public final class ModalPanelRouter {
             }
         };
         overlay.addWidget(dim);
-        WidgetGroup modal = TabletUiFactory.panel(mx, my, w, h, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT);
+        WidgetGroup modal = new WidgetGroup(mx, my, w, h) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                drawWindowShadow(graphics, this);
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+                drawPanelLighting(graphics, this);
+            }
+        };
+        modal.setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
         if (state.iconPickerOpen) {
             iconSearchField = TabletIconPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.assetPickerOpen) {

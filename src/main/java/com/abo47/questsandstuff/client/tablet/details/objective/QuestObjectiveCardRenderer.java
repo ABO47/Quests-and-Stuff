@@ -159,13 +159,8 @@ final class QuestObjectiveCardRenderer {
         boolean selected = selectableReward && !state.questDetailsEditMode
                 ? QuestObjectiveSelectableRewards.isSelectedChoice(state, id)
                 : kind.startsWith(state.questDetailsSelectedObjectiveKind) && id.equals(state.questDetailsSelectedObjectiveId);
-        int cardFill = claimedReward
-                ? withAlpha(ModColors.TEXT_MUTED, 34)
-                : (selectableReward
-                ? withAlpha(selected ? ModColors.SUCCESS : ModColors.WARNING, selected ? 78 : 56)
-                : ModColors.SURFACE_PANEL_ALT);
-        int border = claimedReward ? ModColors.BORDER_BASE : (selected ? ModColors.SUCCESS : (selectableReward ? ModColors.WARNING : ModColors.BORDER_BASE));
-        card.setBackground(Surfaces.bordered(cardFill, border));
+        int accent = selectableReward ? (selected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;
+        card.setBackground(Surfaces.card(selected || selectableReward, accent, claimedReward));
         int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {
             WidgetGroup fill = new WidgetGroup(1, 1, Math.max(1, fillW), QuestDetailsObjectivesPanel.CARD_H - 2);

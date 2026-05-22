@@ -35,10 +35,20 @@ final class UiThemeDefaults {
         JsonObject root = defaultThemeJson();
         root.addProperty("name", name);
         JsonObject colorJson = root.getAsJsonObject("colors");
+        boolean customScrollTrack = false;
+        boolean customScrollThumb = false;
         for (String[] color : colors) {
             if (color.length >= 2) {
                 colorJson.addProperty(color[0], color[1]);
+                customScrollTrack |= UiThemeManager.ROLE_ICON_SCROLL_TRACK.equals(color[0]);
+                customScrollThumb |= UiThemeManager.ROLE_ICON_SCROLL_THUMB.equals(color[0]);
             }
+        }
+        if (!customScrollTrack && colorJson.has(UiThemeManager.UI_BORDER_BASE)) {
+            colorJson.addProperty(UiThemeManager.ROLE_ICON_SCROLL_TRACK, colorJson.get(UiThemeManager.UI_BORDER_BASE).getAsString());
+        }
+        if (!customScrollThumb && colorJson.has(UiThemeManager.UI_INTERACTIVE)) {
+            colorJson.addProperty(UiThemeManager.ROLE_ICON_SCROLL_THUMB, colorJson.get(UiThemeManager.UI_INTERACTIVE).getAsString());
         }
         return root;
     }

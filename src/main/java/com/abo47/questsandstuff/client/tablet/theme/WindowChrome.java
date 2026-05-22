@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.theme;
 
 
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -19,19 +18,19 @@ public final class WindowChrome {
     public static ButtonWidget iconButton(int x, int y, int w, int h, String icon, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         IGuiTexture glyph = UiIconAtlas.iconTexture(icon);
         IGuiTexture iconTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
-            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, ModColors.SURFACE_PANEL_ALT);
+            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, ModColors.elevatedSurface());
             drawBorder(graphics, (int) x0, (int) y0, width, height, ModColors.BORDER_BASE);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
 
         IGuiTexture hoverTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
-            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, UiThemeTokens.withAlpha(activeColor, 56));
-            drawBorder(graphics, (int) x0, (int) y0, width, height, activeColor);
+            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, ModColors.hoverFill(activeColor));
+            drawBorder(graphics, (int) x0, (int) y0, width, height, ModColors.focusBorder());
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
 
         IGuiTexture clickedTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
-            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, UiThemeTokens.withAlpha(activeColor, 64));
+            graphics.fill((int) x0, (int) y0, (int) x0 + width, (int) y0 + height, ModColors.pressedFill(activeColor));
             drawBorder(graphics, (int) x0, (int) y0, width, height, activeColor);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
