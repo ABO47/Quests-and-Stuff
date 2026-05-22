@@ -281,9 +281,10 @@ final class QuestObjectiveSectionWidget {
                     }
                 },
                 refresh,
-                withAlpha(ModColors.BORDER_BASE, 180),
-                withAlpha(ModColors.INTERACTIVE, 180),
-                ModColors.BORDER_ACCENT
+                withAlpha(ModColors.BORDER_BASE, requirements ? (state.questDetailsReqScrollDragging ? 190 : 130) : (state.questDetailsRewardScrollDragging ? 190 : 130)),
+                withAlpha(ModColors.INTERACTIVE, 220),
+                withAlpha(ModColors.INTERACTIVE, 255),
+                DragScrollBarWidget.WIDTH
         ));
     }
 
