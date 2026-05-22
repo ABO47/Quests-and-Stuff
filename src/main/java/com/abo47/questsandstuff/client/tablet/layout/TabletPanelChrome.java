@@ -10,11 +10,46 @@ public final class TabletPanelChrome {
     private TabletPanelChrome() {
     }
 
+    public static void drawWindowShadow(GuiGraphics graphics, WidgetGroup panel) {
+        drawWindowShadow(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSizeWidth(), panel.getSizeHeight());
+    }
+
+    public static void drawWindowShadow(GuiGraphics graphics, int x, int y, int w, int h) {
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        int soft = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 82);
+        int hard = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 120);
+        graphics.fill(x + 4, y + 5, x + w + 4, y + h + 5, soft);
+        graphics.fill(x + 2, y + 3, x + w + 2, y + h + 3, hard);
+    }
+
+    public static void drawPanelLighting(GuiGraphics graphics, WidgetGroup panel) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSizeWidth();
+        int h = panel.getSizeHeight();
+        drawPanelLighting(graphics, x, y, w, h);
+    }
+
+    public static void drawPanelLighting(GuiGraphics graphics, int x, int y, int w, int h) {
+        if (w <= 2 || h <= 2) {
+            return;
+        }
+        int highlight = UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 22);
+        int shade = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 96);
+        graphics.fill(x + 1, y + 1, x + w - 1, y + 2, highlight);
+        graphics.fill(x + 1, y + 2, x + 2, y + h - 1, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 10));
+        graphics.fill(x + 1, y + h - 2, x + w - 1, y + h - 1, shade);
+        graphics.fill(x + w - 2, y + 2, x + w - 1, y + h - 1, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 70));
+    }
+
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
         drawCanvasPanelChrome(graphics, panel, state.canvasViewportX, state.canvasViewportY, state.canvasViewportW, state.canvasViewportH);
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH) {
+        drawWindowShadow(graphics, panel);
         int x = panel.getPositionX();
         int y = panel.getPositionY();
         int w = panel.getSize().width;
@@ -37,6 +72,7 @@ public final class TabletPanelChrome {
             fillPanelRect(graphics, innerLeft, holeTop, holeLeft, holeBottom);
             fillPanelRect(graphics, holeRight, holeTop, innerRight, holeBottom);
         }
+        drawPanelLighting(graphics, x, y, w, h);
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
@@ -63,6 +99,7 @@ public final class TabletPanelChrome {
     }
 
     public static void drawPanelChrome(GuiGraphics graphics, WidgetGroup panel) {
+        drawWindowShadow(graphics, panel);
         int x = panel.getPositionX();
         int y = panel.getPositionY();
         int w = panel.getSize().width;
@@ -70,8 +107,7 @@ public final class TabletPanelChrome {
         int right = x + Math.max(1, w - 1);
         int bottom = y + Math.max(1, h - 1);
         fillPanelRect(graphics, x + 1, y + 1, right, bottom);
-        graphics.fill(x + 1, y + 1, right, y + 2, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 18));
-        graphics.fill(x + 1, bottom - 1, right, bottom, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 96));
+        drawPanelLighting(graphics, x, y, w, h);
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
