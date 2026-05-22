@@ -5,21 +5,21 @@ public final class ModColors {
     private ModColors() {
     }
 
-    public static final int DEFAULT_SURFACE_BASE = 0xFF1D2730;
-    public static final int DEFAULT_SURFACE_PANEL = 0xFF22313D;
-    public static final int DEFAULT_SURFACE_PANEL_ALT = 0xFF2A3A48;
+    public static final int DEFAULT_SURFACE_BASE = 0xFF171C21;
+    public static final int DEFAULT_SURFACE_PANEL = 0xFF202933;
+    public static final int DEFAULT_SURFACE_PANEL_ALT = 0xFF2C3742;
 
-    public static final int DEFAULT_BORDER_BASE = 0xFF4B6A84;
-    public static final int DEFAULT_BORDER_ACCENT = 0xFF7FB5D9;
+    public static final int DEFAULT_BORDER_BASE = 0xFF546170;
+    public static final int DEFAULT_BORDER_ACCENT = 0xFF65B7C8;
 
-    public static final int DEFAULT_TEXT_PRIMARY = 0xFFE8F4FF;
-    public static final int DEFAULT_TEXT_SECONDARY = 0xFFB7CFDF;
-    public static final int DEFAULT_TEXT_MUTED = 0xFF8EA5B7;
+    public static final int DEFAULT_TEXT_PRIMARY = 0xFFEAF1F4;
+    public static final int DEFAULT_TEXT_SECONDARY = 0xFFB8C7CE;
+    public static final int DEFAULT_TEXT_MUTED = 0xFF88979F;
 
-    public static final int DEFAULT_SUCCESS = 0xFF63D187;
-    public static final int DEFAULT_WARNING = 0xFFE7B84B;
-    public static final int DEFAULT_ERROR = 0xFFE06D6D;
-    public static final int DEFAULT_INTERACTIVE = 0xFF53A6E8;
+    public static final int DEFAULT_SUCCESS = 0xFF66D38D;
+    public static final int DEFAULT_WARNING = 0xFFE5B44A;
+    public static final int DEFAULT_ERROR = 0xFFE06F73;
+    public static final int DEFAULT_INTERACTIVE = 0xFF64C3D2;
 
     public static int SURFACE_BASE = DEFAULT_SURFACE_BASE;
     public static int SURFACE_PANEL = DEFAULT_SURFACE_PANEL;
@@ -36,4 +36,38 @@ public final class ModColors {
     public static int WARNING = DEFAULT_WARNING;
     public static int ERROR = DEFAULT_ERROR;
     public static int INTERACTIVE = DEFAULT_INTERACTIVE;
+
+    public static int elevatedSurface() {
+        return mix(SURFACE_PANEL_ALT, TEXT_PRIMARY, 10);
+    }
+
+    public static int recessedSurface() {
+        return mix(SURFACE_BASE, 0xFF000000, 12);
+    }
+
+    public static int subtleBorder() {
+        return mix(BORDER_BASE, SURFACE_BASE, 28);
+    }
+
+    public static int focusBorder() {
+        return mix(BORDER_ACCENT, TEXT_PRIMARY, 10);
+    }
+
+    public static int hoverFill(int accent) {
+        return UiThemeTokens.withAlpha(accent, 46);
+    }
+
+    public static int pressedFill(int accent) {
+        return UiThemeTokens.withAlpha(accent, 76);
+    }
+
+    private static int mix(int color, int other, int otherPercent) {
+        int p = Math.max(0, Math.min(100, otherPercent));
+        int inv = 100 - p;
+        int a = (((color >>> 24) & 0xFF) * inv + ((other >>> 24) & 0xFF) * p) / 100;
+        int r = (((color >>> 16) & 0xFF) * inv + ((other >>> 16) & 0xFF) * p) / 100;
+        int g = (((color >>> 8) & 0xFF) * inv + ((other >>> 8) & 0xFF) * p) / 100;
+        int b = ((color & 0xFF) * inv + (other & 0xFF) * p) / 100;
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
 }

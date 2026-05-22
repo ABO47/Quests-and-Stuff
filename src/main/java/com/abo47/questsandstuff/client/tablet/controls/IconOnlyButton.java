@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -63,6 +64,10 @@ public final class IconOnlyButton extends ButtonWidget {
         drawingHover = isMouseOverElement(mouseX, mouseY) && isActive();
         super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         Position pos = getPosition();
+        if (drawingHover) {
+            graphics.fill(pos.x, pos.y, pos.x + getSizeWidth(), pos.y + getSizeHeight(), ModColors.hoverFill(hoverColor));
+            graphics.renderOutline(pos.x, pos.y, getSizeWidth(), getSizeHeight(), ModColors.focusBorder());
+        }
         int iconX = pos.x + Math.max(0, (getSizeWidth() - iconSize) / 2);
         int iconY = pos.y + Math.max(0, (getSizeHeight() - iconSize) / 2);
         iconTexture.draw(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize);

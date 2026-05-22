@@ -54,7 +54,7 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE));
+        surface.setBackground(Surfaces.bordered(withAlpha(ModColors.elevatedSurface(), 150), ModColors.subtleBorder()));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {

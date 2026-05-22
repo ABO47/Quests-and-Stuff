@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -66,11 +67,15 @@ public final class TabletPanelChrome {
         int y = panel.getPositionY();
         int w = panel.getSize().width;
         int h = panel.getSize().height;
-        fillPanelRect(graphics, x + 1, y + 1, x + Math.max(1, w - 1), y + Math.max(1, h - 1));
+        int right = x + Math.max(1, w - 1);
+        int bottom = y + Math.max(1, h - 1);
+        fillPanelRect(graphics, x + 1, y + 1, right, bottom);
+        graphics.fill(x + 1, y + 1, right, y + 2, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 18));
+        graphics.fill(x + 1, bottom - 1, right, bottom, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 96));
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
-        graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_ACCENT);
+        graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
     }
 
     private static int gridLineColor(TabletUiState state) {

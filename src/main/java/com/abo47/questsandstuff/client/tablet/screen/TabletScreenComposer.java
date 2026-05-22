@@ -63,7 +63,7 @@ public final class TabletScreenComposer {
         int initialChapterW = chapterPanelWidth(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, ModColors.SURFACE_PANEL, ModColors.BORDER_ACCENT);
+        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, CANVAS_H) {
             @Override
@@ -134,7 +134,7 @@ public final class TabletScreenComposer {
             int dynamicListX = chapterCollapsed ? 4 : chapterSideInset;
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - 8) : Math.max(24, chapterW - chapterSideInset * 2);
 
-            chapterPanelRef[0].setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_ACCENT));
+            chapterPanelRef[0].setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
             chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);

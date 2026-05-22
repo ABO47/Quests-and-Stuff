@@ -25,7 +25,7 @@ public final class ActionButtons {
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, int height, String icon, String text, int color, Component[] tooltips, Consumer<ClickData> callback) {
-        parent.addWidget(Surfaces.panel(x, y, width, height, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE));
+        parent.addWidget(Surfaces.panel(x, y, width, height, withAlpha(ModColors.elevatedSurface(), 210), ModColors.subtleBorder()));
         int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, height - 4));
         String safeText = text == null ? "" : text;
         int textWidth = Minecraft.getInstance().font.width(safeText);
@@ -38,8 +38,8 @@ public final class ActionButtons {
         parent.addWidget(new ImageWidget(contentX, iconY, iconSize, iconSize, UiIconAtlas.iconTexture(icon)));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(color, 45), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(color, 80)));
+        hit.setHoverTexture(Surfaces.controlHover(color));
+        hit.setClickedTexture(Surfaces.controlPressed(color));
         if (tooltips != null) {
             hit.setHoverTooltips(tooltips);
         }

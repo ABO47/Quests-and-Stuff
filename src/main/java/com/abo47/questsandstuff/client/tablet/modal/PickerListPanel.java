@@ -50,7 +50,7 @@ final class PickerListPanel {
                 return true;
             }
         };
-        list.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE));
+        list.setBackground(Surfaces.bordered(withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder()));
         modal.addWidget(list);
 
         if (entries.isEmpty()) {

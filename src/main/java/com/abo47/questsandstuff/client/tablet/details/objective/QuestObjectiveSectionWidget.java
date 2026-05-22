@@ -107,7 +107,7 @@ final class QuestObjectiveSectionWidget {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        section.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        section.setBackground(Surfaces.insetPanel());
         return section;
     }
 

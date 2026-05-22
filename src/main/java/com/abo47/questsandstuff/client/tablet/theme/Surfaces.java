@@ -21,6 +21,38 @@ public final class Surfaces {
         return bordered(0x00000000, borderColor);
     }
 
+    public static GuiTextureGroup panel() {
+        return bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
+    }
+
+    public static GuiTextureGroup insetPanel() {
+        return bordered(ModColors.recessedSurface(), ModColors.subtleBorder());
+    }
+
+    public static GuiTextureGroup raisedPanel() {
+        return bordered(ModColors.elevatedSurface(), ModColors.BORDER_BASE);
+    }
+
+    public static GuiTextureGroup control() {
+        return bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
+    }
+
+    public static GuiTextureGroup controlHover(int accentColor) {
+        return bordered(ModColors.hoverFill(accentColor), ModColors.focusBorder());
+    }
+
+    public static GuiTextureGroup controlPressed(int accentColor) {
+        return bordered(ModColors.pressedFill(accentColor), accentColor);
+    }
+
+    public static GuiTextureGroup card(boolean selected, int accentColor, boolean muted) {
+        int fill = muted
+                ? UiThemeTokens.withAlpha(ModColors.TEXT_MUTED, 34)
+                : (selected ? UiThemeTokens.withAlpha(accentColor, 70) : ModColors.elevatedSurface());
+        int border = muted ? ModColors.subtleBorder() : (selected ? accentColor : ModColors.subtleBorder());
+        return bordered(fill, border);
+    }
+
     public static WidgetGroup panel(int x, int y, int w, int h, int fillColor, int borderColor) {
         WidgetGroup panel = new WidgetGroup(x, y, w, h);
         panel.setBackground(bordered(fillColor, borderColor));
