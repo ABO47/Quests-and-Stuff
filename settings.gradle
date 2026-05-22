@@ -1,17 +1,19 @@
 pluginManagement {
     repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.architectury.dev/' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
         gradlePluginPortal()
-        maven {
-            name = 'MinecraftForge'
-            url = 'https://maven.minecraftforge.net/'
-        }
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
     }
 }
 
-plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
-}
+rootProject.name = 'Quests and Stuff'
+
+include 'questsandstuff-common'
+include 'questsandstuff-forge'
+include 'questsandstuff-fabric'
+
+project(':questsandstuff-common').projectDir = file('common')
+project(':questsandstuff-forge').projectDir = file('forge')
+project(':questsandstuff-fabric').projectDir = file('fabric')
