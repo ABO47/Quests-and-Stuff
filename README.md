@@ -20,17 +20,19 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 
 ## Features
 
-- Full in-game visual editor (so no need for any external tools or scripting)
+- Forge and Fabric support
+- In-game visual editor
 - Straight or grid-style connection lines
 - Custom connection colors
-- Item, XP, biome, entity, and manual-check requirements
-- Item, XP, command, and loot table rewards
+- Item, XP, biome, dimension visit, entity kill, and manual check requirements
+- Item, XP, command, loot table, and selectable rewards
 - Custom quest icons
 - Custom chapter icons
-- Custom quest backgrounds
-- Custom chapter backgrounds
+- Custom quest details backgrounds
 - Custom chapter card backgrounds
+- Custom chapter canvas backgrounds
 - Custom completion sounds
+- Quest completion HUD
 - Add text, images, and entity previews on the canvas next to quests
 - Copy, paste, undo, and redo
 - Grid, snapping, center guides, and other editor tools
@@ -39,17 +41,17 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 
 ## WIP
 
-- UI for the remaining requirement types
-- UI for the remaining reward types
+- UI for advancement, recipe, structure, block interaction, entity interaction, item interaction, item use, and stat requirements
+- Full coordinate/radius UI for location requirements
 
 ## TODO
 
+- write docs and record some tutorial videos
 - custom quest card backgrounds
 - custom quest card shapes
 - Blueprint system for reusable quest layouts
 - Import and export for quest packs
-- Custom quest completion HUD
-- fabric support :>
+- more customizable quest completion HUD
 
 ## SOME NOTES
 
