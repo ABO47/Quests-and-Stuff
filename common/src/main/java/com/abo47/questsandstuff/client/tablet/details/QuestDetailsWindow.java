@@ -73,6 +73,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyAdvancementPick(player, state, advancement);
     }
 
+    public static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        QuestDetailsWindowActions.applyStructurePick(player, state, structure);
+    }
+
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestDetailsWindowActions.applyDimensionPick(player, state, dimension);
     }
@@ -139,6 +143,10 @@ public final class QuestDetailsWindow {
 
     public static void openAdvancementPicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openAdvancementPicker(state, target);
+    }
+
+    public static void openStructurePicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openStructurePicker(state, target);
     }
 
     public static void openDimensionPicker(TabletUiState state, String target) {

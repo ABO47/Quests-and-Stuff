@@ -59,6 +59,18 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
     }
 
+    public static void openStructurePicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.structureSearch = "";
+        state.structureScroll = 0;
+        state.structureScrollDragging = false;
+        state.structureSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.STRUCTURE_PICKER);
+    }
+
     public static void openDimensionPicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";

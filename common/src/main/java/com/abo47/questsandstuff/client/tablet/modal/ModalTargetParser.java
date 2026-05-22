@@ -39,6 +39,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_ADVANCEMENT);
         }
 
+        public boolean isTaskStructure() {
+            return is(ModalTargets.TASK_STRUCTURE);
+        }
+
         public boolean isTaskDimension() {
             return is(ModalTargets.TASK_DIMENSION);
         }

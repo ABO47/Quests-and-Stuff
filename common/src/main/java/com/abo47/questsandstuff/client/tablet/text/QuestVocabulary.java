@@ -42,6 +42,7 @@ public final class QuestVocabulary {
     public static final String CHOOSE_BIOME = "ui.questsandstuff.quest.choose_biome";
     public static final String CHOOSE_DIMENSION = "ui.questsandstuff.quest.choose_dimension";
     public static final String CHOOSE_LOOT_TABLE = "ui.questsandstuff.quest.choose_loot_table";
+    public static final String CHOOSE_STRUCTURE = "ui.questsandstuff.quest.choose_structure";
     public static final String CHOOSE_INVENTORY_ITEM = "ui.questsandstuff.quest.choose_inventory_item";
     public static final String FROM_INVENTORY = "ui.questsandstuff.quest.from_inventory";
     public static final String KILL_ENTITY = "ui.questsandstuff.quest.kill_entity";
@@ -52,6 +53,7 @@ public final class QuestVocabulary {
     public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
     public static final String NO_INVENTORY_ITEMS = "ui.questsandstuff.quest.no_inventory_items";
+    public static final String NO_STRUCTURES = "ui.questsandstuff.quest.no_structures";
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
@@ -106,6 +108,7 @@ public final class QuestVocabulary {
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
+    public static final String TYPE_VISIT_STRUCTURE = "ui.questsandstuff.quest.type.visit_structure";
     public static final String TYPE_XP = "ui.questsandstuff.quest.type.xp";
 
     private QuestVocabulary() {

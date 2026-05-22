@@ -44,6 +44,10 @@ public final class QuestDetailsObjectivesPanel {
         QuestObjectiveEditActions.applyAdvancementPick(player, state, advancement);
     }
 
+    public static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        QuestObjectiveEditActions.applyStructurePick(player, state, structure);
+    }
+
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestObjectiveEditActions.applyDimensionPick(player, state, dimension);
     }

@@ -98,6 +98,7 @@ public final class TabletRootWindowController {
                 || state.assetSearchFocused
                 || state.biomeSearchFocused
                 || state.advancementSearchFocused
+                || state.structureSearchFocused
                 || state.dimensionSearchFocused
                 || state.lootTableSearchFocused
                 || state.toolsSearchFocused

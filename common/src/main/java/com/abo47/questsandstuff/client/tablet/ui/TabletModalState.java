@@ -19,6 +19,7 @@ public final class TabletModalState {
         state.assetPickerOpen = flags.assetOpen();
         state.biomePickerOpen = flags.biomeOpen();
         state.advancementPickerOpen = flags.advancementOpen();
+        state.structurePickerOpen = flags.structureOpen();
         state.dimensionPickerOpen = flags.dimensionOpen();
         state.lootTablePickerOpen = flags.lootTableOpen();
         state.itemInventoryPickerOpen = flags.itemInventoryOpen();
@@ -158,6 +159,8 @@ public final class TabletModalState {
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
+        state.structureSearchFocused = false;
+        state.structureScrollDragging = false;
         state.dimensionSearchFocused = false;
         state.dimensionScrollDragging = false;
         state.lootTableSearchFocused = false;
@@ -185,6 +188,8 @@ public final class TabletModalState {
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
+        state.structureSearchFocused = false;
+        state.structureScrollDragging = false;
         state.dimensionSearchFocused = false;
         state.dimensionScrollDragging = false;
         state.lootTableSearchFocused = false;

@@ -133,6 +133,21 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
     }
 
+    static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || structure == null || structure.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskStructure()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "minecraft:map");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || dimension == null || dimension.isBlank()) {
@@ -268,6 +283,10 @@ public final class QuestObjectiveEditActions {
         }
         if ("advancement".equals(typePath)) {
             QuestDetailsWindow.openAdvancementPicker(state, ModalTargets.taskAdvancement(questId, id, type));
+            return;
+        }
+        if ("structure".equals(typePath)) {
+            QuestDetailsWindow.openStructurePicker(state, ModalTargets.taskStructure(questId, id, type));
             return;
         }
         if ("location".equals(typePath)) {

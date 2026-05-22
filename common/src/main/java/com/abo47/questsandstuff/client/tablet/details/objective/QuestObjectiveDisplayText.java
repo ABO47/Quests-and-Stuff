@@ -83,6 +83,10 @@ final class QuestObjectiveDisplayText {
             );
             return advancementName.isBlank() ? typeLabel(type) : advancementName;
         }
+        if ("structure".equals(path)) {
+            String structureName = DisplayNameFormatter.resourceLeaf(QuestObjectiveJsons.asString(json, "target", ""));
+            return structureName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, structureName);
+        }
         if ("location".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));
         }
@@ -134,7 +138,7 @@ final class QuestObjectiveDisplayText {
     static boolean usesAmountField(JsonObject json, boolean task) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         if (task) {
-            return !isManualTask(json) && !"biome".equals(path) && !"advancement".equals(path) && !"location".equals(path);
+            return !isManualTask(json) && !"biome".equals(path) && !"advancement".equals(path) && !"structure".equals(path) && !"location".equals(path);
         }
         return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }

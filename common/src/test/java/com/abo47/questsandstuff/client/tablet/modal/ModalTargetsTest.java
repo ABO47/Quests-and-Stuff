@@ -9,6 +9,7 @@ class ModalTargetsTest {
     void buildersTrimPartsAndKeepEmptySlots() {
         assertEquals("task_item|quest|task|item", ModalTargets.taskItem(" quest ", " task ", " item "));
         assertEquals("task_advancement|quest|task|advancement", ModalTargets.taskAdvancement(" quest ", " task ", " advancement "));
+        assertEquals("task_structure|quest|task|structure", ModalTargets.taskStructure(" quest ", " task ", " structure "));
         assertEquals("kind|a||c", ModalTargets.of(" kind ", " a ", null, " c "));
     }
 

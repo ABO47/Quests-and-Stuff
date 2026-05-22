@@ -5,6 +5,7 @@ public final class ModalTargets {
     public static final String TASK_INVENTORY_ITEM = "task_inventory_item";
     public static final String TASK_BIOME = "task_biome";
     public static final String TASK_ADVANCEMENT = "task_advancement";
+    public static final String TASK_STRUCTURE = "task_structure";
     public static final String TASK_DIMENSION = "task_dimension";
     public static final String TASK_ENTITY = "task_entity";
     public static final String TASK_SIMPLE_ICON = "task_simple_icon";
@@ -58,6 +59,10 @@ public final class ModalTargets {
 
     public static String taskAdvancement(String questId, String taskId, String type) {
         return of(TASK_ADVANCEMENT, questId, taskId, type);
+    }
+
+    public static String taskStructure(String questId, String taskId, String type) {
+        return of(TASK_STRUCTURE, questId, taskId, type);
     }
 
     public static String taskDimension(String questId, String taskId, String type) {
