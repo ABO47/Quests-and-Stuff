@@ -66,13 +66,6 @@ public final class TabletAssetPickerModal {
                 preview.addWidget(new ImageWidget(8 + Math.max(0, (areaW - drawW) / 2), 48, drawW, drawH, texture));
             }
         }
-        preview.addWidget(button(8, h - 70, leftW - 16, 12, TabletModalPanel.tr("ui.questsandstuff.common.use"), ModColors.SURFACE_PANEL, ModColors.SUCCESS, click -> {
-            if (!state.assetSelected.isBlank()) {
-                TabletModalPanel.runAssetBackgroundAction(player, state, state.assetSelected);
-                closeAll(state);
-                refresh.run();
-            }
-        }));
         modal.addWidget(preview);
 
         int controlsY = 2;

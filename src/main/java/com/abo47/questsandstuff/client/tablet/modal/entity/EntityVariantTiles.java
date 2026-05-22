@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 import java.util.Locale;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
@@ -47,7 +46,7 @@ final class EntityVariantTiles {
         WidgetGroup preview = panel(PAD, 22, LEFT_W, h - 48, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
         preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), ModColors.TEXT_PRIMARY));
-        preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 122)) {
+        preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 98)) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 EntityPreviewRenderer.renderEntityAsset(
@@ -63,11 +62,6 @@ final class EntityVariantTiles {
                 );
             }
         });
-        preview.addWidget(button(8, h - 70, LEFT_W - 16, 12, "Use", ModColors.SURFACE_PANEL, ModColors.SUCCESS, click -> {
-            EntityVariantApplyActions.apply(player, state, model.target(), model.selected());
-            closeAll(state);
-            refresh.run();
-        }));
         modal.addWidget(preview);
     }
 
