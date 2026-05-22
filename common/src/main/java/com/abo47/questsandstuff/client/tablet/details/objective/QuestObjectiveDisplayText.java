@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -74,6 +76,13 @@ final class QuestObjectiveDisplayText {
         if ("biome".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "target", "")));
         }
+        if ("advancement".equals(path)) {
+            String advancementName = DisplayNameFormatter.advancement(
+                    QuestObjectiveJsons.asString(json, "target", ""),
+                    ClientQuestCache.advancementDisplays()
+            );
+            return advancementName.isBlank() ? typeLabel(type) : advancementName;
+        }
         if ("location".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));
         }
@@ -125,7 +134,7 @@ final class QuestObjectiveDisplayText {
     static boolean usesAmountField(JsonObject json, boolean task) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         if (task) {
-            return !isManualTask(json) && !"biome".equals(path) && !"location".equals(path);
+            return !isManualTask(json) && !"biome".equals(path) && !"advancement".equals(path) && !"location".equals(path);
         }
         return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }

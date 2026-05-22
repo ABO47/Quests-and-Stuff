@@ -102,6 +102,7 @@ public class TabletUiState {
     public boolean iconPickerOpen;
     public boolean assetPickerOpen;
     public boolean biomePickerOpen;
+    public boolean advancementPickerOpen;
     public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
     public boolean itemInventoryPickerOpen;
@@ -147,6 +148,10 @@ public class TabletUiState {
     public boolean biomeSearchFocused;
     public int biomeScroll;
     public boolean biomeScrollDragging;
+    public String advancementSearch = "";
+    public boolean advancementSearchFocused;
+    public int advancementScroll;
+    public boolean advancementScrollDragging;
     public String dimensionSearch = "";
     public boolean dimensionSearchFocused;
     public int dimensionScroll;

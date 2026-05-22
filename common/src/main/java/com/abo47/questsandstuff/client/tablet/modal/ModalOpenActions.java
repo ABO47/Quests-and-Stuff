@@ -47,6 +47,18 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.BIOME_PICKER);
     }
 
+    public static void openAdvancementPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.advancementSearch = "";
+        state.advancementScroll = 0;
+        state.advancementScrollDragging = false;
+        state.advancementSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
+    }
+
     public static void openDimensionPicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";

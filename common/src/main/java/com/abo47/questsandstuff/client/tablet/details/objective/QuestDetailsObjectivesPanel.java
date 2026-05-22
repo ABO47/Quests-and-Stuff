@@ -40,6 +40,10 @@ public final class QuestDetailsObjectivesPanel {
         QuestObjectiveEditActions.applyBiomePick(player, state, biome);
     }
 
+    public static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        QuestObjectiveEditActions.applyAdvancementPick(player, state, advancement);
+    }
+
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestObjectiveEditActions.applyDimensionPick(player, state, dimension);
     }

@@ -33,6 +33,10 @@ final class QuestDetailsWindowActions {
         QuestDetailsObjectivesPanel.applyBiomePick(player, state, biome);
     }
 
+    static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        QuestDetailsObjectivesPanel.applyAdvancementPick(player, state, advancement);
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestDetailsObjectivesPanel.applyDimensionPick(player, state, dimension);
     }
@@ -161,6 +165,10 @@ final class QuestDetailsWindowActions {
 
     static void openBiomePicker(TabletUiState state, String target) {
         ModalOpenActions.openBiomePicker(state, target);
+    }
+
+    static void openAdvancementPicker(TabletUiState state, String target) {
+        ModalOpenActions.openAdvancementPicker(state, target);
     }
 
     static void openDimensionPicker(TabletUiState state, String target) {

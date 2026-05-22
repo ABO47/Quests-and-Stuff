@@ -118,6 +118,21 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
     }
 
+    static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || advancement == null || advancement.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskAdvancement()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "minecraft:book");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || dimension == null || dimension.isBlank()) {
@@ -249,6 +264,10 @@ public final class QuestObjectiveEditActions {
         }
         if ("biome".equals(typePath)) {
             QuestDetailsWindow.openBiomePicker(state, ModalTargets.taskBiome(questId, id, type));
+            return;
+        }
+        if ("advancement".equals(typePath)) {
+            QuestDetailsWindow.openAdvancementPicker(state, ModalTargets.taskAdvancement(questId, id, type));
             return;
         }
         if ("location".equals(typePath)) {
