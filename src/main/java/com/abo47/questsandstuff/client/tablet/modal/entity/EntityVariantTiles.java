@@ -11,6 +11,8 @@ import com.abo47.questsandstuff.client.tablet.modal.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -70,13 +72,7 @@ final class EntityVariantTiles {
     }
 
     static void addBackButton(WidgetGroup modal, int x, int y, int w, int h, Runnable action) {
-        WidgetGroup back = panel(x, y, w, h, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE);
-        var backIcon = UiIconAtlas.iconTexture("back");
-        if (backIcon != null) {
-            back.addWidget(new ImageWidget(2, 2, 12, 12, backIcon));
-        }
-        modal.addWidget(back);
-        modal.addWidget(flatHitButton(x, y, w, h, click -> action.run()));
+        modal.addWidget(WindowChrome.iconButton(x, y, w, h, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
     }
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
