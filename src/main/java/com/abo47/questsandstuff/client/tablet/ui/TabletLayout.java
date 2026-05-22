@@ -48,7 +48,7 @@ final class TabletLayout {
     static final int CONTEXT_ROW_H = 14;
     static final int[] GRID_SIZES = {16};
     static final int[] GRID_OPACITY = {20, 35, 50, 65, 80};
-    static final int[] CANVAS_BG_OPACITY = {30, 45, 60, 75, 90};
+    static final int[] CANVAS_BG_OPACITY = {30, 45, 60, 75, 100};
     static final int[] CANVAS_LIMIT_WIDTH = {132, 164, 196, 228};
     static final int[] CANVAS_LIMIT_HEIGHT = {64, 78, 92, 104};
     static final String[] CANVAS_LIMIT_LABELS = {"S", "M", "L", "XL"};
