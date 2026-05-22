@@ -85,9 +85,9 @@ public final class TiledPickerPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    withAlpha(ModColors.SURFACE_BASE, 155),
-                    withAlpha(ModColors.INTERACTIVE, 210),
-                    withAlpha(ModColors.INTERACTIVE, 255)
+                    ModColors.scrollTrack(scroll.dragging()),
+                    ModColors.scrollThumb(false),
+                    ModColors.scrollThumb(true)
             ));
         }
         return layout;

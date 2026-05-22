@@ -20,6 +20,8 @@ public final class ModColors {
     public static final int DEFAULT_WARNING = 0xFFE5B44A;
     public static final int DEFAULT_ERROR = 0xFFE06F73;
     public static final int DEFAULT_INTERACTIVE = 0xFF64C3D2;
+    public static final int DEFAULT_SCROLL_TRACK = DEFAULT_BORDER_BASE;
+    public static final int DEFAULT_SCROLL_THUMB = DEFAULT_INTERACTIVE;
 
     public static int SURFACE_BASE = DEFAULT_SURFACE_BASE;
     public static int SURFACE_PANEL = DEFAULT_SURFACE_PANEL;
@@ -36,6 +38,8 @@ public final class ModColors {
     public static int WARNING = DEFAULT_WARNING;
     public static int ERROR = DEFAULT_ERROR;
     public static int INTERACTIVE = DEFAULT_INTERACTIVE;
+    public static int SCROLL_TRACK = DEFAULT_SCROLL_TRACK;
+    public static int SCROLL_THUMB = DEFAULT_SCROLL_THUMB;
 
     public static int elevatedSurface() {
         return mix(SURFACE_PANEL_ALT, TEXT_PRIMARY, 10);
@@ -59,6 +63,14 @@ public final class ModColors {
 
     public static int pressedFill(int accent) {
         return UiThemeTokens.withAlpha(accent, 76);
+    }
+
+    public static int scrollTrack(boolean active) {
+        return UiThemeTokens.withAlpha(SCROLL_TRACK, active ? 190 : 140);
+    }
+
+    public static int scrollThumb(boolean active) {
+        return UiThemeTokens.withAlpha(SCROLL_THUMB, active ? 255 : 220);
     }
 
     private static int mix(int color, int other, int otherPercent) {

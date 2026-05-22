@@ -266,14 +266,14 @@ public final class ContextMenuPanel {
         int trackH = visibleRows * CONTEXT_ROW_H;
         int knobX = trackX + Math.max(0, (DragScrollBarWidget.RESERVED_WIDTH - DragScrollBarWidget.WIDTH) / 2);
         WidgetGroup track = new WidgetGroup(knobX + 1, trackY, 2, trackH);
-        track.setBackground(Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 140)));
+        track.setBackground(Surfaces.fill(ModColors.scrollTrack(false)));
         menu.addWidget(track);
 
         int knobH = Math.max(8, (trackH * visibleRows) / Math.max(1, actionCount));
         int scrollMax = Math.max(1, actionCount - visibleRows);
         int knobOffset = Math.round(((float) start / (float) scrollMax) * Math.max(0, trackH - knobH));
         WidgetGroup knob = new WidgetGroup(knobX, trackY + knobOffset, DragScrollBarWidget.WIDTH, knobH);
-        knob.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 220)));
+        knob.setBackground(Surfaces.fill(ModColors.scrollThumb(false)));
         menu.addWidget(knob);
     }
 
