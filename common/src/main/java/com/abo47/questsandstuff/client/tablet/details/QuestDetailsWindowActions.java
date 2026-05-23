@@ -98,7 +98,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean beginSelectedRename(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -120,6 +120,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean deleteSelected(Player player, TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank()) {
             return false;
@@ -132,6 +135,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean duplicateSelected(Player player, TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
@@ -143,6 +149,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean selectAllDescription(TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank()) {
             return false;
@@ -154,6 +163,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean nudgeSelected(Player player, TabletUiState state, int dx, int dy) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
@@ -220,7 +232,7 @@ final class QuestDetailsWindowActions {
     }
 
     private static String editableQuestId(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return "";
         }
         return questId(state);

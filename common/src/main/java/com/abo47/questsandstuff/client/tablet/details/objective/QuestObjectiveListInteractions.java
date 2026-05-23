@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -58,6 +59,10 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            clearDrag(state);
+            return false;
+        }
         if (!state.questDetailsObjectiveDragKind.equals(kind)) {
             return false;
         }
@@ -83,6 +88,10 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean handleRelease(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            clearDrag(state);
+            return false;
+        }
         if (state.questDetailsObjectiveDragActive && state.questDetailsObjectiveDragKind.equals(kind)) {
             finishDrag(player, state, questId, entries);
             refresh.run();
@@ -97,11 +106,14 @@ final class QuestObjectiveListInteractions {
     }
 
     static void openRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return;
+        }
         QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, id, task);
     }
 
     static boolean deleteSelected(Player player, TabletUiState state, String questId) {
-        if (state == null || state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
         boolean task = "requirement".equals(state.questDetailsSelectedObjectiveKind);
@@ -119,7 +131,7 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean moveSelected(Player player, TabletUiState state, String questId, int offset) {
-        if (state == null || state.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
             return false;
         }
         if ("requirement".equals(state.questDetailsSelectedObjectiveKind)) {

@@ -33,6 +33,7 @@ public final class TabletUiStatePersistence {
             }
             JsonObject root = JsonParser.parseString(Files.readString(UI_STATE_FILE, StandardCharsets.UTF_8)).getAsJsonObject();
             state.editMode = readBoolean(root, "edit_mode", state.editMode);
+            state.questDetailsEditMode = readBoolean(root, "quest_details_edit_mode", state.questDetailsEditMode);
             state.gridEnabled = readBoolean(root, "grid_enabled", state.gridEnabled);
             state.gridSnapLocked = readBoolean(root, "grid_snap_locked", state.gridSnapLocked);
             state.centerSnapXEnabled = readBoolean(root, "center_snap_x_enabled", state.centerSnapXEnabled);
@@ -71,6 +72,7 @@ public final class TabletUiStatePersistence {
             Files.createDirectories(UI_STATE_FILE.getParent());
             JsonObject root = new JsonObject();
             root.addProperty("edit_mode", state.editMode);
+            root.addProperty("quest_details_edit_mode", state.questDetailsEditMode);
             root.addProperty("grid_enabled", state.gridEnabled);
             root.addProperty("grid_snap_locked", state.gridSnapLocked);
             root.addProperty("center_snap_x_enabled", state.centerSnapXEnabled);

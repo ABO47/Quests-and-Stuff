@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -87,11 +88,11 @@ final class QuestObjectiveInlineFields {
         if (!QuestObjectiveDisplayText.usesAmountField(entry.json(), task)) {
             return;
         }
-        if (task && QuestObjectiveDisplayText.isManualXpTask(entry.json()) && (!state.canEdit || !state.questDetailsEditMode)) {
+        if (task && QuestObjectiveDisplayText.isManualXpTask(entry.json()) && !QuestDetailsEditState.canEdit(state)) {
             QuestObjectiveActionWidgets.renderManualXpButton(parent, player, refresh, questId, entry, x, y, w, count, amount);
             return;
         }
-        if (!state.canEdit || !state.questDetailsEditMode) {
+        if (!QuestDetailsEditState.canEdit(state)) {
             int chipX = x - (task ? 24 : 0);
             int chipW = w + (task ? 24 : 0);
             renderAmountText(parent, chipX, y, chipW, task ? count + " / " + amount : "x" + amount);
@@ -134,12 +135,11 @@ final class QuestObjectiveInlineFields {
                 && state.questDetailsObjectiveRenameTask == task
                 && questId.equals(state.questDetailsObjectiveRenameQuestId)
                 && entryId.equals(state.questDetailsObjectiveRenameId)
-                && state.canEdit
-                && state.questDetailsEditMode;
+                && QuestDetailsEditState.canEdit(state);
     }
 
     static boolean handleRenameKey(Player player, TabletUiState state, int keyCode) {
-        if (!state.questDetailsObjectiveRenameOpen) {
+        if (!state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {

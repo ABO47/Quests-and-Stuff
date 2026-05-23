@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -31,7 +32,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGrid(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
-        if (!model.gridEnabled || !state.questDetailsEditMode || !state.canEdit) {
+        if (!model.gridEnabled || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
@@ -84,7 +85,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGuides(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        if (!state.canEdit || !state.questDetailsEditMode || (!state.snapGuideXVisible && !state.snapGuideYVisible)) {
+        if (!QuestDetailsEditState.canEdit(state) || (!state.snapGuideXVisible && !state.snapGuideYVisible)) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
@@ -119,7 +120,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             texture.draw(graphics, 0, 0, -image.w() / 2.0f, -image.h() / 2.0f, image.w(), image.h());
         }
         graphics.pose().popPose();
-        if (isSelectedImage(state, image.id()) && state.canEdit && state.questDetailsEditMode) {
+        if (isSelectedImage(state, image.id()) && QuestDetailsEditState.canEdit(state)) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, image.x(), image.y(), image.w(), image.h(), image.rotation());
         }
     }
@@ -138,7 +139,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(text.rotation())));
         CanvasTextRenderer.drawTextLayer(graphics, state, rendered, text.w(), text.h(), inlineEditing);
         graphics.pose().popPose();
-        if (isSelectedText(state, text.id()) && state.canEdit && state.questDetailsEditMode) {
+        if (isSelectedText(state, text.id()) && QuestDetailsEditState.canEdit(state)) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, text.x(), text.y(), text.w(), text.h(), text.rotation());
         }
     }

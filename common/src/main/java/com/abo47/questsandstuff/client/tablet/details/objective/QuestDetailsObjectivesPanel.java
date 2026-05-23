@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -61,7 +62,7 @@ public final class QuestDetailsObjectivesPanel {
             return true;
         }
         List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
-        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, state.canEdit && state.questDetailsEditMode);
+        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditState.canEdit(state));
         return isSectionCardHit(state, displayRewards, false, x, sectionsY + sectionH + SECTION_GAP, w, sectionsH - sectionH - SECTION_GAP, mouseX, mouseY);
     }
 

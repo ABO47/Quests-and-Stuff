@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
@@ -38,7 +39,7 @@ public final class QuestDetailsObjectiveMenus {
         renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
         renderItemSourcePicker(modal, state, refresh, modalW, modalH);
         QuestObjectiveXpEditor.render(modal, state, player, refresh, modalW, modalH);
-        if (!state.questDetailsTypePickerOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsTypePickerOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         boolean rewards = state.questDetailsTypePickerKind.startsWith("reward");
@@ -75,7 +76,7 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {
-        if (!state.questDetailsContextOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsContextOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();
@@ -108,7 +109,7 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     private static void renderItemSourcePicker(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsItemSourcePickerOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsItemSourcePickerOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         String target = state.questDetailsItemSourcePickerTarget == null ? "" : state.questDetailsItemSourcePickerTarget;
@@ -255,7 +256,7 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     private static void renderCommandRewardEditor(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsCommandRewardEditorOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsCommandRewardEditorOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         int w = 232;

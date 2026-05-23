@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsMouse;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -93,7 +94,7 @@ final class QuestObjectiveCardRenderer {
     }
 
     private static void addIconHoverHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String questId, String id, boolean task, JsonObject json, String icon, int x, int y) {
-        if (!state.canEdit || !state.questDetailsEditMode) {
+        if (!QuestDetailsEditState.canEdit(state)) {
             return;
         }
         var hit = flatHitButton(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, click -> {
@@ -118,17 +119,18 @@ final class QuestObjectiveCardRenderer {
         WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsObjectivesPanel.CARD_H) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 0 && isMouseOverElement(mouseX, mouseY) && state.canEdit && state.questDetailsEditMode) {
+                boolean editMode = QuestDetailsEditState.canEdit(state);
+                if (button == 0 && isMouseOverElement(mouseX, mouseY) && editMode) {
                     QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
                     refresh.run();
                     return true;
                 }
-                if (button == 0 && selectableReward && isMouseOverElement(mouseX, mouseY) && !state.questDetailsEditMode && !claimedReward) {
+                if (button == 0 && selectableReward && isMouseOverElement(mouseX, mouseY) && !editMode && !claimedReward) {
                     QuestObjectiveSelectableRewards.selectChoice(state, id);
                     refresh.run();
                     return true;
                 }
-                if (button == 1 && isMouseOverElement(mouseX, mouseY) && state.canEdit && state.questDetailsEditMode) {
+                if (button == 1 && isMouseOverElement(mouseX, mouseY) && editMode) {
                     int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
                     int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), QuestDetailsObjectivesPanel.CARD_H);
                     QuestObjectiveListInteractions.select(state, kind, id);
@@ -156,7 +158,7 @@ final class QuestObjectiveCardRenderer {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        boolean selected = selectableReward && !state.questDetailsEditMode
+        boolean selected = selectableReward && !QuestDetailsEditState.canEdit(state)
                 ? QuestObjectiveSelectableRewards.isSelectedChoice(state, id)
                 : kind.startsWith(state.questDetailsSelectedObjectiveKind) && id.equals(state.questDetailsSelectedObjectiveId);
         int accent = selectableReward ? (selected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;

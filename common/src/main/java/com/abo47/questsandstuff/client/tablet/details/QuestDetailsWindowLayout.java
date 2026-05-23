@@ -171,7 +171,7 @@ final class QuestDetailsWindowLayout {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3]);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], state.canEdit && state.questDetailsEditMode, false, state.questDetailsGridOpacityPercent);
+                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetailsGridOpacityPercent);
             }
         };
     }

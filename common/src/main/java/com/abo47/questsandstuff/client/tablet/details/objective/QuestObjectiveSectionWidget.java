@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.details.objective;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -33,7 +34,7 @@ final class QuestObjectiveSectionWidget {
 
     static void renderRewards(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
-        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, state.canEdit && state.questDetailsEditMode);
+        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditState.canEdit(state));
         boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetailsClaimedOverrideQuestId);
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestDetailsObjectivesPanel.TITLE_H, 4, rewardsClaimed);
         section.addWidget(label(8, 6, QuestVocabulary.rewards(), ModColors.TEXT_PRIMARY));
@@ -66,14 +67,15 @@ final class QuestObjectiveSectionWidget {
                 int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
                 int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h);
                 String id = hitEntryId(state, entries, kind, listY, h - bottomPad, ly);
-                if (button == 0 && state.canEdit && state.questDetailsEditMode && !id.isBlank() && isCardBodyHit(lx, w)) {
+                boolean editMode = QuestDetailsEditState.canEdit(state);
+                if (button == 0 && editMode && !id.isBlank() && isCardBodyHit(lx, w)) {
                     QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
                     refresh.run();
                     return true;
                 }
                 if (button == 0
                         && "rewards".equals(kind)
-                        && !state.questDetailsEditMode
+                        && !editMode
                         && !rewardsClaimed
                         && !id.isBlank()
                         && QuestObjectiveSelectableRewards.isSelectableChoiceId(id)) {
@@ -81,7 +83,7 @@ final class QuestObjectiveSectionWidget {
                     refresh.run();
                     return true;
                 }
-                if (button == 1 && state.canEdit && state.questDetailsEditMode) {
+                if (button == 1 && editMode) {
                     QuestObjectiveListInteractions.select(state, kind, id);
                     QuestDetailsMouse.openContextAtPointer(state, "requirements".equals(kind) ? "requirement" : "reward", id, mouseX, mouseY, getPositionX(), getPositionY(), lx, ly);
                     refresh.run();

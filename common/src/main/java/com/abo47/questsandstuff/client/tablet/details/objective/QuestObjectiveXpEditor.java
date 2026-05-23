@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -25,7 +26,7 @@ final class QuestObjectiveXpEditor {
     }
 
     static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsXpPickerOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsXpPickerOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         List<ContextAction> actions = state.questDetailsXpPickerTask
