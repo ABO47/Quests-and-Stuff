@@ -15,6 +15,7 @@ final class QuestObjectiveTypeCatalog {
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ADVANCEMENT, "advancement", "trophy"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_STRUCTURE, "structure", "pyramid"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_INTERACT_BLOCK, "block_interact", "box"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_STAT, "stat", "minecraft:paper"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_XP, "xp", "xp"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_MANUAL_CHECK, "check", "manual_check"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_BIOME, "biome", "biome"),

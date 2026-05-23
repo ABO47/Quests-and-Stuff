@@ -43,6 +43,7 @@ public final class QuestVocabulary {
     public static final String CHOOSE_BLOCK = "ui.questsandstuff.quest.choose_block";
     public static final String CHOOSE_DIMENSION = "ui.questsandstuff.quest.choose_dimension";
     public static final String CHOOSE_LOOT_TABLE = "ui.questsandstuff.quest.choose_loot_table";
+    public static final String CHOOSE_STAT = "ui.questsandstuff.quest.choose_stat";
     public static final String CHOOSE_STRUCTURE = "ui.questsandstuff.quest.choose_structure";
     public static final String CHOOSE_INVENTORY_ITEM = "ui.questsandstuff.quest.choose_inventory_item";
     public static final String FROM_INVENTORY = "ui.questsandstuff.quest.from_inventory";
@@ -54,6 +55,7 @@ public final class QuestVocabulary {
     public static final String NO_BLOCKS = "ui.questsandstuff.quest.no_blocks";
     public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
+    public static final String NO_STATS = "ui.questsandstuff.quest.no_stats";
     public static final String NO_INVENTORY_ITEMS = "ui.questsandstuff.quest.no_inventory_items";
     public static final String NO_STRUCTURES = "ui.questsandstuff.quest.no_structures";
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
@@ -110,6 +112,7 @@ public final class QuestVocabulary {
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
+    public static final String TYPE_STAT = "ui.questsandstuff.quest.type.stat";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_VISIT_STRUCTURE = "ui.questsandstuff.quest.type.visit_structure";

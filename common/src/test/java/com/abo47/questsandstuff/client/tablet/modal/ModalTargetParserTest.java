@@ -49,6 +49,16 @@ class ModalTargetParserTest {
     }
 
     @Test
+    void parsesStatTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskStat("quest", "task", "questsandstuff:stat"));
+
+        assertTrue(target.isTaskStat());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:stat", target.type());
+    }
+
+    @Test
     void targetPartsAreDefensivelyCopied() {
         ModalTargetParser.Target target = ModalTargetParser.parse("reward_icon|quest|reward|icon");
         String[] parts = target.parts();

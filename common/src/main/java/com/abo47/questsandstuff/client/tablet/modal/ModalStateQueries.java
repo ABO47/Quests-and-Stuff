@@ -32,6 +32,9 @@ public final class ModalStateQueries {
         if (state.blockPickerOpen) {
             return ModalWindowManager.ModalType.BLOCK_PICKER;
         }
+        if (state.statPickerOpen) {
+            return ModalWindowManager.ModalType.STAT_PICKER;
+        }
         if (state.dimensionPickerOpen) {
             return ModalWindowManager.ModalType.DIMENSION_PICKER;
         }

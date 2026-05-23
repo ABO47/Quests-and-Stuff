@@ -32,7 +32,7 @@ final class ResourceListPickerModal {
     static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, Options options) {
         ModalShell.addTitleAndClose(modal, options.title(), w, state, refresh);
         TextFieldWidget search = ModalShell.addSearchField(modal, 8, 24, w - 16, 16, options.search().get(), options.searchMaxLength(), value -> {
-            String query = SearchFilter.normalize(value);
+            String query = SearchFilter.normalizeUserInput(value);
             options.setSearch().accept(query);
             options.setScroll().accept(0);
             QuestsAndStuffMod.debugLog("[QnS:UI] {} search query='{}'", options.logName(), query);

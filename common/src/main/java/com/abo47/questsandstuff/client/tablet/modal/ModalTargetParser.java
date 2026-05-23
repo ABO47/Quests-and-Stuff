@@ -47,6 +47,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_BLOCK);
         }
 
+        public boolean isTaskStat() {
+            return is(ModalTargets.TASK_STAT);
+        }
+
         public boolean isTaskDimension() {
             return is(ModalTargets.TASK_DIMENSION);
         }

@@ -81,6 +81,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyBlockPick(player, state, block);
     }
 
+    public static void applyStatPick(Player player, TabletUiState state, String stat) {
+        QuestDetailsWindowActions.applyStatPick(player, state, stat);
+    }
+
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestDetailsWindowActions.applyDimensionPick(player, state, dimension);
     }
@@ -155,6 +159,10 @@ public final class QuestDetailsWindow {
 
     public static void openBlockPicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openBlockPicker(state, target);
+    }
+
+    public static void openStatPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openStatPicker(state, target);
     }
 
     public static void openDimensionPicker(TabletUiState state, String target) {

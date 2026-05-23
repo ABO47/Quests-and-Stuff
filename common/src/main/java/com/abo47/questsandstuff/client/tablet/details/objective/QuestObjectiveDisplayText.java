@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.StatTargetFormatter;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -92,6 +93,10 @@ final class QuestObjectiveDisplayText {
         if ("block_interact".equals(path) || "block_interaction".equals(path)) {
             String blockName = blockTargetName(QuestObjectiveJsons.asString(json, "target", ""));
             return blockName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, blockName);
+        }
+        if ("stat".equals(path)) {
+            String statName = StatTargetFormatter.displayName(QuestObjectiveJsons.asString(json, "target", ""));
+            return statName.isBlank() ? typeLabel(type) : statName;
         }
         if ("location".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));

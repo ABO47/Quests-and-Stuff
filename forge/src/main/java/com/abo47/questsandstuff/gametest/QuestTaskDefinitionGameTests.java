@@ -8,18 +8,24 @@ import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestTaskDefinitionGameTests {
@@ -74,6 +80,7 @@ public final class QuestTaskDefinitionGameTests {
         QuestTaskDefinition stat = QuestGameTestDefinitions.task("stat", "stat", 10, "minecraft:mined:minecraft:stone", Map.of());
         current.addTaskCount("stat", 2, Integer.MAX_VALUE);
         requirePositive(stat, signal(QuestSignalType.STAT_CHANGE, "minecraft:mined:minecraft:stone", 7), current);
+        assertCustomStatReadsUseRegisteredValues(helper);
 
         requirePositive(simple("structure", "structure", "minecraft:village"),
                 signal(QuestSignalType.STRUCTURE_ENTER, "minecraft:village", 1), current);
@@ -103,6 +110,21 @@ public final class QuestTaskDefinitionGameTests {
         }
 
         helper.succeed();
+    }
+
+    private static void assertCustomStatReadsUseRegisteredValues(GameTestHelper helper) {
+        ServerPlayer player = detachedPlayer(helper);
+        ResourceLocation jumpId = ResourceLocation.tryParse("minecraft:jump");
+        ResourceLocation jump = BuiltInRegistries.CUSTOM_STAT.getOptional(jumpId)
+                .orElseThrow(() -> new GameTestAssertException("Missing vanilla jump custom stat"));
+        player.awardStat(Stats.CUSTOM.get(jump), 4);
+        int bareCustom = QuestStatHelper.readStat(player, "minecraft:jump");
+        int explicitCustom = QuestStatHelper.readStat(player, "custom:minecraft:jump");
+        int namespacedCustom = QuestStatHelper.readStat(player, "minecraft:custom:minecraft:jump");
+        int unknownCustom = QuestStatHelper.readStat(player, "minecraft:not_a_real_custom_stat");
+        if (bareCustom != 4 || explicitCustom != 4 || namespacedCustom != 4 || unknownCustom != 0) {
+            throw new GameTestAssertException("Custom stat lookup should be canonical and crash-safe");
+        }
     }
 
     private static QuestTaskDefinition simple(String id, String type, String target) {
@@ -156,6 +178,14 @@ public final class QuestTaskDefinitionGameTests {
 
     private static QuestSignal signal(QuestSignalType type, String key, int amount) {
         return new QuestSignal(type, null, key, amount, BlockPos.ZERO, Level.OVERWORLD);
+    }
+
+    private static ServerPlayer detachedPlayer(GameTestHelper helper) {
+        return new ServerPlayer(
+                helper.getLevel().getServer(),
+                helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "qas_stat_test_player")
+        );
     }
 
     private static ResourceLocation id(String path) {

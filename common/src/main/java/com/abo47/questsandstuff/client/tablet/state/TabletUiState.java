@@ -105,6 +105,7 @@ public class TabletUiState {
     public boolean advancementPickerOpen;
     public boolean structurePickerOpen;
     public boolean blockPickerOpen;
+    public boolean statPickerOpen;
     public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
     public boolean itemInventoryPickerOpen;
@@ -163,6 +164,10 @@ public class TabletUiState {
     public boolean blockTagMode;
     public int blockScroll;
     public boolean blockScrollDragging;
+    public String statSearch = "";
+    public boolean statSearchFocused;
+    public int statScroll;
+    public boolean statScrollDragging;
     public String dimensionSearch = "";
     public boolean dimensionSearchFocused;
     public int dimensionScroll;

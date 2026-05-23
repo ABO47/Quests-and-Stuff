@@ -12,8 +12,12 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 
 public final class QuestObjectiveEditActions {
     private QuestObjectiveEditActions() {
@@ -164,6 +168,22 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
     }
 
+    static void applyStatPick(Player player, TabletUiState state, String stat) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || stat == null || stat.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskStat()) {
+            return;
+        }
+        String statTarget = stat.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), statTarget, statIcon(statTarget));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details stat picked quest={} task={} stat={}", parsed.questId(), parsed.entryId(), statTarget);
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || dimension == null || dimension.isBlank()) {
@@ -309,6 +329,10 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openBlockPicker(state, ModalTargets.taskBlock(questId, id, type));
             return;
         }
+        if ("stat".equals(typePath)) {
+            QuestDetailsWindow.openStatPicker(state, ModalTargets.taskStat(questId, id, type));
+            return;
+        }
         if ("location".equals(typePath)) {
             QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
@@ -367,6 +391,53 @@ public final class QuestObjectiveEditActions {
     private static String blockIcon(String target) {
         String clean = target == null ? "" : target.trim();
         return clean.isBlank() ? "box" : clean;
+    }
+
+    private static String statIcon(String target) {
+        String clean = target == null ? "" : target.trim();
+        int split = clean.indexOf(':');
+        if (split <= 0) {
+            return "minecraft:paper";
+        }
+        String category = clean.substring(0, split);
+        String value = clean.substring(split + 1);
+        if ("mined".equals(category)) {
+            return blockItemIcon(value);
+        }
+        if ("crafted".equals(category) || "used".equals(category) || "broken".equals(category)
+                || "picked_up".equals(category) || "dropped".equals(category)) {
+            return itemIcon(value);
+        }
+        if ("killed".equals(category) || "killed_by".equals(category)) {
+            return EntityPreviewRenderer.entityAsset(value);
+        }
+        return "minecraft:paper";
+    }
+
+    private static String blockItemIcon(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "minecraft:paper";
+        }
+        Block block = BuiltInRegistries.BLOCK.get(id);
+        if (!id.equals(BuiltInRegistries.BLOCK.getKey(block))) {
+            return "minecraft:paper";
+        }
+        Item item = block.asItem();
+        if (item == Items.AIR) {
+            return "minecraft:paper";
+        }
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+        return itemId == null ? "minecraft:paper" : itemId.toString();
+    }
+
+    private static String itemIcon(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "minecraft:paper";
+        }
+        Item item = BuiltInRegistries.ITEM.get(id);
+        return item == Items.AIR && !"minecraft:air".equals(value) ? "minecraft:paper" : id.toString();
     }
 
     public static boolean isEntityObjectiveIcon(String questId, String id, boolean task) {

@@ -11,6 +11,7 @@ class ModalTargetsTest {
         assertEquals("task_advancement|quest|task|advancement", ModalTargets.taskAdvancement(" quest ", " task ", " advancement "));
         assertEquals("task_structure|quest|task|structure", ModalTargets.taskStructure(" quest ", " task ", " structure "));
         assertEquals("task_block|quest|task|block_interact", ModalTargets.taskBlock(" quest ", " task ", " block_interact "));
+        assertEquals("task_stat|quest|task|stat", ModalTargets.taskStat(" quest ", " task ", " stat "));
         assertEquals("kind|a||c", ModalTargets.of(" kind ", " a ", null, " c "));
     }
 

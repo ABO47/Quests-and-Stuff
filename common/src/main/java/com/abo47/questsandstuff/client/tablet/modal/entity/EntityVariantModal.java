@@ -41,7 +41,7 @@ public final class EntityVariantModal {
         int backX = rightX + rightW - backSize - 22;
         int searchW = model.browsingFolder() ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
         TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.entityVariantSearch, 80, value -> {
-            state.entityVariantSearch = SearchFilter.normalize(value);
+            state.entityVariantSearch = SearchFilter.normalizeUserInput(value);
             state.entityVariantScroll = 0;
             refresh.run();
         }, focused -> state.entityVariantSearchFocused = focused);
