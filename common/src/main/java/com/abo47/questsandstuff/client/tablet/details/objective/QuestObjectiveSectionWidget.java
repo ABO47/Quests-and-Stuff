@@ -242,7 +242,7 @@ final class QuestObjectiveSectionWidget {
         };
     }
 
-    private static int scrollMax(List<QuestDetailsObjectiveEntry> entries, int visibleH) {
+    static int scrollMax(List<QuestDetailsObjectiveEntry> entries, int visibleH) {
         if (entries.isEmpty()) {
             return 0;
         }

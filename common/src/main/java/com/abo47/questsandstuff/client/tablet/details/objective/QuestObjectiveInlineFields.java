@@ -94,7 +94,7 @@ final class QuestObjectiveInlineFields {
         if (!state.canEdit || !state.questDetailsEditMode) {
             int chipX = x - (task ? 24 : 0);
             int chipW = w + (task ? 24 : 0);
-            renderAmountChip(parent, chipX, y, chipW, task ? count + " / " + amount : "x" + amount);
+            renderAmountText(parent, chipX, y, chipW, task ? count + " / " + amount : "x" + amount);
             return;
         }
         if (task) {
@@ -192,15 +192,10 @@ final class QuestObjectiveInlineFields {
         return value == null ? "" : value.replace('\n', ' ').replace('\r', ' ');
     }
 
-    private static void renderAmountChip(WidgetGroup parent, int x, int y, int maxW, String text) {
-        int width = Math.max(24, Math.min(maxW, Minecraft.getInstance().font.width(text) + 10));
-        int chipX = x + maxW - width;
-        WidgetGroup chip = new WidgetGroup(chipX, y, width, 14);
-        chip.setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 190), ModColors.subtleBorder()));
-        parent.addWidget(chip);
-        String fitted = fitText(text, Math.max(12, width - 6));
+    private static void renderAmountText(WidgetGroup parent, int x, int y, int maxW, String text) {
+        String fitted = fitText(text, Math.max(12, maxW));
         int textW = Minecraft.getInstance().font.width(fitted);
-        parent.addWidget(label(chipX + Math.max(3, (width - textW) / 2), y + 3, fitted, ModColors.TEXT_PRIMARY));
+        parent.addWidget(label(x + Math.max(0, maxW - textW), y + 3, fitted, ModColors.TEXT_SECONDARY));
     }
 
     static String fitText(String value, int width) {

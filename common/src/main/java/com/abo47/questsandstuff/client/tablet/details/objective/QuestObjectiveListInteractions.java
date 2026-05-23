@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
 
@@ -15,6 +17,29 @@ final class QuestObjectiveListInteractions {
         state.questDetailsSelectedObjectiveKind = "requirements".equals(kind) ? "requirement" : kind;
         state.questDetailsSelectedObjectiveKind = "rewards".equals(kind) ? "reward" : state.questDetailsSelectedObjectiveKind;
         state.questDetailsSelectedObjectiveId = id == null ? "" : id;
+    }
+
+    static boolean clearSelection(TabletUiState state, String reason) {
+        if (state == null) {
+            return false;
+        }
+        boolean hadSelection = !state.questDetailsSelectedObjectiveKind.isBlank()
+                || !state.questDetailsSelectedObjectiveId.isBlank();
+        boolean hadDrag = state.questDetailsObjectiveDragPending
+                || state.questDetailsObjectiveDragActive
+                || !state.questDetailsObjectiveDragKind.isBlank()
+                || !state.questDetailsObjectiveDragId.isBlank();
+        boolean hadRename = state.questDetailsObjectiveRenameOpen;
+        if (!hadSelection && !hadDrag && !hadRename) {
+            return false;
+        }
+        state.questDetailsSelectedObjectiveKind = "";
+        state.questDetailsSelectedObjectiveId = "";
+        state.contextDeleteConfirmKey = "";
+        clearDrag(state);
+        QuestDetailsTransientState.closeObjectiveRename(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] objective selection cleared reason={}", reason == null ? "" : reason);
+        return true;
     }
 
     static void selectAndBeginDrag(TabletUiState state, String kind, String id, double mouseX, double mouseY) {
