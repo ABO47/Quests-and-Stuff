@@ -73,6 +73,7 @@ public final class QuestObjectiveEditActions {
             json.addProperty("item", entry);
             json.addProperty("amount", 1);
             json.addProperty("nbt", "");
+            preserveRewardSelectableFlag(questId, id, json);
             EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward item picked quest={} reward={} item={}", questId, id, entry);
         } else if (parsed.isRewardCommandEditorIcon()) {
@@ -115,6 +116,7 @@ public final class QuestObjectiveEditActions {
             json.addProperty("item", itemId);
             json.addProperty("amount", Math.max(1, stack.getCount()));
             json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+            preserveRewardSelectableFlag(parsed.questId(), parsed.entryId(), json);
             EditorCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory reward item picked quest={} reward={} item={} amount={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.getCount(), stack.hasTag());
@@ -511,6 +513,16 @@ public final class QuestObjectiveEditActions {
             EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
         } else {
             EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+        }
+    }
+
+    private static void preserveRewardSelectableFlag(String questId, String rewardId, JsonObject next) {
+        CompoundTag reward = ClientQuestCache.quest(questId)
+                .getCompound("rewards")
+                .getCompound(rewardId);
+        JsonObject existing = QuestObjectiveJsons.read(reward.getString("json"));
+        if (QuestObjectiveSelectableRewards.isSelectable(existing)) {
+            next.addProperty("selectable", true);
         }
     }
 }

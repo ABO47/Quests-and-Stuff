@@ -51,9 +51,10 @@ final class QuestObjectiveCardRenderer {
         boolean selectableWrapper = QuestObjectiveSelectableRewards.isSelectable(entry.json());
         boolean selectableChoice = QuestObjectiveSelectableRewards.isSelectableChoiceId(entry.id());
         boolean selectableReward = selectableWrapper || selectableChoice;
+        boolean claimChoiceEntry = QuestObjectiveSelectableRewards.isClaimChoiceEntry(entry);
         JsonObject displayJson = selectableWrapper ? QuestObjectiveSelectableRewards.displayJson(entry.json()) : entry.json();
         QuestDetailsObjectiveEntry displayEntry = selectableWrapper ? new QuestDetailsObjectiveEntry(entry.id(), entry.tag(), displayJson) : entry;
-        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed));
+        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry));
         String icon = QuestObjectiveDisplayText.rewardIcon(displayJson);
         addObjectiveIcon(parent, displayJson, icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), false, displayJson, icon, x + 8, y + 8);
@@ -112,23 +113,32 @@ final class QuestObjectiveCardRenderer {
     }
 
     private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward) {
-        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, false);
+        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, false, selectableReward);
     }
 
     private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward) {
+        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, claimedReward, selectableReward);
+    }
+
+    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry) {
         WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsObjectivesPanel.CARD_H) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 boolean editMode = QuestDetailsEditState.canEdit(state);
-                if (button == 0 && isMouseOverElement(mouseX, mouseY) && editMode) {
-                    QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
-                    refresh.run();
-                    return true;
-                }
-                if (button == 0 && selectableReward && isMouseOverElement(mouseX, mouseY) && !editMode && !claimedReward) {
-                    QuestObjectiveSelectableRewards.selectChoice(state, id);
-                    refresh.run();
-                    return true;
+                if (button == 0 && isMouseOverElement(mouseX, mouseY)) {
+                    boolean claimChoice = claimChoiceEntry && !claimedReward;
+                    if (claimChoice) {
+                        QuestObjectiveSelectableRewards.selectChoice(state, id);
+                    }
+                    if (editMode) {
+                        QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
+                        refresh.run();
+                        return true;
+                    }
+                    if (claimChoice) {
+                        refresh.run();
+                        return true;
+                    }
                 }
                 if (button == 1 && isMouseOverElement(mouseX, mouseY) && editMode) {
                     int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
@@ -158,10 +168,10 @@ final class QuestObjectiveCardRenderer {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        boolean selected = selectableReward && !QuestDetailsEditState.canEdit(state)
-                ? QuestObjectiveSelectableRewards.isSelectedChoice(state, id)
-                : kind.startsWith(state.questDetailsSelectedObjectiveKind) && id.equals(state.questDetailsSelectedObjectiveId);
-        int accent = selectableReward ? (selected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;
+        boolean editSelected = kind.startsWith(state.questDetailsSelectedObjectiveKind) && id.equals(state.questDetailsSelectedObjectiveId);
+        boolean claimSelected = claimChoiceEntry && QuestObjectiveSelectableRewards.isSelectedChoice(state, id);
+        boolean selected = editSelected || claimSelected;
+        int accent = selectableReward ? (claimSelected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;
         card.setBackground(Surfaces.card(selected || selectableReward, accent, claimedReward));
         int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {

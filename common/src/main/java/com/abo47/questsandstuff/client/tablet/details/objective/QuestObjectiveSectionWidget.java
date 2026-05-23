@@ -66,22 +66,26 @@ final class QuestObjectiveSectionWidget {
                 }
                 int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
                 int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h);
-                String id = hitEntryId(state, entries, kind, listY, h - bottomPad, ly);
+                QuestDetailsObjectiveEntry hitEntry = hitEntry(state, entries, kind, listY, h - bottomPad, ly);
+                String id = hitEntry == null ? "" : hitEntry.id();
                 boolean editMode = QuestDetailsEditState.canEdit(state);
-                if (button == 0 && editMode && !id.isBlank() && isCardBodyHit(lx, w)) {
-                    QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
-                    refresh.run();
-                    return true;
-                }
-                if (button == 0
-                        && "rewards".equals(kind)
-                        && !editMode
+                boolean cardBodyHit = isCardBodyHit(lx, w);
+                boolean claimChoice = "rewards".equals(kind)
                         && !rewardsClaimed
-                        && !id.isBlank()
-                        && QuestObjectiveSelectableRewards.isSelectableChoiceId(id)) {
-                    QuestObjectiveSelectableRewards.selectChoice(state, id);
-                    refresh.run();
-                    return true;
+                        && QuestObjectiveSelectableRewards.isClaimChoiceEntry(hitEntry);
+                if (button == 0 && !id.isBlank() && cardBodyHit) {
+                    if (claimChoice) {
+                        QuestObjectiveSelectableRewards.selectChoice(state, id);
+                    }
+                    if (editMode) {
+                        QuestObjectiveListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
+                        refresh.run();
+                        return true;
+                    }
+                    if (claimChoice) {
+                        refresh.run();
+                        return true;
+                    }
                 }
                 if (button == 1 && editMode) {
                     QuestObjectiveListInteractions.select(state, kind, id);
@@ -290,21 +294,21 @@ final class QuestObjectiveSectionWidget {
         ));
     }
 
-    private static String hitEntryId(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY) {
+    private static QuestDetailsObjectiveEntry hitEntry(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY) {
         if (localY < listY || localY > listBottom || entries.isEmpty()) {
-            return "";
+            return null;
         }
         int scroll = "requirements".equals(kind) ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
         int contentY = localY - listY + scroll - QuestDetailsObjectivesPanel.LIST_PAD;
         if (contentY < 0) {
-            return "";
+            return null;
         }
         int slot = contentY / (QuestDetailsObjectivesPanel.CARD_H + QuestDetailsObjectivesPanel.CARD_GAP);
         int inSlot = contentY % (QuestDetailsObjectivesPanel.CARD_H + QuestDetailsObjectivesPanel.CARD_GAP);
         if (slot < 0 || slot >= entries.size() || inSlot >= QuestDetailsObjectivesPanel.CARD_H) {
-            return "";
+            return null;
         }
-        return entries.get(slot).id();
+        return entries.get(slot);
     }
 
     private static boolean isCardBodyHit(int localX, int sectionW) {
