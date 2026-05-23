@@ -75,6 +75,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.REWARD_ITEM);
         }
 
+        public boolean isRewardInventoryItem() {
+            return is(ModalTargets.REWARD_INVENTORY_ITEM);
+        }
+
         public boolean isRewardLootTable() {
             return is(ModalTargets.REWARD_LOOT_TABLE);
         }

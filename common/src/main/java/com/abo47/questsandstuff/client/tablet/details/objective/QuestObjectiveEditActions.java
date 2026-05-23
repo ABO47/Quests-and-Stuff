@@ -91,20 +91,34 @@ public final class QuestObjectiveEditActions {
             return;
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskInventoryItem()) {
+        if (!parsed.hasAtLeast(4)) {
             return;
         }
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-        JsonObject json = new JsonObject();
-        json.addProperty("id", parsed.entryId());
-        json.addProperty("type", parsed.type());
-        json.addProperty("item", itemId);
-        json.addProperty("amount", 1);
-        json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
-        json.addProperty("collection", "automatic");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
-        state.questDetailsPickTarget = "";
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+        if (parsed.isTaskInventoryItem()) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", parsed.entryId());
+            json.addProperty("type", parsed.type());
+            json.addProperty("item", itemId);
+            json.addProperty("amount", 1);
+            json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+            json.addProperty("collection", "automatic");
+            EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isRewardInventoryItem()) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", parsed.entryId());
+            json.addProperty("type", parsed.type());
+            json.addProperty("item", itemId);
+            json.addProperty("amount", Math.max(1, stack.getCount()));
+            json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+            EditorCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory reward item picked quest={} reward={} item={} amount={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.getCount(), stack.hasTag());
+        }
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
@@ -376,7 +390,7 @@ public final class QuestObjectiveEditActions {
 
     private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, boolean add) {
         if ("item".equals(typePath)) {
-            QuestDetailsWindow.openIconPicker(state, ModalTargets.rewardItem(questId, id, type));
+            QuestDetailsTransientState.openItemSourcePicker(state, ModalTargets.rewardItem(questId, id, type));
             return;
         }
         if ("command".equals(typePath)) {

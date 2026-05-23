@@ -338,9 +338,15 @@ public final class QuestDetailsObjectiveMenus {
 
     private static String inventoryTarget(String target) {
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskItem()) {
+        if (!parsed.hasAtLeast(4)) {
             return target;
         }
-        return ModalTargets.taskInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
+        if (parsed.isTaskItem()) {
+            return ModalTargets.taskInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
+        }
+        if (parsed.isRewardItem()) {
+            return ModalTargets.rewardInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
+        }
+        return target;
     }
 }

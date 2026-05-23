@@ -14,6 +14,7 @@ public final class ModalTargets {
     public static final String TASK_SIMPLE_ICON = "task_simple_icon";
     public static final String TASK_ICON = "task_icon";
     public static final String REWARD_ITEM = "reward_item";
+    public static final String REWARD_INVENTORY_ITEM = "reward_inventory_item";
     public static final String REWARD_LOOT_TABLE = "reward_loot_table";
     public static final String REWARD_ICON = "reward_icon";
     public static final String REWARD_COMMAND_EDITOR_ICON = "reward_command_editor_icon";
@@ -98,6 +99,10 @@ public final class ModalTargets {
 
     public static String rewardItem(String questId, String rewardId, String type) {
         return of(REWARD_ITEM, questId, rewardId, type);
+    }
+
+    public static String rewardInventoryItem(String questId, String rewardId, String type) {
+        return of(REWARD_INVENTORY_ITEM, questId, rewardId, type);
     }
 
     public static String rewardLootTable(String questId, String rewardId, String type) {
