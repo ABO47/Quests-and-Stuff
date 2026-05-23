@@ -29,6 +29,16 @@ class ModalTargetParserTest {
     }
 
     @Test
+    void parsesRecipeTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskRecipe("quest", "task", "questsandstuff:recipe"));
+
+        assertTrue(target.isTaskRecipe());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:recipe", target.type());
+    }
+
+    @Test
     void parsesStructureTaskTarget() {
         ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskStructure("quest", "task", "questsandstuff:structure"));
 

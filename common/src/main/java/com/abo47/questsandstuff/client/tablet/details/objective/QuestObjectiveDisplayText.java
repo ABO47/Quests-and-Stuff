@@ -86,6 +86,14 @@ final class QuestObjectiveDisplayText {
             );
             return advancementName.isBlank() ? typeLabel(type) : advancementName;
         }
+        if ("recipe".equals(path)) {
+            String recipeTarget = QuestObjectiveJsons.asString(json, "target", "");
+            if (recipeTarget.startsWith("#")) {
+                return readableTagName(recipeTarget);
+            }
+            String recipeName = itemName(recipeTarget);
+            return recipeName.isBlank() ? typeLabel(type) : recipeName;
+        }
         if ("structure".equals(path)) {
             String structureName = DisplayNameFormatter.resourceLeaf(QuestObjectiveJsons.asString(json, "target", ""));
             return structureName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, structureName);

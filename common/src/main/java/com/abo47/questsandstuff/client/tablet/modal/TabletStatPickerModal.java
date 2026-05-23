@@ -51,7 +51,7 @@ public final class TabletStatPickerModal {
                         TabletStatPickerModal::stats,
                         TabletStatPickerModal::displayName,
                         QuestDetailsWindow::applyStatPick,
-                        "minecraft:paper",
+                        "stat",
                         24,
                         50,
                         192,

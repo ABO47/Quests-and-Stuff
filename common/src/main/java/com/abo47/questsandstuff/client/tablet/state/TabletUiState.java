@@ -103,6 +103,7 @@ public class TabletUiState {
     public boolean assetPickerOpen;
     public boolean biomePickerOpen;
     public boolean advancementPickerOpen;
+    public boolean recipePickerOpen;
     public boolean structurePickerOpen;
     public boolean blockPickerOpen;
     public boolean statPickerOpen;
@@ -155,6 +156,11 @@ public class TabletUiState {
     public boolean advancementSearchFocused;
     public int advancementScroll;
     public boolean advancementScrollDragging;
+    public String recipeSearch = "";
+    public boolean recipeSearchFocused;
+    public boolean recipeTagMode;
+    public int recipeScroll;
+    public boolean recipeScrollDragging;
     public String structureSearch = "";
     public boolean structureSearchFocused;
     public int structureScroll;

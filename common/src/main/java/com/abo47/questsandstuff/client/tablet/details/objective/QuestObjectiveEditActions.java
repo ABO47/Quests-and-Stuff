@@ -137,6 +137,22 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
     }
 
+    static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || recipe == null || recipe.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskRecipe()) {
+            return;
+        }
+        String recipeTarget = recipe.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), recipeTarget, recipeIcon(recipeTarget));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe picked quest={} task={} recipe={}", parsed.questId(), parsed.entryId(), recipeTarget);
+    }
+
     static void applyStructurePick(Player player, TabletUiState state, String structure) {
         String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
         if (target.isBlank() || structure == null || structure.isBlank()) {
@@ -321,6 +337,10 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openAdvancementPicker(state, ModalTargets.taskAdvancement(questId, id, type));
             return;
         }
+        if ("recipe".equals(typePath)) {
+            QuestDetailsWindow.openRecipePicker(state, ModalTargets.taskRecipe(questId, id, type));
+            return;
+        }
         if ("structure".equals(typePath)) {
             QuestDetailsWindow.openStructurePicker(state, ModalTargets.taskStructure(questId, id, type));
             return;
@@ -397,7 +417,7 @@ public final class QuestObjectiveEditActions {
         String clean = target == null ? "" : target.trim();
         int split = clean.indexOf(':');
         if (split <= 0) {
-            return "minecraft:paper";
+            return "stat";
         }
         String category = clean.substring(0, split);
         String value = clean.substring(split + 1);
@@ -411,7 +431,15 @@ public final class QuestObjectiveEditActions {
         if ("killed".equals(category) || "killed_by".equals(category)) {
             return EntityPreviewRenderer.entityAsset(value);
         }
-        return "minecraft:paper";
+        return "stat";
+    }
+
+    private static String recipeIcon(String target) {
+        if (target != null && target.trim().startsWith("#")) {
+            return target.trim();
+        }
+        String icon = itemIcon(target);
+        return "minecraft:paper".equals(icon) ? "recipe" : icon;
     }
 
     private static String blockItemIcon(String value) {

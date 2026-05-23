@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.quest.model.task.progress;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestInventoryTasks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.mojang.serialization.Codec;
@@ -81,7 +82,14 @@ public record SimpleQuestTaskDefinition(
         if (target.equals(signalKey)) {
             return true;
         }
-        return signalType == QuestSignalType.BLOCK_INTERACT && target.startsWith("#") && blockKeyInTag(signalKey, target.substring(1));
+        if (!target.startsWith("#")) {
+            return false;
+        }
+        String tag = target.substring(1);
+        if (signalType == QuestSignalType.BLOCK_INTERACT) {
+            return blockKeyInTag(signalKey, tag);
+        }
+        return signalType == QuestSignalType.ITEM_CRAFTED && QuestInventoryTasks.itemKeyInTag(signalKey, tag);
     }
 
     private static boolean blockKeyInTag(String blockKey, String tag) {

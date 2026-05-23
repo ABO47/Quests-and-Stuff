@@ -75,6 +75,8 @@ final class UiThemeState {
         iconRoles.put("context_entity", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("manual_check", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("recipe", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("stat", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("xp", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("send-horizontal", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("biome", UiThemeManager.ROLE_ICON_DEFAULT);

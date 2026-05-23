@@ -76,7 +76,7 @@ final class TabletAssets {
         TabletUiPerfProfiler.profile("ui.prewarm.assetsDirs", TabletAssets::ensureAssetsDirs);
         TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(
                 "tools", "grid", "editor", "align-center-horizontal", "align-center-vertical", "objects", "entity", "close", "search", "add", "rename", "delete",
-                "copy", "paste", "connect", "settings-2",
+                "copy", "paste", "connect", "settings-2", "stat", "recipe",
                 "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open",
                 "size", "opacity", "magnet", "lock", "unlock",
                 "background_opacity", "reset_zoom", "reset_quest", "variant", "motion", "properties", "minimap",

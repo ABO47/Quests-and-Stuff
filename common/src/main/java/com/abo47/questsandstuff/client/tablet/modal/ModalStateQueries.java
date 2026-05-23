@@ -26,6 +26,9 @@ public final class ModalStateQueries {
         if (state.advancementPickerOpen) {
             return ModalWindowManager.ModalType.ADVANCEMENT_PICKER;
         }
+        if (state.recipePickerOpen) {
+            return ModalWindowManager.ModalType.RECIPE_PICKER;
+        }
         if (state.structurePickerOpen) {
             return ModalWindowManager.ModalType.STRUCTURE_PICKER;
         }

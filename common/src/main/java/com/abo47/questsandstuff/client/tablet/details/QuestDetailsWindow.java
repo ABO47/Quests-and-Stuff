@@ -73,6 +73,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyAdvancementPick(player, state, advancement);
     }
 
+    public static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        QuestDetailsWindowActions.applyRecipePick(player, state, recipe);
+    }
+
     public static void applyStructurePick(Player player, TabletUiState state, String structure) {
         QuestDetailsWindowActions.applyStructurePick(player, state, structure);
     }
@@ -151,6 +155,10 @@ public final class QuestDetailsWindow {
 
     public static void openAdvancementPicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openAdvancementPicker(state, target);
+    }
+
+    public static void openRecipePicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openRecipePicker(state, target);
     }
 
     public static void openStructurePicker(TabletUiState state, String target) {

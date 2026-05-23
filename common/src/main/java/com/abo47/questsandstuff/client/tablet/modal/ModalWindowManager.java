@@ -8,6 +8,7 @@ public final class ModalWindowManager {
         ASSET_PICKER,
         BIOME_PICKER,
         ADVANCEMENT_PICKER,
+        RECIPE_PICKER,
         STRUCTURE_PICKER,
         BLOCK_PICKER,
         STAT_PICKER,
@@ -56,6 +57,7 @@ public final class ModalWindowManager {
                 type == ModalType.ASSET_PICKER,
                 type == ModalType.BIOME_PICKER,
                 type == ModalType.ADVANCEMENT_PICKER,
+                type == ModalType.RECIPE_PICKER,
                 type == ModalType.STRUCTURE_PICKER,
                 type == ModalType.BLOCK_PICKER,
                 type == ModalType.STAT_PICKER,
@@ -73,6 +75,6 @@ public final class ModalWindowManager {
         return open(ModalType.NONE);
     }
 
-    public record ModalFlags(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean advancementOpen, boolean structureOpen, boolean blockOpen, boolean statOpen, boolean dimensionOpen, boolean lootTableOpen, boolean itemInventoryOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen, boolean settingsOpen) {
+    public record ModalFlags(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean advancementOpen, boolean recipeOpen, boolean structureOpen, boolean blockOpen, boolean statOpen, boolean dimensionOpen, boolean lootTableOpen, boolean itemInventoryOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen, boolean settingsOpen) {
     }
 }

@@ -59,6 +59,19 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
     }
 
+    public static void openRecipePicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.recipeSearch = "";
+        state.recipeTagMode = false;
+        state.recipeScroll = 0;
+        state.recipeScrollDragging = false;
+        state.recipeSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+    }
+
     public static void openStructurePicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";

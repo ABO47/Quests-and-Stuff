@@ -76,6 +76,9 @@ public final class QuestTaskDefinitionGameTests {
 
         requirePositive(simple("recipe", "recipe", "minecraft:oak_planks"),
                 signal(QuestSignalType.ITEM_CRAFTED, "minecraft:oak_planks", 1), current);
+        QuestTaskDefinition recipeTag = simple("recipe_tag", "recipe", "#minecraft:planks");
+        requirePositive(recipeTag, signal(QuestSignalType.ITEM_CRAFTED, "minecraft:oak_planks", 1), current);
+        requireNoChange(recipeTag, signal(QuestSignalType.ITEM_CRAFTED, "minecraft:stick", 1), current);
 
         QuestTaskDefinition stat = QuestGameTestDefinitions.task("stat", "stat", 10, "minecraft:mined:minecraft:stone", Map.of());
         current.addTaskCount("stat", 2, Integer.MAX_VALUE);
