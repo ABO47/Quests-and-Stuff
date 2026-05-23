@@ -116,6 +116,10 @@ final class QuestObjectiveDisplayText {
                     ? QuestVocabulary.text(QuestVocabulary.KILL_ENTITY)
                     : QuestVocabulary.text(QuestVocabulary.KILL_ENTITY_NAMED, entityName);
         }
+        if ("entity_interact".equals(path) || "entity_interaction".equals(path)) {
+            String entityName = EntityPreviewRenderer.entityDisplayName(QuestObjectiveJsons.asString(json, "target", ""));
+            return entityName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, entityName);
+        }
         if ("loot_table".equals(path) || "loot".equals(path)) {
             String lootName = QuestObjectiveLootTableRewardEditor.displayName(QuestObjectiveJsons.asString(json, "loot_table", ""));
             if (!lootName.isBlank()) {

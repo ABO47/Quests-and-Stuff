@@ -81,6 +81,7 @@
   "ui.questsandstuff.quest.type.command": "Command",
   "ui.questsandstuff.quest.type.give_item": "Give Item",
   "ui.questsandstuff.quest.type.interact_block": "Interact with Block",
+  "ui.questsandstuff.quest.type.interact_entity": "Interact with Entity",
   "ui.questsandstuff.quest.type.kill_entity": "Kill Entity",
   "ui.questsandstuff.quest.type.loot_table": "Loot Table",
   "ui.questsandstuff.quest.type.manual_check": "Manual Check",

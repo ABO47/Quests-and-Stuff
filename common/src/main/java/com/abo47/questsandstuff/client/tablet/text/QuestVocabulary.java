@@ -111,6 +111,7 @@ public final class QuestVocabulary {
     public static final String TYPE_COMMAND = "ui.questsandstuff.quest.type.command";
     public static final String TYPE_GIVE_ITEM = "ui.questsandstuff.quest.type.give_item";
     public static final String TYPE_INTERACT_BLOCK = "ui.questsandstuff.quest.type.interact_block";
+    public static final String TYPE_INTERACT_ENTITY = "ui.questsandstuff.quest.type.interact_entity";
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";

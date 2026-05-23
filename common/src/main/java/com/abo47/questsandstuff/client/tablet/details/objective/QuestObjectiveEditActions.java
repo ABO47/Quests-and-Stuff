@@ -357,7 +357,7 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
         }
-        if ("kill_entity".equals(typePath)) {
+        if ("kill_entity".equals(typePath) || "entity_interact".equals(typePath) || "entity_interaction".equals(typePath)) {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskEntity(questId, id, type));
             return;
         }

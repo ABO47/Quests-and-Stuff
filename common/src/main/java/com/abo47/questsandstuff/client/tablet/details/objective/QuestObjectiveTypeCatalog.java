@@ -12,6 +12,7 @@ final class QuestObjectiveTypeCatalog {
         return List.of(
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ACQUIRE_ITEM, "item", "icon"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_KILL_ENTITY, "kill_entity", "kill_entity"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_INTERACT_ENTITY, "entity_interact", "entity"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ADVANCEMENT, "advancement", "trophy"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_RECIPE, "recipe", "recipe"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_STRUCTURE, "structure", "pyramid"),

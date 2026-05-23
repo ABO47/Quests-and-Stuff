@@ -157,7 +157,7 @@ final class QuestObjectiveJsons {
             case "structure" -> "minecraft:map";
             case "biome" -> "biome";
             case "block_interact", "block_interaction" -> "minecraft:oak_button";
-            case "entity_interact", "entity_interaction" -> "minecraft:lead";
+            case "entity_interact", "entity_interaction" -> "";
             case "item_interact", "item_interaction", "item_use" -> "minecraft:stick";
             case "changed_dimension" -> "minecraft:obsidian";
             case "xp" -> XP_CARD_ICON;
