@@ -64,6 +64,7 @@ public final class QuestVocabulary {
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
     public static final String INTERACT_TARGET = "ui.questsandstuff.quest.interact_target";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
+    public static final String USE_TARGET = "ui.questsandstuff.quest.use_target";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
     public static final String EDIT_XP = "ui.questsandstuff.quest.edit_xp";
     public static final String XP_LEVELS = "ui.questsandstuff.quest.xp.levels";
@@ -112,11 +113,13 @@ public final class QuestVocabulary {
     public static final String TYPE_GIVE_ITEM = "ui.questsandstuff.quest.type.give_item";
     public static final String TYPE_INTERACT_BLOCK = "ui.questsandstuff.quest.type.interact_block";
     public static final String TYPE_INTERACT_ENTITY = "ui.questsandstuff.quest.type.interact_entity";
+    public static final String TYPE_INTERACT_ITEM = "ui.questsandstuff.quest.type.interact_item";
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
     public static final String TYPE_RECIPE = "ui.questsandstuff.quest.type.recipe";
     public static final String TYPE_STAT = "ui.questsandstuff.quest.type.stat";
+    public static final String TYPE_USE_ITEM = "ui.questsandstuff.quest.type.use_item";
     public static final String TYPE_VISIT_BIOME = "ui.questsandstuff.quest.type.visit_biome";
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_VISIT_STRUCTURE = "ui.questsandstuff.quest.type.visit_structure";

@@ -120,6 +120,14 @@ final class QuestObjectiveDisplayText {
             String entityName = EntityPreviewRenderer.entityDisplayName(QuestObjectiveJsons.asString(json, "target", ""));
             return entityName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, entityName);
         }
+        if ("item_interact".equals(path) || "item_interaction".equals(path)) {
+            String itemName = itemTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return itemName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, itemName);
+        }
+        if ("item_use".equals(path)) {
+            String itemName = itemTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return itemName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.USE_TARGET, itemName);
+        }
         if ("loot_table".equals(path) || "loot".equals(path)) {
             String lootName = QuestObjectiveLootTableRewardEditor.displayName(QuestObjectiveJsons.asString(json, "loot_table", ""));
             if (!lootName.isBlank()) {
@@ -213,6 +221,14 @@ final class QuestObjectiveDisplayText {
             return DisplayNameFormatter.resourceLeaf(clean.substring(1));
         }
         return blockName(clean);
+    }
+
+    private static String itemTargetName(String value) {
+        String clean = value == null ? "" : value.trim();
+        if (clean.startsWith("#")) {
+            return readableTagName(clean);
+        }
+        return itemName(clean);
     }
 
     private static String readableIdName(String value) {

@@ -66,8 +66,14 @@ public final class QuestTaskDefinitionGameTests {
 
         requirePositive(simple("item_interact", "item_interact", "minecraft:book"),
                 signal(QuestSignalType.ITEM_INTERACT, "minecraft:book", 1), current);
+        QuestTaskDefinition itemInteractTag = simple("item_interact_tag", "item_interact", "#minecraft:planks");
+        requirePositive(itemInteractTag, signal(QuestSignalType.ITEM_INTERACT, "minecraft:oak_planks", 1), current);
+        requireNoChange(itemInteractTag, signal(QuestSignalType.ITEM_INTERACT, "minecraft:stick", 1), current);
         requirePositive(simple("item_use", "item_use", "minecraft:bread"),
                 signal(QuestSignalType.ITEM_USED, "minecraft:bread", 1), current);
+        QuestTaskDefinition itemUseTag = simple("item_use_tag", "item_use", "#minecraft:planks");
+        requirePositive(itemUseTag, signal(QuestSignalType.ITEM_USED, "minecraft:oak_planks", 1), current);
+        requireNoChange(itemUseTag, signal(QuestSignalType.ITEM_USED, "minecraft:stick", 1), current);
         requirePositive(simple("kill", "kill_entity", "minecraft:zombie"),
                 signal(QuestSignalType.ENTITY_KILLED, "minecraft:zombie", 1), current);
 

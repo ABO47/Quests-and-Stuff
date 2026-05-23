@@ -157,6 +157,7 @@ public final class TabletModalState {
         state.assetGridScrollDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
+        state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;

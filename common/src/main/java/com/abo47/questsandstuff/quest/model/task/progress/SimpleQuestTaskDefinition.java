@@ -89,7 +89,10 @@ public record SimpleQuestTaskDefinition(
         if (signalType == QuestSignalType.BLOCK_INTERACT) {
             return blockKeyInTag(signalKey, tag);
         }
-        return signalType == QuestSignalType.ITEM_CRAFTED && QuestInventoryTasks.itemKeyInTag(signalKey, tag);
+        return (signalType == QuestSignalType.ITEM_CRAFTED
+                || signalType == QuestSignalType.ITEM_INTERACT
+                || signalType == QuestSignalType.ITEM_USED)
+                && QuestInventoryTasks.itemKeyInTag(signalKey, tag);
     }
 
     private static boolean blockKeyInTag(String blockKey, String tag) {

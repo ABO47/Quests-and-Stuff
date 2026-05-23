@@ -11,6 +11,8 @@ final class QuestObjectiveTypeCatalog {
     static List<QuestDetailsTypeChoice> taskChoices() {
         return List.of(
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ACQUIRE_ITEM, "item", "icon"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_USE_ITEM, "item_use", "item_use"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_INTERACT_ITEM, "item_interact", "item_interact"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_KILL_ENTITY, "kill_entity", "kill_entity"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_INTERACT_ENTITY, "entity_interact", "entity"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ADVANCEMENT, "advancement", "trophy"),

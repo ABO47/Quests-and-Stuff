@@ -143,6 +143,7 @@ public class TabletUiState {
     public String iconSearch = "";
     public boolean iconSearchFocused;
     public boolean iconTagMode;
+    public boolean iconAllItemsMode;
     public boolean iconEntityMode;
     public int iconScroll;
     public boolean iconScrollDragging;

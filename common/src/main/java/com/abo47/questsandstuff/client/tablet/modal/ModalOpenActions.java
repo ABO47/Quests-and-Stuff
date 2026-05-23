@@ -265,6 +265,7 @@ public final class ModalOpenActions {
         state.iconSearch = "";
         state.iconSearchFocused = false;
         state.iconTagMode = false;
+        state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconScroll = 0;
         state.iconScrollDragging = false;
