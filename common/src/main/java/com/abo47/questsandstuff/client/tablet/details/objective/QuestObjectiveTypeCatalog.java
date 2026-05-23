@@ -12,8 +12,9 @@ final class QuestObjectiveTypeCatalog {
         return List.of(
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ACQUIRE_ITEM, "item", "icon"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_KILL_ENTITY, "kill_entity", "kill_entity"),
-                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ADVANCEMENT, "advancement", "unlock"),
-                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_STRUCTURE, "structure", "open"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_ADVANCEMENT, "advancement", "trophy"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_STRUCTURE, "structure", "pyramid"),
+                new QuestDetailsTypeChoice(QuestVocabulary.TYPE_INTERACT_BLOCK, "block_interact", "box"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_XP, "xp", "xp"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_MANUAL_CHECK, "check", "manual_check"),
                 new QuestDetailsTypeChoice(QuestVocabulary.TYPE_VISIT_BIOME, "biome", "biome"),

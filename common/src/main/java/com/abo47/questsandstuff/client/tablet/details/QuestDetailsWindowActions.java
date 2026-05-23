@@ -41,6 +41,10 @@ final class QuestDetailsWindowActions {
         QuestDetailsObjectivesPanel.applyStructurePick(player, state, structure);
     }
 
+    static void applyBlockPick(Player player, TabletUiState state, String block) {
+        QuestDetailsObjectivesPanel.applyBlockPick(player, state, block);
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestDetailsObjectivesPanel.applyDimensionPick(player, state, dimension);
     }
@@ -177,6 +181,10 @@ final class QuestDetailsWindowActions {
 
     static void openStructurePicker(TabletUiState state, String target) {
         ModalOpenActions.openStructurePicker(state, target);
+    }
+
+    static void openBlockPicker(TabletUiState state, String target) {
+        ModalOpenActions.openBlockPicker(state, target);
     }
 
     static void openDimensionPicker(TabletUiState state, String target) {

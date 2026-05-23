@@ -71,6 +71,19 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.STRUCTURE_PICKER);
     }
 
+    public static void openBlockPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.blockSearch = "";
+        state.blockTagMode = false;
+        state.blockScroll = 0;
+        state.blockScrollDragging = false;
+        state.blockSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
+    }
+
     public static void openDimensionPicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";

@@ -40,6 +40,7 @@ public final class QuestVocabulary {
     public static final String BIOME_FALLBACK = "ui.questsandstuff.quest.biome_fallback";
     public static final String CHOOSE_ADVANCEMENT = "ui.questsandstuff.quest.choose_advancement";
     public static final String CHOOSE_BIOME = "ui.questsandstuff.quest.choose_biome";
+    public static final String CHOOSE_BLOCK = "ui.questsandstuff.quest.choose_block";
     public static final String CHOOSE_DIMENSION = "ui.questsandstuff.quest.choose_dimension";
     public static final String CHOOSE_LOOT_TABLE = "ui.questsandstuff.quest.choose_loot_table";
     public static final String CHOOSE_STRUCTURE = "ui.questsandstuff.quest.choose_structure";
@@ -50,12 +51,14 @@ public final class QuestVocabulary {
     public static final String NO_BIOME_FOLDERS = "ui.questsandstuff.quest.no_biome_folders";
     public static final String NO_ADVANCEMENTS = "ui.questsandstuff.quest.no_advancements";
     public static final String NO_BIOMES = "ui.questsandstuff.quest.no_biomes";
+    public static final String NO_BLOCKS = "ui.questsandstuff.quest.no_blocks";
     public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
     public static final String NO_INVENTORY_ITEMS = "ui.questsandstuff.quest.no_inventory_items";
     public static final String NO_STRUCTURES = "ui.questsandstuff.quest.no_structures";
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
+    public static final String INTERACT_TARGET = "ui.questsandstuff.quest.interact_target";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
     public static final String EDIT_XP = "ui.questsandstuff.quest.edit_xp";
@@ -103,6 +106,7 @@ public final class QuestVocabulary {
     public static final String TYPE_ADVANCEMENT = "ui.questsandstuff.quest.type.advancement";
     public static final String TYPE_COMMAND = "ui.questsandstuff.quest.type.command";
     public static final String TYPE_GIVE_ITEM = "ui.questsandstuff.quest.type.give_item";
+    public static final String TYPE_INTERACT_BLOCK = "ui.questsandstuff.quest.type.interact_block";
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";

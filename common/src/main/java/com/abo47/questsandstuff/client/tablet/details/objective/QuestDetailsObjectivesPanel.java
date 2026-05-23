@@ -48,6 +48,10 @@ public final class QuestDetailsObjectivesPanel {
         QuestObjectiveEditActions.applyStructurePick(player, state, structure);
     }
 
+    public static void applyBlockPick(Player player, TabletUiState state, String block) {
+        QuestObjectiveEditActions.applyBlockPick(player, state, block);
+    }
+
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestObjectiveEditActions.applyDimensionPick(player, state, dimension);
     }

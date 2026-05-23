@@ -9,8 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public record SimpleQuestTaskDefinition(
         String id,
@@ -56,7 +59,7 @@ public record SimpleQuestTaskDefinition(
         if (signal.type() != signalType) {
             return progress == null ? defaultProgress() : progress;
         }
-        if (!target.isBlank() && !target.equals(signal.key())) {
+        if (!matchesTarget(signal.key())) {
             return progress == null ? defaultProgress() : progress;
         }
         return IntegerTaskStorage.INSTANCE.add(progress, Math.max(1, signal.amount()), safeGoal());
@@ -69,5 +72,29 @@ public record SimpleQuestTaskDefinition(
             return this;
         }
         return new SimpleQuestTaskDefinition(id, type, signalType, goal, retargeted, icon, title);
+    }
+
+    private boolean matchesTarget(String signalKey) {
+        if (target.isBlank()) {
+            return true;
+        }
+        if (target.equals(signalKey)) {
+            return true;
+        }
+        return signalType == QuestSignalType.BLOCK_INTERACT && target.startsWith("#") && blockKeyInTag(signalKey, target.substring(1));
+    }
+
+    private static boolean blockKeyInTag(String blockKey, String tag) {
+        ResourceLocation blockId = ResourceLocation.tryParse(blockKey);
+        ResourceLocation tagId = ResourceLocation.tryParse(tag);
+        if (blockId == null || tagId == null) {
+            return false;
+        }
+        Block block = BuiltInRegistries.BLOCK.get(blockId);
+        if (!blockId.equals(BuiltInRegistries.BLOCK.getKey(block))) {
+            return false;
+        }
+        TagKey<Block> tagKey = TagKey.create(BuiltInRegistries.BLOCK.key(), tagId);
+        return block.builtInRegistryHolder().is(tagKey);
     }
 }

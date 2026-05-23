@@ -9,6 +9,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.Locale;
 
@@ -87,6 +89,10 @@ final class QuestObjectiveDisplayText {
             String structureName = DisplayNameFormatter.resourceLeaf(QuestObjectiveJsons.asString(json, "target", ""));
             return structureName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, structureName);
         }
+        if ("block_interact".equals(path) || "block_interaction".equals(path)) {
+            String blockName = blockTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return blockName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, blockName);
+        }
         if ("location".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));
         }
@@ -138,7 +144,13 @@ final class QuestObjectiveDisplayText {
     static boolean usesAmountField(JsonObject json, boolean task) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         if (task) {
-            return !isManualTask(json) && !"biome".equals(path) && !"advancement".equals(path) && !"structure".equals(path) && !"location".equals(path);
+            return !isManualTask(json)
+                    && !"biome".equals(path)
+                    && !"advancement".equals(path)
+                    && !"structure".equals(path)
+                    && !"block_interact".equals(path)
+                    && !"block_interaction".equals(path)
+                    && !"location".equals(path);
         }
         return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }
@@ -164,6 +176,26 @@ final class QuestObjectiveDisplayText {
             return value;
         }
         return item.getDescription().getString();
+    }
+
+    private static String blockName(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "";
+        }
+        Block block = BuiltInRegistries.BLOCK.get(id);
+        if (block == Blocks.AIR && !"minecraft:air".equals(value)) {
+            return value;
+        }
+        return block.getName().getString();
+    }
+
+    private static String blockTargetName(String value) {
+        String clean = value == null ? "" : value.trim();
+        if (clean.startsWith("#")) {
+            return DisplayNameFormatter.resourceLeaf(clean.substring(1));
+        }
+        return blockName(clean);
     }
 
     private static String readableIdName(String value) {

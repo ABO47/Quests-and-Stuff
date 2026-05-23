@@ -38,6 +38,9 @@ public final class QuestTaskDefinitionGameTests {
                 signal(QuestSignalType.BIOME_ENTER, "minecraft:plains", 1), current);
         requirePositive(simple("block", "block_interact", "minecraft:crafting_table"),
                 signal(QuestSignalType.BLOCK_INTERACT, "minecraft:crafting_table", 1), current);
+        QuestTaskDefinition blockTag = simple("block_tag", "block_interact", "#minecraft:doors");
+        requirePositive(blockTag, signal(QuestSignalType.BLOCK_INTERACT, "minecraft:oak_door", 1), current);
+        requireNoChange(blockTag, signal(QuestSignalType.BLOCK_INTERACT, "minecraft:stone", 1), current);
         requirePositive(simple("dim", "changed_dimension", "minecraft:the_nether"),
                 signal(QuestSignalType.DIMENSION_CHANGED, "minecraft:the_nether", 1), current);
         requirePositive(simple("check", "check", "creator/check"),
@@ -114,6 +117,13 @@ public final class QuestTaskDefinitionGameTests {
         int delta = evaluate(definition, signal, current);
         if (delta <= 0) {
             throw new GameTestAssertException("Expected positive delta for task type " + definition.type() + " but got " + delta);
+        }
+    }
+
+    private static void requireNoChange(QuestTaskDefinition definition, QuestSignal signal, QuestProgressState current) {
+        int delta = evaluate(definition, signal, current);
+        if (delta != 0) {
+            throw new GameTestAssertException("Expected no delta for task type " + definition.type() + " but got " + delta);
         }
     }
 

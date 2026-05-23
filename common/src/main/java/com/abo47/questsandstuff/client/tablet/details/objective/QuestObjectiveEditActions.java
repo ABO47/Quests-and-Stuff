@@ -127,7 +127,7 @@ public final class QuestObjectiveEditActions {
         if (!parsed.hasAtLeast(4) || !parsed.isTaskAdvancement()) {
             return;
         }
-        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "minecraft:book");
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
         EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
@@ -142,10 +142,26 @@ public final class QuestObjectiveEditActions {
         if (!parsed.hasAtLeast(4) || !parsed.isTaskStructure()) {
             return;
         }
-        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "minecraft:map");
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
         EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
+    }
+
+    static void applyBlockPick(Player player, TabletUiState state, String block) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || block == null || block.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskBlock()) {
+            return;
+        }
+        String blockId = block.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), blockId, blockIcon(blockId));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
     }
 
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
@@ -289,6 +305,10 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openStructurePicker(state, ModalTargets.taskStructure(questId, id, type));
             return;
         }
+        if ("block_interact".equals(typePath) || "block_interaction".equals(typePath)) {
+            QuestDetailsWindow.openBlockPicker(state, ModalTargets.taskBlock(questId, id, type));
+            return;
+        }
         if ("location".equals(typePath)) {
             QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
@@ -342,6 +362,11 @@ public final class QuestObjectiveEditActions {
             json.addProperty("id", id);
         }
         return task ? QuestObjectiveDisplayText.taskIcon(json) : QuestObjectiveDisplayText.rewardIcon(json);
+    }
+
+    private static String blockIcon(String target) {
+        String clean = target == null ? "" : target.trim();
+        return clean.isBlank() ? "box" : clean;
     }
 
     public static boolean isEntityObjectiveIcon(String questId, String id, boolean task) {

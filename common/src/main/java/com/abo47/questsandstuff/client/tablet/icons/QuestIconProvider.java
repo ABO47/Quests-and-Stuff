@@ -9,6 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +38,13 @@ public final class QuestIconProvider {
                         .collect(Collectors.toList());
                 if (!items.isEmpty()) {
                     ItemStack[] stacks = items.stream().map(ItemStack::new).toArray(ItemStack[]::new);
+                    ItemStackTexture texture = new ItemStackTexture(stacks);
+                    ICON_TEXTURE_CACHE.put(keyValue, texture);
+                    return texture;
+                }
+                List<Item> blockItems = blockTagItems(tagId);
+                if (!blockItems.isEmpty()) {
+                    ItemStack[] stacks = blockItems.stream().map(ItemStack::new).toArray(ItemStack[]::new);
                     ItemStackTexture texture = new ItemStackTexture(stacks);
                     ICON_TEXTURE_CACHE.put(keyValue, texture);
                     return texture;
@@ -98,5 +106,14 @@ public final class QuestIconProvider {
 
     public static void clearCaches() {
         ICON_TEXTURE_CACHE.clear();
+    }
+
+    private static List<Item> blockTagItems(ResourceLocation tagId) {
+        TagKey<Block> key = TagKey.create(BuiltInRegistries.BLOCK.key(), tagId);
+        return BuiltInRegistries.BLOCK.stream()
+                .filter(block -> block.builtInRegistryHolder().is(key))
+                .map(Block::asItem)
+                .filter(item -> item != Items.AIR)
+                .collect(Collectors.toList());
     }
 }

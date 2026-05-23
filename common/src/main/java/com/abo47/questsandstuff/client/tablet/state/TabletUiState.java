@@ -104,6 +104,7 @@ public class TabletUiState {
     public boolean biomePickerOpen;
     public boolean advancementPickerOpen;
     public boolean structurePickerOpen;
+    public boolean blockPickerOpen;
     public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
     public boolean itemInventoryPickerOpen;
@@ -157,6 +158,11 @@ public class TabletUiState {
     public boolean structureSearchFocused;
     public int structureScroll;
     public boolean structureScrollDragging;
+    public String blockSearch = "";
+    public boolean blockSearchFocused;
+    public boolean blockTagMode;
+    public int blockScroll;
+    public boolean blockScrollDragging;
     public String dimensionSearch = "";
     public boolean dimensionSearchFocused;
     public int dimensionScroll;
