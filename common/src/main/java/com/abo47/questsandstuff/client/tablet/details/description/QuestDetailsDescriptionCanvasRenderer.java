@@ -113,7 +113,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         String entityId = EntityPreviewRenderer.entityId(image.asset());
         IGuiTexture texture = entityId.isBlank() ? chapterBackgroundTexture(image.asset()) : null;
         if (!entityId.isBlank()) {
-            if (!EntityPreviewRenderer.renderEntityAsset(graphics, -image.pivotX(), -image.pivotY(), image.w(), image.h(), image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+            if (!EntityPreviewRenderer.renderEntityAssetAtCenter(graphics, 0, 0, image.w(), image.h(), image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+                graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
+            }
+        } else if (CanvasModelPreviewRenderer.isBlockModelAsset(image.asset())) {
+            if (!CanvasModelPreviewRenderer.renderBlockModelAssetAtCenter(graphics, 0, 0, image.w(), image.h(), image.asset(), image.entityYaw(), image.modelPitch())) {
                 graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
             }
         } else if (CanvasModelPreviewRenderer.isModelAsset(image.asset())) {

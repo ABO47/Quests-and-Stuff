@@ -189,14 +189,16 @@ public final class EntityPreviewRenderer {
     }
 
     public static boolean renderEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
+        return renderEntityAssetAtCenter(graphics, x + width / 2, y + height / 2, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks);
+    }
+
+    public static boolean renderEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
         EntityAsset parsed = parseEntityAsset(asset);
         Entity entity = cachedEntity(parsed);
         if (entity == null || width <= 0 || height <= 0) {
             return false;
         }
         EntityVariantCatalog.apply(entity, parsed.variantKey());
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
         int speed = CanvasImageLayer.clampEntitySpinSpeed(spinSpeed);
         float yaw = currentYaw(yawDegrees, speed);
         float pitch = CanvasImageLayer.normalizeDegrees(pitchDegrees);
@@ -315,8 +317,8 @@ public final class EntityPreviewRenderer {
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0.0D);
         graphics.pose().mulPoseMatrix(new Matrix4f().scaling((float) scale, (float) scale, (float) -scale));
-        graphics.pose().translate(0.0D, entity.getBbHeight() / 2.0D, 0.0D);
         graphics.pose().mulPose(rotation);
+        graphics.pose().translate(0.0D, -entity.getBbHeight() / 2.0D, 0.0D);
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);

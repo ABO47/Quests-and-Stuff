@@ -183,6 +183,16 @@ public final class CanvasModelPreviewRenderer {
         return true;
     }
 
+    public static boolean renderBlockModelAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int pitchDegrees) {
+        Block block = blockForAsset(asset);
+        if (block == null || width <= 0 || height <= 0) {
+            return false;
+        }
+        int size = Math.max(1, Math.min(width, height));
+        renderBlockPreview(graphics, centerX, centerY, size, block.defaultBlockState(), yawDegrees, pitchDegrees);
+        return true;
+    }
+
     public static Component[] modelTooltip(String asset) {
         String label = modelDisplayName(asset);
         String id = modelDisplayId(asset);
@@ -216,13 +226,7 @@ public final class CanvasModelPreviewRenderer {
     }
 
     private static boolean renderBlockAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int pitchDegrees) {
-        Block block = blockForAsset(asset);
-        if (block == null || width <= 0 || height <= 0) {
-            return false;
-        }
-        int size = Math.max(1, Math.min(width, height));
-        renderBlockPreview(graphics, x + width / 2, y + height / 2, size, block.defaultBlockState(), yawDegrees, pitchDegrees);
-        return true;
+        return renderBlockModelAssetAtCenter(graphics, x + width / 2, y + height / 2, width, height, asset, yawDegrees, pitchDegrees);
     }
 
     private static void renderBlockPreview(GuiGraphics graphics, int centerX, int centerY, int size, BlockState state, int yawDegrees, int pitchDegrees) {

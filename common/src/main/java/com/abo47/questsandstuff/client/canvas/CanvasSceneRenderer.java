@@ -272,7 +272,11 @@ final class CanvasSceneRenderer {
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
                 String entityId = EntityPreviewRenderer.entityId(image.asset());
                 if (!entityId.isBlank()) {
-                    if (!EntityPreviewRenderer.renderEntityAsset(graphics, -pivotX, -pivotY, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+                    if (!EntityPreviewRenderer.renderEntityAssetAtCenter(graphics, 0, 0, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
+                    }
+                } else if (CanvasModelPreviewRenderer.isBlockModelAsset(image.asset())) {
+                    if (!CanvasModelPreviewRenderer.renderBlockModelAssetAtCenter(graphics, 0, 0, w, h, image.asset(), image.entityYaw(), image.modelPitch())) {
                         graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
                     }
                 } else if (CanvasModelPreviewRenderer.isModelAsset(image.asset())) {

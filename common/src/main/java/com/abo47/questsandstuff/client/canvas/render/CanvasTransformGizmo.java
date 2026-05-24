@@ -259,7 +259,7 @@ public final class CanvasTransformGizmo {
             value = rotationDegrees;
         }
         ScreenPoint point = screenPoint(originX, originY, geometry, 0, x, y);
-        drawValueLabel(graphics, normalize(value) + "°", point.x() + HANDLE, point.y() - HANDLE, color);
+        drawValueLabel(graphics, normalize(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
     }
 
     private static void drawActiveMoveLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int axisLength, int x, int y) {
