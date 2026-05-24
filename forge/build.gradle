@@ -94,6 +94,7 @@ remapJar {
 }
 
 sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     def commonSources = project(':questsandstuff-common').tasks.named('sourcesJar')
     dependsOn commonSources
     from commonSources.map { zipTree(it.archiveFile.get().asFile) }
