@@ -57,13 +57,6 @@ public final class QuestRewardAndTeamGameTests {
             rewards.put("xp_reward", reward("xp_reward", "xp", 7, "", false, Map.of()));
             rewards.put("loot_reward", reward("loot_reward", "loot_table", 3, "minecraft:empty", false, Map.of("fallback_item", "minecraft:stick")));
             rewards.put("command_reward", reward("command_reward", "command", 1, "", false, Map.of("command", "gamerule doDaylightCycle false")));
-            rewards.put("sel_item", reward("sel_item", "item", 1, "minecraft:carrot", false, Map.of()));
-            rewards.put("sel_xp", reward("sel_xp", "xp", 4, "", false, Map.of()));
-            rewards.put("selector", reward("selector", "selectable", 1, "", true, Map.of(
-                    "pick_count", "1",
-                    "available_choices", "2",
-                    "choices", "sel_item,sel_xp"
-            )));
 
             QuestDefinition definition = quest("test/reward_claim_types", QuestSettings.DEFAULT, Map.of(), rewards, Set.of());
             bundle.store.upsert(definition);
@@ -93,17 +86,6 @@ public final class QuestRewardAndTeamGameTests {
             bundle.engine.claimReward(player, definition.id(), "command_reward");
             if (!bundle.progressData.state(player.getUUID()).quest(definition.id()).claimedRewards().contains("command_reward")) {
                 throw new GameTestAssertException("Command reward was not marked claimed");
-            }
-
-            bundle.engine.claimReward(player, definition.id(), "selector", List.of());
-            if (bundle.progressData.state(player.getUUID()).quest(definition.id()).claimedRewards().contains("selector")) {
-                throw new GameTestAssertException("Invalid selectable claim should not execute child rewards");
-            }
-
-            int carrotsBefore = countItems(player, "minecraft:carrot");
-            bundle.engine.claimReward(player, definition.id(), "selector", List.of("sel_item"));
-            if (countItems(player, "minecraft:carrot") - carrotsBefore != 1) {
-                throw new GameTestAssertException("Selectable reward did not execute selected child reward");
             }
 
             int itemBeforeDuplicate = countItems(player, "minecraft:apple");
@@ -146,6 +128,17 @@ public final class QuestRewardAndTeamGameTests {
 
             int applesBefore = countItems(player, "minecraft:apple");
             int carrotsBefore = countItems(player, "minecraft:carrot");
+            bundle.engine.claimAllRewards(player, definition.id());
+            bundle.engine.claimReward(player, definition.id(), "normal_item");
+            bundle.engine.claimSelectedRewardAndAvailableRewards(player, definition.id(), "selector_a", List.of("missing"));
+            var blockedState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (countItems(player, "minecraft:apple") != applesBefore || blockedState.claimedRewards().contains("normal_item")) {
+                throw new GameTestAssertException("Normal rewards should wait for a valid selectable reward claim");
+            }
+            if (countItems(player, "minecraft:carrot") != carrotsBefore || blockedState.claimedRewards().contains("selector_a")) {
+                throw new GameTestAssertException("Invalid selectable claims should not execute rewards");
+            }
+
             bundle.engine.claimSelectedRewardAndAvailableRewards(player, definition.id(), "selector_a", List.of("sel_a"));
 
             var state = bundle.progressData.state(player.getUUID()).quest(definition.id());
@@ -179,6 +172,54 @@ public final class QuestRewardAndTeamGameTests {
             }
             if (!stuckState.claimedRewards().containsAll(rewards.keySet())) {
                 throw new GameTestAssertException("Retrying a stuck selectable claim should mark skipped singleton choices claimed");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void autoClaimWaitsForSelectableRewardChoice(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "auto_claim_selectable_wait");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestSettings autoClaim = new QuestSettings(
+                    false,
+                    QuestVisibilityMode.PREREQUISITES_VISIBLE,
+                    false,
+                    true,
+                    false,
+                    true
+            );
+            Map<String, QuestRewardDefinition> rewards = new LinkedHashMap<>();
+            rewards.put("normal_item", reward("normal_item", "item", 2, "minecraft:apple", false, Map.of()));
+            rewards.put("selector", reward("selector", "selectable", 1, "", true, Map.of(
+                    "pick_count", "1",
+                    "choices", "sel_a"
+            )));
+
+            QuestDefinition definition = quest("test/auto_claim_selectable_wait", autoClaim, Map.of(), rewards, Set.of());
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            int applesBefore = countItems(player, "minecraft:apple");
+            bundle.engine.completeQuest(player, definition.id());
+            var completedState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (countItems(player, "minecraft:apple") != applesBefore || completedState.claimedRewards().contains("normal_item")) {
+                throw new GameTestAssertException("Auto-claim should wait for selectable rewards before granting normal rewards");
+            }
+
+            bundle.engine.claimSelectedRewardAndAvailableRewards(player, definition.id(), "selector", List.of("sel_a"));
+            if (countItems(player, "minecraft:apple") - applesBefore != 2) {
+                throw new GameTestAssertException("Normal rewards should grant after the selectable reward choice is claimed");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
