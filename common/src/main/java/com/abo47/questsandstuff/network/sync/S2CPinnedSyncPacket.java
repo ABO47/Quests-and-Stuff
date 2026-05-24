@@ -10,8 +10,8 @@ import java.util.List;
 public record S2CPinnedSyncPacket(long sequence, List<String> pinned) {
     public static S2CPinnedSyncPacket decode(FriendlyByteBuf buf) {
         long sequence = buf.readLong();
-        int size = buf.readVarInt();
-        List<String> pinned = new ArrayList<>();
+        int size = SyncPacketPayloadLimits.readPinnedQuestCount(buf);
+        List<String> pinned = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             pinned.add(buf.readUtf());
         }
@@ -19,6 +19,7 @@ public record S2CPinnedSyncPacket(long sequence, List<String> pinned) {
     }
 
     public void encode(FriendlyByteBuf buf) {
+        SyncPacketPayloadLimits.requirePinnedQuestCount(pinned.size());
         buf.writeLong(sequence);
         buf.writeVarInt(pinned.size());
         for (String id : pinned) {

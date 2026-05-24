@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
+import com.abo47.questsandstuff.network.sync.SyncPacketPayloadLimits;
+
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.HashMap;
@@ -34,14 +36,12 @@ public final class ClientSyncInbox {
     }
 
     public static void acceptFullChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastFullSequence) {
+        if (sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
             return;
         }
-        ClientSyncChunkAccumulator accumulator = PENDING_FULL.get(sequence);
+        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_FULL, sequence, chunkCount);
         if (accumulator == null) {
-            PENDING_FULL.entrySet().removeIf(entry -> entry.getKey() < sequence);
-            accumulator = new ClientSyncChunkAccumulator(chunkCount);
-            PENDING_FULL.put(sequence, accumulator);
+            return;
         }
         accumulator.add(chunkIndex, payload);
         if (accumulator.complete()) {
@@ -53,14 +53,12 @@ public final class ClientSyncInbox {
     }
 
     public static void acceptDeltaChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastDeltaSequence || sequence < lastFullSequence) {
+        if (sequence < lastDeltaSequence || sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
             return;
         }
-        ClientSyncChunkAccumulator accumulator = PENDING_DELTA.get(sequence);
+        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_DELTA, sequence, chunkCount);
         if (accumulator == null) {
-            PENDING_DELTA.entrySet().removeIf(entry -> entry.getKey() < sequence);
-            accumulator = new ClientSyncChunkAccumulator(chunkCount);
-            PENDING_DELTA.put(sequence, accumulator);
+            return;
         }
         accumulator.add(chunkIndex, payload);
         if (accumulator.complete()) {
@@ -71,14 +69,12 @@ public final class ClientSyncInbox {
     }
 
     public static void acceptDescriptionChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastDescriptionSequence || sequence < lastFullSequence) {
+        if (sequence < lastDescriptionSequence || sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
             return;
         }
-        ClientSyncChunkAccumulator accumulator = PENDING_DESCRIPTION.get(sequence);
+        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_DESCRIPTION, sequence, chunkCount);
         if (accumulator == null) {
-            PENDING_DESCRIPTION.entrySet().removeIf(entry -> entry.getKey() < sequence);
-            accumulator = new ClientSyncChunkAccumulator(chunkCount);
-            PENDING_DESCRIPTION.put(sequence, accumulator);
+            return;
         }
         accumulator.add(chunkIndex, payload);
         if (accumulator.complete()) {
@@ -118,5 +114,54 @@ public final class ClientSyncInbox {
         }
         lastEditorMutationSequence = sequence;
         return true;
+    }
+
+    private static ClientSyncChunkAccumulator accumulatorFor(Map<Long, ClientSyncChunkAccumulator> pending, long sequence, int chunkCount) {
+        Long newestPendingSequence = newestSequence(pending);
+        if (newestPendingSequence != null && sequence < newestPendingSequence) {
+            return null;
+        }
+
+        ClientSyncChunkAccumulator accumulator = pending.get(sequence);
+        if (accumulator != null) {
+            return accumulator.expected() == chunkCount ? accumulator : null;
+        }
+
+        pending.entrySet().removeIf(entry -> entry.getKey() < sequence);
+        trimPendingSequences(pending);
+
+        accumulator = new ClientSyncChunkAccumulator(chunkCount);
+        pending.put(sequence, accumulator);
+        return accumulator;
+    }
+
+    private static void trimPendingSequences(Map<Long, ClientSyncChunkAccumulator> pending) {
+        while (pending.size() >= SyncPacketPayloadLimits.MAX_PENDING_SYNC_SEQUENCES) {
+            Long oldestSequence = oldestSequence(pending);
+            if (oldestSequence == null) {
+                return;
+            }
+            pending.remove(oldestSequence);
+        }
+    }
+
+    private static Long newestSequence(Map<Long, ClientSyncChunkAccumulator> pending) {
+        Long newestSequence = null;
+        for (Long sequence : pending.keySet()) {
+            if (newestSequence == null || sequence > newestSequence) {
+                newestSequence = sequence;
+            }
+        }
+        return newestSequence;
+    }
+
+    private static Long oldestSequence(Map<Long, ClientSyncChunkAccumulator> pending) {
+        Long oldestSequence = null;
+        for (Long sequence : pending.keySet()) {
+            if (oldestSequence == null || sequence < oldestSequence) {
+                oldestSequence = sequence;
+            }
+        }
+        return oldestSequence;
     }
 }

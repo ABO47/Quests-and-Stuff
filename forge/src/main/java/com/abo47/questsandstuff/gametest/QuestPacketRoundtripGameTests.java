@@ -126,6 +126,68 @@ public final class QuestPacketRoundtripGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void syncPacketDecodeRejectsInvalidChunkMetadata(GameTestHelper helper) {
+        FriendlyByteBuf invalidIndex = new FriendlyByteBuf(Unpooled.buffer());
+        invalidIndex.writeLong(20L);
+        invalidIndex.writeVarInt(2);
+        invalidIndex.writeVarInt(2);
+
+        try {
+            S2CFullSyncPacket.decode(invalidIndex);
+            throw new GameTestAssertException("Invalid full sync chunk index should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf tooManyChunks = new FriendlyByteBuf(Unpooled.buffer());
+        tooManyChunks.writeLong(21L);
+        tooManyChunks.writeVarInt(0);
+        tooManyChunks.writeVarInt(SyncPacketPayloadLimits.MAX_SYNC_CHUNKS + 1);
+
+        try {
+            S2CDeltaSyncPacket.decode(tooManyChunks);
+            throw new GameTestAssertException("Oversized delta sync chunk count should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf zeroChunks = new FriendlyByteBuf(Unpooled.buffer());
+        zeroChunks.writeLong(22L);
+        zeroChunks.writeVarInt(0);
+        zeroChunks.writeVarInt(0);
+
+        try {
+            S2CDescriptionSyncPacket.decode(zeroChunks);
+            throw new GameTestAssertException("Zero description sync chunk count should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void pinnedSyncPacketRejectsOversizedList(GameTestHelper helper) {
+        List<String> pinned = new ArrayList<>();
+        for (int i = 0; i <= SyncPacketPayloadLimits.MAX_PINNED_QUESTS; i++) {
+            pinned.add("quest/" + i);
+        }
+        try {
+            new S2CPinnedSyncPacket(23L, pinned).encode(new FriendlyByteBuf(Unpooled.buffer()));
+            throw new GameTestAssertException("Oversized pinned sync packet should fail during encode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeLong(24L);
+        oversized.writeVarInt(SyncPacketPayloadLimits.MAX_PINNED_QUESTS + 1);
+        try {
+            S2CPinnedSyncPacket.decode(oversized);
+            throw new GameTestAssertException("Oversized pinned sync packet should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void selectableRewardPacketRejectsOversizedSelection(GameTestHelper helper) {
         List<String> choices = new ArrayList<>();
         for (int i = 0; i < 65; i++) {
