@@ -24,8 +24,7 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - In-game visual editor
 - Straight or grid-style connection lines
 - Custom connection colors
-- Item, XP, advancement, recipe, stat, biome, dimension visit, structure visit, and manual check requirements
-- Block interaction, entity interaction, item interaction, item use, and entity kill requirements
+- Item, XP, advancement, recipe, stat, biome, dimension visit, structure visit, manual check , Block interaction, entity interaction, item interaction, item use, and entity kill requirements
 - Item, XP, command, loot table, and selectable rewards
 - Command rewards can be disabled in config
 - Inventory/NBT picking for item rewards
