@@ -185,6 +185,10 @@ public final class EntityPreviewRenderer {
     }
 
     public static boolean renderEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, float partialTicks) {
+        return renderEntityAsset(graphics, x, y, width, height, asset, yawDegrees, spinSpeed, CanvasImageLayer.DEFAULT_MODEL_PITCH, partialTicks);
+    }
+
+    public static boolean renderEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
         EntityAsset parsed = parseEntityAsset(asset);
         Entity entity = cachedEntity(parsed);
         if (entity == null || width <= 0 || height <= 0) {
@@ -195,8 +199,9 @@ public final class EntityPreviewRenderer {
         int centerY = y + height / 2;
         int speed = CanvasImageLayer.clampEntitySpinSpeed(spinSpeed);
         float yaw = currentYaw(yawDegrees, speed);
+        float pitch = CanvasImageLayer.normalizeDegrees(pitchDegrees);
         prepareEntityForRender(entity, speed > 0);
-        renderEntityInInventory(graphics, centerX, centerY, renderScale(entity, width, height), entity, yaw, speed > 0 ? partialTicks : 0.0F);
+        renderEntityInInventory(graphics, centerX, centerY, renderScale(entity, width, height), entity, yaw, pitch, speed > 0 ? partialTicks : 0.0F);
         return true;
     }
 
@@ -302,11 +307,11 @@ public final class EntityPreviewRenderer {
         }
     }
 
-    private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float partialTicks) {
+    private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float pitchDegrees, float partialTicks) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        Quaternionf rotation = new Quaternionf().rotateXYZ(0.0F, (float) Math.toRadians(yawDegrees), (float) Math.PI);
+        Quaternionf rotation = new Quaternionf().rotateXYZ((float) Math.toRadians(pitchDegrees), (float) Math.toRadians(yawDegrees), (float) Math.PI);
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0.0D);
         graphics.pose().mulPoseMatrix(new Matrix4f().scaling((float) scale, (float) scale, (float) -scale));

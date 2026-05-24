@@ -64,6 +64,18 @@ final class CanvasContextCanvasActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_entity group={} logical={},{}", selectedGroup, state.contextLogicalX, state.contextLogicalY);
             canvasViewport.refresh();
         }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.add_item"), "icon", ModColors.SUCCESS, () -> {
+            ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemNew(selectedGroup), state.contextPointerLogicalX, state.contextPointerLogicalY);
+            state.contextMenuOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_item_model group={} logical={},{}", selectedGroup, state.contextLogicalX, state.contextLogicalY);
+            canvasViewport.refresh();
+        }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.add_block"), "box", ModColors.SUCCESS, () -> {
+            ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockNew(selectedGroup), state.contextPointerLogicalX, state.contextPointerLogicalY);
+            state.contextMenuOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_block_model group={} logical={},{}", selectedGroup, state.contextLogicalX, state.contextLogicalY);
+            canvasViewport.refresh();
+        }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.add_text_box"), "text", ModColors.SUCCESS, () -> {
             String id = StableIdAllocator.nextId("txt", canvasTextIds(state, selectedGroup));
             int textW = 96;

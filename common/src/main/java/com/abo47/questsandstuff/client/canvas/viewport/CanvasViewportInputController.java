@@ -159,6 +159,7 @@ final class CanvasViewportInputController {
             state.draggingCanvasImage = false;
             state.resizingCanvasImage = false;
             state.rotatingCanvasImage = false;
+            state.canvasImageTransformAxis = "";
             state.snapGuideXVisible = false;
             state.snapGuideYVisible = false;
             refresher.run();

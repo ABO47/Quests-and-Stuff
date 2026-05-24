@@ -133,6 +133,7 @@ public class TabletUiState {
     public String modalCanvasBackgroundTarget = "";
     public String modalCanvasImageTarget = "";
     public String modalCanvasEntityTarget = "";
+    public String modalCanvasModelTarget = "";
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
     public String entityVariantFolder = "";
@@ -401,6 +402,9 @@ public class TabletUiState {
     public int questDetailsTransformStartW;
     public int questDetailsTransformStartH;
     public int questDetailsTransformStartRotation;
+    public int questDetailsTransformStartYaw;
+    public int questDetailsTransformStartPitch;
+    public String questDetailsTransformAxis = "";
     public double questDetailsTransformPivotX;
     public double questDetailsTransformPivotY;
     public double questDetailsTransformStartAngle;
@@ -454,6 +458,7 @@ public class TabletUiState {
     public boolean draggingCanvasImage;
     public boolean resizingCanvasImage;
     public boolean rotatingCanvasImage;
+    public String transformGizmoMode = "move";
     public int canvasImageDragStartX;
     public int canvasImageDragStartY;
     public int canvasImageStartX;
@@ -461,6 +466,9 @@ public class TabletUiState {
     public int canvasImageStartW;
     public int canvasImageStartH;
     public int canvasImageStartRotation;
+    public int canvasImageStartYaw;
+    public int canvasImageStartPitch;
+    public String canvasImageTransformAxis = "";
     public double canvasImageRotatePivotX;
     public double canvasImageRotatePivotY;
     public double canvasImageRotateStartAngle;

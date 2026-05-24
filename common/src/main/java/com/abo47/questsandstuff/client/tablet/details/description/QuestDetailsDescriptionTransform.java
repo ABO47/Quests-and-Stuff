@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -40,8 +41,11 @@ public final class QuestDetailsDescriptionTransform {
         state.questDetailsTransformStartW = rect.w();
         state.questDetailsTransformStartH = rect.h();
         state.questDetailsTransformStartRotation = rect.rotation();
-        state.questDetailsTransformPivotX = contentX.getAsInt() + rect.x() + rect.w() / 2.0;
-        state.questDetailsTransformPivotY = contentY.getAsInt() + rect.y() - state.questDetailsDescScroll + rect.h() / 2.0;
+        CanvasImageLayer image = "desc_image".equals(kind) ? model.image(id) : null;
+        state.questDetailsTransformStartYaw = image == null ? CanvasImageLayer.DEFAULT_ENTITY_YAW : image.entityYaw();
+        state.questDetailsTransformStartPitch = image == null ? CanvasImageLayer.DEFAULT_MODEL_PITCH : image.modelPitch();
+        state.questDetailsTransformPivotX = contentX.getAsInt() + rect.x() + (image == null ? rect.w() / 2.0 : image.pivotX());
+        state.questDetailsTransformPivotY = contentY.getAsInt() + rect.y() - state.questDetailsDescScroll + (image == null ? rect.h() / 2.0 : image.pivotY());
         if (resizeHit) {
             state.questDetailsTransformMode = "resize";
         } else if (rotateHit) {
@@ -113,7 +117,7 @@ public final class QuestDetailsDescriptionTransform {
 
     private CanvasTextLayer transformText(QuestDetailsDescriptionModel model, CanvasTextLayer text, int dx, int dy, int mouseX, int mouseY) {
         return switch (state.questDetailsTransformMode) {
-            case "resize" -> resizedText(model, text, mouseX, mouseY);
+            case "resize" -> resizedText(model, text, mouseX, mouseY, 1, 1);
             case "rotate" -> text.rotateTo(rotation(mouseX, mouseY));
             default -> {
                 int x = snap(model, state.questDetailsTransformStartX + dx);
@@ -127,28 +131,76 @@ public final class QuestDetailsDescriptionTransform {
     private CanvasImageLayer transformImage(QuestDetailsDescriptionModel model, CanvasImageLayer image, int dx, int dy, int mouseX, int mouseY) {
         return switch (state.questDetailsTransformMode) {
             case "resize" -> resizedImage(model, image, mouseX, mouseY);
-            case "rotate" -> image.rotateTo(rotation(mouseX, mouseY));
+            case "rotate" -> CanvasTransformGizmo.supports(image.asset()) && !CanvasTransformGizmo.AXIS_ROLL.equals(state.questDetailsTransformAxis) ? rotateModelFromDrag(image, mouseX, mouseY) : image.rotateTo(rotation(mouseX, mouseY));
             default -> {
-                int x = snap(model, state.questDetailsTransformStartX + dx);
-                int y = snap(model, state.questDetailsTransformStartY + dy);
+                CanvasPoint delta = CanvasTransformGizmo.supports(image.asset()) ? modelDragDelta(model, dx, dy) : new CanvasPoint(snapDelta(model, dx), snapDelta(model, dy));
+                int x = state.questDetailsTransformStartX + delta.x;
+                int y = state.questDetailsTransformStartY + delta.y;
                 SnapMove snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.rotation());
+                if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.questDetailsTransformAxis)) {
+                    snapped = new SnapMove(snapped.x(), y);
+                    state.snapGuideYVisible = false;
+                } else if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.questDetailsTransformAxis)) {
+                    snapped = new SnapMove(x, snapped.y());
+                    state.snapGuideXVisible = false;
+                }
                 yield image.moveTo(clampX(snapped.x(), image.w()), clampY(snapped.y(), image.h()));
             }
         };
     }
 
-    private CanvasTextLayer resizedText(QuestDetailsDescriptionModel model, CanvasTextLayer text, int mouseX, int mouseY) {
-        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 24, 14);
+    private CanvasPoint modelDragDelta(QuestDetailsDescriptionModel model, int dx, int dy) {
+        if (isShiftDown() || CanvasTransformGizmo.AXIS_MOVE_FREE.equals(state.questDetailsTransformAxis)) {
+            return new CanvasPoint(gridDelta(model, dx), gridDelta(model, dy));
+        }
+        if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.questDetailsTransformAxis)) {
+            return new CanvasPoint(snapDelta(model, dx), 0);
+        }
+        if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.questDetailsTransformAxis)) {
+            return new CanvasPoint(0, snapDelta(model, dy));
+        }
+        return new CanvasPoint(snapDelta(model, dx), snapDelta(model, dy));
+    }
+
+    private int gridDelta(QuestDetailsDescriptionModel model, int delta) {
+        if (!model.gridSnapLocked) {
+            return delta;
+        }
+        int step = Math.max(1, CanvasGeometry.gridSize(state));
+        return Math.round((float) delta / (float) step) * step;
+    }
+
+    private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int mouseX, int mouseY) {
+        int delta = rotationDelta(mouseX, mouseY);
+        int yaw = state.questDetailsTransformStartYaw;
+        int pitch = state.questDetailsTransformStartPitch;
+        if (CanvasTransformGizmo.AXIS_PITCH.equals(state.questDetailsTransformAxis)) {
+            pitch = state.questDetailsTransformStartPitch + delta;
+        } else {
+            yaw = state.questDetailsTransformStartYaw + delta;
+        }
+        if (isShiftDown()) {
+            yaw = snapAngle(yaw);
+            pitch = snapAngle(pitch);
+        }
+        return image.withModelRotation(yaw, pitch);
+    }
+
+    private CanvasTextLayer resizedText(QuestDetailsDescriptionModel model, CanvasTextLayer text, int mouseX, int mouseY, int cornerX, int cornerY) {
+        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 24, 14, cornerX, cornerY, isShiftDown());
         return new CanvasTextLayer(text.id(), text.text(), clampX(box.x(), box.width()), clampY(box.y(), box.height()), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
     }
 
     private CanvasImageLayer resizedImage(QuestDetailsDescriptionModel model, CanvasImageLayer image, int mouseX, int mouseY) {
-        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 8, 8);
-        return new CanvasImageLayer(image.id(), image.asset(), clampX(box.x(), box.width()), clampY(box.y(), box.height()), box.width(), box.height(), image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+        boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
+        int cornerX = gizmoSupported ? CanvasTransformGizmo.resizeCornerX(state.questDetailsTransformAxis) : 1;
+        int cornerY = gizmoSupported ? CanvasTransformGizmo.resizeCornerY(state.questDetailsTransformAxis) : 1;
+        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 8, 8, cornerX, cornerY, !gizmoSupported && isShiftDown());
+        return image.withBounds(clampX(box.x(), box.width()), clampY(box.y(), box.height()), box.width(), box.height());
     }
 
-    private CanvasGeometry.ResizedBox resizedBox(QuestDetailsDescriptionModel model, int mouseX, int mouseY, int minW, int minH) {
-        return CanvasGeometry.resizeRotatedFromBottomRight(
+    private CanvasGeometry.ResizedBox resizedBox(QuestDetailsDescriptionModel model, int mouseX, int mouseY, int minW, int minH, int cornerX, int cornerY, boolean preserveAspect) {
+        return CanvasGeometry.resizeRotatedFromCorner(
                 mouseX - contentX.getAsInt(),
                 mouseY - contentY.getAsInt() + state.questDetailsDescScroll,
                 state.questDetailsTransformStartX,
@@ -159,22 +211,36 @@ public final class QuestDetailsDescriptionTransform {
                 minW,
                 minH,
                 CanvasGeometry.gridSize(state),
-                model.gridSnapLocked,
-                isShiftDown()
+                model.gridSnapLocked || isShiftDown(),
+                preserveAspect,
+                cornerX,
+                cornerY
         );
     }
 
     private int rotation(int mouseX, int mouseY) {
+        int rotation = state.questDetailsTransformStartRotation + rotationDelta(mouseX, mouseY);
+        return isShiftDown() ? snapAngle(rotation) : rotation;
+    }
+
+    private int rotationDelta(int mouseX, int mouseY) {
         double angle = Math.atan2(mouseY - state.questDetailsTransformPivotY, mouseX - state.questDetailsTransformPivotX);
-        int rotation = (int) Math.round(state.questDetailsTransformStartRotation + Math.toDegrees(angle - state.questDetailsTransformStartAngle));
-        if (isShiftDown()) {
-            return Math.round(rotation / 15.0f) * 15;
+        double deltaDegrees = Math.toDegrees(angle - state.questDetailsTransformStartAngle);
+        while (deltaDegrees > 180.0D) {
+            deltaDegrees -= 360.0D;
         }
-        return rotation;
+        while (deltaDegrees < -180.0D) {
+            deltaDegrees += 360.0D;
+        }
+        return (int) Math.round(deltaDegrees);
+    }
+
+    private int snapAngle(int angle) {
+        return Math.round(angle / 15.0f) * 15;
     }
 
     private int snap(QuestDetailsDescriptionModel model, int value) {
-        if (!model.gridSnapLocked) {
+        if (!model.gridSnapLocked && !isShiftDown()) {
             return value;
         }
         int step = Math.max(1, CanvasGeometry.gridSize(state));
@@ -182,7 +248,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private int snapDelta(QuestDetailsDescriptionModel model, int delta) {
-        if (!model.gridSnapLocked) {
+        if (!model.gridSnapLocked && !isShiftDown()) {
             return delta;
         }
         int step = Math.max(1, CanvasGeometry.gridSize(state));

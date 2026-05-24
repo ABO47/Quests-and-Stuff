@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -64,7 +65,11 @@ public final class CanvasHitTester {
         if (image == null) {
             return null;
         }
-        if (isCanvasImageResizeHandleHit(state, image, x, y) || isCanvasImageRotateHandleHit(state, image, x, y)) {
+        boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
+        if (gizmoSupported && CanvasTransformGizmo.controlHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), x, y)) {
+            return image;
+        }
+        if (!gizmoSupported && (isCanvasImageResizeHandleHit(state, image, x, y) || isCanvasImageRotateHandleHit(state, image, x, y))) {
             return image;
         }
         int sw = CanvasGeometry.screenSpan(state, image.w());
@@ -210,17 +215,19 @@ public final class CanvasHitTester {
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {
         int sx = CanvasGeometry.screenX(state, image.x());
         int sy = CanvasGeometry.screenY(state, image.y());
-        int sw = CanvasGeometry.screenSpan(state, image.w());
-        int sh = CanvasGeometry.screenSpan(state, image.h());
-        double cx = sx + sw / 2.0;
-        double cy = sy + sh / 2.0;
+        int sw = Math.max(1, CanvasGeometry.screenX(state, image.x() + image.w()) - sx);
+        int sh = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - sy);
+        int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - sx;
+        int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - sy;
+        double cx = sx + pivotX;
+        double cy = sy + pivotY;
         double dx = x - cx;
         double dy = y - cy;
         double radians = Math.toRadians(-image.rotation());
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin + sw / 2.0;
-        double localY = dx * sin + dy * cos + sh / 2.0;
+        double localX = dx * cos - dy * sin + pivotX;
+        double localY = dx * sin + dy * cos + pivotY;
         return new double[]{localX, localY};
     }
 

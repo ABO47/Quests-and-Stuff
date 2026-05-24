@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.canvas;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -12,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -257,26 +259,38 @@ final class CanvasSceneRenderer {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int x = originX + CanvasGeometry.screenX(state, image.x());
-                int y = originY + CanvasGeometry.screenY(state, image.y());
-                int w = CanvasGeometry.screenSpan(state, image.w());
-                int h = CanvasGeometry.screenSpan(state, image.h());
+                int screenLeft = CanvasGeometry.screenX(state, image.x());
+                int screenTop = CanvasGeometry.screenY(state, image.y());
+                int x = originX + screenLeft;
+                int y = originY + screenTop;
+                int w = Math.max(1, CanvasGeometry.screenX(state, image.x() + image.w()) - screenLeft);
+                int h = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - screenTop);
+                int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - screenLeft;
+                int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - screenTop;
                 graphics.pose().pushPose();
-                graphics.pose().translate(x + w / 2.0f, y + h / 2.0f, 0.0f);
+                graphics.pose().translate(x + pivotX, y + pivotY, 0.0f);
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
                 String entityId = EntityPreviewRenderer.entityId(image.asset());
                 if (!entityId.isBlank()) {
-                    if (!EntityPreviewRenderer.renderEntityAsset(graphics, -w / 2, -h / 2, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), 0.0F)) {
-                        graphics.fill(-w / 2, -h / 2, w / 2, h / 2, withAlpha(ModColors.TEXT_MUTED, 45));
+                    if (!EntityPreviewRenderer.renderEntityAsset(graphics, -pivotX, -pivotY, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
+                    }
+                } else if (CanvasModelPreviewRenderer.isModelAsset(image.asset())) {
+                    if (!CanvasModelPreviewRenderer.renderModelAsset(graphics, -pivotX, -pivotY, w, h, image.asset(), image.entityYaw(), image.modelPitch())) {
+                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
                     }
                 } else {
                     IGuiTexture texture = chapterBackgroundTexture(image.asset());
                     if (texture != null) {
-                        texture.draw(graphics, mouseX, mouseY, -w / 2.0f, -h / 2.0f, w, h);
+                        texture.draw(graphics, mouseX, mouseY, -pivotX, -pivotY, w, h);
                     }
                 }
                 graphics.pose().popPose();
                 if (state.canEdit && CanvasRenderer.isImageSelected(state, image.id())) {
+                    if (CanvasTransformGizmo.supports(image.asset())) {
+                        CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
+                        return;
+                    }
                     CanvasPoint selectionDragStart = state.dragStartImagePositions.get(image.id());
                     if (state.draggingSelection && selectionDragStart != null) {
                         CanvasElementSelectionSlot.drawDragging(

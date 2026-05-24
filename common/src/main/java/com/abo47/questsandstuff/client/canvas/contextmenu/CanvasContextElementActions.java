@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
@@ -12,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -29,7 +32,7 @@ final class CanvasContextElementActions {
         }
         CanvasImageLayer contextImage = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
         if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
-            actions.add(new ContextAction("Change entity", "entity", ModColors.INTERACTIVE, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";
                 state.contextMenuOpen = false;
@@ -48,6 +51,37 @@ final class CanvasContextElementActions {
                     },
                     canvasViewport::refresh
             );
+        } else if (contextImage != null && (CanvasModelPreviewRenderer.isItemAsset(contextImage.asset()) || CanvasModelPreviewRenderer.isItemTagAsset(contextImage.asset()))) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
+                ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                state.contextDeleteConfirmKey = "";
+                state.contextMenuOpen = false;
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model group={} image={}", selectedGroup, state.contextCanvasImageId);
+                canvasViewport.refresh();
+            }));
+        } else if (contextImage != null && CanvasModelPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ModColors.INTERACTIVE, () -> {
+                ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                state.contextDeleteConfirmKey = "";
+                state.contextMenuOpen = false;
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model group={} image={}", selectedGroup, state.contextCanvasImageId);
+                canvasViewport.refresh();
+            }));
+        }
+        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())) {
+            CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
+            CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
+                CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
+                if (image == null) {
+                    return;
+                }
+                CanvasRenderer.putCanvasImage(state, selectedGroup, image.withCenteredPivot());
+                state.selectedCanvasImageId = image.id();
+                state.selectedCanvasImageIds.clear();
+                state.selectedCanvasImageIds.add(image.id());
+                state.selectedCanvasTextId = "";
+                state.selectedCanvasTextIds.clear();
+            }, canvasViewport::refresh);
         }
         if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextCanvasImageId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "grid", ModColors.INTERACTIVE, () -> {

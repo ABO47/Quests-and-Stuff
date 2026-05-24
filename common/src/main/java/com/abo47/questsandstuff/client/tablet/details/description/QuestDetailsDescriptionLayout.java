@@ -47,7 +47,7 @@ final class QuestDetailsDescriptionLayout {
         int width = snapSpan(image.w(), grid, 8);
         int height = snapSpan(image.h(), grid, 8);
         var anchor = CanvasGeometry.fitRotatedAnchorToGrid(image.x(), image.y(), image.w(), image.h(), width, height, image.rotation(), grid);
-        return new CanvasImageLayer(image.id(), image.asset(), Math.max(0, anchor.x), Math.max(0, anchor.y), width, height, image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+        return image.withBounds(Math.max(0, anchor.x), Math.max(0, anchor.y), width, height);
     }
 
     static int[] imageSpawnSize(String asset) {

@@ -121,7 +121,7 @@ public final class TabletRecipePickerModal {
             closeAll(state);
             refresh.run();
         });
-        hit.setHoverTooltips(Component.literal(entry.tooltip()));
+        hit.setHoverTooltips(entry.tooltip());
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
@@ -325,11 +325,8 @@ public final class TabletRecipePickerModal {
                     || compactRecipes.contains(compactQuery)));
         }
 
-        String tooltip() {
-            if (tag) {
-                return displayName + " - " + value;
-            }
-            return displayName;
+        Component[] tooltip() {
+            return PickerTooltips.nameAndId(displayName, value);
         }
 
         private static ItemStack[] copyStacks(ItemStack[] stacks) {

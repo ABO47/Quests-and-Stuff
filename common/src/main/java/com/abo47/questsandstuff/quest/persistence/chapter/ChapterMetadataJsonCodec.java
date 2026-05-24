@@ -30,16 +30,21 @@ final class ChapterMetadataJsonCodec {
             if (id.isBlank()) {
                 continue;
             }
+            int width = intOr(json, "w", 80);
+            int height = intOr(json, "h", 80);
             images.add(new CanvasImageLayer(
                     id,
                     stringOr(json, "asset", ""),
                     intOr(json, "x", 0),
                     intOr(json, "y", 0),
-                    intOr(json, "w", 80),
-                    intOr(json, "h", 80),
+                    width,
+                    height,
                     intOr(json, "rotation", 0),
                     intOr(json, "entity_yaw", CanvasImageLayer.DEFAULT_ENTITY_YAW),
-                    intOr(json, "entity_spin_speed", CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED)
+                    intOr(json, "entity_spin_speed", CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED),
+                    intOr(json, "model_pitch", CanvasImageLayer.DEFAULT_MODEL_PITCH),
+                    intOr(json, "pivot_x", width / 2),
+                    intOr(json, "pivot_y", height / 2)
             ));
         }
         return images;
@@ -58,6 +63,9 @@ final class ChapterMetadataJsonCodec {
             json.addProperty("rotation", image.rotation());
             json.addProperty("entity_yaw", image.entityYaw());
             json.addProperty("entity_spin_speed", image.entitySpinSpeed());
+            json.addProperty("model_pitch", image.modelPitch());
+            json.addProperty("pivot_x", image.pivotX());
+            json.addProperty("pivot_y", image.pivotY());
             array.add(json);
         }
         return array;

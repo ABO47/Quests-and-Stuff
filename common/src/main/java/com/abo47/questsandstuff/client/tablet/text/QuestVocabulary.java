@@ -77,13 +77,18 @@ public final class QuestVocabulary {
     public static final String XP_POINTS_MANUAL = "ui.questsandstuff.quest.xp.points_manual";
 
     public static final String CONTEXT_ADD_ENTITY = "ui.questsandstuff.context.add_entity";
+    public static final String CONTEXT_ADD_ITEM = "ui.questsandstuff.context.add_item";
+    public static final String CONTEXT_ADD_BLOCK = "ui.questsandstuff.context.add_block";
     public static final String CONTEXT_ADD_IMAGE = "ui.questsandstuff.context.add_image";
     public static final String CONTEXT_ADD_TEXT_BOX = "ui.questsandstuff.context.add_text_box";
     public static final String CONTEXT_ALIGN_HORIZONTAL_CENTER = "ui.questsandstuff.context.align_horizontal_center";
     public static final String CONTEXT_ALIGN_VERTICAL_CENTER = "ui.questsandstuff.context.align_vertical_center";
     public static final String CONTEXT_BRING_TO_FRONT = "ui.questsandstuff.context.bring_to_front";
+    public static final String CONTEXT_CENTER_PIVOT = "ui.questsandstuff.context.center_pivot";
     public static final String CONTEXT_CHANGE_BACKGROUND = "ui.questsandstuff.context.change_background";
     public static final String CONTEXT_CHANGE_ENTITY = "ui.questsandstuff.context.change_entity";
+    public static final String CONTEXT_CHANGE_ITEM = "ui.questsandstuff.context.change_item";
+    public static final String CONTEXT_CHANGE_BLOCK = "ui.questsandstuff.context.change_block";
     public static final String CONTEXT_CHANGE_ICON = "ui.questsandstuff.context.change_icon";
     public static final String CONTEXT_CHANGE_IMAGE = "ui.questsandstuff.context.change_image";
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
@@ -94,6 +99,9 @@ public final class QuestVocabulary {
     public static final String CONTEXT_EDIT_MOTION = "ui.questsandstuff.context.edit_motion";
     public static final String CONTEXT_EDIT_TEXT = "ui.questsandstuff.context.edit_text";
     public static final String CONTEXT_FIT_TO_GRID = "ui.questsandstuff.context.fit_to_grid";
+    public static final String CONTEXT_GIZMO_MOVE = "ui.questsandstuff.context.gizmo_move";
+    public static final String CONTEXT_GIZMO_RESIZE = "ui.questsandstuff.context.gizmo_resize";
+    public static final String CONTEXT_GIZMO_ROTATE = "ui.questsandstuff.context.gizmo_rotate";
     public static final String CONTEXT_HIDE_CONNECTION = "ui.questsandstuff.context.hide_connection";
     public static final String CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED = "ui.questsandstuff.context.hide_quest_until_unlocked";
     public static final String CONTEXT_MOVE_DOWN = "ui.questsandstuff.context.move_down";

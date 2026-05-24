@@ -57,6 +57,22 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add entity pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
+    static void addItemAt(TabletUiState state, String questId, int panelX, int panelY) {
+        String id = nextDescriptionItemId(modelForQuest(questId));
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 24);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
+        QuestDetailsWindow.openIconPicker(state, ModalTargets.descItemNew(questId, id, Math.max(0, x), Math.max(0, y)));
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details add item model pending quest={} image={} pos={},{}", questId, id, x, y);
+    }
+
+    static void addBlockAt(TabletUiState state, String questId, int panelX, int panelY) {
+        String id = nextDescriptionBlockId(modelForQuest(questId));
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 24);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
+        QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlockNew(questId, id, Math.max(0, x), Math.max(0, y)));
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details add block model pending quest={} image={} pos={},{}", questId, id, x, y);
+    }
+
     static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         CanvasTextLayer text = model.text(id);
         if (text == null) {
@@ -126,16 +142,9 @@ final class QuestDetailsDescriptionEditActions {
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                model.putImage(new CanvasImageLayer(
-                        image.id(),
-                        image.asset(),
+                model.putImage(image.moveTo(
                         horizontal ? Math.max(0, image.x() + delta) : image.x(),
-                        horizontal ? image.y() : Math.max(0, image.y() + delta),
-                        image.w(),
-                        image.h(),
-                        image.rotation(),
-                        image.entityYaw(),
-                        image.entitySpinSpeed()
+                        horizontal ? image.y() : Math.max(0, image.y() + delta)
                 ));
             }
         }
@@ -273,5 +282,13 @@ final class QuestDetailsDescriptionEditActions {
 
     private static String nextDescriptionEntityId(QuestDetailsDescriptionModel model) {
         return StableIdAllocator.nextId("ent", model == null ? List.of() : model.images.keySet());
+    }
+
+    private static String nextDescriptionItemId(QuestDetailsDescriptionModel model) {
+        return StableIdAllocator.nextId("itm", model == null ? List.of() : model.images.keySet());
+    }
+
+    private static String nextDescriptionBlockId(QuestDetailsDescriptionModel model) {
+        return StableIdAllocator.nextId("blk", model == null ? List.of() : model.images.keySet());
     }
 }

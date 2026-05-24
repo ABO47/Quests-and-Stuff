@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
@@ -100,9 +102,7 @@ final class CanvasSelectMoveClickActions {
         boolean textTransformHandleHit = textHit != null
                 && (CanvasRenderer.isCanvasTextResizeHandleHit(state, textHit, localX, localY)
                 || CanvasRenderer.isCanvasTextRotateHandleHit(state, textHit, localX, localY));
-        boolean imageTransformHandleHit = imageHit != null
-                && (CanvasRenderer.isCanvasImageResizeHandleHit(state, imageHit, localX, localY)
-                || CanvasRenderer.isCanvasImageRotateHandleHit(state, imageHit, localX, localY));
+        boolean imageTransformHandleHit = imageHit != null && imageTransformHit(canvasViewport, state, imageHit, localX, localY);
         if (textTransformHandleHit) {
             state.canvasTextLastClickId = "";
             elementTransforms.beginTextTransform(textHit, localX, localY);
@@ -161,5 +161,22 @@ final class CanvasSelectMoveClickActions {
             return true;
         }
         return false;
+    }
+
+    private static boolean imageTransformHit(CanvasViewport canvasViewport, TabletUiState state, CanvasImageLayer image, int localX, int localY) {
+        if (!CanvasTransformGizmo.supports(image.asset())) {
+            return CanvasRenderer.isCanvasImageResizeHandleHit(state, image, localX, localY)
+                    || CanvasRenderer.isCanvasImageRotateHandleHit(state, image, localX, localY);
+        }
+        if (canvasViewport.shiftDown()
+                && CanvasTransformGizmo.activeMode(state) == CanvasTransformMode.RESIZE
+                && CanvasTransformGizmo.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), localX, localY)) {
+            return true;
+        }
+        CanvasTransformMode hitMode = CanvasTransformGizmo.modeAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), localX, localY);
+        return hitMode != null
+                || (canvasViewport.shiftDown()
+                && CanvasTransformGizmo.activeMode(state) == CanvasTransformMode.MOVE
+                && CanvasTransformGizmo.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), localX, localY));
     }
 }

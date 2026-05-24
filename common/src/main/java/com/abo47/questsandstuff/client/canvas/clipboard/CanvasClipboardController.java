@@ -252,7 +252,7 @@ public final class CanvasClipboardController {
             int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.canvasClipboardOriginX);
             int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.canvasClipboardOriginY);
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, image.w(), image.h());
-            CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+            CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             CanvasRenderer.putCanvasImage(state, group, duplicate);
             state.selectedCanvasImageIds.add(id);
             state.selectedCanvasImageId = id;

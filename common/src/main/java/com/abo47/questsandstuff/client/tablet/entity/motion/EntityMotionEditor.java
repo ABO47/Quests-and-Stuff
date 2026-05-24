@@ -19,7 +19,7 @@ public final class EntityMotionEditor {
             return;
         }
         EntityMotionTargets.openImage(state, EntityMotionTargets.SCOPE_CANVAS, group, "", imageId, x, y, image);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas group={} image={} yaw={} spin={}", group, imageId, image.entityYaw(), image.entitySpinSpeed());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas group={} image={} spin={}", group, imageId, image.entitySpinSpeed());
     }
 
     public static void openQuestDetails(TabletUiState state, String questId, String imageId, int x, int y) {
@@ -29,7 +29,7 @@ public final class EntityMotionEditor {
             return;
         }
         EntityMotionTargets.openImage(state, EntityMotionTargets.SCOPE_QUEST_DETAILS, "", questId, imageId, x, y, image);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_details quest={} image={} yaw={} spin={}", questId, imageId, image.entityYaw(), image.entitySpinSpeed());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_details quest={} image={} spin={}", questId, imageId, image.entitySpinSpeed());
     }
 
     public static void openQuestIcon(TabletUiState state, String questId, int x, int y) {
@@ -38,7 +38,7 @@ public final class EntityMotionEditor {
             return;
         }
         EntityMotionTargets.openIcon(state, EntityMotionTargets.SCOPE_QUEST_ICON, "", questId, "", x, y, icon);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_icon quest={} yaw={} spin={}", questId, icon.yaw(), icon.spin());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_icon quest={} spin={}", questId, icon.spin());
     }
 
     public static void openChapterIcon(TabletUiState state, String chapter, int x, int y) {
@@ -47,7 +47,7 @@ public final class EntityMotionEditor {
             return;
         }
         EntityMotionTargets.openIcon(state, EntityMotionTargets.SCOPE_CHAPTER_ICON, chapter, "", "", x, y, icon);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=chapter_icon chapter={} yaw={} spin={}", chapter, icon.yaw(), icon.spin());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=chapter_icon chapter={} spin={}", chapter, icon.spin());
     }
 
     public static void openObjectiveIcon(TabletUiState state, String questId, String objectiveId, boolean task, int x, int y) {
@@ -56,7 +56,7 @@ public final class EntityMotionEditor {
             return;
         }
         EntityMotionTargets.openIcon(state, EntityMotionTargets.SCOPE_OBJECTIVE_ICON, EntityMotionTargets.objectiveGroup(task), questId, objectiveId, x, y, icon);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=objective_icon quest={} objective={} task={} yaw={} spin={}", questId, objectiveId, task, icon.yaw(), icon.spin());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=objective_icon quest={} objective={} task={} spin={}", questId, objectiveId, task, icon.spin());
     }
 
     public static void close(TabletUiState state) {

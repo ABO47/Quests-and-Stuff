@@ -64,6 +64,7 @@ final class TabletShortcutActions {
             state.draggingCanvasImage = false;
             state.resizingCanvasImage = false;
             state.rotatingCanvasImage = false;
+            state.canvasImageTransformAxis = "";
             state.draggingCanvasText = false;
             state.resizingCanvasText = false;
             state.rotatingCanvasText = false;
@@ -79,6 +80,7 @@ final class TabletShortcutActions {
             state.questDetailsTransformKind = "";
             state.questDetailsTransformId = "";
             state.questDetailsTransformMode = "";
+            state.questDetailsTransformAxis = "";
             changed = true;
         }
         if (state.chapterDragPending || state.chapterDragActive || state.questDetailsObjectiveDragPending || state.questDetailsObjectiveDragActive) {

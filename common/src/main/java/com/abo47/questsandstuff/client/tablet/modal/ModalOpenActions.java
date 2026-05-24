@@ -191,6 +191,7 @@ public final class ModalOpenActions {
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.questDetailsAssetPickTarget = "";
         state.contextDeleteConfirmKey = "";
         resetAssetPicker(state);
@@ -214,6 +215,7 @@ public final class ModalOpenActions {
         state.modalCanvasBackgroundTarget = group == null ? "" : group;
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
         resetAssetPicker(state);
@@ -225,6 +227,7 @@ public final class ModalOpenActions {
         closeBeforeOpen(state);
         state.modalCanvasImageTarget = group == null ? "" : group;
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
@@ -239,6 +242,7 @@ public final class ModalOpenActions {
         closeBeforeOpen(state);
         state.modalCanvasEntityTarget = target == null ? "" : target;
         state.modalCanvasImageTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
@@ -246,6 +250,38 @@ public final class ModalOpenActions {
         state.canvasImageLogicalY = logicalY;
         resetIconPicker(state);
         openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+    }
+
+    public static void openCanvasItemPicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = target == null ? "" : target;
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        resetIconPicker(state);
+        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+    }
+
+    public static void openCanvasBlockPicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = target == null ? "" : target;
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        state.blockSearch = "";
+        state.blockTagMode = false;
+        state.blockScroll = 0;
+        state.blockScrollDragging = false;
+        state.blockSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {

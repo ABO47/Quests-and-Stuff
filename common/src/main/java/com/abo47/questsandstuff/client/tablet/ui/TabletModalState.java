@@ -137,6 +137,7 @@ public final class TabletModalState {
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.entityVariantTarget = "";
         state.entityVariantSelected = "";
         state.entityVariantFolder = "";

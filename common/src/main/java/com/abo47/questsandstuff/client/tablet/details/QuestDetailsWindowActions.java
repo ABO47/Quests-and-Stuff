@@ -46,6 +46,9 @@ final class QuestDetailsWindowActions {
     }
 
     static void applyBlockPick(Player player, TabletUiState state, String block) {
+        if (QuestDetailsDescriptionPanel.applyBlockPick(player, state, block)) {
+            return;
+        }
         QuestDetailsObjectivesPanel.applyBlockPick(player, state, block);
     }
 

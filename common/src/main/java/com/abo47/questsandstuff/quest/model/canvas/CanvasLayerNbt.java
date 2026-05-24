@@ -26,6 +26,9 @@ public final class CanvasLayerNbt {
         tag.putInt("rotation", image.rotation());
         tag.putInt("entity_yaw", image.entityYaw());
         tag.putInt("entity_spin_speed", image.entitySpinSpeed());
+        tag.putInt("model_pitch", image.modelPitch());
+        tag.putInt("pivot_x", image.pivotX());
+        tag.putInt("pivot_y", image.pivotY());
         return tag;
     }
 
@@ -37,16 +40,21 @@ public final class CanvasLayerNbt {
         if (id.isBlank()) {
             return null;
         }
+        int width = tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : 80;
+        int height = tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : 80;
         return new CanvasImageLayer(
                 id,
                 tag.getString("asset"),
                 tag.getInt("x"),
                 tag.getInt("y"),
-                tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : 80,
-                tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : 80,
+                width,
+                height,
                 tag.getInt("rotation"),
                 tag.contains("entity_yaw", Tag.TAG_INT) ? tag.getInt("entity_yaw") : CanvasImageLayer.DEFAULT_ENTITY_YAW,
-                tag.contains("entity_spin_speed", Tag.TAG_INT) ? tag.getInt("entity_spin_speed") : CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED
+                tag.contains("entity_spin_speed", Tag.TAG_INT) ? tag.getInt("entity_spin_speed") : CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED,
+                tag.contains("model_pitch", Tag.TAG_INT) ? tag.getInt("model_pitch") : CanvasImageLayer.DEFAULT_MODEL_PITCH,
+                tag.contains("pivot_x", Tag.TAG_INT) ? tag.getInt("pivot_x") : width / 2,
+                tag.contains("pivot_y", Tag.TAG_INT) ? tag.getInt("pivot_y") : height / 2
         );
     }
 

@@ -37,6 +37,24 @@ public final class TabletClientHooks {
             GLFW.GLFW_KEY_F3,
             CATEGORY
     );
+    private static final KeyMapping GIZMO_MOVE = new KeyMapping(
+            "key.questsandstuff.gizmo_move",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_W,
+            CATEGORY
+    );
+    private static final KeyMapping GIZMO_RESIZE = new KeyMapping(
+            "key.questsandstuff.gizmo_resize",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_E,
+            CATEGORY
+    );
+    private static final KeyMapping GIZMO_ROTATE = new KeyMapping(
+            "key.questsandstuff.gizmo_rotate",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            CATEGORY
+    );
 
     private static boolean uiPrewarmed;
     private static boolean suppressNextOpenClick;
@@ -50,6 +68,9 @@ public final class TabletClientHooks {
         registrar.accept(OPEN_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
+        registrar.accept(GIZMO_MOVE);
+        registrar.accept(GIZMO_RESIZE);
+        registrar.accept(GIZMO_ROTATE);
     }
 
     public static boolean quickConnectDown() {
@@ -66,6 +87,18 @@ public final class TabletClientHooks {
 
     public static boolean openUiMatches(int keyCode, int scanCode) {
         return OPEN_UI.matches(keyCode, scanCode);
+    }
+
+    public static boolean gizmoMoveMatches(int keyCode, int scanCode) {
+        return GIZMO_MOVE.matches(keyCode, scanCode);
+    }
+
+    public static boolean gizmoResizeMatches(int keyCode, int scanCode) {
+        return GIZMO_RESIZE.matches(keyCode, scanCode);
+    }
+
+    public static boolean gizmoRotateMatches(int keyCode, int scanCode) {
+        return GIZMO_ROTATE.matches(keyCode, scanCode);
     }
 
     public static void rememberActiveWindow(TabletUiState state) {

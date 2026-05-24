@@ -6,6 +6,8 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.overlay.CanvasTextStyleMenu;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
@@ -14,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -78,7 +81,7 @@ public final class QuestDetailsDescriptionMenus {
         switch (kind) {
             case "description" -> addDescriptionActions(actions, state, player, questId, model, x, y);
             case "desc_text" -> addTextActions(actions, state, player, questId, model);
-            case "desc_image" -> addImageActions(actions, state, player, questId, model);
+            case "desc_image" -> addImageActions(actions, state, player, questId, model, refresh);
             case "desc_selection" -> addSelectionActions(actions, state, player, questId, model, viewportW, viewportH);
             default -> {
             }
@@ -115,6 +118,14 @@ public final class QuestDetailsDescriptionMenus {
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ENTITY), "entity", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addEntityAt(state, questId, x, y);
+        }));
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ITEM), "icon", ModColors.SUCCESS, () -> {
+            state.contextDeleteConfirmKey = "";
+            QuestDetailsDescriptionPanel.addItemAt(state, questId, x, y);
+        }));
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "box", ModColors.SUCCESS, () -> {
+            state.contextDeleteConfirmKey = "";
+            QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
@@ -181,13 +192,19 @@ public final class QuestDetailsDescriptionMenus {
         }));
     }
 
-    private static void addImageActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {
+    private static void addImageActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, Runnable refresh) {
         CanvasImageLayer contextImage = model.image(state.questDetailsContextId);
         boolean entityImage = contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset());
-        actions.add(ContextActions.action(entityImage ? QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ENTITY) : QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_IMAGE), entityImage ? "entity" : "image", ModColors.INTERACTIVE, () -> {
+        boolean itemImage = contextImage != null && (CanvasModelPreviewRenderer.isItemAsset(contextImage.asset()) || CanvasModelPreviewRenderer.isItemTagAsset(contextImage.asset()));
+        boolean blockImage = contextImage != null && CanvasModelPreviewRenderer.isBlockModelAsset(contextImage.asset());
+        actions.add(ContextActions.action(changeImageLabel(entityImage, itemImage, blockImage), changeImageIcon(entityImage, itemImage, blockImage), ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, state.questDetailsContextId));
+            } else if (itemImage) {
+                QuestDetailsWindow.openIconPicker(state, ModalTargets.descItem(questId, state.questDetailsContextId));
+            } else if (blockImage) {
+                QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlock(questId, state.questDetailsContextId));
             } else {
                 QuestDetailsWindow.openAssetPicker(state, ModalTargets.descImage(questId, state.questDetailsContextId));
             }
@@ -208,6 +225,21 @@ public final class QuestDetailsDescriptionMenus {
                 EntityMotionEditor.openQuestDetails(state, questId, state.questDetailsContextId, state.questDetailsContextX, state.questDetailsContextY);
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=edit_entity_motion quest={} image={}", questId, state.questDetailsContextId);
             }));
+        }
+        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())) {
+            CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
+            CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
+                CanvasImageLayer image = model.image(state.questDetailsContextId);
+                if (image != null) {
+                    model.putImage(image.withCenteredPivot());
+                    QuestDetailsDescriptionModel.save(player, questId, model);
+                    state.questDetailsSelectedImageId = image.id();
+                    state.questDetailsSelectedImageIds.clear();
+                    state.questDetailsSelectedImageIds.add(image.id());
+                    state.questDetailsSelectedTextId = "";
+                    state.questDetailsSelectedTextIds.clear();
+                }
+            }, refresh);
         }
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "grid", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
@@ -232,6 +264,32 @@ public final class QuestDetailsDescriptionMenus {
             model.removeImage(state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
+    }
+
+    private static String changeImageLabel(boolean entityImage, boolean itemImage, boolean blockImage) {
+        if (entityImage) {
+            return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ENTITY);
+        }
+        if (itemImage) {
+            return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ITEM);
+        }
+        if (blockImage) {
+            return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BLOCK);
+        }
+        return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_IMAGE);
+    }
+
+    private static String changeImageIcon(boolean entityImage, boolean itemImage, boolean blockImage) {
+        if (entityImage) {
+            return "entity";
+        }
+        if (itemImage) {
+            return "icon";
+        }
+        if (blockImage) {
+            return "box";
+        }
+        return "image";
     }
 
     private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {

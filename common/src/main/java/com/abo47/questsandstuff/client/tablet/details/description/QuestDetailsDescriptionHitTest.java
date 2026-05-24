@@ -1,11 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import java.util.function.IntSupplier;
+
+import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 final class QuestDetailsDescriptionHitTest {
     private final TabletUiState state;
@@ -55,6 +59,31 @@ final class QuestDetailsDescriptionHitTest {
         return selectionRotateHit(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation(), px, visibleY);
     }
 
+    CanvasTransformMode imageGizmoMode(QuestDetailsDescriptionModel model, Hit hit, int px, int visibleY) {
+        if (hit == null || !"desc_image".equals(hit.kind())) {
+            return null;
+        }
+        CanvasImageLayer image = model.image(hit.id());
+        if (image == null || !CanvasTransformGizmo.supports(image.asset())) {
+            return null;
+        }
+        CanvasTransformMode hitMode = imageGizmoMode(image, px, visibleY);
+        return hitMode;
+    }
+
+    String imageGizmoAxis(QuestDetailsDescriptionModel model, Hit hit, int px, int visibleY) {
+        if (hit == null || !"desc_image".equals(hit.kind())) {
+            return "";
+        }
+        CanvasImageLayer image = model.image(hit.id());
+        if (image == null || !CanvasTransformGizmo.supports(image.asset())) {
+            return "";
+        }
+        final String[] axis = new String[1];
+        withSelectionGeometry(() -> axis[0] = CanvasTransformGizmo.axisAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), px, visibleY));
+        return axis[0] == null ? "" : axis[0];
+    }
+
     boolean isHitSelected(Hit hit) {
         return "desc_text".equals(hit.kind()) ? selection.isSelectedText(hit.id()) : selection.isSelectedImage(hit.id());
     }
@@ -66,9 +95,19 @@ final class QuestDetailsDescriptionHitTest {
     }
 
     private boolean hitsImage(CanvasImageLayer image, int lx, int visibleY, int ly) {
-        return selectedControlHit(image.x(), image.y(), image.w(), image.h(), image.rotation(), lx, visibleY, selection.isSelectedImage(image.id()))
+        return selectedImageControlHit(image, lx, visibleY)
                 || elementBoundsHit(image.x(), image.y(), image.w(), image.h(), image.rotation(), lx, visibleY)
                 || contains(image.x(), image.y(), image.w(), image.h(), lx, ly);
+    }
+
+    private boolean selectedImageControlHit(CanvasImageLayer image, int px, int visibleY) {
+        if (!selection.isSelectedImage(image.id())) {
+            return false;
+        }
+        if (CanvasTransformGizmo.supports(image.asset())) {
+            return imageGizmoMode(image, px, visibleY) != null;
+        }
+        return selectedControlHit(image.x(), image.y(), image.w(), image.h(), image.rotation(), px, visibleY, true);
     }
 
     private boolean selectedControlHit(int x, int y, int w, int h, int rotation, int px, int visibleY, boolean selected) {
@@ -95,6 +134,26 @@ final class QuestDetailsDescriptionHitTest {
         final boolean[] hit = new boolean[1];
         withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.rotateHandleHit(state, x, y, w, h, rotation, px, visibleY));
         return hit[0];
+    }
+
+    private CanvasTransformMode imageGizmoMode(CanvasImageLayer image, int px, int visibleY) {
+        final CanvasTransformMode[] mode = new CanvasTransformMode[1];
+        withSelectionGeometry(() -> {
+            if (isShiftDown()
+                    && CanvasTransformGizmo.activeMode(state) == CanvasTransformMode.RESIZE
+                    && CanvasTransformGizmo.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), px, visibleY)) {
+                mode[0] = CanvasTransformMode.MOVE;
+                return;
+            }
+            mode[0] = CanvasTransformGizmo.modeAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), px, visibleY);
+            if (mode[0] == null
+                    && isShiftDown()
+                    && CanvasTransformGizmo.activeMode(state) == CanvasTransformMode.MOVE
+                    && CanvasTransformGizmo.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), px, visibleY)) {
+                mode[0] = CanvasTransformMode.MOVE;
+            }
+        });
+        return mode[0];
     }
 
     private static boolean contains(int x, int y, int w, int h, int px, int py) {

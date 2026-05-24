@@ -4,6 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
@@ -33,7 +35,11 @@ final class TabletRootKeyboardRouter {
             int scanCode,
             int modifiers
     ) {
-        if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !TabletRootWindowController.isTextInputActive(state, root)) {
+        boolean textInputActive = TabletRootWindowController.isTextInputActive(state, root);
+        if (!textInputActive && !root.isAnyModalOpen() && handleGizmoModeShortcut(state, refresher, keyCode, scanCode)) {
+            return true;
+        }
+        if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !textInputActive) {
             TabletClientHooks.closeQuestTabletUi(state, true, "keybind");
             return true;
         }
@@ -188,6 +194,27 @@ final class TabletRootKeyboardRouter {
             refresher.run();
         }
         return changed;
+    }
+
+    private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
+        if (!state.canEdit && !QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
+        CanvasTransformMode mode = null;
+        if (TabletClientHooks.gizmoMoveMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.MOVE;
+        } else if (TabletClientHooks.gizmoResizeMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.RESIZE;
+        } else if (TabletClientHooks.gizmoRotateMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.ROTATE;
+        }
+        if (mode == null) {
+            return false;
+        }
+        CanvasTransformGizmo.setMode(state, mode);
+        QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo shortcut mode={}", mode.id);
+        refresher.run();
+        return true;
     }
 
     private static boolean handleCanvasClipboardShortcut(TabletRootWidget root, TabletUiState state, CanvasViewport canvasViewport, Runnable refresher, int keyCode) {

@@ -92,7 +92,7 @@ final class EntityMotionTargets {
             EntityMotionEditor.close(state);
             return;
         }
-        int yaw = parseDraft(state.entityMotionYawDraft, motion.yaw(), 359);
+        int yaw = motion.yaw();
         int spin = parseDraft(state.entityMotionSpinDraft, motion.spin(), CanvasImageLayer.MAX_ENTITY_SPIN_SPEED);
         switch (state.entityMotionEditorScope) {
             case SCOPE_CANVAS -> applyCanvasMotion(state, yaw, spin, sync);

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -32,6 +33,10 @@ public final class DisplayIconWidget extends WidgetGroup {
         ResourceTexture uiIcon = UiIconAtlas.iconTexture(iconId);
         if (uiIcon != null) {
             uiIcon.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            return;
+        }
+        if (CanvasModelPreviewRenderer.isModelAsset(iconId)
+                && CanvasModelPreviewRenderer.renderModelAsset(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), iconId)) {
             return;
         }
         String entityId = EntityPreviewRenderer.entityId(iconId);

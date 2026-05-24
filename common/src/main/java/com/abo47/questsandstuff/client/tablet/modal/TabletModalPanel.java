@@ -4,6 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasEntityPickerActions;
+import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasModelPickerActions;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -67,6 +69,10 @@ public final class TabletModalPanel {
         return CanvasEntityPickerActions.run(player, state, target, pickedItem);
     }
 
+    static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
+        return CanvasModelPickerActions.run(state, target, pickedValue);
+    }
+
     static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         WidgetGroup base = panel(x, y, w, h, withAlpha(ModColors.INTERACTIVE, 120), ModColors.BORDER_ACCENT);
         parent.addWidget(base);
@@ -88,26 +94,23 @@ public final class TabletModalPanel {
             return new Component[]{Component.translatable("ui.questsandstuff.icon.unknown").withStyle(ChatFormatting.RED)};
         }
         if (entry.startsWith("#")) {
-            return new Component[]{
-                    Component.translatable("ui.questsandstuff.icon.item_tag").withStyle(ChatFormatting.AQUA),
-                    Component.literal(entry).withStyle(ChatFormatting.GRAY)
-            };
+            return PickerTooltips.item(entry);
+        }
+        if (CanvasModelPreviewRenderer.isModelAsset(entry)) {
+            return CanvasModelPreviewRenderer.modelTooltip(entry);
         }
         String entityId = EntityPreviewRenderer.entityId(entry);
         if (!entityId.isBlank()) {
             return new Component[]{
                     Component.literal(EntityPreviewRenderer.entityDisplayName(entityId)).withStyle(ChatFormatting.WHITE),
-                    Component.literal(entry).withStyle(ChatFormatting.DARK_GRAY)
+                    Component.literal(entityId).withStyle(ChatFormatting.DARK_GRAY)
             };
         }
         ResourceLocation id = ResourceLocation.tryParse(entry);
         if (id != null) {
             Item item = BuiltInRegistries.ITEM.get(id);
             if (item != null) {
-                return new Component[]{
-                        item.getDescription().copy().withStyle(ChatFormatting.WHITE),
-                        Component.literal(entry).withStyle(ChatFormatting.DARK_GRAY)
-                };
+                return PickerTooltips.item(entry);
             }
         }
         return new Component[]{Component.literal(entry).withStyle(ChatFormatting.GRAY)};
