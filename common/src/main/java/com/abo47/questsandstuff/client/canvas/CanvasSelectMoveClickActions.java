@@ -99,6 +99,24 @@ final class CanvasSelectMoveClickActions {
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit
     ) {
+        int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+        if (selectionCount > 1) {
+            if (CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
+                selectionTransforms.beginRotate(localX, localY, byQuestId);
+                refresher.run();
+                return true;
+            }
+            if (CanvasRenderer.isSelectionResizeHandleHit(state, localX, localY)) {
+                selectionTransforms.beginResize(localX, localY, byQuestId);
+                refresher.run();
+                return true;
+            }
+            if (!canvasViewport.shiftDown() && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+                selectionTransforms.beginDrag(localX, localY, byQuestId);
+                refresher.run();
+                return true;
+            }
+        }
         boolean textTransformHandleHit = textHit != null
                 && (CanvasRenderer.isCanvasTextResizeHandleHit(state, textHit, localX, localY)
                 || CanvasRenderer.isCanvasTextRotateHandleHit(state, textHit, localX, localY));
@@ -115,7 +133,7 @@ final class CanvasSelectMoveClickActions {
             return true;
         }
         boolean questResizeTransform = !state.selectedQuestIds.isEmpty();
-        boolean questRotateTransform = state.selectedQuestIds.size() > 1;
+        boolean questRotateTransform = selectionCount > 1;
         if (questRotateTransform && CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
             selectionTransforms.beginRotate(localX, localY, byQuestId);
             refresher.run();
@@ -126,7 +144,7 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        if (CanvasRenderer.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+        if (!canvasViewport.shiftDown() && selectionCount > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             selectionTransforms.beginDrag(localX, localY, byQuestId);
             refresher.run();
             return true;

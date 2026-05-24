@@ -1,11 +1,17 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.selection.CanvasLayerGroupTransform;
+import com.abo47.questsandstuff.client.canvas.selection.CanvasLayerSelectionSnapshot;
+import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import java.util.Map;
 
@@ -24,6 +30,8 @@ final class CanvasSelectionRotateController {
         state.rotatingSelection = true;
         state.rotateStartPositions.clear();
         state.rotateStartCenters.clear();
+        state.rotateStartImageLayers.clear();
+        state.rotateStartTextLayers.clear();
         state.transientQuestPositions.clear();
         state.transientQuestScales.clear();
 
@@ -42,6 +50,15 @@ final class CanvasSelectionRotateController {
             minY = Math.min(minY, card.visualLogicalY());
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
+        }
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletUiFactory.selectedGroupName(state), byQuestId);
+        state.rotateStartImageLayers.putAll(snapshot.images());
+        state.rotateStartTextLayers.putAll(snapshot.texts());
+        if (snapshot.hasBounds()) {
+            minX = Math.min(minX, snapshot.left());
+            minY = Math.min(minY, snapshot.top());
+            maxX = Math.max(maxX, snapshot.right());
+            maxY = Math.max(maxY, snapshot.bottom());
         }
         if (minX == Integer.MAX_VALUE) {
             state.rotatePivotX = 0.0;
@@ -71,7 +88,7 @@ final class CanvasSelectionRotateController {
         double currentAngle = Math.atan2(logicalMouseY - state.rotatePivotY, logicalMouseX - state.rotatePivotX);
         double delta = currentAngle - state.rotateStartAngle;
         if (isShiftDown()) {
-            double snap = Math.PI / 4.0;
+            double snap = Math.PI / 12.0;
             delta = Math.round(delta / snap) * snap;
         }
         state.rotatePreviewAngle = delta;
@@ -102,6 +119,30 @@ final class CanvasSelectionRotateController {
                     CanvasGeometry.slotLogicalHeight(state, scale)
             );
             state.transientQuestPositions.put(questId, new CanvasPoint(clamped.x, clamped.y));
+        }
+        String group = TabletUiFactory.selectedGroupName(state);
+        CanvasLayerSelectionSnapshot layerSnapshot = new CanvasLayerSelectionSnapshot(
+                state.rotateStartBoundsLeft,
+                state.rotateStartBoundsTop,
+                state.rotateStartBoundsRight,
+                state.rotateStartBoundsBottom,
+                state.rotateStartImageLayers,
+                state.rotateStartTextLayers
+        );
+        CanvasLayerGroupTransform.Result result = CanvasLayerGroupTransform.rotate(
+                layerSnapshot,
+                state.rotatePivotX,
+                state.rotatePivotY,
+                delta,
+                state.gridSnapLocked,
+                CanvasGeometry.gridSize(state),
+                (x, y, width, height) -> CanvasGeometry.clampAnchorToCanvas(state, x, y, width, height)
+        );
+        for (CanvasImageLayer image : result.images().values()) {
+            CanvasRenderer.putCanvasImage(state, group, image, false);
+        }
+        for (CanvasTextLayer text : result.texts().values()) {
+            CanvasRenderer.putCanvasText(state, group, text, false);
         }
     }
 }

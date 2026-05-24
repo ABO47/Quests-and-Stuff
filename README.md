@@ -39,7 +39,6 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Add text, images, and entity previews on the canvas next to quests
 - Copy, paste, undo, and redo
 - Grid, snapping, center guides, and other editor tools
-- Separate edit modes for the main canvas and quest details
 - Minimap for large quest maps
 - Custom UI themes
 

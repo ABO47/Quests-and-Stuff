@@ -49,8 +49,12 @@ public final class CanvasSelectionTransformController {
         state.dragStartTextPositions.clear();
         state.resizeStartScales.clear();
         state.resizeStartPositions.clear();
+        state.resizeStartImageLayers.clear();
+        state.resizeStartTextLayers.clear();
         state.rotateStartPositions.clear();
         state.rotateStartCenters.clear();
+        state.rotateStartImageLayers.clear();
+        state.rotateStartTextLayers.clear();
         state.rotateStartBoundsLeft = 0;
         state.rotateStartBoundsTop = 0;
         state.rotateStartBoundsRight = 0;

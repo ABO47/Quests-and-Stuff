@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
+import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ final class QuestDetailsDescriptionSelectionState {
 
     static boolean hasSelection(TabletUiState state) {
         return !selectedTextIds(state).isEmpty() || !selectedImageIds(state).isEmpty();
+    }
+
+    static CanvasSelectionSet selectionSet(TabletUiState state) {
+        return new CanvasSelectionSet(Set.of(), selectedImageIds(state), selectedTextIds(state));
     }
 
     static void selectOnlyText(TabletUiState state, String id) {

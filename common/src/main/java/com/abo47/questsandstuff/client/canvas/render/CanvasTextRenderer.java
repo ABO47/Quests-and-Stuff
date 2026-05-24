@@ -44,6 +44,9 @@ public final class CanvasTextRenderer {
                 }
                 graphics.pose().popPose();
                 if (state.canEdit && CanvasRenderer.isTextSelected(state, text.id())) {
+                    if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+                        return;
+                    }
                     CanvasPoint selectionDragStart = state.dragStartTextPositions.get(text.id());
                     if (state.draggingSelection && selectionDragStart != null) {
                         CanvasElementSelectionSlot.drawDragging(

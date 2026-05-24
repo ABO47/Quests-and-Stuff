@@ -42,8 +42,12 @@ public class TabletUiState {
     public final Map<String, CanvasPoint> dragStartTextPositions = new HashMap<>();
     public final Map<String, Float> resizeStartScales = new HashMap<>();
     public final Map<String, CanvasPoint> resizeStartPositions = new HashMap<>();
+    public final Map<String, CanvasImageLayer> resizeStartImageLayers = new HashMap<>();
+    public final Map<String, CanvasTextLayer> resizeStartTextLayers = new HashMap<>();
     public final Map<String, CanvasDoublePoint> rotateStartCenters = new HashMap<>();
     public final Map<String, CanvasPoint> rotateStartPositions = new HashMap<>();
+    public final Map<String, CanvasImageLayer> rotateStartImageLayers = new HashMap<>();
+    public final Map<String, CanvasTextLayer> rotateStartTextLayers = new HashMap<>();
     public final Set<String> recentlyCreatedGroups = new java.util.LinkedHashSet<>();
     public String connectSourceQuestId = "";
     public final Set<String> connectSourceQuestIds = new java.util.LinkedHashSet<>();

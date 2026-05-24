@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.assets;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ final class AssetPathResolver {
     }
 
     static Path resolveAssetPath(Path assetsRoot, String relativePath) {
-        if (containsTraversal(relativePath)) {
+        if (containsTraversal(relativePath) || containsIllegalPathCharacter(relativePath)) {
             return null;
         }
         String rel = normalizeRelative(relativePath);
@@ -31,7 +32,10 @@ final class AssetPathResolver {
             return null;
         }
         Path root = assetsRoot.normalize();
-        Path direct = assetsRoot.resolve(rel).normalize();
+        Path direct = resolveSafe(assetsRoot, rel);
+        if (direct == null) {
+            return null;
+        }
         if (!direct.startsWith(root)) {
             return null;
         }
@@ -39,8 +43,8 @@ final class AssetPathResolver {
             return direct;
         }
         if (!rel.contains("/")) {
-            Path imageFallback = assetsRoot.resolve("pics").resolve(rel).normalize();
-            if (imageFallback.startsWith(root)) {
+            Path imageFallback = resolveSafe(assetsRoot.resolve("pics"), rel);
+            if (imageFallback != null && imageFallback.startsWith(root)) {
                 return imageFallback;
             }
         }
@@ -48,12 +52,15 @@ final class AssetPathResolver {
     }
 
     static Path resolveDirectory(Path assetsRoot, String relativeDir) {
-        if (containsTraversal(relativeDir)) {
+        if (containsTraversal(relativeDir) || containsIllegalPathCharacter(relativeDir)) {
             return null;
         }
         String rel = normalizeRelative(relativeDir);
         Path root = assetsRoot.normalize();
-        Path dir = rel.isBlank() ? root : assetsRoot.resolve(rel).normalize();
+        Path dir = rel.isBlank() ? root : resolveSafe(assetsRoot, rel);
+        if (dir == null) {
+            return null;
+        }
         return dir.startsWith(root) ? dir : null;
     }
 
@@ -71,7 +78,18 @@ final class AssetPathResolver {
         if (containsTraversal(normalized)) {
             return "";
         }
+        if (containsIllegalPathCharacter(normalized)) {
+            return "";
+        }
         return normalized;
+    }
+
+    private static Path resolveSafe(Path root, String relativePath) {
+        try {
+            return root.resolve(relativePath).normalize();
+        } catch (InvalidPathException ignored) {
+            return null;
+        }
     }
 
     private static boolean containsTraversal(String value) {
@@ -81,6 +99,19 @@ final class AssetPathResolver {
         String normalized = value.replace('\\', '/');
         for (String part : normalized.split("/")) {
             if ("..".equals(part)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsIllegalPathCharacter(String value) {
+        if (value == null) {
+            return false;
+        }
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c < 32 || c == '<' || c == '>' || c == ':' || c == '"' || c == '|' || c == '?' || c == '*') {
                 return true;
             }
         }

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
@@ -10,10 +11,8 @@ import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -30,7 +29,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -267,30 +265,11 @@ final class CanvasSceneRenderer {
                 int h = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - screenTop);
                 int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - screenLeft;
                 int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - screenTop;
-                graphics.pose().pushPose();
-                graphics.pose().translate(x + pivotX, y + pivotY, 0.0f);
-                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
-                String entityId = EntityPreviewRenderer.entityId(image.asset());
-                if (!entityId.isBlank()) {
-                    if (!EntityPreviewRenderer.renderEntityAssetAtCenter(graphics, 0, 0, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
-                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
-                    }
-                } else if (CanvasModelPreviewRenderer.isBlockModelAsset(image.asset())) {
-                    if (!CanvasModelPreviewRenderer.renderBlockModelAssetAtCenter(graphics, 0, 0, w, h, image.asset(), image.entityYaw(), image.modelPitch())) {
-                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
-                    }
-                } else if (CanvasModelPreviewRenderer.isModelAsset(image.asset())) {
-                    if (!CanvasModelPreviewRenderer.renderModelAsset(graphics, -pivotX, -pivotY, w, h, image.asset(), image.entityYaw(), image.modelPitch())) {
-                        graphics.fill(-pivotX, -pivotY, -pivotX + w, -pivotY + h, withAlpha(ModColors.TEXT_MUTED, 45));
-                    }
-                } else {
-                    IGuiTexture texture = chapterBackgroundTexture(image.asset());
-                    if (texture != null) {
-                        texture.draw(graphics, mouseX, mouseY, -pivotX, -pivotY, w, h);
-                    }
-                }
-                graphics.pose().popPose();
+                CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, image, x, y, w, h, pivotX, pivotY);
                 if (state.canEdit && CanvasRenderer.isImageSelected(state, image.id())) {
+                    if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+                        return;
+                    }
                     if (CanvasTransformGizmo.supports(image.asset())) {
                         CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
                         return;

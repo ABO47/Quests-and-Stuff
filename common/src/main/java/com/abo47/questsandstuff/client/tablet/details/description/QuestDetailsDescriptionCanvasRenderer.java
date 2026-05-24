@@ -3,11 +3,10 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -107,30 +106,8 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         if (y > contentY + contentH || y + image.h() < contentY) {
             return;
         }
-        graphics.pose().pushPose();
-        graphics.pose().translate(x + image.pivotX(), y + image.pivotY(), 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
-        String entityId = EntityPreviewRenderer.entityId(image.asset());
-        IGuiTexture texture = entityId.isBlank() ? chapterBackgroundTexture(image.asset()) : null;
-        if (!entityId.isBlank()) {
-            if (!EntityPreviewRenderer.renderEntityAssetAtCenter(graphics, 0, 0, image.w(), image.h(), image.asset(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
-                graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
-            }
-        } else if (CanvasModelPreviewRenderer.isBlockModelAsset(image.asset())) {
-            if (!CanvasModelPreviewRenderer.renderBlockModelAssetAtCenter(graphics, 0, 0, image.w(), image.h(), image.asset(), image.entityYaw(), image.modelPitch())) {
-                graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
-            }
-        } else if (CanvasModelPreviewRenderer.isModelAsset(image.asset())) {
-            if (!CanvasModelPreviewRenderer.renderModelAsset(graphics, -image.pivotX(), -image.pivotY(), image.w(), image.h(), image.asset(), image.entityYaw(), image.modelPitch())) {
-                graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
-            }
-        } else if (texture == null) {
-            graphics.fill(-image.pivotX(), -image.pivotY(), -image.pivotX() + image.w(), -image.pivotY() + image.h(), withAlpha(ModColors.TEXT_MUTED, 45));
-        } else {
-            texture.draw(graphics, 0, 0, -image.pivotX(), -image.pivotY(), image.w(), image.h());
-        }
-        graphics.pose().popPose();
-        if (isSelectedImage(state, image.id()) && QuestDetailsEditState.canEdit(state)) {
+        CanvasImageLayerRenderer.draw(graphics, 0, 0, image, x, y, image.w(), image.h(), image.pivotX(), image.pivotY());
+        if (isSelectedImage(state, image.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, image);
         }
     }
@@ -149,7 +126,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(text.rotation())));
         CanvasTextRenderer.drawTextLayer(graphics, state, rendered, text.w(), text.h(), inlineEditing);
         graphics.pose().popPose();
-        if (isSelectedText(state, text.id()) && QuestDetailsEditState.canEdit(state)) {
+        if (isSelectedText(state, text.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, text.x(), text.y(), text.w(), text.h(), text.rotation());
         }
     }
@@ -205,5 +182,9 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static boolean isSelectedImage(TabletUiState state, String id) {
         return id.equals(state.questDetailsSelectedImageId) || state.questDetailsSelectedImageIds.contains(id);
+    }
+
+    private static int selectedCount(TabletUiState state) {
+        return QuestDetailsDescriptionSelectionState.selectionSet(state).size();
     }
 }

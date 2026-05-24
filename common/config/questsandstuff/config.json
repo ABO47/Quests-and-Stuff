@@ -1,0 +1,18 @@
+{
+  "debug": {
+    "debugLogging": false
+  },
+  "animations": {
+    "uiAnimations": true,
+    "contextMenuAnimations": true,
+    "toolsMenuAnimations": true,
+    "minimapAnimations": true,
+    "questWindowAnimations": true,
+    "popupWindowAnimations": true,
+    "connectionAnimations": true,
+    "chapterSwitchAnimations": true
+  },
+  "security": {
+    "commandRewards": true
+  }
+}

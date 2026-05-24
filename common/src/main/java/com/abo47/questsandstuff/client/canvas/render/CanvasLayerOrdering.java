@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,41 @@ public final class CanvasLayerOrdering {
 
     public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
         moveLayer(state, group, textKey(textId), front);
+    }
+
+    public static void moveLayers(TabletUiState state, String group, List<String> keys, boolean front) {
+        if (group == null || group.isBlank() || keys == null || keys.isEmpty()) {
+            return;
+        }
+        Set<String> selected = new LinkedHashSet<>();
+        for (String key : keys) {
+            if (key != null && !key.isBlank()) {
+                selected.add(key);
+            }
+        }
+        if (selected.isEmpty()) {
+            return;
+        }
+        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        for (String key : selected) {
+            if (!order.contains(key)) {
+                order.add(key);
+            }
+        }
+        List<String> moved = new ArrayList<>();
+        order.removeIf(key -> {
+            boolean hit = selected.contains(key);
+            if (hit) {
+                moved.add(key);
+            }
+            return hit;
+        });
+        if (front) {
+            order.addAll(moved);
+        } else {
+            order.addAll(0, moved);
+        }
+        state.canvasLayerOrderByGroup.put(group, order);
     }
 
     public static boolean isImageAboveQuest(TabletUiState state, String group, String imageId, String questId) {

@@ -82,7 +82,7 @@ public final class QuestDetailsDescriptionMenus {
             case "description" -> addDescriptionActions(actions, state, player, questId, model, x, y);
             case "desc_text" -> addTextActions(actions, state, player, questId, model);
             case "desc_image" -> addImageActions(actions, state, player, questId, model, refresh);
-            case "desc_selection" -> addSelectionActions(actions, state, player, questId, model, viewportW, viewportH);
+            case "desc_selection" -> addSelectionActions(actions, state, player, questId, model, viewportW, viewportH, refresh);
             default -> {
             }
         }
@@ -292,7 +292,8 @@ public final class QuestDetailsDescriptionMenus {
         return "image";
     }
 
-    private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
+    private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, Runnable refresh) {
+        CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
