@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -52,11 +53,9 @@ final class QuestDetailsWindowLayout {
         }
 
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
-        rememberFrame(state, frame);
+        rememberFrame(layer, state, frame);
         addDimLayer(layer, state);
         WidgetGroup modal = addModal(layer, state, frame);
-        state.questDetailsScreenX = modal.getPositionX();
-        state.questDetailsScreenY = modal.getPositionY();
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = CHAPTER_X + leftW + Math.max(0, (GAP - SPLITTER_W) / 2);
@@ -75,13 +74,20 @@ final class QuestDetailsWindowLayout {
         TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, CANVAS_Y + QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
     }
 
-    private static void rememberFrame(TabletUiState state, QuestDetailsWindowFrame frame) {
+    static void syncScreenOrigin(WidgetGroup layer, TabletUiState state) {
+        if (layer == null || state == null || !QuestDetailsWindow.isVisible(state)) {
+            return;
+        }
+        state.questDetailsScreenX = TabletWidgetCoordinates.screenX(layer, state.questDetailsX);
+        state.questDetailsScreenY = TabletWidgetCoordinates.screenY(layer, state.questDetailsY);
+    }
+
+    private static void rememberFrame(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
         state.questDetailsX = frame.x();
         state.questDetailsY = frame.y();
-        state.questDetailsScreenX = frame.x();
-        state.questDetailsScreenY = frame.y();
         state.questDetailsW = frame.w();
         state.questDetailsH = frame.h();
+        syncScreenOrigin(layer, state);
     }
 
     private static void addDimLayer(WidgetGroup layer, TabletUiState state) {

@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -42,11 +43,13 @@ final class CanvasSelectMoveClickActions {
             state.canvasLastClickedQuestId = hit.questId();
             state.canvasLastQuestClickAtMs = now;
             if (doubleClick && button == 0) {
+                int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
+                int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
                 QuestDetailsWindow.openAtSource(
                         state,
                         hit.questId(),
-                        canvasViewport.getPositionX() + hit.x(),
-                        canvasViewport.getPositionY() + hit.y(),
+                        viewportScreenX + hit.x(),
+                        viewportScreenY + hit.y(),
                         hit.width(),
                         hit.height()
                 );

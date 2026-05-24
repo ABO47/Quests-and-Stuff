@@ -64,8 +64,8 @@ final class QuestObjectiveSectionWidget {
                 if (!isMouseOverElement(mouseX, mouseY)) {
                     return super.mouseClicked(mouseX, mouseY, button);
                 }
-                int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
-                int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h);
+                int lx = QuestDetailsMouse.localX(state, mouseX, getPositionX(), w);
+                int ly = QuestDetailsMouse.localY(state, mouseY, getPositionY(), h);
                 QuestDetailsObjectiveEntry hitEntry = hitEntry(state, entries, kind, listY, h - bottomPad, ly);
                 String id = hitEntry == null ? "" : hitEntry.id();
                 boolean editMode = QuestDetailsEditState.canEdit(state);
@@ -99,9 +99,9 @@ final class QuestObjectiveSectionWidget {
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
                 if (isObjectiveScrollDragging(state, kind)) {
-                    return super.mouseDragged(getPositionX() + scrollbarX(w), mouseY, button, dragX, dragY);
+                    return super.mouseDragged(QuestDetailsMouse.screenX(state, getPositionX()) + scrollbarX(w), mouseY, button, dragX, dragY);
                 }
-                int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h);
+                int ly = QuestDetailsMouse.localY(state, mouseY, getPositionY(), h);
                 if (QuestObjectiveListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, h - bottomPad, ly, mouseX, mouseY, button)) {
                     return true;
                 }
@@ -111,7 +111,7 @@ final class QuestObjectiveSectionWidget {
             @Override
             public boolean mouseReleased(double mouseX, double mouseY, int button) {
                 if (isObjectiveScrollDragging(state, kind)) {
-                    return super.mouseReleased(getPositionX() + scrollbarX(w), mouseY, button);
+                    return super.mouseReleased(QuestDetailsMouse.screenX(state, getPositionX()) + scrollbarX(w), mouseY, button);
                 }
                 if (QuestObjectiveListInteractions.handleRelease(player, state, refresh, questId, entries, kind)) {
                     return true;
@@ -207,7 +207,7 @@ final class QuestObjectiveSectionWidget {
 
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-                int localY = QuestDetailsMouse.localCoord(mouseY, getPositionY(), h) + listY;
+                int localY = QuestDetailsMouse.localY(state, mouseY, getPositionY(), h) + listY;
                 if (QuestObjectiveListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, listBottom, localY, mouseX, mouseY, button)) {
                     return true;
                 }

@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
@@ -111,12 +112,14 @@ final class CanvasContextQuestActions {
 
     private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {
         QuestCardLayout card = canvasViewport.cardLookup().get(state.contextQuestId);
+        int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
+        int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
         if (card == null) {
             QuestDetailsWindow.openAtSource(
                     state,
                     state.contextQuestId,
-                    canvasViewport.getPositionX() + state.contextMenuX,
-                    canvasViewport.getPositionY() + state.contextMenuY,
+                    viewportScreenX + state.contextMenuX,
+                    viewportScreenY + state.contextMenuY,
                     1,
                     1
             );
@@ -125,8 +128,8 @@ final class CanvasContextQuestActions {
         QuestDetailsWindow.openAtSource(
                 state,
                 state.contextQuestId,
-                canvasViewport.getPositionX() + card.x(),
-                canvasViewport.getPositionY() + card.y(),
+                viewportScreenX + card.x(),
+                viewportScreenY + card.y(),
                 card.width(),
                 card.height()
         );

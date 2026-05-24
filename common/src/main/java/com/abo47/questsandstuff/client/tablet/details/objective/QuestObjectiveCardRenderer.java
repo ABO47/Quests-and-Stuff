@@ -141,8 +141,8 @@ final class QuestObjectiveCardRenderer {
                     }
                 }
                 if (button == 1 && isMouseOverElement(mouseX, mouseY) && editMode) {
-                    int lx = QuestDetailsMouse.localCoord(mouseX, getPositionX(), w);
-                    int ly = QuestDetailsMouse.localCoord(mouseY, getPositionY(), QuestDetailsObjectivesPanel.CARD_H);
+                    int lx = QuestDetailsMouse.localX(state, mouseX, getPositionX(), w);
+                    int ly = QuestDetailsMouse.localY(state, mouseY, getPositionY(), QuestDetailsObjectivesPanel.CARD_H);
                     QuestObjectiveListInteractions.select(state, kind, id);
                     QuestDetailsMouse.openContextAtPointer(state, kind, id, mouseX, mouseY, getPositionX(), getPositionY(), lx, ly);
                     refresh.run();
@@ -153,7 +153,7 @@ final class QuestObjectiveCardRenderer {
 
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-                int localY = listY + y + QuestDetailsMouse.localCoord(mouseY, getPositionY(), QuestDetailsObjectivesPanel.CARD_H);
+                int localY = listY + y + QuestDetailsMouse.localY(state, mouseY, getPositionY(), QuestDetailsObjectivesPanel.CARD_H);
                 if (QuestObjectiveListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, listBottom, localY, mouseX, mouseY, button)) {
                     return true;
                 }

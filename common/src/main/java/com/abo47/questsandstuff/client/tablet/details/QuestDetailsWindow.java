@@ -29,6 +29,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLayout.rebuild(layer, state, player, refresh);
     }
 
+    public static void syncScreenOrigin(WidgetGroup layer, TabletUiState state) {
+        QuestDetailsWindowLayout.syncScreenOrigin(layer, state);
+    }
+
     public static boolean isVisible(TabletUiState state) {
         return state != null && (state.questDetailsOpen || state.questDetailsClosing);
     }

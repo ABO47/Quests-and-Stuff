@@ -36,6 +36,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -97,6 +98,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -109,6 +111,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -121,6 +124,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }

@@ -341,19 +341,19 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     }
 
     private int localX(double mouseX) {
-        return QuestDetailsMouse.localCoord(mouseX, contentX(), contentW());
+        return QuestDetailsMouse.localX(state, mouseX, contentX(), contentW());
     }
 
     private int localY(double mouseY) {
-        return QuestDetailsMouse.localCoord(mouseY, contentY(), contentH());
+        return QuestDetailsMouse.localY(state, mouseY, contentY(), contentH());
     }
 
     private int pointerScreenX(double mouseX) {
-        return contentX() + localX(mouseX);
+        return QuestDetailsMouse.screenX(state, contentX()) + localX(mouseX);
     }
 
     private int pointerScreenY(double mouseY) {
-        return contentY() + localY(mouseY);
+        return QuestDetailsMouse.screenY(state, contentY()) + localY(mouseY);
     }
 
     private void withScissor(GuiGraphics graphics, Runnable draw) {
@@ -387,8 +387,8 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
-        int localMenuX = state.questDetailsTextStyleMenuX - contentX();
-        int localMenuY = state.questDetailsTextStyleMenuY - contentY();
+        int localMenuX = state.questDetailsTextStyleMenuX - (QuestDetailsMouse.screenX(state, contentX()) - state.questDetailsScreenX);
+        int localMenuY = state.questDetailsTextStyleMenuY - (QuestDetailsMouse.screenY(state, contentY()) - state.questDetailsScreenY);
         return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH)
                 || inside(mouseX, mouseY, state.questDetailsScreenX + localMenuX, state.questDetailsScreenY + localMenuY,
                 state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH);
