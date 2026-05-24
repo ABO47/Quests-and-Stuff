@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,14 +20,19 @@ final class QuestRewardClaims {
     private final QuestDefinitionStore definitionStore;
     private final QuestProgressSavedData progressData;
     private final QuestSyncService syncService;
+    private final QuestRuntimeEngine engine;
 
-    QuestRewardClaims(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, QuestSyncService syncService) {
+    QuestRewardClaims(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, QuestSyncService syncService, QuestRuntimeEngine engine) {
         this.definitionStore = definitionStore;
         this.progressData = progressData;
         this.syncService = syncService;
+        this.engine = engine;
     }
 
     boolean claimReward(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
+        if (player == null) {
+            return false;
+        }
         QuestDefinition definition = definitionStore.quests().get(questId);
         if (definition == null) {
             return false;
@@ -38,19 +44,29 @@ final class QuestRewardClaims {
         }
 
         PlayerQuestState state = progressData.state(player.getUUID());
+        Set<String> changed = new HashSet<>();
+        engine.ensureUnlocks(player, player.getUUID(), state, changed, player.server.getTickCount());
         QuestProgressState questState = state.quest(questId);
+        if (!questState.unlocked()) {
+            syncChanged(player, changed);
+            return false;
+        }
         if (!questState.completed() && !definition.tasks().isEmpty()) {
+            syncChanged(player, changed);
             return false;
         }
         if (questState.claimedRewards().contains(rewardId)) {
+            syncChanged(player, changed);
             return false;
         }
 
+        List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
         if (reward.selectable()) {
-            if (!reward.isSelectableClaimValid(selectedRewardIds)) {
+            if (!reward.isSelectableClaimValid(selected)) {
+                syncChanged(player, changed);
                 return false;
             }
-            reward.grantSelected(player, selectedRewardIds);
+            reward.grantSelected(player, selected);
         } else {
             reward.grant(player);
         }
@@ -58,10 +74,8 @@ final class QuestRewardClaims {
         questState.claimedRewards().add(rewardId);
         syncService.sendQuestEvent(player, "reward_claimed", questId, rewardId);
         QuestRewardApplier.maybeResetRepeatable(definition, questState, player.server.getTickCount());
-        progressData.setDirty();
-
-        Set<String> changed = Set.of(questId);
-        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changed));
+        changed.add(questId);
+        syncChanged(player, changed);
         return true;
     }
 
@@ -122,9 +136,7 @@ final class QuestRewardClaims {
             return;
         }
         QuestRewardApplier.maybeResetRepeatable(definition, questState, player.server.getTickCount());
-        progressData.setDirty();
-        Set<String> changedQuests = Set.of(questId);
-        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changedQuests));
+        syncChanged(player, Set.of(questId));
     }
 
     private boolean isAlreadyClaimedValidSingletonChoice(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
@@ -133,11 +145,12 @@ final class QuestRewardClaims {
             return false;
         }
         QuestRewardDefinition reward = definition.rewards().get(rewardId);
-        if (!isSingletonSelectable(reward) || !reward.isSelectableClaimValid(selectedRewardIds)) {
+        List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
+        if (!isSingletonSelectable(reward) || !reward.isSelectableClaimValid(selected)) {
             return false;
         }
         QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
-        return questState.claimedRewards().contains(rewardId);
+        return questState.unlocked() && questState.claimedRewards().contains(rewardId);
     }
 
     private static boolean isSingletonSelectable(QuestRewardDefinition reward) {
@@ -145,5 +158,13 @@ final class QuestRewardClaims {
             return selectable.safeAmount() == 1 && selectable.rewards().size() == 1;
         }
         return reward != null && reward.selectable();
+    }
+
+    private void syncChanged(ServerPlayer player, Set<String> changedQuestIds) {
+        if (changedQuestIds.isEmpty()) {
+            return;
+        }
+        progressData.setDirty();
+        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changedQuestIds));
     }
 }

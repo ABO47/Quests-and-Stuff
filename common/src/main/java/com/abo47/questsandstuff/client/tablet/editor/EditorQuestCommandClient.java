@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 final class EditorQuestCommandClient {
+    private static final int MAX_DESCRIPTION_LINES = 256;
     private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
 
     private EditorQuestCommandClient() {
@@ -273,6 +274,7 @@ final class EditorQuestCommandClient {
         List<String> safeDescription = description == null ? List.of() : description.stream()
                 .filter(line -> line != null)
                 .map(EditorQuestCommandClient::limitDescriptionLine)
+                .limit(MAX_DESCRIPTION_LINES)
                 .toList();
         ClientQuestCache.setQuestDescriptionLocal(normalizedQuestId, safeDescription);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest description save quest={} lines={}", normalizedQuestId, safeDescription.size());

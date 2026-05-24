@@ -1,7 +1,10 @@
 package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.QuestPacketContext;
+import com.abo47.questsandstuff.network.editor.C2SEditorAddQuestPacket;
 import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.network.runtime.C2SClaimSelectableRewardPacket;
 import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
@@ -11,6 +14,7 @@ import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -19,10 +23,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPacketRoundtripGameTests {
@@ -92,6 +99,47 @@ public final class QuestPacketRoundtripGameTests {
         helper.succeed();
     }
 
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void selectableRewardPacketRejectsOversizedSelection(GameTestHelper helper) {
+        List<String> choices = new ArrayList<>();
+        for (int i = 0; i < 65; i++) {
+            choices.add("choice_" + i);
+        }
+        try {
+            new C2SClaimSelectableRewardPacket("quest/a", "selector", choices).encode(new FriendlyByteBuf(Unpooled.buffer()));
+            throw new GameTestAssertException("Oversized selectable reward packet should fail during encode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeUtf("quest/a");
+        oversized.writeUtf("selector");
+        oversized.writeVarInt(65);
+        try {
+            C2SClaimSelectableRewardPacket.decode(oversized);
+            throw new GameTestAssertException("Oversized selectable reward packet should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void editorPacketsDoNotEnqueueForNonEditorPlayers(GameTestHelper helper) {
+        ServerPlayer player = detachedPlayer(helper);
+        QuestPacketContext context = rejectingContext(player);
+
+        new C2SEditorAddQuestPacket("Main", "quest/security", 0, 0, "Blocked").handle(context);
+
+        CompoundTag rewardPayload = new CompoundTag();
+        rewardPayload.putString("quest", "quest/security");
+        rewardPayload.putString("json", "{\"id\":\"cmd\",\"type\":\"command\",\"command\":\"say blocked\"}");
+        new C2SEditorCommandPacket(new EditorCommand(EditorCommandType.REWARD_PUT, rewardPayload)).handle(context);
+
+        helper.succeed();
+    }
+
     private static EditorCommand roundtripEditorCommand(EditorCommand command) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         command.encode(buf);
@@ -144,6 +192,28 @@ public final class QuestPacketRoundtripGameTests {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
         return S2CQuestEventPacket.decode(buf);
+    }
+
+    private static ServerPlayer detachedPlayer(GameTestHelper helper) {
+        return new ServerPlayer(
+                helper.getLevel().getServer(),
+                helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "qas_packet_test")
+        );
+    }
+
+    private static QuestPacketContext rejectingContext(ServerPlayer player) {
+        return new QuestPacketContext() {
+            @Override
+            public ServerPlayer sender() {
+                return player;
+            }
+
+            @Override
+            public void enqueueWork(Runnable work) {
+                throw new GameTestAssertException("Non-editor packet should not enqueue server work");
+            }
+        };
     }
 
     private static CompoundTag commandPayload(EditorCommandType type) {

@@ -21,6 +21,11 @@ import java.util.Set;
 
 public record C2SEditorCommandPacket(EditorCommand command) {
     public static final String PREREQUISITE_FIELD = "prerequisite";
+    private static final int MAX_BULK_EDIT_ENTRIES = 1024;
+    private static final int MAX_DESCRIPTION_LINES = 256;
+    private static final int MAX_EDITOR_JSON_LENGTH = 131_072;
+    private static final int MAX_LAYER_ORDER_ENTRIES = 2048;
+    private static final int MAX_TEXT_SPANS = 256;
 
     public C2SEditorCommandPacket(String action, CompoundTag payload) {
         this(new EditorCommand(EditorCommandType.fromWireName(action), payload));
@@ -36,7 +41,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> {
                 var editor = QuestServices.editor(player.server);
                 CompoundTag payload = command.payload();
@@ -44,6 +49,9 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Map<String, int[]> moves = new HashMap<>();
                     ListTag moveTags = payload == null ? new ListTag() : payload.getList("moves", Tag.TAG_COMPOUND);
+                    if (exceedsLimit(moveTags, MAX_BULK_EDIT_ENTRIES)) {
+                        return;
+                    }
                     for (int i = 0; i < moveTags.size(); i++) {
                         CompoundTag moveTag = moveTags.getCompound(i);
                         String questId = moveTag.getString("quest");
@@ -56,6 +64,9 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Map<String, Float> scales = new HashMap<>();
                     ListTag scaleTags = payload == null ? new ListTag() : payload.getList("scales", Tag.TAG_COMPOUND);
+                    if (exceedsLimit(scaleTags, MAX_BULK_EDIT_ENTRIES)) {
+                        return;
+                    }
                     for (int i = 0; i < scaleTags.size(); i++) {
                         CompoundTag scaleTag = scaleTags.getCompound(i);
                         String questId = scaleTag.getString("quest");
@@ -68,6 +79,9 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Set<String> questIds = new LinkedHashSet<>();
                     ListTag questTags = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
+                    if (exceedsLimit(questTags, MAX_BULK_EDIT_ENTRIES)) {
+                        return;
+                    }
                     for (int i = 0; i < questTags.size(); i++) {
                         String questId = questTags.getString(i);
                         if (questId != null && !questId.isBlank()) {
@@ -113,7 +127,11 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.DESCRIPTION_PUT) {
-                    editor.updateQuestDescription(player, payload.getString("quest"), stringsFromList(payload.getList("description", Tag.TAG_STRING)));
+                    ListTag description = payload.getList("description", Tag.TAG_STRING);
+                    if (exceedsLimit(description, MAX_DESCRIPTION_LINES)) {
+                        return;
+                    }
+                    editor.updateQuestDescription(player, payload.getString("quest"), stringsFromList(description));
                     return;
                 }
                 if (command.type() == EditorCommandType.CONNECTION_COLOR) {
@@ -129,7 +147,11 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.TASK_PUT) {
-                    editor.putQuestTask(player, payload.getString("quest"), payload.getString("json"));
+                    String json = payload.getString("json");
+                    if (exceedsLength(json, MAX_EDITOR_JSON_LENGTH)) {
+                        return;
+                    }
+                    editor.putQuestTask(player, payload.getString("quest"), json);
                     return;
                 }
                 if (command.type() == EditorCommandType.TASK_REMOVE) {
@@ -141,7 +163,11 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.REWARD_PUT) {
-                    editor.putQuestReward(player, payload.getString("quest"), payload.getString("json"));
+                    String json = payload.getString("json");
+                    if (exceedsLength(json, MAX_EDITOR_JSON_LENGTH)) {
+                        return;
+                    }
+                    editor.putQuestReward(player, payload.getString("quest"), json);
                     return;
                 }
                 if (command.type() == EditorCommandType.REWARD_REMOVE) {
@@ -161,7 +187,11 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_TEXT_PUT) {
-                    editor.putCanvasText(player, payload.getString("group"), CanvasLayerNbt.textFromTag(payload.getCompound("text")));
+                    CompoundTag text = payload.getCompound("text");
+                    if (exceedsLimit(text.getList("spans", Tag.TAG_COMPOUND), MAX_TEXT_SPANS)) {
+                        return;
+                    }
+                    editor.putCanvasText(player, payload.getString("group"), CanvasLayerNbt.textFromTag(text));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_TEXT_REMOVE) {
@@ -169,7 +199,11 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_LAYER_ORDER) {
-                    editor.setCanvasLayerOrder(player, payload.getString("group"), CanvasLayerNbt.stringsFromListTag(payload.getList("order", Tag.TAG_STRING)));
+                    ListTag order = payload.getList("order", Tag.TAG_STRING);
+                    if (exceedsLimit(order, MAX_LAYER_ORDER_ENTRIES)) {
+                        return;
+                    }
+                    editor.setCanvasLayerOrder(player, payload.getString("group"), nonBlankStringsFromList(order));
                 }
             });
         }
@@ -181,6 +215,25 @@ public record C2SEditorCommandPacket(EditorCommand command) {
             values.add(tags.getString(i));
         }
         return values;
+    }
+
+    private static List<String> nonBlankStringsFromList(ListTag tags) {
+        List<String> values = new ArrayList<>();
+        for (int i = 0; i < tags.size(); i++) {
+            String value = tags.getString(i);
+            if (value != null && !value.isBlank()) {
+                values.add(value);
+            }
+        }
+        return values;
+    }
+
+    private static boolean exceedsLimit(ListTag tags, int maxEntries) {
+        return tags != null && tags.size() > maxEntries;
+    }
+
+    private static boolean exceedsLength(String value, int maxLength) {
+        return value != null && value.length() > maxLength;
     }
 
     private static String prerequisiteId(CompoundTag payload) {

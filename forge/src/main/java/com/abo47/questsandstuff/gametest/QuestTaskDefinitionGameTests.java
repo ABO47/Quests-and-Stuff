@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
@@ -116,6 +119,28 @@ public final class QuestTaskDefinitionGameTests {
             if (QuestTasks.get(id(requiredType)) == null) {
                 throw new GameTestAssertException("Missing default task type registration: " + requiredType);
             }
+        }
+
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void itemMatcherFailsClosedForMalformedRequiredNbt(GameTestHelper helper) {
+        ItemStack stack = new ItemStack(Items.DIAMOND);
+        stack.getOrCreateTag().putString("qas_marker", "yes");
+
+        if (!QuestItemMatcher.matchesNbt(stack, "")) {
+            throw new GameTestAssertException("Blank required NBT should match");
+        }
+        if (QuestItemMatcher.matchesNbt(stack, "{display:{Name:'broken'")) {
+            throw new GameTestAssertException("Malformed required NBT should not match");
+        }
+        if (!QuestItemMatcher.matchesNbt(stack, "{qas_marker:\"yes\"}")) {
+            throw new GameTestAssertException("Valid matching required NBT should match");
+        }
+        if (QuestItemMatcher.matchesNbt(stack, "{qas_marker:\"no\"}")) {
+            throw new GameTestAssertException("Mismatched required NBT should not match");
         }
 
         helper.succeed();

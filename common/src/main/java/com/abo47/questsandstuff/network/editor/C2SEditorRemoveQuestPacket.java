@@ -18,7 +18,7 @@ public record C2SEditorRemoveQuestPacket(String questId) {
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> QuestServices.editor(player.server).removeQuest(player, questId));
         }
     }

@@ -39,7 +39,7 @@ public final class QuestRuntimeEngine {
         this.definitionStore = definitionStore;
         this.progressData = progressData;
         this.syncService = syncService;
-        this.rewardClaims = new QuestRewardClaims(definitionStore, progressData, syncService);
+        this.rewardClaims = new QuestRewardClaims(definitionStore, progressData, syncService, this);
         this.signalProgression = new QuestSignalProgression(definitionStore, progressData, syncService, performanceTracker, this);
         this.manualSubmissions = new QuestManualSubmissions(definitionStore, progressData, syncService, this);
         this.progressAdmin = new QuestProgressAdminActions(definitionStore, progressData, syncService, this);

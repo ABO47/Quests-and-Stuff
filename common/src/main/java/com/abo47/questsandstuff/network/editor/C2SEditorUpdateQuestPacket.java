@@ -20,7 +20,7 @@ public record C2SEditorUpdateQuestPacket(String questId, String title, String su
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> QuestServices.editor(player.server)
                     .updateQuestDisplay(player, questId, title, subtitle));
         }

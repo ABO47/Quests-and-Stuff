@@ -14,7 +14,10 @@ public final class QuestItemMatcher {
             return true;
         }
         CompoundTag required = parse(requiredSnbt);
-        if (required == null || required.isEmpty()) {
+        if (required == null) {
+            return false;
+        }
+        if (required.isEmpty()) {
             return true;
         }
         CompoundTag actual = stack.getTag();

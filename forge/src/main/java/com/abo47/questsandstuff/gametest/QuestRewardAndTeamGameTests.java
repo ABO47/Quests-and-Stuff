@@ -188,6 +188,55 @@ public final class QuestRewardAndTeamGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void tasklessRewardClaimRequiresUnlock(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "taskless_reward_unlock");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition parent = quest("test/reward_parent", QuestSettings.DEFAULT, Map.of(), Map.of(), Set.of());
+            QuestDefinition child = quest(
+                    "test/reward_locked_child",
+                    QuestSettings.DEFAULT,
+                    Map.of(),
+                    Map.of("item_reward", reward("item_reward", "item", 1, "minecraft:apple", false, Map.of())),
+                    Set.of(parent.id())
+            );
+            bundle.store.upsert(parent);
+            bundle.store.upsert(child);
+            bundle.engine.rebuildIndex();
+
+            int applesBefore = countItems(player, "minecraft:apple");
+            bundle.engine.claimReward(player, child.id(), "item_reward");
+            var lockedState = bundle.progressData.state(player.getUUID()).quest(child.id());
+            if (countItems(player, "minecraft:apple") != applesBefore) {
+                throw new GameTestAssertException("Locked taskless reward should not grant items");
+            }
+            if (lockedState.unlocked() || lockedState.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Locked taskless reward should not be marked unlocked or claimed");
+            }
+
+            bundle.engine.completeQuest(player, parent.id());
+            bundle.engine.claimReward(player, child.id(), "item_reward");
+            var unlockedState = bundle.progressData.state(player.getUUID()).quest(child.id());
+            if (countItems(player, "minecraft:apple") - applesBefore != 1) {
+                throw new GameTestAssertException("Unlocked taskless reward should grant items");
+            }
+            if (!unlockedState.unlocked() || !unlockedState.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Unlocked taskless reward should be marked claimed");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void repeatableAutoClaimResetsQuestState(GameTestHelper helper) {
         Bundle bundle = null;
         try {
