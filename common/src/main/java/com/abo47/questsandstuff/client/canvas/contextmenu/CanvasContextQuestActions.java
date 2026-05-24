@@ -74,13 +74,14 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
+        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
             EditorCommandClient.resetQuestProgress(player, state.contextQuestId);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
-        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
+        addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
         addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
         actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
@@ -147,6 +148,20 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
+    }
+
+    private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+        boolean repeatable = questTag.getBoolean("repeatable");
+        actions.add(new ContextAction(
+                CanvasContextMenuController.tr(repeatable ? QuestVocabulary.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestVocabulary.CONTEXT_MAKE_QUEST_REPEATABLE),
+                repeatable ? "repeat-off" : "repeat",
+                repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                () -> {
+                    EditorCommandClient.setQuestRepeatable(player, state.contextQuestId, !repeatable);
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextQuestId, !repeatable);
+                    canvasViewport.refresh();
+                }));
     }
 
     private static void addQuestVisibilityAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

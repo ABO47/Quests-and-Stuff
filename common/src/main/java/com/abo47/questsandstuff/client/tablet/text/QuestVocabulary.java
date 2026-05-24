@@ -101,6 +101,8 @@ public final class QuestVocabulary {
     public static final String CONTEXT_PASTE = "ui.questsandstuff.context.paste";
     public static final String CONTEXT_REMOVE_BACKGROUND = "ui.questsandstuff.context.remove_background";
     public static final String CONTEXT_REMOVE_PREREQUISITE = "ui.questsandstuff.context.remove_prerequisite";
+    public static final String CONTEXT_MAKE_QUEST_REPEATABLE = "ui.questsandstuff.context.make_quest_repeatable";
+    public static final String CONTEXT_MAKE_QUEST_NOT_REPEATABLE = "ui.questsandstuff.context.make_quest_not_repeatable";
     public static final String CONTEXT_REVEAL_QUEST = "ui.questsandstuff.context.reveal_quest";
     public static final String CONTEXT_SELECTION_CONNECTION_COLOR = "ui.questsandstuff.context.selection_connection_color";
     public static final String CONTEXT_SEND_TO_BACK = "ui.questsandstuff.context.send_to_back";

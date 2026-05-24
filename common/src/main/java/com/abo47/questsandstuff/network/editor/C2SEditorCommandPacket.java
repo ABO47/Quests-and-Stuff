@@ -110,6 +110,10 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestAutoClaim(player, payload.getString("quest"), payload.getBoolean("enabled"));
                     return;
                 }
+                if (command.type() == EditorCommandType.QUEST_REPEATABLE) {
+                    editor.setQuestRepeatable(player, payload.getString("quest"), payload.getBoolean("enabled"));
+                    return;
+                }
                 if (command.type() == EditorCommandType.QUEST_HIDDEN_MODE) {
                     editor.setQuestHiddenMode(player, payload.getString("quest"), payload.getString("mode"));
                     return;

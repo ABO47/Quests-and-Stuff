@@ -209,6 +209,8 @@
   "ui.questsandstuff.context.hide_connection": "Hide Connection",
   "ui.questsandstuff.context.hide_inspector": "Hide Inspector",
   "ui.questsandstuff.context.hide_quest_until_unlocked": "Hide Quest Until Unlocked",
+  "ui.questsandstuff.context.make_quest_not_repeatable": "Make Non-Repeatable",
+  "ui.questsandstuff.context.make_quest_repeatable": "Make Repeatable",
   "ui.questsandstuff.context.move_down": "Move Down",
   "ui.questsandstuff.context.move_up": "Move Up",
   "ui.questsandstuff.context.open_quest": "Open Quest",

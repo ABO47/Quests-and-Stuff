@@ -207,6 +207,10 @@ public final class EditorQuestSessionActions {
         settingsEdits.setQuestAutoClaim(player, questId, enabled);
     }
 
+    public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {
+        settingsEdits.setQuestRepeatable(player, questId, enabled);
+    }
+
     public void setQuestHiddenMode(ServerPlayer player, String questId, String mode) {
         settingsEdits.setQuestHiddenMode(player, questId, mode);
     }

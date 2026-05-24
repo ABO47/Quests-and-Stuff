@@ -79,7 +79,7 @@ final class TabletAssets {
                 "copy", "paste", "connect", "settings-2", "stat", "recipe", "item_use", "item_interact",
                 "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open",
                 "size", "opacity", "magnet", "lock", "unlock",
-                "background_opacity", "reset_zoom", "reset_quest", "variant", "motion", "properties", "minimap",
+                "background_opacity", "reset_zoom", "reset_quest", "repeat", "repeat-off", "variant", "motion", "properties", "minimap",
                 "style_align_left", "style_align_center", "style_align_right",
                 "style_bold", "style_italic", "style_color", "themes", "claim_all", "xp", "send-horizontal", "eye", "eye-off", "audio-lines", "reset"
         ));

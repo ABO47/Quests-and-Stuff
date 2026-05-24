@@ -89,6 +89,10 @@ final class UiThemeState {
         iconRoles.put("context_reset_zoom", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_reset_quest", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("reset_quest", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("context_repeat", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("context_repeat-off", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("repeat", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("repeat-off", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("context_variant", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_motion", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_style", UiThemeManager.ROLE_ICON_INTERACTIVE);

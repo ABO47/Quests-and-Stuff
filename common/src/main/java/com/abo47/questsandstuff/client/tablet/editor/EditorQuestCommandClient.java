@@ -266,6 +266,18 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestAutoClaim(serverPlayer, normalizedQuestId, enabled));
     }
 
+    static void setQuestRepeatable(Player player, String questId, boolean enabled) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        ClientQuestCache.setQuestRepeatableLocal(normalizedQuestId, enabled);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putBoolean("enabled", enabled);
+        EditorCommandSender.run(player, "quest_repeatable", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestRepeatable(serverPlayer, normalizedQuestId, enabled));
+    }
+
     static void updateQuestDescription(Player player, String questId, List<String> description) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {

@@ -258,6 +258,10 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setQuestAutoClaimLocal(questId, enabled);
     }
 
+    public static void setQuestRepeatableLocal(String questId, boolean enabled) {
+        ClientQuestLocalMutations.setQuestRepeatableLocal(questId, enabled);
+    }
+
     public static void setQuestHiddenModeLocal(String questId, String hiddenMode) {
         ClientQuestLocalMutations.setQuestHiddenModeLocal(questId, hiddenMode);
     }
