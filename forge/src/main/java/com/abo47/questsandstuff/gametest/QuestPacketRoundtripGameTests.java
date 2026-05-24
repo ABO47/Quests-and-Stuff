@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
@@ -119,6 +120,27 @@ public final class QuestPacketRoundtripGameTests {
         try {
             C2SClaimSelectableRewardPacket.decode(oversized);
             throw new GameTestAssertException("Oversized selectable reward packet should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void editorCommandDecodeRejectsOversizedPayload(GameTestHelper helper) {
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeUtf(EditorCommandType.DESCRIPTION_PUT.wireName());
+        CompoundTag payload = new CompoundTag();
+        ListTag lines = new ListTag();
+        for (int i = 0; i <= EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES; i++) {
+            lines.add(StringTag.valueOf("line_" + i));
+        }
+        payload.put("description", lines);
+        oversized.writeNbt(payload);
+
+        try {
+            EditorCommand.decode(oversized);
+            throw new GameTestAssertException("Oversized editor command payload should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
         helper.succeed();

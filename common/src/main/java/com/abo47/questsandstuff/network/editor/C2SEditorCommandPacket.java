@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.network.QuestPacketContext;
 
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import net.minecraft.nbt.CompoundTag;
@@ -21,11 +22,6 @@ import java.util.Set;
 
 public record C2SEditorCommandPacket(EditorCommand command) {
     public static final String PREREQUISITE_FIELD = "prerequisite";
-    private static final int MAX_BULK_EDIT_ENTRIES = 1024;
-    private static final int MAX_DESCRIPTION_LINES = 256;
-    private static final int MAX_EDITOR_JSON_LENGTH = 131_072;
-    private static final int MAX_LAYER_ORDER_ENTRIES = 2048;
-    private static final int MAX_TEXT_SPANS = 256;
 
     public C2SEditorCommandPacket(String action, CompoundTag payload) {
         this(new EditorCommand(EditorCommandType.fromWireName(action), payload));
@@ -49,7 +45,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Map<String, int[]> moves = new HashMap<>();
                     ListTag moveTags = payload == null ? new ListTag() : payload.getList("moves", Tag.TAG_COMPOUND);
-                    if (exceedsLimit(moveTags, MAX_BULK_EDIT_ENTRIES)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(moveTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
                     for (int i = 0; i < moveTags.size(); i++) {
@@ -64,7 +60,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Map<String, Float> scales = new HashMap<>();
                     ListTag scaleTags = payload == null ? new ListTag() : payload.getList("scales", Tag.TAG_COMPOUND);
-                    if (exceedsLimit(scaleTags, MAX_BULK_EDIT_ENTRIES)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(scaleTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
                     for (int i = 0; i < scaleTags.size(); i++) {
@@ -79,7 +75,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     String group = payload == null ? "" : payload.getString("group");
                     Set<String> questIds = new LinkedHashSet<>();
                     ListTag questTags = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
-                    if (exceedsLimit(questTags, MAX_BULK_EDIT_ENTRIES)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(questTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
                     for (int i = 0; i < questTags.size(); i++) {
@@ -128,7 +124,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.DESCRIPTION_PUT) {
                     ListTag description = payload.getList("description", Tag.TAG_STRING);
-                    if (exceedsLimit(description, MAX_DESCRIPTION_LINES)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {
                         return;
                     }
                     editor.updateQuestDescription(player, payload.getString("quest"), stringsFromList(description));
@@ -148,7 +144,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.TASK_PUT) {
                     String json = payload.getString("json");
-                    if (exceedsLength(json, MAX_EDITOR_JSON_LENGTH)) {
+                    if (EditorCommandPayloadLimits.exceedsLength(json, EditorCommandPayloadLimits.MAX_EDITOR_JSON_LENGTH)) {
                         return;
                     }
                     editor.putQuestTask(player, payload.getString("quest"), json);
@@ -164,7 +160,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.REWARD_PUT) {
                     String json = payload.getString("json");
-                    if (exceedsLength(json, MAX_EDITOR_JSON_LENGTH)) {
+                    if (EditorCommandPayloadLimits.exceedsLength(json, EditorCommandPayloadLimits.MAX_EDITOR_JSON_LENGTH)) {
                         return;
                     }
                     editor.putQuestReward(player, payload.getString("quest"), json);
@@ -188,7 +184,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.CANVAS_TEXT_PUT) {
                     CompoundTag text = payload.getCompound("text");
-                    if (exceedsLimit(text.getList("spans", Tag.TAG_COMPOUND), MAX_TEXT_SPANS)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(text.getList("spans", Tag.TAG_COMPOUND), EditorCommandPayloadLimits.MAX_TEXT_SPANS)) {
                         return;
                     }
                     editor.putCanvasText(player, payload.getString("group"), CanvasLayerNbt.textFromTag(text));
@@ -200,7 +196,7 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.CANVAS_LAYER_ORDER) {
                     ListTag order = payload.getList("order", Tag.TAG_STRING);
-                    if (exceedsLimit(order, MAX_LAYER_ORDER_ENTRIES)) {
+                    if (EditorCommandPayloadLimits.exceedsLimit(order, EditorCommandPayloadLimits.MAX_LAYER_ORDER_ENTRIES)) {
                         return;
                     }
                     editor.setCanvasLayerOrder(player, payload.getString("group"), nonBlankStringsFromList(order));
@@ -226,14 +222,6 @@ public record C2SEditorCommandPacket(EditorCommand command) {
             }
         }
         return values;
-    }
-
-    private static boolean exceedsLimit(ListTag tags, int maxEntries) {
-        return tags != null && tags.size() > maxEntries;
-    }
-
-    private static boolean exceedsLength(String value, int maxLength) {
-        return value != null && value.length() > maxLength;
     }
 
     private static String prerequisiteId(CompoundTag payload) {

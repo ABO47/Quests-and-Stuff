@@ -25,6 +25,7 @@ public final class QuestsAndStuffConfig {
     private static boolean popupWindowAnimations = true;
     private static boolean connectionAnimations = true;
     private static boolean chapterSwitchAnimations = true;
+    private static boolean commandRewards = true;
 
     private QuestsAndStuffConfig() {
     }
@@ -200,6 +201,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean commandRewardsEnabled() {
+        load();
+        return commandRewards;
+    }
+
+    public static void setCommandRewardsEnabled(boolean enabled) {
+        load();
+        if (commandRewards != enabled) {
+            commandRewards = enabled;
+            save();
+        }
+    }
+
     private static void read(JsonObject root) {
         JsonObject debug = object(root, "debug");
         debugLogging = bool(debug, "debugLogging", debugLogging);
@@ -213,6 +227,9 @@ public final class QuestsAndStuffConfig {
         popupWindowAnimations = bool(animations, "popupWindowAnimations", popupWindowAnimations);
         connectionAnimations = bool(animations, "connectionAnimations", connectionAnimations);
         chapterSwitchAnimations = bool(animations, "chapterSwitchAnimations", chapterSwitchAnimations);
+
+        JsonObject security = object(root, "security");
+        commandRewards = bool(security, "commandRewards", commandRewards);
     }
 
     private static synchronized void save() {
@@ -231,6 +248,10 @@ public final class QuestsAndStuffConfig {
         animations.addProperty("connectionAnimations", connectionAnimations);
         animations.addProperty("chapterSwitchAnimations", chapterSwitchAnimations);
         root.add("animations", animations);
+
+        JsonObject security = new JsonObject();
+        security.addProperty("commandRewards", commandRewards);
+        root.add("security", security);
 
         Path file = configFile();
         try {
