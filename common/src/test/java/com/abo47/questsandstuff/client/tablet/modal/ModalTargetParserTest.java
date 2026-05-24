@@ -19,6 +19,56 @@ class ModalTargetParserTest {
     }
 
     @Test
+    void parsesAdvancementTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskAdvancement("quest", "task", "questsandstuff:advancement"));
+
+        assertTrue(target.isTaskAdvancement());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:advancement", target.type());
+    }
+
+    @Test
+    void parsesRecipeTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskRecipe("quest", "task", "questsandstuff:recipe"));
+
+        assertTrue(target.isTaskRecipe());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:recipe", target.type());
+    }
+
+    @Test
+    void parsesStructureTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskStructure("quest", "task", "questsandstuff:structure"));
+
+        assertTrue(target.isTaskStructure());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:structure", target.type());
+    }
+
+    @Test
+    void parsesBlockTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskBlock("quest", "task", "questsandstuff:block_interact"));
+
+        assertTrue(target.isTaskBlock());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:block_interact", target.type());
+    }
+
+    @Test
+    void parsesStatTaskTarget() {
+        ModalTargetParser.Target target = ModalTargetParser.parse(ModalTargets.taskStat("quest", "task", "questsandstuff:stat"));
+
+        assertTrue(target.isTaskStat());
+        assertEquals("quest", target.questId());
+        assertEquals("task", target.entryId());
+        assertEquals("questsandstuff:stat", target.type());
+    }
+
+    @Test
     void targetPartsAreDefensivelyCopied() {
         ModalTargetParser.Target target = ModalTargetParser.parse("reward_icon|quest|reward|icon");
         String[] parts = target.parts();

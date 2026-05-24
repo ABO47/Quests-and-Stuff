@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
@@ -31,7 +32,7 @@ final class QuestDetailsToolsMenu {
         }
         final int menuPad = 1;
         final int toolGap = 2;
-        final boolean editTools = state.canEdit && state.questDetailsEditMode;
+        final boolean editTools = QuestDetailsEditState.canEdit(state);
         final int toolCount = editTools ? 10 : 2;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;

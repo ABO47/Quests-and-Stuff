@@ -21,7 +21,7 @@ public record C2SEditorGroupPacket(String action, String group, String value, in
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> {
                 var editor = QuestServices.editor(player.server);
                 switch (action == null ? "" : action) {

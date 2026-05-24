@@ -72,7 +72,7 @@ final class QuestObjectiveJsons {
             return json;
         }
         if ("stat".equals(typePath)) {
-            return simpleTask(id, type, "minecraft:jump", "minecraft:paper");
+            return simpleTask(id, type, "minecraft:jump", "stat");
         }
         if ("location".equals(typePath)) {
             JsonObject json = base(id, type);
@@ -140,7 +140,7 @@ final class QuestObjectiveJsons {
         return switch (typePath) {
             case "kill_entity" -> "minecraft:zombie";
             case "advancement" -> "minecraft:story/root";
-            case "recipe" -> "minecraft:crafting_table";
+            case "recipe" -> "recipe";
             case "structure" -> "minecraft:village";
             case "block_interact", "block_interaction" -> "minecraft:crafting_table";
             case "entity_interact", "entity_interaction" -> "minecraft:villager";
@@ -153,15 +153,15 @@ final class QuestObjectiveJsons {
         return switch (typePath) {
             case "kill_entity" -> "";
             case "advancement" -> "minecraft:book";
-            case "recipe" -> "minecraft:crafting_table";
+            case "recipe" -> "recipe";
             case "structure" -> "minecraft:map";
             case "biome" -> "biome";
             case "block_interact", "block_interaction" -> "minecraft:oak_button";
-            case "entity_interact", "entity_interaction" -> "minecraft:lead";
+            case "entity_interact", "entity_interaction" -> "";
             case "item_interact", "item_interaction", "item_use" -> "minecraft:stick";
             case "changed_dimension" -> "minecraft:obsidian";
             case "xp" -> XP_CARD_ICON;
-            case "stat" -> "minecraft:paper";
+            case "stat" -> "stat";
             case "location" -> "minecraft:compass";
             default -> "minecraft:book";
         };

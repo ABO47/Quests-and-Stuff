@@ -11,8 +11,7 @@ public record S2CEditorMutationPacket(long sequence, String action, String quest
         long sequence = buf.readLong();
         String action = buf.readUtf();
         String questId = buf.readUtf();
-        CompoundTag tag = buf.readNbt();
-        return new S2CEditorMutationPacket(sequence, action, questId, tag == null ? new CompoundTag() : tag);
+        return new S2CEditorMutationPacket(sequence, action, questId, SyncPacketPayloadLimits.readNbt(buf));
     }
 
     public void encode(FriendlyByteBuf buf) {

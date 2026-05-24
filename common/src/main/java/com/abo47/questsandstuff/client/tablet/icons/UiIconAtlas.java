@@ -111,6 +111,8 @@ public final class UiIconAtlas {
             case "context_size" -> add(names, "size");
             case "context_reset_zoom" -> add(names, "reset_zoom");
             case "context_reset_quest" -> add(names, "reset_quest");
+            case "context_repeat" -> add(names, "repeat");
+            case "context_repeat-off", "context_repeat_off" -> add(names, "repeat-off");
             case "context_variant" -> add(names, "variant");
             case "context_motion" -> add(names, "motion");
             case "context_style" -> {

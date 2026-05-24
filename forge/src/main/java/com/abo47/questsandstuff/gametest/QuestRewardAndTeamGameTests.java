@@ -1,6 +1,10 @@
 package com.abo47.questsandstuff.gametest;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.QuestPacketContext;
+import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
@@ -188,6 +192,239 @@ public final class QuestRewardAndTeamGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void tasklessRewardClaimRequiresUnlock(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "taskless_reward_unlock");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition parent = quest("test/reward_parent", QuestSettings.DEFAULT, Map.of(), Map.of(), Set.of());
+            QuestDefinition child = quest(
+                    "test/reward_locked_child",
+                    QuestSettings.DEFAULT,
+                    Map.of(),
+                    Map.of("item_reward", reward("item_reward", "item", 1, "minecraft:apple", false, Map.of())),
+                    Set.of(parent.id())
+            );
+            bundle.store.upsert(parent);
+            bundle.store.upsert(child);
+            bundle.engine.rebuildIndex();
+
+            int applesBefore = countItems(player, "minecraft:apple");
+            bundle.engine.claimReward(player, child.id(), "item_reward");
+            var lockedState = bundle.progressData.state(player.getUUID()).quest(child.id());
+            if (countItems(player, "minecraft:apple") != applesBefore) {
+                throw new GameTestAssertException("Locked taskless reward should not grant items");
+            }
+            if (lockedState.unlocked() || lockedState.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Locked taskless reward should not be marked unlocked or claimed");
+            }
+
+            bundle.engine.completeQuest(player, parent.id());
+            bundle.engine.claimReward(player, child.id(), "item_reward");
+            var unlockedState = bundle.progressData.state(player.getUUID()).quest(child.id());
+            if (countItems(player, "minecraft:apple") - applesBefore != 1) {
+                throw new GameTestAssertException("Unlocked taskless reward should grant items");
+            }
+            if (!unlockedState.unlocked() || !unlockedState.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Unlocked taskless reward should be marked claimed");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void manualCheckPacketOnlyCompletesVisibleExactTask(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "manual_check_packet_scope");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition visible = quest(
+                    "test/manual_check_visible",
+                    QuestSettings.DEFAULT,
+                    Map.of(
+                            "clicked", task("clicked", "check", 1, "shared/manual_key", Map.of()),
+                            "same_key", task("same_key", "check", 1, "shared/manual_key", Map.of())
+                    ),
+                    Map.of(),
+                    Set.of()
+            );
+            QuestDefinition hidden = quest(
+                    "test/manual_check_hidden",
+                    new QuestSettings(false, QuestVisibilityMode.COMPLETED, false, false, false, true),
+                    Map.of("hidden", task("hidden", "check", 1, "hidden/manual_key", Map.of())),
+                    Map.of(),
+                    Set.of()
+            );
+            bundle.store.upsert(visible);
+            bundle.store.upsert(hidden);
+            bundle.engine.rebuildIndex();
+
+            new C2SManualTaskPacket(visible.id(), "clicked").handle(immediateContext(player));
+            var visibleState = bundle.progressData.state(player.getUUID()).quest(visible.id());
+            if (visibleState.getTaskCount("clicked") != 1) {
+                throw new GameTestAssertException("Manual check packet should complete the clicked requirement");
+            }
+            if (visibleState.getTaskCount("same_key") != 0) {
+                throw new GameTestAssertException("Manual check packet should not complete another requirement sharing the same target key");
+            }
+
+            new C2SManualTaskPacket(hidden.id(), "hidden").handle(immediateContext(player));
+            var hiddenState = bundle.progressData.state(player.getUUID()).quest(hidden.id());
+            if (hiddenState.getTaskCount("hidden") != 0 || hiddenState.completed()) {
+                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible requirements");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void nonEditorResetPacketDoesNotClearClaimedRewards(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "reset_packet_permission");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition definition = quest(
+                    "test/reset_packet_permission",
+                    QuestSettings.DEFAULT,
+                    Map.of(),
+                    Map.of("item_reward", reward("item_reward", "item", 1, "minecraft:apple", false, Map.of())),
+                    Set.of()
+            );
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            bundle.engine.claimReward(player, definition.id(), "item_reward");
+            var state = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (!state.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Test setup should start with a claimed reward");
+            }
+
+            new C2SResetQuestPacket(definition.id()).handle(immediateContext(player));
+            var afterResetAttempt = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (!afterResetAttempt.claimedRewards().contains("item_reward")) {
+                throw new GameTestAssertException("Non-editor reset packet should not clear claimed rewards");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void commandRewardsRespectConfig(GameTestHelper helper) {
+        Bundle bundle = null;
+        boolean previousCommandRewards = QuestsAndStuffConfig.commandRewardsEnabled();
+        try {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(false);
+            bundle = createBundle(helper, "command_reward_config");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition definition = quest(
+                    "test/command_reward_config",
+                    QuestSettings.DEFAULT,
+                    Map.of(),
+                    Map.of("command_reward", reward("command_reward", "command", 1, "", false, Map.of("command", "give @s minecraft:apple 1"))),
+                    Set.of()
+            );
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            int applesBefore = countItems(player, "minecraft:apple");
+            bundle.engine.claimReward(player, definition.id(), "command_reward");
+            if (countItems(player, "minecraft:apple") != applesBefore) {
+                throw new GameTestAssertException("Disabled command rewards should not execute commands");
+            }
+            if (bundle.progressData.state(player.getUUID()).quest(definition.id()).claimedRewards().contains("command_reward")) {
+                throw new GameTestAssertException("Disabled command rewards should not be marked claimed");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(previousCommandRewards);
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void repeatableQuestIgnoresDisabledCommandRewardForReset(GameTestHelper helper) {
+        Bundle bundle = null;
+        boolean previousCommandRewards = QuestsAndStuffConfig.commandRewardsEnabled();
+        try {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(false);
+            bundle = createBundle(helper, "repeatable_disabled_command");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestSettings settings = new QuestSettings(
+                    false,
+                    QuestVisibilityMode.LOCKED,
+                    true,
+                    false,
+                    false,
+                    true
+            );
+            QuestDefinition definition = quest(
+                    "test/repeatable_disabled_command",
+                    settings,
+                    Map.of("check", task("check", "check", 1, "repeatable/disabled_command", Map.of())),
+                    Map.of("command_reward", reward("command_reward", "command", 1, "", false, Map.of("command", "give @s minecraft:apple 1"))),
+                    Set.of()
+            );
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            bundle.engine.completeQuest(player, definition.id());
+            var completedState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (!completedState.completed()) {
+                throw new GameTestAssertException("Test setup should complete repeatable quest");
+            }
+
+            bundle.engine.claimReward(player, definition.id(), "command_reward");
+            var resetState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (resetState.completed()) {
+                throw new GameTestAssertException("Disabled command reward should not block repeatable reset");
+            }
+            if (resetState.claimedRewards().contains("command_reward")) {
+                throw new GameTestAssertException("Disabled command reward should not be marked claimed during repeatable reset");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(previousCommandRewards);
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void repeatableAutoClaimResetsQuestState(GameTestHelper helper) {
         Bundle bundle = null;
         try {
@@ -326,6 +563,20 @@ public final class QuestRewardAndTeamGameTests {
                 helper.getLevel(),
                 new GameProfile(UUID.randomUUID(), "qas_test_player")
         );
+    }
+
+    private static QuestPacketContext immediateContext(ServerPlayer player) {
+        return new QuestPacketContext() {
+            @Override
+            public ServerPlayer sender() {
+                return player;
+            }
+
+            @Override
+            public void enqueueWork(Runnable work) {
+                work.run();
+            }
+        };
     }
 
     private static QuestDefinition quest(

@@ -12,6 +12,7 @@ public enum EditorCommandType {
     PREREQUISITE_REMOVE("prerequisite_remove"),
     QUEST_ICON("quest_icon"),
     QUEST_AUTO_CLAIM("quest_auto_claim"),
+    QUEST_REPEATABLE("quest_repeatable"),
     QUEST_HIDDEN_MODE("quest_hidden_mode"),
     QUEST_VISUAL_HIDDEN("quest_visual_hidden"),
     QUEST_CHANGE_COMPLETION_SOUND("quest_change_completion_sound"),

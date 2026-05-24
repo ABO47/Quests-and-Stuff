@@ -76,7 +76,7 @@ public final class TabletAssetPickerModal {
         boolean canGoBack = !dir.isBlank();
         int searchW = canGoBack ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
         TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.assetSearch, 80, value -> {
-            state.assetSearch = SearchFilter.normalize(value);
+            state.assetSearch = SearchFilter.normalizeUserInput(value);
             state.assetGridScroll = 0;
             refresh.run();
         }, focused -> state.assetSearchFocused = focused);

@@ -35,6 +35,7 @@ public final class StyledTextFields {
         field.setClientSideWidget();
         field.setCurrentString(current == null ? "" : current);
         field.setMaxStringLength(maxLength);
+        field.setValidator(SearchFieldController::normalizeUserSearch);
         applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
         return field;
     }

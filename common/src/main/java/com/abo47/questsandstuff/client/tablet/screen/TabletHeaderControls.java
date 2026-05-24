@@ -78,7 +78,7 @@ final class TabletHeaderControls {
         configureSearchField(chapterSearchField);
 
         TextFieldWidget searchField = new TextFieldWidget(contentInset, topY, 60, headerH, () -> state.search, value -> {
-            state.search = SearchFilter.normalize(value);
+            state.search = SearchFilter.normalizeUserInput(value);
             if (!state.search.isBlank()) {
                 CanvasRenderer.jumpToBestMatch(state);
             }
@@ -264,6 +264,7 @@ final class TabletHeaderControls {
 
     private static void configureSearchField(TextFieldWidget field) {
         field.setClientSideWidget();
+        field.setValidator(SearchFilter::normalizeUserInput);
         field.setBordered(false);
         field.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         field.setTextColor(ModColors.TEXT_PRIMARY);

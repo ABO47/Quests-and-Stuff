@@ -39,7 +39,7 @@ public final class QuestRuntimeEngine {
         this.definitionStore = definitionStore;
         this.progressData = progressData;
         this.syncService = syncService;
-        this.rewardClaims = new QuestRewardClaims(definitionStore, progressData, syncService);
+        this.rewardClaims = new QuestRewardClaims(definitionStore, progressData, syncService, this);
         this.signalProgression = new QuestSignalProgression(definitionStore, progressData, syncService, performanceTracker, this);
         this.manualSubmissions = new QuestManualSubmissions(definitionStore, progressData, syncService, this);
         this.progressAdmin = new QuestProgressAdminActions(definitionStore, progressData, syncService, this);
@@ -131,6 +131,10 @@ public final class QuestRuntimeEngine {
 
     public void runManualTask(ServerPlayer player, String taskKey) {
         onSignal(QuestSignal.of(QuestSignalType.MANUAL_CHECK, player, taskKey, 1, player.blockPosition()));
+    }
+
+    public void submitManualCheckTask(ServerPlayer player, String questId, String taskId) {
+        manualSubmissions.submitCheckTask(player, questId, taskId);
     }
 
     public void submitManualItemTask(ServerPlayer player, String questId, String taskId) {

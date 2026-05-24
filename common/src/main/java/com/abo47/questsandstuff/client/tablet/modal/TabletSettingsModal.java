@@ -31,12 +31,12 @@ public final class TabletSettingsModal {
     private static final int ROW_H = 34;
     private static final int ROW_INSET = 4;
     private static final int SWITCH_GAP = 8;
-    private static final int TAB_ANIMATIONS = 0;
-    private static final int TAB_THEMES = 1;
+    private static final int TAB_THEMES = 0;
+    private static final int TAB_ANIMATIONS = 1;
     private static final int TAB_DEBUG = 2;
     private static final List<SettingTab> TABS = List.of(
-            new SettingTab(TAB_ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations"),
             new SettingTab(TAB_THEMES, "themes", "ui.questsandstuff.settings.tab_themes"),
+            new SettingTab(TAB_ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations"),
             new SettingTab(TAB_DEBUG, "debug", "ui.questsandstuff.settings.tab_debug")
     );
 
@@ -81,15 +81,15 @@ public final class TabletSettingsModal {
                 ),
                 2,
                 refresh,
-                (list, option, index, rowY, rowW) -> renderOptionRow(list, option, rowY, rowW, refresh)
+                (list, option, index, rowY, rowW) -> renderOptionRow(list, option, rowY, rowW, state.settingsTab != TAB_ANIMATIONS, refresh)
         );
     }
 
     private static int activeTab(int tab) {
-        if (tab == TAB_THEMES || tab == TAB_DEBUG) {
+        if (tab == TAB_THEMES || tab == TAB_ANIMATIONS || tab == TAB_DEBUG) {
             return tab;
         }
-        return TAB_ANIMATIONS;
+        return TAB_THEMES;
     }
 
     private static void addTabs(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
@@ -242,7 +242,7 @@ public final class TabletSettingsModal {
         );
     }
 
-    private static void renderOptionRow(WidgetGroup list, SettingOption option, int rowY, int rowW, Runnable refresh) {
+    private static void renderOptionRow(WidgetGroup list, SettingOption option, int rowY, int rowW, boolean showDescription, Runnable refresh) {
         boolean enabled = option.enabled();
         int rowX = ROW_INSET;
         int rowH = ROW_H - ROW_INSET;
@@ -261,8 +261,10 @@ public final class TabletSettingsModal {
         int textW = Math.max(16, switchX - rowX - 14);
         int crop = Math.max(14, textW / 6);
         int titleColor = enabled ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
-        list.addWidget(label(rowX + 8, rowY + 5, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), titleColor));
-        list.addWidget(label(rowX + 8, rowY + 18, SearchFilter.crop(TabletModalPanel.tr(option.descriptionKey()), crop + 6), ModColors.TEXT_MUTED));
+        list.addWidget(label(rowX + 8, rowY + (showDescription ? 5 : 11), SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), titleColor));
+        if (showDescription) {
+            list.addWidget(label(rowX + 8, rowY + 18, SearchFilter.crop(TabletModalPanel.tr(option.descriptionKey()), crop + 6), ModColors.TEXT_MUTED));
+        }
         list.addWidget(new ToggleSwitchWidget(
                 option.id(),
                 switchX,

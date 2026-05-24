@@ -75,6 +75,8 @@ final class UiThemeState {
         iconRoles.put("context_entity", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("manual_check", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("recipe", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("stat", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("xp", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("send-horizontal", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("biome", UiThemeManager.ROLE_ICON_DEFAULT);
@@ -87,6 +89,10 @@ final class UiThemeState {
         iconRoles.put("context_reset_zoom", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_reset_quest", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("reset_quest", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("context_repeat", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("context_repeat-off", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("repeat", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("repeat-off", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("context_variant", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_motion", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_style", UiThemeManager.ROLE_ICON_INTERACTIVE);

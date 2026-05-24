@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
@@ -209,7 +210,7 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean handleQuestDetailsClipboardShortcut(TabletRootWidget root, TabletUiState state, Runnable refresher, int keyCode) {
-        if (!state.canEdit || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (!QuestDetailsEditState.canEdit(state) || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (QuestDetailsWindow.handleClipboardShortcut(root.resolvePlayer(), state, keyCode)) {

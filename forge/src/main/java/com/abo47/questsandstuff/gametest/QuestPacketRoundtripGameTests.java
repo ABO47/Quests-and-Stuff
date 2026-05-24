@@ -1,7 +1,10 @@
 package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.QuestPacketContext;
+import com.abo47.questsandstuff.network.editor.C2SEditorAddQuestPacket;
 import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.network.runtime.C2SClaimSelectableRewardPacket;
 import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
@@ -9,8 +12,11 @@ import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.network.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -19,10 +25,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPacketRoundtripGameTests {
@@ -92,6 +101,153 @@ public final class QuestPacketRoundtripGameTests {
         helper.succeed();
     }
 
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void syncPacketDecodeRejectsOversizedPayload(GameTestHelper helper) {
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeLong(19L);
+        oversized.writeVarInt(0);
+        oversized.writeVarInt(1);
+        CompoundTag payload = new CompoundTag();
+        payload.putString("blob", "x".repeat((int) SyncPacketPayloadLimits.MAX_SYNC_NBT_BYTES + 1));
+        oversized.writeNbt(payload);
+
+        boolean rejected = false;
+        try {
+            S2CFullSyncPacket.decode(oversized);
+        } catch (RuntimeException expected) {
+            rejected = true;
+        }
+        if (!rejected) {
+            throw new GameTestAssertException("Oversized sync payload should fail during decode");
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void syncPacketDecodeRejectsInvalidChunkMetadata(GameTestHelper helper) {
+        FriendlyByteBuf invalidIndex = new FriendlyByteBuf(Unpooled.buffer());
+        invalidIndex.writeLong(20L);
+        invalidIndex.writeVarInt(2);
+        invalidIndex.writeVarInt(2);
+
+        try {
+            S2CFullSyncPacket.decode(invalidIndex);
+            throw new GameTestAssertException("Invalid full sync chunk index should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf tooManyChunks = new FriendlyByteBuf(Unpooled.buffer());
+        tooManyChunks.writeLong(21L);
+        tooManyChunks.writeVarInt(0);
+        tooManyChunks.writeVarInt(SyncPacketPayloadLimits.MAX_SYNC_CHUNKS + 1);
+
+        try {
+            S2CDeltaSyncPacket.decode(tooManyChunks);
+            throw new GameTestAssertException("Oversized delta sync chunk count should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf zeroChunks = new FriendlyByteBuf(Unpooled.buffer());
+        zeroChunks.writeLong(22L);
+        zeroChunks.writeVarInt(0);
+        zeroChunks.writeVarInt(0);
+
+        try {
+            S2CDescriptionSyncPacket.decode(zeroChunks);
+            throw new GameTestAssertException("Zero description sync chunk count should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void pinnedSyncPacketRejectsOversizedList(GameTestHelper helper) {
+        List<String> pinned = new ArrayList<>();
+        for (int i = 0; i <= SyncPacketPayloadLimits.MAX_PINNED_QUESTS; i++) {
+            pinned.add("quest/" + i);
+        }
+        try {
+            new S2CPinnedSyncPacket(23L, pinned).encode(new FriendlyByteBuf(Unpooled.buffer()));
+            throw new GameTestAssertException("Oversized pinned sync packet should fail during encode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeLong(24L);
+        oversized.writeVarInt(SyncPacketPayloadLimits.MAX_PINNED_QUESTS + 1);
+        try {
+            S2CPinnedSyncPacket.decode(oversized);
+            throw new GameTestAssertException("Oversized pinned sync packet should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void selectableRewardPacketRejectsOversizedSelection(GameTestHelper helper) {
+        List<String> choices = new ArrayList<>();
+        for (int i = 0; i < 65; i++) {
+            choices.add("choice_" + i);
+        }
+        try {
+            new C2SClaimSelectableRewardPacket("quest/a", "selector", choices).encode(new FriendlyByteBuf(Unpooled.buffer()));
+            throw new GameTestAssertException("Oversized selectable reward packet should fail during encode");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeUtf("quest/a");
+        oversized.writeUtf("selector");
+        oversized.writeVarInt(65);
+        try {
+            C2SClaimSelectableRewardPacket.decode(oversized);
+            throw new GameTestAssertException("Oversized selectable reward packet should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void editorCommandDecodeRejectsOversizedPayload(GameTestHelper helper) {
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeUtf(EditorCommandType.DESCRIPTION_PUT.wireName());
+        CompoundTag payload = new CompoundTag();
+        ListTag lines = new ListTag();
+        for (int i = 0; i <= EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES; i++) {
+            lines.add(StringTag.valueOf("line_" + i));
+        }
+        payload.put("description", lines);
+        oversized.writeNbt(payload);
+
+        try {
+            EditorCommand.decode(oversized);
+            throw new GameTestAssertException("Oversized editor command payload should fail during decode");
+        } catch (IllegalArgumentException expected) {
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void editorPacketsDoNotEnqueueForNonEditorPlayers(GameTestHelper helper) {
+        ServerPlayer player = detachedPlayer(helper);
+        QuestPacketContext context = rejectingContext(player);
+
+        new C2SEditorAddQuestPacket("Main", "quest/security", 0, 0, "Blocked").handle(context);
+
+        CompoundTag rewardPayload = new CompoundTag();
+        rewardPayload.putString("quest", "quest/security");
+        rewardPayload.putString("json", "{\"id\":\"cmd\",\"type\":\"command\",\"command\":\"say blocked\"}");
+        new C2SEditorCommandPacket(new EditorCommand(EditorCommandType.REWARD_PUT, rewardPayload)).handle(context);
+
+        helper.succeed();
+    }
+
     private static EditorCommand roundtripEditorCommand(EditorCommand command) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         command.encode(buf);
@@ -144,6 +300,28 @@ public final class QuestPacketRoundtripGameTests {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
         return S2CQuestEventPacket.decode(buf);
+    }
+
+    private static ServerPlayer detachedPlayer(GameTestHelper helper) {
+        return new ServerPlayer(
+                helper.getLevel().getServer(),
+                helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "qas_packet_test")
+        );
+    }
+
+    private static QuestPacketContext rejectingContext(ServerPlayer player) {
+        return new QuestPacketContext() {
+            @Override
+            public ServerPlayer sender() {
+                return player;
+            }
+
+            @Override
+            public void enqueueWork(Runnable work) {
+                throw new GameTestAssertException("Non-editor packet should not enqueue server work");
+            }
+        };
     }
 
     private static CompoundTag commandPayload(EditorCommandType type) {

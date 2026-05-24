@@ -4,11 +4,17 @@ public final class ModalTargets {
     public static final String TASK_ITEM = "task_item";
     public static final String TASK_INVENTORY_ITEM = "task_inventory_item";
     public static final String TASK_BIOME = "task_biome";
+    public static final String TASK_ADVANCEMENT = "task_advancement";
+    public static final String TASK_RECIPE = "task_recipe";
+    public static final String TASK_STRUCTURE = "task_structure";
+    public static final String TASK_BLOCK = "task_block";
+    public static final String TASK_STAT = "task_stat";
     public static final String TASK_DIMENSION = "task_dimension";
     public static final String TASK_ENTITY = "task_entity";
     public static final String TASK_SIMPLE_ICON = "task_simple_icon";
     public static final String TASK_ICON = "task_icon";
     public static final String REWARD_ITEM = "reward_item";
+    public static final String REWARD_INVENTORY_ITEM = "reward_inventory_item";
     public static final String REWARD_LOOT_TABLE = "reward_loot_table";
     public static final String REWARD_ICON = "reward_icon";
     public static final String REWARD_COMMAND_EDITOR_ICON = "reward_command_editor_icon";
@@ -55,6 +61,26 @@ public final class ModalTargets {
         return of(TASK_BIOME, questId, taskId, type);
     }
 
+    public static String taskAdvancement(String questId, String taskId, String type) {
+        return of(TASK_ADVANCEMENT, questId, taskId, type);
+    }
+
+    public static String taskRecipe(String questId, String taskId, String type) {
+        return of(TASK_RECIPE, questId, taskId, type);
+    }
+
+    public static String taskStructure(String questId, String taskId, String type) {
+        return of(TASK_STRUCTURE, questId, taskId, type);
+    }
+
+    public static String taskBlock(String questId, String taskId, String type) {
+        return of(TASK_BLOCK, questId, taskId, type);
+    }
+
+    public static String taskStat(String questId, String taskId, String type) {
+        return of(TASK_STAT, questId, taskId, type);
+    }
+
     public static String taskDimension(String questId, String taskId, String type) {
         return of(TASK_DIMENSION, questId, taskId, type);
     }
@@ -73,6 +99,10 @@ public final class ModalTargets {
 
     public static String rewardItem(String questId, String rewardId, String type) {
         return of(REWARD_ITEM, questId, rewardId, type);
+    }
+
+    public static String rewardInventoryItem(String questId, String rewardId, String type) {
+        return of(REWARD_INVENTORY_ITEM, questId, rewardId, type);
     }
 
     public static String rewardLootTable(String questId, String rewardId, String type) {

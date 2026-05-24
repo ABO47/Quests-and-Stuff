@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
@@ -36,6 +36,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -46,14 +47,35 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
         boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
         boolean motionEditorHit = motionEditorWasOpen && EntityMotionEditor.isQuestDetailsHit(state, mouseX, mouseY);
+        String selectedObjectiveKindBefore = state.questDetailsSelectedObjectiveKind;
+        String selectedObjectiveIdBefore = state.questDetailsSelectedObjectiveId;
+        boolean dragPendingBefore = state.questDetailsObjectiveDragPending;
+        boolean clearObjectiveSelection = (button == 0 || button == 1)
+                && !detailsContextHit
+                && !textStyleHit
+                && !textOwnerHit
+                && !motionEditorHit
+                && !QuestDetailsObjectivesPanel.isCardHit(state, mouseX, mouseY);
         if (textStyleHit) {
             state.questDetailsTextStyleInteractionAtMs = System.currentTimeMillis();
         }
         super.mouseClicked(mouseX, mouseY, button);
+        if (clearObjectiveSelection && objectiveInteractionStarted(
+                state,
+                selectedObjectiveKindBefore,
+                selectedObjectiveIdBefore,
+                dragPendingBefore,
+                detailsContextWasOpen
+        )) {
+            clearObjectiveSelection = false;
+        }
         if (motionEditorWasOpen && (motionEditorHit || EntityMotionEditor.isDragging(state))) {
             return true;
         }
         if (motionEditorWasOpen && (button == 0 || button == 1)) {
+            if (clearObjectiveSelection) {
+                QuestDetailsObjectivesPanel.clearSelection(state, "outside_card_click");
+            }
             EntityMotionEditor.close(state);
             refresh.run();
             return true;
@@ -65,6 +87,8 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
                 || recentlyHandledTextStyleClick()) {
             return true;
         }
+        boolean selectionCleared = clearObjectiveSelection
+                && QuestDetailsObjectivesPanel.clearSelection(state, "outside_card_click");
         if (!QuestDetailsWindow.isInside(state, mouseX, mouseY)) {
             closeFloatingDetailsState();
             refresh.run();
@@ -75,8 +99,30 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetailsTextStyleOpen) {
             closeTextStyle("outside_click");
             refresh.run();
+        } else if (selectionCleared) {
+            refresh.run();
         }
         return true;
+    }
+
+    private static boolean objectiveInteractionStarted(
+            TabletUiState state,
+            String selectedKindBefore,
+            String selectedIdBefore,
+            boolean dragPendingBefore,
+            boolean detailsContextWasOpen
+    ) {
+        if (!selectedKindBefore.equals(state.questDetailsSelectedObjectiveKind)
+                || !selectedIdBefore.equals(state.questDetailsSelectedObjectiveId)) {
+            return true;
+        }
+        if (!dragPendingBefore && state.questDetailsObjectiveDragPending && !state.questDetailsObjectiveDragId.isBlank()) {
+            return true;
+        }
+        if (!detailsContextWasOpen && state.questDetailsContextOpen) {
+            return "requirement".equals(state.questDetailsContextKind) || "reward".equals(state.questDetailsContextKind);
+        }
+        return false;
     }
 
     @Override
@@ -84,6 +130,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -96,6 +143,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -108,6 +156,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }

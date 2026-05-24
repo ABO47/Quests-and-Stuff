@@ -33,6 +33,26 @@ final class QuestDetailsWindowActions {
         QuestDetailsObjectivesPanel.applyBiomePick(player, state, biome);
     }
 
+    static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        QuestDetailsObjectivesPanel.applyAdvancementPick(player, state, advancement);
+    }
+
+    static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        QuestDetailsObjectivesPanel.applyRecipePick(player, state, recipe);
+    }
+
+    static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        QuestDetailsObjectivesPanel.applyStructurePick(player, state, structure);
+    }
+
+    static void applyBlockPick(Player player, TabletUiState state, String block) {
+        QuestDetailsObjectivesPanel.applyBlockPick(player, state, block);
+    }
+
+    static void applyStatPick(Player player, TabletUiState state, String stat) {
+        QuestDetailsObjectivesPanel.applyStatPick(player, state, stat);
+    }
+
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
         QuestDetailsObjectivesPanel.applyDimensionPick(player, state, dimension);
     }
@@ -78,7 +98,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean beginSelectedRename(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -100,6 +120,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean deleteSelected(Player player, TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank()) {
             return false;
@@ -112,6 +135,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean duplicateSelected(Player player, TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
@@ -123,6 +149,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean selectAllDescription(TabletUiState state) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank()) {
             return false;
@@ -134,6 +163,9 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean nudgeSelected(Player player, TabletUiState state, int dx, int dy) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
         String questId = questId(state);
         if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
@@ -163,6 +195,26 @@ final class QuestDetailsWindowActions {
         ModalOpenActions.openBiomePicker(state, target);
     }
 
+    static void openAdvancementPicker(TabletUiState state, String target) {
+        ModalOpenActions.openAdvancementPicker(state, target);
+    }
+
+    static void openRecipePicker(TabletUiState state, String target) {
+        ModalOpenActions.openRecipePicker(state, target);
+    }
+
+    static void openStructurePicker(TabletUiState state, String target) {
+        ModalOpenActions.openStructurePicker(state, target);
+    }
+
+    static void openBlockPicker(TabletUiState state, String target) {
+        ModalOpenActions.openBlockPicker(state, target);
+    }
+
+    static void openStatPicker(TabletUiState state, String target) {
+        ModalOpenActions.openStatPicker(state, target);
+    }
+
     static void openDimensionPicker(TabletUiState state, String target) {
         ModalOpenActions.openDimensionPicker(state, target);
     }
@@ -180,7 +232,7 @@ final class QuestDetailsWindowActions {
     }
 
     private static String editableQuestId(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !state.canEdit || !state.questDetailsEditMode) {
+        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return "";
         }
         return questId(state);

@@ -10,10 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record C2SClaimSelectableRewardPacket(String questId, String rewardId, List<String> selectedRewardIds) {
+    private static final int MAX_SELECTED_REWARDS = 64;
+
     public static C2SClaimSelectableRewardPacket decode(FriendlyByteBuf buf) {
         String questId = buf.readUtf();
         String rewardId = buf.readUtf();
         int size = buf.readVarInt();
+        if (size < 0 || size > MAX_SELECTED_REWARDS) {
+            throw new IllegalArgumentException("Invalid selectable reward selection size: " + size);
+        }
         List<String> selected = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             selected.add(buf.readUtf());
@@ -22,11 +27,15 @@ public record C2SClaimSelectableRewardPacket(String questId, String rewardId, Li
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(questId);
-        buf.writeUtf(rewardId);
-        buf.writeVarInt(selectedRewardIds.size());
-        for (String id : selectedRewardIds) {
-            buf.writeUtf(id);
+        List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
+        if (selected.size() > MAX_SELECTED_REWARDS) {
+            throw new IllegalArgumentException("Too many selectable reward choices: " + selected.size());
+        }
+        buf.writeUtf(questId == null ? "" : questId);
+        buf.writeUtf(rewardId == null ? "" : rewardId);
+        buf.writeVarInt(selected.size());
+        for (String id : selected) {
+            buf.writeUtf(id == null ? "" : id);
         }
     }
 

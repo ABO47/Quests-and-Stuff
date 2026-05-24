@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.world.entity.player.Player;
@@ -41,8 +42,8 @@ final class CanvasViewportClickController {
         if (!canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
         }
-        int localX = (int) Math.round(mouseX - canvasViewport.getPositionX());
-        int localY = (int) Math.round(mouseY - canvasViewport.getPositionY());
+        int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvasPanelX + state.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvasPanelY + state.canvasViewportY, mouseY);
 
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
             if (EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {
@@ -173,11 +174,13 @@ final class CanvasViewportClickController {
                 state.selectedQuestIds.add(hit.questId());
                 state.lastJumpQuest = hit.questId();
                 if (button == 0) {
+                    int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
+                    int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
                     QuestDetailsWindow.openAtSource(
                             state,
                             hit.questId(),
-                            canvasViewport.getPositionX() + hit.x(),
-                            canvasViewport.getPositionY() + hit.y(),
+                            viewportScreenX + hit.x(),
+                            viewportScreenY + hit.y(),
                             hit.width(),
                             hit.height()
                     );

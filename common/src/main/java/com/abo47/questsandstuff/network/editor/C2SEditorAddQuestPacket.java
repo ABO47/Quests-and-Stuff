@@ -28,7 +28,7 @@ public record C2SEditorAddQuestPacket(String group, String questId, int x, int y
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> QuestServices.editor(player.server).addQuest(player, group, questId, x, y, title));
         }
     }

@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
 import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.task.player.XpQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.progress.CheckQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
@@ -31,6 +32,19 @@ final class QuestManualSubmissions {
         this.progressData = progressData;
         this.syncService = syncService;
         this.engine = engine;
+    }
+
+    void submitCheckTask(ServerPlayer player, String questId, String taskId) {
+        QuestDefinition definition = definitionStore.quests().get(questId);
+        if (definition == null) {
+            return;
+        }
+        QuestTaskDefinition task = definition.tasks().get(taskId);
+        if (!(task instanceof CheckQuestTaskDefinition)) {
+            return;
+        }
+
+        applyManualCheckProgress(player, manualTargets(player, definition), questId, taskId, task);
     }
 
     void submitItemTask(ServerPlayer player, String questId, String taskId) {
@@ -106,6 +120,32 @@ final class QuestManualSubmissions {
                 ? List.of(player.getUUID())
                 : TeamProgressProviders.members(player.serverLevel(), player.getUUID());
         return targets.isEmpty() ? List.of(player.getUUID()) : targets;
+    }
+
+    private void applyManualCheckProgress(ServerPlayer player, List<UUID> targets, String questId, String taskId, QuestTaskDefinition task) {
+        long tick = player.server.getTickCount();
+        Set<String> changed = new HashSet<>();
+        for (UUID targetId : targets) {
+            PlayerQuestState state = progressData.state(targetId);
+            engine.ensureUnlocks(player, targetId, state, changed, tick);
+            QuestDefinition definition = definitionStore.quests().get(questId);
+            if (definition == null || !engine.isVisibleFor(state, definition)) {
+                continue;
+            }
+            QuestProgressState questState = state.quest(questId);
+            if (!questState.unlocked() || QuestCompletionRules.isTaskComplete(definition, questState, taskId, task)) {
+                continue;
+            }
+            questState.setTaskProgress(taskId, task, QuestCompletionRules.completeProgress(task));
+            changed.add(questId);
+            if (engine.recomputeCompletion(player, targetId, state, questId, tick, true)) {
+                engine.ensureUnlocks(player, targetId, state, changed, tick);
+            }
+        }
+        if (!changed.isEmpty()) {
+            progressData.setDirty();
+            player.server.getPlayerList().getPlayers().forEach(p -> syncService.syncDelta(p, changed));
+        }
     }
 
     private void applyManualTaskProgress(ServerPlayer player, List<UUID> targets, String questId, String taskId, QuestTaskDefinition task, int accepted) {

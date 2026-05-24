@@ -36,12 +36,18 @@ public final class TabletIconPickerModal {
         int sidePad = 8;
         String detailsTarget = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget.trim();
         String canvasEntityTarget = state.modalCanvasEntityTarget == null ? "" : state.modalCanvasEntityTarget.trim();
-        boolean entityPicker = !canvasEntityTarget.isBlank() || isEntityPickerTarget(detailsTarget);
+        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
+        boolean entityPicker = !canvasEntityTarget.isBlank() || details.isEntityIconPickerTarget();
+        boolean useItemPicker = isUseItemPickerTarget(details);
         boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, state.modalQuestTarget, state.modalChapterTarget);
         if (entityPicker) {
             state.iconTagMode = false;
+            state.iconAllItemsMode = false;
             state.iconEntityMode = true;
+        } else if (useItemPicker) {
+            state.iconEntityMode = false;
         } else if (!supportsEntityIcons) {
+            state.iconAllItemsMode = false;
             state.iconEntityMode = false;
         }
         int headY = 22;
@@ -60,15 +66,15 @@ public final class TabletIconPickerModal {
         TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.iconSearch, 80, value -> {
             state.iconSearch = SearchFilter.normalizeUserInput(value);
             state.iconScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", iconModeName(state, entityPicker), state.iconSearch);
+            QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", iconModeName(state, entityPicker, useItemPicker), state.iconSearch);
             refresh.run();
         }, focused -> state.iconSearchFocused = focused);
 
         if (!entityPicker) {
-            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, iconModeIcon(state), click -> {
-                cycleIconMode(state, supportsEntityIcons);
+            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, iconModeIcon(state, useItemPicker), click -> {
+                cycleIconMode(state, supportsEntityIcons, useItemPicker);
                 state.iconScroll = 0;
-                QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={}", iconModeName(state, false));
+                QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={}", iconModeName(state, false, useItemPicker));
                 refresh.run();
             });
         }
@@ -76,7 +82,7 @@ public final class TabletIconPickerModal {
         boolean pickingEntityIcons = entityPicker || state.iconEntityMode;
         List<String> entries = pickingEntityIcons
                 ? EntityPreviewRenderer.searchableSpawnEggEntries(state.iconSearch)
-                : QuestIconProvider.searchableEntries(state.iconSearch, state.iconTagMode);
+                : searchableIconEntries(state, useItemPicker);
         String chapterTarget = state.modalChapterTarget == null || state.modalChapterTarget.isBlank() ? selectedGroupName(state) : state.modalChapterTarget;
         String questTarget = state.modalQuestTarget == null ? "" : state.modalQuestTarget.trim();
         TiledPickerPanel.add(
@@ -139,8 +145,21 @@ public final class TabletIconPickerModal {
         return search;
     }
 
-    private static boolean isEntityPickerTarget(String target) {
-        return ModalTargetParser.parse(target).isEntityIconPickerTarget();
+    private static List<String> searchableIconEntries(TabletUiState state, boolean useItemPicker) {
+        if (useItemPicker && !state.iconAllItemsMode && !state.iconTagMode) {
+            return QuestIconProvider.searchableUsableItemEntries(state.iconSearch);
+        }
+        return QuestIconProvider.searchableEntries(state.iconSearch, state.iconTagMode);
+    }
+
+    private static boolean isUseItemPickerTarget(ModalTargetParser.Target target) {
+        return target.isTaskSimpleIcon() && "item_use".equals(typePath(target.type()));
+    }
+
+    private static String typePath(String type) {
+        String value = type == null ? "" : type.trim();
+        int namespaceSeparator = value.indexOf(':');
+        return namespaceSeparator >= 0 ? value.substring(namespaceSeparator + 1) : value;
     }
 
     private static boolean supportsEntityIconSelection(String detailsTarget, String questTarget, String chapterTarget) {
@@ -151,7 +170,21 @@ public final class TabletIconPickerModal {
         return (questTarget != null && !questTarget.isBlank()) || (chapterTarget != null && !chapterTarget.isBlank());
     }
 
-    private static void cycleIconMode(TabletUiState state, boolean supportsEntityIcons) {
+    private static void cycleIconMode(TabletUiState state, boolean supportsEntityIcons, boolean useItemPicker) {
+        if (useItemPicker) {
+            state.iconEntityMode = false;
+            if (state.iconTagMode) {
+                state.iconTagMode = false;
+                state.iconAllItemsMode = false;
+            } else if (state.iconAllItemsMode) {
+                state.iconAllItemsMode = false;
+                state.iconTagMode = true;
+            } else {
+                state.iconAllItemsMode = true;
+            }
+            return;
+        }
+        state.iconAllItemsMode = false;
         if (state.iconEntityMode) {
             state.iconEntityMode = false;
             state.iconTagMode = false;
@@ -164,18 +197,24 @@ public final class TabletIconPickerModal {
         }
     }
 
-    private static String iconModeIcon(TabletUiState state) {
+    private static String iconModeIcon(TabletUiState state, boolean useItemPicker) {
         if (state.iconEntityMode) {
             return "entity";
         }
-        return state.iconTagMode ? "mode_tags" : "mode_items";
+        if (state.iconTagMode) {
+            return "mode_tags";
+        }
+        return useItemPicker && !state.iconAllItemsMode ? "send-horizontal" : "mode_items";
     }
 
-    private static String iconModeName(TabletUiState state, boolean entityPicker) {
+    private static String iconModeName(TabletUiState state, boolean entityPicker, boolean useItemPicker) {
         if (entityPicker || state.iconEntityMode) {
             return "entities";
         }
-        return state.iconTagMode ? "tags" : "items";
+        if (state.iconTagMode) {
+            return "tags";
+        }
+        return useItemPicker && !state.iconAllItemsMode ? "usable_items" : "items";
     }
 
     private static String pickedEntityIcon(String entry) {

@@ -47,6 +47,68 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.BIOME_PICKER);
     }
 
+    public static void openAdvancementPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.advancementSearch = "";
+        state.advancementScroll = 0;
+        state.advancementScrollDragging = false;
+        state.advancementSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
+    }
+
+    public static void openRecipePicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.recipeSearch = "";
+        state.recipeTagMode = false;
+        state.recipeScroll = 0;
+        state.recipeScrollDragging = false;
+        state.recipeSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+    }
+
+    public static void openStructurePicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.structureSearch = "";
+        state.structureScroll = 0;
+        state.structureScrollDragging = false;
+        state.structureSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.STRUCTURE_PICKER);
+    }
+
+    public static void openBlockPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.blockSearch = "";
+        state.blockTagMode = false;
+        state.blockScroll = 0;
+        state.blockScrollDragging = false;
+        state.blockSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
+    }
+
+    public static void openStatPicker(TabletUiState state, String target) {
+        closeBeforeOpen(state);
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.statSearch = "";
+        state.statScroll = 0;
+        state.statScrollDragging = false;
+        state.statSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.STAT_PICKER);
+    }
+
     public static void openDimensionPicker(TabletUiState state, String target) {
         closeBeforeOpen(state);
         state.modalQuestTarget = "";
@@ -203,6 +265,7 @@ public final class ModalOpenActions {
         state.iconSearch = "";
         state.iconSearchFocused = false;
         state.iconTagMode = false;
+        state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconScroll = 0;
         state.iconScrollDragging = false;

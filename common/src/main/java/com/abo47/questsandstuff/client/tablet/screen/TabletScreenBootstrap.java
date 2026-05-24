@@ -35,9 +35,6 @@ final class TabletScreenBootstrap {
         TabletUiState state = new TabletUiState();
         state.editorAvailable = player.hasPermissions(2);
         readPersistedUiState(state);
-        if (!state.editorAvailable) {
-            state.editMode = false;
-        }
         state.canEdit = state.editorAvailable && state.editMode;
         state.chapterPanelWidth = chapterPanelWidth(state);
         state.chapterPanelCollapsed = isChapterPanelCollapsed(state);

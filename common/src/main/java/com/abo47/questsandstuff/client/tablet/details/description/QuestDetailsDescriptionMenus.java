@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -29,7 +30,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void keepTextStyleOpenForActiveEdit(TabletUiState state, QuestDetailsDescriptionModel model) {
-        if (!state.canEdit || !state.questDetailsEditMode || !state.canvasTextEditOpen
+        if (!QuestDetailsEditState.canEdit(state) || !state.canvasTextEditOpen
                 || state.questDetailsTextEditTarget.isBlank()
                 || !state.questDetailsTextEditTarget.equals(state.canvasTextEditTarget)
                 || model.text(state.questDetailsTextEditTarget) == null) {
@@ -40,7 +41,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void renderStyleMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int w, int h) {
-        if ((!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeSliderTarget.isBlank()) || !state.canEdit || !state.questDetailsEditMode) {
+        if ((!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeSliderTarget.isBlank()) || !QuestDetailsEditState.canEdit(state)) {
             resetStyleMenuBounds(state);
             return;
         }
@@ -70,7 +71,7 @@ public final class QuestDetailsDescriptionMenus {
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int viewportW, int viewportH) {
         String kind = state.questDetailsContextKind;
-        if (!state.questDetailsContextOpen || kind == null || !kind.startsWith("desc") || !state.canEdit || !state.questDetailsEditMode) {
+        if (!state.questDetailsContextOpen || kind == null || !kind.startsWith("desc") || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();

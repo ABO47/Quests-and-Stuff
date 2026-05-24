@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsMouse;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
@@ -96,7 +97,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             ToolMenuAnimation.closeQuestDetails(state);
             return true;
         }
-        if (!state.canEdit || !state.questDetailsEditMode) {
+        if (!QuestDetailsEditState.canEdit(state)) {
             return true;
         }
         int lx = localX(mouseX);
@@ -203,6 +204,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             refresh.run();
             return true;
         }
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        }
         if (textEdit.dragSelectionTo(localX(mouseX), localY(mouseY))) {
             return true;
         }
@@ -224,7 +228,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (textEdit.handleKey(keyCode)) {
+        if (QuestDetailsEditState.canEdit(state) && textEdit.handleKey(keyCode)) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -232,7 +236,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (textEdit.handleChar(codePoint)) {
+        if (QuestDetailsEditState.canEdit(state) && textEdit.handleChar(codePoint)) {
             return true;
         }
         return super.charTyped(codePoint, modifiers);
@@ -247,6 +251,10 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             state.questDetailsPanning = false;
             refresh.run();
             return true;
+        }
+        if (!QuestDetailsEditState.canEdit(state)) {
+            clearEditDragState();
+            return super.mouseReleased(mouseX, mouseY, button);
         }
         if (state.selectingCanvasTextRange && textEdit.isEditing()) {
             state.selectingCanvasTextRange = false;
@@ -333,19 +341,19 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     }
 
     private int localX(double mouseX) {
-        return QuestDetailsMouse.localCoord(mouseX, contentX(), contentW());
+        return QuestDetailsMouse.localX(state, mouseX, contentX(), contentW());
     }
 
     private int localY(double mouseY) {
-        return QuestDetailsMouse.localCoord(mouseY, contentY(), contentH());
+        return QuestDetailsMouse.localY(state, mouseY, contentY(), contentH());
     }
 
     private int pointerScreenX(double mouseX) {
-        return contentX() + localX(mouseX);
+        return QuestDetailsMouse.screenX(state, contentX()) + localX(mouseX);
     }
 
     private int pointerScreenY(double mouseY) {
-        return contentY() + localY(mouseY);
+        return QuestDetailsMouse.screenY(state, contentY()) + localY(mouseY);
     }
 
     private void withScissor(GuiGraphics graphics, Runnable draw) {
@@ -379,8 +387,8 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
-        int localMenuX = state.questDetailsTextStyleMenuX - contentX();
-        int localMenuY = state.questDetailsTextStyleMenuY - contentY();
+        int localMenuX = state.questDetailsTextStyleMenuX - (QuestDetailsMouse.screenX(state, contentX()) - state.questDetailsScreenX);
+        int localMenuY = state.questDetailsTextStyleMenuY - (QuestDetailsMouse.screenY(state, contentY()) - state.questDetailsScreenY);
         return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH)
                 || inside(mouseX, mouseY, state.questDetailsScreenX + localMenuX, state.questDetailsScreenY + localMenuY,
                 state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH);
@@ -388,6 +396,16 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
+    }
+
+    private void clearEditDragState() {
+        state.selectingCanvasTextRange = false;
+        state.questDetailsBoxSelecting = false;
+        state.questDetailsTransformId = "";
+        state.questDetailsTransformKind = "";
+        state.questDetailsTransformMode = "";
+        state.snapGuideXVisible = false;
+        state.snapGuideYVisible = false;
     }
 
     private static void toggle(java.util.Set<String> values, String id) {

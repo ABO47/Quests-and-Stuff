@@ -5,22 +5,27 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 
 final class TabletRootDismissals {
     private TabletRootDismissals() {
     }
 
     static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY) {
+        int rootX = TabletWidgetCoordinates.rootX(root);
+        int rootY = TabletWidgetCoordinates.rootY(root);
         boolean chapterMenuWasOpen = state.chapterMenuOpen;
         boolean contextMenuWasOpen = state.contextMenuOpen;
-        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY);
-        boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY);
-        boolean chapterTextMenuHit = state.chapterTextMenuOpen && TabletRootHitTest.isChapterTextMenuHit(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY);
-        boolean assetContextHit = state.assetContextOpen && TabletRootHitTest.isAssetContextHit(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY);
+        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean chapterTextMenuHit = state.chapterTextMenuOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean assetContextHit = state.assetContextOpen && TabletRootHitTest.isAssetContextHit(state, rootX, rootY, mouseX, mouseY);
         return new ClickDismissState(chapterMenuWasOpen, contextMenuWasOpen, chapterMenuHit, contextMenuHit, chapterTextMenuHit, assetContextHit);
     }
 
     static boolean handleAfterClick(TabletRootWidget root, TabletUiState state, Runnable refresher, ClickDismissState clickState, double mouseX, double mouseY, int button, boolean handled) {
+        int rootX = TabletWidgetCoordinates.rootX(root);
+        int rootY = TabletWidgetCoordinates.rootY(root);
         if (state.questDetailsOpen) {
             return true;
         }
@@ -33,13 +38,13 @@ final class TabletRootDismissals {
         }
         boolean changed = false;
         if (TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)
-                && !TabletRootHitTest.isInsideChapterPanel(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)) {
+                && !TabletRootHitTest.isInsideChapterPanel(state, rootX, rootY, mouseX, mouseY)) {
             state.pendingChapterRename = "";
             changed = true;
         }
         if (!state.pendingQuestTitleChangeId.isBlank()
                 && !QuestDetailsWindow.isInside(state, mouseX, mouseY)
-                && !TabletRootHitTest.isInsideCanvasViewport(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)) {
+                && !TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY)) {
             EditorCommandClient.cancelQuestTitleChange(state);
             changed = true;
         }
@@ -66,14 +71,14 @@ final class TabletRootDismissals {
             state.contextDeleteConfirmKey = "";
             changed = true;
         }
-        if (!TabletRootHitTest.isInsideCanvasViewport(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)
-                && !TabletRootHitTest.isToolsMenuHit(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)
+        if (!TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY)
+                && !TabletRootHitTest.isToolsMenuHit(state, rootX, rootY, mouseX, mouseY)
                 && !state.selectedQuestIds.isEmpty()) {
             state.selectedQuestIds.clear();
             state.connectSourceQuestId = "";
             state.connectSourceQuestIds.clear();
             state.selectionBoundsVisible = false;
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas selection cleared reason=outside_canvas x={} y={}", Math.round(mouseX - root.getPositionX()), Math.round(mouseY - root.getPositionY()));
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas selection cleared reason=outside_canvas x={} y={}", Math.round(mouseX - rootX), Math.round(mouseY - rootY));
             changed = true;
         }
         if (changed) {

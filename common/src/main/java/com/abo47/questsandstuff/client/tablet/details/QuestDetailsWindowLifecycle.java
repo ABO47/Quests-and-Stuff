@@ -32,7 +32,6 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsClosing = false;
         state.questDetailsOpen = true;
         state.questDetailsQuestId = questId.trim();
-        state.questDetailsEditMode = state.canEdit;
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);

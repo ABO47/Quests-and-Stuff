@@ -1,12 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.StatTargetFormatter;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.Locale;
 
@@ -74,6 +79,33 @@ final class QuestObjectiveDisplayText {
         if ("biome".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "target", "")));
         }
+        if ("advancement".equals(path)) {
+            String advancementName = DisplayNameFormatter.advancement(
+                    QuestObjectiveJsons.asString(json, "target", ""),
+                    ClientQuestCache.advancementDisplays()
+            );
+            return advancementName.isBlank() ? typeLabel(type) : advancementName;
+        }
+        if ("recipe".equals(path)) {
+            String recipeTarget = QuestObjectiveJsons.asString(json, "target", "");
+            if (recipeTarget.startsWith("#")) {
+                return readableTagName(recipeTarget);
+            }
+            String recipeName = itemName(recipeTarget);
+            return recipeName.isBlank() ? typeLabel(type) : recipeName;
+        }
+        if ("structure".equals(path)) {
+            String structureName = DisplayNameFormatter.resourceLeaf(QuestObjectiveJsons.asString(json, "target", ""));
+            return structureName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, structureName);
+        }
+        if ("block_interact".equals(path) || "block_interaction".equals(path)) {
+            String blockName = blockTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return blockName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, blockName);
+        }
+        if ("stat".equals(path)) {
+            String statName = StatTargetFormatter.displayName(QuestObjectiveJsons.asString(json, "target", ""));
+            return statName.isBlank() ? typeLabel(type) : statName;
+        }
         if ("location".equals(path)) {
             return QuestVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(QuestObjectiveJsons.asString(json, "dimension", "")));
         }
@@ -83,6 +115,18 @@ final class QuestObjectiveDisplayText {
             return entityName.isBlank()
                     ? QuestVocabulary.text(QuestVocabulary.KILL_ENTITY)
                     : QuestVocabulary.text(QuestVocabulary.KILL_ENTITY_NAMED, entityName);
+        }
+        if ("entity_interact".equals(path) || "entity_interaction".equals(path)) {
+            String entityName = EntityPreviewRenderer.entityDisplayName(QuestObjectiveJsons.asString(json, "target", ""));
+            return entityName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, entityName);
+        }
+        if ("item_interact".equals(path) || "item_interaction".equals(path)) {
+            String itemName = itemTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return itemName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.INTERACT_TARGET, itemName);
+        }
+        if ("item_use".equals(path)) {
+            String itemName = itemTargetName(QuestObjectiveJsons.asString(json, "target", ""));
+            return itemName.isBlank() ? typeLabel(type) : QuestVocabulary.text(QuestVocabulary.USE_TARGET, itemName);
         }
         if ("loot_table".equals(path) || "loot".equals(path)) {
             String lootName = QuestObjectiveLootTableRewardEditor.displayName(QuestObjectiveJsons.asString(json, "loot_table", ""));
@@ -125,7 +169,13 @@ final class QuestObjectiveDisplayText {
     static boolean usesAmountField(JsonObject json, boolean task) {
         String path = QuestObjectiveJsons.typePath(QuestObjectiveJsons.asString(json, "type", ""));
         if (task) {
-            return !isManualTask(json) && !"biome".equals(path) && !"location".equals(path);
+            return !isManualTask(json)
+                    && !"biome".equals(path)
+                    && !"advancement".equals(path)
+                    && !"structure".equals(path)
+                    && !"block_interact".equals(path)
+                    && !"block_interaction".equals(path)
+                    && !"location".equals(path);
         }
         return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }
@@ -151,6 +201,34 @@ final class QuestObjectiveDisplayText {
             return value;
         }
         return item.getDescription().getString();
+    }
+
+    private static String blockName(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "";
+        }
+        Block block = BuiltInRegistries.BLOCK.get(id);
+        if (block == Blocks.AIR && !"minecraft:air".equals(value)) {
+            return value;
+        }
+        return block.getName().getString();
+    }
+
+    private static String blockTargetName(String value) {
+        String clean = value == null ? "" : value.trim();
+        if (clean.startsWith("#")) {
+            return DisplayNameFormatter.resourceLeaf(clean.substring(1));
+        }
+        return blockName(clean);
+    }
+
+    private static String itemTargetName(String value) {
+        String clean = value == null ? "" : value.trim();
+        if (clean.startsWith("#")) {
+            return readableTagName(clean);
+        }
+        return itemName(clean);
     }
 
     private static String readableIdName(String value) {

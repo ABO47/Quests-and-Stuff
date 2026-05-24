@@ -1,7 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
 
@@ -15,6 +18,29 @@ final class QuestObjectiveListInteractions {
         state.questDetailsSelectedObjectiveKind = "requirements".equals(kind) ? "requirement" : kind;
         state.questDetailsSelectedObjectiveKind = "rewards".equals(kind) ? "reward" : state.questDetailsSelectedObjectiveKind;
         state.questDetailsSelectedObjectiveId = id == null ? "" : id;
+    }
+
+    static boolean clearSelection(TabletUiState state, String reason) {
+        if (state == null) {
+            return false;
+        }
+        boolean hadSelection = !state.questDetailsSelectedObjectiveKind.isBlank()
+                || !state.questDetailsSelectedObjectiveId.isBlank();
+        boolean hadDrag = state.questDetailsObjectiveDragPending
+                || state.questDetailsObjectiveDragActive
+                || !state.questDetailsObjectiveDragKind.isBlank()
+                || !state.questDetailsObjectiveDragId.isBlank();
+        boolean hadRename = state.questDetailsObjectiveRenameOpen;
+        if (!hadSelection && !hadDrag && !hadRename) {
+            return false;
+        }
+        state.questDetailsSelectedObjectiveKind = "";
+        state.questDetailsSelectedObjectiveId = "";
+        state.contextDeleteConfirmKey = "";
+        clearDrag(state);
+        QuestDetailsTransientState.closeObjectiveRename(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] objective selection cleared reason={}", reason == null ? "" : reason);
+        return true;
     }
 
     static void selectAndBeginDrag(TabletUiState state, String kind, String id, double mouseX, double mouseY) {
@@ -33,6 +59,10 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            clearDrag(state);
+            return false;
+        }
         if (!state.questDetailsObjectiveDragKind.equals(kind)) {
             return false;
         }
@@ -58,6 +88,10 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean handleRelease(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            clearDrag(state);
+            return false;
+        }
         if (state.questDetailsObjectiveDragActive && state.questDetailsObjectiveDragKind.equals(kind)) {
             finishDrag(player, state, questId, entries);
             refresh.run();
@@ -72,11 +106,14 @@ final class QuestObjectiveListInteractions {
     }
 
     static void openRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+        if (!QuestDetailsEditState.canEdit(state)) {
+            return;
+        }
         QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, id, task);
     }
 
     static boolean deleteSelected(Player player, TabletUiState state, String questId) {
-        if (state == null || state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
         boolean task = "requirement".equals(state.questDetailsSelectedObjectiveKind);
@@ -94,7 +131,7 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean moveSelected(Player player, TabletUiState state, String questId, int offset) {
-        if (state == null || state.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
             return false;
         }
         if ("requirement".equals(state.questDetailsSelectedObjectiveKind)) {

@@ -17,6 +17,7 @@ import java.util.Map;
 
 final class QuestObjectiveSelectableRewards {
     private static final String CHOICE_SEPARATOR = "\u001F";
+    private static final String STANDALONE_SELECTION_KEY = CHOICE_SEPARATOR + "standalone";
 
     private QuestObjectiveSelectableRewards() {
     }
@@ -83,6 +84,16 @@ final class QuestObjectiveSelectableRewards {
         return id != null && id.contains(CHOICE_SEPARATOR);
     }
 
+    static boolean isClaimChoiceEntry(QuestDetailsObjectiveEntry entry) {
+        if (entry == null) {
+            return false;
+        }
+        if (isSelectableChoiceId(entry.id())) {
+            return true;
+        }
+        return isSelectable(entry.json()) && !isSelectableWrapper(entry.json());
+    }
+
     static String choiceGroupId(String id) {
         int separator = id == null ? -1 : id.indexOf(CHOICE_SEPARATOR);
         return separator < 0 ? "" : id.substring(0, separator);
@@ -97,15 +108,14 @@ final class QuestObjectiveSelectableRewards {
         if (state == null || id == null || id.isBlank()) {
             return;
         }
-        state.questDetailsSelectedObjectiveKind = "reward";
-        state.questDetailsSelectedObjectiveId = id;
-        if (!isSelectableChoiceId(id)) {
-            return;
-        }
-        String groupId = choiceGroupId(id);
-        String choiceId = choiceId(id);
-        if (!groupId.isBlank() && !choiceId.isBlank()) {
-            state.questDetailsSelectableRewardChoices.put(groupId, choiceId);
+        if (isSelectableChoiceId(id)) {
+            String groupId = choiceGroupId(id);
+            String choiceId = choiceId(id);
+            if (!groupId.isBlank() && !choiceId.isBlank()) {
+                state.questDetailsSelectableRewardChoices.put(groupId, choiceId);
+            }
+        } else {
+            state.questDetailsSelectableRewardChoices.put(STANDALONE_SELECTION_KEY, id);
         }
     }
 
@@ -114,7 +124,7 @@ final class QuestObjectiveSelectableRewards {
             return false;
         }
         if (!isSelectableChoiceId(id)) {
-            return id.equals(state.questDetailsSelectedObjectiveId);
+            return id.equals(state.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
         }
         String groupId = choiceGroupId(id);
         String choiceId = choiceId(id);
@@ -135,38 +145,6 @@ final class QuestObjectiveSelectableRewards {
         QuestsAndStuffMod.debugLog("[QnS:UI] reward marked selectable quest={} reward={}", questId, rewardId);
     }
 
-    static boolean claimSingleChoice(Player player, String questId, String rewardId, JsonObject selectable) {
-        if (!isSelectable(selectable)) {
-            return false;
-        }
-        if (!isSelectableWrapper(selectable)) {
-            QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of()));
-            QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward claimed quest={} reward={}", questId, rewardId);
-            return true;
-        }
-        if (QuestObjectiveDisplayText.amount(selectable) != 1) {
-            return false;
-        }
-        JsonElement rewards = selectable.get("rewards");
-        if (rewards == null || !rewards.isJsonObject()) {
-            return false;
-        }
-        String choiceId = "";
-        int choices = 0;
-        for (Map.Entry<String, JsonElement> entry : rewards.getAsJsonObject().entrySet()) {
-            if (entry.getValue().isJsonObject()) {
-                choiceId = entry.getKey();
-                choices++;
-            }
-        }
-        if (choices != 1 || choiceId.isBlank()) {
-            return false;
-        }
-        QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of(choiceId)));
-        QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward single choice claimed quest={} reward={} choice={}", questId, rewardId, choiceId);
-        return true;
-    }
-
     static boolean claimSelected(Player player, TabletUiState state, String questId) {
         if (state == null) {
             return false;
@@ -178,26 +156,24 @@ final class QuestObjectiveSelectableRewards {
             if (!isSelectable(json)) {
                 continue;
             }
-            String choiceId = selectedChoiceForGroup(state, rewardId);
-            if (choiceId.isBlank()) {
+            if (!isSelectableWrapper(json)) {
+                if (!isStandaloneSelected(state, rewardId)) {
+                    continue;
+                }
+                QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of()));
+                QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward claimed quest={} reward={}", questId, rewardId);
+                claimedAny = true;
                 continue;
             }
-            if (!choiceExists(json, choiceId)) {
+            String choiceId = selectedChoiceForGroup(state, rewardId);
+            if (choiceId.isBlank() || !choiceExists(json, choiceId)) {
                 continue;
             }
             QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of(choiceId)));
             QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward choice claimed quest={} reward={} choice={}", questId, rewardId, choiceId);
             claimedAny = true;
         }
-        if (claimedAny) {
-            return true;
-        }
-        if (!"reward".equals(state.questDetailsSelectedObjectiveKind)) {
-            return false;
-        }
-        String rewardId = state.questDetailsSelectedObjectiveId == null ? "" : state.questDetailsSelectedObjectiveId.trim();
-        JsonObject json = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
-        return claimSingleChoice(player, questId, rewardId, json);
+        return claimedAny;
     }
 
     static boolean allSelectableRewardsSelected(CompoundTag quest, TabletUiState state) {
@@ -207,7 +183,8 @@ final class QuestObjectiveSelectableRewards {
         CompoundTag rewards = quest.getCompound("rewards");
         boolean hasSelectable = false;
         boolean hasSelected = false;
-        boolean hasSelectedSingleton = false;
+        boolean hasStandaloneSelectable = false;
+        boolean hasSelectedStandalone = false;
         for (String rewardId : rewards.getAllKeys()) {
             JsonObject json = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
             if (!isSelectable(json)) {
@@ -215,64 +192,23 @@ final class QuestObjectiveSelectableRewards {
             }
             hasSelectable = true;
             if (!isSelectableWrapper(json)) {
-                if (rewardId.equals(state.questDetailsSelectedObjectiveId)) {
-                    return true;
+                hasStandaloneSelectable = true;
+                if (isStandaloneSelected(state, rewardId)) {
+                    hasSelected = true;
+                    hasSelectedStandalone = true;
                 }
                 continue;
             }
             String choiceId = selectedChoiceForGroup(state, rewardId);
             if (choiceId.isBlank() || !choiceExists(json, choiceId)) {
-                continue;
-            }
-            hasSelected = true;
-            if (isSingletonSelectable(json)) {
-                hasSelectedSingleton = true;
-            }
-        }
-        if (!hasSelectable || !hasSelected) {
-            return false;
-        }
-        for (String rewardId : rewards.getAllKeys()) {
-            JsonObject json = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
-            if (!isSelectable(json)) {
-                continue;
-            }
-            String choiceId = selectedChoiceForGroup(state, rewardId);
-            if (!choiceId.isBlank() && choiceExists(json, choiceId)) {
-                continue;
-            }
-            if (hasSelectedSingleton && isSingletonSelectable(json)) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean isSingletonSelectable(JsonObject json) {
-        if (!isSelectable(json)) {
-            return false;
-        }
-        if (!isSelectableWrapper(json)) {
-            return true;
-        }
-        if (QuestObjectiveDisplayText.amount(json) != 1) {
-            return false;
-        }
-        JsonElement rewards = json.get("rewards");
-        if (rewards == null || !rewards.isJsonObject()) {
-            return false;
-        }
-        int choices = 0;
-        for (Map.Entry<String, JsonElement> entry : rewards.getAsJsonObject().entrySet()) {
-            if (entry.getValue().isJsonObject()) {
-                choices++;
-            }
-            if (choices > 1) {
                 return false;
             }
+            hasSelected = true;
         }
-        return choices == 1;
+        if (hasStandaloneSelectable && !hasSelectedStandalone) {
+            return false;
+        }
+        return hasSelectable && hasSelected;
     }
 
     static boolean hasSelectableReward(CompoundTag quest) {
@@ -297,11 +233,11 @@ final class QuestObjectiveSelectableRewards {
         if (selected != null && !selected.isBlank()) {
             return selected.trim();
         }
-        String rewardId = state.questDetailsSelectedObjectiveId == null ? "" : state.questDetailsSelectedObjectiveId.trim();
-        if (isSelectableChoiceId(rewardId) && groupId.equals(choiceGroupId(rewardId))) {
-            return choiceId(rewardId);
-        }
         return "";
+    }
+
+    private static boolean isStandaloneSelected(TabletUiState state, String rewardId) {
+        return state != null && rewardId != null && rewardId.equals(state.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
     }
 
     private static boolean choiceExists(JsonObject selectable, String choiceId) {

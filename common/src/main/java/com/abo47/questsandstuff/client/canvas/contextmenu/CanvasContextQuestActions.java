@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
@@ -73,13 +74,14 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
+        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
             EditorCommandClient.resetQuestProgress(player, state.contextQuestId);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
-        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
+        addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
         addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
         actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
@@ -111,12 +113,14 @@ final class CanvasContextQuestActions {
 
     private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {
         QuestCardLayout card = canvasViewport.cardLookup().get(state.contextQuestId);
+        int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
+        int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
         if (card == null) {
             QuestDetailsWindow.openAtSource(
                     state,
                     state.contextQuestId,
-                    canvasViewport.getPositionX() + state.contextMenuX,
-                    canvasViewport.getPositionY() + state.contextMenuY,
+                    viewportScreenX + state.contextMenuX,
+                    viewportScreenY + state.contextMenuY,
                     1,
                     1
             );
@@ -125,8 +129,8 @@ final class CanvasContextQuestActions {
         QuestDetailsWindow.openAtSource(
                 state,
                 state.contextQuestId,
-                canvasViewport.getPositionX() + card.x(),
-                canvasViewport.getPositionY() + card.y(),
+                viewportScreenX + card.x(),
+                viewportScreenY + card.y(),
                 card.width(),
                 card.height()
         );
@@ -144,6 +148,20 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
+    }
+
+    private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+        boolean repeatable = questTag.getBoolean("repeatable");
+        actions.add(new ContextAction(
+                CanvasContextMenuController.tr(repeatable ? QuestVocabulary.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestVocabulary.CONTEXT_MAKE_QUEST_REPEATABLE),
+                repeatable ? "repeat-off" : "repeat",
+                repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                () -> {
+                    EditorCommandClient.setQuestRepeatable(player, state.contextQuestId, !repeatable);
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextQuestId, !repeatable);
+                    canvasViewport.refresh();
+                }));
     }
 
     private static void addQuestVisibilityAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

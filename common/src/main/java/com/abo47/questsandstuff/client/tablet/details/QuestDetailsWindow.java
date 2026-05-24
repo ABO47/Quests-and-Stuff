@@ -29,6 +29,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLayout.rebuild(layer, state, player, refresh);
     }
 
+    public static void syncScreenOrigin(WidgetGroup layer, TabletUiState state) {
+        QuestDetailsWindowLayout.syncScreenOrigin(layer, state);
+    }
+
     public static boolean isVisible(TabletUiState state) {
         return state != null && (state.questDetailsOpen || state.questDetailsClosing);
     }
@@ -67,6 +71,26 @@ public final class QuestDetailsWindow {
 
     public static void applyBiomePick(Player player, TabletUiState state, String biome) {
         QuestDetailsWindowActions.applyBiomePick(player, state, biome);
+    }
+
+    public static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        QuestDetailsWindowActions.applyAdvancementPick(player, state, advancement);
+    }
+
+    public static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        QuestDetailsWindowActions.applyRecipePick(player, state, recipe);
+    }
+
+    public static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        QuestDetailsWindowActions.applyStructurePick(player, state, structure);
+    }
+
+    public static void applyBlockPick(Player player, TabletUiState state, String block) {
+        QuestDetailsWindowActions.applyBlockPick(player, state, block);
+    }
+
+    public static void applyStatPick(Player player, TabletUiState state, String stat) {
+        QuestDetailsWindowActions.applyStatPick(player, state, stat);
     }
 
     public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
@@ -131,6 +155,26 @@ public final class QuestDetailsWindow {
 
     public static void openBiomePicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openBiomePicker(state, target);
+    }
+
+    public static void openAdvancementPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openAdvancementPicker(state, target);
+    }
+
+    public static void openRecipePicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openRecipePicker(state, target);
+    }
+
+    public static void openStructurePicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openStructurePicker(state, target);
+    }
+
+    public static void openBlockPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openBlockPicker(state, target);
+    }
+
+    public static void openStatPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openStatPicker(state, target);
     }
 
     public static void openDimensionPicker(TabletUiState state, String target) {

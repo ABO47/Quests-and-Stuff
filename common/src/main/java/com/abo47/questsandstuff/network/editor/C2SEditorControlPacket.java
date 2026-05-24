@@ -18,7 +18,7 @@ public record C2SEditorControlPacket(String action) {
 
     public void handle(QuestPacketContext context) {
         ServerPlayer player = context.sender();
-        if (player != null) {
+        if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> {
                 var editor = QuestServices.editor(player.server);
                 String op = action == null ? "" : action;

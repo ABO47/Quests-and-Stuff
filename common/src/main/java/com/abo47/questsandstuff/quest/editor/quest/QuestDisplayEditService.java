@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
 
 public final class QuestDisplayEditService {
+    private static final int MAX_DESCRIPTION_LINES = 256;
     private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
 
     private final EditorSessionService service;
@@ -55,6 +56,7 @@ public final class QuestDisplayEditService {
                 description == null ? List.of() : description.stream()
                         .filter(line -> line != null)
                         .map(QuestDisplayEditService::limitDescriptionLine)
+                        .limit(MAX_DESCRIPTION_LINES)
                         .toList(),
                 source.display().groups(),
                 source.display().icon(),

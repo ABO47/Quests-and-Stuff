@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
@@ -26,7 +27,7 @@ final class TabletShortcutActions {
     }
 
     static boolean handleGlobal(Player player, TabletUiState state, CanvasViewport canvasViewport, int keyCode, int scanCode, boolean ctrl, boolean shift) {
-        if (state == null || !state.canEdit || TabletRootWindowController.isTextInputActive(state, null)) {
+        if (state == null || !activeEditMode(state) || TabletRootWindowController.isTextInputActive(state, null)) {
             return false;
         }
         if (TabletClientHooks.renameSelectedMatches(keyCode, scanCode)) {
@@ -216,6 +217,10 @@ final class TabletShortcutActions {
     private static boolean isArrow(int keyCode) {
         return keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT
                 || keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN;
+    }
+
+    private static boolean activeEditMode(TabletUiState state) {
+        return state.questDetailsOpen ? QuestDetailsEditState.canEdit(state) : state.canEdit;
     }
 
     private static int nudgeDx(int keyCode, boolean shift, int step) {

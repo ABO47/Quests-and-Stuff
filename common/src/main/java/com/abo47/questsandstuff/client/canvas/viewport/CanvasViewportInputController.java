@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
-
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
@@ -9,10 +8,11 @@ import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportZoom;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -40,8 +40,8 @@ final class CanvasViewportInputController {
         if (!state.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
-        int localX = (int) Math.round(mouseX - viewport.getPositionX());
-        int localY = (int) Math.round(mouseY - viewport.getPositionY());
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
 
         if (CanvasMinimapController.handleDrag(state, localX, localY)) {
             viewport.refreshCanvas();
@@ -128,8 +128,8 @@ final class CanvasViewportInputController {
         if (!state.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseReleased(mouseX, mouseY, button);
         }
-        int localX = (int) Math.round(mouseX - viewport.getPositionX());
-        int localY = (int) Math.round(mouseY - viewport.getPositionY());
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
         if (CanvasMinimapController.finishDrag(state)) {
             viewport.refreshCanvas();
             return true;
@@ -237,8 +237,8 @@ final class CanvasViewportInputController {
         if (!viewport.isMouseOverElement(mouseX, mouseY)) {
             return viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        int localX = (int) Math.round(mouseX - viewport.getPositionX());
-        int localY = (int) Math.round(mouseY - viewport.getPositionY());
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
         if (EntityMotionEditor.isMainCanvasOpen(state) && EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             refresher.run();

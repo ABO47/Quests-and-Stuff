@@ -152,6 +152,17 @@ public final class ClientQuestLocalMutations {
         quest.putBoolean("auto_claim_rewards", enabled);
     }
 
+    public static void setQuestRepeatableLocal(String questId, boolean enabled) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putBoolean("repeatable", enabled);
+    }
+
     public static void setQuestHiddenModeLocal(String questId, String hiddenMode) {
         if (questId == null || questId.isBlank() || hiddenMode == null || hiddenMode.isBlank()) {
             return;
@@ -283,6 +294,7 @@ public final class ClientQuestLocalMutations {
         quest.putBoolean("unlocked", true);
         quest.putBoolean("claimed", false);
         quest.putFloat("progress", 0.0f);
+        quest.putBoolean("repeatable", false);
         quest.putBoolean("auto_claim_rewards", false);
         quest.putString("hidden_mode", QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName());
         quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, true);

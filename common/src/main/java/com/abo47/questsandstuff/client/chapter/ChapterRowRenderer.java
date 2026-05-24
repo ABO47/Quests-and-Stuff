@@ -211,6 +211,7 @@ final class ChapterRowRenderer {
             state.modalCanvasEntityTarget = "";
             state.iconSearch = "";
             state.iconTagMode = false;
+            state.iconAllItemsMode = false;
             state.iconEntityMode = false;
             state.iconScroll = 0;
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(group));

@@ -22,7 +22,7 @@ final class QuestObjectiveActionWidgets {
     private QuestObjectiveActionWidgets() {
     }
 
-    static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, QuestDetailsObjectiveEntry entry, int x, int y, int w, boolean done) {
+    static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, boolean done) {
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
         int iconY = y - 1;
@@ -31,8 +31,7 @@ final class QuestObjectiveActionWidgets {
             return;
         }
         var hit = IconOnlyButton.create(iconX, iconY, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
-            String taskKey = QuestObjectiveDisplayText.manualTarget(entry.json(), entry.id());
-            QuestNetwork.sendToServer(new C2SManualTaskPacket(taskKey));
+            QuestNetwork.sendToServer(new C2SManualTaskPacket(questId, entry.id()));
             refresh.run();
         });
         parent.addWidget(hit.tooltips(new Component[]{QuestVocabulary.component(QuestVocabulary.MARK_REQUIREMENT_DONE)}));
@@ -79,8 +78,10 @@ final class QuestObjectiveActionWidgets {
         if (claimable) {
             var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> {
                 boolean hasSelectableReward = QuestObjectiveSelectableRewards.hasSelectableReward(quest);
-                QuestDetailsWindow.claimAll(player, questId);
                 boolean claimedSelectable = QuestObjectiveSelectableRewards.claimSelected(player, state, questId);
+                if (!hasSelectableReward || !claimedSelectable) {
+                    QuestDetailsWindow.claimAll(player, questId);
+                }
                 boolean selectableSelectionsComplete = QuestObjectiveSelectableRewards.allSelectableRewardsSelected(quest, state);
                 if (!hasSelectableReward || (claimedSelectable && selectableSelectionsComplete)) {
                     if (state != null) {

@@ -12,8 +12,12 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 
 public final class QuestObjectiveEditActions {
     private QuestObjectiveEditActions() {
@@ -69,6 +73,7 @@ public final class QuestObjectiveEditActions {
             json.addProperty("item", entry);
             json.addProperty("amount", 1);
             json.addProperty("nbt", "");
+            preserveRewardSelectableFlag(questId, id, json);
             EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward item picked quest={} reward={} item={}", questId, id, entry);
         } else if (parsed.isRewardCommandEditorIcon()) {
@@ -87,20 +92,35 @@ public final class QuestObjectiveEditActions {
             return;
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskInventoryItem()) {
+        if (!parsed.hasAtLeast(4)) {
             return;
         }
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-        JsonObject json = new JsonObject();
-        json.addProperty("id", parsed.entryId());
-        json.addProperty("type", parsed.type());
-        json.addProperty("item", itemId);
-        json.addProperty("amount", 1);
-        json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
-        json.addProperty("collection", "automatic");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
-        state.questDetailsPickTarget = "";
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+        if (parsed.isTaskInventoryItem()) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", parsed.entryId());
+            json.addProperty("type", parsed.type());
+            json.addProperty("item", itemId);
+            json.addProperty("amount", 1);
+            json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+            json.addProperty("collection", "automatic");
+            EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isRewardInventoryItem()) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", parsed.entryId());
+            json.addProperty("type", parsed.type());
+            json.addProperty("item", itemId);
+            json.addProperty("amount", Math.max(1, stack.getCount()));
+            json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
+            preserveRewardSelectableFlag(parsed.questId(), parsed.entryId(), json);
+            EditorCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory reward item picked quest={} reward={} item={} amount={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.getCount(), stack.hasTag());
+        }
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
@@ -116,6 +136,84 @@ public final class QuestObjectiveEditActions {
         EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
+    }
+
+    static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || advancement == null || advancement.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskAdvancement()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
+    }
+
+    static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || recipe == null || recipe.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskRecipe()) {
+            return;
+        }
+        String recipeTarget = recipe.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), recipeTarget, recipeIcon(recipeTarget));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe picked quest={} task={} recipe={}", parsed.questId(), parsed.entryId(), recipeTarget);
+    }
+
+    static void applyStructurePick(Player player, TabletUiState state, String structure) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || structure == null || structure.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskStructure()) {
+            return;
+        }
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
+    }
+
+    static void applyBlockPick(Player player, TabletUiState state, String block) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || block == null || block.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskBlock()) {
+            return;
+        }
+        String blockId = block.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), blockId, blockIcon(blockId));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
+    }
+
+    static void applyStatPick(Player player, TabletUiState state, String stat) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || stat == null || stat.isBlank()) {
+            return;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4) || !parsed.isTaskStat()) {
+            return;
+        }
+        String statTarget = stat.trim();
+        JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), statTarget, statIcon(statTarget));
+        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details stat picked quest={} task={} stat={}", parsed.questId(), parsed.entryId(), statTarget);
     }
 
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
@@ -251,11 +349,31 @@ public final class QuestObjectiveEditActions {
             QuestDetailsWindow.openBiomePicker(state, ModalTargets.taskBiome(questId, id, type));
             return;
         }
+        if ("advancement".equals(typePath)) {
+            QuestDetailsWindow.openAdvancementPicker(state, ModalTargets.taskAdvancement(questId, id, type));
+            return;
+        }
+        if ("recipe".equals(typePath)) {
+            QuestDetailsWindow.openRecipePicker(state, ModalTargets.taskRecipe(questId, id, type));
+            return;
+        }
+        if ("structure".equals(typePath)) {
+            QuestDetailsWindow.openStructurePicker(state, ModalTargets.taskStructure(questId, id, type));
+            return;
+        }
+        if ("block_interact".equals(typePath) || "block_interaction".equals(typePath)) {
+            QuestDetailsWindow.openBlockPicker(state, ModalTargets.taskBlock(questId, id, type));
+            return;
+        }
+        if ("stat".equals(typePath)) {
+            QuestDetailsWindow.openStatPicker(state, ModalTargets.taskStat(questId, id, type));
+            return;
+        }
         if ("location".equals(typePath)) {
             QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
         }
-        if ("kill_entity".equals(typePath)) {
+        if ("kill_entity".equals(typePath) || "entity_interact".equals(typePath) || "entity_interaction".equals(typePath)) {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskEntity(questId, id, type));
             return;
         }
@@ -274,7 +392,7 @@ public final class QuestObjectiveEditActions {
 
     private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, boolean add) {
         if ("item".equals(typePath)) {
-            QuestDetailsWindow.openIconPicker(state, ModalTargets.rewardItem(questId, id, type));
+            QuestDetailsTransientState.openItemSourcePicker(state, ModalTargets.rewardItem(questId, id, type));
             return;
         }
         if ("command".equals(typePath)) {
@@ -306,6 +424,66 @@ public final class QuestObjectiveEditActions {
         return task ? QuestObjectiveDisplayText.taskIcon(json) : QuestObjectiveDisplayText.rewardIcon(json);
     }
 
+    private static String blockIcon(String target) {
+        String clean = target == null ? "" : target.trim();
+        return clean.isBlank() ? "box" : clean;
+    }
+
+    private static String statIcon(String target) {
+        String clean = target == null ? "" : target.trim();
+        int split = clean.indexOf(':');
+        if (split <= 0) {
+            return "stat";
+        }
+        String category = clean.substring(0, split);
+        String value = clean.substring(split + 1);
+        if ("mined".equals(category)) {
+            return blockItemIcon(value);
+        }
+        if ("crafted".equals(category) || "used".equals(category) || "broken".equals(category)
+                || "picked_up".equals(category) || "dropped".equals(category)) {
+            return itemIcon(value);
+        }
+        if ("killed".equals(category) || "killed_by".equals(category)) {
+            return EntityPreviewRenderer.entityAsset(value);
+        }
+        return "stat";
+    }
+
+    private static String recipeIcon(String target) {
+        if (target != null && target.trim().startsWith("#")) {
+            return target.trim();
+        }
+        String icon = itemIcon(target);
+        return "minecraft:paper".equals(icon) ? "recipe" : icon;
+    }
+
+    private static String blockItemIcon(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "minecraft:paper";
+        }
+        Block block = BuiltInRegistries.BLOCK.get(id);
+        if (!id.equals(BuiltInRegistries.BLOCK.getKey(block))) {
+            return "minecraft:paper";
+        }
+        Item item = block.asItem();
+        if (item == Items.AIR) {
+            return "minecraft:paper";
+        }
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+        return itemId == null ? "minecraft:paper" : itemId.toString();
+    }
+
+    private static String itemIcon(String value) {
+        ResourceLocation id = ResourceLocation.tryParse(value);
+        if (id == null) {
+            return "minecraft:paper";
+        }
+        Item item = BuiltInRegistries.ITEM.get(id);
+        return item == Items.AIR && !"minecraft:air".equals(value) ? "minecraft:paper" : id.toString();
+    }
+
     public static boolean isEntityObjectiveIcon(String questId, String id, boolean task) {
         return EntityPreviewRenderer.isEntityAsset(objectiveIcon(questId, id, task));
     }
@@ -335,6 +513,16 @@ public final class QuestObjectiveEditActions {
             EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
         } else {
             EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+        }
+    }
+
+    private static void preserveRewardSelectableFlag(String questId, String rewardId, JsonObject next) {
+        CompoundTag reward = ClientQuestCache.quest(questId)
+                .getCompound("rewards")
+                .getCompound(rewardId);
+        JsonObject existing = QuestObjectiveJsons.read(reward.getString("json"));
+        if (QuestObjectiveSelectableRewards.isSelectable(existing)) {
+            next.addProperty("selectable", true);
         }
     }
 }

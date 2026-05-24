@@ -35,6 +35,26 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_BIOME);
         }
 
+        public boolean isTaskAdvancement() {
+            return is(ModalTargets.TASK_ADVANCEMENT);
+        }
+
+        public boolean isTaskRecipe() {
+            return is(ModalTargets.TASK_RECIPE);
+        }
+
+        public boolean isTaskStructure() {
+            return is(ModalTargets.TASK_STRUCTURE);
+        }
+
+        public boolean isTaskBlock() {
+            return is(ModalTargets.TASK_BLOCK);
+        }
+
+        public boolean isTaskStat() {
+            return is(ModalTargets.TASK_STAT);
+        }
+
         public boolean isTaskDimension() {
             return is(ModalTargets.TASK_DIMENSION);
         }
@@ -53,6 +73,10 @@ public final class ModalTargetParser {
 
         public boolean isRewardItem() {
             return is(ModalTargets.REWARD_ITEM);
+        }
+
+        public boolean isRewardInventoryItem() {
+            return is(ModalTargets.REWARD_INVENTORY_ITEM);
         }
 
         public boolean isRewardLootTable() {

@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.chapter;
 
-
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -57,8 +57,8 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (ModalStateQueries.anyOpen(state)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        int localX = (int) Math.round(mouseX - getPositionX());
-        int localY = (int) Math.round(mouseY - getPositionY());
+        int localX = TabletWidgetCoordinates.localX(this, CHAPTER_X, mouseX);
+        int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
         if (button == 1 && isMouseOverElement(mouseX, mouseY) && isChapterCardAreaHit(localX, localY, state)) {
             openContextAt(localX, localY);
             return true;
@@ -88,14 +88,14 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (state.chapterScrollDragging) {
             int previous = state.chapterScroll;
-            updateChapterScrollByMouse(mouseY - getPositionY(), state);
+            updateChapterScrollByMouse(TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY), state);
             if (state.chapterScroll != previous) {
                 refreshChapterViews.run();
             }
             return true;
         }
         if (state.chapterDragActive) {
-            int localY = (int) Math.round(mouseY - getPositionY());
+            int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
             int nextTarget = chapterInsertIndexAtY(localY, state);
             if (nextTarget != state.chapterDragTargetIndex) {
                 state.chapterDragTargetIndex = nextTarget;
@@ -110,7 +110,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             }
             state.chapterDragPending = false;
             state.chapterDragActive = true;
-            int localY = (int) Math.round(mouseY - getPositionY());
+            int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
             state.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterDragName, state.chapterDragTargetIndex);
             refreshChapterViews.run();

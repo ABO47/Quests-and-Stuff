@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -38,8 +39,16 @@ public record CommandQuestRewardDefinition(
     }
 
     @Override
+    public boolean canClaim(ServerPlayer player) {
+        return QuestsAndStuffConfig.commandRewardsEnabled();
+    }
+
+    @Override
     public void grant(ServerPlayer player) {
         if (command == null || command.isBlank()) {
+            return;
+        }
+        if (!QuestsAndStuffConfig.commandRewardsEnabled()) {
             return;
         }
         player.server.getCommands().performPrefixedCommand(

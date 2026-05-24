@@ -90,6 +90,7 @@ final class QuestSyncPayloadBuilder {
             questTag.putBoolean("claimed", allRewardsClaimed(definition, progress));
             questTag.putFloat("progress", progressPercent(definition, progress));
         }
+        questTag.putBoolean("repeatable", definition.settings().repeatable());
         questTag.putBoolean("auto_claim_rewards", definition.settings().autoClaimRewards());
         questTag.putString("hidden_mode", definition.settings().hiddenMode().serializedName());
         questTag.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, definition.settings().showPrerequisiteArrow());

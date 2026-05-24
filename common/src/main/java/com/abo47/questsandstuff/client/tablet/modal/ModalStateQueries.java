@@ -23,6 +23,21 @@ public final class ModalStateQueries {
         if (state.biomePickerOpen) {
             return ModalWindowManager.ModalType.BIOME_PICKER;
         }
+        if (state.advancementPickerOpen) {
+            return ModalWindowManager.ModalType.ADVANCEMENT_PICKER;
+        }
+        if (state.recipePickerOpen) {
+            return ModalWindowManager.ModalType.RECIPE_PICKER;
+        }
+        if (state.structurePickerOpen) {
+            return ModalWindowManager.ModalType.STRUCTURE_PICKER;
+        }
+        if (state.blockPickerOpen) {
+            return ModalWindowManager.ModalType.BLOCK_PICKER;
+        }
+        if (state.statPickerOpen) {
+            return ModalWindowManager.ModalType.STAT_PICKER;
+        }
         if (state.dimensionPickerOpen) {
             return ModalWindowManager.ModalType.DIMENSION_PICKER;
         }

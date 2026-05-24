@@ -8,18 +8,27 @@ import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestTaskDefinitionGameTests {
@@ -38,6 +47,9 @@ public final class QuestTaskDefinitionGameTests {
                 signal(QuestSignalType.BIOME_ENTER, "minecraft:plains", 1), current);
         requirePositive(simple("block", "block_interact", "minecraft:crafting_table"),
                 signal(QuestSignalType.BLOCK_INTERACT, "minecraft:crafting_table", 1), current);
+        QuestTaskDefinition blockTag = simple("block_tag", "block_interact", "#minecraft:doors");
+        requirePositive(blockTag, signal(QuestSignalType.BLOCK_INTERACT, "minecraft:oak_door", 1), current);
+        requireNoChange(blockTag, signal(QuestSignalType.BLOCK_INTERACT, "minecraft:stone", 1), current);
         requirePositive(simple("dim", "changed_dimension", "minecraft:the_nether"),
                 signal(QuestSignalType.DIMENSION_CHANGED, "minecraft:the_nether", 1), current);
         requirePositive(simple("check", "check", "creator/check"),
@@ -57,8 +69,14 @@ public final class QuestTaskDefinitionGameTests {
 
         requirePositive(simple("item_interact", "item_interact", "minecraft:book"),
                 signal(QuestSignalType.ITEM_INTERACT, "minecraft:book", 1), current);
+        QuestTaskDefinition itemInteractTag = simple("item_interact_tag", "item_interact", "#minecraft:planks");
+        requirePositive(itemInteractTag, signal(QuestSignalType.ITEM_INTERACT, "minecraft:oak_planks", 1), current);
+        requireNoChange(itemInteractTag, signal(QuestSignalType.ITEM_INTERACT, "minecraft:stick", 1), current);
         requirePositive(simple("item_use", "item_use", "minecraft:bread"),
                 signal(QuestSignalType.ITEM_USED, "minecraft:bread", 1), current);
+        QuestTaskDefinition itemUseTag = simple("item_use_tag", "item_use", "#minecraft:planks");
+        requirePositive(itemUseTag, signal(QuestSignalType.ITEM_USED, "minecraft:oak_planks", 1), current);
+        requireNoChange(itemUseTag, signal(QuestSignalType.ITEM_USED, "minecraft:stick", 1), current);
         requirePositive(simple("kill", "kill_entity", "minecraft:zombie"),
                 signal(QuestSignalType.ENTITY_KILLED, "minecraft:zombie", 1), current);
 
@@ -67,10 +85,14 @@ public final class QuestTaskDefinitionGameTests {
 
         requirePositive(simple("recipe", "recipe", "minecraft:oak_planks"),
                 signal(QuestSignalType.ITEM_CRAFTED, "minecraft:oak_planks", 1), current);
+        QuestTaskDefinition recipeTag = simple("recipe_tag", "recipe", "#minecraft:planks");
+        requirePositive(recipeTag, signal(QuestSignalType.ITEM_CRAFTED, "minecraft:oak_planks", 1), current);
+        requireNoChange(recipeTag, signal(QuestSignalType.ITEM_CRAFTED, "minecraft:stick", 1), current);
 
         QuestTaskDefinition stat = QuestGameTestDefinitions.task("stat", "stat", 10, "minecraft:mined:minecraft:stone", Map.of());
         current.addTaskCount("stat", 2, Integer.MAX_VALUE);
         requirePositive(stat, signal(QuestSignalType.STAT_CHANGE, "minecraft:mined:minecraft:stone", 7), current);
+        assertCustomStatReadsUseRegisteredValues(helper);
 
         requirePositive(simple("structure", "structure", "minecraft:village"),
                 signal(QuestSignalType.STRUCTURE_ENTER, "minecraft:village", 1), current);
@@ -102,6 +124,43 @@ public final class QuestTaskDefinitionGameTests {
         helper.succeed();
     }
 
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void itemMatcherFailsClosedForMalformedRequiredNbt(GameTestHelper helper) {
+        ItemStack stack = new ItemStack(Items.DIAMOND);
+        stack.getOrCreateTag().putString("qas_marker", "yes");
+
+        if (!QuestItemMatcher.matchesNbt(stack, "")) {
+            throw new GameTestAssertException("Blank required NBT should match");
+        }
+        if (QuestItemMatcher.matchesNbt(stack, "{display:{Name:'broken'")) {
+            throw new GameTestAssertException("Malformed required NBT should not match");
+        }
+        if (!QuestItemMatcher.matchesNbt(stack, "{qas_marker:\"yes\"}")) {
+            throw new GameTestAssertException("Valid matching required NBT should match");
+        }
+        if (QuestItemMatcher.matchesNbt(stack, "{qas_marker:\"no\"}")) {
+            throw new GameTestAssertException("Mismatched required NBT should not match");
+        }
+
+        helper.succeed();
+    }
+
+    private static void assertCustomStatReadsUseRegisteredValues(GameTestHelper helper) {
+        ServerPlayer player = detachedPlayer(helper);
+        ResourceLocation jumpId = ResourceLocation.tryParse("minecraft:jump");
+        ResourceLocation jump = BuiltInRegistries.CUSTOM_STAT.getOptional(jumpId)
+                .orElseThrow(() -> new GameTestAssertException("Missing vanilla jump custom stat"));
+        player.awardStat(Stats.CUSTOM.get(jump), 4);
+        int bareCustom = QuestStatHelper.readStat(player, "minecraft:jump");
+        int explicitCustom = QuestStatHelper.readStat(player, "custom:minecraft:jump");
+        int namespacedCustom = QuestStatHelper.readStat(player, "minecraft:custom:minecraft:jump");
+        int unknownCustom = QuestStatHelper.readStat(player, "minecraft:not_a_real_custom_stat");
+        if (bareCustom != 4 || explicitCustom != 4 || namespacedCustom != 4 || unknownCustom != 0) {
+            throw new GameTestAssertException("Custom stat lookup should be canonical and crash-safe");
+        }
+    }
+
     private static QuestTaskDefinition simple(String id, String type, String target) {
         return task(id, type, target, Map.of());
     }
@@ -114,6 +173,13 @@ public final class QuestTaskDefinitionGameTests {
         int delta = evaluate(definition, signal, current);
         if (delta <= 0) {
             throw new GameTestAssertException("Expected positive delta for task type " + definition.type() + " but got " + delta);
+        }
+    }
+
+    private static void requireNoChange(QuestTaskDefinition definition, QuestSignal signal, QuestProgressState current) {
+        int delta = evaluate(definition, signal, current);
+        if (delta != 0) {
+            throw new GameTestAssertException("Expected no delta for task type " + definition.type() + " but got " + delta);
         }
     }
 
@@ -146,6 +212,14 @@ public final class QuestTaskDefinitionGameTests {
 
     private static QuestSignal signal(QuestSignalType type, String key, int amount) {
         return new QuestSignal(type, null, key, amount, BlockPos.ZERO, Level.OVERWORLD);
+    }
+
+    private static ServerPlayer detachedPlayer(GameTestHelper helper) {
+        return new ServerPlayer(
+                helper.getLevel().getServer(),
+                helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "qas_stat_test_player")
+        );
     }
 
     private static ResourceLocation id(String path) {

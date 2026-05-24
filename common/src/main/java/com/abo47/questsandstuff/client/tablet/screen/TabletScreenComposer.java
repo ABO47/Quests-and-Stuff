@@ -109,9 +109,6 @@ public final class TabletScreenComposer {
             rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             state.editorAvailable = player.hasPermissions(2);
-            if (!state.editorAvailable) {
-                state.editMode = false;
-            }
             state.canEdit = state.editorAvailable && state.editMode;
             if (!state.canEdit) {
                 state.toolsGridSizeMenuOpen = false;

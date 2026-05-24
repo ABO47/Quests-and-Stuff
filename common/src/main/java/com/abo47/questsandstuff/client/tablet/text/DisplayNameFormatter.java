@@ -38,6 +38,15 @@ public final class DisplayNameFormatter {
         return readable.isBlank() ? clean(biome) : readable;
     }
 
+    public static String advancement(String advancement, Map<String, String> displayNames) {
+        String display = displayNames == null ? "" : displayNames.getOrDefault(advancement, "");
+        if (display != null && !display.isBlank()) {
+            return display.trim();
+        }
+        String readable = resourceLeaf(advancement);
+        return readable.isBlank() ? clean(advancement) : readable;
+    }
+
     public static String titleCase(String value) {
         String clean = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
         if (clean.isBlank()) {

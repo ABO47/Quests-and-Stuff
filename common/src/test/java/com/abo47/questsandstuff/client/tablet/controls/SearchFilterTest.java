@@ -12,6 +12,7 @@ class SearchFilterTest {
         assertEquals("nether fortress", SearchFilter.normalize("  Nether Fortress  "));
         assertEquals("netherfortress", SearchFilter.normalizeKey("Nether Fortress"));
         assertEquals("nether fortress", SearchFilter.normalizeUserInput("Nether Fortress"));
+        assertEquals("nether fortress ", SearchFilter.normalizeUserInput("Nether Fortress "));
     }
 
     @Test
@@ -19,6 +20,7 @@ class SearchFilterTest {
         assertTrue(SearchFilter.matches("minecraft:plains", "minecraft:plains", "Plains"));
         assertTrue(SearchFilter.matches("lost city", "custom:chests/lost_city", "Lost City Chest"));
         assertTrue(SearchFilter.matches("lostcity", "custom:chests/lost_city", "Lost City Chest"));
+        assertTrue(SearchFilter.matches("walk one", "minecraft:walk_one_cm", "Walk One Cm"));
         assertFalse(SearchFilter.matches("ocean", "minecraft:plains", "Plains"));
     }
 

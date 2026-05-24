@@ -30,14 +30,22 @@ public interface QuestRewardDefinition {
         return true;
     }
 
+    default boolean canClaim(ServerPlayer player) {
+        return true;
+    }
+
     void grant(ServerPlayer player);
 
     default boolean isSelectableClaimValid(List<String> selectedRewardIds) {
         return selectable() && (selectedRewardIds == null || selectedRewardIds.isEmpty());
     }
 
+    default boolean isSelectableClaimValid(ServerPlayer player, List<String> selectedRewardIds) {
+        return isSelectableClaimValid(selectedRewardIds);
+    }
+
     default void grantSelected(ServerPlayer player, List<String> selectedRewardIds) {
-        if (isSelectableClaimValid(selectedRewardIds)) {
+        if (isSelectableClaimValid(player, selectedRewardIds)) {
             grant(player);
         }
     }

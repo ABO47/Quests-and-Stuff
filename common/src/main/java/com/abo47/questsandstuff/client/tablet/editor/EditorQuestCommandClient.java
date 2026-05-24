@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 final class EditorQuestCommandClient {
+    private static final int MAX_DESCRIPTION_LINES = 256;
     private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
 
     private EditorQuestCommandClient() {
@@ -265,6 +266,18 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestAutoClaim(serverPlayer, normalizedQuestId, enabled));
     }
 
+    static void setQuestRepeatable(Player player, String questId, boolean enabled) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        ClientQuestCache.setQuestRepeatableLocal(normalizedQuestId, enabled);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putBoolean("enabled", enabled);
+        EditorCommandSender.run(player, "quest_repeatable", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestRepeatable(serverPlayer, normalizedQuestId, enabled));
+    }
+
     static void updateQuestDescription(Player player, String questId, List<String> description) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {
@@ -273,6 +286,7 @@ final class EditorQuestCommandClient {
         List<String> safeDescription = description == null ? List.of() : description.stream()
                 .filter(line -> line != null)
                 .map(EditorQuestCommandClient::limitDescriptionLine)
+                .limit(MAX_DESCRIPTION_LINES)
                 .toList();
         ClientQuestCache.setQuestDescriptionLocal(normalizedQuestId, safeDescription);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest description save quest={} lines={}", normalizedQuestId, safeDescription.size());

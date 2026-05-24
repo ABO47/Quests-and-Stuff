@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -81,18 +82,20 @@ final class QuestObjectiveInlineFields {
         int count = task ? Math.max(0, entry.tag().getInt("count")) : 0;
         int amount = QuestObjectiveDisplayText.amount(entry.json());
         if (task && QuestObjectiveDisplayText.isManualTask(entry.json())) {
-            QuestObjectiveActionWidgets.renderManualDoneButton(parent, player, refresh, entry, x - 16, y, w + 16, count > 0);
+            QuestObjectiveActionWidgets.renderManualDoneButton(parent, player, refresh, questId, entry, x - 16, y, w + 16, count > 0);
             return;
         }
         if (!QuestObjectiveDisplayText.usesAmountField(entry.json(), task)) {
             return;
         }
-        if (task && QuestObjectiveDisplayText.isManualXpTask(entry.json()) && (!state.canEdit || !state.questDetailsEditMode)) {
+        if (task && QuestObjectiveDisplayText.isManualXpTask(entry.json()) && !QuestDetailsEditState.canEdit(state)) {
             QuestObjectiveActionWidgets.renderManualXpButton(parent, player, refresh, questId, entry, x, y, w, count, amount);
             return;
         }
-        if (!state.canEdit || !state.questDetailsEditMode) {
-            parent.addWidget(label(x - (task ? 24 : 0), y + 3, task ? count + " / " + amount : Integer.toString(amount), ModColors.TEXT_PRIMARY));
+        if (!QuestDetailsEditState.canEdit(state)) {
+            int chipX = x - (task ? 24 : 0);
+            int chipW = w + (task ? 24 : 0);
+            renderAmountText(parent, chipX, y, chipW, task ? count + " / " + amount : "x" + amount);
             return;
         }
         if (task) {
@@ -132,12 +135,11 @@ final class QuestObjectiveInlineFields {
                 && state.questDetailsObjectiveRenameTask == task
                 && questId.equals(state.questDetailsObjectiveRenameQuestId)
                 && entryId.equals(state.questDetailsObjectiveRenameId)
-                && state.canEdit
-                && state.questDetailsEditMode;
+                && QuestDetailsEditState.canEdit(state);
     }
 
     static boolean handleRenameKey(Player player, TabletUiState state, int keyCode) {
-        if (!state.questDetailsObjectiveRenameOpen) {
+        if (!state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
@@ -188,6 +190,12 @@ final class QuestObjectiveInlineFields {
 
     private static String sanitizeObjectiveTitle(String value) {
         return value == null ? "" : value.replace('\n', ' ').replace('\r', ' ');
+    }
+
+    private static void renderAmountText(WidgetGroup parent, int x, int y, int maxW, String text) {
+        String fitted = fitText(text, Math.max(12, maxW));
+        int textW = Minecraft.getInstance().font.width(fitted);
+        parent.addWidget(label(x + Math.max(0, maxW - textW), y + 3, fitted, ModColors.TEXT_SECONDARY));
     }
 
     static String fitText(String value, int width) {

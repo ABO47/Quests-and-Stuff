@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.client.chapter.ChapterPanel;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class TabletRootPointerRouter {
@@ -22,6 +24,7 @@ final class TabletRootPointerRouter {
         }
         if (root.isFrontWindowOpen()) {
             if (frontWindowLayer != null) {
+                QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
                 frontWindowLayer.mouseClicked(mouseX, mouseY, button);
             }
             return true;
@@ -58,6 +61,9 @@ final class TabletRootPointerRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
+            if (frontWindowLayer != null) {
+                QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
+            }
             if (QuestObjectiveDragDispatcher.handleDrag(root.resolvePlayer(), state, refresher, mouseX, mouseY, button)) {
                 return true;
             }
@@ -74,7 +80,7 @@ final class TabletRootPointerRouter {
             selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
             return true;
         }
-        if (TabletChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, root.getPositionY(), mouseX, mouseY, button)) {
+        if (TabletChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
             return true;
         }
         return selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
@@ -88,6 +94,9 @@ final class TabletRootPointerRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
+            if (frontWindowLayer != null) {
+                QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
+            }
             if (QuestObjectiveDragDispatcher.handleRelease(root.resolvePlayer(), state, refresher)) {
                 return true;
             }
@@ -120,6 +129,7 @@ final class TabletRootPointerRouter {
         }
         if (root.isFrontWindowOpen()) {
             if (frontWindowLayer != null) {
+                QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
                 frontWindowLayer.mouseWheelMove(mouseX, mouseY, wheelDelta);
             }
             return true;
@@ -136,7 +146,7 @@ final class TabletRootPointerRouter {
     }
 
     private static boolean beginChapterScrollDrag(TabletRootWidget root, TabletUiState state, Runnable refresher, double mouseX, double mouseY) {
-        if (!TabletRootHitTest.isInsideChapterPanel(state, root.getPositionX(), root.getPositionY(), mouseX, mouseY)) {
+        if (!TabletRootHitTest.isInsideChapterPanel(state, TabletWidgetCoordinates.rootX(root), TabletWidgetCoordinates.rootY(root), mouseX, mouseY)) {
             return false;
         }
         int localX = localChapterX(root, mouseX);
@@ -166,19 +176,19 @@ final class TabletRootPointerRouter {
     }
 
     private static int localRootX(TabletRootWidget root, double mouseX) {
-        return (int) Math.round(mouseX - root.getPositionX());
+        return TabletWidgetCoordinates.localX(root, 0, mouseX);
     }
 
     private static int localRootY(TabletRootWidget root, double mouseY) {
-        return (int) Math.round(mouseY - root.getPositionY());
+        return TabletWidgetCoordinates.localY(root, 0, mouseY);
     }
 
     private static int localChapterX(TabletRootWidget root, double mouseX) {
-        return (int) Math.round(mouseX - root.getPositionX() - TabletUiFactory.CHAPTER_X);
+        return TabletWidgetCoordinates.localX(root, TabletUiFactory.CHAPTER_X, mouseX);
     }
 
     private static int localChapterY(TabletRootWidget root, double mouseY) {
-        return (int) Math.round(mouseY - root.getPositionY() - TabletUiFactory.CHAPTER_Y);
+        return TabletWidgetCoordinates.localY(root, TabletUiFactory.CHAPTER_Y, mouseY);
     }
 
     @FunctionalInterface

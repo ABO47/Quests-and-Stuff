@@ -49,6 +49,30 @@ public final class QuestSettingsEditService {
         updateQuest(player, quest, next);
     }
 
+    public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
+        if (quest == null) {
+            return;
+        }
+        QuestSettings old = quest.settings();
+        if (old.repeatable() == enabled) {
+            return;
+        }
+
+        EditorSessionService.EditorSession session = service.session(player);
+        service.captureUndo(session);
+        QuestSettings next = new QuestSettings(
+                old.individualProgress(),
+                old.hiddenMode(),
+                enabled,
+                old.autoClaimRewards(),
+                old.unlockNotification(),
+                old.showPrerequisiteArrow()
+        );
+        updateQuest(player, quest, next);
+    }
+
     public void setQuestHiddenMode(ServerPlayer player, String questId, String mode) {
         String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
         QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);

@@ -15,8 +15,15 @@ public final class ClientSyncChunkAccumulator {
         this.expected = Math.max(1, expected);
     }
 
+    public int expected() {
+        return expected;
+    }
+
     public void add(int index, CompoundTag payload) {
-        parts.put(index, payload.copy());
+        if (index < 0 || index >= expected) {
+            return;
+        }
+        parts.put(index, payload == null ? new CompoundTag() : payload.copy());
     }
 
     public boolean complete() {

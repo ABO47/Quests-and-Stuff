@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
@@ -196,7 +197,7 @@ public final class QuestSyncService {
     }
 
     private static boolean hasEditorVisibility(ServerPlayer player) {
-        return player != null && player.hasPermissions(2);
+        return QuestEditorPermissions.canEdit(player);
     }
 
     private void syncDescriptions(ServerPlayer player, Set<String> questIds) {
