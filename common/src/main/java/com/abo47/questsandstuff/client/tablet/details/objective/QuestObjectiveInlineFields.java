@@ -82,7 +82,7 @@ final class QuestObjectiveInlineFields {
         int count = task ? Math.max(0, entry.tag().getInt("count")) : 0;
         int amount = QuestObjectiveDisplayText.amount(entry.json());
         if (task && QuestObjectiveDisplayText.isManualTask(entry.json())) {
-            QuestObjectiveActionWidgets.renderManualDoneButton(parent, player, refresh, entry, x - 16, y, w + 16, count > 0);
+            QuestObjectiveActionWidgets.renderManualDoneButton(parent, player, refresh, questId, entry, x - 16, y, w + 16, count > 0);
             return;
         }
         if (!QuestObjectiveDisplayText.usesAmountField(entry.json(), task)) {

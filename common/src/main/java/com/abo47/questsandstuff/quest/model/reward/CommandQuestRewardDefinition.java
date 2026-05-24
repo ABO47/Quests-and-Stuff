@@ -39,6 +39,11 @@ public record CommandQuestRewardDefinition(
     }
 
     @Override
+    public boolean canClaim(ServerPlayer player) {
+        return QuestsAndStuffConfig.commandRewardsEnabled();
+    }
+
+    @Override
     public void grant(ServerPlayer player) {
         if (command == null || command.isBlank()) {
             return;

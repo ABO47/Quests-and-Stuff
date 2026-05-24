@@ -133,6 +133,10 @@ public final class QuestRuntimeEngine {
         onSignal(QuestSignal.of(QuestSignalType.MANUAL_CHECK, player, taskKey, 1, player.blockPosition()));
     }
 
+    public void submitManualCheckTask(ServerPlayer player, String questId, String taskId) {
+        manualSubmissions.submitCheckTask(player, questId, taskId);
+    }
+
     public void submitManualItemTask(ServerPlayer player, String questId, String taskId) {
         manualSubmissions.submitItemTask(player, questId, taskId);
     }

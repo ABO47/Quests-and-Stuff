@@ -61,8 +61,13 @@ final class QuestRewardClaims {
         }
 
         List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
+        if (!reward.canClaim(player)) {
+            syncChanged(player, changed);
+            return false;
+        }
+
         if (reward.selectable()) {
-            if (!reward.isSelectableClaimValid(selected)) {
+            if (!reward.isSelectableClaimValid(player, selected)) {
                 syncChanged(player, changed);
                 return false;
             }
@@ -96,7 +101,7 @@ final class QuestRewardClaims {
             if (reward == null || reward.selectable()) {
                 continue;
             }
-            if (!reward.canBeMassClaimed()) {
+            if (!reward.canBeMassClaimed() || !reward.canClaim(player)) {
                 continue;
             }
             claimReward(player, questId, rewardId, List.of());
@@ -146,7 +151,7 @@ final class QuestRewardClaims {
         }
         QuestRewardDefinition reward = definition.rewards().get(rewardId);
         List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
-        if (!isSingletonSelectable(reward) || !reward.isSelectableClaimValid(selected)) {
+        if (!isSingletonSelectable(reward) || !reward.canClaim(player) || !reward.isSelectableClaimValid(player, selected)) {
             return false;
         }
         QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);

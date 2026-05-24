@@ -27,6 +27,9 @@ public final class QuestRewardApplier {
             if (questState.claimedRewards().contains(entry.getKey())) {
                 continue;
             }
+            if (!entry.getValue().canClaim(player)) {
+                continue;
+            }
             entry.getValue().grant(player);
             questState.claimedRewards().add(entry.getKey());
             syncService.sendQuestEvent(player, "reward_claimed", definition.id(), entry.getKey());

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.gametest;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.QuestPacketContext;
+import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -240,6 +241,59 @@ public final class QuestRewardAndTeamGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void manualCheckPacketOnlyCompletesVisibleExactTask(GameTestHelper helper) {
+        Bundle bundle = null;
+        try {
+            bundle = createBundle(helper, "manual_check_packet_scope");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestDefinition visible = quest(
+                    "test/manual_check_visible",
+                    QuestSettings.DEFAULT,
+                    Map.of(
+                            "clicked", task("clicked", "check", 1, "shared/manual_key", Map.of()),
+                            "same_key", task("same_key", "check", 1, "shared/manual_key", Map.of())
+                    ),
+                    Map.of(),
+                    Set.of()
+            );
+            QuestDefinition hidden = quest(
+                    "test/manual_check_hidden",
+                    new QuestSettings(false, QuestVisibilityMode.COMPLETED, false, false, false, true),
+                    Map.of("hidden", task("hidden", "check", 1, "hidden/manual_key", Map.of())),
+                    Map.of(),
+                    Set.of()
+            );
+            bundle.store.upsert(visible);
+            bundle.store.upsert(hidden);
+            bundle.engine.rebuildIndex();
+
+            new C2SManualTaskPacket(visible.id(), "clicked").handle(immediateContext(player));
+            var visibleState = bundle.progressData.state(player.getUUID()).quest(visible.id());
+            if (visibleState.getTaskCount("clicked") != 1) {
+                throw new GameTestAssertException("Manual check packet should complete the clicked requirement");
+            }
+            if (visibleState.getTaskCount("same_key") != 0) {
+                throw new GameTestAssertException("Manual check packet should not complete another requirement sharing the same target key");
+            }
+
+            new C2SManualTaskPacket(hidden.id(), "hidden").handle(immediateContext(player));
+            var hiddenState = bundle.progressData.state(player.getUUID()).quest(hidden.id());
+            if (hiddenState.getTaskCount("hidden") != 0 || hiddenState.completed()) {
+                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible requirements");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void nonEditorResetPacketDoesNotClearClaimedRewards(GameTestHelper helper) {
         Bundle bundle = null;
         try {
@@ -301,6 +355,9 @@ public final class QuestRewardAndTeamGameTests {
             bundle.engine.claimReward(player, definition.id(), "command_reward");
             if (countItems(player, "minecraft:apple") != applesBefore) {
                 throw new GameTestAssertException("Disabled command rewards should not execute commands");
+            }
+            if (bundle.progressData.state(player.getUUID()).quest(definition.id()).claimedRewards().contains("command_reward")) {
+                throw new GameTestAssertException("Disabled command rewards should not be marked claimed");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());

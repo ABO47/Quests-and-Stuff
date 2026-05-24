@@ -62,8 +62,22 @@ public record SelectableQuestRewardDefinition(
     }
 
     @Override
-    public void grantSelected(ServerPlayer player, List<String> selectedRewardIds) {
+    public boolean isSelectableClaimValid(ServerPlayer player, List<String> selectedRewardIds) {
         if (!isSelectableClaimValid(selectedRewardIds)) {
+            return false;
+        }
+        for (String selected : selectedRewardIds) {
+            QuestRewardDefinition reward = rewards.get(selected);
+            if (reward == null || !reward.canClaim(player)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void grantSelected(ServerPlayer player, List<String> selectedRewardIds) {
+        if (!isSelectableClaimValid(player, selectedRewardIds)) {
             return;
         }
         for (String selected : selectedRewardIds) {
