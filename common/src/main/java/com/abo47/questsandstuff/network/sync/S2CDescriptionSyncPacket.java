@@ -11,8 +11,7 @@ public record S2CDescriptionSyncPacket(long sequence, int chunkIndex, int chunkC
         long sequence = buf.readLong();
         int chunkIndex = buf.readVarInt();
         int chunkCount = buf.readVarInt();
-        CompoundTag tag = buf.readNbt();
-        return new S2CDescriptionSyncPacket(sequence, chunkIndex, chunkCount, tag == null ? new CompoundTag() : tag);
+        return new S2CDescriptionSyncPacket(sequence, chunkIndex, chunkCount, SyncPacketPayloadLimits.readNbt(buf));
     }
 
     public void encode(FriendlyByteBuf buf) {

@@ -9,8 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 public record S2CDisplayCacheSyncPacket(long sequence, CompoundTag payload) {
     public static S2CDisplayCacheSyncPacket decode(FriendlyByteBuf buf) {
         long sequence = buf.readLong();
-        CompoundTag tag = buf.readNbt();
-        return new S2CDisplayCacheSyncPacket(sequence, tag == null ? new CompoundTag() : tag);
+        return new S2CDisplayCacheSyncPacket(sequence, SyncPacketPayloadLimits.readNbt(buf));
     }
 
     public void encode(FriendlyByteBuf buf) {

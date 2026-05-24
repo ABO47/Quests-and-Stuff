@@ -62,6 +62,9 @@ final class QuestRewardClaims {
 
         List<String> selected = selectedRewardIds == null ? List.of() : selectedRewardIds;
         if (!reward.canClaim(player)) {
+            if (QuestRewardApplier.maybeResetRepeatable(player, definition, questState, player.server.getTickCount())) {
+                changed.add(questId);
+            }
             syncChanged(player, changed);
             return false;
         }
@@ -78,7 +81,7 @@ final class QuestRewardClaims {
 
         questState.claimedRewards().add(rewardId);
         syncService.sendQuestEvent(player, "reward_claimed", questId, rewardId);
-        QuestRewardApplier.maybeResetRepeatable(definition, questState, player.server.getTickCount());
+        QuestRewardApplier.maybeResetRepeatable(player, definition, questState, player.server.getTickCount());
         changed.add(questId);
         syncChanged(player, changed);
         return true;
@@ -105,6 +108,10 @@ final class QuestRewardClaims {
                 continue;
             }
             claimReward(player, questId, rewardId, List.of());
+        }
+        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        if (QuestRewardApplier.maybeResetRepeatable(player, definition, questState, player.server.getTickCount())) {
+            syncChanged(player, Set.of(questId));
         }
     }
 
@@ -140,7 +147,7 @@ final class QuestRewardClaims {
         if (!changed) {
             return;
         }
-        QuestRewardApplier.maybeResetRepeatable(definition, questState, player.server.getTickCount());
+        QuestRewardApplier.maybeResetRepeatable(player, definition, questState, player.server.getTickCount());
         syncChanged(player, Set.of(questId));
     }
 

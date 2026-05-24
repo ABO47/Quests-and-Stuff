@@ -34,29 +34,38 @@ public final class QuestRewardApplier {
             questState.claimedRewards().add(entry.getKey());
             syncService.sendQuestEvent(player, "reward_claimed", definition.id(), entry.getKey());
         }
-        maybeResetRepeatable(definition, questState, serverTick);
+        maybeResetRepeatable(player, definition, questState, serverTick);
     }
 
-    public static void maybeResetRepeatable(QuestDefinition definition, QuestProgressState questState, long serverTick) {
+    public static boolean maybeResetRepeatable(ServerPlayer player, QuestDefinition definition, QuestProgressState questState, long serverTick) {
         if (!definition.settings().repeatable()) {
-            return;
+            return false;
         }
         if (!questState.completed()) {
-            return;
+            return false;
         }
-        if (!allRewardsClaimed(definition, questState)) {
-            return;
+        if (!allClaimableRewardsClaimed(player, definition, questState)) {
+            return false;
         }
         questState.clearTaskProgress();
         questState.claimedRewards().clear();
         questState.setCompleted(false, serverTick);
         questState.setUnlocked(true);
+        return true;
     }
 
-    private static boolean allRewardsClaimed(QuestDefinition definition, QuestProgressState questState) {
+    private static boolean allClaimableRewardsClaimed(ServerPlayer player, QuestDefinition definition, QuestProgressState questState) {
         if (definition.rewards().isEmpty()) {
             return true;
         }
-        return questState.claimedRewards().containsAll(definition.rewards().keySet());
+        for (Map.Entry<String, QuestRewardDefinition> entry : definition.rewards().entrySet()) {
+            if (!entry.getValue().canClaim(player)) {
+                continue;
+            }
+            if (!questState.claimedRewards().contains(entry.getKey())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

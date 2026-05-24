@@ -11,8 +11,7 @@ public record S2CFullSyncPacket(long sequence, int chunkIndex, int chunkCount, C
         long sequence = buf.readLong();
         int chunkIndex = buf.readVarInt();
         int chunkCount = buf.readVarInt();
-        CompoundTag tag = buf.readNbt();
-        return new S2CFullSyncPacket(sequence, chunkIndex, chunkCount, tag == null ? new CompoundTag() : tag);
+        return new S2CFullSyncPacket(sequence, chunkIndex, chunkCount, SyncPacketPayloadLimits.readNbt(buf));
     }
 
     public void encode(FriendlyByteBuf buf) {

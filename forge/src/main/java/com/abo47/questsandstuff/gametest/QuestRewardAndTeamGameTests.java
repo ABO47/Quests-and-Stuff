@@ -372,6 +372,59 @@ public final class QuestRewardAndTeamGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
+    public static void repeatableQuestIgnoresDisabledCommandRewardForReset(GameTestHelper helper) {
+        Bundle bundle = null;
+        boolean previousCommandRewards = QuestsAndStuffConfig.commandRewardsEnabled();
+        try {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(false);
+            bundle = createBundle(helper, "repeatable_disabled_command");
+            ServerPlayer player = createDetachedServerPlayer(helper);
+
+            QuestSettings settings = new QuestSettings(
+                    false,
+                    QuestVisibilityMode.LOCKED,
+                    true,
+                    false,
+                    false,
+                    true
+            );
+            QuestDefinition definition = quest(
+                    "test/repeatable_disabled_command",
+                    settings,
+                    Map.of("check", task("check", "check", 1, "repeatable/disabled_command", Map.of())),
+                    Map.of("command_reward", reward("command_reward", "command", 1, "", false, Map.of("command", "give @s minecraft:apple 1"))),
+                    Set.of()
+            );
+            bundle.store.upsert(definition);
+            bundle.engine.rebuildIndex();
+
+            bundle.engine.completeQuest(player, definition.id());
+            var completedState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (!completedState.completed()) {
+                throw new GameTestAssertException("Test setup should complete repeatable quest");
+            }
+
+            bundle.engine.claimReward(player, definition.id(), "command_reward");
+            var resetState = bundle.progressData.state(player.getUUID()).quest(definition.id());
+            if (resetState.completed()) {
+                throw new GameTestAssertException("Disabled command reward should not block repeatable reset");
+            }
+            if (resetState.claimedRewards().contains("command_reward")) {
+                throw new GameTestAssertException("Disabled command reward should not be marked claimed during repeatable reset");
+            }
+        } catch (IOException e) {
+            throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
+        } finally {
+            QuestsAndStuffConfig.setCommandRewardsEnabled(previousCommandRewards);
+            if (bundle != null) {
+                bundle.close();
+            }
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
     public static void repeatableAutoClaimResetsQuestState(GameTestHelper helper) {
         Bundle bundle = null;
         try {

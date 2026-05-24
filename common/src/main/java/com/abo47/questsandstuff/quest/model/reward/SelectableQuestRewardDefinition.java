@@ -40,6 +40,17 @@ public record SelectableQuestRewardDefinition(
     }
 
     @Override
+    public boolean canClaim(ServerPlayer player) {
+        int available = 0;
+        for (QuestRewardDefinition reward : rewards.values()) {
+            if (reward.canBeMassClaimed() && reward.canClaim(player)) {
+                available++;
+            }
+        }
+        return available >= safeAmount();
+    }
+
+    @Override
     public void grant(ServerPlayer player) {
     }
 

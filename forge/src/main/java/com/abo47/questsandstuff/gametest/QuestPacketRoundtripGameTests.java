@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.network.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -96,6 +97,29 @@ public final class QuestPacketRoundtripGameTests {
         S2CQuestEventPacket event = roundtrip(new S2CQuestEventPacket(17L, "quest_unlocked", "quest/a", "reward/x"));
         if (event.sequence() != 17L || !"quest_unlocked".equals(event.eventType()) || !"quest/a".equals(event.questId()) || !"reward/x".equals(event.rewardId())) {
             throw new GameTestAssertException("Quest event packet roundtrip mismatch");
+        }
+        helper.succeed();
+    }
+
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void syncPacketDecodeRejectsOversizedPayload(GameTestHelper helper) {
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeLong(19L);
+        oversized.writeVarInt(0);
+        oversized.writeVarInt(1);
+        CompoundTag payload = new CompoundTag();
+        payload.putString("blob", "x".repeat((int) SyncPacketPayloadLimits.MAX_SYNC_NBT_BYTES + 1));
+        oversized.writeNbt(payload);
+
+        boolean rejected = false;
+        try {
+            S2CFullSyncPacket.decode(oversized);
+        } catch (RuntimeException expected) {
+            rejected = true;
+        }
+        if (!rejected) {
+            throw new GameTestAssertException("Oversized sync payload should fail during decode");
         }
         helper.succeed();
     }
