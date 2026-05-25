@@ -61,6 +61,7 @@ public final class TabletScreenComposer {
         WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, ROOT_W, 0);
         rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         int initialChapterW = chapterPanelWidth(state);
+        boolean initialChapterCollapsed = isChapterPanelCollapsed(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
         WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
@@ -85,7 +86,7 @@ public final class TabletScreenComposer {
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), CHAPTER_H - chapterListY - contentInset - 1);
-        chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        chapterList.setBackground(initialChapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
@@ -132,7 +133,7 @@ public final class TabletScreenComposer {
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - 8) : Math.max(24, chapterW - chapterSideInset * 2);
 
             chapterPanelRef[0].setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
-            chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+            chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);
 

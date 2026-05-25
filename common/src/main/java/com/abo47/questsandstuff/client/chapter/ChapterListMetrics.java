@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class ChapterListMetrics {
+    private static final int COLLAPSED_TILE_W = 28;
+
     private ChapterListMetrics() {
     }
 
@@ -88,11 +90,16 @@ final class ChapterListMetrics {
             int cardW;
             if (showScrollBar) {
                 trackX = listW - TabletUiFactory.CHAPTER_SCROLL_W - 2;
-                cardX = 4;
-                cardW = Math.max(collapsed ? 16 : 96, trackX - cardX - 3);
+                if (collapsed) {
+                    cardW = Math.min(COLLAPSED_TILE_W, Math.max(16, trackX - 6));
+                    cardX = Math.max(1, (trackX - cardW) / 2);
+                } else {
+                    cardX = 4;
+                    cardW = Math.max(96, trackX - cardX - 3);
+                }
             } else {
                 trackX = listW + 1;
-                cardW = Math.max(collapsed ? 16 : 96, listW - 8);
+                cardW = collapsed ? Math.min(COLLAPSED_TILE_W, Math.max(16, listW - 4)) : Math.max(96, listW - 8);
                 cardW = Math.min(cardW, Math.max(1, listW - 2));
                 cardX = Math.max(1, (listW - cardW) / 2);
             }
