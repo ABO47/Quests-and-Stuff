@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.canvas;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
@@ -83,12 +84,10 @@ final class CanvasViewportInputController {
 
         if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
             elementTransforms.updateImageTransform(localX, localY, cards);
-            viewport.refreshCanvas();
             return true;
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             elementTransforms.updateTextTransform(localX, localY, cards);
-            viewport.refreshCanvas();
             return true;
         }
 
@@ -170,7 +169,9 @@ final class CanvasViewportInputController {
         }
 
         if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
-            CanvasRenderer.persistCanvasImage(state, TabletUiFactory.selectedGroupName(state), state.selectedCanvasImageId);
+            String group = TabletUiFactory.selectedGroupName(state);
+            CanvasRenderer.commitTransientCanvasImage(state, group, state.selectedCanvasImageId);
+            CanvasRenderer.persistCanvasImage(state, group, state.selectedCanvasImageId);
             state.draggingCanvasImage = false;
             state.resizingCanvasImage = false;
             state.rotatingCanvasImage = false;
@@ -181,7 +182,9 @@ final class CanvasViewportInputController {
             return true;
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
-            CanvasRenderer.persistCanvasText(state, TabletUiFactory.selectedGroupName(state), state.selectedCanvasTextId);
+            String group = TabletUiFactory.selectedGroupName(state);
+            CanvasRenderer.commitTransientCanvasText(state, group, state.selectedCanvasTextId);
+            CanvasRenderer.persistCanvasText(state, group, state.selectedCanvasTextId);
             state.draggingCanvasText = false;
             state.resizingCanvasText = false;
             state.rotatingCanvasText = false;
@@ -194,6 +197,8 @@ final class CanvasViewportInputController {
         if (state.draggingSelection) {
             state.draggingSelection = false;
             viewport.endSelectionDragPreview();
+            int movedImages = state.transientCanvasImages.size();
+            int movedTexts = state.transientCanvasTexts.size();
             if (state.transientQuestPositions.isEmpty() && (state.dragSelectionDeltaX != 0 || state.dragSelectionDeltaY != 0)) {
                 selectionTransforms.populateDragPositions();
             }
@@ -201,12 +206,21 @@ final class CanvasViewportInputController {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
             String group = TabletUiFactory.selectedGroupName(state);
+            CanvasRenderer.commitSelectedTransientCanvasLayers(state, group);
             for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
                 CanvasRenderer.persistCanvasImage(state, group, imageId);
             }
             for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
                 CanvasRenderer.persistCanvasText(state, group, textId);
             }
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] canvas selection drag commit quests={} images={} texts={} delta={},{}",
+                    state.transientQuestPositions.size(),
+                    movedImages,
+                    movedTexts,
+                    state.dragSelectionDeltaX,
+                    state.dragSelectionDeltaY
+            );
             selectionTransforms.clear();
             refresher.run();
             return true;
@@ -220,6 +234,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestScales.isEmpty()) {
                 EditorCommandClient.runCanvasScaleAction(player, state, state.transientQuestScales);
             }
+            CanvasRenderer.commitSelectedTransientCanvasLayers(state, TabletUiFactory.selectedGroupName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -231,6 +246,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
+            CanvasRenderer.commitSelectedTransientCanvasLayers(state, TabletUiFactory.selectedGroupName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();

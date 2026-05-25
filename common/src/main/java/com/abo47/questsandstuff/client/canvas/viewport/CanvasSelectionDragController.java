@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -36,6 +37,7 @@ final class CanvasSelectionDragController {
         state.dragStartPositions.clear();
         state.dragStartImagePositions.clear();
         state.dragStartTextPositions.clear();
+        CanvasRenderer.clearTransientCanvasTransforms(state);
         for (String questId : state.selectedQuestIds) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card != null) {
@@ -62,6 +64,14 @@ final class CanvasSelectionDragController {
         state.dragStartSelectionTop = state.selectionBoundsTop;
         state.dragStartSelectionRight = state.selectionBoundsRight;
         state.dragStartSelectionBottom = state.selectionBoundsBottom;
+        QuestsAndStuffMod.debugLog(
+                "[QnS:UI] canvas selection drag start quests={} images={} texts={} bounds={}x{}",
+                state.dragStartPositions.size(),
+                state.dragStartImagePositions.size(),
+                state.dragStartTextPositions.size(),
+                Math.max(0, state.dragStartBoundsRight - state.dragStartBoundsLeft),
+                Math.max(0, state.dragStartBoundsBottom - state.dragStartBoundsTop)
+        );
     }
 
     void updateDrag(int localX, int localY, List<QuestCardLayout> cards, boolean deferQuestPositions) {
@@ -100,13 +110,13 @@ final class CanvasSelectionDragController {
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
-                CanvasRenderer.putCanvasImage(state, group, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy), false);
+                CanvasRenderer.putTransientCanvasImage(state, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartTextPositions.entrySet()) {
             CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, entry.getKey());
             if (text != null) {
-                CanvasRenderer.putCanvasText(state, group, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy), false);
+                CanvasRenderer.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
     }

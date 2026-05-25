@@ -155,18 +155,19 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     boolean selectionDragPreviewSupported() {
-        return state.selectedCanvasImageId.isBlank()
-                && state.selectedCanvasTextId.isBlank()
-                && state.selectedCanvasImageIds.isEmpty()
-                && state.selectedCanvasTextIds.isEmpty();
+        return !state.selectedQuestIds.isEmpty()
+                || !state.selectedCanvasImageId.isBlank()
+                || !state.selectedCanvasTextId.isBlank()
+                || !state.selectedCanvasImageIds.isEmpty()
+                || !state.selectedCanvasTextIds.isEmpty();
     }
 
     boolean previewSelectionDrag() {
-        if (!selectionDragPreviewSupported() || state.selectedQuestIds.isEmpty()) {
+        if (!selectionDragPreviewSupported()) {
             return false;
         }
         ensureSelectionLayerBases();
-        if (selectionQuestLayerBases.isEmpty()) {
+        if (!state.selectedQuestIds.isEmpty() && selectionQuestLayerBases.isEmpty()) {
             return false;
         }
         int dx = selectionDragScreenX();

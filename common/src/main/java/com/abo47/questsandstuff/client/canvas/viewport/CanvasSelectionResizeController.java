@@ -37,6 +37,7 @@ final class CanvasSelectionResizeController {
         state.resizeStartPositions.clear();
         state.resizeStartImageLayers.clear();
         state.resizeStartTextLayers.clear();
+        CanvasRenderer.clearTransientCanvasTransforms(state);
         state.transientQuestPositions.clear();
         state.transientQuestScales.clear();
         for (String questId : state.selectedQuestIds) {
@@ -113,10 +114,10 @@ final class CanvasSelectionResizeController {
         }
         String group = TabletUiFactory.selectedGroupName(state);
         for (CanvasImageLayer image : resize.images().values()) {
-            CanvasRenderer.putCanvasImage(state, group, image, false);
+            CanvasRenderer.putTransientCanvasImage(state, image);
         }
         for (CanvasTextLayer text : resize.texts().values()) {
-            CanvasRenderer.putCanvasText(state, group, text, false);
+            CanvasRenderer.putTransientCanvasText(state, text);
         }
     }
 

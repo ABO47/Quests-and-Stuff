@@ -11,23 +11,26 @@ import net.minecraft.world.item.ItemStack;
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;
     private final ItemStack stack;
+    private final ItemStackTexture stackTexture;
 
     public DisplayIconWidget(int x, int y, int width, int height, String iconId) {
         super(x, y, width, height);
         this.iconId = iconId == null ? "" : iconId;
         this.stack = ItemStack.EMPTY;
+        this.stackTexture = null;
     }
 
     public DisplayIconWidget(int x, int y, int width, int height, ItemStack stack) {
         super(x, y, width, height);
         this.iconId = "";
         this.stack = stack == null ? ItemStack.EMPTY : stack.copy();
+        this.stackTexture = this.stack.isEmpty() ? null : new ItemStackTexture(this.stack);
     }
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (!stack.isEmpty()) {
-            new ItemStackTexture(stack).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            stackTexture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             return;
         }
         ResourceTexture uiIcon = UiIconAtlas.iconTexture(iconId);

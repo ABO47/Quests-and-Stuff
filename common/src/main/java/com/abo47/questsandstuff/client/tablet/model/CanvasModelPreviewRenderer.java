@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.model;
 
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.mojang.blaze3d.platform.Lighting;
@@ -24,7 +25,9 @@ import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CanvasModelPreviewRenderer {
     public static final String ITEM_ASSET_PREFIX = "item:";
@@ -35,6 +38,9 @@ public final class CanvasModelPreviewRenderer {
     public static final int DEFAULT_BLOCK_PITCH = 30;
     private static final float ICON_BLOCK_FILL = 0.72F;
     private static final float CANVAS_BLOCK_FILL = 0.94F;
+    private static final Map<String, ItemStack[]> ITEM_STACK_CACHE = new HashMap<>();
+    private static final Map<String, ItemStackTexture> ITEM_TEXTURE_CACHE = new HashMap<>();
+    private static final Map<String, List<Block>> BLOCK_TAG_CACHE = new HashMap<>();
 
     private CanvasModelPreviewRenderer() {
     }
@@ -177,11 +183,11 @@ public final class CanvasModelPreviewRenderer {
         if (isBlockModelAsset(asset)) {
             return renderBlockAsset(graphics, x, y, width, height, asset, yawDegrees, pitchDegrees);
         }
-        ItemStack[] stacks = stacksForAsset(asset);
-        if (stacks.length == 0) {
+        ItemStackTexture texture = textureForAsset(asset);
+        if (texture == null) {
             return false;
         }
-        new ItemStackTexture(stacks).draw(graphics, 0, 0, x, y, width, height);
+        texture.draw(graphics, 0, 0, x, y, width, height);
         return true;
     }
 
@@ -216,6 +222,23 @@ public final class CanvasModelPreviewRenderer {
     }
 
     private static ItemStack[] stacksForAsset(String asset) {
+        String key = asset == null ? "" : asset.trim();
+        if (key.isBlank()) {
+            return new ItemStack[0];
+        }
+        return ITEM_STACK_CACHE.computeIfAbsent(key, CanvasModelPreviewRenderer::createStacksForAsset);
+    }
+
+    private static ItemStackTexture textureForAsset(String asset) {
+        ItemStack[] stacks = stacksForAsset(asset);
+        if (stacks.length == 0) {
+            return null;
+        }
+        String key = asset == null ? "" : asset.trim();
+        return ITEM_TEXTURE_CACHE.computeIfAbsent(key, ignored -> new ItemStackTexture(stacks));
+    }
+
+    private static ItemStack[] createStacksForAsset(String asset) {
         if (isItemAsset(asset)) {
             ItemStack stack = itemStack(itemId(asset));
             return stack.isEmpty() ? new ItemStack[0] : new ItemStack[]{stack};
@@ -241,6 +264,10 @@ public final class CanvasModelPreviewRenderer {
 
     private static void renderBlockPreview(GuiGraphics graphics, int centerX, int centerY, int size, BlockState state, int yawDegrees, int pitchDegrees, float fill) {
         float scale = Math.max(1.0F, size * fill);
+        TabletUiPerfProfiler.profile("ui.renderBlockPreview", () -> renderBlockPreviewInternal(graphics, centerX, centerY, state, yawDegrees, pitchDegrees, scale));
+    }
+
+    private static void renderBlockPreviewInternal(GuiGraphics graphics, int centerX, int centerY, BlockState state, int yawDegrees, int pitchDegrees, float scale) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
@@ -291,13 +318,18 @@ public final class CanvasModelPreviewRenderer {
             return null;
         }
         TagKey<Block> key = TagKey.create(BuiltInRegistries.BLOCK.key(), id);
+        List<Block> blocks = BLOCK_TAG_CACHE.computeIfAbsent(id.toString(), ignored -> blocksForTag(key));
+        return blocks.isEmpty() ? null : blocks.get(cyclingIndex(blocks.size()));
+    }
+
+    private static List<Block> blocksForTag(TagKey<Block> key) {
         List<Block> blocks = new ArrayList<>();
         for (Block block : BuiltInRegistries.BLOCK) {
             if (isRenderableBlock(block) && block.builtInRegistryHolder().is(key)) {
                 blocks.add(block);
             }
         }
-        return blocks.isEmpty() ? null : blocks.get(cyclingIndex(blocks.size()));
+        return List.copyOf(blocks);
     }
 
     private static ItemStack[] itemTagStacks(String tagId) {
