@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -162,10 +163,9 @@ final class CanvasSceneRenderer {
             return;
         }
         CompoundTag tag = card.tag();
-        int baseTint = tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
-        canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(baseTint)));
         float progress = questProgress(tag);
-        if (tag.getBoolean("unlocked") && progress > 0.0f) {
+        boolean customBackground = renderQuestBackground(canvasViewport, card, tag, progress);
+        if (!customBackground && tag.getBoolean("unlocked") && progress > 0.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
             renderQuestProgressFill(canvasViewport, card, progress);
         }
         renderQuestIcon(canvasViewport, card);
@@ -177,6 +177,54 @@ final class CanvasSceneRenderer {
             return;
         }
         addQuestTooltipHit(canvasViewport, card);
+    }
+
+    private static boolean renderQuestBackground(WidgetGroup canvasViewport, QuestCardLayout card, CompoundTag tag, float progress) {
+        String background = tag.getString("quest_background");
+        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
+            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
+            return false;
+        }
+        IGuiTexture texture = chapterBackgroundTexture(background, tag.getBoolean("quest_background_grayscale"));
+        if (texture == null) {
+            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
+            return false;
+        }
+        canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), texture));
+        int filter = questBackgroundFilter(tag);
+        if ((filter >>> 24) != 0) {
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), filter);
+        } else if (tag.getBoolean("unlocked") && progress > 0.0f && progress < 1.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
+            int fillW = Math.max(1, Math.min(card.width(), Math.round(card.width() * progress)));
+            addSolidRect(canvasViewport, card.x(), card.y(), fillW, card.height(), withAlpha(ModColors.SUCCESS, 54));
+        }
+        return true;
+    }
+
+    private static int defaultQuestBackgroundTint(CompoundTag tag) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return withAlpha(ModColors.TEXT_SECONDARY, 255);
+        }
+        if (tag.getBoolean("claimed")) {
+            return withAlpha(ModColors.WARNING, 255);
+        }
+        if (tag.getBoolean("completed")) {
+            return withAlpha(ModColors.SUCCESS, 255);
+        }
+        return tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
+    }
+
+    private static int questBackgroundFilter(CompoundTag tag) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return withAlpha(ModColors.SURFACE_BASE, 138);
+        }
+        if (tag.getBoolean("claimed")) {
+            return withAlpha(ModColors.WARNING, 94);
+        }
+        if (tag.getBoolean("completed")) {
+            return withAlpha(ModColors.SUCCESS, 82);
+        }
+        return 0x00000000;
     }
 
     private static void renderQuestRenameField(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {

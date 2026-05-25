@@ -368,6 +368,10 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setQuestCompletionSoundVolumeLocal(questId, volume);
     }
 
+    public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
+        ClientQuestLocalMutations.setQuestBackgroundLocal(questId, background, grayscale);
+    }
+
     public static void resetQuestProgressLocal(String questId) {
         ClientQuestLocalMutations.resetQuestProgressLocal(questId);
     }

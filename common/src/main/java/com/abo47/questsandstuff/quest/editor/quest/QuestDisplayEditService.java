@@ -37,7 +37,9 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
-                source.display().visualHidden()
+                source.display().visualHidden(),
+                source.display().questBackground(),
+                source.display().questBackgroundGrayscale()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
     }
@@ -64,7 +66,9 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
-                source.display().visualHidden()
+                source.display().visualHidden(),
+                source.display().questBackground(),
+                source.display().questBackgroundGrayscale()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
     }
@@ -88,7 +92,9 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
-                source.display().visualHidden()
+                source.display().visualHidden(),
+                source.display().questBackground(),
+                source.display().questBackgroundGrayscale()
         );
         QuestsAndStuffMod.debugLog("[QnS:Editor] quest icon quest={} icon={}", normalizedQuestId, normalizedIcon);
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
@@ -113,7 +119,9 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 old.completionSound(),
                 old.completionSoundVolume(),
-                hidden
+                hidden,
+                old.questBackground(),
+                old.questBackgroundGrayscale()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }
@@ -141,7 +149,9 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 normalizedSound,
                 old.completionSoundVolume(),
-                old.visualHidden()
+                old.visualHidden(),
+                old.questBackground(),
+                old.questBackgroundGrayscale()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }
@@ -169,7 +179,39 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 old.completionSound(),
                 normalizedVolume,
-                old.visualHidden()
+                old.visualHidden(),
+                old.questBackground(),
+                old.questBackgroundGrayscale()
+        );
+        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+    }
+
+    public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
+        if (quest == null) {
+            return;
+        }
+        String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
+        if (quest.display().questBackground().equals(normalizedBackground) && quest.display().questBackgroundGrayscale() == grayscale) {
+            return;
+        }
+
+        EditorSessionService.EditorSession session = service.session(player);
+        service.captureUndo(session);
+        QuestDisplay old = quest.display();
+        QuestDisplay display = new QuestDisplay(
+                old.title(),
+                old.subtitle(),
+                old.description(),
+                old.groups(),
+                old.icon(),
+                old.iconBackground(),
+                old.completionSound(),
+                old.completionSoundVolume(),
+                old.visualHidden(),
+                normalizedBackground,
+                grayscale
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }

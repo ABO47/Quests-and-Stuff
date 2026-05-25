@@ -29,11 +29,16 @@ final class AssetTextureCache {
     }
 
     static IGuiTexture chapterBackgroundTexture(Path assetsRoot, String background) {
+        return chapterBackgroundTexture(assetsRoot, background, false);
+    }
+
+    static IGuiTexture chapterBackgroundTexture(Path assetsRoot, String background, boolean grayscale) {
         if (background == null || background.isBlank() || "default".equals(background)) {
             return null;
         }
         AssetPathResolver.ensureAssetsDirs(assetsRoot);
-        IGuiTexture cached = TEXTURE_CACHE.get(background);
+        String cacheKey = textureCacheKey(background, grayscale);
+        IGuiTexture cached = TEXTURE_CACHE.get(cacheKey);
         if (cached != null) {
             return cached;
         }
@@ -42,9 +47,9 @@ final class AssetTextureCache {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
-        IGuiTexture out = "gif".equals(ext) ? loadGifTexture(path, background) : loadStaticTexture(path, background);
+        IGuiTexture out = "gif".equals(ext) ? loadGifTexture(path, cacheKey, grayscale) : loadStaticTexture(path, cacheKey, grayscale);
         if (out != null) {
-            TEXTURE_CACHE.put(background, out);
+            TEXTURE_CACHE.put(cacheKey, out);
         }
         return out;
     }
@@ -88,7 +93,7 @@ final class AssetTextureCache {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
-        IGuiTexture out = "gif".equals(ext) ? loadGifFallbackStatic(path, relativePath + "_thumb") : loadStaticTexture(path, relativePath + "_thumb");
+        IGuiTexture out = "gif".equals(ext) ? loadGifFallbackStatic(path, relativePath + "_thumb", false) : loadStaticTexture(path, relativePath + "_thumb", false);
         if (out != null) {
             THUMBNAIL_CACHE.put(relativePath, out);
         }
@@ -97,6 +102,7 @@ final class AssetTextureCache {
 
     static void clearTextureCache(String key) {
         TEXTURE_CACHE.remove(key);
+        TEXTURE_CACHE.remove(textureCacheKey(key, true));
         THUMBNAIL_CACHE.remove(key);
     }
 
@@ -116,11 +122,14 @@ final class AssetTextureCache {
         return null;
     }
 
-    private static IGuiTexture loadStaticTexture(Path path, String key) {
+    private static IGuiTexture loadStaticTexture(Path path, String key, boolean grayscale) {
         try (var stream = Files.newInputStream(path)) {
             NativeImage image = NativeImage.read(stream);
             if (image == null) {
                 return null;
+            }
+            if (grayscale) {
+                applyGrayscale(image);
             }
             ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key));
             Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
@@ -131,7 +140,7 @@ final class AssetTextureCache {
         }
     }
 
-    private static IGuiTexture loadGifTexture(Path path, String key) {
+    private static IGuiTexture loadGifTexture(Path path, String key, boolean grayscale) {
         try (ImageInputStream input = ImageIO.createImageInputStream(path.toFile())) {
             Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
             if (!readers.hasNext()) {
@@ -146,7 +155,7 @@ final class AssetTextureCache {
             List<ResourceTexture> frames = new ArrayList<>();
             List<Integer> delaysMs = new ArrayList<>();
             for (int i = 0; i < count; i++) {
-                addGifFrame(reader, key, i, frames, delaysMs);
+                addGifFrame(reader, key, i, frames, delaysMs, grayscale);
             }
             if (frames.isEmpty()) {
                 return null;
@@ -154,11 +163,11 @@ final class AssetTextureCache {
             return new DynamicTexture(() -> frameAtCurrentTime(frames, delaysMs));
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed loading gif {}", key, e);
-            return loadGifFallbackStatic(path, key);
+            return loadGifFallbackStatic(path, key, grayscale);
         }
     }
 
-    private static void addGifFrame(ImageReader reader, String key, int index, List<ResourceTexture> frames, List<Integer> delaysMs) throws java.io.IOException {
+    private static void addGifFrame(ImageReader reader, String key, int index, List<ResourceTexture> frames, List<Integer> delaysMs, boolean grayscale) throws java.io.IOException {
         BufferedImage frame = reader.read(index);
         if (frame == null) {
             return;
@@ -169,6 +178,9 @@ final class AssetTextureCache {
             NativeImage image = NativeImage.read(frameIn);
             if (image == null) {
                 return;
+            }
+            if (grayscale) {
+                applyGrayscale(image);
             }
             ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key + "_f" + index));
             Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
@@ -196,7 +208,26 @@ final class AssetTextureCache {
         return frames.get(frames.size() - 1);
     }
 
-    private static IGuiTexture loadGifFallbackStatic(Path path, String key) {
+    private static String textureCacheKey(String background, boolean grayscale) {
+        return grayscale ? background + "#grayscale" : background;
+    }
+
+    private static void applyGrayscale(NativeImage image) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int color = image.getPixelRGBA(x, y);
+                int red = color & 0xFF;
+                int green = (color >>> 8) & 0xFF;
+                int blue = (color >>> 16) & 0xFF;
+                int alpha = (color >>> 24) & 0xFF;
+                int gray = Math.round(red * 0.299f + green * 0.587f + blue * 0.114f);
+                int grayscale = (alpha << 24) | (gray << 16) | (gray << 8) | gray;
+                image.setPixelRGBA(x, y, grayscale);
+            }
+        }
+    }
+
+    private static IGuiTexture loadGifFallbackStatic(Path path, String key, boolean grayscale) {
         try {
             BufferedImage image = ImageIO.read(path.toFile());
             if (image == null) {
@@ -208,6 +239,9 @@ final class AssetTextureCache {
                 NativeImage nativeImage = NativeImage.read(frameIn);
                 if (nativeImage == null) {
                     return null;
+                }
+                if (grayscale) {
+                    applyGrayscale(nativeImage);
                 }
                 ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key + "_fallback"));
                 Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(nativeImage));

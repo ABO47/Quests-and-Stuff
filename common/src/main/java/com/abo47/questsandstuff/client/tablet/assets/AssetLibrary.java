@@ -19,6 +19,10 @@ public final class AssetLibrary {
         return AssetTextureCache.chapterBackgroundTexture(assetsRoot, background);
     }
 
+    public static IGuiTexture chapterBackgroundTexture(Path assetsRoot, String background, boolean grayscale) {
+        return AssetTextureCache.chapterBackgroundTexture(assetsRoot, background, grayscale);
+    }
+
     public static List<AssetEntry> listAssetEntries(Path assetsRoot, String relativeDir) {
         return AssetSearchIndex.listAssetEntries(assetsRoot, relativeDir);
     }

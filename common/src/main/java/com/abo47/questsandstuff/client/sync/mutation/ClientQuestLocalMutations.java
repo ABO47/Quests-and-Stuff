@@ -228,6 +228,18 @@ public final class ClientQuestLocalMutations {
         quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
     }
 
+    public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putString("quest_background", QuestDisplay.normalizeQuestBackground(background));
+        quest.putBoolean("quest_background_grayscale", grayscale);
+    }
+
     public static void resetQuestProgressLocal(String questId) {
         String normalized = questId == null ? "" : questId.trim();
         if (normalized.isBlank()) {
@@ -322,6 +334,8 @@ public final class ClientQuestLocalMutations {
         quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
         quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
         quest.putBoolean("visual_hidden", false);
+        quest.putString("quest_background", QuestDisplay.DEFAULT_QUEST_BACKGROUND);
+        quest.putBoolean("quest_background_grayscale", false);
         quest.putBoolean("completed", false);
         quest.putBoolean("unlocked", true);
         quest.putBoolean("claimed", false);

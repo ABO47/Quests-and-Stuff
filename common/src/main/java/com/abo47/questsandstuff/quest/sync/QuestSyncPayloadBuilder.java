@@ -95,6 +95,8 @@ final class QuestSyncPayloadBuilder {
         questTag.putString("completion_sound", definition.display().completionSound());
         questTag.putInt("completion_sound_volume", definition.display().completionSoundVolume());
         questTag.putBoolean("visual_hidden", definition.display().visualHidden());
+        questTag.putString("quest_background", definition.display().questBackground());
+        questTag.putBoolean("quest_background_grayscale", definition.display().questBackgroundGrayscale());
         if (progress != null) {
             questTag.putBoolean("completed", progress.completed());
             questTag.putBoolean("unlocked", progress.unlocked());

@@ -188,6 +188,10 @@ public final class TabletUiFactory {
         return TabletAssets.chapterBackgroundTexture(background);
     }
 
+    public static IGuiTexture chapterBackgroundTexture(String background, boolean grayscale) {
+        return TabletAssets.chapterBackgroundTexture(background, grayscale);
+    }
+
     public static ItemStackTexture iconTexture(String iconId) {
         return TabletAssets.iconTexture(iconId);
     }

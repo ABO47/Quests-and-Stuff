@@ -130,6 +130,10 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestCompletionSoundVolume(player, payload.getString("quest"), payload.getInt("volume"));
                     return;
                 }
+                if (command.type() == EditorCommandType.QUEST_BACKGROUND) {
+                    editor.setQuestBackground(player, payload.getString("quest"), payload.getString("background"), payload.getBoolean("grayscale"));
+                    return;
+                }
                 if (command.type() == EditorCommandType.DESCRIPTION_PUT) {
                     ListTag description = payload.getList("description", Tag.TAG_STRING);
                     if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {

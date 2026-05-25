@@ -319,6 +319,10 @@ public final class EditorSessionService {
         questActions.setQuestCompletionSoundVolume(player, questId, volume);
     }
 
+    public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
+        questActions.setQuestBackground(player, questId, background, grayscale);
+    }
+
     public void undo(ServerPlayer player) {
         undoRedoActions.undo(player);
     }

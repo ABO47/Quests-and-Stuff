@@ -108,6 +108,10 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questId, volume);
     }
 
+    public static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
+        EditorQuestCommandClient.setQuestBackground(player, questId, background, grayscale);
+    }
+
     public static void runRemoveQuestAction(Player player, String questId) {
         EditorQuestCommandClient.runRemoveQuestAction(player, questId);
     }

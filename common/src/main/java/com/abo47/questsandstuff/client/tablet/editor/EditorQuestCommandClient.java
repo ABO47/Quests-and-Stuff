@@ -93,6 +93,20 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, normalizedQuestId, normalizedVolume));
     }
 
+    static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        ClientQuestCache.setQuestBackgroundLocal(normalizedQuestId, normalizedBackground, grayscale);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putString("background", normalizedBackground);
+        payload.putBoolean("grayscale", grayscale);
+        EditorCommandSender.run(player, "quest_background", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestBackground(serverPlayer, normalizedQuestId, normalizedBackground, grayscale));
+    }
+
     static void runRemoveQuestAction(Player player, String questId) {
         if (questId == null || questId.isBlank()) {
             return;

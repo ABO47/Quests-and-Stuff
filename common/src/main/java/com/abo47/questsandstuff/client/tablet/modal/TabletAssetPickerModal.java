@@ -5,8 +5,10 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
@@ -16,6 +18,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -70,12 +73,14 @@ public final class TabletAssetPickerModal {
             }
         } else {
             preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ModColors.TEXT_MUTED));
+            addQuestBackgroundOptions(preview, state, refresh, leftW, previewH);
         }
         if (!selected.isBlank() && dims != null) {
-            IGuiTexture texture = chapterBackgroundTexture(selected);
+            boolean grayscale = isQuestBackgroundPicker(state) && state.modalQuestBackgroundGrayscale;
+            IGuiTexture texture = chapterBackgroundTexture(selected, grayscale);
             if (texture != null) {
                 int areaW = leftW - 16;
-                int areaH = h - 100;
+                int areaH = Math.max(1, h - (isQuestBackgroundPicker(state) ? 124 : 100));
                 float scale = Math.min(1f, Math.min((float) areaW / Math.max(1, dims.width()), (float) areaH / Math.max(1, dims.height())));
                 int drawW = Math.max(1, Math.round(dims.width() * scale));
                 int drawH = Math.max(1, Math.round(dims.height() * scale));
@@ -190,6 +195,32 @@ public final class TabletAssetPickerModal {
             addContext(modal, state, player, refresh, rightX, rightW, h, assets);
         }
         return search;
+    }
+
+    private static void addQuestBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
+        if (!isQuestBackgroundPicker(state)) {
+            return;
+        }
+        String target = state.modalQuestBackgroundTarget.trim();
+        int rowY = Math.max(48, previewH - 24);
+        preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE), ModColors.TEXT_SECONDARY));
+        preview.addWidget(new ToggleSwitchWidget(
+                "quest_background_grayscale:" + target,
+                Math.max(8, leftW - 8 - ToggleSwitchWidget.DEFAULT_WIDTH),
+                rowY,
+                ToggleSwitchWidget.DEFAULT_WIDTH,
+                ToggleSwitchWidget.DEFAULT_HEIGHT,
+                () -> state.modalQuestBackgroundGrayscale,
+                enabled -> state.modalQuestBackgroundGrayscale = enabled,
+                refresh,
+                new Component[]{
+                        Component.translatable(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE_TOOLTIP)
+                }
+        ));
+    }
+
+    private static boolean isQuestBackgroundPicker(TabletUiState state) {
+        return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank();
     }
 
     private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int rightX, int rightW, int h, List<AssetLibrary.AssetEntry> assets) {

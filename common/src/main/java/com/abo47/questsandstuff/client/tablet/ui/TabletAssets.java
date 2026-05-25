@@ -40,6 +40,10 @@ final class TabletAssets {
         return AssetLibrary.chapterBackgroundTexture(TabletLayout.ASSETS_ROOT_DIR, background);
     }
 
+    static IGuiTexture chapterBackgroundTexture(String background, boolean grayscale) {
+        return AssetLibrary.chapterBackgroundTexture(TabletLayout.ASSETS_ROOT_DIR, background, grayscale);
+    }
+
     static ItemStackTexture iconTexture(String iconId) {
         return QuestIconProvider.iconTexture(iconId);
     }

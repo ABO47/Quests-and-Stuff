@@ -171,6 +171,10 @@ public final class EditorQuestSessionActions {
         displayEdits.setQuestCompletionSoundVolume(player, questId, volume);
     }
 
+    public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
+        displayEdits.setQuestBackground(player, questId, background, grayscale);
+    }
+
     public void putQuestTask(ServerPlayer player, String questId, String taskJson) {
         contentEdits.putQuestTask(player, questId, taskJson);
     }

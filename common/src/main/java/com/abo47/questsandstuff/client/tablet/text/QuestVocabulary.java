@@ -93,12 +93,15 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_BLOCK = "ui.questsandstuff.context.change_block";
     public static final String CONTEXT_CHANGE_ICON = "ui.questsandstuff.context.change_icon";
     public static final String CONTEXT_CHANGE_IMAGE = "ui.questsandstuff.context.change_image";
+    public static final String CONTEXT_CHANGE_QUEST_BACKGROUND = "ui.questsandstuff.context.change_quest_background";
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
     public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
     public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
     public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
     public static final String SOUND_LEVEL = "ui.questsandstuff.sound.level";
+    public static final String QUEST_BACKGROUND_GRAYSCALE = "ui.questsandstuff.quest_background.grayscale";
+    public static final String QUEST_BACKGROUND_GRAYSCALE_TOOLTIP = "ui.questsandstuff.quest_background.grayscale_tooltip";
     public static final String CONTEXT_CONNECTION_COLOR = "ui.questsandstuff.context.connection_color";
     public static final String CONTEXT_COPY = "ui.questsandstuff.context.copy";
     public static final String CONTEXT_EDIT_MOTION = "ui.questsandstuff.context.edit_motion";

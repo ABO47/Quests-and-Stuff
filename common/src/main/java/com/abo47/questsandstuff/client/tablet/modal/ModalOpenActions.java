@@ -231,8 +231,25 @@ public final class ModalOpenActions {
         state.modalChapterTarget = chapter == null ? "" : chapter;
         state.modalQuestTarget = "";
         state.modalCanvasBackgroundTarget = "";
+        state.modalQuestBackgroundTarget = "";
         resetAssetPicker(state);
         state.assetSelected = currentBackground == null ? "" : currentBackground;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openQuestBackgroundPicker(TabletUiState state, String questId, String currentBackground, boolean grayscale) {
+        closeBeforeOpen(state);
+        state.modalQuestBackgroundTarget = questId == null ? "" : questId;
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        state.modalQuestBackgroundGrayscale = grayscale;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
@@ -244,6 +261,7 @@ public final class ModalOpenActions {
         state.modalCanvasModelTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
+        state.modalQuestBackgroundTarget = "";
         resetAssetPicker(state);
         state.assetSelected = currentBackground == null ? "" : currentBackground;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);

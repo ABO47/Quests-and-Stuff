@@ -21,6 +21,7 @@ import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -96,6 +97,25 @@ final class CanvasContextQuestActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
+        actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openQuestBackgroundPicker(
+                    state,
+                    state.contextQuestId,
+                    questTag.getString("quest_background"),
+                    questTag.getBoolean("quest_background_grayscale")
+            );
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextQuestId);
+            canvasViewport.refresh();
+        }));
+        if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_BACKGROUND), "delete", ModColors.WARNING, () -> {
+                EditorCommandClient.setQuestBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextQuestId);
+                canvasViewport.refresh();
+            }));
+        }
         EntityIconControls.addEntityVariantAndMotionActions(
                 actions,
                 state,

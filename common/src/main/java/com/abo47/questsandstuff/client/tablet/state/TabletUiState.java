@@ -139,6 +139,8 @@ public class TabletUiState {
     public String modalCanvasImageTarget = "";
     public String modalCanvasEntityTarget = "";
     public String modalCanvasModelTarget = "";
+    public String modalQuestBackgroundTarget = "";
+    public boolean modalQuestBackgroundGrayscale;
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
     public String entityVariantFolder = "";
