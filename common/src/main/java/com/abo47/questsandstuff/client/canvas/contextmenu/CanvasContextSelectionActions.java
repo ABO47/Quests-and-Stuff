@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -15,9 +16,12 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 final class CanvasContextSelectionActions {
     private CanvasContextSelectionActions() {
@@ -28,9 +32,14 @@ final class CanvasContextSelectionActions {
             return;
         }
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+            if (state.contextQuestCompletionSoundMenuOpen && state.selectedQuestIds.size() > 1) {
+                addBatchCompletionSoundSubmenu(actions, canvasViewport, state);
+                return;
+            }
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
+            addBatchQuestActions(actions, canvasViewport, state);
             addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedGroup, canvasViewport.cardLookup())) {
@@ -61,6 +70,63 @@ final class CanvasContextSelectionActions {
             }
         }
         return false;
+    }
+
+    private static void addBatchQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
+        Set<String> questIds = state.selectedQuestIds;
+        if (questIds.size() <= 1) {
+            return;
+        }
+        List<String> targets = new ArrayList<>(questIds);
+        CompoundTag first = firstQuest(targets);
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+            state.contextQuestCompletionSoundMenuOpen = true;
+            state.contextMenuScroll = 0;
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_quest_background"), "background", ModColors.INTERACTIVE, () -> {
+            state.contextQuestCompletionSoundMenuOpen = false;
+            ModalOpenActions.openBatchQuestBackgroundPicker(
+                    state,
+                    targets,
+                    first.getString("quest_background"),
+                    first.getBoolean("quest_background_grayscale")
+            );
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static void addBatchCompletionSoundSubmenu(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
+        List<String> targets = new ArrayList<>(state.selectedQuestIds);
+        CompoundTag first = firstQuest(targets);
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openBatchQuestGameSoundPicker(state, targets, first.getString("completion_sound"));
+            state.contextQuestCompletionSoundMenuOpen = false;
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_game quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openBatchQuestCustomCompletionSoundPicker(state, targets, first.getString("completion_sound"));
+            state.contextQuestCompletionSoundMenuOpen = false;
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_custom quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static CompoundTag firstQuest(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestCache.quest(questId);
+            if (quest != null && !quest.isEmpty()) {
+                return quest;
+            }
+        }
+        return new CompoundTag();
     }
 
     private static void addSelectionLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {

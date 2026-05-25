@@ -45,7 +45,8 @@ public final class TabletAssetPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        boolean soundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
+        boolean soundPicker = (state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
+                || !state.modalQuestCompletionSoundTargets.isEmpty())
                 && state.assetBrowseDir != null && state.assetBrowseDir.startsWith("sounds");
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr(soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library"), w, state, refresh);
         String dir = state.assetBrowseDir == null ? "" : state.assetBrowseDir;
@@ -201,7 +202,7 @@ public final class TabletAssetPickerModal {
         if (!isQuestBackgroundPicker(state)) {
             return;
         }
-        String target = state.modalQuestBackgroundTarget.trim();
+        String target = state.modalQuestBackgroundTargets.isEmpty() ? state.modalQuestBackgroundTarget.trim() : "batch";
         int rowY = Math.max(48, previewH - 24);
         preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE), ModColors.TEXT_SECONDARY));
         preview.addWidget(new ToggleSwitchWidget(
@@ -220,7 +221,8 @@ public final class TabletAssetPickerModal {
     }
 
     private static boolean isQuestBackgroundPicker(TabletUiState state) {
-        return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank();
+        return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank()
+                || !state.modalQuestBackgroundTargets.isEmpty();
     }
 
     private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int rightX, int rightW, int h, List<AssetLibrary.AssetEntry> assets) {

@@ -26,7 +26,6 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Custom connection colors
 - Item, XP, advancement, recipe, stat, biome, dimension visit, structure visit, manual check , Block interaction, entity interaction, item interaction, item use, and entity kill requirements
 - Item, XP, command, loot table, and selectable rewards
-- Command rewards can be disabled in config
 - Inventory/NBT picking for item rewards
 - Repeatable quests
 - Lock or hide quests and chapters until they are unlocked
@@ -37,7 +36,6 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Custom chapter card backgrounds
 - Custom chapter canvas backgrounds
 - Game or custom completion sounds with volume controls
-- Quest completion HUD
 - Add text, images, items, blocks, and entity previews on the main canvas and quest details canvas
 - Move, resize, rotate, and multi-select canvas elements
 - Copy, paste, undo, and redo
@@ -60,6 +58,7 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 ## TODO
 
 - write docs and record some tutorial videos
+- add more text styling options
 
 ## SOME NOTES
 

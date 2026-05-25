@@ -7,7 +7,9 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class QuestDisplayEditService {
     private static final int MAX_DESCRIPTION_LINES = 256;
@@ -156,6 +158,32 @@ public final class QuestDisplayEditService {
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }
 
+    public void setQuestCompletionSound(ServerPlayer player, Set<String> questIds, String sound) {
+        String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
+        List<QuestDefinition> updated = new ArrayList<>();
+        for (QuestDefinition quest : selectedQuests(questIds)) {
+            if (quest.display().completionSound().equals(normalizedSound)) {
+                continue;
+            }
+            QuestDisplay old = quest.display();
+            QuestDisplay display = new QuestDisplay(
+                    old.title(),
+                    old.subtitle(),
+                    old.description(),
+                    old.groups(),
+                    old.icon(),
+                    old.iconBackground(),
+                    normalizedSound,
+                    old.completionSoundVolume(),
+                    old.visualHidden(),
+                    old.questBackground(),
+                    old.questBackgroundGrayscale()
+            );
+            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+        }
+        updateQuests(player, updated);
+    }
+
     public void setQuestCompletionSoundVolume(ServerPlayer player, String questId, int volume) {
         String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
         QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
@@ -184,6 +212,32 @@ public final class QuestDisplayEditService {
                 old.questBackgroundGrayscale()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+    }
+
+    public void setQuestCompletionSoundVolume(ServerPlayer player, Set<String> questIds, int volume) {
+        int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
+        List<QuestDefinition> updated = new ArrayList<>();
+        for (QuestDefinition quest : selectedQuests(questIds)) {
+            if (quest.display().completionSoundVolume() == normalizedVolume) {
+                continue;
+            }
+            QuestDisplay old = quest.display();
+            QuestDisplay display = new QuestDisplay(
+                    old.title(),
+                    old.subtitle(),
+                    old.description(),
+                    old.groups(),
+                    old.icon(),
+                    old.iconBackground(),
+                    old.completionSound(),
+                    normalizedVolume,
+                    old.visualHidden(),
+                    old.questBackground(),
+                    old.questBackgroundGrayscale()
+            );
+            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+        }
+        updateQuests(player, updated);
     }
 
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
@@ -216,12 +270,70 @@ public final class QuestDisplayEditService {
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }
 
+    public void setQuestBackground(ServerPlayer player, Set<String> questIds, String background, boolean grayscale) {
+        String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
+        List<QuestDefinition> updated = new ArrayList<>();
+        for (QuestDefinition quest : selectedQuests(questIds)) {
+            QuestDisplay old = quest.display();
+            if (old.questBackground().equals(normalizedBackground) && old.questBackgroundGrayscale() == grayscale) {
+                continue;
+            }
+            QuestDisplay display = new QuestDisplay(
+                    old.title(),
+                    old.subtitle(),
+                    old.description(),
+                    old.groups(),
+                    old.icon(),
+                    old.iconBackground(),
+                    old.completionSound(),
+                    old.completionSoundVolume(),
+                    old.visualHidden(),
+                    normalizedBackground,
+                    grayscale
+            );
+            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+        }
+        updateQuests(player, updated);
+    }
+
     private void updateQuest(ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
         service.definitionStore().upsert(updated);
         service.definitionStore().saveNow(updated.id());
         session.currentQuest = updated.id();
         service.postMutation(player);
         service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", updated);
+    }
+
+    private void updateQuests(ServerPlayer player, List<QuestDefinition> updated) {
+        if (updated == null || updated.isEmpty()) {
+            return;
+        }
+        EditorSessionService.EditorSession session = service.session(player);
+        service.captureUndo(session);
+        for (QuestDefinition definition : updated) {
+            service.definitionStore().upsert(definition);
+            service.definitionStore().saveNow(definition.id());
+            session.currentQuest = definition.id();
+        }
+        service.postMutation(player);
+        for (QuestDefinition definition : updated) {
+            service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", definition);
+        }
+    }
+
+    private List<QuestDefinition> selectedQuests(Set<String> questIds) {
+        if (questIds == null || questIds.isEmpty()) {
+            return List.of();
+        }
+        List<QuestDefinition> quests = new ArrayList<>();
+        for (String questId : questIds) {
+            String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+            QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
+            if (quest != null) {
+                quests.add(quest);
+            }
+        }
+        return quests;
     }
 
     private static String limitDescriptionLine(String line) {

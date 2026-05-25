@@ -193,6 +193,8 @@
   "ui.questsandstuff.context.add_text_box": "Add Text Box",
   "ui.questsandstuff.context.align_horizontal_center": "Align Horizontal Center",
   "ui.questsandstuff.context.align_vertical_center": "Align Vertical Center",
+  "ui.questsandstuff.context.batch_completion_sound": "Batch Completion Sound",
+  "ui.questsandstuff.context.batch_quest_background": "Batch Quest Background",
   "ui.questsandstuff.context.bring_to_front": "Bring To Front",
   "ui.questsandstuff.context.center_on_quest": "Center On Quest",
   "ui.questsandstuff.context.center_pivot": "Center Pivot",

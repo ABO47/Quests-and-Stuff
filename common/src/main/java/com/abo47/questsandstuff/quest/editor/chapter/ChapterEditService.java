@@ -128,8 +128,7 @@ public final class ChapterEditService {
         EditorSessionService.EditorSession session = owner.session(player);
         owner.captureUndo(session);
 
-        groups.set(index, to);
-        owner.definitionStore().setGroupOrder(groups);
+        owner.definitionStore().renameGroupMetadata(from, to);
         for (QuestDefinition quest : new ArrayList<>(owner.definitionStore().quests().values())) {
             if (!quest.display().groups().containsKey(from)) {
                 continue;
@@ -139,6 +138,8 @@ public final class ChapterEditService {
             map.put(to, view == null ? ChapterDefinition.DEFAULT : view);
             owner.definitionStore().upsert(withGroups(quest, map));
         }
+        groups.set(index, to);
+        owner.definitionStore().setGroupOrder(groups);
 
         if (from.equals(session.currentGroup)) {
             session.currentGroup = to;

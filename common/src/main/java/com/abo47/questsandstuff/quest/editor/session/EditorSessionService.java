@@ -316,12 +316,24 @@ public final class EditorSessionService {
         questActions.setQuestCompletionSound(player, questId, sound);
     }
 
+    public void setQuestCompletionSound(ServerPlayer player, Set<String> questIds, String sound) {
+        questActions.setQuestCompletionSound(player, questIds, sound);
+    }
+
     public void setQuestCompletionSoundVolume(ServerPlayer player, String questId, int volume) {
         questActions.setQuestCompletionSoundVolume(player, questId, volume);
     }
 
+    public void setQuestCompletionSoundVolume(ServerPlayer player, Set<String> questIds, int volume) {
+        questActions.setQuestCompletionSoundVolume(player, questIds, volume);
+    }
+
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
         questActions.setQuestBackground(player, questId, background, grayscale);
+    }
+
+    public void setQuestBackground(ServerPlayer player, Set<String> questIds, String background, boolean grayscale) {
+        questActions.setQuestBackground(player, questIds, background, grayscale);
     }
 
     public void undo(ServerPlayer player) {

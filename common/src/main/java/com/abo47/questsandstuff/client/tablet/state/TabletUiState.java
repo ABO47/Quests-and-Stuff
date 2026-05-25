@@ -140,6 +140,7 @@ public class TabletUiState {
     public String modalCanvasEntityTarget = "";
     public String modalCanvasModelTarget = "";
     public String modalQuestBackgroundTarget = "";
+    public final Set<String> modalQuestBackgroundTargets = new java.util.LinkedHashSet<>();
     public boolean modalQuestBackgroundGrayscale;
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
@@ -377,6 +378,7 @@ public class TabletUiState {
     public String questDetailsObjectiveRenameQuestId = "";
     public String questDetailsObjectiveRenameId = "";
     public String questDetailsObjectiveRenameDraft = "";
+    public boolean questDetailsObjectiveRenameFocusPending;
     public final Map<String, String> questDetailsSelectableRewardChoices = new HashMap<>();
     public String questDetailsSelectedObjectiveKind = "";
     public String questDetailsSelectedObjectiveId = "";
@@ -440,6 +442,7 @@ public class TabletUiState {
     public final Map<String, Set<String>> gridConnectionsByGroup = new HashMap<>();
     public final Map<String, Map<String, Integer>> connectionColorsByGroup = new HashMap<>();
     public String modalQuestCompletionSoundTarget = "";
+    public final Set<String> modalQuestCompletionSoundTargets = new java.util.LinkedHashSet<>();
     public String hoveredQuestId = "";
     public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();

@@ -57,4 +57,28 @@ class ChapterMetadataSnapshotTest {
         assertEquals("text_a", store.canvasTexts("chapter_one").get(0).id());
         assertFalse(store.groupOrder().contains("chapter_two"));
     }
+
+    @Test
+    void renameKeepsChapterMetadataAndCanvasLayers() {
+        ChapterMetadataStore store = new ChapterMetadataStore(root);
+        store.setGroupOrder(List.of("old_chapter"), Set.of("old_chapter"));
+        store.setGroupIcon("old_chapter", "minecraft:diamond");
+        store.setGroupBackground("old_chapter", "asset:backgrounds/one.png");
+        store.setGroupCanvasBackground("old_chapter", "minecraft:stone");
+        store.setGroupLockUntilUnlocked("old_chapter", true);
+        store.putCanvasImage("old_chapter", new CanvasImageLayer("image_a", "item:minecraft:apple", 1, 2, 32, 24, 45));
+        store.putCanvasText("old_chapter", new CanvasTextLayer("text_a", "Hello", 3, 4, 40, 16, 90, "center", "italic", 0xFFFFFF));
+        store.setCanvasLayerOrder("old_chapter", List.of("image:image_a", "text:text_a"));
+
+        store.renameGroup("old_chapter", "new_chapter", Set.of("new_chapter"));
+
+        assertEquals(List.of("new_chapter"), store.groupOrder());
+        assertEquals("minecraft:diamond", store.groupIcon("new_chapter"));
+        assertEquals("asset:backgrounds/one.png", store.groupBackground("new_chapter"));
+        assertEquals("minecraft:stone", store.groupCanvasBackground("new_chapter"));
+        assertTrue(store.groupLockUntilUnlocked("new_chapter"));
+        assertEquals(List.of("image:image_a", "text:text_a"), store.canvasLayerOrder("new_chapter"));
+        assertEquals("image_a", store.canvasImages("new_chapter").get(0).id());
+        assertEquals("text_a", store.canvasTexts("new_chapter").get(0).id());
+    }
 }

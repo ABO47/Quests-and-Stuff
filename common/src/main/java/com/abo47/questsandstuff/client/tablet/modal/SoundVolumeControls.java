@@ -69,6 +69,11 @@ final class SoundVolumeControls {
         String target = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
         int volume = QuestDisplay.normalizeCompletionSoundVolume(state.soundVolumeDraft);
         state.soundVolumeDraft = volume;
+        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionSoundVolume(player, state.modalQuestCompletionSoundTargets, volume);
+            QuestSoundPreview.restartIfPlaying(soundId, volume);
+            return;
+        }
         if (!target.isBlank()) {
             EditorCommandClient.setQuestCompletionSoundVolume(player, target, volume);
         }

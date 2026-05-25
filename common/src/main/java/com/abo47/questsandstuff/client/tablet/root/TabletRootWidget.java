@@ -101,7 +101,7 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean charTyped(char c, int modifiers) {
-        return TabletRootKeyboardRouter.charTyped(this, modalLayer, frontWindowLayer, (typed, mod) -> super.charTyped(typed, mod), c, modifiers);
+        return TabletRootKeyboardRouter.charTyped(this, state, modalLayer, frontWindowLayer, refresher, (typed, mod) -> super.charTyped(typed, mod), c, modifiers);
     }
 
     Player resolvePlayer() {

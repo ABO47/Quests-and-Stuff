@@ -55,6 +55,32 @@ final class ChapterMetadataState {
         reconcile(discoveredGroups);
     }
 
+    void renameGroup(String fromName, String toName) {
+        String from = normalizeGroupName(fromName);
+        String to = normalizeGroupName(toName);
+        if (from.isBlank() || to.isBlank() || from.equals(to)) {
+            return;
+        }
+        for (int i = 0; i < groupOrder.size(); i++) {
+            if (from.equals(groupOrder.get(i))) {
+                groupOrder.set(i, to);
+                break;
+            }
+        }
+        moveValue(groupIcons, from, to);
+        moveValue(groupBackgrounds, from, to);
+        moveValue(groupCanvasBackgrounds, from, to);
+        moveValue(groupTextAlign, from, to);
+        moveValue(groupTextColor, from, to);
+        moveValue(groupTextStyle, from, to);
+        moveValue(groupTextSize, from, to);
+        moveValue(groupLockUntilUnlocked, from, to);
+        moveValue(groupHideUntilUnlocked, from, to);
+        moveValue(canvasImagesByGroup, from, to);
+        moveValue(canvasTextsByGroup, from, to);
+        moveValue(canvasLayerOrderByGroup, from, to);
+    }
+
     String groupIcon(String group) {
         return groupIcons.getOrDefault(group, "");
     }
@@ -153,6 +179,13 @@ final class ChapterMetadataState {
             copy.put(entry.getKey(), List.copyOf(entry.getValue()));
         }
         return Map.copyOf(copy);
+    }
+
+    private static <T> void moveValue(Map<String, T> map, String from, String to) {
+        if (!map.containsKey(from) || map.containsKey(to)) {
+            return;
+        }
+        map.put(to, map.remove(from));
     }
 
     static String normalizeGroupName(String name) {

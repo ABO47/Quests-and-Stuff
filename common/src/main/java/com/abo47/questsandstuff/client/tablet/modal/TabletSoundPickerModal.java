@@ -111,6 +111,11 @@ public final class TabletSoundPickerModal {
     }
 
     private static void applySound(TabletUiState state, Player player, String soundId) {
+        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionSound(player, state.modalQuestCompletionSoundTargets, soundId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} sound={}", state.modalQuestCompletionSoundTargets.size(), soundId);
+            return;
+        }
         String target = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
         if (!target.isBlank()) {
             EditorCommandClient.setQuestCompletionSound(player, target, soundId);

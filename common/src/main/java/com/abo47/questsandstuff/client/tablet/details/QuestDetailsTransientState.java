@@ -103,6 +103,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsObjectiveRenameQuestId = questId == null ? "" : questId;
         state.questDetailsObjectiveRenameId = id == null ? "" : id;
         state.questDetailsObjectiveRenameDraft = draft == null ? "" : draft;
+        state.questDetailsObjectiveRenameFocusPending = true;
         closeTypePicker(state);
         closeItemSourcePicker(state);
         closeXpPicker(state);
@@ -124,6 +125,7 @@ public final class QuestDetailsTransientState {
         state.questDetailsObjectiveRenameQuestId = "";
         state.questDetailsObjectiveRenameId = "";
         state.questDetailsObjectiveRenameDraft = "";
+        state.questDetailsObjectiveRenameFocusPending = false;
     }
 
     public static boolean closeFloatingPopups(TabletUiState state) {

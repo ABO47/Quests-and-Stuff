@@ -75,7 +75,10 @@ final class QuestObjectiveInlineFields {
             commitObjectiveRename(player, state);
             refresh.run();
         }));
-        field.setFocus(true);
+        if (state.questDetailsObjectiveRenameFocusPending) {
+            state.questDetailsObjectiveRenameFocusPending = false;
+            field.requestFocusWhenReady();
+        }
     }
 
     static void renderAmountField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, boolean task) {
@@ -138,7 +141,7 @@ final class QuestObjectiveInlineFields {
                 && QuestDetailsEditState.canEdit(state);
     }
 
-    static boolean handleRenameKey(Player player, TabletUiState state, int keyCode) {
+    static boolean handleRenameKey(Player player, TabletUiState state, int keyCode, boolean draftUnchanged) {
         if (!state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
@@ -150,7 +153,25 @@ final class QuestObjectiveInlineFields {
             closeObjectiveRenameEditor(state);
             return true;
         }
+        if (draftUnchanged && keyCode == GLFW.GLFW_KEY_BACKSPACE && !state.questDetailsObjectiveRenameDraft.isEmpty()) {
+            state.questDetailsObjectiveRenameDraft = state.questDetailsObjectiveRenameDraft.substring(0, state.questDetailsObjectiveRenameDraft.length() - 1);
+            return true;
+        }
         return false;
+    }
+
+    static boolean handleRenameChar(TabletUiState state, char c, boolean draftUnchanged) {
+        if (!draftUnchanged || !state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
+        if (Character.isISOControl(c)) {
+            return false;
+        }
+        state.questDetailsObjectiveRenameDraft = sanitizeObjectiveTitle(state.questDetailsObjectiveRenameDraft + c);
+        if (state.questDetailsObjectiveRenameDraft.length() > 80) {
+            state.questDetailsObjectiveRenameDraft = state.questDetailsObjectiveRenameDraft.substring(0, 80);
+        }
+        return true;
     }
 
     static void openObjectiveRenameEditor(TabletUiState state, String questId, String id, boolean task) {

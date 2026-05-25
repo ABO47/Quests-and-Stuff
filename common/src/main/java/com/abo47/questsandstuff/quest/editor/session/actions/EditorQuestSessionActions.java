@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
+import java.util.Set;
 
 public final class EditorQuestSessionActions {
     private final EditorSessionService service;
@@ -167,12 +168,24 @@ public final class EditorQuestSessionActions {
         displayEdits.setQuestCompletionSound(player, questId, sound);
     }
 
+    public void setQuestCompletionSound(ServerPlayer player, Set<String> questIds, String sound) {
+        displayEdits.setQuestCompletionSound(player, questIds, sound);
+    }
+
     public void setQuestCompletionSoundVolume(ServerPlayer player, String questId, int volume) {
         displayEdits.setQuestCompletionSoundVolume(player, questId, volume);
     }
 
+    public void setQuestCompletionSoundVolume(ServerPlayer player, Set<String> questIds, int volume) {
+        displayEdits.setQuestCompletionSoundVolume(player, questIds, volume);
+    }
+
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
         displayEdits.setQuestBackground(player, questId, background, grayscale);
+    }
+
+    public void setQuestBackground(ServerPlayer player, Set<String> questIds, String background, boolean grayscale) {
+        displayEdits.setQuestBackground(player, questIds, background, grayscale);
     }
 
     public void putQuestTask(ServerPlayer player, String questId, String taskJson) {

@@ -122,10 +122,11 @@ final class TabletRootKeyboardRouter {
         if (handleQuestDetailsHistoryShortcut(root, state, refresher, undoAction, redoAction, keyCode)) {
             return true;
         }
+        String renameDraftBefore = state.questDetailsObjectiveRenameDraft;
         if (frontWindowLayer != null) {
             frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
         }
-        if (QuestDetailsObjectivesPanel.handleRenameKey(root.resolvePlayer(), state, keyCode)) {
+        if (QuestDetailsObjectivesPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetailsObjectiveRenameDraft))) {
             refresher.run();
         }
         return true;
@@ -295,7 +296,7 @@ final class TabletRootKeyboardRouter {
         return selfKeyRelease.invoke(keyCode, scanCode, modifiers);
     }
 
-    static boolean charTyped(TabletRootWidget root, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, CharTypedDelegate selfCharTyped, char c, int modifiers) {
+    static boolean charTyped(TabletRootWidget root, TabletUiState state, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, Runnable refresher, CharTypedDelegate selfCharTyped, char c, int modifiers) {
         if (root.isAnyModalOpen()) {
             if (modalLayer != null) {
                 modalLayer.charTyped(c, modifiers);
@@ -303,8 +304,12 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
+            String renameDraftBefore = state.questDetailsObjectiveRenameDraft;
             if (frontWindowLayer != null) {
                 frontWindowLayer.charTyped(c, modifiers);
+            }
+            if (QuestDetailsObjectivesPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetailsObjectiveRenameDraft))) {
+                refresher.run();
             }
             return true;
         }

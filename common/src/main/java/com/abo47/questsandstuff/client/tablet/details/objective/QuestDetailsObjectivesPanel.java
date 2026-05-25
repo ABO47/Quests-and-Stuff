@@ -118,8 +118,12 @@ public final class QuestDetailsObjectivesPanel {
         QuestDetailsObjectiveMenus.renderContextMenu(modal, state, player, refresh, questId);
     }
 
-    public static boolean handleRenameKey(Player player, TabletUiState state, int keyCode) {
-        return QuestObjectiveInlineFields.handleRenameKey(player, state, keyCode);
+    public static boolean handleRenameKey(Player player, TabletUiState state, int keyCode, boolean draftUnchanged) {
+        return QuestObjectiveInlineFields.handleRenameKey(player, state, keyCode, draftUnchanged);
+    }
+
+    public static boolean handleRenameChar(TabletUiState state, char c, boolean draftUnchanged) {
+        return QuestObjectiveInlineFields.handleRenameChar(state, c, draftUnchanged);
     }
 
     public static void openObjectiveRenameEditor(TabletUiState state, String questId, String id, boolean task) {

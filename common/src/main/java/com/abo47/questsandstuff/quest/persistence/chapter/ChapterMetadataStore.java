@@ -71,6 +71,12 @@ public final class ChapterMetadataStore {
         save();
     }
 
+    public void renameGroup(String fromName, String toName, Set<String> discoveredGroups) {
+        state.renameGroup(fromName, toName);
+        state.reconcile(discoveredGroups);
+        save();
+    }
+
     public String groupIcon(String group) {
         return state.groupIcon(group);
     }

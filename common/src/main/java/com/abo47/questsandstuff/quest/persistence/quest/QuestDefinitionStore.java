@@ -73,6 +73,10 @@ public final class QuestDefinitionStore {
         chapters.setGroupOrder(groups, discoverGroups());
     }
 
+    public void renameGroupMetadata(String fromName, String toName) {
+        chapters.renameGroup(fromName, toName, discoverGroups());
+    }
+
     public String groupIcon(String group) {
         return chapters.groupIcon(group);
     }

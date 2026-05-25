@@ -132,7 +132,8 @@ public final class TabletModalState {
     }
 
     private static void finishCloseAllModals(TabletUiState state) {
-        boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank();
+        boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
+                || !state.modalQuestCompletionSoundTargets.isEmpty();
         applyModalFlags(state, ModalWindowManager.closeAll());
         state.modalQuestTarget = "";
         state.modalCanvasBackgroundTarget = "";
@@ -140,6 +141,7 @@ public final class TabletModalState {
         state.modalCanvasEntityTarget = "";
         state.modalCanvasModelTarget = "";
         state.modalQuestBackgroundTarget = "";
+        state.modalQuestBackgroundTargets.clear();
         state.modalQuestBackgroundGrayscale = false;
         state.entityVariantTarget = "";
         state.entityVariantSelected = "";
@@ -149,6 +151,7 @@ public final class TabletModalState {
         state.entityVariantScroll = 0;
         state.entityVariantScrollDragging = false;
         state.modalQuestCompletionSoundTarget = "";
+        state.modalQuestCompletionSoundTargets.clear();
         if (closingSoundPicker) {
             state.assetBrowseDir = "";
             state.assetSelected = "";
