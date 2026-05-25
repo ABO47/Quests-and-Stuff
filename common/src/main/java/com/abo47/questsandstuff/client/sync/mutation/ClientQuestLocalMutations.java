@@ -82,6 +82,10 @@ public final class ClientQuestLocalMutations {
         });
     }
 
+    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientChapterLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    }
+
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
         ClientCanvasLocalMutations.putCanvasImageLocal(group, image);
     }

@@ -233,6 +233,17 @@ public final class ChapterEditService {
         owner.postMutation(player);
     }
 
+    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
+        String group = validGroup(groupName);
+        if (group.isBlank() || owner.definitionStore().groupHideUntilUnlocked(group) == hideUntilUnlocked) {
+            return;
+        }
+        EditorSessionService.EditorSession session = owner.session(player);
+        owner.captureUndo(session);
+        owner.definitionStore().setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+        owner.postMutation(player);
+    }
+
     private String validGroup(String groupName) {
         String group = EditorSessionService.normalizeGroup(groupName);
         return group.isBlank() || !owner.definitionStore().groupOrder().contains(group) ? "" : group;

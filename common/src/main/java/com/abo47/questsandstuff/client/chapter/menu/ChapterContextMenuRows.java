@@ -40,6 +40,13 @@ public final class ChapterContextMenuRows {
                 locked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> ChapterContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
         ));
+        boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
+        actions.add(ContextActions.action(
+                tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_CHAPTER : QuestVocabulary.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
+                hidden ? "eye" : "eye-off",
+                hidden ? ModColors.SUCCESS : ModColors.WARNING,
+                () -> ChapterContextMenuActions.setHideUntilUnlocked(player, state, target, !hidden, refresh)
+        ));
         actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
         if (layout.entityVariants()) {
             actions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));

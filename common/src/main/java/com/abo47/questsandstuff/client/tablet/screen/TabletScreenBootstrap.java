@@ -80,7 +80,7 @@ final class TabletScreenBootstrap {
     }
 
     static void keepSelectedGroupValid(TabletUiState state, boolean persist) {
-        List<String> groups = ClientQuestCache.groupOrder();
+        List<String> groups = ClientQuestCache.selectableGroupOrder(state.canEdit);
         if (groups.isEmpty()) {
             state.selectedGroup = "";
             return;

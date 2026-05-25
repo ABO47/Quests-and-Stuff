@@ -125,9 +125,7 @@ public final class CanvasRenderer {
     }
 
     private static boolean isVisualHiddenOutsideEdit(CompoundTag questTag) {
-        return questTag.getBoolean("visual_hidden")
-                && !questTag.getBoolean("unlocked")
-                && !questTag.getBoolean("completed");
+        return ClientQuestCache.questHiddenPreview(questTag);
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {

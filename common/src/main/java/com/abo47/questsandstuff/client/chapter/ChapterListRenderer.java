@@ -33,11 +33,14 @@ final class ChapterListRenderer {
         int trackY = 4;
         int trackH = listH - 8;
         int rowStep = collapsed ? TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP : TabletUiFactory.CHAPTER_CARD_H + TabletUiFactory.CHAPTER_CARD_GAP;
-        List<String> chapterGroups = ChapterListMetrics.filteredGroups(groups, state.chapterSearch);
+        List<String> chapterGroups = ChapterListMetrics.filteredGroups(groups, state.chapterSearch, state.canEdit);
 
         if (chapterGroups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)) {
             ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
-            chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none_matching"), ModColors.TEXT_MUTED));
+            String emptyKey = state.chapterSearch == null || state.chapterSearch.isBlank()
+                    ? "ui.questsandstuff.chapter.none"
+                    : "ui.questsandstuff.chapter.none_matching";
+            chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr(emptyKey), ModColors.TEXT_MUTED));
             return;
         }
 

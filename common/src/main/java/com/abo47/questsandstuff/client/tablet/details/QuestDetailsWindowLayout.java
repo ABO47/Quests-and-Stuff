@@ -47,7 +47,7 @@ final class QuestDetailsWindowLayout {
 
         String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
         CompoundTag quest = ClientQuestCache.quests().get(questId);
-        if (questId.isBlank() || quest == null || (!state.canEdit && ClientQuestCache.questLockedPreview(quest))) {
+        if (questId.isBlank() || quest == null || (!state.canEdit && (ClientQuestCache.questLockedPreview(quest) || ClientQuestCache.questHiddenPreview(quest)))) {
             QuestDetailsWindowLifecycle.finishClose(state);
             return;
         }

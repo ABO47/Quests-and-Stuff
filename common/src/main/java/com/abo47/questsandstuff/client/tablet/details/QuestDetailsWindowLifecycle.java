@@ -31,7 +31,7 @@ final class QuestDetailsWindowLifecycle {
         }
         String trimmedQuestId = questId.trim();
         if (!canOpenQuestDetails(state, trimmedQuestId)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details open blocked locked_preview quest={}", trimmedQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details open blocked preview_hidden quest={}", trimmedQuestId);
             return;
         }
         state.questDetailsClosing = false;
@@ -233,6 +233,7 @@ final class QuestDetailsWindowLifecycle {
         if (state == null || questId == null || questId.isBlank()) {
             return false;
         }
-        return state.canEdit || !ClientQuestCache.questLockedPreview(ClientQuestCache.quest(questId));
+        CompoundTag quest = ClientQuestCache.quest(questId);
+        return state.canEdit || (!ClientQuestCache.questLockedPreview(quest) && !ClientQuestCache.questHiddenPreview(quest));
     }
 }

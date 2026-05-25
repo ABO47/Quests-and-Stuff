@@ -165,7 +165,7 @@ final class ChapterRowRenderer {
     }
 
     private static boolean canOpenChapter(TabletUiState state, String group) {
-        return state != null && (state.canEdit || !ClientQuestCache.groupLockedPreview(group));
+        return state != null && (state.canEdit || ClientQuestCache.groupOpenablePreview(group));
     }
 
     private static void selectChapter(TabletUiState state, String group) {

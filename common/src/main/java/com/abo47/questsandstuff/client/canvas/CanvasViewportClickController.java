@@ -174,7 +174,7 @@ final class CanvasViewportClickController {
                 state.selectedQuestIds.clear();
                 state.selectedQuestIds.add(hit.questId());
                 state.lastJumpQuest = hit.questId();
-                if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag())) {
+                if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag()) && !ClientQuestCache.questHiddenPreview(hit.tag())) {
                     int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
                     int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
                     QuestDetailsWindow.openAtSource(

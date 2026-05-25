@@ -96,6 +96,10 @@ public final class QuestDefinitionStore {
         return chapters.groupLockUntilUnlocked(group);
     }
 
+    public boolean groupHideUntilUnlocked(String group) {
+        return chapters.groupHideUntilUnlocked(group);
+    }
+
     public Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
         return chapters.canvasImagesByGroup();
     }
@@ -146,6 +150,10 @@ public final class QuestDefinitionStore {
 
     public void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
         chapters.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+    }
+
+    public void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
+        chapters.setGroupHideUntilUnlocked(group, hideUntilUnlocked);
     }
 
     public void putCanvasImage(String group, CanvasImageLayer image) {

@@ -88,6 +88,7 @@ final class CanvasContextQuestActions {
         addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
         addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
+        addQuestVisualHiddenAction(actions, canvasViewport, state, player, questTag);
         addCompletionSoundActions(actions, canvasViewport, state, questTag);
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextQuestId));
@@ -201,11 +202,22 @@ final class CanvasContextQuestActions {
                 lockUntilUnlocked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> {
                     EditorCommandClient.setQuestHiddenMode(player, state.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
-                    if (questTag.getBoolean("visual_hidden")) {
-                        EditorCommandClient.setQuestVisualHidden(player, state.contextQuestId, false);
-                    }
                     state.contextDeleteConfirmKey = "";
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextQuestId, !lockUntilUnlocked);
+                    canvasViewport.refresh();
+                }));
+    }
+
+    private static void addQuestVisualHiddenAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+        boolean hidden = questTag.getBoolean("visual_hidden");
+        actions.add(new ContextAction(
+                CanvasContextMenuController.tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_QUEST : QuestVocabulary.CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED),
+                hidden ? "eye" : "eye-off",
+                hidden ? ModColors.SUCCESS : ModColors.WARNING,
+                () -> {
+                    EditorCommandClient.setQuestVisualHidden(player, state.contextQuestId, !hidden);
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextQuestId, !hidden);
                     canvasViewport.refresh();
                 }));
     }

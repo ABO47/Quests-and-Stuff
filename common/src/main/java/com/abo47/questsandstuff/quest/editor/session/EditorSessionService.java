@@ -210,6 +210,10 @@ public final class EditorSessionService {
         chapterActions.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
     }
 
+    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
+        chapterActions.setGroupHideUntilUnlocked(player, groupName, hideUntilUnlocked);
+    }
+
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
         canvasActions.putCanvasImage(player, groupName, image);
     }

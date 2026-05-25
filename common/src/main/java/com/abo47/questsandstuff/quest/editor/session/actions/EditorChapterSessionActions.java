@@ -61,4 +61,8 @@ public final class EditorChapterSessionActions {
     public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
         chapterEdits.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
     }
+
+    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
+        chapterEdits.setGroupHideUntilUnlocked(player, groupName, hideUntilUnlocked);
+    }
 }

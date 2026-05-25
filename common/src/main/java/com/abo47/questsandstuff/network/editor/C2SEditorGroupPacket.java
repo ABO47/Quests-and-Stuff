@@ -48,6 +48,7 @@ public record C2SEditorGroupPacket(String action, String group, String value, in
                         }
                     }
                     case "set_lock_until_unlocked" -> editor.setGroupLockUntilUnlocked(player, group, Boolean.parseBoolean(value));
+                    case "set_hide_until_unlocked" -> editor.setGroupHideUntilUnlocked(player, group, Boolean.parseBoolean(value));
                     default -> {
                     }
                 }

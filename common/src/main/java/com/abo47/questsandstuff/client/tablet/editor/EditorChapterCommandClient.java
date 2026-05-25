@@ -20,7 +20,7 @@ final class EditorChapterCommandClient {
     }
 
     static void cycleGroup(TabletUiState state, int dir) {
-        List<String> groups = ClientQuestCache.groupOrder();
+        List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.canEdit);
         if (groups.isEmpty()) {
             state.selectedGroup = "";
             state.groupDraft = "";
@@ -37,12 +37,12 @@ final class EditorChapterCommandClient {
 
     static String selectedGroupName(TabletUiState state) {
         String selected = sanitizeGroupName(state == null ? "" : state.selectedGroup);
-        if (state == null || state.canEdit || selected.isBlank() || !ClientQuestCache.groupLockedPreview(selected)) {
+        if (state == null || state.canEdit || selected.isBlank() || ClientQuestCache.groupOpenablePreview(selected)) {
             return selected;
         }
-        for (String group : ClientQuestCache.groupOrder()) {
+        for (String group : ClientQuestCache.selectableGroupOrder(false)) {
             String sanitized = sanitizeGroupName(group);
-            if (!sanitized.isBlank() && !ClientQuestCache.groupLockedPreview(sanitized)) {
+            if (!sanitized.isBlank()) {
                 return sanitized;
             }
         }
@@ -156,11 +156,11 @@ final class EditorChapterCommandClient {
 
         String packetGroup = switch (op) {
             case "create" -> to;
-            case "rename", "delete", "move", "move_to", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked" -> from;
+            case "rename", "delete", "move", "move_to", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked", "set_hide_until_unlocked" -> from;
             default -> "";
         };
         String packetValue = switch (op) {
-            case "rename", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked" -> to;
+            case "rename", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked", "set_hide_until_unlocked" -> to;
             default -> "";
         };
         Runnable optimisticApply = () -> applyLocalGroupAction(state, op, from, to, offset);
@@ -215,6 +215,7 @@ final class EditorChapterCommandClient {
                 }
             }
             case "set_lock_until_unlocked" -> editor.setGroupLockUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
+            case "set_hide_until_unlocked" -> editor.setGroupHideUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
             default -> {
             }
         }
@@ -258,6 +259,7 @@ final class EditorChapterCommandClient {
                 }
             }
             case "set_lock_until_unlocked" -> ClientQuestCache.setGroupLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
+            case "set_hide_until_unlocked" -> ClientQuestCache.setGroupHideUntilUnlockedLocal(from, Boolean.parseBoolean(to));
             default -> {
             }
         }

@@ -55,6 +55,7 @@ final class QuestSyncPayloadBuilder {
             entry.putString("text_style", definitionStore.groupTextStyle(group));
             entry.putInt("text_size", definitionStore.groupTextSize(group));
             entry.putBoolean("lock_until_unlocked", definitionStore.groupLockUntilUnlocked(group));
+            entry.putBoolean("hide_until_unlocked", definitionStore.groupHideUntilUnlocked(group));
             entry.put("canvas_images", CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
             entry.put("canvas_texts", CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
             entry.put("canvas_layer_order", CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));

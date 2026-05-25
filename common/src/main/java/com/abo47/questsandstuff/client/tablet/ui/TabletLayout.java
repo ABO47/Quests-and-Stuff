@@ -247,6 +247,9 @@ final class TabletLayout {
             if (DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
+            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+                continue;
+            }
             if (!SearchFilter.matches(query, group)) {
                 continue;
             }

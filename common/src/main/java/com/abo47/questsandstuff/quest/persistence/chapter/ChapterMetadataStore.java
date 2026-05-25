@@ -61,6 +61,10 @@ public final class ChapterMetadataStore {
         return state.groupLockUntilUnlocked(group);
     }
 
+    public boolean groupHideUntilUnlocked(String group) {
+        return state.groupHideUntilUnlocked(group);
+    }
+
     public java.util.Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
         return ChapterMetadataState.copyLayerMap(state.canvasImagesByGroup);
     }
@@ -168,6 +172,16 @@ public final class ChapterMetadataStore {
         }
         state.groupLockUntilUnlocked.put(normalized, lockUntilUnlocked);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter lock_until_unlocked {} -> {}", normalized, lockUntilUnlocked);
+        save();
+    }
+
+    public void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        state.groupHideUntilUnlocked.put(normalized, hideUntilUnlocked);
+        QuestsAndStuffMod.debugLog("[QnS:Store] chapter hide_until_unlocked {} -> {}", normalized, hideUntilUnlocked);
         save();
     }
 

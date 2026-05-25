@@ -260,6 +260,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             if (com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
+            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+                continue;
+            }
             if (!SearchFilter.matches(query, group)) {
                 continue;
             }
@@ -319,6 +322,6 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private boolean canOpenChapter(String group) {
-        return state.canEdit || !ClientQuestCache.groupLockedPreview(group);
+        return state.canEdit || ClientQuestCache.groupOpenablePreview(group);
     }
 }

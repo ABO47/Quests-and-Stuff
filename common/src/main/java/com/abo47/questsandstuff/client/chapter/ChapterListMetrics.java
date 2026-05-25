@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.chapter;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -17,10 +18,17 @@ final class ChapterListMetrics {
     }
 
     static List<String> filteredGroups(List<String> groups, String queryText) {
+        return filteredGroups(groups, queryText, true);
+    }
+
+    static List<String> filteredGroups(List<String> groups, String queryText, boolean canEdit) {
         String chapterQuery = SearchFilter.normalize(queryText);
         List<String> chapterGroups = new ArrayList<>();
         for (String group : groups) {
             if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+                continue;
+            }
+            if (!canEdit && ClientQuestCache.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(chapterQuery, group)) {

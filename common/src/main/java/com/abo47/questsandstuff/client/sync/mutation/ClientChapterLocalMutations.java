@@ -99,4 +99,8 @@ public final class ClientChapterLocalMutations {
     public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
         ClientChapterState.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
     }
+
+    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientChapterState.setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+    }
 }
