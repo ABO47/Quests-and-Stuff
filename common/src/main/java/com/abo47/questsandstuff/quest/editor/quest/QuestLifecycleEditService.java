@@ -35,8 +35,6 @@ public final class QuestLifecycleEditService {
 
     public void addQuest(ServerPlayer player, String preferredGroup, String preferredQuestId, int x, int y, String preferredTitle) {
         EditorSessionService.EditorSession session = service.session(player);
-        service.captureUndo(session);
-
         String group = preferredGroup == null || preferredGroup.isBlank() ? session.currentGroup : preferredGroup;
         if (group == null || group.isBlank()) {
             List<String> groups = service.groups();
@@ -48,6 +46,7 @@ public final class QuestLifecycleEditService {
             QuestsAndStuffMod.debugLog("[QnS:Editor] add quest skipped: no chapter selected/available");
             return;
         }
+        service.captureUndo(session);
         service.ensureGroupExists(group);
         session.currentGroup = group;
         String id = EditorSessionService.normalizeQuestId(preferredQuestId);

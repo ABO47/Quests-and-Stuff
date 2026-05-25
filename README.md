@@ -29,31 +29,37 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Command rewards can be disabled in config
 - Inventory/NBT picking for item rewards
 - Repeatable quests
+- Lock or hide quests and chapters until they are unlocked
 - Custom quest icons
 - Custom chapter icons
+- Custom quest backgrounds with status colors
 - Custom quest details backgrounds
 - Custom chapter card backgrounds
 - Custom chapter canvas backgrounds
-- Custom completion sounds
+- Game or custom completion sounds with volume controls
 - Quest completion HUD
-- Add text, images, and entity previews on the canvas next to quests
+- Add text, images, items, blocks, and entity previews on the main canvas and quest details canvas
+- Move, resize, rotate, and multi-select canvas elements
 - Copy, paste, undo, and redo
 - Grid, snapping, center guides, and other editor tools
-- Minimap for large quest maps
+- Quest minimap for large quest maps
 - Custom UI themes
+
+## Dependencies
+
+- Forge: LDLib 1.0.50
+- Fabric: Fabric API and LDLib 1.0.50
 
 ## WIP
 
 - Full coordinate/radius UI for location requirements
-- custom quest card backgrounds
-- custom quest card shapes
 - more customizable quest completion HUD
+- Blueprint system for reusable quest layouts
+- Import and export for quest packs
 
 ## TODO
 
 - write docs and record some tutorial videos
-- Blueprint system for reusable quest layouts
-- Import and export for quest packs
 
 ## SOME NOTES
 

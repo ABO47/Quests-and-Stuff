@@ -1,9 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.chapter;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -13,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withGroups;
@@ -30,6 +29,11 @@ public final class ChapterEditService {
         if (group.isBlank()) {
             return;
         }
+        if (owner.definitionStore().groupOrder().contains(group)) {
+            owner.session(player).currentGroup = group;
+            return;
+        }
+        owner.captureUndo(owner.session(player));
         owner.ensureGroupExists(group);
         owner.session(player).currentGroup = group;
         owner.postMutation(player);
@@ -79,6 +83,7 @@ public final class ChapterEditService {
         if (next == index) {
             return;
         }
+        owner.captureUndo(owner.session(player));
         groups.remove(index);
         groups.add(next, group);
         owner.definitionStore().setGroupOrder(groups);
@@ -100,6 +105,7 @@ public final class ChapterEditService {
         if (next == index) {
             return;
         }
+        owner.captureUndo(owner.session(player));
         groups.remove(index);
         groups.add(next, group);
         owner.definitionStore().setGroupOrder(groups);
@@ -142,28 +148,33 @@ public final class ChapterEditService {
 
     public void setGroupIcon(ServerPlayer player, String groupName, String iconId) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        String value = iconId == null ? "" : iconId.trim();
+        if (group.isBlank() || owner.definitionStore().groupIcon(group).equals(value)) {
             return;
         }
-        owner.definitionStore().setGroupIcon(group, iconId);
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().setGroupIcon(group, value);
         owner.postMutation(player);
     }
 
     public void setGroupBackground(ServerPlayer player, String groupName, String backgroundId) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        String value = backgroundId == null || backgroundId.isBlank() ? "default" : backgroundId.trim();
+        if (group.isBlank() || owner.definitionStore().groupBackground(group).equals(value)) {
             return;
         }
-        owner.definitionStore().setGroupBackground(group, backgroundId);
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().setGroupBackground(group, value);
         owner.postMutation(player);
     }
 
     public void setGroupCanvasBackground(ServerPlayer player, String groupName, String backgroundId) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        String value = backgroundId == null || backgroundId.isBlank() ? "default" : backgroundId.trim();
+        if (group.isBlank() || owner.definitionStore().groupCanvasBackground(group).equals(value)) {
             return;
         }
-        String value = backgroundId == null || backgroundId.isBlank() ? "default" : backgroundId.trim();
+        owner.captureUndo(owner.session(player));
         QuestsAndStuffMod.debugLog("[QnS:Editor] chapter canvas background group={} background={}", group, value);
         owner.definitionStore().setGroupCanvasBackground(group, value);
         owner.postMutation(player);
@@ -171,37 +182,44 @@ public final class ChapterEditService {
 
     public void setGroupTextAlign(ServerPlayer player, String groupName, String align) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        String value = normalizeTextAlign(align);
+        if (group.isBlank() || owner.definitionStore().groupTextAlign(group).equals(value)) {
             return;
         }
-        owner.definitionStore().setGroupTextAlign(group, align);
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().setGroupTextAlign(group, value);
         owner.postMutation(player);
     }
 
     public void setGroupTextColor(ServerPlayer player, String groupName, int color) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        if (group.isBlank() || owner.definitionStore().groupTextColor(group) == color) {
             return;
         }
+        owner.captureUndo(owner.session(player));
         owner.definitionStore().setGroupTextColor(group, color);
         owner.postMutation(player);
     }
 
     public void setGroupTextStyle(ServerPlayer player, String groupName, String style) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        String value = normalizeTextStyle(style);
+        if (group.isBlank() || owner.definitionStore().groupTextStyle(group).equals(value)) {
             return;
         }
-        owner.definitionStore().setGroupTextStyle(group, style);
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().setGroupTextStyle(group, value);
         owner.postMutation(player);
     }
 
     public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
         String group = validGroup(groupName);
-        if (group.isBlank()) {
+        int value = Math.max(6, Math.min(36, size));
+        if (group.isBlank() || owner.definitionStore().groupTextSize(group) == value) {
             return;
         }
-        owner.definitionStore().setGroupTextSize(group, size);
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().setGroupTextSize(group, value);
         owner.postMutation(player);
     }
 
@@ -247,5 +265,21 @@ public final class ChapterEditService {
     private String validGroup(String groupName) {
         String group = EditorSessionService.normalizeGroup(groupName);
         return group.isBlank() || !owner.definitionStore().groupOrder().contains(group) ? "" : group;
+    }
+
+    private static String normalizeTextAlign(String align) {
+        String value = align == null ? "" : align.trim().toLowerCase(Locale.ROOT);
+        return switch (value) {
+            case "left", "right" -> value;
+            default -> "center";
+        };
+    }
+
+    private static String normalizeTextStyle(String style) {
+        String value = style == null ? "" : style.trim().toLowerCase(Locale.ROOT);
+        return switch (value) {
+            case "bold", "italic", "bold_italic" -> value;
+            default -> "normal";
+        };
     }
 }

@@ -7,7 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class ChapterMetadataStore {
@@ -22,6 +24,46 @@ public final class ChapterMetadataStore {
 
     public List<String> groupOrder() {
         return List.copyOf(state.groupOrder);
+    }
+
+    public ChapterMetadataSnapshot snapshot() {
+        return new ChapterMetadataSnapshot(
+                List.copyOf(state.groupOrder),
+                Map.copyOf(state.groupIcons),
+                Map.copyOf(state.groupBackgrounds),
+                Map.copyOf(state.groupCanvasBackgrounds),
+                Map.copyOf(state.groupTextAlign),
+                Map.copyOf(state.groupTextColor),
+                Map.copyOf(state.groupTextStyle),
+                Map.copyOf(state.groupTextSize),
+                Map.copyOf(state.groupLockUntilUnlocked),
+                Map.copyOf(state.groupHideUntilUnlocked),
+                ChapterMetadataState.copyLayerMap(state.canvasImagesByGroup),
+                ChapterMetadataState.copyLayerMap(state.canvasTextsByGroup),
+                ChapterMetadataState.copyLayerMap(state.canvasLayerOrderByGroup)
+        );
+    }
+
+    public void restore(ChapterMetadataSnapshot snapshot) {
+        state.clear();
+        if (snapshot == null) {
+            save();
+            return;
+        }
+        state.groupOrder.addAll(snapshot.groupOrder());
+        state.groupIcons.putAll(snapshot.groupIcons());
+        state.groupBackgrounds.putAll(snapshot.groupBackgrounds());
+        state.groupCanvasBackgrounds.putAll(snapshot.groupCanvasBackgrounds());
+        state.groupTextAlign.putAll(snapshot.groupTextAlign());
+        state.groupTextColor.putAll(snapshot.groupTextColor());
+        state.groupTextStyle.putAll(snapshot.groupTextStyle());
+        state.groupTextSize.putAll(snapshot.groupTextSize());
+        state.groupLockUntilUnlocked.putAll(snapshot.groupLockUntilUnlocked());
+        state.groupHideUntilUnlocked.putAll(snapshot.groupHideUntilUnlocked());
+        state.canvasImagesByGroup.putAll(mutableLayerMap(snapshot.canvasImagesByGroup()));
+        state.canvasTextsByGroup.putAll(mutableLayerMap(snapshot.canvasTextsByGroup()));
+        state.canvasLayerOrderByGroup.putAll(mutableLayerMap(snapshot.canvasLayerOrderByGroup()));
+        save();
     }
 
     public void setGroupOrder(List<String> groups, Set<String> discoveredGroups) {
@@ -244,6 +286,17 @@ public final class ChapterMetadataStore {
 
     public void reconcile(Set<String> discoveredGroups) {
         state.reconcile(discoveredGroups);
+    }
+
+    private static <T> Map<String, List<T>> mutableLayerMap(Map<String, List<T>> source) {
+        Map<String, List<T>> copy = new HashMap<>();
+        if (source == null) {
+            return copy;
+        }
+        for (Map.Entry<String, List<T>> entry : source.entrySet()) {
+            copy.put(entry.getKey(), List.copyOf(entry.getValue()));
+        }
+        return copy;
     }
 
 }

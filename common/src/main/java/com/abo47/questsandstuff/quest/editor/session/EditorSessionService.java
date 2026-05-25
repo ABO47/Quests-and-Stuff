@@ -13,10 +13,11 @@ import com.abo47.questsandstuff.quest.editor.session.actions.EditorCanvasSession
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorChapterSessionActions;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorQuestSessionActions;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorUndoRedoActions;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore.EditorSnapshot;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import com.abo47.questsandstuff.util.QuestClipboardDebugLog;
@@ -443,7 +444,7 @@ public final class EditorSessionService {
         public String currentQuest;
         public EditorMode mode = EditorMode.MOVE;
         public ClipboardSnapshot clipboardSnapshot = ClipboardSnapshot.empty();
-        public final Deque<Map<String, QuestDefinition>> undo = new ArrayDeque<>();
-        public final Deque<Map<String, QuestDefinition>> redo = new ArrayDeque<>();
+        public final Deque<EditorSnapshot> undo = new ArrayDeque<>();
+        public final Deque<EditorSnapshot> redo = new ArrayDeque<>();
     }
 }

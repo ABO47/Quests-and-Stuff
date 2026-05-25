@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,6 +59,10 @@ public final class QuestDefinitionStore {
             snapshot.put(entry.getKey(), cloneDefinition(entry.getValue()));
         }
         return snapshot;
+    }
+
+    public EditorSnapshot editorSnapshot() {
+        return new EditorSnapshot(snapshot(), chapters.snapshot());
     }
 
     public List<String> groupOrder() {
@@ -199,6 +204,16 @@ public final class QuestDefinitionStore {
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
     }
 
+    public void replaceAll(EditorSnapshot replacement) {
+        if (replacement == null) {
+            return;
+        }
+        replaceAll(replacement.quests());
+        chapters.restore(replacement.chapters());
+        chapters.reconcile(discoverGroups());
+        chapters.save();
+    }
+
     public void load() {
         try {
             Map<String, QuestDefinition> loaded = QuestDefinitionLoader.load(questsDir);
@@ -302,6 +317,9 @@ public final class QuestDefinitionStore {
             groups.addAll(definition.display().groups().keySet());
         }
         return groups;
+    }
+
+    public record EditorSnapshot(Map<String, QuestDefinition> quests, ChapterMetadataSnapshot chapters) {
     }
 
 }

@@ -54,7 +54,7 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
-            return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, keyCode, scanCode, modifiers);
+            return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
         if (!root.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
             state.quickConnectHeld = true;
@@ -96,7 +96,18 @@ final class TabletRootKeyboardRouter {
         return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
     }
 
-    private static boolean keyPressedForFrontWindow(TabletRootWidget root, TabletUiState state, WidgetGroup frontWindowLayer, CanvasViewport canvasViewport, Runnable refresher, int keyCode, int scanCode, int modifiers) {
+    private static boolean keyPressedForFrontWindow(
+            TabletRootWidget root,
+            TabletUiState state,
+            WidgetGroup frontWindowLayer,
+            CanvasViewport canvasViewport,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode,
+            int scanCode,
+            int modifiers
+    ) {
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -106,6 +117,9 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (handleQuestDetailsClipboardShortcut(root, state, refresher, keyCode)) {
+            return true;
+        }
+        if (handleQuestDetailsHistoryShortcut(root, state, refresher, undoAction, redoAction, keyCode)) {
             return true;
         }
         if (frontWindowLayer != null) {
@@ -241,6 +255,30 @@ final class TabletRootKeyboardRouter {
             return false;
         }
         if (QuestDetailsWindow.handleClipboardShortcut(root.resolvePlayer(), state, keyCode)) {
+            refresher.run();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean handleQuestDetailsHistoryShortcut(
+            TabletRootWidget root,
+            TabletUiState state,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode
+    ) {
+        if (!QuestDetailsEditState.canEdit(state) || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+            return false;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Z) {
+            undoAction.run();
+            refresher.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Y) {
+            redoAction.run();
             refresher.run();
             return true;
         }
