@@ -51,6 +51,9 @@ final class CanvasMinimapOverlay {
             Map<String, QuestCardLayout> byQuestId
     ) {
         clearState(state);
+        if (!QuestsAndStuffConfig.minimapEnabled()) {
+            return;
+        }
         CanvasMinimapGeometry.Layout hitLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), state.minimapCollapsed);
         applyLayout(state, hitLayout);
         if (hitLayout.panelW() <= 0 || hitLayout.panelH() <= 0) {

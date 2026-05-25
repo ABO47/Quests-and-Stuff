@@ -24,7 +24,15 @@ public final class CanvasSelectionTransformController {
     }
 
     public void updateDrag(int localX, int localY, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
-        dragController.updateDrag(localX, localY, cards);
+        updateDrag(localX, localY, cards, byQuestId, false);
+    }
+
+    public void updateDrag(int localX, int localY, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, boolean deferQuestPositions) {
+        dragController.updateDrag(localX, localY, cards, deferQuestPositions);
+    }
+
+    public void populateDragPositions() {
+        dragController.populateTransientQuestPositions();
     }
 
     public void beginResize(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {

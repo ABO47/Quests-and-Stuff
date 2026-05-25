@@ -12,6 +12,9 @@
     "connectionAnimations": true,
     "chapterSwitchAnimations": true
   },
+  "canvas": {
+    "minimap": true
+  },
   "security": {
     "commandRewards": true
   }

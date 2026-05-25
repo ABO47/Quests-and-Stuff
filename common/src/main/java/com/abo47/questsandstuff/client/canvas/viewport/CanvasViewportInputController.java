@@ -66,11 +66,18 @@ final class CanvasViewportInputController {
         if (state.draggingCanvas) {
             int dx = localX - state.dragCurrentX;
             int dy = localY - state.dragCurrentY;
-            state.canvasOffsetX += dx;
-            state.canvasOffsetY += dy;
             state.dragCurrentX = localX;
             state.dragCurrentY = localY;
-            viewport.refreshCanvas();
+            if (viewport.previewCanvasPan(dx, dy)) {
+                if (viewport.panPreviewNeedsRefresh()) {
+                    viewport.commitCanvasPan();
+                    viewport.refreshCanvas();
+                }
+            } else {
+                state.canvasOffsetX += dx;
+                state.canvasOffsetY += dy;
+                viewport.refreshCanvas();
+            }
             return true;
         }
 
@@ -86,7 +93,14 @@ final class CanvasViewportInputController {
         }
 
         if (state.draggingSelection) {
-            selectionTransforms.updateDrag(localX, localY, cards, byQuestId);
+            boolean liveQuestPreview = viewport.selectionDragPreviewSupported();
+            selectionTransforms.updateDrag(localX, localY, cards, byQuestId, liveQuestPreview);
+            if (liveQuestPreview && viewport.previewSelectionDrag()) {
+                return true;
+            }
+            if (liveQuestPreview) {
+                selectionTransforms.populateDragPositions();
+            }
             viewport.refreshCanvas();
             return true;
         }
@@ -106,7 +120,7 @@ final class CanvasViewportInputController {
         if (state.boxSelecting) {
             state.boxCurrentX = localX;
             state.boxCurrentY = localY;
-            viewport.refreshCanvas();
+            CanvasBoxSelectionController.updateBoxSelection(state, cards);
             return true;
         }
 
@@ -142,6 +156,7 @@ final class CanvasViewportInputController {
         }
         if (state.draggingCanvas) {
             state.draggingCanvas = false;
+            viewport.commitCanvasPan();
             viewport.refreshCanvas();
             return true;
         }
@@ -178,6 +193,10 @@ final class CanvasViewportInputController {
 
         if (state.draggingSelection) {
             state.draggingSelection = false;
+            viewport.endSelectionDragPreview();
+            if (state.transientQuestPositions.isEmpty() && (state.dragSelectionDeltaX != 0 || state.dragSelectionDeltaY != 0)) {
+                selectionTransforms.populateDragPositions();
+            }
             if (!state.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
@@ -269,7 +288,8 @@ final class CanvasViewportInputController {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             return true;
         }
-        CanvasViewportZoom.zoomAt(state, viewport::refreshCanvas, localX, localY, wheelDelta);
+        viewport.commitCanvasPan();
+        CanvasViewportZoom.zoomAt(state, viewport::queueCanvasRefresh, localX, localY, wheelDelta);
         return true;
     }
 }

@@ -64,7 +64,7 @@ final class CanvasSelectionDragController {
         state.dragStartSelectionBottom = state.selectionBoundsBottom;
     }
 
-    void updateDrag(int localX, int localY, List<QuestCardLayout> cards) {
+    void updateDrag(int localX, int localY, List<QuestCardLayout> cards, boolean deferQuestPositions) {
         int dx = (int) Math.round(CanvasGeometry.screenToLogicalX(state, localX) - CanvasGeometry.screenToLogicalX(state, state.dragStartX));
         int dy = (int) Math.round(CanvasGeometry.screenToLogicalY(state, localY) - CanvasGeometry.screenToLogicalY(state, state.dragStartY));
         state.dragCurrentX = localX;
@@ -80,17 +80,22 @@ final class CanvasSelectionDragController {
             }
             delta = clamped;
         }
-        applySelectionDragDelta(delta.x, delta.y);
+        applySelectionDragDelta(delta.x, delta.y, deferQuestPositions);
     }
 
-    private void applySelectionDragDelta(int dx, int dy) {
+    void populateTransientQuestPositions() {
+        populateTransientQuestPositions(state.dragSelectionDeltaX, state.dragSelectionDeltaY);
+    }
+
+    private void applySelectionDragDelta(int dx, int dy, boolean deferQuestPositions) {
         state.dragSelectionDeltaX = dx;
         state.dragSelectionDeltaY = dy;
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
-        for (Map.Entry<String, CanvasPoint> entry : state.dragStartPositions.entrySet()) {
-            state.transientQuestPositions.put(entry.getKey(), new CanvasPoint(entry.getValue().x + dx, entry.getValue().y + dy));
+        if (deferQuestPositions) {
+            state.transientQuestPositions.clear();
+        } else {
+            populateTransientQuestPositions(dx, dy);
         }
+        state.transientQuestScales.clear();
         String group = TabletUiFactory.selectedGroupName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
@@ -103,6 +108,13 @@ final class CanvasSelectionDragController {
             if (text != null) {
                 CanvasRenderer.putCanvasText(state, group, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy), false);
             }
+        }
+    }
+
+    private void populateTransientQuestPositions(int dx, int dy) {
+        state.transientQuestPositions.clear();
+        for (Map.Entry<String, CanvasPoint> entry : state.dragStartPositions.entrySet()) {
+            state.transientQuestPositions.put(entry.getKey(), new CanvasPoint(entry.getValue().x + dx, entry.getValue().y + dy));
         }
     }
 

@@ -25,6 +25,7 @@ public final class QuestsAndStuffConfig {
     private static boolean popupWindowAnimations = true;
     private static boolean connectionAnimations = true;
     private static boolean chapterSwitchAnimations = true;
+    private static boolean minimap = true;
     private static boolean commandRewards = true;
 
     private QuestsAndStuffConfig() {
@@ -201,6 +202,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean minimapEnabled() {
+        load();
+        return minimap;
+    }
+
+    public static void setMinimapEnabled(boolean enabled) {
+        load();
+        if (minimap != enabled) {
+            minimap = enabled;
+            save();
+        }
+    }
+
     public static boolean commandRewardsEnabled() {
         load();
         return commandRewards;
@@ -228,6 +242,9 @@ public final class QuestsAndStuffConfig {
         connectionAnimations = bool(animations, "connectionAnimations", connectionAnimations);
         chapterSwitchAnimations = bool(animations, "chapterSwitchAnimations", chapterSwitchAnimations);
 
+        JsonObject canvas = object(root, "canvas");
+        minimap = bool(canvas, "minimap", minimap);
+
         JsonObject security = object(root, "security");
         commandRewards = bool(security, "commandRewards", commandRewards);
     }
@@ -248,6 +265,10 @@ public final class QuestsAndStuffConfig {
         animations.addProperty("connectionAnimations", connectionAnimations);
         animations.addProperty("chapterSwitchAnimations", chapterSwitchAnimations);
         root.add("animations", animations);
+
+        JsonObject canvas = new JsonObject();
+        canvas.addProperty("minimap", minimap);
+        root.add("canvas", canvas);
 
         JsonObject security = new JsonObject();
         security.addProperty("commandRewards", commandRewards);

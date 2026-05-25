@@ -67,21 +67,14 @@ final class CanvasSelectMoveClickActions {
                 state.selectedQuestIds.add(hit.questId());
             }
             selectionTransforms.beginDrag(localX, localY, byQuestId);
+            canvasViewport.beginSelectionDragPreview();
         } else {
             state.draggingSelection = false;
             state.resizingSelection = false;
             state.rotatingSelection = false;
             state.transientQuestPositions.clear();
             state.transientQuestScales.clear();
-            state.boxSelecting = true;
-            state.boxAdditive = canvasViewport.shiftDown();
-            state.boxStartX = localX;
-            state.boxStartY = localY;
-            state.boxCurrentX = localX;
-            state.boxCurrentY = localY;
-            if (!state.boxAdditive) {
-                CanvasRenderer.clearCanvasSelection(state);
-            }
+            CanvasBoxSelectionController.beginBoxSelection(state, canvasViewport.shiftDown(), localX, localY);
         }
         refresher.run();
     }
@@ -113,6 +106,7 @@ final class CanvasSelectMoveClickActions {
             }
             if (!canvasViewport.shiftDown() && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
                 selectionTransforms.beginDrag(localX, localY, byQuestId);
+                canvasViewport.beginSelectionDragPreview();
                 refresher.run();
                 return true;
             }
@@ -146,6 +140,7 @@ final class CanvasSelectMoveClickActions {
         }
         if (!canvasViewport.shiftDown() && selectionCount > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             selectionTransforms.beginDrag(localX, localY, byQuestId);
+            canvasViewport.beginSelectionDragPreview();
             refresher.run();
             return true;
         }

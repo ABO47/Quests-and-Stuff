@@ -32,10 +32,12 @@ public final class TabletSettingsModal {
     private static final int ROW_INSET = 4;
     private static final int SWITCH_GAP = 8;
     private static final int TAB_THEMES = 0;
-    private static final int TAB_ANIMATIONS = 1;
-    private static final int TAB_DEBUG = 2;
+    private static final int TAB_CANVAS = 1;
+    private static final int TAB_ANIMATIONS = 2;
+    private static final int TAB_DEBUG = 3;
     private static final List<SettingTab> TABS = List.of(
             new SettingTab(TAB_THEMES, "themes", "ui.questsandstuff.settings.tab_themes"),
+            new SettingTab(TAB_CANVAS, "canvas", "ui.questsandstuff.settings.tab_canvas"),
             new SettingTab(TAB_ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations"),
             new SettingTab(TAB_DEBUG, "debug", "ui.questsandstuff.settings.tab_debug")
     );
@@ -86,7 +88,7 @@ public final class TabletSettingsModal {
     }
 
     private static int activeTab(int tab) {
-        if (tab == TAB_THEMES || tab == TAB_ANIMATIONS || tab == TAB_DEBUG) {
+        if (tab == TAB_THEMES || tab == TAB_CANVAS || tab == TAB_ANIMATIONS || tab == TAB_DEBUG) {
             return tab;
         }
         return TAB_THEMES;
@@ -148,7 +150,24 @@ public final class TabletSettingsModal {
         if (tab == TAB_DEBUG) {
             return debugOptions();
         }
+        if (tab == TAB_CANVAS) {
+            return canvasOptions();
+        }
         return animationOptions();
+    }
+
+    private static List<SettingOption> canvasOptions() {
+        return List.of(
+                new SettingOption(
+                        "minimap",
+                        "ui.questsandstuff.settings.minimap",
+                        "ui.questsandstuff.settings.minimap_desc",
+                        QuestsAndStuffConfig::minimapEnabled,
+                        QuestsAndStuffConfig::setMinimapEnabled,
+                        false,
+                        false
+                )
+        );
     }
 
     private static List<SettingOption> animationOptions() {

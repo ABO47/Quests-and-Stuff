@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,14 @@ public final class CanvasViewport extends WidgetGroup {
     private Runnable canvasRefresher = () -> {};
     private List<QuestCardLayout> cards = List.of();
     private Map<String, QuestCardLayout> byQuestId = Map.of();
+    private WidgetGroup canvasContentLayer;
+    private final Map<String, WidgetGroup> questCardLayers = new HashMap<>();
+    private final Map<String, LayerPosition> selectionQuestLayerBases = new HashMap<>();
+    private int canvasContentLayerBaseX;
+    private int canvasContentLayerBaseY;
+    private int livePanX;
+    private int livePanY;
+    private boolean canvasRefreshQueued;
     private final CanvasInlineTextEditor textEditor;
     private final CanvasElementTransformController elementTransforms;
     private final CanvasSelectionTransformController selectionTransforms;
@@ -49,8 +59,8 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     public void updateCardCache(List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
-        this.cards = List.copyOf(cards);
-        this.byQuestId = Map.copyOf(byQuestId);
+        this.cards = shiftedCards(cards, livePanX, livePanY);
+        this.byQuestId = shiftedLookup(byQuestId, livePanX, livePanY);
     }
 
     public List<QuestCardLayout> cardCache() {
@@ -70,7 +80,230 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     public void refreshCanvas() {
+        canvasRefreshQueued = false;
         canvasRefresher.run();
+    }
+
+    void queueCanvasRefresh() {
+        canvasRefreshQueued = true;
+    }
+
+    @Override
+    public void clearAllWidgets() {
+        super.clearAllWidgets();
+        canvasContentLayer = null;
+        questCardLayers.clear();
+        selectionQuestLayerBases.clear();
+        canvasContentLayerBaseX = 0;
+        canvasContentLayerBaseY = 0;
+    }
+
+    void registerQuestCardLayer(String questId, WidgetGroup layer) {
+        if (questId == null || questId.isBlank() || layer == null) {
+            return;
+        }
+        questCardLayers.put(questId, layer);
+    }
+
+    void setCanvasContentLayer(WidgetGroup canvasContentLayer) {
+        this.canvasContentLayer = canvasContentLayer;
+        if (canvasContentLayer == null) {
+            canvasContentLayerBaseX = 0;
+            canvasContentLayerBaseY = 0;
+            return;
+        }
+        canvasContentLayerBaseX = canvasContentLayer.getSelfPositionX();
+        canvasContentLayerBaseY = canvasContentLayer.getSelfPositionY();
+        applyLivePanToLayer();
+    }
+
+    void beginCanvasPan() {
+        if (livePanX != 0 || livePanY != 0) {
+            shiftCardCache(-livePanX, -livePanY);
+        }
+        livePanX = 0;
+        livePanY = 0;
+        state.canvasLivePanX = 0;
+        state.canvasLivePanY = 0;
+        applyLivePanToLayer();
+    }
+
+    boolean previewCanvasPan(int dx, int dy) {
+        if (dx == 0 && dy == 0) {
+            return true;
+        }
+        if (canvasContentLayer == null) {
+            return false;
+        }
+        livePanX += dx;
+        livePanY += dy;
+        state.canvasLivePanX = livePanX;
+        state.canvasLivePanY = livePanY;
+        applyLivePanToLayer();
+        shiftCardCache(dx, dy);
+        return true;
+    }
+
+    boolean panPreviewNeedsRefresh() {
+        int thresholdX = Math.max(1, (CanvasLayoutService.panRenderOverscanX(getSizeWidth()) * 3) / 4);
+        int thresholdY = Math.max(1, (CanvasLayoutService.panRenderOverscanY(getSizeHeight()) * 3) / 4);
+        return Math.abs(livePanX) >= thresholdX || Math.abs(livePanY) >= thresholdY;
+    }
+
+    void beginSelectionDragPreview() {
+        selectionQuestLayerBases.clear();
+    }
+
+    boolean selectionDragPreviewSupported() {
+        return state.selectedCanvasImageId.isBlank()
+                && state.selectedCanvasTextId.isBlank()
+                && state.selectedCanvasImageIds.isEmpty()
+                && state.selectedCanvasTextIds.isEmpty();
+    }
+
+    boolean previewSelectionDrag() {
+        if (!selectionDragPreviewSupported() || state.selectedQuestIds.isEmpty()) {
+            return false;
+        }
+        ensureSelectionLayerBases();
+        if (selectionQuestLayerBases.isEmpty()) {
+            return false;
+        }
+        int dx = selectionDragScreenX();
+        int dy = selectionDragScreenY();
+        for (Map.Entry<String, LayerPosition> entry : selectionQuestLayerBases.entrySet()) {
+            WidgetGroup layer = questCardLayers.get(entry.getKey());
+            if (layer != null) {
+                LayerPosition base = entry.getValue();
+                layer.setSelfPosition(base.x() + dx, base.y() + dy);
+            }
+        }
+        previewSelectionBounds(dx, dy);
+        return true;
+    }
+
+    void endSelectionDragPreview() {
+        selectionQuestLayerBases.clear();
+    }
+
+    private void ensureSelectionLayerBases() {
+        if (!selectionQuestLayerBases.isEmpty()) {
+            return;
+        }
+        for (String questId : state.selectedQuestIds) {
+            WidgetGroup layer = questCardLayers.get(questId);
+            if (layer != null) {
+                selectionQuestLayerBases.put(questId, new LayerPosition(layer.getSelfPositionX(), layer.getSelfPositionY()));
+            }
+        }
+    }
+
+    private void previewSelectionBounds(int dx, int dy) {
+        if (state.dragStartSelectionRight <= state.dragStartSelectionLeft
+                || state.dragStartSelectionBottom <= state.dragStartSelectionTop) {
+            return;
+        }
+        state.selectionBoundsVisible = true;
+        state.selectionBoundsLeft = state.dragStartSelectionLeft + dx;
+        state.selectionBoundsTop = state.dragStartSelectionTop + dy;
+        state.selectionBoundsRight = state.dragStartSelectionRight + dx;
+        state.selectionBoundsBottom = state.dragStartSelectionBottom + dy;
+    }
+
+    private int selectionDragScreenX() {
+        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+    }
+
+    private int selectionDragScreenY() {
+        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
+    }
+
+    void commitCanvasPan() {
+        if (livePanX == 0 && livePanY == 0) {
+            return;
+        }
+        state.canvasOffsetX += livePanX;
+        state.canvasOffsetY += livePanY;
+        livePanX = 0;
+        livePanY = 0;
+        state.canvasLivePanX = 0;
+        state.canvasLivePanY = 0;
+        applyLivePanToLayer();
+    }
+
+    private void applyLivePanToLayer() {
+        if (canvasContentLayer == null) {
+            return;
+        }
+        canvasContentLayer.setSelfPosition(canvasContentLayerBaseX + livePanX, canvasContentLayerBaseY + livePanY);
+    }
+
+    private void shiftCardCache(int dx, int dy) {
+        if (cards.isEmpty()) {
+            return;
+        }
+        List<QuestCardLayout> shifted = new ArrayList<>(cards.size());
+        Map<String, QuestCardLayout> shiftedByQuestId = new HashMap<>();
+        for (QuestCardLayout card : cards) {
+            QuestCardLayout shiftedCard = shiftCard(card, dx, dy);
+            shifted.add(shiftedCard);
+            shiftedByQuestId.put(shiftedCard.questId(), shiftedCard);
+        }
+        cards = List.copyOf(shifted);
+        byQuestId = Map.copyOf(shiftedByQuestId);
+    }
+
+    private static List<QuestCardLayout> shiftedCards(List<QuestCardLayout> cards, int dx, int dy) {
+        if (cards == null || cards.isEmpty()) {
+            return List.of();
+        }
+        if (dx == 0 && dy == 0) {
+            return List.copyOf(cards);
+        }
+        List<QuestCardLayout> shifted = new ArrayList<>(cards.size());
+        for (QuestCardLayout card : cards) {
+            shifted.add(shiftCard(card, dx, dy));
+        }
+        return List.copyOf(shifted);
+    }
+
+    private static Map<String, QuestCardLayout> shiftedLookup(Map<String, QuestCardLayout> byQuestId, int dx, int dy) {
+        if (byQuestId == null || byQuestId.isEmpty()) {
+            return Map.of();
+        }
+        if (dx == 0 && dy == 0) {
+            return Map.copyOf(byQuestId);
+        }
+        Map<String, QuestCardLayout> shifted = new HashMap<>();
+        for (Map.Entry<String, QuestCardLayout> entry : byQuestId.entrySet()) {
+            shifted.put(entry.getKey(), shiftCard(entry.getValue(), dx, dy));
+        }
+        return Map.copyOf(shifted);
+    }
+
+    private static QuestCardLayout shiftCard(QuestCardLayout card, int dx, int dy) {
+        return new QuestCardLayout(
+                card.questId(),
+                card.tag(),
+                card.logicalX(),
+                card.logicalY(),
+                card.logicalWidth(),
+                card.logicalHeight(),
+                card.slotLogicalWidth(),
+                card.slotLogicalHeight(),
+                card.visualLogicalX(),
+                card.visualLogicalY(),
+                card.scale(),
+                card.x() + dx,
+                card.y() + dy,
+                card.width(),
+                card.height()
+        );
+    }
+
+    private record LayerPosition(int x, int y) {
     }
 
     @Override
@@ -95,7 +328,8 @@ public final class CanvasViewport extends WidgetGroup {
         boolean animationFinished = CanvasMinimapController.finishAnimationIfDone(state);
         animationFinished |= CanvasConnectionAnimation.finishIfDone(state);
         animationFinished |= CanvasChapterSwitchAnimation.finishIfDone(state);
-        if (animationFinished) {
+        if (animationFinished || canvasRefreshQueued) {
+            canvasRefreshQueued = false;
             refreshCanvas();
         }
     }

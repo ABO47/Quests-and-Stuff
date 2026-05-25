@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
@@ -107,7 +108,16 @@ final class CanvasSceneRenderer {
         }
     }
 
-    static void renderCanvasElements(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, List<QuestCardLayout> visibleCards, int viewportW, int viewportH) {
+    static void renderCanvasElements(
+            WidgetGroup canvasViewport,
+            TabletUiState state,
+            Player player,
+            Runnable refresh,
+            List<QuestCardLayout> visibleCards,
+            int viewportW,
+            int viewportH,
+            BiConsumer<String, WidgetGroup> questCardLayerSink
+    ) {
         String group = selectedGroupName(state);
         List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(group, List.of());
         List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(group, List.of());
@@ -145,38 +155,66 @@ final class CanvasSceneRenderer {
             if (key.startsWith(CanvasLayerOrdering.QUEST_PREFIX)) {
                 QuestCardLayout card = cardsById.get(key.substring(CanvasLayerOrdering.QUEST_PREFIX.length()));
                 if (card != null) {
-                    renderQuestCard(canvasViewport, state, player, refresh, card, viewportW, viewportH);
+                    renderQuestCard(canvasViewport, state, player, refresh, card, viewportW, viewportH, questCardLayerSink);
                 }
             }
         }
     }
 
-    private static boolean intersectsViewport(QuestCardLayout card, int viewportW, int viewportH) {
-        return card.x() + card.width() >= 0
-                && card.y() + card.height() >= 0
-                && card.x() <= viewportW
-                && card.y() <= viewportH;
-    }
-
-    private static void renderQuestCard(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {
-        if (!intersectsViewport(card, viewportW, viewportH)) {
+    private static void renderQuestCard(
+            WidgetGroup canvasViewport,
+            TabletUiState state,
+            Player player,
+            Runnable refresh,
+            QuestCardLayout card,
+            int viewportW,
+            int viewportH,
+            BiConsumer<String, WidgetGroup> questCardLayerSink
+    ) {
+        if (!CanvasLayoutService.intersectsPanRenderWindow(card, viewportW, viewportH)) {
             return;
         }
         CompoundTag tag = card.tag();
+        WidgetGroup cardLayer = new WidgetGroup(card.x(), card.y(), card.width(), card.height());
+        QuestCardLayout localCard = localCard(card);
         float progress = questProgress(tag);
-        boolean customBackground = renderQuestBackground(canvasViewport, card, tag, progress);
+        boolean customBackground = renderQuestBackground(cardLayer, localCard, tag, progress);
         if (!customBackground && tag.getBoolean("unlocked") && progress > 0.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
-            renderQuestProgressFill(canvasViewport, card, progress);
+            renderQuestProgressFill(cardLayer, localCard, progress);
         }
-        renderQuestIcon(canvasViewport, card);
-        renderLockedPreviewState(canvasViewport, card);
-        renderSearchState(canvasViewport, state, card);
-        renderHiddenEditState(canvasViewport, state, card);
+        renderQuestIcon(cardLayer, localCard);
+        renderLockedPreviewState(cardLayer, localCard);
+        renderSearchState(cardLayer, state, localCard);
+        renderHiddenEditState(cardLayer, state, localCard);
+        canvasViewport.addWidget(cardLayer);
+        if (questCardLayerSink != null) {
+            questCardLayerSink.accept(card.questId(), cardLayer);
+        }
         if (state.canEdit && card.questId().equals(state.pendingQuestTitleChangeId)) {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
-        addQuestTooltipHit(canvasViewport, card);
+        addQuestTooltipHit(cardLayer, localCard);
+    }
+
+    private static QuestCardLayout localCard(QuestCardLayout card) {
+        return new QuestCardLayout(
+                card.questId(),
+                card.tag(),
+                card.logicalX(),
+                card.logicalY(),
+                card.logicalWidth(),
+                card.logicalHeight(),
+                card.slotLogicalWidth(),
+                card.slotLogicalHeight(),
+                card.visualLogicalX(),
+                card.visualLogicalY(),
+                card.scale(),
+                0,
+                0,
+                card.width(),
+                card.height()
+        );
     }
 
     private static boolean renderQuestBackground(WidgetGroup canvasViewport, QuestCardLayout card, CompoundTag tag, float progress) {

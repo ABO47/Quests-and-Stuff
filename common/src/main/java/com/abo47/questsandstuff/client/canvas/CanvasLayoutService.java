@@ -21,6 +21,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistU
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
 
 public final class CanvasLayoutService {
+    private static final int MIN_PAN_RENDER_OVERSCAN = 96;
+
     private CanvasLayoutService() {
     }
 
@@ -83,6 +85,23 @@ public final class CanvasLayoutService {
         List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts);
         visibleCards.sort(Comparator.comparingInt(card -> CanvasLayerOrdering.layerIndex(layerOrder, CanvasLayerOrdering.questKey(card.questId()))));
         return visibleCards;
+    }
+
+    public static int panRenderOverscanX(int viewportW) {
+        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportW);
+    }
+
+    public static int panRenderOverscanY(int viewportH) {
+        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportH);
+    }
+
+    public static boolean intersectsPanRenderWindow(QuestCardLayout card, int viewportW, int viewportH) {
+        int marginX = panRenderOverscanX(viewportW);
+        int marginY = panRenderOverscanY(viewportH);
+        return card.x() + card.width() >= -marginX
+                && card.y() + card.height() >= -marginY
+                && card.x() <= viewportW + marginX
+                && card.y() <= viewportH + marginY;
     }
 
     public static void clampCanvasOffset(TabletUiState state, List<QuestCardLayout> cards, int contentW, int contentH) {

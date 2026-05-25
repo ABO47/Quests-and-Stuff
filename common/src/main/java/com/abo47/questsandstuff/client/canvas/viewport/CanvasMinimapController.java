@@ -15,6 +15,10 @@ public final class CanvasMinimapController {
     }
 
     public static boolean handleClick(TabletUiState state, int localX, int localY) {
+        if (!QuestsAndStuffConfig.minimapEnabled()) {
+            state.draggingMinimap = false;
+            return false;
+        }
         if (isToggleHit(state, localX, localY) || (state.minimapCollapsed && isPanelHit(state, localX, localY))) {
             boolean wasCollapsed = state.minimapCollapsed;
             state.minimapCollapsed = !state.minimapCollapsed;
@@ -35,6 +39,10 @@ public final class CanvasMinimapController {
     }
 
     public static boolean handleDrag(TabletUiState state, int localX, int localY) {
+        if (!QuestsAndStuffConfig.minimapEnabled()) {
+            state.draggingMinimap = false;
+            return false;
+        }
         if (!state.draggingMinimap) {
             return false;
         }
@@ -43,6 +51,10 @@ public final class CanvasMinimapController {
     }
 
     public static boolean finishDrag(TabletUiState state) {
+        if (!QuestsAndStuffConfig.minimapEnabled()) {
+            state.draggingMinimap = false;
+            return false;
+        }
         if (!state.draggingMinimap) {
             return false;
         }
@@ -52,6 +64,7 @@ public final class CanvasMinimapController {
 
     public static boolean isClosingAnimationRunning(TabletUiState state) {
         return state != null
+                && QuestsAndStuffConfig.minimapEnabled()
                 && QuestsAndStuffConfig.minimapAnimationsEnabled()
                 && UiAnimationProgress.running(state.minimapAnimationStartMs, ANIMATION_MS)
                 && state.minimapCollapsed
@@ -71,7 +84,8 @@ public final class CanvasMinimapController {
     }
 
     public static boolean isPanelHit(TabletUiState state, int localX, int localY) {
-        return CanvasMinimapGeometry.hit(localX, localY, state.minimapPanelX, state.minimapPanelY, state.minimapPanelW, state.minimapPanelH);
+        return QuestsAndStuffConfig.minimapEnabled()
+                && CanvasMinimapGeometry.hit(localX, localY, state.minimapPanelX, state.minimapPanelY, state.minimapPanelW, state.minimapPanelH);
     }
 
     private static boolean isToggleHit(TabletUiState state, int localX, int localY) {
