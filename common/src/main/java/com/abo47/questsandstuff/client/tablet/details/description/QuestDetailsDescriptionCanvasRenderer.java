@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -101,33 +102,35 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
-        int x = contentX + image.x();
-        int y = contentY + image.y() - state.questDetailsDescScroll;
-        if (y > contentY + contentH || y + image.h() < contentY) {
+        CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+        int x = contentX + drawImage.x();
+        int y = contentY + drawImage.y() - state.questDetailsDescScroll;
+        if (y > contentY + contentH || y + drawImage.h() < contentY) {
             return;
         }
-        CanvasImageLayerRenderer.draw(graphics, 0, 0, image, x, y, image.w(), image.h(), image.pivotX(), image.pivotY());
-        if (isSelectedImage(state, image.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
-            drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, image);
+        CanvasImageLayerRenderer.draw(graphics, 0, 0, drawImage, x, y, drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY());
+        if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
+            drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
         }
     }
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
-        int x = contentX + text.x();
-        int y = contentY + text.y() - state.questDetailsDescScroll;
-        if (y > contentY + contentH || y + text.h() < contentY) {
+        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        int x = contentX + drawText.x();
+        int y = contentY + drawText.y() - state.questDetailsDescScroll;
+        if (y > contentY + contentH || y + drawText.h() < contentY) {
             return;
         }
-        boolean inlineEditing = state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget)
-                && text.id().equals(state.questDetailsTextEditTarget);
-        CanvasTextLayer rendered = inlineEditing ? text.withText(state.canvasTextEditDraft) : text;
+        boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget)
+                && drawText.id().equals(state.questDetailsTextEditTarget);
+        CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvasTextEditDraft) : drawText;
         graphics.pose().pushPose();
-        graphics.pose().translate(x + text.w() / 2.0f, y + text.h() / 2.0f, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(text.rotation())));
-        CanvasTextRenderer.drawTextLayer(graphics, state, rendered, text.w(), text.h(), inlineEditing);
+        graphics.pose().translate(x + drawText.w() / 2.0f, y + drawText.h() / 2.0f, 0.0f);
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
+        CanvasTextRenderer.drawTextLayer(graphics, state, rendered, drawText.w(), drawText.h(), inlineEditing);
         graphics.pose().popPose();
-        if (isSelectedText(state, text.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
-            drawSelection(graphics, state, contentX, contentY, contentW, contentH, text.x(), text.y(), text.w(), text.h(), text.rotation());
+        if (isSelectedText(state, drawText.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
+            drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
         }
     }
 

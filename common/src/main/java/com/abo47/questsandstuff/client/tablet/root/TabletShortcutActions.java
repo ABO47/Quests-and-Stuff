@@ -82,6 +82,7 @@ final class TabletShortcutActions {
             state.questDetailsTransformId = "";
             state.questDetailsTransformMode = "";
             state.questDetailsTransformAxis = "";
+            CanvasRenderer.clearTransientCanvasTransforms(state);
             changed = true;
         }
         if (state.chapterDragPending || state.chapterDragActive || state.questDetailsObjectiveDragPending || state.questDetailsObjectiveDragActive) {
