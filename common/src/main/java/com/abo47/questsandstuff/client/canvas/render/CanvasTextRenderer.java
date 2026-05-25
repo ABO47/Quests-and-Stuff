@@ -28,48 +28,49 @@ public final class CanvasTextRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int x = originX + CanvasGeometry.screenX(state, text.x());
-                int y = originY + CanvasGeometry.screenY(state, text.y());
-                int w = CanvasGeometry.screenSpan(state, text.w());
-                int h = CanvasGeometry.screenSpan(state, text.h());
+                int x = originX + CanvasGeometry.screenX(state, drawText.x());
+                int y = originY + CanvasGeometry.screenY(state, drawText.y());
+                int w = CanvasGeometry.screenSpan(state, drawText.w());
+                int h = CanvasGeometry.screenSpan(state, drawText.h());
                 graphics.pose().pushPose();
                 graphics.pose().translate(x + w / 2.0f, y + h / 2.0f, 0.0f);
-                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(text.rotation())));
-                boolean inlineEditing = state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget);
-                drawCanvasTextLines(graphics, state, text, w, h, inlineEditing);
+                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
+                boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget);
+                drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing);
                 if (inlineEditing) {
-                    drawCanvasTextCaret(graphics, state, text, w, h);
+                    drawCanvasTextCaret(graphics, state, drawText, w, h);
                 }
                 graphics.pose().popPose();
-                if (state.canEdit && CanvasRenderer.isTextSelected(state, text.id())) {
+                if (state.canEdit && CanvasRenderer.isTextSelected(state, drawText.id())) {
                     if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    CanvasPoint selectionDragStart = state.dragStartTextPositions.get(text.id());
+                    CanvasPoint selectionDragStart = state.dragStartTextPositions.get(drawText.id());
                     if (state.draggingSelection && selectionDragStart != null) {
                         CanvasElementSelectionSlot.drawDragging(
                                 graphics,
                                 state,
                                 originX,
                                 originY,
-                                text.x(),
-                                text.y(),
+                                drawText.x(),
+                                drawText.y(),
                                 selectionDragStart.x,
                                 selectionDragStart.y,
-                                text.w(),
-                                text.h(),
-                                text.rotation()
+                                drawText.w(),
+                                drawText.h(),
+                                drawText.rotation()
                         );
-                    } else if (state.draggingCanvasText && text.id().equals(state.selectedCanvasTextId)) {
+                    } else if (state.draggingCanvasText && drawText.id().equals(state.selectedCanvasTextId)) {
                         CanvasElementSelectionSlot.drawDragging(
                                 graphics,
                                 state,
                                 originX,
                                 originY,
-                                text.x(),
-                                text.y(),
+                                drawText.x(),
+                                drawText.y(),
                                 state.canvasTextStartX,
                                 state.canvasTextStartY,
                                 state.canvasTextStartW,
@@ -77,7 +78,7 @@ public final class CanvasTextRenderer {
                                 state.canvasTextStartRotation
                         );
                     } else {
-                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, text.x(), text.y(), text.w(), text.h(), text.rotation());
+                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                     }
                 }
             }

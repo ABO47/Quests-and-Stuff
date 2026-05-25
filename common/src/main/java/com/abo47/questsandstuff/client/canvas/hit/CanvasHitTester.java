@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.hit;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -43,7 +44,7 @@ public final class CanvasHitTester {
         String group = selectedGroupName(state);
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
-            CanvasImageLayer image = images.get(i);
+            CanvasImageLayer image = CanvasRenderer.effectiveCanvasImage(state, images.get(i));
             int sw = CanvasGeometry.screenSpan(state, image.w());
             int sh = CanvasGeometry.screenSpan(state, image.h());
             double[] local = canvasImageLocalScreenPoint(state, image, x, y);
@@ -65,6 +66,7 @@ public final class CanvasHitTester {
         if (image == null) {
             return null;
         }
+        image = CanvasRenderer.effectiveCanvasImage(state, image);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
         if (gizmoSupported && CanvasTransformGizmo.controlHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), x, y)) {
             return image;
@@ -118,7 +120,7 @@ public final class CanvasHitTester {
         String group = selectedGroupName(state);
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
-            CanvasTextLayer text = texts.get(i);
+            CanvasTextLayer text = CanvasRenderer.effectiveCanvasText(state, texts.get(i));
             int sw = CanvasGeometry.screenSpan(state, text.w());
             int sh = CanvasGeometry.screenSpan(state, text.h());
             double[] local = canvasTextLocalScreenPoint(state, text, x, y);
@@ -140,6 +142,7 @@ public final class CanvasHitTester {
         if (text == null) {
             return null;
         }
+        text = CanvasRenderer.effectiveCanvasText(state, text);
         if (isCanvasTextResizeHandleHit(state, text, x, y) || isCanvasTextRotateHandleHit(state, text, x, y)) {
             return text;
         }

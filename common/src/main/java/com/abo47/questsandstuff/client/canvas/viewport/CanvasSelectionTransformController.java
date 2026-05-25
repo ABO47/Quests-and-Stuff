@@ -82,6 +82,8 @@ public final class CanvasSelectionTransformController {
         state.snapGuideYVisible = false;
         state.transientQuestPositions.clear();
         state.transientQuestScales.clear();
+        state.transientCanvasImages.clear();
+        state.transientCanvasTexts.clear();
     }
 
 }

@@ -446,6 +446,8 @@ public class TabletUiState {
     public String hoveredQuestId = "";
     public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
+    public final Map<String, CanvasImageLayer> transientCanvasImages = new HashMap<>();
+    public final Map<String, CanvasTextLayer> transientCanvasTexts = new HashMap<>();
     public final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
     public boolean canvasQuestClipboardAvailable;
     public int canvasClipboardOriginX;

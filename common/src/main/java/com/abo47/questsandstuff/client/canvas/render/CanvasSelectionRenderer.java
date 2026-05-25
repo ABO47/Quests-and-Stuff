@@ -90,10 +90,11 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, card.y() + card.height());
         }
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            if (!CanvasRenderer.isImageSelected(state, image.id())) {
+            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+            if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, image.x(), image.y(), image.w(), image.h(), image.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -101,10 +102,11 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, bounds[3]);
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            if (!CanvasRenderer.isTextSelected(state, text.id())) {
+            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+            if (!CanvasRenderer.isTextSelected(state, drawText.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -174,13 +176,16 @@ public final class CanvasSelectionRenderer {
     }
 
     public static void renderAlignmentGuides(WidgetGroup canvasViewport, TabletUiState state) {
-        if (!state.canEdit || (!state.snapGuideXVisible && !state.snapGuideYVisible)) {
+        if (!state.canEdit) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                if (!state.snapGuideXVisible && !state.snapGuideYVisible) {
+                    return;
+                }
                 int originX = getPositionX();
                 int originY = getPositionY();
                 if (state.snapGuideXVisible && state.snapGuideX >= 0 && state.snapGuideX < getSizeWidth()) {
@@ -235,10 +240,11 @@ public final class CanvasSelectionRenderer {
         }
         String group = selectedGroupName(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            if (!CanvasRenderer.isImageSelected(state, image.id())) {
+            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+            if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, image.x(), image.y(), image.w(), image.h(), image.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
             drawClippedRect(
                     graphics,
                     originX,
@@ -254,10 +260,11 @@ public final class CanvasSelectionRenderer {
             );
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            if (!CanvasRenderer.isTextSelected(state, text.id())) {
+            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+            if (!CanvasRenderer.isTextSelected(state, drawText.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
             drawClippedRect(
                     graphics,
                     originX,

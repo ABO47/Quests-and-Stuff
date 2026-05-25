@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.entity;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -215,7 +216,8 @@ public final class EntityPreviewRenderer {
         float yaw = currentYaw(yawDegrees, speed);
         float pitch = CanvasImageLayer.normalizeDegrees(pitchDegrees);
         prepareEntityForRender(entity, speed > 0);
-        renderEntityInInventory(graphics, centerX, centerY, renderScale(entity, width, height, fill, maxScale), entity, yaw, pitch, speed > 0 ? partialTicks : 0.0F);
+        double scale = renderScale(entity, width, height, fill, maxScale);
+        TabletUiPerfProfiler.profile("ui.renderEntityPreview", () -> renderEntityInInventory(graphics, centerX, centerY, scale, entity, yaw, pitch, speed > 0 ? partialTicks : 0.0F));
         return true;
     }
 

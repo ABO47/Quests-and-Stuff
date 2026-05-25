@@ -70,6 +70,7 @@ final class TabletShortcutActions {
             state.rotatingCanvasText = false;
             state.transientQuestPositions.clear();
             state.transientQuestScales.clear();
+            CanvasRenderer.clearTransientCanvasTransforms(state);
             state.snapGuideXVisible = false;
             state.snapGuideYVisible = false;
             changed = true;

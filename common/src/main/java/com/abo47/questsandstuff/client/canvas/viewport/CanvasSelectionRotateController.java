@@ -32,6 +32,7 @@ final class CanvasSelectionRotateController {
         state.rotateStartCenters.clear();
         state.rotateStartImageLayers.clear();
         state.rotateStartTextLayers.clear();
+        CanvasRenderer.clearTransientCanvasTransforms(state);
         state.transientQuestPositions.clear();
         state.transientQuestScales.clear();
 
@@ -139,10 +140,10 @@ final class CanvasSelectionRotateController {
                 (x, y, width, height) -> CanvasGeometry.clampAnchorToCanvas(state, x, y, width, height)
         );
         for (CanvasImageLayer image : result.images().values()) {
-            CanvasRenderer.putCanvasImage(state, group, image, false);
+            CanvasRenderer.putTransientCanvasImage(state, image);
         }
         for (CanvasTextLayer text : result.texts().values()) {
-            CanvasRenderer.putCanvasText(state, group, text, false);
+            CanvasRenderer.putTransientCanvasText(state, text);
         }
     }
 }

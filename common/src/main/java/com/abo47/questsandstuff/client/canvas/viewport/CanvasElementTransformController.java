@@ -25,6 +25,7 @@ public final class CanvasElementTransformController {
     }
 
     public void beginImageTransform(CanvasImageLayer image, int localX, int localY) {
+        CanvasRenderer.clearTransientCanvasTransforms(state);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
         boolean selectedBeforeClick = image.id().equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(image.id());
         if (gizmoSupported && !selectedBeforeClick) {
@@ -111,7 +112,7 @@ public final class CanvasElementTransformController {
                     ? rotateModelFromDrag(image, logicalX, logicalY)
                     : image.rotateTo(layerRotation(logicalX, logicalY));
         }
-        CanvasRenderer.putCanvasImage(state, group, next, false);
+        CanvasRenderer.putTransientCanvasImage(state, next);
     }
 
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int logicalX, int logicalY) {
@@ -162,6 +163,7 @@ public final class CanvasElementTransformController {
     }
 
     public void beginTextTransform(CanvasTextLayer text, int localX, int localY) {
+        CanvasRenderer.clearTransientCanvasTransforms(state);
         state.selectedCanvasTextId = text.id();
         state.selectedCanvasImageId = "";
         state.selectedCanvasTextIds.clear();
@@ -217,7 +219,7 @@ public final class CanvasElementTransformController {
             }
             next = text.rotateTo(angle);
         }
-        CanvasRenderer.putCanvasText(state, group, next, false);
+        CanvasRenderer.putTransientCanvasText(state, next);
     }
 
     private CanvasImageLayer applySmartSnapToImage(CanvasImageLayer image, List<QuestCardLayout> cards, String group) {

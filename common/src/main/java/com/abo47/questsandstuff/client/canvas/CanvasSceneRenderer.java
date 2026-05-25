@@ -348,48 +348,49 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int screenLeft = CanvasGeometry.screenX(state, image.x());
-                int screenTop = CanvasGeometry.screenY(state, image.y());
+                int screenLeft = CanvasGeometry.screenX(state, drawImage.x());
+                int screenTop = CanvasGeometry.screenY(state, drawImage.y());
                 int x = originX + screenLeft;
                 int y = originY + screenTop;
-                int w = Math.max(1, CanvasGeometry.screenX(state, image.x() + image.w()) - screenLeft);
-                int h = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - screenTop);
-                int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - screenLeft;
-                int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - screenTop;
-                CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, image, x, y, w, h, pivotX, pivotY);
-                if (state.canEdit && CanvasRenderer.isImageSelected(state, image.id())) {
+                int w = Math.max(1, CanvasGeometry.screenX(state, drawImage.x() + drawImage.w()) - screenLeft);
+                int h = Math.max(1, CanvasGeometry.screenY(state, drawImage.y() + drawImage.h()) - screenTop);
+                int pivotX = CanvasGeometry.screenX(state, drawImage.x() + drawImage.pivotX()) - screenLeft;
+                int pivotY = CanvasGeometry.screenY(state, drawImage.y() + drawImage.pivotY()) - screenTop;
+                CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, drawImage, x, y, w, h, pivotX, pivotY);
+                if (state.canEdit && CanvasRenderer.isImageSelected(state, drawImage.id())) {
                     if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    if (CanvasTransformGizmo.supports(image.asset())) {
-                        CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
+                    if (CanvasTransformGizmo.supports(drawImage.asset())) {
+                        CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation(), drawImage.entityYaw(), drawImage.modelPitch());
                         return;
                     }
-                    CanvasPoint selectionDragStart = state.dragStartImagePositions.get(image.id());
+                    CanvasPoint selectionDragStart = state.dragStartImagePositions.get(drawImage.id());
                     if (state.draggingSelection && selectionDragStart != null) {
                         CanvasElementSelectionSlot.drawDragging(
                                 graphics,
                                 state,
                                 originX,
                                 originY,
-                                image.x(),
-                                image.y(),
+                                drawImage.x(),
+                                drawImage.y(),
                                 selectionDragStart.x,
                                 selectionDragStart.y,
-                                image.w(),
-                                image.h(),
-                                image.rotation()
+                                drawImage.w(),
+                                drawImage.h(),
+                                drawImage.rotation()
                         );
-                    } else if (state.draggingCanvasImage && image.id().equals(state.selectedCanvasImageId)) {
+                    } else if (state.draggingCanvasImage && drawImage.id().equals(state.selectedCanvasImageId)) {
                         CanvasElementSelectionSlot.drawDragging(
                                 graphics,
                                 state,
                                 originX,
                                 originY,
-                                image.x(),
-                                image.y(),
+                                drawImage.x(),
+                                drawImage.y(),
                                 state.canvasImageStartX,
                                 state.canvasImageStartY,
                                 state.canvasImageStartW,
@@ -397,7 +398,7 @@ final class CanvasSceneRenderer {
                                 state.canvasImageStartRotation
                         );
                     } else {
-                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, image.x(), image.y(), image.w(), image.h(), image.rotation());
+                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
                     }
                 }
             }

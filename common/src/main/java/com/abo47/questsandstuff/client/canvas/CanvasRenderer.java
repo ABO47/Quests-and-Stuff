@@ -234,6 +234,7 @@ public final class CanvasRenderer {
         state.selectedCanvasTextId = "";
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasTextIds.clear();
+        clearTransientCanvasTransforms(state);
     }
 
     public static QuestCardLayout hitTestCard(List<QuestCardLayout> cards, int x, int y) {
@@ -318,6 +319,75 @@ public final class CanvasRenderer {
 
     public static CanvasImageLayer findCanvasImage(TabletUiState state, String group, String imageId) {
         return CanvasElementStore.findCanvasImage(state, group, imageId);
+    }
+
+    public static CanvasImageLayer effectiveCanvasImage(TabletUiState state, CanvasImageLayer image) {
+        if (state == null || image == null) {
+            return image;
+        }
+        return state.transientCanvasImages.getOrDefault(image.id(), image);
+    }
+
+    public static CanvasTextLayer effectiveCanvasText(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null) {
+            return text;
+        }
+        return state.transientCanvasTexts.getOrDefault(text.id(), text);
+    }
+
+    public static void putTransientCanvasImage(TabletUiState state, CanvasImageLayer image) {
+        if (state == null || image == null || image.id().isBlank()) {
+            return;
+        }
+        state.transientCanvasImages.put(image.id(), image);
+    }
+
+    public static void putTransientCanvasText(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null || text.id().isBlank()) {
+            return;
+        }
+        state.transientCanvasTexts.put(text.id(), text);
+    }
+
+    public static boolean commitTransientCanvasImage(TabletUiState state, String group, String imageId) {
+        if (state == null || group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
+            return false;
+        }
+        CanvasImageLayer preview = state.transientCanvasImages.remove(imageId);
+        if (preview == null) {
+            return false;
+        }
+        CanvasElementStore.putCanvasImage(state, group, preview, false);
+        return true;
+    }
+
+    public static boolean commitTransientCanvasText(TabletUiState state, String group, String textId) {
+        if (state == null || group == null || group.isBlank() || textId == null || textId.isBlank()) {
+            return false;
+        }
+        CanvasTextLayer preview = state.transientCanvasTexts.remove(textId);
+        if (preview == null) {
+            return false;
+        }
+        CanvasElementStore.putCanvasText(state, group, preview, false);
+        return true;
+    }
+
+    public static void commitSelectedTransientCanvasLayers(TabletUiState state, String group) {
+        for (String imageId : selectedCanvasImageIds(state)) {
+            commitTransientCanvasImage(state, group, imageId);
+        }
+        for (String textId : selectedCanvasTextIds(state)) {
+            commitTransientCanvasText(state, group, textId);
+        }
+    }
+
+    public static void clearTransientCanvasTransforms(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
+        state.transientCanvasImages.clear();
+        state.transientCanvasTexts.clear();
     }
 
     public static void updateCanvasText(TabletUiState state, String group, String textId, java.util.function.UnaryOperator<CanvasTextLayer> updater) {
