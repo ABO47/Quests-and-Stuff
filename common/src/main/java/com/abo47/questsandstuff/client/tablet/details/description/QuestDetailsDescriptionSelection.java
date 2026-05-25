@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -140,8 +141,9 @@ public final class QuestDetailsDescriptionSelection {
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (CanvasTextLayer text : model.texts.values()) {
-            if (isSelectedText(text.id())) {
-                int[] box = bounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+            if (isSelectedText(drawText.id())) {
+                int[] box = bounds(drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1] - state.questDetailsDescScroll);
                 maxX = Math.max(maxX, box[2]);
@@ -149,8 +151,9 @@ public final class QuestDetailsDescriptionSelection {
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
-            if (isSelectedImage(image.id())) {
-                int[] box = bounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+            if (isSelectedImage(drawImage.id())) {
+                int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1] - state.questDetailsDescScroll);
                 maxX = Math.max(maxX, box[2]);
