@@ -84,6 +84,10 @@ public final class TabletUiFactory {
         TabletActiveState.refreshActiveTablet();
     }
 
+    public static String activeSelectedGroup() {
+        return TabletActiveState.activeSelectedGroup();
+    }
+
     public static void syncCanvasStateFromCache(TabletUiState state) {
         TabletActiveState.syncCanvasStateFromCache(state);
     }

@@ -110,6 +110,18 @@ public final class ClientQuestCache {
         return ClientDisplayState.recentEvents();
     }
 
+    public static void noteQuestCompletedForChapterNotices(String questId, String currentGroup) {
+        ClientDisplayState.noteQuestCompleted(quest(questId), currentGroup);
+    }
+
+    public static boolean groupHasCompletionNotice(String group) {
+        return ClientDisplayState.chapterHasCompletionNotice(group);
+    }
+
+    public static void clearGroupCompletionNotice(String group) {
+        ClientDisplayState.clearChapterCompletionNotice(group);
+    }
+
     public static List<String> groupOrder() {
         return ClientChapterState.groupOrderSnapshot();
     }

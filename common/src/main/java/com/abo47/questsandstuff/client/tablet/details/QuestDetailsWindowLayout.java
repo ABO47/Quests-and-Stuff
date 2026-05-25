@@ -19,10 +19,8 @@ import javax.annotation.Nonnull;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelLighting;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
@@ -116,14 +114,12 @@ final class QuestDetailsWindowLayout {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawWindowShadow(graphics, this);
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-                drawPanelLighting(graphics, this);
             }
         };
         modal.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
-            layer.addWidget(SourceOriginRevealWidget.window(
+            layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,
                     () -> state.questDetailsAnimationStartMs,
                     () -> !state.questDetailsClosing,

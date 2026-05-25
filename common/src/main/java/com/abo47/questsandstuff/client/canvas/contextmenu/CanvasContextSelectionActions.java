@@ -79,7 +79,7 @@ final class CanvasContextSelectionActions {
         }
         List<String> targets = new ArrayList<>(questIds);
         CompoundTag first = firstQuest(targets);
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_sound"), "audio-lines", ModColors.INTERACTIVE, false, () -> {
             state.contextQuestCompletionSoundMenuOpen = true;
             state.contextMenuScroll = 0;
             state.contextDeleteConfirmKey = "";

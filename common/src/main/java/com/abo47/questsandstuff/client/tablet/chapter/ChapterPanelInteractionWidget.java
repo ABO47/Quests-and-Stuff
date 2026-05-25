@@ -318,6 +318,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.chapterTextMenuTarget = "";
         state.chapterTextFontSizeSliderTarget = "";
         state.chapterSelectionJustChanged = true;
+        ClientQuestCache.clearGroupCompletionNotice(group);
         persistUiState(state);
     }
 

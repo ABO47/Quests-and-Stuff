@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 final class ChapterRowRenderer {
     private static final int COLLAPSED_TILE_SIZE = 28;
     private static final int COLLAPSED_ICON_SIZE = 16;
+    private static final int NOTICE_ICON_SIZE = 9;
 
     private ChapterRowRenderer() {
     }
@@ -36,6 +38,7 @@ final class ChapterRowRenderer {
             if (lockedPreview) {
                 renderLockedFilter(chapterList, layout.cardX(), collapsedTileY(y), layout.cardW(), COLLAPSED_TILE_SIZE);
             }
+            addCompletionNotice(chapterList, group, collapsedIconX(layout) - 2, collapsedIconY(y) - 5);
             addChapterSelectionHits(chapterList, state, refresh, group, y, layout, true, layout.cardW());
             addChapterIconChangeHit(chapterList, state, refresh, group, collapsedIconX(layout), collapsedIconY(y));
             return;
@@ -60,6 +63,7 @@ final class ChapterRowRenderer {
         if (lockedPreview) {
             renderLockedFilter(chapterList, layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H);
         }
+        addCompletionNotice(chapterList, group, iconDrawX - 2, y + 3);
         addChapterSelectionHits(chapterList, state, refresh, group, y, layout, collapsed, textW);
         addChapterIconChangeHit(chapterList, state, refresh, group, iconDrawX, y + 8);
     }
@@ -176,6 +180,7 @@ final class ChapterRowRenderer {
         state.chapterTextMenuOpen = false;
         state.chapterTextMenuTarget = "";
         state.chapterTextFontSizeSliderTarget = "";
+        ClientQuestCache.clearGroupCompletionNotice(group);
     }
 
     private static WidgetGroup chapterStyledLabel(int x, int y, String text, int color, String style, int fontSize) {
@@ -211,6 +216,13 @@ final class ChapterRowRenderer {
         WidgetGroup filter = new WidgetGroup(x, y, w, h);
         filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 150)));
         chapterList.addWidget(filter);
+    }
+
+    private static void addCompletionNotice(WidgetGroup chapterList, String group, int x, int y) {
+        if (!ClientQuestCache.groupHasCompletionNotice(group)) {
+            return;
+        }
+        chapterList.addWidget(new ChapterCompletionNoticeWidget(x, y, NOTICE_ICON_SIZE, NOTICE_ICON_SIZE));
     }
 
     private static int chapterLabelWidth(String text, String style, int fontSize) {
@@ -310,6 +322,23 @@ final class ChapterRowRenderer {
                 int textY = y + Math.max(0, (h - font.lineHeight) / 2);
                 graphics.drawString(font, initial, textX, textY, selected ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED, false);
             }
+        }
+    }
+
+    private static final class ChapterCompletionNoticeWidget extends WidgetGroup {
+        private ChapterCompletionNoticeWidget(int x, int y, int width, int height) {
+            super(x, y, width, height);
+        }
+
+        @Override
+        public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            IGuiTexture texture = UiIconAtlas.iconTexture("chapter_notice");
+            if (texture == null) {
+                return;
+            }
+            long time = System.currentTimeMillis();
+            int bounce = Math.round((float) Math.sin(time / 180.0) * 2.0f);
+            texture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY() + bounce, getSizeWidth(), getSizeHeight());
         }
     }
 }

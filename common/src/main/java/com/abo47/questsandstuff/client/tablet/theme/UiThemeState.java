@@ -113,6 +113,7 @@ final class UiThemeState {
         iconRoles.put("unlock_quest", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("lock_chapter", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("unlock_chapter", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("chapter_notice", UiThemeManager.ROLE_ICON_WARNING);
         iconRoles.put("context_audio-lines", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_connect", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("context_disconnect", UiThemeManager.ROLE_ICON_WARNING);
