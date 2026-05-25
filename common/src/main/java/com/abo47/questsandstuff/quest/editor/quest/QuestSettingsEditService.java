@@ -118,18 +118,7 @@ public final class QuestSettingsEditService {
     }
 
     private void updateQuest(ServerPlayer player, QuestDefinition quest, QuestSettings settings) {
-        QuestDefinition updated = new QuestDefinition(
-                quest.schema(),
-                quest.id(),
-                quest.display(),
-                settings,
-                quest.prerequisites(),
-                quest.connectionColors(),
-                quest.connectionModes(),
-                quest.hiddenConnections(),
-                quest.tasks(),
-                quest.rewards()
-        );
+        QuestDefinition updated = QuestDefinitionEdits.withSettings(quest, settings);
         service.definitionStore().upsert(updated);
         service.definitionStore().saveNow(updated.id());
         service.postMutation(player);

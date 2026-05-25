@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformCon
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -173,7 +174,7 @@ final class CanvasViewportClickController {
                 state.selectedQuestIds.clear();
                 state.selectedQuestIds.add(hit.questId());
                 state.lastJumpQuest = hit.questId();
-                if (button == 0) {
+                if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag())) {
                     int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
                     int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
                     QuestDetailsWindow.openAtSource(

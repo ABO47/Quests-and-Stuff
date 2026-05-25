@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -58,6 +59,9 @@ public final class QuestLifecycleEditService {
         int finalX = freePosition[0];
         int finalY = freePosition[1];
         QuestsAndStuffMod.debugLog("[QnS:Editor] add quest request group={} reqId={} assignedId={} reqPos={},{} finalPos={},{}", group, preferredQuestId, id, x, y, finalX, finalY);
+        QuestSettings settings = service.definitionStore().groupLockUntilUnlocked(group)
+                ? questSettingsWithHiddenMode(QuestVisibilityMode.LOCKED)
+                : QuestSettings.DEFAULT;
 
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
@@ -73,7 +77,7 @@ public final class QuestLifecycleEditService {
                         QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME,
                         false
                 ),
-                QuestSettings.DEFAULT,
+                settings,
                 Set.of(),
                 Map.of(),
                 Map.of()
@@ -140,5 +144,17 @@ public final class QuestLifecycleEditService {
         if (!definition.display().groups().isEmpty()) {
             session.currentGroup = definition.display().groups().keySet().stream().sorted().findFirst().orElse(session.currentGroup);
         }
+    }
+
+    private static QuestSettings questSettingsWithHiddenMode(QuestVisibilityMode mode) {
+        QuestSettings defaults = QuestSettings.DEFAULT;
+        return new QuestSettings(
+                defaults.individualProgress(),
+                mode,
+                defaults.repeatable(),
+                defaults.autoClaimRewards(),
+                defaults.unlockNotification(),
+                defaults.showPrerequisiteArrow()
+        );
     }
 }

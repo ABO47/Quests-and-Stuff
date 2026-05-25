@@ -95,4 +95,8 @@ public final class ClientChapterLocalMutations {
     public static void setGroupTextSizeLocal(String group, int size) {
         ClientChapterState.setGroupTextSize(group, size);
     }
+
+    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        ClientChapterState.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+    }
 }

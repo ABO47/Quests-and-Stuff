@@ -205,6 +205,11 @@ public final class EditorSessionService {
     public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
         chapterActions.setGroupTextSize(player, groupName, size);
     }
+
+    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
+        chapterActions.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
+    }
+
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
         canvasActions.putCanvasImage(player, groupName, image);
     }

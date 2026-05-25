@@ -72,12 +72,16 @@ final class TabletRootDismissals {
             state.contextDeleteConfirmKey = "";
             changed = true;
         }
-        if (!TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY)
+        boolean insideCanvasViewport = TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY);
+        boolean insideChapterPanel = TabletRootHitTest.isInsideChapterPanel(state, rootX, rootY, mouseX, mouseY);
+        if (!insideCanvasViewport
                 && !TabletRootHitTest.isToolsMenuHit(state, rootX, rootY, mouseX, mouseY)
                 && !state.selectedQuestIds.isEmpty()) {
             state.selectedQuestIds.clear();
-            state.connectSourceQuestId = "";
-            state.connectSourceQuestIds.clear();
+            if (!insideChapterPanel) {
+                state.connectSourceQuestId = "";
+                state.connectSourceQuestIds.clear();
+            }
             state.selectionBoundsVisible = false;
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas selection cleared reason=outside_canvas x={} y={}", Math.round(mouseX - rootX), Math.round(mouseY - rootY));
             changed = true;

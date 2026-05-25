@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -65,6 +66,20 @@ public final class ClientQuestLocalMutations {
 
     public static void setGroupTextSizeLocal(String group, int size) {
         ClientChapterLocalMutations.setGroupTextSizeLocal(group, size);
+    }
+
+    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        String normalizedGroup = ClientChapterState.normalizeGroup(group);
+        if (normalizedGroup.isBlank()) {
+            return;
+        }
+        ClientChapterLocalMutations.setGroupLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
+        String mode = (lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName();
+        ClientQuestState.forEachQuestEntry((questId, quest) -> {
+            if (quest.getCompound("groups").contains(normalizedGroup)) {
+                setQuestHiddenModeLocal(questId, mode);
+            }
+        });
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
@@ -309,7 +324,7 @@ public final class ClientQuestLocalMutations {
         quest.putFloat("progress", 0.0f);
         quest.putBoolean("repeatable", false);
         quest.putBoolean("auto_claim_rewards", false);
-        quest.putString("hidden_mode", QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName());
+        quest.putString("hidden_mode", (ClientChapterState.groupLockUntilUnlocked(normalizedGroup) ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName());
         quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, true);
         quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());
         quest.put("description", new ListTag());

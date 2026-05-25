@@ -44,6 +44,7 @@ final class ChapterMetadataWriter {
         json.addProperty("text_color", state.groupTextColor(group));
         json.addProperty("text_style", state.groupTextStyle(group));
         json.addProperty("text_size", state.groupTextSize(group));
+        json.addProperty("lock_until_unlocked", state.groupLockUntilUnlocked(group));
         json.add("canvas_images", ChapterMetadataJsonCodec.writeCanvasImages(state.canvasImagesByGroup.getOrDefault(group, List.of())));
         json.add("canvas_texts", ChapterMetadataJsonCodec.writeCanvasTexts(state.canvasTextsByGroup.getOrDefault(group, List.of())));
         json.add("canvas_layer_order", ChapterMetadataJsonCodec.writeStringArray(state.canvasLayerOrderByGroup.getOrDefault(group, List.of())));

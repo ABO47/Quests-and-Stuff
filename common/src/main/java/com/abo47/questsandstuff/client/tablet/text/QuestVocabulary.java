@@ -109,6 +109,8 @@ public final class QuestVocabulary {
     public static final String CONTEXT_GIZMO_ROTATE = "ui.questsandstuff.context.gizmo_rotate";
     public static final String CONTEXT_HIDE_CONNECTION = "ui.questsandstuff.context.hide_connection";
     public static final String CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED = "ui.questsandstuff.context.hide_quest_until_unlocked";
+    public static final String CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED = "ui.questsandstuff.context.lock_chapter_until_unlocked";
+    public static final String CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED = "ui.questsandstuff.context.lock_quest_until_unlocked";
     public static final String CONTEXT_MOVE_DOWN = "ui.questsandstuff.context.move_down";
     public static final String CONTEXT_MOVE_UP = "ui.questsandstuff.context.move_up";
     public static final String CONTEXT_PASTE = "ui.questsandstuff.context.paste";
@@ -119,7 +121,9 @@ public final class QuestVocabulary {
     public static final String CONTEXT_REVEAL_QUEST = "ui.questsandstuff.context.reveal_quest";
     public static final String CONTEXT_SELECTION_CONNECTION_COLOR = "ui.questsandstuff.context.selection_connection_color";
     public static final String CONTEXT_SEND_TO_BACK = "ui.questsandstuff.context.send_to_back";
+    public static final String CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED = "ui.questsandstuff.context.show_chapter_before_unlocked";
     public static final String CONTEXT_SHOW_CONNECTION = "ui.questsandstuff.context.show_connection";
+    public static final String CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED = "ui.questsandstuff.context.show_quest_before_unlocked";
     public static final String CONTEXT_TEXT_STYLE = "ui.questsandstuff.context.text_style";
 
     public static final String TYPE_ACQUIRE_ITEM = "ui.questsandstuff.quest.type.acquire_item";

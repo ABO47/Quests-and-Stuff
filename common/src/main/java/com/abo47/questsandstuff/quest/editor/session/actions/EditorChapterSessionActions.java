@@ -57,4 +57,8 @@ public final class EditorChapterSessionActions {
     public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
         chapterEdits.setGroupTextSize(player, groupName, size);
     }
+
+    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
+        chapterEdits.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
+    }
 }

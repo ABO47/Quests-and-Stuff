@@ -162,8 +162,8 @@ public final class CanvasContextMenuSupport {
         if (questId == null || questId.isBlank()) {
             return false;
         }
-        for (QuestCardLayout card : canvasViewport.cardCache()) {
-            if (!questId.equals(card.questId())) {
+        for (String candidate : ClientQuestCache.quests().keySet()) {
+            if (!questId.equals(candidate)) {
                 return true;
             }
         }

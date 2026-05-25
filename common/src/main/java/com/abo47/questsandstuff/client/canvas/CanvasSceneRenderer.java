@@ -169,6 +169,7 @@ final class CanvasSceneRenderer {
             renderQuestProgressFill(canvasViewport, card, progress);
         }
         renderQuestIcon(canvasViewport, card);
+        renderLockedPreviewState(canvasViewport, card);
         renderSearchState(canvasViewport, state, card);
         renderHiddenEditState(canvasViewport, state, card);
         if (state.canEdit && card.questId().equals(state.pendingQuestTitleChangeId)) {
@@ -212,6 +213,12 @@ final class CanvasSceneRenderer {
         boolean hidden = card.tag().getBoolean("visual_hidden") && !card.tag().getBoolean("unlocked");
         if (hidden) {
             addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 190));
+        }
+    }
+
+    private static void renderLockedPreviewState(WidgetGroup canvasViewport, QuestCardLayout card) {
+        if (ClientQuestCache.questLockedPreview(card.tag())) {
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
         }
     }
 
@@ -354,13 +361,16 @@ final class CanvasSceneRenderer {
         if (!tag.getCompound("tasks").isEmpty() && (tag.getBoolean("completed") || tag.getBoolean("claimed"))) {
             progress = 100;
         }
+        Component status = ClientQuestCache.questLockedPreview(tag)
+                ? Component.translatable("ui.questsandstuff.quest.locked")
+                : Component.literal(progress + "%");
         ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), Surfaces.fill(0x00000000), click -> {});
         hit.setClientSideWidget();
         hit.setHoverTexture(Surfaces.fill(0x00000000));
         hit.setClickedTexture(Surfaces.fill(0x00000000));
         hit.setHoverTooltips(new Component[]{
                 Component.literal(title),
-                Component.literal(progress + "%")
+                status
         });
         canvasViewport.addWidget(hit);
     }

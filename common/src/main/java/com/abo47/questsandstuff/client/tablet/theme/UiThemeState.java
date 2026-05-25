@@ -101,6 +101,18 @@ final class UiThemeState {
         iconRoles.put("context_open", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_eye", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_eye-off", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("context_lock_quest", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("context_unlock_quest", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("context_lock_chapter", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("context_unlock_chapter", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("lock_canvas", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("unlock_canvas", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("lock_separator", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("unlock_separator", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("lock_quest", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("unlock_quest", UiThemeManager.ROLE_ICON_SUCCESS);
+        iconRoles.put("lock_chapter", UiThemeManager.ROLE_ICON_WARNING);
+        iconRoles.put("unlock_chapter", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("context_audio-lines", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_connect", UiThemeManager.ROLE_ICON_SUCCESS);
         iconRoles.put("context_disconnect", UiThemeManager.ROLE_ICON_WARNING);

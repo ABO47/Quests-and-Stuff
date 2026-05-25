@@ -18,6 +18,7 @@ final class ChapterMetadataState {
     final Map<String, Integer> groupTextColor = new HashMap<>();
     final Map<String, String> groupTextStyle = new HashMap<>();
     final Map<String, Integer> groupTextSize = new HashMap<>();
+    final Map<String, Boolean> groupLockUntilUnlocked = new HashMap<>();
     final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
     final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
@@ -31,6 +32,7 @@ final class ChapterMetadataState {
         groupTextColor.clear();
         groupTextStyle.clear();
         groupTextSize.clear();
+        groupLockUntilUnlocked.clear();
         canvasImagesByGroup.clear();
         canvasTextsByGroup.clear();
         canvasLayerOrderByGroup.clear();
@@ -79,6 +81,10 @@ final class ChapterMetadataState {
         return groupTextSize.getOrDefault(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
+    boolean groupLockUntilUnlocked(String group) {
+        return groupLockUntilUnlocked.getOrDefault(group, false);
+    }
+
     void reconcile(Set<String> discoveredGroups) {
         Set<String> discovered = discoveredGroups == null ? Set.of() : discoveredGroups;
         groupOrder.removeIf(group -> group == null || group.isBlank());
@@ -94,6 +100,7 @@ final class ChapterMetadataState {
         groupTextColor.keySet().removeIf(group -> !groupOrder.contains(group));
         groupTextStyle.keySet().removeIf(group -> !groupOrder.contains(group));
         groupTextSize.keySet().removeIf(group -> !groupOrder.contains(group));
+        groupLockUntilUnlocked.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasImagesByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasTextsByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasLayerOrderByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
@@ -105,6 +112,7 @@ final class ChapterMetadataState {
             groupTextColor.putIfAbsent(group, 0xFFFFFFFF);
             groupTextStyle.putIfAbsent(group, "normal");
             groupTextSize.putIfAbsent(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
+            groupLockUntilUnlocked.putIfAbsent(group, false);
             canvasImagesByGroup.putIfAbsent(group, List.of());
             canvasTextsByGroup.putIfAbsent(group, List.of());
             canvasLayerOrderByGroup.putIfAbsent(group, List.of());

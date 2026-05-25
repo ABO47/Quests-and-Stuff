@@ -6,6 +6,8 @@ import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withGroups;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
 
 public final class ChapterEditService {
     private final EditorSessionService owner;
@@ -199,6 +202,34 @@ public final class ChapterEditService {
             return;
         }
         owner.definitionStore().setGroupTextSize(group, size);
+        owner.postMutation(player);
+    }
+
+    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
+        String group = validGroup(groupName);
+        if (group.isBlank() || owner.definitionStore().groupLockUntilUnlocked(group) == lockUntilUnlocked) {
+            return;
+        }
+        EditorSessionService.EditorSession session = owner.session(player);
+        owner.captureUndo(session);
+        owner.definitionStore().setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+
+        QuestVisibilityMode mode = lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE;
+        for (QuestDefinition quest : new ArrayList<>(owner.definitionStore().quests().values())) {
+            if (!quest.display().groups().containsKey(group) || quest.settings().hiddenMode() == mode) {
+                continue;
+            }
+            QuestSettings old = quest.settings();
+            QuestSettings settings = new QuestSettings(
+                    old.individualProgress(),
+                    mode,
+                    old.repeatable(),
+                    old.autoClaimRewards(),
+                    old.unlockNotification(),
+                    old.showPrerequisiteArrow()
+            );
+            owner.definitionStore().upsert(withSettings(quest, settings));
+        }
         owner.postMutation(player);
     }
 

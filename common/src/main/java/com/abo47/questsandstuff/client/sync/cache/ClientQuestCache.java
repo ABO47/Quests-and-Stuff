@@ -142,6 +142,32 @@ public final class ClientQuestCache {
         return ClientChapterState.groupTextSize(group);
     }
 
+    public static boolean groupLockUntilUnlocked(String group) {
+        return ClientChapterState.groupLockUntilUnlocked(group);
+    }
+
+    public static boolean groupLockedPreview(String group) {
+        if (!groupLockUntilUnlocked(group)) {
+            return false;
+        }
+        for (CompoundTag quest : quests().values()) {
+            if (!quest.getCompound("groups").contains(group)) {
+                continue;
+            }
+            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean questLockedPreview(CompoundTag quest) {
+        return quest != null
+                && "locked".equals(quest.getString("hidden_mode"))
+                && !quest.getBoolean("unlocked")
+                && !quest.getBoolean("completed");
+    }
+
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
         return ClientCanvasLayerState.imagesByGroup();
     }
@@ -212,6 +238,10 @@ public final class ClientQuestCache {
 
     public static void setGroupTextSizeLocal(String group, int size) {
         ClientQuestLocalMutations.setGroupTextSizeLocal(group, size);
+    }
+
+    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        ClientQuestLocalMutations.setGroupLockUntilUnlockedLocal(group, lockUntilUnlocked);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {

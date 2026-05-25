@@ -146,11 +146,11 @@ final class EditorChapterCommandClient {
 
         String packetGroup = switch (op) {
             case "create" -> to;
-            case "rename", "delete", "move", "move_to", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size" -> from;
+            case "rename", "delete", "move", "move_to", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked" -> from;
             default -> "";
         };
         String packetValue = switch (op) {
-            case "rename", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size" -> to;
+            case "rename", "set_icon", "set_background", "set_canvas_background", "set_text_align", "set_text_color", "set_text_style", "set_text_size", "set_lock_until_unlocked" -> to;
             default -> "";
         };
         Runnable optimisticApply = () -> applyLocalGroupAction(state, op, from, to, offset);
@@ -204,6 +204,7 @@ final class EditorChapterCommandClient {
                 } catch (NumberFormatException ignored) {
                 }
             }
+            case "set_lock_until_unlocked" -> editor.setGroupLockUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
             default -> {
             }
         }
@@ -246,6 +247,7 @@ final class EditorChapterCommandClient {
                 } catch (NumberFormatException ignored) {
                 }
             }
+            case "set_lock_until_unlocked" -> ClientQuestCache.setGroupLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
             default -> {
             }
         }

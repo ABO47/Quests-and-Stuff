@@ -143,7 +143,7 @@ final class MainCanvasToolsMenu {
                         state.canvasOffsetY = 0;
                     }
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-grid enabled={}", state.gridCanvasLocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-canvas enabled={}", state.gridCanvasLocked);
                     refresh.run();
                 });
 
@@ -160,7 +160,7 @@ final class MainCanvasToolsMenu {
     }
 
     private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int toolGap, int border) {
-        addToggle(menu, x, y, toolSlot, border, state.chapterSplitterLocked ? "lock" : "unlock",
+        addToggle(menu, x, y, toolSlot, border, state.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
                 state.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
                 !state.chapterSplitterLocked,
                 new Component[]{

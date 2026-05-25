@@ -28,6 +28,10 @@ final class QuestSyncPayloadBuilder {
     }
 
     ListTag groupsTag() {
+        return groupsTag(Set.of(), true);
+    }
+
+    ListTag groupsTag(Set<String> visibleQuestIds, boolean includeAllGroups) {
         ListTag groupsTag = new ListTag();
         for (String group : definitionStore.groupOrder()) {
             groupsTag.add(StringTag.valueOf(group));
@@ -36,6 +40,10 @@ final class QuestSyncPayloadBuilder {
     }
 
     CompoundTag groupPropsTag() {
+        return groupPropsTag(Set.of(), true);
+    }
+
+    CompoundTag groupPropsTag(Set<String> visibleQuestIds, boolean includeAllGroups) {
         CompoundTag groupProps = new CompoundTag();
         for (String group : definitionStore.groupOrder()) {
             CompoundTag entry = new CompoundTag();
@@ -46,6 +54,7 @@ final class QuestSyncPayloadBuilder {
             entry.putInt("text_color", definitionStore.groupTextColor(group));
             entry.putString("text_style", definitionStore.groupTextStyle(group));
             entry.putInt("text_size", definitionStore.groupTextSize(group));
+            entry.putBoolean("lock_until_unlocked", definitionStore.groupLockUntilUnlocked(group));
             entry.put("canvas_images", CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
             entry.put("canvas_texts", CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
             entry.put("canvas_layer_order", CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));

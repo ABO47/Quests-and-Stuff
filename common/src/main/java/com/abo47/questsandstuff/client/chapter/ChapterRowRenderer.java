@@ -29,9 +29,13 @@ final class ChapterRowRenderer {
 
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
         boolean selected = group.equals(state.selectedGroup);
+        boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
         String rowLabel = group.equals(state.pendingChapterRename) ? state.chapterDraftName : group;
         if (collapsed) {
             addCollapsedChapterRow(chapterList, group, rowLabel, y, layout, selected);
+            if (lockedPreview) {
+                renderLockedFilter(chapterList, layout.cardX(), collapsedTileY(y), layout.cardW(), COLLAPSED_TILE_SIZE);
+            }
             addChapterSelectionHits(chapterList, state, refresh, group, y, layout, true, layout.cardW());
             addChapterIconChangeHit(chapterList, state, refresh, group, collapsedIconX(layout), collapsedIconY(y));
             return;
@@ -53,6 +57,9 @@ final class ChapterRowRenderer {
         }
         int textW = Math.max(8, layout.cardW() - 26);
         addChapterLabel(chapterList, group, rowLabel, y, layout.cardX(), textW);
+        if (lockedPreview) {
+            renderLockedFilter(chapterList, layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H);
+        }
         addChapterSelectionHits(chapterList, state, refresh, group, y, layout, collapsed, textW);
         addChapterIconChangeHit(chapterList, state, refresh, group, iconDrawX, y + 8);
     }
@@ -188,6 +195,12 @@ final class ChapterRowRenderer {
                 ClientQuestCache.groupIcon(group),
                 group
         );
+    }
+
+    private static void renderLockedFilter(WidgetGroup chapterList, int x, int y, int w, int h) {
+        WidgetGroup filter = new WidgetGroup(x, y, w, h);
+        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 150)));
+        chapterList.addWidget(filter);
     }
 
     private static int chapterLabelWidth(String text, String style, int fontSize) {

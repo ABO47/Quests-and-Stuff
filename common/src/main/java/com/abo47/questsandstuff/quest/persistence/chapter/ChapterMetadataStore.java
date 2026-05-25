@@ -57,6 +57,10 @@ public final class ChapterMetadataStore {
         return state.groupTextSize(group);
     }
 
+    public boolean groupLockUntilUnlocked(String group) {
+        return state.groupLockUntilUnlocked(group);
+    }
+
     public java.util.Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
         return ChapterMetadataState.copyLayerMap(state.canvasImagesByGroup);
     }
@@ -154,6 +158,16 @@ public final class ChapterMetadataStore {
         int value = CanvasTextLayer.clampFontSize(size);
         state.groupTextSize.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_size {} -> {}", normalized, value);
+        save();
+    }
+
+    public void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        state.groupLockUntilUnlocked.put(normalized, lockUntilUnlocked);
+        QuestsAndStuffMod.debugLog("[QnS:Store] chapter lock_until_unlocked {} -> {}", normalized, lockUntilUnlocked);
         save();
     }
 

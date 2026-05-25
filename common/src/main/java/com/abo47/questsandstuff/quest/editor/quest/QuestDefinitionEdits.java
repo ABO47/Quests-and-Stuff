@@ -105,6 +105,23 @@ public final class QuestDefinitionEdits {
         );
     }
 
+    public static QuestDefinition withSettings(QuestDefinition definition, QuestSettings settings) {
+        return new QuestDefinition(
+                definition.schema(),
+                definition.id(),
+                definition.display(),
+                settings,
+                definition.prerequisites(),
+                definition.connectionColors(),
+                definition.connectionModes(),
+                definition.hiddenConnections(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
+                definition.tasks(),
+                definition.rewards()
+        );
+    }
+
     public static QuestDefinition withConnectionColors(QuestDefinition definition, Map<String, Integer> colors) {
         Set<String> prerequisites = definition.prerequisites();
         return new QuestDefinition(
