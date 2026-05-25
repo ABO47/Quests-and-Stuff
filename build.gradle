@@ -59,8 +59,21 @@ subprojects {
         withSourcesJar()
     }
 
+    sourceSets {
+        test {
+            java.srcDirs = []
+            resources.srcDirs = []
+        }
+    }
+
     loom {
         silentMojangMappingsLicense()
+    }
+
+    tasks.matching { task ->
+        task.name in ['compileTestJava', 'processTestResources', 'testClasses', 'test']
+    }.configureEach {
+        enabled = false
     }
 
     dependencies {

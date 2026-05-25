@@ -12,6 +12,10 @@ final class QuestVisibilityRules {
     private QuestVisibilityRules() {
     }
 
+    static boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition) {
+        return isVisibleFor(state, definition, Map.of());
+    }
+
     static boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition, Map<String, QuestDefinition> definitions) {
         return isVisibleFor(state, definition, definitions == null ? Map.of() : definitions, new HashSet<>());
     }
@@ -44,6 +48,10 @@ final class QuestVisibilityRules {
         for (String prerequisite : definition.prerequisites()) {
             QuestDefinition prerequisiteDefinition = definitions.get(prerequisite);
             if (prerequisiteDefinition != null && isVisibleFor(state, prerequisiteDefinition, definitions, visiting)) {
+                return true;
+            }
+            QuestProgressState prerequisiteState = state.quest(prerequisite);
+            if (prerequisiteState.completed() || prerequisiteState.unlocked()) {
                 return true;
             }
         }

@@ -18,30 +18,34 @@ class QuestVisibilityRulesTest {
     void completedQuestsStayVisibleForEveryHiddenMode() {
         PlayerQuestState state = new PlayerQuestState();
         state.quest("done").setCompleted(true, 42);
+        QuestDefinition definition = quest("done", QuestVisibilityMode.COMPLETED, Set.of());
 
-        assertTrue(QuestVisibilityRules.isVisibleFor(state, quest("done", QuestVisibilityMode.COMPLETED, Set.of())));
+        assertTrue(QuestVisibilityRules.isVisibleFor(state, definition, Map.of(definition.id(), definition)));
     }
 
     @Test
     void lockedModeOnlyShowsUnlockedQuests() {
         PlayerQuestState state = new PlayerQuestState();
         QuestDefinition definition = quest("locked", QuestVisibilityMode.LOCKED, Set.of());
+        Map<String, QuestDefinition> definitions = Map.of(definition.id(), definition);
 
-        assertFalse(QuestVisibilityRules.isVisibleFor(state, definition));
+        assertFalse(QuestVisibilityRules.isVisibleFor(state, definition, definitions));
 
         state.quest("locked").setUnlocked(true);
-        assertTrue(QuestVisibilityRules.isVisibleFor(state, definition));
+        assertTrue(QuestVisibilityRules.isVisibleFor(state, definition, definitions));
     }
 
     @Test
     void prerequisitesVisibleModeShowsWhenAPrerequisiteIsKnown() {
         PlayerQuestState state = new PlayerQuestState();
+        QuestDefinition parent = quest("parent", QuestVisibilityMode.LOCKED, Set.of());
         QuestDefinition definition = quest("child", QuestVisibilityMode.PREREQUISITES_VISIBLE, Set.of("parent"));
+        Map<String, QuestDefinition> definitions = Map.of(parent.id(), parent, definition.id(), definition);
 
-        assertFalse(QuestVisibilityRules.isVisibleFor(state, definition));
+        assertFalse(QuestVisibilityRules.isVisibleFor(state, definition, definitions));
 
         state.quest("parent").setUnlocked(true);
-        assertTrue(QuestVisibilityRules.isVisibleFor(state, definition));
+        assertTrue(QuestVisibilityRules.isVisibleFor(state, definition, definitions));
     }
 
     private static QuestDefinition quest(String id, QuestVisibilityMode mode, Set<String> prerequisites) {
