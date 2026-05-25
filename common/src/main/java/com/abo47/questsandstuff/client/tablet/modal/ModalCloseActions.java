@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
 
@@ -8,10 +9,12 @@ public final class ModalCloseActions {
     }
 
     public static void closeAll(TabletUiState state) {
+        QuestSoundPreview.stop();
         TabletModalState.closeAllModals(state);
     }
 
     public static void closeAllImmediately(TabletUiState state) {
+        QuestSoundPreview.stop();
         TabletModalState.closeAllModalsImmediately(state);
     }
 

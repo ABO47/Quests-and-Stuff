@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -64,6 +66,24 @@ public final class ClientQuestLocalMutations {
 
     public static void setGroupTextSizeLocal(String group, int size) {
         ClientChapterLocalMutations.setGroupTextSizeLocal(group, size);
+    }
+
+    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        String normalizedGroup = ClientChapterState.normalizeGroup(group);
+        if (normalizedGroup.isBlank()) {
+            return;
+        }
+        ClientChapterLocalMutations.setGroupLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
+        String mode = (lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName();
+        ClientQuestState.forEachQuestEntry((questId, quest) -> {
+            if (quest.getCompound("groups").contains(normalizedGroup)) {
+                setQuestHiddenModeLocal(questId, mode);
+            }
+        });
+    }
+
+    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientChapterLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
@@ -197,6 +217,29 @@ public final class ClientQuestLocalMutations {
         quest.putString("completion_sound", normalizedSound);
     }
 
+    public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
+    }
+
+    public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putString("quest_background", QuestDisplay.normalizeQuestBackground(background));
+        quest.putBoolean("quest_background_grayscale", grayscale);
+    }
+
     public static void resetQuestProgressLocal(String questId) {
         String normalized = questId == null ? "" : questId.trim();
         if (normalized.isBlank()) {
@@ -289,14 +332,17 @@ public final class ClientQuestLocalMutations {
         quest.putString("icon", "minecraft:book");
         quest.putString("icon_background", "minecraft:barrier");
         quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
+        quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
         quest.putBoolean("visual_hidden", false);
+        quest.putString("quest_background", QuestDisplay.DEFAULT_QUEST_BACKGROUND);
+        quest.putBoolean("quest_background_grayscale", false);
         quest.putBoolean("completed", false);
         quest.putBoolean("unlocked", true);
         quest.putBoolean("claimed", false);
         quest.putFloat("progress", 0.0f);
         quest.putBoolean("repeatable", false);
         quest.putBoolean("auto_claim_rewards", false);
-        quest.putString("hidden_mode", QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName());
+        quest.putString("hidden_mode", (ClientChapterState.groupLockUntilUnlocked(normalizedGroup) ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName());
         quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, true);
         quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());
         quest.put("description", new ListTag());

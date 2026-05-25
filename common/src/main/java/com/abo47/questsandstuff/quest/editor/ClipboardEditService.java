@@ -7,6 +7,8 @@ import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -27,6 +29,7 @@ import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugForm
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedStrings;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.duplicateDefinition;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.normalizeScale;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
 
 public final class ClipboardEditService {
     private final EditorSessionService owner;
@@ -140,6 +143,9 @@ public final class ClipboardEditService {
             int y = request.anchorY() + (entry.sourceY() - minY);
             float scale = normalizeScale(entry.scale(), 1.0f);
             QuestDefinition duplicate = duplicateDefinition(entry.definition(), newId, request.targetChapter(), x, y, scale, allocatedIds);
+            if (owner.definitionStore().groupLockUntilUnlocked(request.targetChapter())) {
+                duplicate = withSettings(duplicate, withHiddenMode(duplicate.settings(), QuestVisibilityMode.LOCKED));
+            }
             owner.clipboardDebug("PASTE stage source=" + entry.sourceId()
                     + " -> " + newId
                     + " pos=" + x + "," + y
@@ -207,5 +213,17 @@ public final class ClipboardEditService {
     private static ChapterDefinition firstVisibleGroupView(QuestDefinition definition) {
         String group = firstVisibleGroup(definition);
         return group.isBlank() ? null : definition.display().groups().get(group);
+    }
+
+    private static QuestSettings withHiddenMode(QuestSettings source, QuestVisibilityMode mode) {
+        QuestSettings settings = source == null ? QuestSettings.DEFAULT : source;
+        return new QuestSettings(
+                settings.individualProgress(),
+                mode,
+                settings.repeatable(),
+                settings.autoClaimRewards(),
+                settings.unlockNotification(),
+                settings.showPrerequisiteArrow()
+        );
     }
 }

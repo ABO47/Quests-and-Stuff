@@ -42,8 +42,12 @@ public class TabletUiState {
     public final Map<String, CanvasPoint> dragStartTextPositions = new HashMap<>();
     public final Map<String, Float> resizeStartScales = new HashMap<>();
     public final Map<String, CanvasPoint> resizeStartPositions = new HashMap<>();
+    public final Map<String, CanvasImageLayer> resizeStartImageLayers = new HashMap<>();
+    public final Map<String, CanvasTextLayer> resizeStartTextLayers = new HashMap<>();
     public final Map<String, CanvasDoublePoint> rotateStartCenters = new HashMap<>();
     public final Map<String, CanvasPoint> rotateStartPositions = new HashMap<>();
+    public final Map<String, CanvasImageLayer> rotateStartImageLayers = new HashMap<>();
+    public final Map<String, CanvasTextLayer> rotateStartTextLayers = new HashMap<>();
     public final Set<String> recentlyCreatedGroups = new java.util.LinkedHashSet<>();
     public String connectSourceQuestId = "";
     public final Set<String> connectSourceQuestIds = new java.util.LinkedHashSet<>();
@@ -110,6 +114,7 @@ public class TabletUiState {
     public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
     public boolean itemInventoryPickerOpen;
+    public boolean soundPickerOpen;
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
@@ -133,6 +138,10 @@ public class TabletUiState {
     public String modalCanvasBackgroundTarget = "";
     public String modalCanvasImageTarget = "";
     public String modalCanvasEntityTarget = "";
+    public String modalCanvasModelTarget = "";
+    public String modalQuestBackgroundTarget = "";
+    public final Set<String> modalQuestBackgroundTargets = new java.util.LinkedHashSet<>();
+    public boolean modalQuestBackgroundGrayscale;
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
     public String entityVariantFolder = "";
@@ -187,6 +196,13 @@ public class TabletUiState {
     public boolean itemInventorySearchFocused;
     public int itemInventoryScroll;
     public boolean itemInventoryScrollDragging;
+    public String soundSearch = "";
+    public boolean soundSearchFocused;
+    public int soundScroll;
+    public boolean soundScrollDragging;
+    public String soundSelected = "";
+    public int soundVolumeDraft = 100;
+    public boolean soundVolumeDragging;
     public String assetSelected = "";
     public String assetBrowseDir = "";
     public String assetSearch = "";
@@ -252,6 +268,7 @@ public class TabletUiState {
     public int contextMenuWidthPx;
     public int contextMenuHeightPx;
     public String contextDeleteConfirmKey = "";
+    public boolean contextQuestCompletionSoundMenuOpen;
     public long contextMenuAnimationStartMs;
     public String contextMenuAnimationKey = "";
     public String contextQuestId = "";
@@ -361,6 +378,7 @@ public class TabletUiState {
     public String questDetailsObjectiveRenameQuestId = "";
     public String questDetailsObjectiveRenameId = "";
     public String questDetailsObjectiveRenameDraft = "";
+    public boolean questDetailsObjectiveRenameFocusPending;
     public final Map<String, String> questDetailsSelectableRewardChoices = new HashMap<>();
     public String questDetailsSelectedObjectiveKind = "";
     public String questDetailsSelectedObjectiveId = "";
@@ -401,6 +419,9 @@ public class TabletUiState {
     public int questDetailsTransformStartW;
     public int questDetailsTransformStartH;
     public int questDetailsTransformStartRotation;
+    public int questDetailsTransformStartYaw;
+    public int questDetailsTransformStartPitch;
+    public String questDetailsTransformAxis = "";
     public double questDetailsTransformPivotX;
     public double questDetailsTransformPivotY;
     public double questDetailsTransformStartAngle;
@@ -421,6 +442,7 @@ public class TabletUiState {
     public final Map<String, Set<String>> gridConnectionsByGroup = new HashMap<>();
     public final Map<String, Map<String, Integer>> connectionColorsByGroup = new HashMap<>();
     public String modalQuestCompletionSoundTarget = "";
+    public final Set<String> modalQuestCompletionSoundTargets = new java.util.LinkedHashSet<>();
     public String hoveredQuestId = "";
     public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
@@ -454,6 +476,7 @@ public class TabletUiState {
     public boolean draggingCanvasImage;
     public boolean resizingCanvasImage;
     public boolean rotatingCanvasImage;
+    public String transformGizmoMode = "move";
     public int canvasImageDragStartX;
     public int canvasImageDragStartY;
     public int canvasImageStartX;
@@ -461,6 +484,9 @@ public class TabletUiState {
     public int canvasImageStartW;
     public int canvasImageStartH;
     public int canvasImageStartRotation;
+    public int canvasImageStartYaw;
+    public int canvasImageStartPitch;
+    public String canvasImageTransformAxis = "";
     public double canvasImageRotatePivotX;
     public double canvasImageRotatePivotY;
     public double canvasImageRotateStartAngle;

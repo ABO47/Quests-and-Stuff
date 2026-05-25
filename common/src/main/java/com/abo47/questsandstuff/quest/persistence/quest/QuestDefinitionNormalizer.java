@@ -30,7 +30,10 @@ final class QuestDefinitionNormalizer {
                         definition.display().icon(),
                         definition.display().iconBackground(),
                         definition.display().completionSound(),
-                        definition.display().visualHidden()
+                        definition.display().completionSoundVolume(),
+                        definition.display().visualHidden(),
+                        definition.display().questBackground(),
+                        definition.display().questBackgroundGrayscale()
                 ),
                 new QuestSettings(
                         definition.settings().individualProgress(),

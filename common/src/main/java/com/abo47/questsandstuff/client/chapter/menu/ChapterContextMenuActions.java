@@ -127,6 +127,26 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
+    public static void setLockUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        EditorCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
+        state.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=lock_until_unlocked chapter={} enabled={}", target, enabled);
+        refresh.run();
+    }
+
+    public static void setHideUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        EditorCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
+        state.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=hide_until_unlocked chapter={} enabled={}", target, enabled);
+        refresh.run();
+    }
+
     public static void textStyle(TabletUiState state, String target, Runnable refresh) {
         state.chapterTextMenuOpen = true;
         state.chapterTextMenuTarget = target;

@@ -203,7 +203,7 @@ public final class CanvasSelectionRenderer {
             TabletUiState state,
             List<QuestCardLayout> cards
     ) {
-        if (!state.canEdit || state.selectedQuestIds.size() <= 1 || !state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.canEdit || CanvasRenderer.totalCanvasSelectionCount(state) <= 1 || !state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
@@ -226,6 +226,45 @@ public final class CanvasSelectionRenderer {
                     border
             );
         }
+        String group = selectedGroupName(state);
+        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+            if (!CanvasRenderer.isImageSelected(state, image.id())) {
+                continue;
+            }
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, image.x(), image.y(), image.w(), image.h(), image.rotation());
+            drawClippedRect(
+                    graphics,
+                    originX,
+                    originY,
+                    maxW,
+                    maxH,
+                    bounds[0] - SINGLE_SELECTION_PAD,
+                    bounds[1] - SINGLE_SELECTION_PAD,
+                    bounds[2] - bounds[0] + SINGLE_SELECTION_PAD * 2,
+                    bounds[3] - bounds[1] + SINGLE_SELECTION_PAD * 2,
+                    fill,
+                    border
+            );
+        }
+        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+            if (!CanvasRenderer.isTextSelected(state, text.id())) {
+                continue;
+            }
+            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
+            drawClippedRect(
+                    graphics,
+                    originX,
+                    originY,
+                    maxW,
+                    maxH,
+                    bounds[0] - SINGLE_SELECTION_PAD,
+                    bounds[1] - SINGLE_SELECTION_PAD,
+                    bounds[2] - bounds[0] + SINGLE_SELECTION_PAD * 2,
+                    bounds[3] - bounds[1] + SINGLE_SELECTION_PAD * 2,
+                    fill,
+                    border
+            );
+        }
     }
 
     private static void drawSelectionBounds(
@@ -242,7 +281,7 @@ public final class CanvasSelectionRenderer {
         if (state.selectedQuestIds.isEmpty() && CanvasRenderer.totalCanvasSelectionCount(state) == 1) {
             return;
         }
-        if (state.rotatingSelection && state.selectedQuestIds.size() > 1) {
+        if (state.rotatingSelection && CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
             drawRotatedSelectionBounds(graphics, originX, originY, state);
             return;
         }

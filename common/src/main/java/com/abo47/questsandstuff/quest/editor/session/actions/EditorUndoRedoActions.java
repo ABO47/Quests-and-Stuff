@@ -34,7 +34,7 @@ public final class EditorUndoRedoActions {
         if (session.undo.isEmpty()) {
             return;
         }
-        session.redo.push(definitionStore.snapshot());
+        session.redo.push(definitionStore.editorSnapshot());
         definitionStore.replaceAll(session.undo.pop());
         postMutation(player);
     }
@@ -44,7 +44,7 @@ public final class EditorUndoRedoActions {
         if (session.redo.isEmpty()) {
             return;
         }
-        session.undo.push(definitionStore.snapshot());
+        session.undo.push(definitionStore.editorSnapshot());
         definitionStore.replaceAll(session.redo.pop());
         postMutation(player);
     }
@@ -58,7 +58,7 @@ public final class EditorUndoRedoActions {
     }
 
     public void captureUndo(EditorSession session) {
-        session.undo.push(definitionStore.snapshot());
+        session.undo.push(definitionStore.editorSnapshot());
         while (session.undo.size() > MAX_HISTORY) {
             session.undo.removeLast();
         }

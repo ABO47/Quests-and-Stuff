@@ -61,9 +61,10 @@ public final class TabletScreenComposer {
         WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, ROOT_W, 0);
         rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         int initialChapterW = chapterPanelWidth(state);
+        boolean initialChapterCollapsed = isChapterPanelCollapsed(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
+        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, initialChapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, CANVAS_H) {
             @Override
@@ -85,7 +86,7 @@ public final class TabletScreenComposer {
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), CHAPTER_H - chapterListY - contentInset - 1);
-        chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        chapterList.setBackground(initialChapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
@@ -126,20 +127,22 @@ public final class TabletScreenComposer {
             int canvasX = canvasPanelX(state);
             int canvasW = canvasPanelWidth(state);
             boolean chapterCollapsed = state.chapterPanelCollapsed;
-            int dynamicListY = chapterCollapsed ? 6 : chapterListY;
+            int dynamicListY = chapterCollapsed ? 0 : chapterListY;
             int chapterSideInset = 7;
-            int dynamicListX = chapterCollapsed ? 4 : chapterSideInset;
-            int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - 8) : Math.max(24, chapterW - chapterSideInset * 2);
+            int collapsedChapterInset = 0;
+            int dynamicListX = chapterCollapsed ? collapsedChapterInset : chapterSideInset;
+            int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
+            int dynamicListH = chapterCollapsed ? CHAPTER_H : CHAPTER_H - dynamicListY - contentInset - 1;
 
-            chapterPanelRef[0].setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
-            chapterList.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+            chapterPanelRef[0].setBackground(Surfaces.bordered(chapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
+            chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);
 
             chapterPanelRef[0].setSize(chapterW, CHAPTER_H);
             headers.layoutChapter(chapterCollapsed, dynamicListX, dynamicListW, chapterTopY, chapterHeaderH);
             chapterList.setSelfPosition(dynamicListX, dynamicListY);
-            chapterList.setSize(dynamicListW, CHAPTER_H - dynamicListY - contentInset - 1);
+            chapterList.setSize(dynamicListW, dynamicListH);
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
             canvasPanel.setSize(canvasW, CANVAS_H);

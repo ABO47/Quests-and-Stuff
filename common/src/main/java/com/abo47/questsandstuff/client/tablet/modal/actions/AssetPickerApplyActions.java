@@ -22,11 +22,33 @@ public final class AssetPickerApplyActions {
 
     public static void run(Player player, TabletUiState state, String background) {
         String soundTarget = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
+        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
+            int count = state.modalQuestCompletionSoundTargets.size();
+            EditorCommandClient.setQuestCompletionSound(player, state.modalQuestCompletionSoundTargets, background);
+            state.modalQuestCompletionSoundTargets.clear();
+            state.assetBrowseDir = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} asset={}", count, background);
+            return;
+        }
         if (!soundTarget.isBlank()) {
             EditorCommandClient.setQuestCompletionSound(player, soundTarget, background);
             state.modalQuestCompletionSoundTarget = "";
             state.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest change completion sound picked quest={} asset={}", soundTarget, background);
+            return;
+        }
+        String questBackgroundTarget = state.modalQuestBackgroundTarget == null ? "" : state.modalQuestBackgroundTarget.trim();
+        if (!state.modalQuestBackgroundTargets.isEmpty()) {
+            EditorCommandClient.setQuestBackground(player, state.modalQuestBackgroundTargets, background, state.modalQuestBackgroundGrayscale);
+            int count = state.modalQuestBackgroundTargets.size();
+            state.modalQuestBackgroundTargets.clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch background picked quests={} asset={} grayscale={}", count, background, state.modalQuestBackgroundGrayscale);
+            return;
+        }
+        if (!questBackgroundTarget.isBlank()) {
+            EditorCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
+            state.modalQuestBackgroundTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
             return;
         }
         String detailsTarget = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget.trim();

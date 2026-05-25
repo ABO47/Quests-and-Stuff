@@ -15,8 +15,6 @@ import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -114,9 +112,9 @@ public final class TabletItemInventoryPickerModal {
     }
 
     private static Component[] tooltip(ItemStack stack) {
-        List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
         String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-        lines.add(Component.literal(id).withStyle(ChatFormatting.DARK_GRAY));
+        List<Component> lines = new ArrayList<>();
+        lines.addAll(List.of(PickerTooltips.nameAndId(stack.getHoverName().getString(), id)));
         String summary = nbtSummary(stack);
         if (!summary.isBlank()) {
             lines.add(Component.literal("NBT: " + summary).withStyle(ChatFormatting.GOLD));

@@ -18,13 +18,12 @@ import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_CARD_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_CARD_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterAtY;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterInsertIndexAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterRowStep;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterCardAreaHit;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterScrollBarHit;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
@@ -147,7 +146,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (ModalStateQueries.anyOpen(state)) {
             return true;
         }
-        int step = Math.max(8, (CHAPTER_CARD_H + CHAPTER_CARD_GAP) / 3);
+        int step = Math.max(8, chapterRowStep(state) / 3);
         int next = ScrollController.wheel(state.chapterScroll, state.chapterScrollMax, step, wheelDelta);
         if (next != state.chapterScroll) {
             state.chapterScroll = next;
@@ -159,7 +158,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private void openContextAt(int localX, int localY) {
         String hit = chapterAtY(localY, state);
         if (hit != null && !hit.isBlank()) {
-            selectChapterDirect(hit);
+            if (canOpenChapter(hit)) {
+                selectChapterDirect(hit);
+            }
         } else {
             clearChapterSelection();
         }
@@ -183,6 +184,15 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private boolean selectOrClearAt(double mouseX, double mouseY, int localX, int localY) {
         String hit = chapterAtY(localY, state);
         if (hit != null && !hit.isBlank() && isChapterCardAreaHit(localX, localY, state)) {
+            if (!canOpenChapter(hit)) {
+                state.chapterMenuOpen = false;
+                state.chapterDragPending = false;
+                state.chapterDragActive = false;
+                state.chapterDragName = "";
+                state.chapterDragTargetIndex = -1;
+                refresh.run();
+                return true;
+            }
             selectChapterDirect(hit);
             state.chapterMenuOpen = false;
             if (EditorCommandClient.canManageGroups(state) && (state.chapterSearch == null || state.chapterSearch.isBlank())) {
@@ -235,7 +245,8 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         int cardWidth = Math.max(1, cardRight - cardLeft);
         boolean collapsed = state.chapterPanelCollapsed || state.chapterListWidth <= 54;
         int iconLeft = collapsed ? cardLeft + Math.max(0, (cardWidth - CONTENT_ICON_SIZE) / 2) : cardLeft + 2;
-        int iconTop = state.chapterRowStartY + index * (CHAPTER_CARD_H + CHAPTER_CARD_GAP) - state.chapterScroll + 8;
+        int rowStep = chapterRowStep(state);
+        int iconTop = state.chapterRowStartY + index * rowStep - state.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);
         return localX >= iconLeft
                 && localX < iconLeft + CONTENT_ICON_SIZE
                 && localY >= iconTop
@@ -247,6 +258,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         java.util.List<String> visible = new java.util.ArrayList<>();
         for (String group : ClientQuestCache.groupOrder()) {
             if (com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+                continue;
+            }
+            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {
@@ -293,6 +307,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (group == null || group.isBlank()) {
             return;
         }
+        if (!canOpenChapter(group)) {
+            return;
+        }
         state.selectedGroup = group;
         state.groupDraft = group;
         state.chapterDraftName = group;
@@ -301,6 +318,11 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.chapterTextMenuTarget = "";
         state.chapterTextFontSizeSliderTarget = "";
         state.chapterSelectionJustChanged = true;
+        ClientQuestCache.clearGroupCompletionNotice(group);
         persistUiState(state);
+    }
+
+    private boolean canOpenChapter(String group) {
+        return state.canEdit || ClientQuestCache.groupOpenablePreview(group);
     }
 }

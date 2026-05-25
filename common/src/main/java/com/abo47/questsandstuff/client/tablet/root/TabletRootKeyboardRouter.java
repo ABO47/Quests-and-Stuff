@@ -4,6 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
@@ -33,7 +35,11 @@ final class TabletRootKeyboardRouter {
             int scanCode,
             int modifiers
     ) {
-        if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !TabletRootWindowController.isTextInputActive(state, root)) {
+        boolean textInputActive = TabletRootWindowController.isTextInputActive(state, root);
+        if (!textInputActive && !root.isAnyModalOpen() && handleGizmoModeShortcut(state, refresher, keyCode, scanCode)) {
+            return true;
+        }
+        if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !textInputActive) {
             TabletClientHooks.closeQuestTabletUi(state, true, "keybind");
             return true;
         }
@@ -48,7 +54,7 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
-            return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, keyCode, scanCode, modifiers);
+            return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
         if (!root.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
             state.quickConnectHeld = true;
@@ -90,7 +96,18 @@ final class TabletRootKeyboardRouter {
         return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
     }
 
-    private static boolean keyPressedForFrontWindow(TabletRootWidget root, TabletUiState state, WidgetGroup frontWindowLayer, CanvasViewport canvasViewport, Runnable refresher, int keyCode, int scanCode, int modifiers) {
+    private static boolean keyPressedForFrontWindow(
+            TabletRootWidget root,
+            TabletUiState state,
+            WidgetGroup frontWindowLayer,
+            CanvasViewport canvasViewport,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode,
+            int scanCode,
+            int modifiers
+    ) {
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
@@ -102,10 +119,14 @@ final class TabletRootKeyboardRouter {
         if (handleQuestDetailsClipboardShortcut(root, state, refresher, keyCode)) {
             return true;
         }
+        if (handleQuestDetailsHistoryShortcut(root, state, refresher, undoAction, redoAction, keyCode)) {
+            return true;
+        }
+        String renameDraftBefore = state.questDetailsObjectiveRenameDraft;
         if (frontWindowLayer != null) {
             frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
         }
-        if (QuestDetailsObjectivesPanel.handleRenameKey(root.resolvePlayer(), state, keyCode)) {
+        if (QuestDetailsObjectivesPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetailsObjectiveRenameDraft))) {
             refresher.run();
         }
         return true;
@@ -190,6 +211,27 @@ final class TabletRootKeyboardRouter {
         return changed;
     }
 
+    private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
+        if (!state.canEdit && !QuestDetailsEditState.canEdit(state)) {
+            return false;
+        }
+        CanvasTransformMode mode = null;
+        if (TabletClientHooks.gizmoMoveMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.MOVE;
+        } else if (TabletClientHooks.gizmoResizeMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.RESIZE;
+        } else if (TabletClientHooks.gizmoRotateMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.ROTATE;
+        }
+        if (mode == null) {
+            return false;
+        }
+        CanvasTransformGizmo.setMode(state, mode);
+        QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo shortcut mode={}", mode.id);
+        refresher.run();
+        return true;
+    }
+
     private static boolean handleCanvasClipboardShortcut(TabletRootWidget root, TabletUiState state, CanvasViewport canvasViewport, Runnable refresher, int keyCode) {
         if (canvasViewport == null || !state.canEdit || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
@@ -220,6 +262,30 @@ final class TabletRootKeyboardRouter {
         return false;
     }
 
+    private static boolean handleQuestDetailsHistoryShortcut(
+            TabletRootWidget root,
+            TabletUiState state,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode
+    ) {
+        if (!QuestDetailsEditState.canEdit(state) || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+            return false;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Z) {
+            undoAction.run();
+            refresher.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Y) {
+            redoAction.run();
+            refresher.run();
+            return true;
+        }
+        return false;
+    }
+
     static boolean keyReleased(TabletRootWidget root, TabletUiState state, Runnable refresher, KeyDelegate selfKeyRelease, int keyCode, int scanCode, int modifiers) {
         if (TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
             state.quickConnectHeld = false;
@@ -230,7 +296,7 @@ final class TabletRootKeyboardRouter {
         return selfKeyRelease.invoke(keyCode, scanCode, modifiers);
     }
 
-    static boolean charTyped(TabletRootWidget root, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, CharTypedDelegate selfCharTyped, char c, int modifiers) {
+    static boolean charTyped(TabletRootWidget root, TabletUiState state, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, Runnable refresher, CharTypedDelegate selfCharTyped, char c, int modifiers) {
         if (root.isAnyModalOpen()) {
             if (modalLayer != null) {
                 modalLayer.charTyped(c, modifiers);
@@ -238,8 +304,12 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
+            String renameDraftBefore = state.questDetailsObjectiveRenameDraft;
             if (frontWindowLayer != null) {
                 frontWindowLayer.charTyped(c, modifiers);
+            }
+            if (QuestDetailsObjectivesPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetailsObjectiveRenameDraft))) {
+                refresher.run();
             }
             return true;
         }

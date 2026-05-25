@@ -26,6 +26,7 @@ public final class TabletModalState {
         state.dimensionPickerOpen = flags.dimensionOpen();
         state.lootTablePickerOpen = flags.lootTableOpen();
         state.itemInventoryPickerOpen = flags.itemInventoryOpen();
+        state.soundPickerOpen = flags.soundOpen();
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
@@ -131,12 +132,17 @@ public final class TabletModalState {
     }
 
     private static void finishCloseAllModals(TabletUiState state) {
-        boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank();
+        boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
+                || !state.modalQuestCompletionSoundTargets.isEmpty();
         applyModalFlags(state, ModalWindowManager.closeAll());
         state.modalQuestTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.modalQuestBackgroundTarget = "";
+        state.modalQuestBackgroundTargets.clear();
+        state.modalQuestBackgroundGrayscale = false;
         state.entityVariantTarget = "";
         state.entityVariantSelected = "";
         state.entityVariantFolder = "";
@@ -145,6 +151,7 @@ public final class TabletModalState {
         state.entityVariantScroll = 0;
         state.entityVariantScrollDragging = false;
         state.modalQuestCompletionSoundTarget = "";
+        state.modalQuestCompletionSoundTargets.clear();
         if (closingSoundPicker) {
             state.assetBrowseDir = "";
             state.assetSelected = "";
@@ -177,6 +184,9 @@ public final class TabletModalState {
         state.lootTableScrollDragging = false;
         state.itemInventorySearchFocused = false;
         state.itemInventoryScrollDragging = false;
+        state.soundSearchFocused = false;
+        state.soundScrollDragging = false;
+        state.soundSelected = "";
         state.pickerLastClickKey = "";
         state.pickerLastClickAtMs = 0L;
         state.colorPaletteContextOpen = false;
@@ -212,6 +222,8 @@ public final class TabletModalState {
         state.lootTableScrollDragging = false;
         state.itemInventorySearchFocused = false;
         state.itemInventoryScrollDragging = false;
+        state.soundSearchFocused = false;
+        state.soundScrollDragging = false;
         state.entityVariantSearchFocused = false;
         state.entityVariantScrollDragging = false;
         state.pickerLastClickKey = "";

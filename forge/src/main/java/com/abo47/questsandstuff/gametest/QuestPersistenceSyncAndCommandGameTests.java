@@ -319,6 +319,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
+                            source.display().completionSoundVolume(),
                             source.display().visualHidden()
                     ),
                     source.settings(),
@@ -498,8 +499,12 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
                 ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (ClientQuestCache.quests().containsKey(questId)) {
-                throw new GameTestAssertException("Fresh locked quest should require unlock preparation before visibility-filtered full sync");
+            CompoundTag lockedPreview = ClientQuestCache.quests().get(questId);
+            if (lockedPreview == null) {
+                throw new GameTestAssertException("Fresh locked quest should sync as a locked preview before unlock preparation");
+            }
+            if (lockedPreview.getBoolean("unlocked")) {
+                throw new GameTestAssertException("Fresh locked quest preview should stay locked before unlock preparation");
             }
 
             packets.clear();

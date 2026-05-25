@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.QuestIconProvider;
+import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -36,14 +37,20 @@ public final class TabletIconPickerModal {
         int sidePad = 8;
         String detailsTarget = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget.trim();
         String canvasEntityTarget = state.modalCanvasEntityTarget == null ? "" : state.modalCanvasEntityTarget.trim();
+        String canvasModelTarget = state.modalCanvasModelTarget == null ? "" : state.modalCanvasModelTarget.trim();
         ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
+        ModalTargetParser.Target canvasModel = ModalTargetParser.parse(canvasModelTarget);
         boolean entityPicker = !canvasEntityTarget.isBlank() || details.isEntityIconPickerTarget();
+        boolean itemModelPicker = canvasModel.isItemModelPickerTarget() || details.isItemModelPickerTarget();
         boolean useItemPicker = isUseItemPickerTarget(details);
         boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, state.modalQuestTarget, state.modalChapterTarget);
         if (entityPicker) {
             state.iconTagMode = false;
             state.iconAllItemsMode = false;
             state.iconEntityMode = true;
+        } else if (itemModelPicker) {
+            state.iconAllItemsMode = false;
+            state.iconEntityMode = false;
         } else if (useItemPicker) {
             state.iconEntityMode = false;
         } else if (!supportsEntityIcons) {
@@ -70,7 +77,14 @@ public final class TabletIconPickerModal {
             refresh.run();
         }, focused -> state.iconSearchFocused = focused);
 
-        if (!entityPicker) {
+        if (itemModelPicker) {
+            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, state.iconTagMode ? "mode_tags" : "mode_items", click -> {
+                state.iconTagMode = !state.iconTagMode;
+                state.iconScroll = 0;
+                QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={}", iconModeName(state, false, useItemPicker));
+                refresh.run();
+            });
+        } else if (!entityPicker) {
             TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, iconModeIcon(state, useItemPicker), click -> {
                 cycleIconMode(state, supportsEntityIcons, useItemPicker);
                 state.iconScroll = 0;
@@ -80,7 +94,9 @@ public final class TabletIconPickerModal {
         }
 
         boolean pickingEntityIcons = entityPicker || state.iconEntityMode;
-        List<String> entries = pickingEntityIcons
+        List<String> entries = itemModelPicker
+                ? searchableModelItemEntries(state.iconSearch, state.iconTagMode)
+                : pickingEntityIcons
                 ? EntityPreviewRenderer.searchableSpawnEggEntries(state.iconSearch)
                 : searchableIconEntries(state, useItemPicker);
         String chapterTarget = state.modalChapterTarget == null || state.modalChapterTarget.isBlank() ? selectedGroupName(state) : state.modalChapterTarget;
@@ -114,7 +130,12 @@ public final class TabletIconPickerModal {
             ButtonWidget hit = flatHitButton(x + 1, y + 1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
                 boolean doubleClick = click.button == 0
                         && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("icon", chapterTarget, questTarget, previewIcon));
-                if (!canvasEntityTarget.isBlank()) {
+                if (!canvasModelTarget.isBlank()) {
+                    if (TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry)) {
+                        closeAll(state);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas model picked target={} item={}", canvasModelTarget, entry);
+                } else if (!canvasEntityTarget.isBlank()) {
                     if (TabletModalPanel.runCanvasEntityAction(player, state, canvasEntityTarget, entry)) {
                         closeAll(state);
                     }
@@ -150,6 +171,12 @@ public final class TabletIconPickerModal {
             return QuestIconProvider.searchableUsableItemEntries(state.iconSearch);
         }
         return QuestIconProvider.searchableEntries(state.iconSearch, state.iconTagMode);
+    }
+
+    private static List<String> searchableModelItemEntries(String search, boolean tagMode) {
+        return QuestIconProvider.searchableEntries(search, tagMode).stream()
+                .filter(entry -> !CanvasModelPreviewRenderer.itemAssetForPick(entry).isBlank())
+                .toList();
     }
 
     private static boolean isUseItemPickerTarget(ModalTargetParser.Target target) {

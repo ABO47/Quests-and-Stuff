@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -58,15 +59,17 @@ public final class QuestSyncService {
     public void syncFull(ServerPlayer player) {
         PlayerQuestState playerState = progressData.state(player.getUUID());
         Set<String> visibleQuestIds = visibleQuestIds(player, playerState);
-        List<Set<String>> chunks = partition(visibleQuestIds);
+        Set<String> syncedQuestIds = syncedQuestIds(player, playerState);
+        List<Set<String>> chunks = partition(syncedQuestIds);
+        boolean editorGraphVisible = canSeeEditorGraph(player);
         long sequence = sequenceCounter.getAndIncrement();
         long bytes = 0L;
 
         for (int i = 0; i < chunks.size(); i++) {
             CompoundTag payload = new CompoundTag();
             payload.putInt("schema", QuestDefinition.CURRENT_SCHEMA);
-            payload.put("groups", payloads.groupsTag());
-            payload.put("group_props", payloads.groupPropsTag());
+            payload.put("groups", payloads.groupsTag(syncedQuestIds, editorGraphVisible));
+            payload.put("group_props", payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
             payload.put("quests", payloads.questPayload(playerState, chunks.get(i)));
             bytes += payload.toString().length();
             QuestNetwork.sendToPlayer(new S2CFullSyncPacket(sequence, i, chunks.size(), payload), player);
@@ -85,7 +88,9 @@ public final class QuestSyncService {
 
         PlayerQuestState playerState = progressData.state(player.getUUID());
         boolean editorGraphVisible = canSeeEditorGraph(player);
+        Set<String> syncedQuestIds = syncedQuestIds(player, playerState);
         Set<String> existingChanged = new HashSet<>();
+        Set<String> descriptionChanged = new HashSet<>();
         Set<String> removed = new HashSet<>();
         for (String questId : changedQuests) {
             QuestDefinition definition = definitionStore.quests().get(questId);
@@ -93,7 +98,11 @@ public final class QuestSyncService {
                 removed.add(questId);
                 continue;
             }
-            if (editorGraphVisible || visibilityFilter.test(playerState, definition)) {
+            boolean visible = editorGraphVisible || visibilityFilter.test(playerState, definition);
+            if (visible) {
+                descriptionChanged.add(questId);
+            }
+            if (visible || shouldSyncLockedPreview(playerState, definition)) {
                 existingChanged.add(questId);
             } else {
                 removed.add(questId);
@@ -109,6 +118,10 @@ public final class QuestSyncService {
             CompoundTag payload = new CompoundTag();
 
             Set<String> changedIds = i < changedChunks.size() ? changedChunks.get(i) : Set.of();
+            if (i == 0) {
+                payload.put("groups", payloads.groupsTag(syncedQuestIds, editorGraphVisible));
+                payload.put("group_props", payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
+            }
             payload.put("changed", payloads.questPayload(playerState, changedIds));
 
             CompoundTag removedTag = new CompoundTag();
@@ -123,7 +136,7 @@ public final class QuestSyncService {
             QuestNetwork.sendToPlayer(new S2CDeltaSyncPacket(sequence, i, chunkCount, payload), player);
         }
 
-        syncDescriptions(player, existingChanged);
+        syncDescriptions(player, descriptionChanged);
         performanceTracker.recordDeltaSync(1, chunkCount, bytes);
     }
 
@@ -190,6 +203,26 @@ public final class QuestSyncService {
             }
         }
         return visible;
+    }
+
+    private Set<String> syncedQuestIds(ServerPlayer player, PlayerQuestState playerState) {
+        if (canSeeEditorGraph(player)) {
+            return new HashSet<>(definitionStore.quests().keySet());
+        }
+        Set<String> synced = new HashSet<>();
+        for (Map.Entry<String, QuestDefinition> entry : definitionStore.quests().entrySet()) {
+            QuestDefinition definition = entry.getValue();
+            if (visibilityFilter.test(playerState, definition) || shouldSyncLockedPreview(playerState, definition)) {
+                synced.add(entry.getKey());
+            }
+        }
+        return synced;
+    }
+
+    private boolean shouldSyncLockedPreview(PlayerQuestState playerState, QuestDefinition definition) {
+        return definition.settings().hiddenMode() == QuestVisibilityMode.LOCKED
+                && !playerState.quest(definition.id()).unlocked()
+                && !playerState.quest(definition.id()).completed();
     }
 
     private boolean canSeeEditorGraph(ServerPlayer player) {

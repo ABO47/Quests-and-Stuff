@@ -28,9 +28,17 @@ public final class ModalTargets {
     public static final String DESC_IMAGE_NEW = "desc_image_new";
     public static final String DESC_ENTITY = "desc_entity";
     public static final String DESC_ENTITY_NEW = "desc_entity_new";
+    public static final String DESC_ITEM = "desc_item";
+    public static final String DESC_ITEM_NEW = "desc_item_new";
+    public static final String DESC_BLOCK = "desc_block";
+    public static final String DESC_BLOCK_NEW = "desc_block_new";
     public static final String QUEST_DESC_TEXT = "quest_desc_text";
     public static final String CANVAS_ENTITY_NEW = "new";
     public static final String CANVAS_ENTITY_CHANGE = "change";
+    public static final String CANVAS_ITEM_NEW = "item_new";
+    public static final String CANVAS_ITEM_CHANGE = "item_change";
+    public static final String CANVAS_BLOCK_NEW = "block_new";
+    public static final String CANVAS_BLOCK_CHANGE = "block_change";
     public static final String CANVAS_IMAGE = "canvas";
     public static final String CANVAS_TEXT = "canvas_text";
     public static final String CONNECTION = "connection";
@@ -157,6 +165,22 @@ public final class ModalTargets {
         return of(DESC_ENTITY_NEW, questId, imageId, x, y);
     }
 
+    public static String descItem(String questId, String imageId) {
+        return of(DESC_ITEM, questId, imageId);
+    }
+
+    public static String descItemNew(String questId, String imageId, int x, int y) {
+        return of(DESC_ITEM_NEW, questId, imageId, x, y);
+    }
+
+    public static String descBlock(String questId, String imageId) {
+        return of(DESC_BLOCK, questId, imageId);
+    }
+
+    public static String descBlockNew(String questId, String imageId, int x, int y) {
+        return of(DESC_BLOCK_NEW, questId, imageId, x, y);
+    }
+
     public static String questDescText(String questId, String textId) {
         return of(QUEST_DESC_TEXT, questId, textId);
     }
@@ -167,6 +191,22 @@ public final class ModalTargets {
 
     public static String canvasEntityChange(String group, String imageId) {
         return of(CANVAS_ENTITY_CHANGE, group, imageId);
+    }
+
+    public static String canvasItemNew(String group) {
+        return of(CANVAS_ITEM_NEW, group);
+    }
+
+    public static String canvasItemChange(String group, String imageId) {
+        return of(CANVAS_ITEM_CHANGE, group, imageId);
+    }
+
+    public static String canvasBlockNew(String group) {
+        return of(CANVAS_BLOCK_NEW, group);
+    }
+
+    public static String canvasBlockChange(String group, String imageId) {
+        return of(CANVAS_BLOCK_CHANGE, group, imageId);
     }
 
     public static String canvasImage(String group, String imageId) {

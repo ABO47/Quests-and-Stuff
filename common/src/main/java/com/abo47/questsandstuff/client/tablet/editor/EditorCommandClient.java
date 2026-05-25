@@ -104,6 +104,26 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.setQuestCompletionSound(player, questId, sound);
     }
 
+    public static void setQuestCompletionSound(Player player, Set<String> questIds, String sound) {
+        EditorQuestCommandClient.setQuestCompletionSound(player, questIds, sound);
+    }
+
+    public static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
+        EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questId, volume);
+    }
+
+    public static void setQuestCompletionSoundVolume(Player player, Set<String> questIds, int volume) {
+        EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questIds, volume);
+    }
+
+    public static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
+        EditorQuestCommandClient.setQuestBackground(player, questId, background, grayscale);
+    }
+
+    public static void setQuestBackground(Player player, Set<String> questIds, String background, boolean grayscale) {
+        EditorQuestCommandClient.setQuestBackground(player, questIds, background, grayscale);
+    }
+
     public static void runRemoveQuestAction(Player player, String questId) {
         EditorQuestCommandClient.runRemoveQuestAction(player, questId);
     }

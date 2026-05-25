@@ -14,9 +14,14 @@ public record QuestDisplay(
         String icon,
         String iconBackground,
         String completionSound,
-        boolean visualHidden
+        int completionSoundVolume,
+        boolean visualHidden,
+        String questBackground,
+        boolean questBackgroundGrayscale
 ) {
     public static final String DEFAULT_COMPLETION_SOUND = "minecraft:ui.toast.challenge_complete";
+    public static final int DEFAULT_COMPLETION_SOUND_VOLUME = 100;
+    public static final String DEFAULT_QUEST_BACKGROUND = "default";
 
     public static final QuestDisplay DEFAULT = new QuestDisplay(
             "Untitled Quest",
@@ -26,6 +31,9 @@ public record QuestDisplay(
             "minecraft:book",
             "minecraft:barrier",
             DEFAULT_COMPLETION_SOUND,
+            DEFAULT_COMPLETION_SOUND_VOLUME,
+            false,
+            DEFAULT_QUEST_BACKGROUND,
             false
     );
 
@@ -37,7 +45,40 @@ public record QuestDisplay(
             String icon,
             String iconBackground
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, DEFAULT_COMPLETION_SOUND, false);
+        this(title, subtitle, description, groups, icon, iconBackground, DEFAULT_COMPLETION_SOUND, DEFAULT_COMPLETION_SOUND_VOLUME, false, DEFAULT_QUEST_BACKGROUND, false);
+    }
+
+    public QuestDisplay(
+            String title,
+            String subtitle,
+            List<String> description,
+            Map<String, ChapterDefinition> groups,
+            String icon,
+            String iconBackground,
+            String completionSound,
+            boolean visualHidden
+    ) {
+        this(title, subtitle, description, groups, icon, iconBackground, completionSound, DEFAULT_COMPLETION_SOUND_VOLUME, visualHidden, DEFAULT_QUEST_BACKGROUND, false);
+    }
+
+    public QuestDisplay(
+            String title,
+            String subtitle,
+            List<String> description,
+            Map<String, ChapterDefinition> groups,
+            String icon,
+            String iconBackground,
+            String completionSound,
+            int completionSoundVolume,
+            boolean visualHidden
+    ) {
+        this(title, subtitle, description, groups, icon, iconBackground, completionSound, completionSoundVolume, visualHidden, DEFAULT_QUEST_BACKGROUND, false);
+    }
+
+    public QuestDisplay {
+        completionSound = completionSound == null || completionSound.isBlank() ? DEFAULT_COMPLETION_SOUND : completionSound.trim();
+        completionSoundVolume = normalizeCompletionSoundVolume(completionSoundVolume);
+        questBackground = normalizeQuestBackground(questBackground);
     }
 
     public static final Codec<QuestDisplay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -48,6 +89,17 @@ public record QuestDisplay(
             Codec.STRING.fieldOf("icon").orElse("minecraft:book").forGetter(QuestDisplay::icon),
             Codec.STRING.fieldOf("icon_background").orElse("minecraft:barrier").forGetter(QuestDisplay::iconBackground),
             Codec.STRING.fieldOf("completion_sound").orElse(DEFAULT_COMPLETION_SOUND).forGetter(QuestDisplay::completionSound),
-            Codec.BOOL.fieldOf("visual_hidden").orElse(false).forGetter(QuestDisplay::visualHidden)
+            Codec.INT.fieldOf("completion_sound_volume").orElse(DEFAULT_COMPLETION_SOUND_VOLUME).forGetter(QuestDisplay::completionSoundVolume),
+            Codec.BOOL.fieldOf("visual_hidden").orElse(false).forGetter(QuestDisplay::visualHidden),
+            Codec.STRING.fieldOf("quest_background").orElse(DEFAULT_QUEST_BACKGROUND).forGetter(QuestDisplay::questBackground),
+            Codec.BOOL.fieldOf("quest_background_grayscale").orElse(false).forGetter(QuestDisplay::questBackgroundGrayscale)
     ).apply(instance, QuestDisplay::new));
+
+    public static int normalizeCompletionSoundVolume(int volume) {
+        return Math.max(0, Math.min(100, volume));
+    }
+
+    public static String normalizeQuestBackground(String background) {
+        return background == null || background.isBlank() ? DEFAULT_QUEST_BACKGROUND : background.trim();
+    }
 }

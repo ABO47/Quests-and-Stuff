@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.network.editor.C2SEditorRemoveQuestPacket;
 import com.abo47.questsandstuff.network.editor.C2SEditorUpdateQuestPacket;
 import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,7 +19,10 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 final class EditorQuestCommandClient {
     private static final int MAX_DESCRIPTION_LINES = 256;
@@ -77,6 +81,79 @@ final class EditorQuestCommandClient {
         payload.putString("sound", normalizedSound);
         EditorCommandSender.run(player, "quest_change_completion_sound", payload,
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, normalizedQuestId, normalizedSound));
+    }
+
+    static void setQuestCompletionSound(Player player, Set<String> questIds, String sound) {
+        Set<String> targets = normalizedQuestIds(questIds);
+        String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
+        if (targets.isEmpty()) {
+            return;
+        }
+        for (String questId : targets) {
+            ClientQuestCache.setQuestCompletionSoundLocal(questId, normalizedSound);
+        }
+        CompoundTag payload = questIdsPayload(targets);
+        payload.putString("sound", normalizedSound);
+        EditorCommandSender.run(player, "quest_change_completion_sound_many", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, targets, normalizedSound));
+    }
+
+    static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
+        ClientQuestCache.setQuestCompletionSoundVolumeLocal(normalizedQuestId, normalizedVolume);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putInt("volume", normalizedVolume);
+        EditorCommandSender.run(player, "quest_change_completion_sound_volume", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, normalizedQuestId, normalizedVolume));
+    }
+
+    static void setQuestCompletionSoundVolume(Player player, Set<String> questIds, int volume) {
+        Set<String> targets = normalizedQuestIds(questIds);
+        if (targets.isEmpty()) {
+            return;
+        }
+        int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
+        for (String questId : targets) {
+            ClientQuestCache.setQuestCompletionSoundVolumeLocal(questId, normalizedVolume);
+        }
+        CompoundTag payload = questIdsPayload(targets);
+        payload.putInt("volume", normalizedVolume);
+        EditorCommandSender.run(player, "quest_change_completion_sound_volume_many", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, targets, normalizedVolume));
+    }
+
+    static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        ClientQuestCache.setQuestBackgroundLocal(normalizedQuestId, normalizedBackground, grayscale);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putString("background", normalizedBackground);
+        payload.putBoolean("grayscale", grayscale);
+        EditorCommandSender.run(player, "quest_background", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestBackground(serverPlayer, normalizedQuestId, normalizedBackground, grayscale));
+    }
+
+    static void setQuestBackground(Player player, Set<String> questIds, String background, boolean grayscale) {
+        Set<String> targets = normalizedQuestIds(questIds);
+        String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
+        if (targets.isEmpty()) {
+            return;
+        }
+        for (String questId : targets) {
+            ClientQuestCache.setQuestBackgroundLocal(questId, normalizedBackground, grayscale);
+        }
+        CompoundTag payload = questIdsPayload(targets);
+        payload.putString("background", normalizedBackground);
+        payload.putBoolean("grayscale", grayscale);
+        EditorCommandSender.run(player, "quest_background_many", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestBackground(serverPlayer, targets, normalizedBackground, grayscale));
     }
 
     static void runRemoveQuestAction(Player player, String questId) {
@@ -302,6 +379,30 @@ final class EditorQuestCommandClient {
 
     private static String limitDescriptionLine(String line) {
         return line.length() > MAX_DESCRIPTION_LINE_LENGTH ? line.substring(0, MAX_DESCRIPTION_LINE_LENGTH) : line;
+    }
+
+    private static Set<String> normalizedQuestIds(Collection<String> questIds) {
+        Set<String> targets = new LinkedHashSet<>();
+        if (questIds == null) {
+            return targets;
+        }
+        for (String questId : questIds) {
+            String normalized = EditorCommandSender.id(questId);
+            if (!normalized.isBlank()) {
+                targets.add(normalized);
+            }
+        }
+        return targets;
+    }
+
+    private static CompoundTag questIdsPayload(Set<String> questIds) {
+        CompoundTag payload = new CompoundTag();
+        ListTag tags = new ListTag();
+        for (String questId : questIds) {
+            tags.add(StringTag.valueOf(questId));
+        }
+        payload.put("quests", tags);
+        return payload;
     }
 
     private static int[] findNearestFreeCell(TabletUiState state, String group, int startX, int startY) {

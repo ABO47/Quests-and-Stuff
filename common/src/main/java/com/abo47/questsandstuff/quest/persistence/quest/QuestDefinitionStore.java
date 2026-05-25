@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,12 +61,20 @@ public final class QuestDefinitionStore {
         return snapshot;
     }
 
+    public EditorSnapshot editorSnapshot() {
+        return new EditorSnapshot(snapshot(), chapters.snapshot());
+    }
+
     public List<String> groupOrder() {
         return chapters.groupOrder();
     }
 
     public void setGroupOrder(List<String> groups) {
         chapters.setGroupOrder(groups, discoverGroups());
+    }
+
+    public void renameGroupMetadata(String fromName, String toName) {
+        chapters.renameGroup(fromName, toName, discoverGroups());
     }
 
     public String groupIcon(String group) {
@@ -90,6 +99,14 @@ public final class QuestDefinitionStore {
 
     public int groupTextSize(String group) {
         return chapters.groupTextSize(group);
+    }
+
+    public boolean groupLockUntilUnlocked(String group) {
+        return chapters.groupLockUntilUnlocked(group);
+    }
+
+    public boolean groupHideUntilUnlocked(String group) {
+        return chapters.groupHideUntilUnlocked(group);
     }
 
     public Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
@@ -140,6 +157,14 @@ public final class QuestDefinitionStore {
         chapters.setGroupTextSize(group, size);
     }
 
+    public void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
+        chapters.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+    }
+
+    public void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
+        chapters.setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+    }
+
     public void putCanvasImage(String group, CanvasImageLayer image) {
         chapters.putCanvasImage(group, image);
     }
@@ -181,6 +206,16 @@ public final class QuestDefinitionStore {
         }
         chapters.reconcile(discoverGroups());
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
+    }
+
+    public void replaceAll(EditorSnapshot replacement) {
+        if (replacement == null) {
+            return;
+        }
+        replaceAll(replacement.quests());
+        chapters.restore(replacement.chapters());
+        chapters.reconcile(discoverGroups());
+        chapters.save();
     }
 
     public void load() {
@@ -286,6 +321,9 @@ public final class QuestDefinitionStore {
             groups.addAll(definition.display().groups().keySet());
         }
         return groups;
+    }
+
+    public record EditorSnapshot(Map<String, QuestDefinition> quests, ChapterMetadataSnapshot chapters) {
     }
 
 }

@@ -149,7 +149,7 @@ public final class CanvasSelectionActions {
 
     private static CanvasImageLayer movedImage(TabletUiState state, CanvasImageLayer image, int offset, boolean verticalCenterLine) {
         CanvasPoint clamped = movedElementPosition(state, image.x(), image.y(), image.w(), image.h(), offset, verticalCenterLine);
-        return new CanvasImageLayer(image.id(), image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+        return image.moveTo(clamped.x, clamped.y);
     }
 
     private static CanvasTextLayer movedText(TabletUiState state, CanvasTextLayer text, int offset, boolean verticalCenterLine) {

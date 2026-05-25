@@ -42,7 +42,10 @@ public final class QuestDefinitionEdits {
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
-                            source.display().visualHidden()
+                            source.display().completionSoundVolume(),
+                            source.display().visualHidden(),
+                            source.display().questBackground(),
+                            source.display().questBackgroundGrayscale()
                     ),
                     new QuestSettings(
                             source.settings().individualProgress(),
@@ -99,6 +102,23 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.tasks(),
+                definition.rewards()
+        );
+    }
+
+    public static QuestDefinition withSettings(QuestDefinition definition, QuestSettings settings) {
+        return new QuestDefinition(
+                definition.schema(),
+                definition.id(),
+                definition.display(),
+                settings,
+                definition.prerequisites(),
+                definition.connectionColors(),
+                definition.connectionModes(),
+                definition.hiddenConnections(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -162,7 +182,10 @@ public final class QuestDefinitionEdits {
                 definition.display().icon(),
                 definition.display().iconBackground(),
                 definition.display().completionSound(),
-                definition.display().visualHidden()
+                definition.display().completionSoundVolume(),
+                definition.display().visualHidden(),
+                definition.display().questBackground(),
+                definition.display().questBackgroundGrayscale()
         );
         return new QuestDefinition(
                 definition.schema(),

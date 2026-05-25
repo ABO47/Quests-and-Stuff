@@ -7,11 +7,14 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -105,6 +108,20 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         int ly = visibleY + state.questDetailsDescScroll;
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY, ly);
+        if (button == 0 && selection.count() > 1) {
+            if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
+                transforms.beginSelectionTransform(model, lx, visibleY, "rotate");
+                state.questDetailsTextStyleOpen = false;
+                refresh.run();
+                return true;
+            }
+            if (selection.selectionResizeHandleHit(model, lx, visibleY)) {
+                transforms.beginSelectionTransform(model, lx, visibleY, "resize");
+                state.questDetailsTextStyleOpen = false;
+                refresh.run();
+                return true;
+            }
+        }
         if (button == 0 && textEdit.isEditing()) {
             CanvasTextLayer editingText = model.text(state.questDetailsTextEditTarget);
             QuestDetailsDescriptionHitTest.Rect editingRect = editingText == null
@@ -167,9 +184,18 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             return true;
         }
         QuestDetailsDescriptionHitTest.Rect hitRect = hitTest.rect(model, hit);
-        boolean resizeHit = hitTest.inResizeHandle(hitRect, lx, visibleY);
-        boolean rotateHit = hitTest.inRotateHandle(hitRect, lx, visibleY);
-        if (isShiftDown() && !resizeHit && !rotateHit) {
+        if ("desc_image".equals(hit.kind())) {
+            CanvasImageLayer hitImage = model.image(hit.id());
+            if (hitImage != null && CanvasTransformGizmo.supports(hitImage.asset()) && !selection.isSelectedImage(hit.id())) {
+                CanvasTransformGizmo.setMode(state, CanvasTransformMode.MOVE);
+            }
+        }
+        boolean groupHit = selection.count() > 1 && hitTest.isHitSelected(hit);
+        CanvasTransformMode clickedGizmoMode = groupHit ? null : hitTest.imageGizmoMode(model, hit, lx, visibleY);
+        boolean resizeHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.RESIZE || hitTest.inResizeHandle(hitRect, lx, visibleY));
+        boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
+        boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
+        if (isShiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
             toggleSelection(hit);
             state.questDetailsTextStyleOpen = false;
             refresh.run();
@@ -277,8 +303,14 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         state.questDetailsTransformId = "";
         state.questDetailsTransformKind = "";
         state.questDetailsTransformMode = "";
+        state.questDetailsTransformAxis = "";
         state.dragStartTextPositions.clear();
         state.dragStartImagePositions.clear();
+        state.resizeStartImageLayers.clear();
+        state.resizeStartTextLayers.clear();
+        state.rotateStartImageLayers.clear();
+        state.rotateStartTextLayers.clear();
+        state.rotatePreviewAngle = 0.0;
         state.snapGuideXVisible = false;
         state.snapGuideYVisible = false;
         refresh.run();
@@ -287,10 +319,32 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     private void beginTransform(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit, int lx, int visibleY, int ly) {
         QuestDetailsDescriptionHitTest.Rect rect = hitTest.rect(model, hit);
-        boolean resizeHit = hitTest.inResizeHandle(rect, lx, visibleY);
-        boolean rotateHit = hitTest.inRotateHandle(rect, lx, visibleY);
+        CanvasImageLayer image = "desc_image".equals(hit.kind()) ? model.image(hit.id()) : null;
+        boolean gizmoSupported = image != null && CanvasTransformGizmo.supports(image.asset());
+        CanvasTransformMode gizmoMode = hitTest.imageGizmoMode(model, hit, lx, visibleY);
+        if (gizmoSupported && gizmoMode == null) {
+            state.questDetailsTransformAxis = "";
+            return;
+        }
+        state.questDetailsTransformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
+        boolean resizeHit = gizmoMode == CanvasTransformMode.RESIZE
+                || (!gizmoSupported && gizmoMode == null && hitTest.inResizeHandle(rect, lx, visibleY));
+        boolean rotateHit = gizmoMode == CanvasTransformMode.ROTATE
+                || (!gizmoSupported && gizmoMode == null && hitTest.inRotateHandle(rect, lx, visibleY));
         boolean selectionMove = selection.count() > 1 && hitTest.isHitSelected(hit) && !resizeHit && !rotateHit;
         transforms.beginTransform(model, hit.kind(), hit.id(), new QuestDetailsDescriptionTransform.ElementRect(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation()), selectionMove, resizeHit, rotateHit, lx, visibleY, ly);
+    }
+
+    private boolean shiftMoveHit(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
+        if (!isShiftDown() || !"desc_image".equals(hit.kind())) {
+            return false;
+        }
+        CanvasImageLayer image = model.image(hit.id());
+        CanvasTransformMode active = CanvasTransformGizmo.activeMode(state);
+        if (image == null || !CanvasTransformGizmo.supports(image.asset()) || (active != CanvasTransformMode.MOVE && active != CanvasTransformMode.RESIZE)) {
+            return false;
+        }
+        return true;
     }
 
     private void select(QuestDetailsDescriptionHitTest.Hit hit) {
@@ -404,6 +458,14 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         state.questDetailsTransformId = "";
         state.questDetailsTransformKind = "";
         state.questDetailsTransformMode = "";
+        state.questDetailsTransformAxis = "";
+        state.dragStartTextPositions.clear();
+        state.dragStartImagePositions.clear();
+        state.resizeStartImageLayers.clear();
+        state.resizeStartTextLayers.clear();
+        state.rotateStartImageLayers.clear();
+        state.rotateStartTextLayers.clear();
+        state.rotatePreviewAngle = 0.0;
         state.snapGuideXVisible = false;
         state.snapGuideYVisible = false;
     }

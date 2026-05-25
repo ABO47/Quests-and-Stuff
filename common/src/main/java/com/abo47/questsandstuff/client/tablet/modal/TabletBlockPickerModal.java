@@ -17,7 +17,6 @@ import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -105,13 +104,20 @@ public final class TabletBlockPickerModal {
         }
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             if (!entry.value().isBlank()) {
-                QuestDetailsWindow.applyBlockPick(player, state, entry.value());
+                String canvasModelTarget = state.modalCanvasModelTarget == null ? "" : state.modalCanvasModelTarget.trim();
+                if (!canvasModelTarget.isBlank()) {
+                    if (!TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry.value())) {
+                        return;
+                    }
+                } else {
+                    QuestDetailsWindow.applyBlockPick(player, state, entry.value());
+                }
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] block picked kind={} value={} preview={}", entry.tag() ? "tag" : "block", entry.value(), entry.previewId());
             closeAll(state);
             refresh.run();
         });
-        hit.setHoverTooltips(Component.literal(entry.displayName() + " - " + entry.value()));
+        hit.setHoverTooltips(PickerTooltips.nameAndId(entry.displayName(), entry.value()));
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         surface.addWidget(hit);

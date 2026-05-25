@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,7 +16,9 @@ final class QuestRewardDelivery {
             return;
         }
         ItemStack copy = stack.copy();
-        if (player.addItem(copy)) {
+        boolean insertedAll = player.addItem(copy);
+        syncInventory(player);
+        if (insertedAll) {
             player.level().playSound(
                     null,
                     player.getX(),
@@ -32,6 +35,25 @@ final class QuestRewardDelivery {
         if (dropped != null) {
             dropped.setNoPickUpDelay();
             dropped.setTarget(player.getUUID());
+        }
+    }
+
+    private static void syncInventory(ServerPlayer player) {
+        player.getInventory().setChanged();
+        if (player.connection == null) {
+            return;
+        }
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
+        }
+        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+            player.connection.send(new ClientboundContainerSetSlotPacket(
+                    -2,
+                    0,
+                    slot,
+                    player.getInventory().getItem(slot).copy()
+            ));
         }
     }
 }

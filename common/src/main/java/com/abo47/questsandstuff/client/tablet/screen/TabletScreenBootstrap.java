@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.screen;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.network.QuestNetwork;
@@ -55,7 +56,7 @@ final class TabletScreenBootstrap {
 
     static Runnable undoAction(TabletUiState state, Player player) {
         return () -> {
-            if (!state.canEdit) {
+            if (!canUseEditorHistory(state)) {
                 return;
             }
             if (player instanceof ServerPlayer serverPlayer) {
@@ -68,7 +69,7 @@ final class TabletScreenBootstrap {
 
     static Runnable redoAction(TabletUiState state, Player player) {
         return () -> {
-            if (!state.canEdit) {
+            if (!canUseEditorHistory(state)) {
                 return;
             }
             if (player instanceof ServerPlayer serverPlayer) {
@@ -79,8 +80,12 @@ final class TabletScreenBootstrap {
         };
     }
 
+    private static boolean canUseEditorHistory(TabletUiState state) {
+        return state != null && state.editorAvailable && (state.canEdit || QuestDetailsEditState.canEdit(state));
+    }
+
     static void keepSelectedGroupValid(TabletUiState state, boolean persist) {
-        List<String> groups = ClientQuestCache.groupOrder();
+        List<String> groups = ClientQuestCache.selectableGroupOrder(state.canEdit);
         if (groups.isEmpty()) {
             state.selectedGroup = "";
             return;

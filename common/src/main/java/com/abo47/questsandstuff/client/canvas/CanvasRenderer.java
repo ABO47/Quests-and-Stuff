@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -124,9 +125,7 @@ public final class CanvasRenderer {
     }
 
     private static boolean isVisualHiddenOutsideEdit(CompoundTag questTag) {
-        return questTag.getBoolean("visual_hidden")
-                && !questTag.getBoolean("unlocked")
-                && !questTag.getBoolean("completed");
+        return ClientQuestCache.questHiddenPreview(questTag);
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {
@@ -180,6 +179,11 @@ public final class CanvasRenderer {
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
+    public static void moveCanvasLayers(TabletUiState state, String group, List<String> layerKeys, boolean front) {
+        CanvasLayerOrdering.moveLayers(state, group, layerKeys, front);
+        CanvasElementStore.persistLayerOrder(state, group);
+    }
+
     public static boolean isImageAboveQuest(TabletUiState state, String group, String imageId, String questId) {
         return CanvasLayerOrdering.isImageAboveQuest(state, group, imageId, questId);
     }
@@ -217,7 +221,7 @@ public final class CanvasRenderer {
     }
 
     public static int totalCanvasSelectionCount(TabletUiState state) {
-        return state.selectedQuestIds.size() + selectedCanvasImageIds(state).size() + selectedCanvasTextIds(state).size();
+        return CanvasSelectionSet.current(state).size();
     }
 
     public static void clearCanvasSelection(TabletUiState state) {

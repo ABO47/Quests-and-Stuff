@@ -28,6 +28,11 @@ public final class ClientSyncPayloadApplier {
     }
 
     public static void applyDeltaSync(CompoundTag payload) {
+        boolean chapterPayload = payload.contains("groups", Tag.TAG_LIST) || payload.contains("group_props", Tag.TAG_COMPOUND);
+        if (chapterPayload) {
+            ClientChapterState.loadFromFullPayload(payload);
+            ClientCanvasLayerState.loadFromFullPayload(payload);
+        }
         CompoundTag changed = payload.getCompound("changed");
         for (String questId : changed.getAllKeys()) {
             ClientQuestState.putQuest(questId, changed.getCompound(questId));
@@ -37,6 +42,9 @@ public final class ClientSyncPayloadApplier {
             ClientQuestState.removeQuest(questId);
         }
         ClientRawSyncPayload.merge(payload);
+        if (chapterPayload) {
+            TabletUiFactory.syncActiveCanvasStateFromCache();
+        }
     }
 
     public static void applyDescriptionSync(CompoundTag payload) {

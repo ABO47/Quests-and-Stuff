@@ -1,24 +1,17 @@
 package com.abo47.questsandstuff.client.hud;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sound.AssetSoundInstance;
+import com.abo47.questsandstuff.client.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Optional;
 
 public final class QuestCompletionNotificationOverlay {
     private static final long DISPLAY_MS = 2600L;
@@ -35,7 +28,7 @@ public final class QuestCompletionNotificationOverlay {
         }
         CompoundTag quest = ClientQuestCache.quest(questId);
         String title = quest.getString("title");
-        playSound(quest.getString("completion_sound"));
+        QuestCompletionSoundPlayer.play(quest.getString("completion_sound"), completionSoundVolume(quest));
         NOTIFICATIONS.addLast(new Notification(title == null || title.isBlank() ? questId : title, System.currentTimeMillis()));
         while (NOTIFICATIONS.size() > 3) {
             NOTIFICATIONS.removeFirst();
@@ -75,62 +68,6 @@ public final class QuestCompletionNotificationOverlay {
         graphics.drawString(minecraft.font, title, x + 7, y + 14, TabletUiFactory.withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
     }
 
-    private static void playSound(String soundId) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) {
-            return;
-        }
-        boolean assetSoundValue = !normalizeAssetSound(soundId).isBlank();
-        Optional<Path> assetSound = resolveAssetSound(soundId);
-        if (assetSound.isPresent()) {
-            Path path = assetSound.get();
-            ResourceLocation id = ResourceLocation.tryBuild(
-                    QuestsAndStuffMod.MODID,
-                    "completion_asset/" + Integer.toHexString(path.toAbsolutePath().normalize().toString().hashCode())
-            );
-            minecraft.getSoundManager().play(new AssetSoundInstance(id, path));
-            return;
-        }
-        if (assetSoundValue) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f));
-            return;
-        }
-        ResourceLocation id = ResourceLocation.tryParse(soundId == null || soundId.isBlank()
-                ? "minecraft:ui.toast.challenge_complete"
-                : soundId);
-        SoundEvent event = id == null || "minecraft:ui.toast.challenge_complete".equals(id.toString())
-                ? SoundEvents.UI_TOAST_CHALLENGE_COMPLETE
-                : SoundEvent.createVariableRangeEvent(id);
-        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(event, 1.0f));
-    }
-
-    private static Optional<Path> resolveAssetSound(String soundId) {
-        String relative = normalizeAssetSound(soundId);
-        if (relative.isBlank()) {
-            return Optional.empty();
-        }
-        Path root = TabletUiFactory.ASSETS_ROOT_DIR.toAbsolutePath().normalize();
-        Path path = root.resolve(relative).normalize();
-        if (!path.startsWith(root) || !Files.isRegularFile(path) || !AssetSoundInstance.canPlay(path)) {
-            return Optional.empty();
-        }
-        return Optional.of(path);
-    }
-
-    private static String normalizeAssetSound(String soundId) {
-        if (soundId == null) {
-            return "";
-        }
-        String normalized = soundId.replace('\\', '/').trim();
-        while (normalized.startsWith("/")) {
-            normalized = normalized.substring(1);
-        }
-        if (!normalized.startsWith("sounds/") || normalized.contains("..")) {
-            return "";
-        }
-        return normalized;
-    }
-
     private static float easeOut(float value) {
         float t = Math.max(0.0f, Math.min(1.0f, value));
         return 1.0f - (1.0f - t) * (1.0f - t);
@@ -139,6 +76,13 @@ public final class QuestCompletionNotificationOverlay {
     private static String crop(String value, int max) {
         String safe = value == null ? "" : value;
         return safe.length() <= max ? safe : safe.substring(0, Math.max(0, max - 3)) + "...";
+    }
+
+    private static int completionSoundVolume(CompoundTag quest) {
+        if (quest == null || !quest.contains("completion_sound_volume")) {
+            return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
+        }
+        return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
     private record Notification(String title, long startedAtMs) {

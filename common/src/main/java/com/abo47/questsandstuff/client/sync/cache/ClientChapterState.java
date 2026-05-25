@@ -20,6 +20,8 @@ public final class ClientChapterState {
     private static final Map<String, Integer> GROUP_TEXT_COLOR = new HashMap<>();
     private static final Map<String, String> GROUP_TEXT_STYLE = new HashMap<>();
     private static final Map<String, Integer> GROUP_TEXT_SIZE = new HashMap<>();
+    private static final Map<String, Boolean> GROUP_LOCK_UNTIL_UNLOCKED = new HashMap<>();
+    private static final Map<String, Boolean> GROUP_HIDE_UNTIL_UNLOCKED = new HashMap<>();
 
     private ClientChapterState() {
     }
@@ -33,6 +35,8 @@ public final class ClientChapterState {
         GROUP_TEXT_COLOR.clear();
         GROUP_TEXT_STYLE.clear();
         GROUP_TEXT_SIZE.clear();
+        GROUP_LOCK_UNTIL_UNLOCKED.clear();
+        GROUP_HIDE_UNTIL_UNLOCKED.clear();
     }
 
     public static void loadFromFullPayload(CompoundTag payload) {
@@ -54,6 +58,8 @@ public final class ClientChapterState {
             }
             GROUP_TEXT_STYLE.put(group, normalizeTextStyle(props.contains("text_style") ? props.getString("text_style") : "normal"));
             GROUP_TEXT_SIZE.put(group, clampTextSize(props.contains("text_size") ? props.getInt("text_size") : CanvasTextLayer.DEFAULT_FONT_SIZE));
+            GROUP_LOCK_UNTIL_UNLOCKED.put(group, props.getBoolean("lock_until_unlocked"));
+            GROUP_HIDE_UNTIL_UNLOCKED.put(group, props.getBoolean("hide_until_unlocked"));
         }
     }
 
@@ -78,6 +84,8 @@ public final class ClientChapterState {
         GROUP_TEXT_COLOR.putIfAbsent(normalized, 0xFFFFFFFF);
         GROUP_TEXT_STYLE.putIfAbsent(normalized, "normal");
         GROUP_TEXT_SIZE.putIfAbsent(normalized, CanvasTextLayer.DEFAULT_FONT_SIZE);
+        GROUP_LOCK_UNTIL_UNLOCKED.putIfAbsent(normalized, false);
+        GROUP_HIDE_UNTIL_UNLOCKED.putIfAbsent(normalized, false);
         return true;
     }
 
@@ -101,6 +109,10 @@ public final class ClientChapterState {
         GROUP_TEXT_COLOR.put(target, color == null ? 0xFFFFFFFF : color);
         Integer textSize = GROUP_TEXT_SIZE.remove(source);
         GROUP_TEXT_SIZE.put(target, textSize == null ? CanvasTextLayer.DEFAULT_FONT_SIZE : textSize);
+        Boolean lockUntilUnlocked = GROUP_LOCK_UNTIL_UNLOCKED.remove(source);
+        GROUP_LOCK_UNTIL_UNLOCKED.put(target, lockUntilUnlocked != null && lockUntilUnlocked);
+        Boolean hideUntilUnlocked = GROUP_HIDE_UNTIL_UNLOCKED.remove(source);
+        GROUP_HIDE_UNTIL_UNLOCKED.put(target, hideUntilUnlocked != null && hideUntilUnlocked);
         return true;
     }
 
@@ -116,6 +128,8 @@ public final class ClientChapterState {
         GROUP_TEXT_COLOR.remove(normalized);
         GROUP_TEXT_STYLE.remove(normalized);
         GROUP_TEXT_SIZE.remove(normalized);
+        GROUP_LOCK_UNTIL_UNLOCKED.remove(normalized);
+        GROUP_HIDE_UNTIL_UNLOCKED.remove(normalized);
         return true;
     }
 
@@ -173,6 +187,14 @@ public final class ClientChapterState {
         return GROUP_TEXT_SIZE.getOrDefault(normalizeGroup(group), CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
+    public static boolean groupLockUntilUnlocked(String group) {
+        return GROUP_LOCK_UNTIL_UNLOCKED.getOrDefault(normalizeGroup(group), false);
+    }
+
+    public static boolean groupHideUntilUnlocked(String group) {
+        return GROUP_HIDE_UNTIL_UNLOCKED.getOrDefault(normalizeGroup(group), false);
+    }
+
     public static void setGroupIcon(String group, String icon) {
         String normalized = normalizeGroup(group);
         if (!normalized.isBlank()) {
@@ -219,6 +241,20 @@ public final class ClientChapterState {
         String normalized = normalizeGroup(group);
         if (!normalized.isBlank()) {
             GROUP_TEXT_SIZE.put(normalized, clampTextSize(size));
+        }
+    }
+
+    public static void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_LOCK_UNTIL_UNLOCKED.put(normalized, lockUntilUnlocked);
+        }
+    }
+
+    public static void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
+        String normalized = normalizeGroup(group);
+        if (!normalized.isBlank()) {
+            GROUP_HIDE_UNTIL_UNLOCKED.put(normalized, hideUntilUnlocked);
         }
     }
 

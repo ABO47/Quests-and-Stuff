@@ -185,7 +185,7 @@ public final class CanvasGridFitController {
                 nextW,
                 nextH
         );
-        return new CanvasImageLayer(image.id(), image.asset(), clamped.x, clamped.y, nextW, nextH, image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+        return image.withBounds(clamped.x, clamped.y, nextW, nextH);
     }
 
     private static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {

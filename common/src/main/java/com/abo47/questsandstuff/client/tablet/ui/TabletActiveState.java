@@ -28,6 +28,10 @@ final class TabletActiveState {
         activeTabletRefresh.run();
     }
 
+    static String activeSelectedGroup() {
+        return activeTabletState == null ? "" : TabletEditorActions.selectedGroupName(activeTabletState);
+    }
+
     static void syncCanvasStateFromCache(TabletUiState state) {
         if (state == null) {
             return;

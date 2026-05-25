@@ -27,6 +27,13 @@ class AssetPathResolverTest {
     }
 
     @Test
+    void rejectsRegistryIdsAsFilesystemPaths() {
+        assertEquals("", AssetPathResolver.normalizeRelative("block:minecraft:black_stained_glass"));
+        assertNull(AssetPathResolver.resolveAssetPath(root, "block:minecraft:black_stained_glass"));
+        assertNull(AssetPathResolver.resolveDirectory(root, "item:minecraft:diamond"));
+    }
+
+    @Test
     void detectsSupportedAssetTypesByDirectory() {
         assertTrue(AssetPathResolver.isSupportedAsset("pics", "hero.webp"));
         assertTrue(AssetPathResolver.isSupportedAsset("sounds", "complete.ogg"));

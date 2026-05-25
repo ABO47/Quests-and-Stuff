@@ -89,7 +89,7 @@ public final class QuestDetailsDescriptionClipboard {
         }
         for (CanvasImageLayer image : state.canvasImageClipboard) {
             String id = StableIdAllocator.nextId(imageIdPrefix(image), model.images.keySet());
-            CanvasImageLayer pasted = new CanvasImageLayer(id, image.asset(), Math.max(0, image.x() + dx), Math.max(0, image.y() + dy), image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed());
+            CanvasImageLayer pasted = new CanvasImageLayer(id, image.asset(), Math.max(0, image.x() + dx), Math.max(0, image.y() + dy), image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             model.putImage(pasted);
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             state.questDetailsSelectedImageIds.add(id);

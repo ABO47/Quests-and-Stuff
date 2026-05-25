@@ -62,11 +62,19 @@ public final class ClientSyncChunkAccumulator {
         CompoundTag delta = new CompoundTag();
         CompoundTag changed = new CompoundTag();
         CompoundTag removed = new CompoundTag();
+        ListTag groups = new ListTag();
+        CompoundTag groupProps = new CompoundTag();
 
         for (int i = 0; i < expected; i++) {
             CompoundTag part = parts.get(i);
             if (part == null) {
                 continue;
+            }
+            if (groups.isEmpty()) {
+                groups = (ListTag) part.getList("groups", Tag.TAG_STRING).copy();
+            }
+            if (groupProps.isEmpty() && part.contains("group_props", Tag.TAG_COMPOUND)) {
+                groupProps = part.getCompound("group_props").copy();
             }
             CompoundTag partChanged = part.getCompound("changed");
             for (String key : partChanged.getAllKeys()) {
@@ -79,6 +87,10 @@ public final class ClientSyncChunkAccumulator {
             }
         }
 
+        if (!groups.isEmpty() || !groupProps.isEmpty()) {
+            delta.put("groups", groups);
+            delta.put("group_props", groupProps);
+        }
         delta.put("changed", changed);
         delta.put("removed", removed);
         return delta;

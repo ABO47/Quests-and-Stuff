@@ -110,6 +110,18 @@ public final class ClientQuestCache {
         return ClientDisplayState.recentEvents();
     }
 
+    public static void noteQuestCompletedForChapterNotices(String questId, String currentGroup) {
+        ClientDisplayState.noteQuestCompleted(quest(questId), currentGroup);
+    }
+
+    public static boolean groupHasCompletionNotice(String group) {
+        return ClientDisplayState.chapterHasCompletionNotice(group);
+    }
+
+    public static void clearGroupCompletionNotice(String group) {
+        ClientDisplayState.clearChapterCompletionNotice(group);
+    }
+
     public static List<String> groupOrder() {
         return ClientChapterState.groupOrderSnapshot();
     }
@@ -140,6 +152,88 @@ public final class ClientQuestCache {
 
     public static int groupTextSize(String group) {
         return ClientChapterState.groupTextSize(group);
+    }
+
+    public static boolean groupLockUntilUnlocked(String group) {
+        return ClientChapterState.groupLockUntilUnlocked(group);
+    }
+
+    public static boolean groupHideUntilUnlocked(String group) {
+        return ClientChapterState.groupHideUntilUnlocked(group);
+    }
+
+    public static boolean groupLockedPreview(String group) {
+        if (!groupLockUntilUnlocked(group)) {
+            return false;
+        }
+        for (CompoundTag quest : quests().values()) {
+            if (!quest.getCompound("groups").contains(group)) {
+                continue;
+            }
+            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean groupHiddenPreview(String group) {
+        if (!groupHideUntilUnlocked(group)) {
+            return false;
+        }
+        for (CompoundTag quest : quests().values()) {
+            if (!quest.getCompound("groups").contains(group)) {
+                continue;
+            }
+            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean groupOpenablePreview(String group) {
+        return !groupLockedPreview(group) && !groupHiddenPreview(group);
+    }
+
+    public static List<String> selectableGroupOrder(boolean canEdit) {
+        if (canEdit) {
+            return groupOrder();
+        }
+        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
+        for (String group : groupOrder()) {
+            if (groupOpenablePreview(group)) {
+                groups.add(group);
+            }
+        }
+        return List.copyOf(groups);
+    }
+
+    public static List<String> visibleGroupOrder(boolean canEdit) {
+        if (canEdit) {
+            return groupOrder();
+        }
+        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
+        for (String group : groupOrder()) {
+            if (!groupHiddenPreview(group)) {
+                groups.add(group);
+            }
+        }
+        return List.copyOf(groups);
+    }
+
+    public static boolean questLockedPreview(CompoundTag quest) {
+        return quest != null
+                && "locked".equals(quest.getString("hidden_mode"))
+                && !quest.getBoolean("unlocked")
+                && !quest.getBoolean("completed");
+    }
+
+    public static boolean questHiddenPreview(CompoundTag quest) {
+        return quest != null
+                && quest.getBoolean("visual_hidden")
+                && !quest.getBoolean("unlocked")
+                && !quest.getBoolean("completed");
     }
 
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
@@ -214,6 +308,14 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setGroupTextSizeLocal(group, size);
     }
 
+    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        ClientQuestLocalMutations.setGroupLockUntilUnlockedLocal(group, lockUntilUnlocked);
+    }
+
+    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientQuestLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    }
+
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
         ClientQuestLocalMutations.putCanvasImageLocal(group, image);
     }
@@ -272,6 +374,14 @@ public final class ClientQuestCache {
 
     public static void setQuestCompletionSoundLocal(String questId, String sound) {
         ClientQuestLocalMutations.setQuestCompletionSoundLocal(questId, sound);
+    }
+
+    public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
+        ClientQuestLocalMutations.setQuestCompletionSoundVolumeLocal(questId, volume);
+    }
+
+    public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
+        ClientQuestLocalMutations.setQuestBackgroundLocal(questId, background, grayscale);
     }
 
     public static void resetQuestProgressLocal(String questId) {

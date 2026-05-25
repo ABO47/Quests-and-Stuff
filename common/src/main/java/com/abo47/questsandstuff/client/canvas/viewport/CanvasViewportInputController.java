@@ -159,6 +159,7 @@ final class CanvasViewportInputController {
             state.draggingCanvasImage = false;
             state.resizingCanvasImage = false;
             state.rotatingCanvasImage = false;
+            state.canvasImageTransformAxis = "";
             state.snapGuideXVisible = false;
             state.snapGuideYVisible = false;
             refresher.run();
@@ -200,6 +201,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestScales.isEmpty()) {
                 EditorCommandClient.runCanvasScaleAction(player, state, state.transientQuestScales);
             }
+            persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
             return true;
@@ -210,6 +212,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
+            persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
             return true;
@@ -223,6 +226,16 @@ final class CanvasViewportInputController {
         }
 
         return viewport.callSuperMouseReleased(mouseX, mouseY, button);
+    }
+
+    private static void persistSelectedCanvasLayers(TabletUiState state) {
+        String group = TabletUiFactory.selectedGroupName(state);
+        for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
+            CanvasRenderer.persistCanvasImage(state, group, imageId);
+        }
+        for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
+            CanvasRenderer.persistCanvasText(state, group, textId);
+        }
     }
 
     static boolean mouseWheelMove(

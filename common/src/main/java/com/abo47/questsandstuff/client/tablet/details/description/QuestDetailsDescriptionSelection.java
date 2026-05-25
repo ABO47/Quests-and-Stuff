@@ -14,6 +14,9 @@ import java.util.function.IntSupplier;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class QuestDetailsDescriptionSelection {
+    private static final int SELECTION_PAD = 4;
+    private static final int HANDLE_SIZE = 5;
+
     private final TabletUiState state;
     private final IntSupplier contentX;
     private final IntSupplier contentY;
@@ -39,14 +42,7 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     int count() {
-        int count = state.questDetailsSelectedTextIds.size() + state.questDetailsSelectedImageIds.size();
-        if (!state.questDetailsSelectedTextId.isBlank() && !state.questDetailsSelectedTextIds.contains(state.questDetailsSelectedTextId)) {
-            count++;
-        }
-        if (!state.questDetailsSelectedImageId.isBlank() && !state.questDetailsSelectedImageIds.contains(state.questDetailsSelectedImageId)) {
-            count++;
-        }
-        return count;
+        return QuestDetailsDescriptionSelectionState.selectionSet(state).size();
     }
 
     boolean isSelectedText(String id) {
@@ -95,16 +91,44 @@ public final class QuestDetailsDescriptionSelection {
         if (!bounds.valid()) {
             return;
         }
-        drawRect(graphics, bounds.left() - 4, bounds.top() - 4, bounds.width() + 8, bounds.height() + 8, withAlpha(ModColors.INTERACTIVE, 24), withAlpha(ModColors.INTERACTIVE, 214));
+        int left = bounds.left() - SELECTION_PAD;
+        int top = bounds.top() - SELECTION_PAD;
+        int right = bounds.right() + SELECTION_PAD;
+        int bottom = bounds.bottom() + SELECTION_PAD;
+        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(ModColors.INTERACTIVE, 24), withAlpha(ModColors.INTERACTIVE, 214));
+        drawRect(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
+        drawRect(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
     }
 
     boolean selectionBoundsHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
         SelectionRect bounds = selectionBounds(model);
         return bounds.valid()
-                && lx >= bounds.left() - 4
-                && lx <= bounds.right() + 4
-                && visibleY >= bounds.top() - 4
-                && visibleY <= bounds.bottom() + 4;
+                && lx >= bounds.left() - SELECTION_PAD
+                && lx <= bounds.right() + SELECTION_PAD
+                && visibleY >= bounds.top() - SELECTION_PAD
+                && visibleY <= bounds.bottom() + SELECTION_PAD;
+    }
+
+    boolean selectionResizeHandleHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
+        SelectionRect bounds = selectionBounds(model);
+        if (!bounds.valid()) {
+            return false;
+        }
+        int right = bounds.right() + SELECTION_PAD;
+        int bottom = bounds.bottom() + SELECTION_PAD;
+        return lx >= right - HANDLE_SIZE && lx <= right
+                && visibleY >= bottom - HANDLE_SIZE && visibleY <= bottom;
+    }
+
+    boolean selectionRotateHandleHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
+        SelectionRect bounds = selectionBounds(model);
+        if (!bounds.valid()) {
+            return false;
+        }
+        int right = bounds.right() + SELECTION_PAD;
+        int top = bounds.top() - SELECTION_PAD;
+        return lx >= right - HANDLE_SIZE && lx <= right
+                && visibleY >= top && visibleY <= top + HANDLE_SIZE;
     }
 
     private SelectionRect selectionBounds(QuestDetailsDescriptionModel model) {

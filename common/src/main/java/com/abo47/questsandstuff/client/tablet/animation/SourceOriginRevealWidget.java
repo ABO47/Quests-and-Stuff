@@ -28,13 +28,15 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
     private final BooleanSupplier openingSupplier;
     private final Supplier<SourceRect> sourceSupplier;
     private final long durationMs;
+    private final boolean shadowEnabled;
 
-    private SourceOriginRevealWidget(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, Supplier<SourceRect> sourceSupplier, long durationMs) {
+    private SourceOriginRevealWidget(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, Supplier<SourceRect> sourceSupplier, long durationMs, boolean shadowEnabled) {
         super(content.getSelfPositionX(), content.getSelfPositionY(), content.getSizeWidth(), content.getSizeHeight());
         this.startMsSupplier = startMsSupplier;
         this.openingSupplier = openingSupplier;
         this.sourceSupplier = sourceSupplier;
         this.durationMs = durationMs;
+        this.shadowEnabled = shadowEnabled;
         content.setSelfPosition(0, 0);
         addWidget(content);
     }
@@ -43,11 +45,19 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         return wrap(content, startMsSupplier, openingSupplier, sourceSupplier, WINDOW_OPEN_MS);
     }
 
+    public static WidgetGroup windowNoShadow(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, Supplier<SourceRect> sourceSupplier) {
+        return wrap(content, startMsSupplier, openingSupplier, sourceSupplier, WINDOW_OPEN_MS, false);
+    }
+
     public static WidgetGroup wrap(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, Supplier<SourceRect> sourceSupplier, long durationMs) {
+        return wrap(content, startMsSupplier, openingSupplier, sourceSupplier, durationMs, true);
+    }
+
+    public static WidgetGroup wrap(WidgetGroup content, LongSupplier startMsSupplier, BooleanSupplier openingSupplier, Supplier<SourceRect> sourceSupplier, long durationMs, boolean shadowEnabled) {
         if (content == null) {
             return new WidgetGroup(0, 0, 1, 1);
         }
-        return new SourceOriginRevealWidget(content, startMsSupplier, openingSupplier, sourceSupplier, durationMs);
+        return new SourceOriginRevealWidget(content, startMsSupplier, openingSupplier, sourceSupplier, durationMs, shadowEnabled);
     }
 
     public static boolean windowRunning(long startMs) {
@@ -80,7 +90,7 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
     private void drawRevealed(GuiGraphics graphics, boolean drawShadow, Runnable draw) {
         long startMs = startMs();
         if (!UiAnimationProgress.running(startMs, durationMs) && opening()) {
-            if (drawShadow) {
+            if (drawShadow && shadowEnabled) {
                 drawShadow(graphics, 1.0f);
             }
             draw.run();
@@ -100,7 +110,7 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         graphics.pose().translate(finalX, finalY, 0.0F);
         graphics.pose().scale(frame.scale(), frame.scale(), 1.0F);
         graphics.pose().translate(-finalX, -finalY, 0.0F);
-        if (drawShadow) {
+        if (drawShadow && shadowEnabled) {
             drawShadow(graphics, frame.openAmount());
         }
         draw.run();

@@ -55,6 +55,12 @@ final class ChapterMetadataReader {
         if (json.has("text_size")) {
             state.groupTextSize.put(name, CanvasTextLayer.clampFontSize(json.get("text_size").getAsInt()));
         }
+        if (json.has("lock_until_unlocked")) {
+            state.groupLockUntilUnlocked.put(name, json.get("lock_until_unlocked").getAsBoolean());
+        }
+        if (json.has("hide_until_unlocked")) {
+            state.groupHideUntilUnlocked.put(name, json.get("hide_until_unlocked").getAsBoolean());
+        }
     }
 
     private static void readCanvasLayers(JsonObject json, ChapterMetadataState state, String name) {

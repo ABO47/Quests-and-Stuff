@@ -18,6 +18,8 @@ final class ChapterMetadataState {
     final Map<String, Integer> groupTextColor = new HashMap<>();
     final Map<String, String> groupTextStyle = new HashMap<>();
     final Map<String, Integer> groupTextSize = new HashMap<>();
+    final Map<String, Boolean> groupLockUntilUnlocked = new HashMap<>();
+    final Map<String, Boolean> groupHideUntilUnlocked = new HashMap<>();
     final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
     final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
@@ -31,6 +33,8 @@ final class ChapterMetadataState {
         groupTextColor.clear();
         groupTextStyle.clear();
         groupTextSize.clear();
+        groupLockUntilUnlocked.clear();
+        groupHideUntilUnlocked.clear();
         canvasImagesByGroup.clear();
         canvasTextsByGroup.clear();
         canvasLayerOrderByGroup.clear();
@@ -49,6 +53,32 @@ final class ChapterMetadataState {
             }
         }
         reconcile(discoveredGroups);
+    }
+
+    void renameGroup(String fromName, String toName) {
+        String from = normalizeGroupName(fromName);
+        String to = normalizeGroupName(toName);
+        if (from.isBlank() || to.isBlank() || from.equals(to)) {
+            return;
+        }
+        for (int i = 0; i < groupOrder.size(); i++) {
+            if (from.equals(groupOrder.get(i))) {
+                groupOrder.set(i, to);
+                break;
+            }
+        }
+        moveValue(groupIcons, from, to);
+        moveValue(groupBackgrounds, from, to);
+        moveValue(groupCanvasBackgrounds, from, to);
+        moveValue(groupTextAlign, from, to);
+        moveValue(groupTextColor, from, to);
+        moveValue(groupTextStyle, from, to);
+        moveValue(groupTextSize, from, to);
+        moveValue(groupLockUntilUnlocked, from, to);
+        moveValue(groupHideUntilUnlocked, from, to);
+        moveValue(canvasImagesByGroup, from, to);
+        moveValue(canvasTextsByGroup, from, to);
+        moveValue(canvasLayerOrderByGroup, from, to);
     }
 
     String groupIcon(String group) {
@@ -79,6 +109,14 @@ final class ChapterMetadataState {
         return groupTextSize.getOrDefault(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
+    boolean groupLockUntilUnlocked(String group) {
+        return groupLockUntilUnlocked.getOrDefault(group, false);
+    }
+
+    boolean groupHideUntilUnlocked(String group) {
+        return groupHideUntilUnlocked.getOrDefault(group, false);
+    }
+
     void reconcile(Set<String> discoveredGroups) {
         Set<String> discovered = discoveredGroups == null ? Set.of() : discoveredGroups;
         groupOrder.removeIf(group -> group == null || group.isBlank());
@@ -94,6 +132,8 @@ final class ChapterMetadataState {
         groupTextColor.keySet().removeIf(group -> !groupOrder.contains(group));
         groupTextStyle.keySet().removeIf(group -> !groupOrder.contains(group));
         groupTextSize.keySet().removeIf(group -> !groupOrder.contains(group));
+        groupLockUntilUnlocked.keySet().removeIf(group -> !groupOrder.contains(group));
+        groupHideUntilUnlocked.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasImagesByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasTextsByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasLayerOrderByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
@@ -105,6 +145,8 @@ final class ChapterMetadataState {
             groupTextColor.putIfAbsent(group, 0xFFFFFFFF);
             groupTextStyle.putIfAbsent(group, "normal");
             groupTextSize.putIfAbsent(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
+            groupLockUntilUnlocked.putIfAbsent(group, false);
+            groupHideUntilUnlocked.putIfAbsent(group, false);
             canvasImagesByGroup.putIfAbsent(group, List.of());
             canvasTextsByGroup.putIfAbsent(group, List.of());
             canvasLayerOrderByGroup.putIfAbsent(group, List.of());
@@ -137,6 +179,13 @@ final class ChapterMetadataState {
             copy.put(entry.getKey(), List.copyOf(entry.getValue()));
         }
         return Map.copyOf(copy);
+    }
+
+    private static <T> void moveValue(Map<String, T> map, String from, String to) {
+        if (!map.containsKey(from) || map.containsKey(to)) {
+            return;
+        }
+        map.put(to, map.remove(from));
     }
 
     static String normalizeGroupName(String name) {

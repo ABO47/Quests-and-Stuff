@@ -78,12 +78,14 @@ final class QuestObjectiveActionWidgets {
         if (claimable) {
             var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> {
                 boolean hasSelectableReward = QuestObjectiveSelectableRewards.hasSelectableReward(quest);
-                boolean claimedSelectable = QuestObjectiveSelectableRewards.claimSelected(player, state, questId);
-                if (!hasSelectableReward || !claimedSelectable) {
+                boolean canClaimNow = true;
+                if (hasSelectableReward) {
+                    canClaimNow = QuestObjectiveSelectableRewards.allSelectableRewardsSelected(quest, state)
+                            && QuestObjectiveSelectableRewards.claimSelected(player, state, questId);
+                } else {
                     QuestDetailsWindow.claimAll(player, questId);
                 }
-                boolean selectableSelectionsComplete = QuestObjectiveSelectableRewards.allSelectableRewardsSelected(quest, state);
-                if (!hasSelectableReward || (claimedSelectable && selectableSelectionsComplete)) {
+                if (canClaimNow) {
                     if (state != null) {
                         state.questDetailsClaimedOverrideQuestId = questId;
                     }

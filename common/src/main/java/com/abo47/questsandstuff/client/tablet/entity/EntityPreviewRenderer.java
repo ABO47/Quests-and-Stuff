@@ -34,6 +34,10 @@ public final class EntityPreviewRenderer {
     public static final int FRONT_ENTITY_YAW = 205;
     private static final int DEFAULT_ICON_ENTITY_YAW = FRONT_ENTITY_YAW;
     private static final int DEFAULT_ICON_ENTITY_SPIN_SPEED = 0;
+    private static final double ICON_ENTITY_FILL = 0.82D;
+    private static final double ICON_ENTITY_MAX_SCALE = 96.0D;
+    private static final double CANVAS_ENTITY_FILL = 0.94D;
+    private static final double CANVAS_ENTITY_MAX_SCALE = 2048.0D;
 
     private EntityPreviewRenderer() {
     }
@@ -185,26 +189,41 @@ public final class EntityPreviewRenderer {
     }
 
     public static boolean renderEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, float partialTicks) {
+        return renderEntityAsset(graphics, x, y, width, height, asset, yawDegrees, spinSpeed, CanvasImageLayer.DEFAULT_MODEL_PITCH, partialTicks);
+    }
+
+    public static boolean renderEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
+        return renderEntityAssetAtCenter(graphics, x + width / 2, y + height / 2, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks);
+    }
+
+    public static boolean renderEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
+        return renderEntityAssetAtCenter(graphics, centerX, centerY, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks, ICON_ENTITY_FILL, ICON_ENTITY_MAX_SCALE);
+    }
+
+    public static boolean renderCanvasEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
+        return renderEntityAssetAtCenter(graphics, centerX, centerY, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks, CANVAS_ENTITY_FILL, CANVAS_ENTITY_MAX_SCALE);
+    }
+
+    private static boolean renderEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks, double fill, double maxScale) {
         EntityAsset parsed = parseEntityAsset(asset);
         Entity entity = cachedEntity(parsed);
         if (entity == null || width <= 0 || height <= 0) {
             return false;
         }
         EntityVariantCatalog.apply(entity, parsed.variantKey());
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
         int speed = CanvasImageLayer.clampEntitySpinSpeed(spinSpeed);
         float yaw = currentYaw(yawDegrees, speed);
+        float pitch = CanvasImageLayer.normalizeDegrees(pitchDegrees);
         prepareEntityForRender(entity, speed > 0);
-        renderEntityInInventory(graphics, centerX, centerY, renderScale(entity, width, height), entity, yaw, speed > 0 ? partialTicks : 0.0F);
+        renderEntityInInventory(graphics, centerX, centerY, renderScale(entity, width, height, fill, maxScale), entity, yaw, pitch, speed > 0 ? partialTicks : 0.0F);
         return true;
     }
 
-    private static double renderScale(Entity entity, int width, int height) {
+    private static double renderScale(Entity entity, int width, int height, double fill, double maxScale) {
         double entityW = Math.max(0.25D, entity.getBbWidth());
         double entityH = Math.max(0.25D, entity.getBbHeight());
-        double scale = Math.min(width / entityW, height / entityH) * 0.82D;
-        return Math.max(1.0D, Math.min(96.0D, scale));
+        double scale = Math.min(width / entityW, height / entityH) * fill;
+        return Math.max(1.0D, Math.min(maxScale, scale));
     }
 
     private static Entity cachedEntity(EntityAsset asset) {
@@ -302,16 +321,16 @@ public final class EntityPreviewRenderer {
         }
     }
 
-    private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float partialTicks) {
+    private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float pitchDegrees, float partialTicks) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        Quaternionf rotation = new Quaternionf().rotateXYZ(0.0F, (float) Math.toRadians(yawDegrees), (float) Math.PI);
+        Quaternionf rotation = new Quaternionf().rotateXYZ((float) Math.toRadians(pitchDegrees), (float) Math.toRadians(yawDegrees), (float) Math.PI);
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0.0D);
         graphics.pose().mulPoseMatrix(new Matrix4f().scaling((float) scale, (float) scale, (float) -scale));
-        graphics.pose().translate(0.0D, entity.getBbHeight() / 2.0D, 0.0D);
         graphics.pose().mulPose(rotation);
+        graphics.pose().translate(0.0D, -entity.getBbHeight() / 2.0D, 0.0D);
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);

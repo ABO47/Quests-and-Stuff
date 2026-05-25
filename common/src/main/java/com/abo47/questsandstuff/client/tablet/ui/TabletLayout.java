@@ -22,13 +22,14 @@ final class TabletLayout {
 
     static final int CHAPTER_W = 168;
     static final int CHAPTER_W_MIN = 44;
-    static final int CHAPTER_W_ICON = 44;
+    static final int CHAPTER_W_ICON = 26;
     static final int CHAPTER_W_MAX = 248;
     static final int CHAPTER_W_ICON_SNAP = 56;
     static final int SPLITTER_W = GAP;
     static final int CANVAS_W = BODY_W - CHAPTER_W - GAP;
     static final int CHAPTER_CARD_H = 32;
     static final int CHAPTER_CARD_GAP = 8;
+    static final int CHAPTER_COLLAPSED_ROW_STEP = 30;
     static final String DRAFT_CHAPTER = "__draft_chapter__";
     static final Path ASSETS_ROOT_DIR = Path.of("config", "questsandstuff", "assets");
 
@@ -85,7 +86,7 @@ final class TabletLayout {
     }
 
     static int indexAtY(int localY, TabletUiState state) {
-        int slot = (localY - state.chapterRowStartY + state.chapterScroll) / (CHAPTER_CARD_H + CHAPTER_CARD_GAP);
+        int slot = (localY - state.chapterRowStartY + state.chapterScroll) / chapterRowStep(state);
         int size = Math.max(1, visibleChapterGroups(state).size());
         return Math.max(0, Math.min(size - 1, slot));
     }
@@ -99,10 +100,10 @@ final class TabletLayout {
         if (scrolledY <= 0) {
             return 0;
         }
-        int slotH = CHAPTER_CARD_H + CHAPTER_CARD_GAP;
+        int slotH = chapterRowStep(state);
         int idx = scrolledY / slotH;
         int inSlotY = scrolledY % slotH;
-        int insert = inSlotY < (CHAPTER_CARD_H / 2) ? idx : idx + 1;
+        int insert = inSlotY < (slotH / 2) ? idx : idx + 1;
         if (state.chapterDragActive && !state.chapterDragName.isBlank()) {
             int ghostIdx = Math.max(0, Math.min(size, state.chapterDragTargetIndex));
             if (insert > ghostIdx) {
@@ -117,10 +118,10 @@ final class TabletLayout {
         if (scrolledY < 0) {
             return -1;
         }
-        int slotH = CHAPTER_CARD_H + CHAPTER_CARD_GAP;
+        int slotH = chapterRowStep(state);
         int idx = scrolledY / slotH;
         int inSlotY = scrolledY % slotH;
-        if (inSlotY >= CHAPTER_CARD_H) {
+        if (inSlotY >= Math.min(CHAPTER_CARD_H, slotH)) {
             return -1;
         }
         List<String> groups = visibleChapterGroups(state);
@@ -165,7 +166,7 @@ final class TabletLayout {
         List<String> groups = visibleChapterGroups(state);
         int idx = Math.max(0, groups.indexOf(state.chapterTextMenuTarget));
         int menuHeight = chapterTextMenuHeight(state);
-        int rowTop = 8 + idx * (CHAPTER_CARD_H + CHAPTER_CARD_GAP) - state.chapterScroll;
+        int rowTop = 8 + idx * chapterRowStep(state) - state.chapterScroll;
         int rowBottom = rowTop + CHAPTER_CARD_H;
         int aboveY = rowTop - menuHeight - 6;
         int belowY = rowBottom + 3;
@@ -188,6 +189,13 @@ final class TabletLayout {
 
     static int chapterTextMenuHeight(TabletUiState state) {
         return CHAPTER_TEXT_MENU_H;
+    }
+
+    static int chapterRowStep(TabletUiState state) {
+        if (state != null && (state.chapterPanelCollapsed || state.chapterListWidth <= 54)) {
+            return CHAPTER_COLLAPSED_ROW_STEP;
+        }
+        return CHAPTER_CARD_H + CHAPTER_CARD_GAP;
     }
 
     static boolean isChapterFontSizeSliderOpen(TabletUiState state) {
@@ -237,6 +245,9 @@ final class TabletLayout {
         List<String> groups = new ArrayList<>();
         for (String group : ClientQuestCache.groupOrder()) {
             if (DRAFT_CHAPTER.equals(group)) {
+                continue;
+            }
+            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {

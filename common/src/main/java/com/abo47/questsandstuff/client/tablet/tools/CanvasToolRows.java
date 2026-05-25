@@ -85,18 +85,18 @@ final class CanvasToolRows {
     }
 
     static void canvasLock(ToolMenuRows rows, boolean locked, Runnable action) {
-        rows.toggle(locked ? "lock" : "unlock",
+        rows.toggle(locked ? "lock_canvas" : "unlock_canvas",
                 locked ? ModColors.ERROR : ModColors.SUCCESS,
                 !locked,
                 new Component[]{
-                        Component.translatable("ui.questsandstuff.tools.lock_grid"),
+                        Component.translatable("ui.questsandstuff.tools.lock_canvas"),
                         Component.translatable(locked ? "ui.questsandstuff.tools.lock_state_locked" : "ui.questsandstuff.tools.lock_state_unlocked")
                 },
                 action);
     }
 
     static void splitterLock(ToolMenuRows rows, boolean locked, Runnable action) {
-        rows.toggle(locked ? "lock" : "unlock",
+        rows.toggle(locked ? "lock_separator" : "unlock_separator",
                 locked ? ModColors.ERROR : ModColors.SUCCESS,
                 !locked,
                 new Component[]{

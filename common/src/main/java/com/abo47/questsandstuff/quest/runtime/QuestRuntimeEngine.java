@@ -247,6 +247,6 @@ public final class QuestRuntimeEngine {
     }
 
     public boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition) {
-        return QuestVisibilityRules.isVisibleFor(state, definition);
+        return QuestVisibilityRules.isVisibleFor(state, definition, definitionStore.quests());
     }
 }

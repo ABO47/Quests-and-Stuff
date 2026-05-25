@@ -17,7 +17,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 
 final class EntityMotionPopup {
     private static final int W = 188;
-    private static final int H = 82;
+    private static final int H = 56;
     private static final int PAD = 8;
     private static final int FIELD_W = 34;
     private static final int FIELD_H = 14;
@@ -35,30 +35,25 @@ final class EntityMotionPopup {
 
         WidgetGroup popup = panel(x, y, W, H, withAlpha(ModColors.SURFACE_BASE, 248), ModColors.BORDER_ACCENT);
         popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(ModColors.SURFACE_PANEL_ALT, 170), ModColors.BORDER_BASE));
-        popup.addWidget(label(PAD, 6, "Entity motion", ModColors.TEXT_PRIMARY));
+        popup.addWidget(label(PAD, 6, "Entity spin", ModColors.TEXT_PRIMARY));
         popup.addWidget(closeIconButton(W - 19, 3, 14, 14, click -> {
             EntityMotionEditor.close(state);
             refresh.run();
         }));
-        TextFieldWidget yawField = addRow(popup, state, player, refresh, motion, 24, "Facing", true);
-        TextFieldWidget spinField = addRow(popup, state, player, refresh, motion, 50, "Spin", false);
+        TextFieldWidget spinField = addSpinRow(popup, state, player, refresh, motion, 26);
         parent.addWidget(popup);
-        restoreFieldFocus(state, yawField, spinField);
+        restoreFieldFocus(state, spinField);
     }
 
-    private static TextFieldWidget addRow(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, EntityMotionValues motion, int y, String title, boolean yaw) {
-        int value = yaw ? motion.yaw() : motion.spin();
-        int max = yaw ? 359 : CanvasImageLayer.MAX_ENTITY_SPIN_SPEED;
-        String draft = yaw ? state.entityMotionYawDraft : state.entityMotionSpinDraft;
+    private static TextFieldWidget addSpinRow(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, EntityMotionValues motion, int y) {
+        int value = motion.spin();
+        int max = CanvasImageLayer.MAX_ENTITY_SPIN_SPEED;
+        String draft = state.entityMotionSpinDraft;
         if (draft == null || draft.isBlank()) {
             draft = Integer.toString(value);
-            if (yaw) {
-                state.entityMotionYawDraft = draft;
-            } else {
-                state.entityMotionSpinDraft = draft;
-            }
+            state.entityMotionSpinDraft = draft;
         }
-        parent.addWidget(label(PAD, y + 4, title, ModColors.TEXT_SECONDARY));
+        parent.addWidget(label(PAD, y + 4, "Spin", ModColors.TEXT_SECONDARY));
         parent.addWidget(new EntityMotionSliderWidget(
                 56,
                 y + 1,
@@ -68,33 +63,26 @@ final class EntityMotionPopup {
                 max,
                 value,
                 next -> {
-                    EntityMotionTargets.setDraft(state, yaw, next);
+                    EntityMotionTargets.setDraft(state, false, next);
                     EntityMotionTargets.applyMotion(player, state, false);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] entity motion preview scope={} image={} field={} value={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, yaw ? "yaw" : "spin", next);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] entity motion preview scope={} image={} spin={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, next);
                     refresh.run();
                 },
                 () -> {
                     EntityMotionTargets.applyMotion(player, state, true);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] entity motion commit scope={} image={} yaw={} spin={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, state.entityMotionYawDraft, state.entityMotionSpinDraft);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] entity motion commit scope={} image={} spin={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, state.entityMotionSpinDraft);
                     refresh.run();
                 },
-                () -> yaw ? state.entityMotionYawSliderDragging : state.entityMotionSpinSliderDragging,
-                dragging -> {
-                    if (yaw) {
-                        state.entityMotionYawSliderDragging = dragging;
-                    } else {
-                        state.entityMotionSpinSliderDragging = dragging;
-                    }
-                }
+                () -> state.entityMotionSpinSliderDragging,
+                dragging -> state.entityMotionSpinSliderDragging = dragging
         ));
-        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + 2, FIELD_W, FIELD_H, max, yaw);
+        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + 2, FIELD_W, FIELD_H, max);
         parent.addWidget(field);
         return field;
     }
 
-    private static TextFieldWidget numberField(Player player, TabletUiState state, Runnable refresh, int x, int y, int w, int h, int max, boolean yaw) {
-        String fieldKey = yaw ? "yaw" : "spin";
-        String draft = yaw ? state.entityMotionYawDraft : state.entityMotionSpinDraft;
+    private static TextFieldWidget numberField(Player player, TabletUiState state, Runnable refresh, int x, int y, int w, int h, int max) {
+        String draft = state.entityMotionSpinDraft;
         TextFieldWidget field = StyledTextFields.numberField(
                 x,
                 y,
@@ -105,15 +93,11 @@ final class EntityMotionPopup {
                 max,
                 3,
                 value -> {
-                    if (yaw) {
-                        state.entityMotionYawDraft = sanitizeNumber(value);
-                    } else {
-                        state.entityMotionSpinDraft = sanitizeNumber(value);
-                    }
+                    state.entityMotionSpinDraft = sanitizeNumber(value);
                 },
                 () -> {
                     state.entityMotionFocusedField = "";
-                    commitNumberField(player, state, yaw);
+                    commitNumberField(player, state);
                     refresh.run();
                 },
                 () -> {
@@ -124,41 +108,39 @@ final class EntityMotionPopup {
                 () -> {
                     if (state.entityMotionEditorOpen) {
                         state.entityMotionFocusedField = "";
-                        commitNumberField(player, state, yaw);
+                        commitNumberField(player, state);
                         refresh.run();
                     }
                 },
                 focused -> {
                     if (focused) {
-                        state.entityMotionFocusedField = fieldKey;
+                        state.entityMotionFocusedField = "spin";
                     }
                 }
         );
         field.setCurrentString(draft);
         StyledTextFields.applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
-        field.setHoverTooltips(new Component[]{Component.literal(yaw ? "Facing degrees" : "Spin speed")});
+        field.setHoverTooltips(new Component[]{Component.literal("Spin speed")});
         return field;
     }
 
-    private static void restoreFieldFocus(TabletUiState state, TextFieldWidget yawField, TextFieldWidget spinField) {
+    private static void restoreFieldFocus(TabletUiState state, TextFieldWidget spinField) {
         String focused = state.entityMotionFocusedField == null ? "" : state.entityMotionFocusedField;
-        if ("yaw".equals(focused)) {
-            yawField.setFocus(true);
-        } else if ("spin".equals(focused)) {
+        if ("spin".equals(focused)) {
             spinField.setFocus(true);
         }
     }
 
-    private static void commitNumberField(Player player, TabletUiState state, boolean yaw) {
+    private static void commitNumberField(Player player, TabletUiState state) {
         EntityMotionValues motion = EntityMotionTargets.currentMotionValues(state);
         if (motion == null) {
             EntityMotionEditor.close(state);
             return;
         }
-        int value = EntityMotionTargets.parseDraft(yaw ? state.entityMotionYawDraft : state.entityMotionSpinDraft, yaw ? motion.yaw() : motion.spin(), yaw ? 359 : CanvasImageLayer.MAX_ENTITY_SPIN_SPEED);
-        EntityMotionTargets.setDraft(state, yaw, value);
+        int value = EntityMotionTargets.parseDraft(state.entityMotionSpinDraft, motion.spin(), CanvasImageLayer.MAX_ENTITY_SPIN_SPEED);
+        EntityMotionTargets.setDraft(state, false, value);
         EntityMotionTargets.applyMotion(player, state, true);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion number commit scope={} image={} field={} value={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, yaw ? "yaw" : "spin", value);
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion number commit scope={} image={} spin={}", state.entityMotionEditorScope, state.entityMotionEditorImageId, value);
     }
 
     private static String sanitizeNumber(String value) {

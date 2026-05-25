@@ -3,13 +3,14 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -17,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -28,7 +30,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -162,13 +163,13 @@ final class CanvasSceneRenderer {
             return;
         }
         CompoundTag tag = card.tag();
-        int baseTint = tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
-        canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(baseTint)));
         float progress = questProgress(tag);
-        if (tag.getBoolean("unlocked") && progress > 0.0f) {
+        boolean customBackground = renderQuestBackground(canvasViewport, card, tag, progress);
+        if (!customBackground && tag.getBoolean("unlocked") && progress > 0.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
             renderQuestProgressFill(canvasViewport, card, progress);
         }
         renderQuestIcon(canvasViewport, card);
+        renderLockedPreviewState(canvasViewport, card);
         renderSearchState(canvasViewport, state, card);
         renderHiddenEditState(canvasViewport, state, card);
         if (state.canEdit && card.questId().equals(state.pendingQuestTitleChangeId)) {
@@ -176,6 +177,54 @@ final class CanvasSceneRenderer {
             return;
         }
         addQuestTooltipHit(canvasViewport, card);
+    }
+
+    private static boolean renderQuestBackground(WidgetGroup canvasViewport, QuestCardLayout card, CompoundTag tag, float progress) {
+        String background = tag.getString("quest_background");
+        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
+            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
+            return false;
+        }
+        IGuiTexture texture = chapterBackgroundTexture(background, tag.getBoolean("quest_background_grayscale"));
+        if (texture == null) {
+            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
+            return false;
+        }
+        canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), texture));
+        int filter = questBackgroundFilter(tag);
+        if ((filter >>> 24) != 0) {
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), filter);
+        } else if (tag.getBoolean("unlocked") && progress > 0.0f && progress < 1.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
+            int fillW = Math.max(1, Math.min(card.width(), Math.round(card.width() * progress)));
+            addSolidRect(canvasViewport, card.x(), card.y(), fillW, card.height(), withAlpha(ModColors.SUCCESS, 54));
+        }
+        return true;
+    }
+
+    private static int defaultQuestBackgroundTint(CompoundTag tag) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return withAlpha(ModColors.TEXT_SECONDARY, 255);
+        }
+        if (tag.getBoolean("claimed")) {
+            return withAlpha(ModColors.WARNING, 255);
+        }
+        if (tag.getBoolean("completed")) {
+            return withAlpha(ModColors.SUCCESS, 255);
+        }
+        return tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
+    }
+
+    private static int questBackgroundFilter(CompoundTag tag) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return withAlpha(ModColors.SURFACE_BASE, 138);
+        }
+        if (tag.getBoolean("claimed")) {
+            return withAlpha(ModColors.WARNING, 94);
+        }
+        if (tag.getBoolean("completed")) {
+            return withAlpha(ModColors.SUCCESS, 82);
+        }
+        return 0x00000000;
     }
 
     private static void renderQuestRenameField(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {
@@ -212,6 +261,12 @@ final class CanvasSceneRenderer {
         boolean hidden = card.tag().getBoolean("visual_hidden") && !card.tag().getBoolean("unlocked");
         if (hidden) {
             addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 190));
+        }
+    }
+
+    private static void renderLockedPreviewState(WidgetGroup canvasViewport, QuestCardLayout card) {
+        if (ClientQuestCache.questLockedPreview(card.tag())) {
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
         }
     }
 
@@ -257,26 +312,23 @@ final class CanvasSceneRenderer {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int x = originX + CanvasGeometry.screenX(state, image.x());
-                int y = originY + CanvasGeometry.screenY(state, image.y());
-                int w = CanvasGeometry.screenSpan(state, image.w());
-                int h = CanvasGeometry.screenSpan(state, image.h());
-                graphics.pose().pushPose();
-                graphics.pose().translate(x + w / 2.0f, y + h / 2.0f, 0.0f);
-                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
-                String entityId = EntityPreviewRenderer.entityId(image.asset());
-                if (!entityId.isBlank()) {
-                    if (!EntityPreviewRenderer.renderEntityAsset(graphics, -w / 2, -h / 2, w, h, image.asset(), image.entityYaw(), image.entitySpinSpeed(), 0.0F)) {
-                        graphics.fill(-w / 2, -h / 2, w / 2, h / 2, withAlpha(ModColors.TEXT_MUTED, 45));
-                    }
-                } else {
-                    IGuiTexture texture = chapterBackgroundTexture(image.asset());
-                    if (texture != null) {
-                        texture.draw(graphics, mouseX, mouseY, -w / 2.0f, -h / 2.0f, w, h);
-                    }
-                }
-                graphics.pose().popPose();
+                int screenLeft = CanvasGeometry.screenX(state, image.x());
+                int screenTop = CanvasGeometry.screenY(state, image.y());
+                int x = originX + screenLeft;
+                int y = originY + screenTop;
+                int w = Math.max(1, CanvasGeometry.screenX(state, image.x() + image.w()) - screenLeft);
+                int h = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - screenTop);
+                int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - screenLeft;
+                int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - screenTop;
+                CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, image, x, y, w, h, pivotX, pivotY);
                 if (state.canEdit && CanvasRenderer.isImageSelected(state, image.id())) {
+                    if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+                        return;
+                    }
+                    if (CanvasTransformGizmo.supports(image.asset())) {
+                        CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
+                        return;
+                    }
                     CanvasPoint selectionDragStart = state.dragStartImagePositions.get(image.id());
                     if (state.draggingSelection && selectionDragStart != null) {
                         CanvasElementSelectionSlot.drawDragging(
@@ -357,13 +409,16 @@ final class CanvasSceneRenderer {
         if (!tag.getCompound("tasks").isEmpty() && (tag.getBoolean("completed") || tag.getBoolean("claimed"))) {
             progress = 100;
         }
+        Component status = ClientQuestCache.questLockedPreview(tag)
+                ? Component.translatable("ui.questsandstuff.quest.locked")
+                : Component.literal(progress + "%");
         ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), Surfaces.fill(0x00000000), click -> {});
         hit.setClientSideWidget();
         hit.setHoverTexture(Surfaces.fill(0x00000000));
         hit.setClickedTexture(Surfaces.fill(0x00000000));
         hit.setHoverTooltips(new Component[]{
                 Component.literal(title),
-                Component.literal(progress + "%")
+                status
         });
         canvasViewport.addWidget(hit);
     }

@@ -147,7 +147,7 @@ final class QuestDetailsToolsMenu {
     }
 
     private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Player player, String questId, Runnable refresh, int x, int y, int toolSlot, int toolGap, int border) {
-        addToggle(menu, x, y, toolSlot, border, state.questDetailsSplitterLocked ? "lock" : "unlock",
+        addToggle(menu, x, y, toolSlot, border, state.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
                 state.questDetailsSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
                 !state.questDetailsSplitterLocked,
                 new Component[]{

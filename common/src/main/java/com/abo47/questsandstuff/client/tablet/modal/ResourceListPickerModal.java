@@ -10,7 +10,6 @@ import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -67,7 +66,7 @@ final class ResourceListPickerModal {
             refresh.run();
         });
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 54)));
-        hit.setHoverTooltips(Component.literal(entry));
+        hit.setHoverTooltips(PickerTooltips.nameAndId(options.displayName().value(entry), entry));
         list.addWidget(hit);
     }
 

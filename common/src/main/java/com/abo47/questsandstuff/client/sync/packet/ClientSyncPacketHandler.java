@@ -40,7 +40,9 @@ public final class ClientSyncPacketHandler {
     public static void handleQuestEvent(long sequence, String eventType, String questId, String rewardId) {
         ClientQuestCache.applyQuestEvent(sequence, eventType, questId, rewardId);
         if ("quest_completed".equals(eventType)) {
+            ClientQuestCache.noteQuestCompletedForChapterNotices(questId, TabletUiFactory.activeSelectedGroup());
             QuestCompletionNotificationOverlay.push(questId);
+            TabletUiFactory.refreshActiveTablet();
         }
     }
 

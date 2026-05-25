@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.chapter.menu;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.client.resources.language.I18n;
@@ -31,6 +33,20 @@ public final class ChapterContextMenuRows {
 
         String deleteLabel = TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete"));
         actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, false, true, () -> ChapterContextMenuActions.delete(player, state, target, refresh)));
+        boolean locked = ClientQuestCache.groupLockUntilUnlocked(target);
+        actions.add(ContextActions.action(
+                tr(locked ? QuestVocabulary.CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED : QuestVocabulary.CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED),
+                locked ? "unlock_chapter" : "lock_chapter",
+                locked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                () -> ChapterContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
+        ));
+        boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
+        actions.add(ContextActions.action(
+                tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_CHAPTER : QuestVocabulary.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
+                hidden ? "eye" : "eye-off",
+                hidden ? ModColors.SUCCESS : ModColors.WARNING,
+                () -> ChapterContextMenuActions.setHideUntilUnlocked(player, state, target, !hidden, refresh)
+        ));
         actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
         if (layout.entityVariants()) {
             actions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));

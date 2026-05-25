@@ -131,6 +131,22 @@ public final class ModalTargetParser {
             return is(ModalTargets.DESC_ENTITY_NEW);
         }
 
+        public boolean isDescItem() {
+            return is(ModalTargets.DESC_ITEM);
+        }
+
+        public boolean isDescItemNew() {
+            return is(ModalTargets.DESC_ITEM_NEW);
+        }
+
+        public boolean isDescBlock() {
+            return is(ModalTargets.DESC_BLOCK);
+        }
+
+        public boolean isDescBlockNew() {
+            return is(ModalTargets.DESC_BLOCK_NEW);
+        }
+
         public boolean isQuestDescText() {
             return is(ModalTargets.QUEST_DESC_TEXT);
         }
@@ -147,6 +163,22 @@ public final class ModalTargetParser {
             return is(ModalTargets.CANVAS_ENTITY_CHANGE);
         }
 
+        public boolean isCanvasItemNew() {
+            return is(ModalTargets.CANVAS_ITEM_NEW);
+        }
+
+        public boolean isCanvasItemChange() {
+            return is(ModalTargets.CANVAS_ITEM_CHANGE);
+        }
+
+        public boolean isCanvasBlockNew() {
+            return is(ModalTargets.CANVAS_BLOCK_NEW);
+        }
+
+        public boolean isCanvasBlockChange() {
+            return is(ModalTargets.CANVAS_BLOCK_CHANGE);
+        }
+
         public boolean isCanvasText() {
             return is(ModalTargets.CANVAS_TEXT);
         }
@@ -161,6 +193,14 @@ public final class ModalTargetParser {
 
         public boolean isEntityIconPickerTarget() {
             return isDescEntityNew() || isDescEntity() || isTaskEntity();
+        }
+
+        public boolean isItemModelPickerTarget() {
+            return isDescItemNew() || isDescItem() || isCanvasItemNew() || isCanvasItemChange();
+        }
+
+        public boolean isBlockModelPickerTarget() {
+            return isDescBlockNew() || isDescBlock() || isCanvasBlockNew() || isCanvasBlockChange();
         }
 
         public boolean supportsEntityIconSelection() {

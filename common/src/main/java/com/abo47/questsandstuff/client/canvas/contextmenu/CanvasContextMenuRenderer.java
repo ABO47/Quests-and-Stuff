@@ -19,6 +19,7 @@ final class CanvasContextMenuRenderer {
             state.contextMenuRows = 0;
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
+            state.contextQuestCompletionSoundMenuOpen = false;
             return;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
@@ -28,6 +29,7 @@ final class CanvasContextMenuRenderer {
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
             state.contextDeleteConfirmKey = "";
+            state.contextQuestCompletionSoundMenuOpen = false;
             return;
         }
         int rowCount = ContextMenuPanel.rowActionCount(actions);
@@ -56,6 +58,7 @@ final class CanvasContextMenuRenderer {
                 state.contextMenuScroll = 0;
                 state.contextMenuScrollMax = 0;
                 state.contextDeleteConfirmKey = "";
+                state.contextQuestCompletionSoundMenuOpen = false;
             }
         });
         canvasViewport.addWidget(menu);

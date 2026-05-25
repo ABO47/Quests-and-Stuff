@@ -178,21 +178,57 @@ public final class CanvasGeometry {
             boolean snapSizeToGrid,
             boolean preserveAspect
     ) {
+        return resizeRotatedFromCorner(
+                mouseX,
+                mouseY,
+                startX,
+                startY,
+                startWidth,
+                startHeight,
+                rotationDegrees,
+                minWidth,
+                minHeight,
+                grid,
+                snapSizeToGrid,
+                preserveAspect,
+                1,
+                1
+        );
+    }
+
+    public static ResizedBox resizeRotatedFromCorner(
+            double mouseX,
+            double mouseY,
+            int startX,
+            int startY,
+            int startWidth,
+            int startHeight,
+            int rotationDegrees,
+            int minWidth,
+            int minHeight,
+            int grid,
+            boolean snapSizeToGrid,
+            boolean preserveAspect,
+            int cornerX,
+            int cornerY
+    ) {
         int safeStartWidth = Math.max(1, startWidth);
         int safeStartHeight = Math.max(1, startHeight);
         int safeMinWidth = Math.max(1, minWidth);
         int safeMinHeight = Math.max(1, minHeight);
+        int sx = cornerX < 0 ? -1 : 1;
+        int sy = cornerY < 0 ? -1 : 1;
         double radians = Math.toRadians(normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double centerX = startX + safeStartWidth / 2.0;
         double centerY = startY + safeStartHeight / 2.0;
-        double fixedX = centerX - safeStartWidth * cos / 2.0 + safeStartHeight * sin / 2.0;
-        double fixedY = centerY - safeStartWidth * sin / 2.0 - safeStartHeight * cos / 2.0;
+        double fixedX = centerX - sx * safeStartWidth * cos / 2.0 + sy * safeStartHeight * sin / 2.0;
+        double fixedY = centerY - sx * safeStartWidth * sin / 2.0 - sy * safeStartHeight * cos / 2.0;
         double vectorX = mouseX - fixedX;
         double vectorY = mouseY - fixedY;
-        double nextWidth = vectorX * cos + vectorY * sin;
-        double nextHeight = -vectorX * sin + vectorY * cos;
+        double nextWidth = sx * (vectorX * cos + vectorY * sin);
+        double nextHeight = sy * (-vectorX * sin + vectorY * cos);
         nextWidth = Math.max(safeMinWidth, nextWidth);
         nextHeight = Math.max(safeMinHeight, nextHeight);
         if (preserveAspect) {
@@ -206,8 +242,8 @@ public final class CanvasGeometry {
             roundedWidth = snapSpanToGrid(roundedWidth, grid, safeMinWidth);
             roundedHeight = snapSpanToGrid(roundedHeight, grid, safeMinHeight);
         }
-        double nextCenterX = fixedX + roundedWidth * cos / 2.0 - roundedHeight * sin / 2.0;
-        double nextCenterY = fixedY + roundedWidth * sin / 2.0 + roundedHeight * cos / 2.0;
+        double nextCenterX = fixedX + sx * roundedWidth * cos / 2.0 - sy * roundedHeight * sin / 2.0;
+        double nextCenterY = fixedY + sx * roundedWidth * sin / 2.0 + sy * roundedHeight * cos / 2.0;
         int nextX = (int) Math.round(nextCenterX - roundedWidth / 2.0);
         int nextY = (int) Math.round(nextCenterY - roundedHeight / 2.0);
         return new ResizedBox(nextX, nextY, roundedWidth, roundedHeight);

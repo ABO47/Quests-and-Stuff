@@ -1,8 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.sound.QuestCompletionSoundPlayer;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import net.minecraft.nbt.CompoundTag;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletModalState.openModal;
 
@@ -186,16 +194,80 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
+        openQuestCustomCompletionSoundPicker(state, questId, currentSound);
+    }
+
+    public static void openQuestGameSoundPicker(TabletUiState state, String questId, String currentSound) {
         closeBeforeOpen(state);
         state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
+        state.modalQuestCompletionSoundTargets.clear();
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        state.contextDeleteConfirmKey = "";
+        resetSoundPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(questId);
+        state.soundVolumeDragging = false;
+        state.soundSelected = currentSound == null || currentSound.isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+        openModal(state, ModalWindowManager.ModalType.SOUND_PICKER);
+    }
+
+    public static void openQuestCustomCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
+        closeBeforeOpen(state);
+        state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
+        state.modalQuestCompletionSoundTargets.clear();
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.questDetailsAssetPickTarget = "";
         state.contextDeleteConfirmKey = "";
         resetAssetPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(questId);
+        state.soundVolumeDragging = false;
         state.assetBrowseDir = "sounds";
-        state.assetSelected = currentSound == null || currentSound.isBlank() ? "" : currentSound;
+        state.assetSelected = currentSound == null || currentSound.isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openBatchQuestGameSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
+        closeBeforeOpen(state);
+        Set<String> targets = normalizedTargets(questIds);
+        state.modalQuestCompletionSoundTarget = "";
+        state.modalQuestCompletionSoundTargets.clear();
+        state.modalQuestCompletionSoundTargets.addAll(targets);
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        state.contextDeleteConfirmKey = "";
+        resetSoundPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(firstTarget(targets));
+        state.soundVolumeDragging = false;
+        state.soundSelected = currentSound == null || currentSound.isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+        openModal(state, ModalWindowManager.ModalType.SOUND_PICKER);
+    }
+
+    public static void openBatchQuestCustomCompletionSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
+        closeBeforeOpen(state);
+        Set<String> targets = normalizedTargets(questIds);
+        state.modalQuestCompletionSoundTarget = "";
+        state.modalQuestCompletionSoundTargets.clear();
+        state.modalQuestCompletionSoundTargets.addAll(targets);
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        state.contextDeleteConfirmKey = "";
+        resetAssetPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(firstTarget(targets));
+        state.soundVolumeDragging = false;
+        state.assetBrowseDir = "sounds";
+        state.assetSelected = currentSound == null || currentSound.isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
@@ -204,8 +276,44 @@ public final class ModalOpenActions {
         state.modalChapterTarget = chapter == null ? "" : chapter;
         state.modalQuestTarget = "";
         state.modalCanvasBackgroundTarget = "";
+        state.modalQuestBackgroundTarget = "";
         resetAssetPicker(state);
         state.assetSelected = currentBackground == null ? "" : currentBackground;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openQuestBackgroundPicker(TabletUiState state, String questId, String currentBackground, boolean grayscale) {
+        closeBeforeOpen(state);
+        state.modalQuestBackgroundTarget = questId == null ? "" : questId;
+        state.modalQuestBackgroundTargets.clear();
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        state.modalQuestBackgroundGrayscale = grayscale;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openBatchQuestBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground, boolean grayscale) {
+        closeBeforeOpen(state);
+        state.modalQuestBackgroundTarget = "";
+        state.modalQuestBackgroundTargets.clear();
+        state.modalQuestBackgroundTargets.addAll(normalizedTargets(questIds));
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        state.modalQuestBackgroundGrayscale = grayscale;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
@@ -214,8 +322,10 @@ public final class ModalOpenActions {
         state.modalCanvasBackgroundTarget = group == null ? "" : group;
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
+        state.modalQuestBackgroundTarget = "";
         resetAssetPicker(state);
         state.assetSelected = currentBackground == null ? "" : currentBackground;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
@@ -225,6 +335,7 @@ public final class ModalOpenActions {
         closeBeforeOpen(state);
         state.modalCanvasImageTarget = group == null ? "" : group;
         state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
@@ -239,6 +350,7 @@ public final class ModalOpenActions {
         closeBeforeOpen(state);
         state.modalCanvasEntityTarget = target == null ? "" : target;
         state.modalCanvasImageTarget = "";
+        state.modalCanvasModelTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalChapterTarget = "";
         state.modalQuestTarget = "";
@@ -246,6 +358,38 @@ public final class ModalOpenActions {
         state.canvasImageLogicalY = logicalY;
         resetIconPicker(state);
         openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+    }
+
+    public static void openCanvasItemPicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = target == null ? "" : target;
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        resetIconPicker(state);
+        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+    }
+
+    public static void openCanvasBlockPicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = target == null ? "" : target;
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        state.blockSearch = "";
+        state.blockTagMode = false;
+        state.blockScroll = 0;
+        state.blockScrollDragging = false;
+        state.blockSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
@@ -279,6 +423,39 @@ public final class ModalOpenActions {
         state.assetSearchFocused = false;
         state.assetGridScroll = 0;
         state.assetGridScrollDragging = false;
+    }
+
+    private static void resetSoundPicker(TabletUiState state) {
+        state.soundSearch = "";
+        state.soundSearchFocused = false;
+        state.soundScroll = 0;
+        state.soundScrollDragging = false;
+    }
+
+    private static int completionSoundVolume(String questId) {
+        CompoundTag quest = ClientQuestCache.quest(questId);
+        if (quest == null || !quest.contains("completion_sound_volume")) {
+            return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
+        }
+        return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
+    }
+
+    private static Set<String> normalizedTargets(Collection<String> questIds) {
+        Set<String> targets = new LinkedHashSet<>();
+        if (questIds == null) {
+            return targets;
+        }
+        for (String questId : questIds) {
+            String target = questId == null ? "" : questId.trim();
+            if (!target.isBlank()) {
+                targets.add(target);
+            }
+        }
+        return targets;
+    }
+
+    private static String firstTarget(Set<String> targets) {
+        return targets.isEmpty() ? "" : targets.iterator().next();
     }
 
     private static void closeBeforeOpen(TabletUiState state) {

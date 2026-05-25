@@ -11,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuestSyncPayloadBuilderTest {
     @TempDir
@@ -49,5 +51,45 @@ class QuestSyncPayloadBuilderTest {
         ListTag hidden = payload.getList("hidden_connections", net.minecraft.nbt.Tag.TAG_STRING);
         assertEquals("a_parent", hidden.getString(0));
         assertEquals("z_parent", hidden.getString(1));
+    }
+
+    @Test
+    void lockedChapterIsSyncedBeforeQuestInsideIsVisible() {
+        QuestDefinitionStore store = new QuestDefinitionStore(root);
+        store.upsert(quest("quest/locked", "locked_chapter"));
+        store.upsert(quest("quest/open", "open_chapter"));
+        store.setGroupLockUntilUnlocked("locked_chapter", true);
+
+        QuestSyncPayloadBuilder builder = new QuestSyncPayloadBuilder(store);
+        ListTag lockedGroups = builder.groupsTag(Set.of("quest/open"), false);
+        CompoundTag lockedProps = builder.groupPropsTag(Set.of("quest/open"), false);
+        assertTrue(containsString(lockedGroups, "locked_chapter"));
+        assertTrue(lockedProps.getCompound("locked_chapter").getBoolean("lock_until_unlocked"));
+
+        ListTag visibleGroups = builder.groupsTag(Set.of("quest/open", "quest/locked"), false);
+        CompoundTag visibleProps = builder.groupPropsTag(Set.of("quest/open", "quest/locked"), false);
+        assertTrue(containsString(visibleGroups, "locked_chapter"));
+        assertTrue(visibleProps.getCompound("locked_chapter").getBoolean("lock_until_unlocked"));
+    }
+
+    private static QuestDefinition quest(String id, String group) {
+        return new QuestDefinition(
+                QuestDefinition.CURRENT_SCHEMA,
+                id,
+                new QuestDisplay(id, "", List.of(), Map.of(group, ChapterDefinition.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                QuestSettings.DEFAULT,
+                Set.of(),
+                Map.of(),
+                Map.of()
+        );
+    }
+
+    private static boolean containsString(ListTag tag, String value) {
+        for (int i = 0; i < tag.size(); i++) {
+            if (value.equals(tag.getString(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

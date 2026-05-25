@@ -7,7 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class ChapterMetadataStore {
@@ -24,8 +26,54 @@ public final class ChapterMetadataStore {
         return List.copyOf(state.groupOrder);
     }
 
+    public ChapterMetadataSnapshot snapshot() {
+        return new ChapterMetadataSnapshot(
+                List.copyOf(state.groupOrder),
+                Map.copyOf(state.groupIcons),
+                Map.copyOf(state.groupBackgrounds),
+                Map.copyOf(state.groupCanvasBackgrounds),
+                Map.copyOf(state.groupTextAlign),
+                Map.copyOf(state.groupTextColor),
+                Map.copyOf(state.groupTextStyle),
+                Map.copyOf(state.groupTextSize),
+                Map.copyOf(state.groupLockUntilUnlocked),
+                Map.copyOf(state.groupHideUntilUnlocked),
+                ChapterMetadataState.copyLayerMap(state.canvasImagesByGroup),
+                ChapterMetadataState.copyLayerMap(state.canvasTextsByGroup),
+                ChapterMetadataState.copyLayerMap(state.canvasLayerOrderByGroup)
+        );
+    }
+
+    public void restore(ChapterMetadataSnapshot snapshot) {
+        state.clear();
+        if (snapshot == null) {
+            save();
+            return;
+        }
+        state.groupOrder.addAll(snapshot.groupOrder());
+        state.groupIcons.putAll(snapshot.groupIcons());
+        state.groupBackgrounds.putAll(snapshot.groupBackgrounds());
+        state.groupCanvasBackgrounds.putAll(snapshot.groupCanvasBackgrounds());
+        state.groupTextAlign.putAll(snapshot.groupTextAlign());
+        state.groupTextColor.putAll(snapshot.groupTextColor());
+        state.groupTextStyle.putAll(snapshot.groupTextStyle());
+        state.groupTextSize.putAll(snapshot.groupTextSize());
+        state.groupLockUntilUnlocked.putAll(snapshot.groupLockUntilUnlocked());
+        state.groupHideUntilUnlocked.putAll(snapshot.groupHideUntilUnlocked());
+        state.canvasImagesByGroup.putAll(mutableLayerMap(snapshot.canvasImagesByGroup()));
+        state.canvasTextsByGroup.putAll(mutableLayerMap(snapshot.canvasTextsByGroup()));
+        state.canvasLayerOrderByGroup.putAll(mutableLayerMap(snapshot.canvasLayerOrderByGroup()));
+        save();
+    }
+
     public void setGroupOrder(List<String> groups, Set<String> discoveredGroups) {
         state.setGroupOrder(groups, discoveredGroups);
+        save();
+    }
+
+    public void renameGroup(String fromName, String toName, Set<String> discoveredGroups) {
+        state.renameGroup(fromName, toName);
+        state.reconcile(discoveredGroups);
         save();
     }
 
@@ -55,6 +103,14 @@ public final class ChapterMetadataStore {
 
     public int groupTextSize(String group) {
         return state.groupTextSize(group);
+    }
+
+    public boolean groupLockUntilUnlocked(String group) {
+        return state.groupLockUntilUnlocked(group);
+    }
+
+    public boolean groupHideUntilUnlocked(String group) {
+        return state.groupHideUntilUnlocked(group);
     }
 
     public java.util.Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
@@ -157,6 +213,26 @@ public final class ChapterMetadataStore {
         save();
     }
 
+    public void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        state.groupLockUntilUnlocked.put(normalized, lockUntilUnlocked);
+        QuestsAndStuffMod.debugLog("[QnS:Store] chapter lock_until_unlocked {} -> {}", normalized, lockUntilUnlocked);
+        save();
+    }
+
+    public void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        state.groupHideUntilUnlocked.put(normalized, hideUntilUnlocked);
+        QuestsAndStuffMod.debugLog("[QnS:Store] chapter hide_until_unlocked {} -> {}", normalized, hideUntilUnlocked);
+        save();
+    }
+
     public void putCanvasImage(String group, CanvasImageLayer image) {
         if (image != null && ChapterCanvasLayerMutations.put(state, group, image, image.id(), "image:" + image.id(), state.canvasImagesByGroup, CanvasImageLayer::id)) {
             save();
@@ -216,6 +292,17 @@ public final class ChapterMetadataStore {
 
     public void reconcile(Set<String> discoveredGroups) {
         state.reconcile(discoveredGroups);
+    }
+
+    private static <T> Map<String, List<T>> mutableLayerMap(Map<String, List<T>> source) {
+        Map<String, List<T>> copy = new HashMap<>();
+        if (source == null) {
+            return copy;
+        }
+        for (Map.Entry<String, List<T>> entry : source.entrySet()) {
+            copy.put(entry.getKey(), List.copyOf(entry.getValue()));
+        }
+        return copy;
     }
 
 }

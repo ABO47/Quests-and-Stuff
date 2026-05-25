@@ -127,6 +127,10 @@ public final class UiIconAtlas {
             case "context_paste" -> add(names, "paste");
             case "context_eye" -> add(names, "eye");
             case "context_eye-off", "context_eye_off" -> add(names, "eye-off");
+            case "context_lock_quest" -> add(names, "lock_quest");
+            case "context_unlock_quest" -> add(names, "unlock_quest");
+            case "context_lock_chapter" -> add(names, "lock_chapter");
+            case "context_unlock_chapter" -> add(names, "unlock_chapter");
             case "context_audio-lines", "context_audio_lines" -> add(names, "audio-lines");
             case "context_reset", "reset" -> add(names, "reset_quest");
             case "context_editor", "edit", "toggle_editor" -> add(names, "editor");

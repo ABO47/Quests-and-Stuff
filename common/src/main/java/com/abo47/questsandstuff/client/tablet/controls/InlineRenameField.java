@@ -13,6 +13,7 @@ public class InlineRenameField extends TextFieldWidget {
     private final Runnable onBlur;
     private final Consumer<Boolean> onFocus;
     private boolean suppressNextBlur;
+    private boolean focusWhenReady;
 
     public InlineRenameField(
             int x,
@@ -34,6 +35,17 @@ public class InlineRenameField extends TextFieldWidget {
         this.onBlur = onBlur == null ? this.onCommit : onBlur;
         this.onFocus = onFocus == null ? focused -> {
         } : onFocus;
+    }
+
+    public void requestFocusWhenReady() {
+        focusWhenReady = true;
+        applyPendingFocus();
+    }
+
+    @Override
+    public void initWidget() {
+        super.initWidget();
+        applyPendingFocus();
     }
 
     @Override
@@ -68,5 +80,19 @@ public class InlineRenameField extends TextFieldWidget {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private void applyPendingFocus() {
+        if (!focusWhenReady || getGui() == null) {
+            return;
+        }
+        focusWhenReady = false;
+        if (!isFocus()) {
+            setFocus(true);
+        }
+        if (isRemote() && textField != null) {
+            textField.setCursorPosition(textField.getValue().length());
+            textField.setHighlightPos(textField.getCursorPosition());
+        }
     }
 }

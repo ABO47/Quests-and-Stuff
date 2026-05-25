@@ -126,6 +126,26 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestCompletionSound(player, payload.getString("quest"), payload.getString("sound"));
                     return;
                 }
+                if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_MANY) {
+                    editor.setQuestCompletionSound(player, questIdsFromPayload(payload), payload.getString("sound"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME) {
+                    editor.setQuestCompletionSoundVolume(player, payload.getString("quest"), payload.getInt("volume"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY) {
+                    editor.setQuestCompletionSoundVolume(player, questIdsFromPayload(payload), payload.getInt("volume"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_BACKGROUND) {
+                    editor.setQuestBackground(player, payload.getString("quest"), payload.getString("background"), payload.getBoolean("grayscale"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_BACKGROUND_MANY) {
+                    editor.setQuestBackground(player, questIdsFromPayload(payload), payload.getString("background"), payload.getBoolean("grayscale"));
+                    return;
+                }
                 if (command.type() == EditorCommandType.DESCRIPTION_PUT) {
                     ListTag description = payload.getList("description", Tag.TAG_STRING);
                     if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {
@@ -233,5 +253,20 @@ public record C2SEditorCommandPacket(EditorCommand command) {
             return "";
         }
         return payload.getString(PREREQUISITE_FIELD);
+    }
+
+    private static Set<String> questIdsFromPayload(CompoundTag payload) {
+        ListTag tags = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
+        Set<String> questIds = new LinkedHashSet<>();
+        if (EditorCommandPayloadLimits.exceedsLimit(tags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
+            return questIds;
+        }
+        for (int i = 0; i < tags.size(); i++) {
+            String questId = tags.getString(i);
+            if (questId != null && !questId.isBlank()) {
+                questIds.add(questId);
+            }
+        }
+        return questIds;
     }
 }
