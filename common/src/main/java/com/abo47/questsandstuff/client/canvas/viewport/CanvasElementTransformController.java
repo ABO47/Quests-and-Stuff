@@ -333,7 +333,7 @@ public final class CanvasElementTransformController {
                 8,
                 CanvasTransformGizmo.resizeCornerX(state.canvasImageTransformAxis),
                 CanvasTransformGizmo.resizeCornerY(state.canvasImageTransformAxis),
-                !CanvasTransformGizmo.supports(image.asset()) && isShiftDown()
+                CanvasTransformGizmo.supports(image.asset()) || isShiftDown()
         );
         return image.withBounds(box.x(), box.y(), box.width(), box.height());
     }

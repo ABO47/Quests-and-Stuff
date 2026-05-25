@@ -33,6 +33,8 @@ public final class CanvasModelPreviewRenderer {
     public static final String BLOCK_TAG_ASSET_PREFIX = "block_tag:";
     public static final int DEFAULT_BLOCK_YAW = 45;
     public static final int DEFAULT_BLOCK_PITCH = 30;
+    private static final float ICON_BLOCK_FILL = 0.72F;
+    private static final float CANVAS_BLOCK_FILL = 0.94F;
 
     private CanvasModelPreviewRenderer() {
     }
@@ -184,12 +186,20 @@ public final class CanvasModelPreviewRenderer {
     }
 
     public static boolean renderBlockModelAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int pitchDegrees) {
+        return renderBlockModelAssetAtCenter(graphics, centerX, centerY, width, height, asset, yawDegrees, pitchDegrees, ICON_BLOCK_FILL);
+    }
+
+    public static boolean renderCanvasBlockModelAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int pitchDegrees) {
+        return renderBlockModelAssetAtCenter(graphics, centerX, centerY, width, height, asset, yawDegrees, pitchDegrees, CANVAS_BLOCK_FILL);
+    }
+
+    private static boolean renderBlockModelAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int pitchDegrees, float fill) {
         Block block = blockForAsset(asset);
         if (block == null || width <= 0 || height <= 0) {
             return false;
         }
         int size = Math.max(1, Math.min(width, height));
-        renderBlockPreview(graphics, centerX, centerY, size, block.defaultBlockState(), yawDegrees, pitchDegrees);
+        renderBlockPreview(graphics, centerX, centerY, size, block.defaultBlockState(), yawDegrees, pitchDegrees, fill);
         return true;
     }
 
@@ -229,8 +239,8 @@ public final class CanvasModelPreviewRenderer {
         return renderBlockModelAssetAtCenter(graphics, x + width / 2, y + height / 2, width, height, asset, yawDegrees, pitchDegrees);
     }
 
-    private static void renderBlockPreview(GuiGraphics graphics, int centerX, int centerY, int size, BlockState state, int yawDegrees, int pitchDegrees) {
-        float scale = Math.max(1.0F, size * 0.72F);
+    private static void renderBlockPreview(GuiGraphics graphics, int centerX, int centerY, int size, BlockState state, int yawDegrees, int pitchDegrees, float fill) {
+        float scale = Math.max(1.0F, size * fill);
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);

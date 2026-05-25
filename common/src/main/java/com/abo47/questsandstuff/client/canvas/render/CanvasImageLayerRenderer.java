@@ -27,13 +27,13 @@ public final class CanvasImageLayerRenderer {
         String asset = image.asset();
         String entityId = EntityPreviewRenderer.entityId(asset);
         if (!entityId.isBlank()) {
-            if (!EntityPreviewRenderer.renderEntityAssetAtCenter(graphics, 0, 0, width, height, asset, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
+            if (!EntityPreviewRenderer.renderCanvasEntityAssetAtCenter(graphics, 0, 0, width, height, asset, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {
                 drawFallback(graphics, width, height, pivotX, pivotY);
             }
             return;
         }
         if (CanvasModelPreviewRenderer.isBlockModelAsset(asset)) {
-            if (!CanvasModelPreviewRenderer.renderBlockModelAssetAtCenter(graphics, 0, 0, width, height, asset, image.entityYaw(), image.modelPitch())) {
+            if (!CanvasModelPreviewRenderer.renderCanvasBlockModelAssetAtCenter(graphics, 0, 0, width, height, asset, image.entityYaw(), image.modelPitch())) {
                 drawFallback(graphics, width, height, pivotX, pivotY);
             }
             return;

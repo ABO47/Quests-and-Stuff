@@ -335,7 +335,7 @@ public final class QuestDetailsDescriptionTransform {
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
         int cornerX = gizmoSupported ? CanvasTransformGizmo.resizeCornerX(state.questDetailsTransformAxis) : 1;
         int cornerY = gizmoSupported ? CanvasTransformGizmo.resizeCornerY(state.questDetailsTransformAxis) : 1;
-        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 8, 8, cornerX, cornerY, !gizmoSupported && isShiftDown());
+        CanvasGeometry.ResizedBox box = resizedBox(model, mouseX, mouseY, 8, 8, cornerX, cornerY, gizmoSupported || isShiftDown());
         return image.withBounds(clampX(box.x(), box.width()), clampY(box.y(), box.height()), box.width(), box.height());
     }
 
