@@ -84,25 +84,36 @@ public final class QuestRuntimeLogicGameTests {
             store = new QuestDefinitionStore(tempRoot("prerequisite_visible"));
             QuestDefinition prerequisite = quest("test/prerequisite", QuestVisibilityMode.LOCKED, Set.of());
             QuestDefinition gated = quest("test/gated", QuestVisibilityMode.PREREQUISITES_VISIBLE, Set.of(prerequisite.id()));
+            QuestDefinition chained = quest("test/chained", QuestVisibilityMode.PREREQUISITES_VISIBLE, Set.of(gated.id()));
 
             store.upsert(prerequisite);
             store.upsert(gated);
+            store.upsert(chained);
             QuestRuntimeEngine engine = new QuestRuntimeEngine(store, null, null, null);
             PlayerQuestState state = new PlayerQuestState();
 
             if (engine.isVisibleFor(state, gated)) {
                 throw new GameTestAssertException("PREREQUISITES_VISIBLE should hide when no prerequisite progress exists");
             }
+            if (engine.isVisibleFor(state, chained)) {
+                throw new GameTestAssertException("Chained PREREQUISITES_VISIBLE should hide when its visible root is hidden");
+            }
 
             state.quest(prerequisite.id()).setUnlocked(true);
             if (!engine.isVisibleFor(state, gated)) {
                 throw new GameTestAssertException("PREREQUISITES_VISIBLE should show when prerequisite is unlocked");
+            }
+            if (!engine.isVisibleFor(state, chained)) {
+                throw new GameTestAssertException("Chained PREREQUISITES_VISIBLE should show when prerequisite is visible");
             }
 
             state.quest(prerequisite.id()).setUnlocked(false);
             state.quest(prerequisite.id()).setCompleted(true, 12L);
             if (!engine.isVisibleFor(state, gated)) {
                 throw new GameTestAssertException("PREREQUISITES_VISIBLE should show when prerequisite is completed");
+            }
+            if (!engine.isVisibleFor(state, chained)) {
+                throw new GameTestAssertException("Chained PREREQUISITES_VISIBLE should show when prerequisite is visible through completion");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Failed creating temp quest test root: " + e.getMessage());
