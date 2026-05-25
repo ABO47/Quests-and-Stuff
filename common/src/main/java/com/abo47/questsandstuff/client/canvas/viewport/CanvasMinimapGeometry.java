@@ -3,8 +3,6 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import java.util.List;
 
@@ -48,12 +46,7 @@ public final class CanvasMinimapGeometry {
         return new Layout(panelX, panelY, panelW, panelH, mapX, mapY, mapW, mapH, toggleX, toggleY, toggleW, toggleH, false);
     }
 
-    public static WorldBounds worldBounds(
-            TabletUiState state,
-            List<QuestCardLayout> cards,
-            List<CanvasImageLayer> images,
-            List<CanvasTextLayer> texts
-    ) {
+    public static WorldBounds worldBounds(TabletUiState state, List<QuestCardLayout> cards) {
         int minX = (int) Math.floor(CanvasGeometry.screenToLogicalX(state, state.canvasContentX));
         int minY = (int) Math.floor(CanvasGeometry.screenToLogicalY(state, state.canvasContentY));
         int maxX = (int) Math.ceil(CanvasGeometry.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW)));
@@ -64,18 +57,6 @@ public final class CanvasMinimapGeometry {
             minY = Math.min(minY, card.visualLogicalY());
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
-        }
-        for (CanvasImageLayer image : images) {
-            minX = Math.min(minX, image.x());
-            minY = Math.min(minY, image.y());
-            maxX = Math.max(maxX, image.x() + image.w());
-            maxY = Math.max(maxY, image.y() + image.h());
-        }
-        for (CanvasTextLayer text : texts) {
-            minX = Math.min(minX, text.x());
-            minY = Math.min(minY, text.y());
-            maxX = Math.max(maxX, text.x() + text.w());
-            maxY = Math.max(maxY, text.y() + text.h());
         }
 
         minX -= WORLD_PAD;

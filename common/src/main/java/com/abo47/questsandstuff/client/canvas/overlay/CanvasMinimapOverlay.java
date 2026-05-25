@@ -13,8 +13,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -41,7 +39,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
-    private static final int MIN_ELEMENT_SIZE = 2;
     private static final float BODY_REVEAL_START = 0.48f;
 
     private CanvasMinimapOverlay() {
@@ -71,15 +68,13 @@ final class CanvasMinimapOverlay {
                 ? CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false)
                 : hitLayout;
         String group = selectedGroupName(state);
-        List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(group, List.of());
-        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, visibleCards, images, texts);
+        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, visibleCards);
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
         if (!state.minimapCollapsed) {
             applyProjection(state, projection);
         }
 
-        MiniSnapshot snapshot = snapshot(state, group, visibleCards, byQuestId, images, texts, projection);
+        MiniSnapshot snapshot = snapshot(state, group, visibleCards, byQuestId, projection);
         CanvasMinimapGeometry.Layout collapsedLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), true);
         canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, layout, collapsedLayout, snapshot));
     }
@@ -134,18 +129,8 @@ final class CanvasMinimapOverlay {
             String group,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
-            List<CanvasImageLayer> images,
-            List<CanvasTextLayer> texts,
             CanvasMinimapGeometry.Projection projection
     ) {
-        List<MiniRect> elements = new ArrayList<>();
-        for (CanvasImageLayer image : images) {
-            elements.add(projectRect(projection, image.x(), image.y(), image.w(), image.h(), MIN_ELEMENT_SIZE, ModColors.TEXT_MUTED, 110));
-        }
-        for (CanvasTextLayer text : texts) {
-            elements.add(projectRect(projection, text.x(), text.y(), text.w(), text.h(), MIN_ELEMENT_SIZE, ModColors.TEXT_SECONDARY, 125));
-        }
-
         Map<String, MiniRect> questBoxes = new HashMap<>();
         List<MiniRect> questRects = new ArrayList<>();
         for (QuestCardLayout card : cards) {
@@ -206,7 +191,7 @@ final class CanvasMinimapOverlay {
         }
 
         MiniRect viewport = projectViewport(state, projection);
-        return new MiniSnapshot(List.copyOf(elements), List.copyOf(questRects), List.copyOf(connections), viewport);
+        return new MiniSnapshot(List.copyOf(questRects), List.copyOf(connections), viewport);
     }
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
@@ -302,9 +287,6 @@ final class CanvasMinimapOverlay {
     }
 
     private static void drawSnapshot(GuiGraphics graphics, MiniSnapshot snapshot, int originX, int originY) {
-        for (MiniRect element : snapshot.elements()) {
-            drawFlatBox(graphics, originX + element.x(), originY + element.y(), element.w(), element.h(), element.color(), element.alpha());
-        }
         for (MiniConnection connection : snapshot.connections()) {
             drawMiniLine(
                     graphics,
@@ -329,10 +311,6 @@ final class CanvasMinimapOverlay {
         }
         graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 255));
         graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
-    }
-
-    private static void drawFlatBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
-        graphics.fill(x, y, x + w, y + h, withAlpha(color, alpha));
     }
 
     private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {
@@ -417,7 +395,7 @@ final class CanvasMinimapOverlay {
         return Math.max(min, Math.min(max, value));
     }
 
-    private record MiniSnapshot(List<MiniRect> elements, List<MiniRect> quests, List<MiniConnection> connections, MiniRect viewport) {
+    private record MiniSnapshot(List<MiniRect> quests, List<MiniConnection> connections, MiniRect viewport) {
     }
 
     private record MiniRect(int x, int y, int w, int h, int color, int alpha) {
