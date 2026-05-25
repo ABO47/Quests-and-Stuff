@@ -158,7 +158,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private void openContextAt(int localX, int localY) {
         String hit = chapterAtY(localY, state);
         if (hit != null && !hit.isBlank()) {
-            selectChapterDirect(hit);
+            if (canOpenChapter(hit)) {
+                selectChapterDirect(hit);
+            }
         } else {
             clearChapterSelection();
         }
@@ -182,6 +184,15 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private boolean selectOrClearAt(double mouseX, double mouseY, int localX, int localY) {
         String hit = chapterAtY(localY, state);
         if (hit != null && !hit.isBlank() && isChapterCardAreaHit(localX, localY, state)) {
+            if (!canOpenChapter(hit)) {
+                state.chapterMenuOpen = false;
+                state.chapterDragPending = false;
+                state.chapterDragActive = false;
+                state.chapterDragName = "";
+                state.chapterDragTargetIndex = -1;
+                refresh.run();
+                return true;
+            }
             selectChapterDirect(hit);
             state.chapterMenuOpen = false;
             if (EditorCommandClient.canManageGroups(state) && (state.chapterSearch == null || state.chapterSearch.isBlank())) {
@@ -293,6 +304,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (group == null || group.isBlank()) {
             return;
         }
+        if (!canOpenChapter(group)) {
+            return;
+        }
         state.selectedGroup = group;
         state.groupDraft = group;
         state.chapterDraftName = group;
@@ -302,5 +316,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.chapterTextFontSizeSliderTarget = "";
         state.chapterSelectionJustChanged = true;
         persistUiState(state);
+    }
+
+    private boolean canOpenChapter(String group) {
+        return state.canEdit || !ClientQuestCache.groupLockedPreview(group);
     }
 }

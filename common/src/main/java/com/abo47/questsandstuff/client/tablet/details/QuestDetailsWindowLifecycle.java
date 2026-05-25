@@ -29,9 +29,14 @@ final class QuestDetailsWindowLifecycle {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
+        String trimmedQuestId = questId.trim();
+        if (!canOpenQuestDetails(state, trimmedQuestId)) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details open blocked locked_preview quest={}", trimmedQuestId);
+            return;
+        }
         state.questDetailsClosing = false;
         state.questDetailsOpen = true;
-        state.questDetailsQuestId = questId.trim();
+        state.questDetailsQuestId = trimmedQuestId;
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
@@ -139,8 +144,8 @@ final class QuestDetailsWindowLifecycle {
         if (current < 0) {
             current = 0;
         }
-        int next = current + direction;
-        if (next < 0 || next >= ids.size()) {
+        int next = nextOpenableQuestIndex(state, ids, current, direction);
+        if (next < 0) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details navigate blocked from={} direction={}", questId, direction);
             return;
         }
@@ -210,5 +215,24 @@ final class QuestDetailsWindowLifecycle {
         state.selectedCanvasImageId = "";
         state.selectedCanvasTextIds.clear();
         state.selectedCanvasImageIds.clear();
+    }
+
+    private static int nextOpenableQuestIndex(TabletUiState state, List<String> ids, int current, int direction) {
+        if (direction == 0) {
+            return -1;
+        }
+        for (int i = current + direction; i >= 0 && i < ids.size(); i += direction) {
+            if (canOpenQuestDetails(state, ids.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean canOpenQuestDetails(TabletUiState state, String questId) {
+        if (state == null || questId == null || questId.isBlank()) {
+            return false;
+        }
+        return state.canEdit || !ClientQuestCache.questLockedPreview(ClientQuestCache.quest(questId));
     }
 }

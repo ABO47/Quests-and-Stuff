@@ -36,7 +36,17 @@ final class EditorChapterCommandClient {
     }
 
     static String selectedGroupName(TabletUiState state) {
-        return sanitizeGroupName(state.selectedGroup);
+        String selected = sanitizeGroupName(state == null ? "" : state.selectedGroup);
+        if (state == null || state.canEdit || selected.isBlank() || !ClientQuestCache.groupLockedPreview(selected)) {
+            return selected;
+        }
+        for (String group : ClientQuestCache.groupOrder()) {
+            String sanitized = sanitizeGroupName(group);
+            if (!sanitized.isBlank() && !ClientQuestCache.groupLockedPreview(sanitized)) {
+                return sanitized;
+            }
+        }
+        return "";
     }
 
     static boolean canEditGroups(TabletUiState state) {

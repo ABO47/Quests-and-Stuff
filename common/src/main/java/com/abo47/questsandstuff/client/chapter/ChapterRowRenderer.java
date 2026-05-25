@@ -28,8 +28,8 @@ final class ChapterRowRenderer {
     }
 
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
-        boolean selected = group.equals(state.selectedGroup);
         boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
+        boolean selected = group.equals(TabletUiFactory.selectedGroupName(state));
         String rowLabel = group.equals(state.pendingChapterRename) ? state.chapterDraftName : group;
         if (collapsed) {
             addCollapsedChapterRow(chapterList, group, rowLabel, y, layout, selected);
@@ -140,6 +140,9 @@ final class ChapterRowRenderer {
     private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
         final int rowY = y;
         var menuHit = TabletUiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
+            if (!canOpenChapter(state, group)) {
+                return;
+            }
             selectChapter(state, group);
             state.chapterMenuTarget = group;
             state.chapterMenuX = 8;
@@ -150,12 +153,19 @@ final class ChapterRowRenderer {
         menuHit.setHoverTooltips(new Component[]{Component.literal(group)});
         chapterList.addWidget(menuHit);
         var rowHit = TabletUiFactory.flatHitButton(layout.cardX(), collapsed ? collapsedTileY(y) : y, layout.cardW(), collapsed ? COLLAPSED_TILE_SIZE : TabletUiFactory.CHAPTER_CARD_H, click -> {
+            if (!canOpenChapter(state, group)) {
+                return;
+            }
             selectChapter(state, group);
             TabletUiFactory.persistUiState(state);
             refresh.run();
         });
         rowHit.setHoverTooltips(new Component[]{Component.literal(group)});
         chapterList.addWidget(rowHit);
+    }
+
+    private static boolean canOpenChapter(TabletUiState state, String group) {
+        return state != null && (state.canEdit || !ClientQuestCache.groupLockedPreview(group));
     }
 
     private static void selectChapter(TabletUiState state, String group) {
