@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerMod
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletRecipePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStructurePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
@@ -52,6 +53,7 @@ public final class ModalPanelRouter {
         TextFieldWidget dimensionSearchField = null;
         TextFieldWidget lootTableSearchField = null;
         TextFieldWidget itemInventorySearchField = null;
+        TextFieldWidget soundSearchField = null;
         TextFieldWidget entityVariantSearchField = null;
         int w = Math.min(432, overlay.getSize().width - 32);
         int h = Math.min(260, overlay.getSize().height - 32);
@@ -99,6 +101,8 @@ public final class ModalPanelRouter {
             lootTableSearchField = TabletLootTablePickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.itemInventoryPickerOpen) {
             itemInventorySearchField = TabletItemInventoryPickerModal.rebuild(modal, state, player, refresh, w, h);
+        } else if (state.soundPickerOpen) {
+            soundSearchField = TabletSoundPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.colorPickerOpen) {
             TabletColorPickerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.themePickerOpen) {
@@ -120,7 +124,7 @@ public final class ModalPanelRouter {
             overlay.addWidget(modal);
         }
         if (!state.modalWindowClosing) {
-            restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, advancementSearchField, recipeSearchField, structureSearchField, blockSearchField, statSearchField, dimensionSearchField, lootTableSearchField, itemInventorySearchField, entityVariantSearchField);
+            restoreSearchFocus(state, iconSearchField, assetSearchField, biomeSearchField, advancementSearchField, recipeSearchField, structureSearchField, blockSearchField, statSearchField, dimensionSearchField, lootTableSearchField, itemInventorySearchField, soundSearchField, entityVariantSearchField);
         }
     }
 
@@ -157,6 +161,7 @@ public final class ModalPanelRouter {
             TextFieldWidget dimensionSearchField,
             TextFieldWidget lootTableSearchField,
             TextFieldWidget itemInventorySearchField,
+            TextFieldWidget soundSearchField,
             TextFieldWidget entityVariantSearchField
     ) {
         if (iconSearchField != null && state.iconSearchFocused) {
@@ -191,6 +196,9 @@ public final class ModalPanelRouter {
         }
         if (itemInventorySearchField != null && state.itemInventorySearchFocused) {
             itemInventorySearchField.setFocus(true);
+        }
+        if (soundSearchField != null && state.soundSearchFocused) {
+            soundSearchField.setFocus(true);
         }
         if (entityVariantSearchField != null && state.entityVariantSearchFocused) {
             entityVariantSearchField.setFocus(true);

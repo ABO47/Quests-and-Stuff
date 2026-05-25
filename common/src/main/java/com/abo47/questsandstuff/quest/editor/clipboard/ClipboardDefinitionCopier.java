@@ -27,6 +27,7 @@ public final class ClipboardDefinitionCopier {
                 source.display().icon(),
                 source.display().iconBackground(),
                 source.display().completionSound(),
+                source.display().completionSoundVolume(),
                 source.display().visualHidden()
         );
         return new QuestDefinition(

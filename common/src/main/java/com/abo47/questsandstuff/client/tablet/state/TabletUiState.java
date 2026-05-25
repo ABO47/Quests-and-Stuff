@@ -114,6 +114,7 @@ public class TabletUiState {
     public boolean dimensionPickerOpen;
     public boolean lootTablePickerOpen;
     public boolean itemInventoryPickerOpen;
+    public boolean soundPickerOpen;
     public boolean themePickerOpen;
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
@@ -192,6 +193,13 @@ public class TabletUiState {
     public boolean itemInventorySearchFocused;
     public int itemInventoryScroll;
     public boolean itemInventoryScrollDragging;
+    public String soundSearch = "";
+    public boolean soundSearchFocused;
+    public int soundScroll;
+    public boolean soundScrollDragging;
+    public String soundSelected = "";
+    public int soundVolumeDraft = 100;
+    public boolean soundVolumeDragging;
     public String assetSelected = "";
     public String assetBrowseDir = "";
     public String assetSearch = "";
@@ -257,6 +265,7 @@ public class TabletUiState {
     public int contextMenuWidthPx;
     public int contextMenuHeightPx;
     public String contextDeleteConfirmKey = "";
+    public boolean contextQuestCompletionSoundMenuOpen;
     public long contextMenuAnimationStartMs;
     public String contextMenuAnimationKey = "";
     public String contextQuestId = "";

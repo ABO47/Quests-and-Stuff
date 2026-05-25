@@ -63,6 +63,7 @@ public final class CanvasContextMenuSupport {
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
             state.contextMenuOpen = false;
+            state.contextQuestCompletionSoundMenuOpen = false;
             return true;
         }
 
@@ -105,6 +106,7 @@ public final class CanvasContextMenuSupport {
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
         state.contextDeleteConfirmKey = "";
+        state.contextQuestCompletionSoundMenuOpen = false;
         return true;
     }
 
@@ -130,6 +132,7 @@ public final class CanvasContextMenuSupport {
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
             state.contextDeleteConfirmKey = "";
+            state.contextQuestCompletionSoundMenuOpen = false;
             return true;
         }
         return true;

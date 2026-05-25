@@ -319,6 +319,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
+                            source.display().completionSoundVolume(),
                             source.display().visualHidden()
                     ),
                     source.settings(),

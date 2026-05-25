@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.network.editor.C2SEditorRemoveQuestPacket;
 import com.abo47.questsandstuff.network.editor.C2SEditorUpdateQuestPacket;
 import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -77,6 +78,19 @@ final class EditorQuestCommandClient {
         payload.putString("sound", normalizedSound);
         EditorCommandSender.run(player, "quest_change_completion_sound", payload,
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, normalizedQuestId, normalizedSound));
+    }
+
+    static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
+        ClientQuestCache.setQuestCompletionSoundVolumeLocal(normalizedQuestId, normalizedVolume);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putInt("volume", normalizedVolume);
+        EditorCommandSender.run(player, "quest_change_completion_sound_volume", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, normalizedQuestId, normalizedVolume));
     }
 
     static void runRemoveQuestAction(Player player, String questId) {

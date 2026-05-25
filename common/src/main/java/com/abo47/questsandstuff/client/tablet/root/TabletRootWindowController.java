@@ -63,6 +63,7 @@ public final class TabletRootWindowController {
             state.contextMenuOpen = false;
             state.contextMenuRows = 0;
             state.contextDeleteConfirmKey = "";
+            state.contextQuestCompletionSoundMenuOpen = false;
             return true;
         }
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
@@ -102,6 +103,7 @@ public final class TabletRootWindowController {
                 || state.blockSearchFocused
                 || state.dimensionSearchFocused
                 || state.lootTableSearchFocused
+                || state.soundSearchFocused
                 || state.toolsSearchFocused
                 || state.questDetailsTitleFocused
                 || state.assetRenameOpen

@@ -1,8 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.sound.QuestCompletionSoundPlayer;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import net.minecraft.nbt.CompoundTag;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletModalState.openModal;
 
@@ -186,6 +190,26 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
+        openQuestCustomCompletionSoundPicker(state, questId, currentSound);
+    }
+
+    public static void openQuestGameSoundPicker(TabletUiState state, String questId, String currentSound) {
+        closeBeforeOpen(state);
+        state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        state.contextDeleteConfirmKey = "";
+        resetSoundPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(questId);
+        state.soundVolumeDragging = false;
+        state.soundSelected = currentSound == null || currentSound.isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+        openModal(state, ModalWindowManager.ModalType.SOUND_PICKER);
+    }
+
+    public static void openQuestCustomCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
         closeBeforeOpen(state);
         state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
         state.modalCanvasBackgroundTarget = "";
@@ -195,8 +219,10 @@ public final class ModalOpenActions {
         state.questDetailsAssetPickTarget = "";
         state.contextDeleteConfirmKey = "";
         resetAssetPicker(state);
+        state.soundVolumeDraft = completionSoundVolume(questId);
+        state.soundVolumeDragging = false;
         state.assetBrowseDir = "sounds";
-        state.assetSelected = currentSound == null || currentSound.isBlank() ? "" : currentSound;
+        state.assetSelected = currentSound == null || currentSound.isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
@@ -315,6 +341,21 @@ public final class ModalOpenActions {
         state.assetSearchFocused = false;
         state.assetGridScroll = 0;
         state.assetGridScrollDragging = false;
+    }
+
+    private static void resetSoundPicker(TabletUiState state) {
+        state.soundSearch = "";
+        state.soundSearchFocused = false;
+        state.soundScroll = 0;
+        state.soundScrollDragging = false;
+    }
+
+    private static int completionSoundVolume(String questId) {
+        CompoundTag quest = ClientQuestCache.quest(questId);
+        if (quest == null || !quest.contains("completion_sound_volume")) {
+            return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
+        }
+        return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
     private static void closeBeforeOpen(TabletUiState state) {

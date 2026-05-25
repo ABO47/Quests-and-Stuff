@@ -70,6 +70,7 @@ public final class QuestLifecycleEditService {
                         "minecraft:book",
                         "minecraft:barrier",
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,
+                        QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME,
                         false
                 ),
                 QuestSettings.DEFAULT,

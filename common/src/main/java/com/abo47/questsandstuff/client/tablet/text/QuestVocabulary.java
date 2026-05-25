@@ -44,6 +44,7 @@ public final class QuestVocabulary {
     public static final String CHOOSE_DIMENSION = "ui.questsandstuff.quest.choose_dimension";
     public static final String CHOOSE_LOOT_TABLE = "ui.questsandstuff.quest.choose_loot_table";
     public static final String CHOOSE_RECIPE = "ui.questsandstuff.quest.choose_recipe";
+    public static final String CHOOSE_SOUND = "ui.questsandstuff.quest.choose_sound";
     public static final String CHOOSE_STAT = "ui.questsandstuff.quest.choose_stat";
     public static final String CHOOSE_STRUCTURE = "ui.questsandstuff.quest.choose_structure";
     public static final String CHOOSE_INVENTORY_ITEM = "ui.questsandstuff.quest.choose_inventory_item";
@@ -57,6 +58,7 @@ public final class QuestVocabulary {
     public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
     public static final String NO_RECIPES = "ui.questsandstuff.quest.no_recipes";
+    public static final String NO_SOUNDS = "ui.questsandstuff.quest.no_sounds";
     public static final String NO_STATS = "ui.questsandstuff.quest.no_stats";
     public static final String NO_INVENTORY_ITEMS = "ui.questsandstuff.quest.no_inventory_items";
     public static final String NO_STRUCTURES = "ui.questsandstuff.quest.no_structures";
@@ -94,6 +96,9 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
     public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
+    public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
+    public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
+    public static final String SOUND_LEVEL = "ui.questsandstuff.sound.level";
     public static final String CONTEXT_CONNECTION_COLOR = "ui.questsandstuff.context.connection_color";
     public static final String CONTEXT_COPY = "ui.questsandstuff.context.copy";
     public static final String CONTEXT_EDIT_MOTION = "ui.questsandstuff.context.edit_motion";

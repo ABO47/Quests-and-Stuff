@@ -306,6 +306,10 @@ public final class EditorSessionService {
         questActions.setQuestCompletionSound(player, questId, sound);
     }
 
+    public void setQuestCompletionSoundVolume(ServerPlayer player, String questId, int volume) {
+        questActions.setQuestCompletionSoundVolume(player, questId, volume);
+    }
+
     public void undo(ServerPlayer player) {
         undoRedoActions.undo(player);
     }

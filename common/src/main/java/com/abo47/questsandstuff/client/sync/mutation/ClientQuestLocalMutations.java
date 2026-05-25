@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -197,6 +198,17 @@ public final class ClientQuestLocalMutations {
         quest.putString("completion_sound", normalizedSound);
     }
 
+    public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
+    }
+
     public static void resetQuestProgressLocal(String questId) {
         String normalized = questId == null ? "" : questId.trim();
         if (normalized.isBlank()) {
@@ -289,6 +301,7 @@ public final class ClientQuestLocalMutations {
         quest.putString("icon", "minecraft:book");
         quest.putString("icon_background", "minecraft:barrier");
         quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
+        quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
         quest.putBoolean("visual_hidden", false);
         quest.putBoolean("completed", false);
         quest.putBoolean("unlocked", true);

@@ -57,6 +57,7 @@ final class TabletRootDismissals {
             state.contextMenuOpen = false;
             state.contextMenuRows = 0;
             state.contextDeleteConfirmKey = "";
+            state.contextQuestCompletionSoundMenuOpen = false;
             changed = true;
         }
         if (state.chapterTextMenuOpen && !clickState.chapterTextMenuHit() && !handled) {

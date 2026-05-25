@@ -81,7 +81,7 @@ final class TabletAssets {
                 "size", "opacity", "magnet", "lock", "unlock",
                 "background_opacity", "reset_zoom", "reset_quest", "repeat", "repeat-off", "variant", "motion", "properties", "minimap",
                 "style_align_left", "style_align_center", "style_align_right",
-                "style_bold", "style_italic", "style_color", "themes", "claim_all", "xp", "send-horizontal", "eye", "eye-off", "audio-lines", "reset"
+                "style_bold", "style_italic", "style_color", "themes", "claim_all", "xp", "send-horizontal", "eye", "eye-off", "audio-lines", "play", "pause", "reset"
         ));
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();

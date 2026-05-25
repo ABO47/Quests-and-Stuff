@@ -30,6 +30,7 @@ final class QuestDefinitionNormalizer {
                         definition.display().icon(),
                         definition.display().iconBackground(),
                         definition.display().completionSound(),
+                        definition.display().completionSoundVolume(),
                         definition.display().visualHidden()
                 ),
                 new QuestSettings(

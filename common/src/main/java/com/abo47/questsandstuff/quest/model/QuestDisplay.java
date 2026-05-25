@@ -14,9 +14,11 @@ public record QuestDisplay(
         String icon,
         String iconBackground,
         String completionSound,
+        int completionSoundVolume,
         boolean visualHidden
 ) {
     public static final String DEFAULT_COMPLETION_SOUND = "minecraft:ui.toast.challenge_complete";
+    public static final int DEFAULT_COMPLETION_SOUND_VOLUME = 100;
 
     public static final QuestDisplay DEFAULT = new QuestDisplay(
             "Untitled Quest",
@@ -26,6 +28,7 @@ public record QuestDisplay(
             "minecraft:book",
             "minecraft:barrier",
             DEFAULT_COMPLETION_SOUND,
+            DEFAULT_COMPLETION_SOUND_VOLUME,
             false
     );
 
@@ -37,7 +40,25 @@ public record QuestDisplay(
             String icon,
             String iconBackground
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, DEFAULT_COMPLETION_SOUND, false);
+        this(title, subtitle, description, groups, icon, iconBackground, DEFAULT_COMPLETION_SOUND, DEFAULT_COMPLETION_SOUND_VOLUME, false);
+    }
+
+    public QuestDisplay(
+            String title,
+            String subtitle,
+            List<String> description,
+            Map<String, ChapterDefinition> groups,
+            String icon,
+            String iconBackground,
+            String completionSound,
+            boolean visualHidden
+    ) {
+        this(title, subtitle, description, groups, icon, iconBackground, completionSound, DEFAULT_COMPLETION_SOUND_VOLUME, visualHidden);
+    }
+
+    public QuestDisplay {
+        completionSound = completionSound == null || completionSound.isBlank() ? DEFAULT_COMPLETION_SOUND : completionSound.trim();
+        completionSoundVolume = normalizeCompletionSoundVolume(completionSoundVolume);
     }
 
     public static final Codec<QuestDisplay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -48,6 +69,11 @@ public record QuestDisplay(
             Codec.STRING.fieldOf("icon").orElse("minecraft:book").forGetter(QuestDisplay::icon),
             Codec.STRING.fieldOf("icon_background").orElse("minecraft:barrier").forGetter(QuestDisplay::iconBackground),
             Codec.STRING.fieldOf("completion_sound").orElse(DEFAULT_COMPLETION_SOUND).forGetter(QuestDisplay::completionSound),
+            Codec.INT.fieldOf("completion_sound_volume").orElse(DEFAULT_COMPLETION_SOUND_VOLUME).forGetter(QuestDisplay::completionSoundVolume),
             Codec.BOOL.fieldOf("visual_hidden").orElse(false).forGetter(QuestDisplay::visualHidden)
     ).apply(instance, QuestDisplay::new));
+
+    public static int normalizeCompletionSoundVolume(int volume) {
+        return Math.max(0, Math.min(100, volume));
+    }
 }

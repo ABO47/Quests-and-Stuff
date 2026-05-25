@@ -104,6 +104,10 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.setQuestCompletionSound(player, questId, sound);
     }
 
+    public static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
+        EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questId, volume);
+    }
+
     public static void runRemoveQuestAction(Player player, String questId) {
         EditorQuestCommandClient.runRemoveQuestAction(player, questId);
     }

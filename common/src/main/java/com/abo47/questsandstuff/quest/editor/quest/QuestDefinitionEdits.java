@@ -42,6 +42,7 @@ public final class QuestDefinitionEdits {
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
+                            source.display().completionSoundVolume(),
                             source.display().visualHidden()
                     ),
                     new QuestSettings(
@@ -162,6 +163,7 @@ public final class QuestDefinitionEdits {
                 definition.display().icon(),
                 definition.display().iconBackground(),
                 definition.display().completionSound(),
+                definition.display().completionSoundVolume(),
                 definition.display().visualHidden()
         );
         return new QuestDefinition(

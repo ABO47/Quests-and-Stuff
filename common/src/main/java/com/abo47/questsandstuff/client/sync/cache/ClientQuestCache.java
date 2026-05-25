@@ -274,6 +274,10 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setQuestCompletionSoundLocal(questId, sound);
     }
 
+    public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
+        ClientQuestLocalMutations.setQuestCompletionSoundVolumeLocal(questId, volume);
+    }
+
     public static void resetQuestProgressLocal(String questId) {
         ClientQuestLocalMutations.resetQuestProgressLocal(questId);
     }

@@ -29,10 +29,14 @@ public final class AssetSoundInstance extends AbstractSoundInstance {
     private final WeighedSoundEvents event;
 
     public AssetSoundInstance(ResourceLocation id, Path path) {
+        this(id, path, 1.0f);
+    }
+
+    public AssetSoundInstance(ResourceLocation id, Path path, float volume) {
         super(id, SoundSource.MASTER, SoundInstance.createUnseededRandom());
         this.path = path;
         this.extension = extension(path);
-        this.volume = 1.0f;
+        this.volume = Math.max(0.0f, Math.min(1.0f, volume));
         this.pitch = 1.0f;
         this.relative = true;
         this.attenuation = SoundInstance.Attenuation.NONE;

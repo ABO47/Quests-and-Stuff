@@ -36,6 +36,7 @@ public final class QuestDisplayEditService {
                 source.display().icon(),
                 source.display().iconBackground(),
                 source.display().completionSound(),
+                source.display().completionSoundVolume(),
                 source.display().visualHidden()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
@@ -62,6 +63,7 @@ public final class QuestDisplayEditService {
                 source.display().icon(),
                 source.display().iconBackground(),
                 source.display().completionSound(),
+                source.display().completionSoundVolume(),
                 source.display().visualHidden()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
@@ -85,6 +87,7 @@ public final class QuestDisplayEditService {
                 normalizedIcon,
                 source.display().iconBackground(),
                 source.display().completionSound(),
+                source.display().completionSoundVolume(),
                 source.display().visualHidden()
         );
         QuestsAndStuffMod.debugLog("[QnS:Editor] quest icon quest={} icon={}", normalizedQuestId, normalizedIcon);
@@ -109,6 +112,7 @@ public final class QuestDisplayEditService {
                 old.icon(),
                 old.iconBackground(),
                 old.completionSound(),
+                old.completionSoundVolume(),
                 hidden
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
@@ -136,6 +140,35 @@ public final class QuestDisplayEditService {
                 old.icon(),
                 old.iconBackground(),
                 normalizedSound,
+                old.completionSoundVolume(),
+                old.visualHidden()
+        );
+        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+    }
+
+    public void setQuestCompletionSoundVolume(ServerPlayer player, String questId, int volume) {
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
+        if (quest == null) {
+            return;
+        }
+        int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
+        if (quest.display().completionSoundVolume() == normalizedVolume) {
+            return;
+        }
+
+        EditorSessionService.EditorSession session = service.session(player);
+        service.captureUndo(session);
+        QuestDisplay old = quest.display();
+        QuestDisplay display = new QuestDisplay(
+                old.title(),
+                old.subtitle(),
+                old.description(),
+                old.groups(),
+                old.icon(),
+                old.iconBackground(),
+                old.completionSound(),
+                normalizedVolume,
                 old.visualHidden()
         );
         updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));

@@ -26,6 +26,7 @@ public final class TabletModalState {
         state.dimensionPickerOpen = flags.dimensionOpen();
         state.lootTablePickerOpen = flags.lootTableOpen();
         state.itemInventoryPickerOpen = flags.itemInventoryOpen();
+        state.soundPickerOpen = flags.soundOpen();
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
@@ -178,6 +179,9 @@ public final class TabletModalState {
         state.lootTableScrollDragging = false;
         state.itemInventorySearchFocused = false;
         state.itemInventoryScrollDragging = false;
+        state.soundSearchFocused = false;
+        state.soundScrollDragging = false;
+        state.soundSelected = "";
         state.pickerLastClickKey = "";
         state.pickerLastClickAtMs = 0L;
         state.colorPaletteContextOpen = false;
@@ -213,6 +217,8 @@ public final class TabletModalState {
         state.lootTableScrollDragging = false;
         state.itemInventorySearchFocused = false;
         state.itemInventoryScrollDragging = false;
+        state.soundSearchFocused = false;
+        state.soundScrollDragging = false;
         state.entityVariantSearchFocused = false;
         state.entityVariantScrollDragging = false;
         state.pickerLastClickKey = "";

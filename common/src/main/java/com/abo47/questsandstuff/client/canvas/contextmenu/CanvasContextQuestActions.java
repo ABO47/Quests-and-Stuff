@@ -37,6 +37,11 @@ final class CanvasContextQuestActions {
         if (state.contextMenuTarget != ContextMenuTarget.QUEST || state.contextQuestId.isBlank()) {
             return;
         }
+        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
+        if (state.contextQuestCompletionSoundMenuOpen) {
+            addCompletionSoundActions(actions, canvasViewport, state, questTag);
+            return;
+        }
         if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextQuestId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
                 state.connectSourceQuestId = state.contextQuestId;
@@ -74,7 +79,6 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
-        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
             EditorCommandClient.resetQuestProgress(player, state.contextQuestId);
             state.contextDeleteConfirmKey = "";
@@ -84,12 +88,7 @@ final class CanvasContextQuestActions {
         addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
         addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
-        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
-            String sound = questTag.getString("completion_sound");
-            ModalOpenActions.openQuestCompletionSoundPicker(state, state.contextQuestId, sound);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_sound quest={} sound={}", state.contextQuestId, state.assetSelected);
-            canvasViewport.refresh();
-        }));
+        addCompletionSoundActions(actions, canvasViewport, state, questTag);
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextQuestId));
             state.contextDeleteConfirmKey = "";
@@ -109,6 +108,33 @@ final class CanvasContextQuestActions {
                 canvasViewport::refresh
         );
         addQuestLayerActions(actions, canvasViewport, state, selectedGroup);
+    }
+
+    private static void addCompletionSoundActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
+        if (!state.contextQuestCompletionSoundMenuOpen) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, false, () -> {
+                state.contextQuestCompletionSoundMenuOpen = true;
+                state.contextMenuScroll = 0;
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_menu quest={}", state.contextQuestId);
+                canvasViewport.refresh();
+            }));
+            return;
+        }
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_GAME_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
+            String sound = questTag.getString("completion_sound");
+            ModalOpenActions.openQuestGameSoundPicker(state, state.contextQuestId, sound);
+            state.contextQuestCompletionSoundMenuOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_game quest={} sound={}", state.contextQuestId, sound);
+            canvasViewport.refresh();
+        }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_CUSTOM_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
+            String sound = questTag.getString("completion_sound");
+            ModalOpenActions.openQuestCustomCompletionSoundPicker(state, state.contextQuestId, sound);
+            state.contextQuestCompletionSoundMenuOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_custom quest={} sound={}", state.contextQuestId, sound);
+            canvasViewport.refresh();
+        }));
     }
 
     private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {

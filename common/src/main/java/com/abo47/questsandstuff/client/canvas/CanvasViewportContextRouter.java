@@ -25,6 +25,7 @@ final class CanvasViewportContextRouter {
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
         state.contextDeleteConfirmKey = "";
+        state.contextQuestCompletionSoundMenuOpen = false;
     }
 
     static void openContextMenu(
@@ -51,6 +52,7 @@ final class CanvasViewportContextRouter {
         state.contextMenuY = localY;
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
+        state.contextQuestCompletionSoundMenuOpen = false;
         state.createQuestModalOpen = false;
         state.contextLogicalX = logicalX;
         state.contextLogicalY = logicalY;
