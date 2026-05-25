@@ -86,12 +86,21 @@ public final class CanvasRenderer {
             state.connectSourceQuestId = "";
         }
         state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.quests().containsKey(questId));
-        if (state.canEdit && state.gridEnabled) {
-            CanvasSceneRenderer.renderGridOverlay(canvasViewport, state, contentX, contentY, contentW, contentH);
-        }
         WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
-        ConnectionRenderer.renderPrerequisiteConnections(canvasContent, state, visibleCards, byQuestId);
-        CanvasSceneRenderer.renderCanvasElements(canvasContent, state, canvasViewport.player(), canvasViewport::refresh, visibleCards, viewportW, viewportH);
+        if (state.canEdit && state.gridEnabled) {
+            CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
+        }
+        ConnectionRenderer.renderPrerequisiteConnections(canvasContent, state, visibleCards, byQuestId, viewportW, viewportH);
+        CanvasSceneRenderer.renderCanvasElements(
+                canvasContent,
+                state,
+                canvasViewport.player(),
+                canvasViewport::refresh,
+                visibleCards,
+                viewportW,
+                viewportH,
+                canvasViewport::registerQuestCardLayer
+        );
         CanvasSelectionRenderer.renderAlignmentGuides(canvasContent, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {
@@ -99,15 +108,10 @@ public final class CanvasRenderer {
             state.createQuestModalOpen = false;
             state.boxSelecting = false;
         }
-        if (state.canEdit && state.boxSelecting) {
-            int minX = Math.min(state.boxStartX, state.boxCurrentX);
-            int minY = Math.min(state.boxStartY, state.boxCurrentY);
-            int boxW = Math.max(1, Math.abs(state.boxCurrentX - state.boxStartX));
-            int boxH = Math.max(1, Math.abs(state.boxCurrentY - state.boxStartY));
-            canvasContent.addWidget(panel(minX, minY, boxW, boxH, withAlpha(ModColors.INTERACTIVE, 48), ModColors.INTERACTIVE));
-        }
         CanvasSelectionRenderer.renderSelectionOverlay(canvasContent, state, visibleCards);
-        canvasViewport.addWidget(CanvasChapterSwitchAnimation.wrap(state, canvasContent));
+        WidgetGroup canvasContentLayer = CanvasChapterSwitchAnimation.wrap(state, canvasContent);
+        canvasViewport.setCanvasContentLayer(canvasContentLayer);
+        canvasViewport.addWidget(canvasContentLayer);
         renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
         canvasViewport.updateCardCache(visibleCards, byQuestId);
     }

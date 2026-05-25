@@ -62,6 +62,7 @@ final class CanvasViewportClickController {
             state.draggingCanvas = true;
             state.dragCurrentX = localX;
             state.dragCurrentY = localY;
+            canvasViewport.beginCanvasPan();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas pan start button=middle x={} y={} locked={} zoom={}", localX, localY, state.gridCanvasLocked, state.canvasZoom);
             return true;
         }
@@ -226,6 +227,7 @@ final class CanvasViewportClickController {
             state.draggingCanvas = true;
             state.dragCurrentX = localX;
             state.dragCurrentY = localY;
+            canvasViewport.beginCanvasPan();
             return true;
         }
 

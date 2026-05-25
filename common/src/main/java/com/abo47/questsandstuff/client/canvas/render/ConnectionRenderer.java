@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
+import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasLayoutService;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -18,7 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Quaternionf;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -129,7 +131,14 @@ public final class ConnectionRenderer {
         }
     }
 
-    public static void renderPrerequisiteConnections(WidgetGroup canvasViewport, TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
+    public static void renderPrerequisiteConnections(
+            WidgetGroup canvasViewport,
+            TabletUiState state,
+            List<QuestCardLayout> cards,
+            Map<String, QuestCardLayout> byQuestId,
+            int viewportW,
+            int viewportH
+    ) {
         List<ConnectionLine> lines = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
         String group = selectedGroupName(state);
@@ -151,10 +160,16 @@ public final class ConnectionRenderer {
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
+                if (!CanvasLayoutService.intersectsPanRenderWindow(prerequisite, viewportW, viewportH)
+                        && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
+                    continue;
+                }
                 boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId());
 
                 lines.add(new ConnectionLine(
                         edgeId,
+                        prerequisiteId,
+                        quest.questId(),
                         prerequisite.x(),
                         prerequisite.y(),
                         prerequisite.width(),
@@ -182,9 +197,11 @@ public final class ConnectionRenderer {
             }
             for (String sourceQuestId : pendingSources) {
                 QuestCardLayout source = byQuestId.get(sourceQuestId);
-                if (source != null) {
+                if (source != null && CanvasLayoutService.intersectsPanRenderWindow(source, viewportW, viewportH)) {
                     lines.add(new ConnectionLine(
                             "",
+                            sourceQuestId,
+                            sourceQuestId,
                             source.x(),
                             source.y(),
                             source.width(),
@@ -214,9 +231,13 @@ public final class ConnectionRenderer {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
+                int clipMinX = originX - state.canvasLivePanX;
+                int clipMinY = originY - state.canvasLivePanY;
+                int clipMaxX = clipMinX + getSizeWidth();
+                int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now);
+                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
                 }
             }
         });
@@ -242,11 +263,28 @@ public final class ConnectionRenderer {
         );
     }
 
-    private static void drawConnection(GuiGraphics graphics, int originX, int originY, TabletUiState state, ConnectionLine line, int mouseX, int mouseY, long now) {
-        int startX = originX + line.startX();
-        int startY = originY + line.startY();
-        int endX = originX + line.endX();
-        int endY = originY + line.endY();
+    private static void drawConnection(
+            GuiGraphics graphics,
+            int originX,
+            int originY,
+            TabletUiState state,
+            ConnectionLine line,
+            int mouseX,
+            int mouseY,
+            long now,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        int sourceOffsetX = selectionDragOffsetX(state, line.sourceQuestId());
+        int sourceOffsetY = selectionDragOffsetY(state, line.sourceQuestId());
+        int targetOffsetX = selectionDragOffsetX(state, line.targetQuestId());
+        int targetOffsetY = selectionDragOffsetY(state, line.targetQuestId());
+        int startX = originX + line.startX() + sourceOffsetX;
+        int startY = originY + line.startY() + sourceOffsetY;
+        int endX = originX + line.endX() + targetOffsetX;
+        int endY = originY + line.endY() + targetOffsetY;
 
         if (line.pending()) {
             graphics.fill(startX - 5, startY - 5, startX + 6, startY + 6, withAlpha(ModColors.SUCCESS, 72));
@@ -254,23 +292,60 @@ public final class ConnectionRenderer {
             return;
         }
 
-        if (line.hidden() && !state.canEdit && !isHoveringEndpoint(originX, originY, line, mouseX, mouseY)) {
+        boolean hoveringEndpoint = isHoveringEndpoint(
+                originX,
+                originY,
+                line,
+                mouseX,
+                mouseY,
+                sourceOffsetX,
+                sourceOffsetY,
+                targetOffsetX,
+                targetOffsetY
+        );
+        if (line.hidden() && !state.canEdit && !hoveringEndpoint) {
             return;
         }
-        int alpha = line.hidden() && isHoveringEndpoint(originX, originY, line, mouseX, mouseY) ? 245 : line.alpha();
+        int alpha = line.hidden() && hoveringEndpoint ? 245 : line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.edgeId(), now);
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (0.58f + 0.42f * animation.progress())));
-            drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress());
+            drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), clipMinX, clipMinY, clipMaxX, clipMaxY);
             return;
         }
-        drawTexturedChevrons(graphics, path, line.color(), alpha);
+        drawTexturedChevrons(graphics, path, line.color(), alpha, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
-    private static boolean isHoveringEndpoint(int originX, int originY, ConnectionLine line, int mouseX, int mouseY) {
-        return inside(mouseX, mouseY, originX + line.sourceX(), originY + line.sourceY(), line.sourceW(), line.sourceH())
-                || inside(mouseX, mouseY, originX + line.targetX(), originY + line.targetY(), line.targetW(), line.targetH());
+    private static boolean isHoveringEndpoint(
+            int originX,
+            int originY,
+            ConnectionLine line,
+            int mouseX,
+            int mouseY,
+            int sourceOffsetX,
+            int sourceOffsetY,
+            int targetOffsetX,
+            int targetOffsetY
+    ) {
+        return inside(mouseX, mouseY, originX + line.sourceX() + sourceOffsetX, originY + line.sourceY() + sourceOffsetY, line.sourceW(), line.sourceH())
+                || inside(mouseX, mouseY, originX + line.targetX() + targetOffsetX, originY + line.targetY() + targetOffsetY, line.targetW(), line.targetH());
+    }
+
+    private static int selectionDragOffsetX(TabletUiState state, String questId) {
+        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.selectedQuestIds.contains(questId)) {
+            return 0;
+        }
+        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+    }
+
+    private static int selectionDragOffsetY(TabletUiState state, String questId) {
+        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.selectedQuestIds.contains(questId)) {
+            return 0;
+        }
+        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
     }
 
     private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -283,32 +358,56 @@ public final class ConnectionRenderer {
         return state.canvasContentX + state.canvasOffsetX + snapped;
     }
 
-    private static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha) {
-        drawTexturedChevrons(graphics, path, color, alpha, 1.0f);
+    private static void drawTexturedChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            int color,
+            int alpha,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
-    private static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float progress) {
+    private static void drawTexturedChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            int color,
+            int alpha,
+            float progress,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
         int glyphW = 5;
         int glyphH = 9;
         double spacing = Math.max(1.0, glyphW - 1.0);
-        int safeAlpha = Math.max(0, Math.min(255, alpha));
-        int lightColor = withAlpha(color, safeAlpha);
-        int darkColor = withAlpha(darkenColor(color, 0.52f), safeAlpha);
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
             return;
         }
         double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, progress)));
-        int phase = 0;
-        setChevronTextureFilter(GL11.GL_LINEAR);
-        for (double distance = glyphW / 2.0; distance < Math.min(totalLength, visibleLength); distance += spacing) {
-            ChevronPlacement placement = chevronAtDistance(path, distance);
-            if (placement == null) {
-                continue;
-            }
-            int chevronColor = (phase++ % 2 == 0) ? lightColor : darkColor;
-            drawTexturedChevron(graphics, chevronColor, placement.x(), placement.y(), placement.dirX(), placement.dirY(), glyphW, glyphH);
+        List<ChevronGlyph> glyphs = chevronGlyphs(path, color, alpha, visibleLength, glyphW, glyphH, spacing, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        if (glyphs.isEmpty()) {
+            return;
         }
+        setChevronTextureFilter(GL11.GL_LINEAR);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, CONNECTION_CHEVRON);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        Matrix4f matrix = graphics.pose().last().pose();
+        buffer.begin(VertexFormat.Mode.QUADS, POSITION_TEX_COLOR);
+        for (ChevronGlyph glyph : glyphs) {
+            emitChevronQuad(buffer, matrix, glyph, glyphW, glyphH);
+        }
+        tessellator.end();
+        RenderSystem.disableBlend();
         setChevronTextureFilter(GL11.GL_NEAREST);
     }
 
@@ -324,8 +423,26 @@ public final class ConnectionRenderer {
         return total;
     }
 
-    private static ChevronPlacement chevronAtDistance(List<CanvasPoint> path, double targetDistance) {
-        double walked = 0.0;
+    private static List<ChevronGlyph> chevronGlyphs(
+            List<CanvasPoint> path,
+            int color,
+            int alpha,
+            double visibleLength,
+            int glyphW,
+            int glyphH,
+            double spacing,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        int safeAlpha = Math.max(0, Math.min(255, alpha));
+        int lightColor = withAlpha(color, safeAlpha);
+        int darkColor = withAlpha(darkenColor(color, 0.52f), safeAlpha);
+        int pad = Math.max(glyphW, glyphH) + 2;
+        double startDistance = glyphW / 2.0;
+        double walked = 0.0D;
+        List<ChevronGlyph> glyphs = new ArrayList<>();
         for (int i = 0; i + 1 < path.size(); i++) {
             CanvasPoint a = path.get(i);
             CanvasPoint b = path.get(i + 1);
@@ -335,15 +452,78 @@ public final class ConnectionRenderer {
             if (length <= 0.0) {
                 continue;
             }
-            if (walked + length >= targetDistance) {
-                double segmentDistance = targetDistance - walked;
-                double dirX = dx / length;
-                double dirY = dy / length;
-                return new ChevronPlacement(a.x + dirX * segmentDistance, a.y + dirY * segmentDistance, dirX, dirY);
+            double segmentEnd = walked + length;
+            if (segmentEnd <= startDistance || walked >= visibleLength) {
+                walked = segmentEnd;
+                continue;
             }
-            walked += length;
+            double[] range = clippedSegmentRange(
+                    a.x,
+                    a.y,
+                    b.x,
+                    b.y,
+                    clipMinX - pad,
+                    clipMinY - pad,
+                    clipMaxX + pad,
+                    clipMaxY + pad
+            );
+            if (range != null) {
+                double rangeStart = Math.max(startDistance, walked + range[0] * length);
+                double rangeEnd = Math.min(visibleLength, walked + range[1] * length);
+                int firstIndex = (int) Math.ceil((rangeStart - startDistance) / spacing);
+                for (double distance = startDistance + firstIndex * spacing; distance < rangeEnd; distance += spacing, firstIndex++) {
+                    double segmentDistance = distance - walked;
+                    double dirX = dx / length;
+                    double dirY = dy / length;
+                    int chevronColor = (firstIndex % 2 == 0) ? lightColor : darkColor;
+                    glyphs.add(new ChevronGlyph(a.x + dirX * segmentDistance, a.y + dirY * segmentDistance, dirX, dirY, chevronColor));
+                }
+            }
+            walked = segmentEnd;
         }
-        return null;
+        return glyphs;
+    }
+
+    private static double[] clippedSegmentRange(double x0, double y0, double x1, double y1, double minX, double minY, double maxX, double maxY) {
+        double[] range = {0.0D, 1.0D};
+        double dx = x1 - x0;
+        double dy = y1 - y0;
+        if (!clipTest(-dx, x0 - minX, range)) {
+            return null;
+        }
+        if (!clipTest(dx, maxX - x0, range)) {
+            return null;
+        }
+        if (!clipTest(-dy, y0 - minY, range)) {
+            return null;
+        }
+        if (!clipTest(dy, maxY - y0, range)) {
+            return null;
+        }
+        return range;
+    }
+
+    private static boolean clipTest(double p, double q, double[] range) {
+        if (p == 0.0D) {
+            return q >= 0.0D;
+        }
+        double r = q / p;
+        if (p < 0.0D) {
+            if (r > range[1]) {
+                return false;
+            }
+            if (r > range[0]) {
+                range[0] = r;
+            }
+            return true;
+        }
+        if (r < range[0]) {
+            return false;
+        }
+        if (r < range[1]) {
+            range[1] = r;
+        }
+        return true;
     }
 
     private static void setChevronTextureFilter(int filter) {
@@ -360,34 +540,25 @@ public final class ConnectionRenderer {
         return alpha | (r << 16) | (g << 8) | b;
     }
 
-    private static void drawTexturedChevron(GuiGraphics graphics, int color, double x, double y, double dirX, double dirY, int glyphW, int glyphH) {
-        float direction = (float) Math.atan2(dirY, dirX);
-        graphics.pose().pushPose();
-        graphics.pose().translate((float) x, (float) y, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationZ(direction));
-        drawChevronQuad(graphics, -glyphW / 2.0f, -glyphH / 2.0f, glyphW, glyphH, color);
-        graphics.pose().popPose();
+    private static void emitChevronQuad(BufferBuilder buffer, Matrix4f matrix, ChevronGlyph glyph, int glyphW, int glyphH) {
+        float halfW = glyphW / 2.0f;
+        float halfH = glyphH / 2.0f;
+        emitChevronVertex(buffer, matrix, glyph, -halfW, halfH, CHEVRON_U0, 1.0f);
+        emitChevronVertex(buffer, matrix, glyph, halfW, halfH, CHEVRON_U1, 1.0f);
+        emitChevronVertex(buffer, matrix, glyph, halfW, -halfH, CHEVRON_U1, 0.0f);
+        emitChevronVertex(buffer, matrix, glyph, -halfW, -halfH, CHEVRON_U0, 0.0f);
     }
 
-    private static void drawChevronQuad(GuiGraphics graphics, float x, float y, float width, float height, int color) {
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, CONNECTION_CHEVRON);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        var matrix = graphics.pose().last().pose();
-        buffer.begin(VertexFormat.Mode.QUADS, POSITION_TEX_COLOR);
-        buffer.vertex(matrix, x, y + height, 0).uv(CHEVRON_U0, 1.0f).color(color).endVertex();
-        buffer.vertex(matrix, x + width, y + height, 0).uv(CHEVRON_U1, 1.0f).color(color).endVertex();
-        buffer.vertex(matrix, x + width, y, 0).uv(CHEVRON_U1, 0.0f).color(color).endVertex();
-        buffer.vertex(matrix, x, y, 0).uv(CHEVRON_U0, 0.0f).color(color).endVertex();
-        tessellator.end();
-        RenderSystem.disableBlend();
+    private static void emitChevronVertex(BufferBuilder buffer, Matrix4f matrix, ChevronGlyph glyph, float localX, float localY, float u, float v) {
+        float x = (float) (glyph.x() + glyph.dirX() * localX - glyph.dirY() * localY);
+        float y = (float) (glyph.y() + glyph.dirY() * localX + glyph.dirX() * localY);
+        buffer.vertex(matrix, x, y, 0.0f).uv(u, v).color(glyph.color()).endVertex();
     }
 
     private record ConnectionLine(
             String edgeId,
+            String sourceQuestId,
+            String targetQuestId,
             int sourceX,
             int sourceY,
             int sourceW,
@@ -408,6 +579,6 @@ public final class ConnectionRenderer {
     ) {
     }
 
-    private record ChevronPlacement(double x, double y, double dirX, double dirY) {
+    private record ChevronGlyph(double x, double y, double dirX, double dirY, int color) {
     }
 }

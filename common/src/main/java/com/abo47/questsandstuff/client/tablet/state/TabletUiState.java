@@ -507,8 +507,15 @@ public class TabletUiState {
     public boolean resizingSelection;
     public boolean rotatingSelection;
     public boolean draggingCanvas;
+    public int canvasLivePanX;
+    public int canvasLivePanY;
     public boolean boxSelecting;
     public boolean boxAdditive;
+    public final Set<String> boxSelectionBaseQuestIds = new java.util.LinkedHashSet<>();
+    public final Set<String> boxSelectionBaseCanvasImageIds = new java.util.LinkedHashSet<>();
+    public final Set<String> boxSelectionBaseCanvasTextIds = new java.util.LinkedHashSet<>();
+    public String boxSelectionBaseCanvasImageId = "";
+    public String boxSelectionBaseCanvasTextId = "";
     public int dragStartX;
     public int dragStartY;
     public int dragCurrentX;

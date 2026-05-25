@@ -168,6 +168,7 @@ public final class CanvasSelectionRenderer {
         if (!state.canEdit || state.createQuestModalOpen || state.questDetailsOpen) {
             return;
         }
+        drawBoxSelectionRect(graphics, originX, originY, maxW, maxH, state);
         drawIndividualSelectionBounds(graphics, originX, originY, maxW, maxH, state, cards);
         drawSelectionBounds(graphics, originX, originY, maxW, maxH, state);
     }
@@ -203,7 +204,7 @@ public final class CanvasSelectionRenderer {
             TabletUiState state,
             List<QuestCardLayout> cards
     ) {
-        if (!state.canEdit || CanvasRenderer.totalCanvasSelectionCount(state) <= 1 || !state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.canEdit || (!state.boxSelecting && CanvasRenderer.totalCanvasSelectionCount(state) <= 1) || !state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
@@ -212,14 +213,20 @@ public final class CanvasSelectionRenderer {
             if (!state.selectedQuestIds.contains(card.questId())) {
                 continue;
             }
+            int x = card.x();
+            int y = card.y();
+            if (state.draggingSelection && state.dragStartPositions.containsKey(card.questId())) {
+                x += selectionDragScreenX(state);
+                y += selectionDragScreenY(state);
+            }
             drawClippedRect(
                     graphics,
                     originX,
                     originY,
                     maxW,
                     maxH,
-                    card.x() - SINGLE_SELECTION_PAD,
-                    card.y() - SINGLE_SELECTION_PAD,
+                    x - SINGLE_SELECTION_PAD,
+                    y - SINGLE_SELECTION_PAD,
                     card.width() + SINGLE_SELECTION_PAD * 2,
                     card.height() + SINGLE_SELECTION_PAD * 2,
                     fill,
@@ -267,6 +274,46 @@ public final class CanvasSelectionRenderer {
         }
     }
 
+    private static void drawBoxSelectionRect(
+            GuiGraphics graphics,
+            int originX,
+            int originY,
+            int maxW,
+            int maxH,
+            TabletUiState state
+    ) {
+        if (!state.boxSelecting) {
+            return;
+        }
+        int minX = Math.min(state.boxStartX, state.boxCurrentX);
+        int minY = Math.min(state.boxStartY, state.boxCurrentY);
+        int boxW = Math.max(1, Math.abs(state.boxCurrentX - state.boxStartX));
+        int boxH = Math.max(1, Math.abs(state.boxCurrentY - state.boxStartY));
+        drawClippedRect(
+                graphics,
+                originX,
+                originY,
+                maxW,
+                maxH,
+                minX,
+                minY,
+                boxW,
+                boxH,
+                withAlpha(ModColors.INTERACTIVE, 48),
+                ModColors.INTERACTIVE
+        );
+    }
+
+    private static int selectionDragScreenX(TabletUiState state) {
+        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+    }
+
+    private static int selectionDragScreenY(TabletUiState state) {
+        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
+    }
+
     private static void drawSelectionBounds(
             GuiGraphics graphics,
             int originX,
@@ -276,6 +323,9 @@ public final class CanvasSelectionRenderer {
             TabletUiState state
     ) {
         if (!state.canEdit || !state.selectionBoundsVisible || state.pendingQuestTitleChangeId != null && !state.pendingQuestTitleChangeId.isBlank()) {
+            return;
+        }
+        if (state.boxSelecting) {
             return;
         }
         if (state.selectedQuestIds.isEmpty() && CanvasRenderer.totalCanvasSelectionCount(state) == 1) {
