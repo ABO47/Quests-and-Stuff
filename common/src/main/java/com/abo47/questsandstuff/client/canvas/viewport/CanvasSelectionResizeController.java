@@ -131,11 +131,17 @@ final class CanvasSelectionResizeController {
                 minimum,
                 CanvasGeometry.gridSize(state),
                 state.gridSnapLocked || isShiftDown(),
-                isShiftDown(),
+                isShiftDown() || isSingleQuestOnlyResize(),
                 minLeft,
                 minTop,
                 maxRight,
                 maxBottom
         );
+    }
+
+    private boolean isSingleQuestOnlyResize() {
+        return state.resizeStartScales.size() == 1
+                && state.resizeStartImageLayers.isEmpty()
+                && state.resizeStartTextLayers.isEmpty();
     }
 }
