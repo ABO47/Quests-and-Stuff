@@ -26,7 +26,9 @@ final class ChapterListRenderer {
         int rowStartY = collapsed ? 0 : 8;
         if (groups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)) {
             ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
-            chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none"), ModColors.TEXT_MUTED));
+            if (!collapsed) {
+                chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none"), ModColors.TEXT_MUTED));
+            }
             return;
         }
 
@@ -37,10 +39,12 @@ final class ChapterListRenderer {
 
         if (chapterGroups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)) {
             ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
-            String emptyKey = state.chapterSearch == null || state.chapterSearch.isBlank()
-                    ? "ui.questsandstuff.chapter.none"
-                    : "ui.questsandstuff.chapter.none_matching";
-            chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr(emptyKey), ModColors.TEXT_MUTED));
+            if (!collapsed) {
+                String emptyKey = state.chapterSearch == null || state.chapterSearch.isBlank()
+                        ? "ui.questsandstuff.chapter.none"
+                        : "ui.questsandstuff.chapter.none_matching";
+                chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr(emptyKey), ModColors.TEXT_MUTED));
+            }
             return;
         }
 
