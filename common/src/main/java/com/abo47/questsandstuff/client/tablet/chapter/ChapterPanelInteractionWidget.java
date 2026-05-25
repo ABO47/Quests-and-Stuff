@@ -18,13 +18,12 @@ import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_CARD_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_CARD_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterAtY;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterInsertIndexAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterRowStep;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterCardAreaHit;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterScrollBarHit;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
@@ -147,7 +146,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (ModalStateQueries.anyOpen(state)) {
             return true;
         }
-        int step = Math.max(8, (CHAPTER_CARD_H + CHAPTER_CARD_GAP) / 3);
+        int step = Math.max(8, chapterRowStep(state) / 3);
         int next = ScrollController.wheel(state.chapterScroll, state.chapterScrollMax, step, wheelDelta);
         if (next != state.chapterScroll) {
             state.chapterScroll = next;
@@ -235,7 +234,8 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         int cardWidth = Math.max(1, cardRight - cardLeft);
         boolean collapsed = state.chapterPanelCollapsed || state.chapterListWidth <= 54;
         int iconLeft = collapsed ? cardLeft + Math.max(0, (cardWidth - CONTENT_ICON_SIZE) / 2) : cardLeft + 2;
-        int iconTop = state.chapterRowStartY + index * (CHAPTER_CARD_H + CHAPTER_CARD_GAP) - state.chapterScroll + 8;
+        int rowStep = chapterRowStep(state);
+        int iconTop = state.chapterRowStartY + index * rowStep - state.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);
         return localX >= iconLeft
                 && localX < iconLeft + CONTENT_ICON_SIZE
                 && localY >= iconTop

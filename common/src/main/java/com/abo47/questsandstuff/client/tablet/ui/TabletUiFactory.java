@@ -39,6 +39,7 @@ public final class TabletUiFactory {
     public static final int CANVAS_W = TabletLayout.CANVAS_W;
     public static final int CHAPTER_CARD_H = TabletLayout.CHAPTER_CARD_H;
     public static final int CHAPTER_CARD_GAP = TabletLayout.CHAPTER_CARD_GAP;
+    public static final int CHAPTER_COLLAPSED_ROW_STEP = TabletLayout.CHAPTER_COLLAPSED_ROW_STEP;
     public static final String DRAFT_CHAPTER = TabletLayout.DRAFT_CHAPTER;
     public static final Path ASSETS_ROOT_DIR = TabletLayout.ASSETS_ROOT_DIR;
     public static final int CHAPTER_X = TabletLayout.CHAPTER_X;
@@ -225,6 +226,10 @@ public final class TabletUiFactory {
 
     public static int chapterIndexAtY(int localY, TabletUiState state) {
         return TabletLayout.chapterIndexAtY(localY, state);
+    }
+
+    public static int chapterRowStep(TabletUiState state) {
+        return TabletLayout.chapterRowStep(state);
     }
 
     public static boolean isChapterScrollBarHit(int localX, int localY, TabletUiState state) {

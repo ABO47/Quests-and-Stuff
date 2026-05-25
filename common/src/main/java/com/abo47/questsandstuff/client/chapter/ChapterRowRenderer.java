@@ -206,7 +206,7 @@ final class ChapterRowRenderer {
     }
 
     private static int collapsedTileY(int rowY) {
-        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_CARD_H - COLLAPSED_TILE_SIZE) / 2);
+        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_TILE_SIZE) / 2);
     }
 
     private static int collapsedIconX(ChapterListMetrics.Layout layout) {
@@ -214,7 +214,7 @@ final class ChapterRowRenderer {
     }
 
     private static int collapsedIconY(int rowY) {
-        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_CARD_H - COLLAPSED_ICON_SIZE) / 2);
+        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_ICON_SIZE) / 2);
     }
 
     private static Component styledChapterComponent(String text, String style) {
@@ -275,7 +275,11 @@ final class ChapterRowRenderer {
             int h = getSizeHeight();
             boolean hovered = isMouseOverElement(mouseX, mouseY);
             if (selected || hovered) {
-                graphics.fill(x, y, x + w, y + h, selected ? ModColors.pressedFill(ModColors.INTERACTIVE) : ModColors.hoverFill(ModColors.INTERACTIVE));
+                int fill = selected ? TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 108) : TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 44);
+                int fillSize = Math.min(w, h);
+                int fillX = x + Math.max(0, (w - fillSize) / 2);
+                int fillY = y + Math.max(0, (h - fillSize) / 2);
+                graphics.fill(fillX, fillY, fillX + fillSize, fillY + fillSize, fill);
             }
             if (!initial.isBlank()) {
                 var font = Minecraft.getInstance().font;

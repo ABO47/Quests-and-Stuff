@@ -23,33 +23,34 @@ final class ChapterListRenderer {
         int listOriginX = chapterList.getSelfPositionX();
         int listOriginY = chapterList.getSelfPositionY();
         int baseCardX = 4;
+        int rowStartY = collapsed ? 0 : 8;
         if (groups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)) {
-            ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX);
+            ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
             chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none"), ModColors.TEXT_MUTED));
             return;
         }
 
         int trackY = 4;
         int trackH = listH - 8;
-        int rowStep = TabletUiFactory.CHAPTER_CARD_H + TabletUiFactory.CHAPTER_CARD_GAP;
+        int rowStep = collapsed ? TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP : TabletUiFactory.CHAPTER_CARD_H + TabletUiFactory.CHAPTER_CARD_GAP;
         List<String> chapterGroups = ChapterListMetrics.filteredGroups(groups, state.chapterSearch);
 
         if (chapterGroups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)) {
-            ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX);
+            ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
             chapterList.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none_matching"), ModColors.TEXT_MUTED));
             return;
         }
 
         int baseRows = chapterGroups.size() + (TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename) ? 1 : 0);
-        int totalHeight = 16 + baseRows * rowStep;
+        int totalHeight = (collapsed ? 0 : 16) + baseRows * rowStep;
         state.chapterScrollMax = Math.max(0, totalHeight - (listH - 8));
         state.chapterScroll = ScrollController.clamp(state.chapterScroll, state.chapterScrollMax);
         boolean showScrollBar = state.chapterScrollMax > 0;
 
         ChapterListMetrics.Layout layout = ChapterListMetrics.Layout.create(listW, collapsed, showScrollBar);
-        ChapterListMetrics.remember(state, listOriginX, listOriginY, listW, listH, layout, trackY, trackH);
+        ChapterListMetrics.remember(state, listOriginX, listOriginY, listW, listH, layout, trackY, trackH, rowStartY);
 
-        int y = 8 - state.chapterScroll;
+        int y = rowStartY - state.chapterScroll;
         int ghostInsertIndex = Math.max(0, Math.min(chapterGroups.size(), state.chapterDragTargetIndex));
         boolean showGhostCard = state.chapterDragActive && !state.chapterDragName.isBlank();
 
