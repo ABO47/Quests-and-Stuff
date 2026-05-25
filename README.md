@@ -4,19 +4,11 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 
 ### Main Canvas
 
-![Main canvas outside edit mode](media/screenshots/1.png)
-
-![Main canvas inside edit mode](media/screenshots/2.png)
-
-![Main canvas inside edit mode with the minimap expanded](media/screenshots/5.png)
+![Main canvas outside edit mode](media/screenshots/8.png)
 
 ### Quest Details
 
-![Quest details outside edit mode](media/screenshots/3.png)
-
-![Quest details inside edit mode](media/screenshots/4.png)
-
-![Quest details inside edit mode with the quest completed](media/screenshots/6.png)
+![Quest details outside edit mode](media/screenshots/7.png)
 
 ## Features
 
