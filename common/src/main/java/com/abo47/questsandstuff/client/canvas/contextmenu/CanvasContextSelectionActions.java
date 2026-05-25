@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
@@ -13,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -26,7 +28,9 @@ final class CanvasContextSelectionActions {
             return;
         }
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
-            CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
+            if (selectionSupportsGizmo(state, selectedGroup)) {
+                CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
+            }
             addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedGroup, canvasViewport.cardLookup())) {
@@ -48,6 +52,15 @@ final class CanvasContextSelectionActions {
                 canvasViewport.refresh();
             }));
         }
+    }
+
+    private static boolean selectionSupportsGizmo(TabletUiState state, String selectedGroup) {
+        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of())) {
+            if (CanvasRenderer.isImageSelected(state, image.id()) && CanvasTransformGizmo.supports(image.asset())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void addSelectionLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {

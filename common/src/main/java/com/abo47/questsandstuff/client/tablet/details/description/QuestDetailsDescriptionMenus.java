@@ -226,7 +226,9 @@ public final class QuestDetailsDescriptionMenus {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=edit_entity_motion quest={} image={}", questId, state.questDetailsContextId);
             }));
         }
-        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())) {
+        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
+                && descriptionSelectionCount(state) == 1
+                && QuestDetailsDescriptionSelectionState.selectedImageIds(state).contains(contextImage.id())) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
             CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
                 CanvasImageLayer image = model.image(state.questDetailsContextId);
@@ -293,7 +295,9 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, Runnable refresh) {
-        CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
+        if (selectionSupportsGizmo(state, model)) {
+            CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
+        }
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
@@ -325,6 +329,21 @@ public final class QuestDetailsDescriptionMenus {
             QuestDetailsDescriptionPanel.deleteDescriptionSelection(state, model);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
+    }
+
+    private static boolean selectionSupportsGizmo(TabletUiState state, QuestDetailsDescriptionModel model) {
+        for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
+            CanvasImageLayer image = model.image(imageId);
+            if (image != null && CanvasTransformGizmo.supports(image.asset())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int descriptionSelectionCount(TabletUiState state) {
+        return QuestDetailsDescriptionSelectionState.selectedImageIds(state).size()
+                + QuestDetailsDescriptionSelectionState.selectedTextIds(state).size();
     }
 
     private static void updateText(Player player, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next) {

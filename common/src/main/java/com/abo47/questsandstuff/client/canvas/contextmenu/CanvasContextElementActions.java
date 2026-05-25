@@ -68,7 +68,9 @@ final class CanvasContextElementActions {
                 canvasViewport.refresh();
             }));
         }
-        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())) {
+        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
+                && CanvasRenderer.totalCanvasSelectionCount(state) == 1
+                && CanvasRenderer.isImageSelected(state, contextImage.id())) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
                 CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
