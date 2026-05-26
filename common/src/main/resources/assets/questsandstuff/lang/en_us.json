@@ -158,6 +158,8 @@
   "ui.questsandstuff.settings.full_screen_mode_desc": "Use the whole screen for the quest tablet canvas.",
   "ui.questsandstuff.settings.minimap": "Minimap",
   "ui.questsandstuff.settings.minimap_desc": "Show the quest minimap on the canvas.",
+  "ui.questsandstuff.settings.read_only_canvas_focus": "Focused Player Camera",
+  "ui.questsandstuff.settings.read_only_canvas_focus_desc": "Center and limit player view around visible quest content.",
   "ui.questsandstuff.settings.minimap_animations": "Minimap Animations",
   "ui.questsandstuff.settings.minimap_animations_desc": "Animate minimap expand and collapse.",
   "ui.questsandstuff.settings.popup_window_animations": "Popup Window Animations",

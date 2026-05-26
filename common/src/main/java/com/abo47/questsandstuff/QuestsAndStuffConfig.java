@@ -27,6 +27,7 @@ public final class QuestsAndStuffConfig {
     private static boolean chapterSwitchAnimations = true;
     private static boolean fullScreenMode;
     private static boolean minimap = true;
+    private static boolean readOnlyCanvasFocus;
     private static boolean commandRewards = true;
 
     private QuestsAndStuffConfig() {
@@ -229,6 +230,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean readOnlyCanvasFocusEnabled() {
+        load();
+        return readOnlyCanvasFocus;
+    }
+
+    public static void setReadOnlyCanvasFocusEnabled(boolean enabled) {
+        load();
+        if (readOnlyCanvasFocus != enabled) {
+            readOnlyCanvasFocus = enabled;
+            save();
+        }
+    }
+
     public static boolean commandRewardsEnabled() {
         load();
         return commandRewards;
@@ -259,6 +273,7 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = object(root, "canvas");
         fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
+        readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
 
         JsonObject security = object(root, "security");
         commandRewards = bool(security, "commandRewards", commandRewards);
@@ -284,6 +299,7 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = new JsonObject();
         canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
+        canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
         root.add("canvas", canvas);
 
         JsonObject security = new JsonObject();

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas;
 
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.model.QuestMatch;
@@ -148,7 +149,7 @@ public final class CanvasLayoutService {
 
         setCanvasWorldBounds(state, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY);
 
-        if (!state.canEdit) {
+        if (!state.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
             CanvasPoint clamped = CanvasCameraController.clampedOffsetToWorldBounds(
                     state,
                     state.canvasOffsetX,

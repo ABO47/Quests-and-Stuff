@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
@@ -80,7 +81,7 @@ public final class CanvasCameraController {
         if (state == null) {
             return new CanvasPoint(offsetX, offsetY);
         }
-        if (!state.canEdit) {
+        if (!state.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
             int minLogicalX = state.canvasNavigationMinX;
             int minLogicalY = state.canvasNavigationMinY;
             int maxLogicalX = minLogicalX + Math.max(1, state.canvasNavigationWidth);
