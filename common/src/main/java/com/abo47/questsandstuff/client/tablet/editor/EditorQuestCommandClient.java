@@ -359,18 +359,6 @@ final class EditorQuestCommandClient {
         runQuestDisplayAction(player, questId, title, subtitle);
     }
 
-    static void setQuestAutoClaim(Player player, String questId, boolean enabled) {
-        String normalizedQuestId = EditorCommandSender.id(questId);
-        if (normalizedQuestId.isBlank()) {
-            return;
-        }
-        ClientQuestCache.setQuestAutoClaimLocal(normalizedQuestId, enabled);
-        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
-        payload.putBoolean("enabled", enabled);
-        EditorCommandSender.run(player, "quest_auto_claim", payload,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestAutoClaim(serverPlayer, normalizedQuestId, enabled));
-    }
-
     static void setQuestRepeatable(Player player, String questId, boolean enabled) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {

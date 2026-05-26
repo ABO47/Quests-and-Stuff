@@ -360,10 +360,6 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setQuestIconLocal(questId, icon);
     }
 
-    public static void setQuestAutoClaimLocal(String questId, boolean enabled) {
-        ClientQuestLocalMutations.setQuestAutoClaimLocal(questId, enabled);
-    }
-
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
         ClientQuestLocalMutations.setQuestRepeatableLocal(questId, enabled);
     }

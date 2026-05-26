@@ -1,9 +1,12 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.hud.QuestCompletionNotificationOverlay;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.network.QuestNetwork;
+import com.abo47.questsandstuff.network.runtime.C2SClaimAllRewardsPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -42,6 +45,10 @@ public final class ClientSyncPacketHandler {
         if ("quest_completed".equals(eventType)) {
             ClientQuestCache.noteQuestCompletedForChapterNotices(questId, TabletUiFactory.activeSelectedGroup());
             QuestCompletionNotificationOverlay.push(questId);
+            if (QuestsAndStuffConfig.autoClaimRewardsEnabled() && questId != null && !questId.isBlank()) {
+                QuestNetwork.sendToServer(new C2SClaimAllRewardsPacket(questId));
+                QuestsAndStuffMod.debugLog("[QnS:UI] global auto-claim quest={}", questId);
+            }
             TabletUiFactory.refreshActiveTablet();
         }
     }

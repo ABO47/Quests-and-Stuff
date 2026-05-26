@@ -6,7 +6,6 @@ import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardApplier;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -42,9 +41,6 @@ final class QuestProgressAdminActions {
         }
         questState.setCompleted(true, player.server.getTickCount());
         syncService.sendQuestEvent(player, "quest_completed", questId, "");
-        if (definition.settings().autoClaimRewards()) {
-            QuestRewardApplier.autoClaimNonSelectableRewards(player, definition, questState, player.server.getTickCount(), syncService);
-        }
         progressData.setDirty();
         player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, Set.of(questId)));
     }

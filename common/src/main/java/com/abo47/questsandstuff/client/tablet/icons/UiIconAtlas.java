@@ -134,7 +134,6 @@ public final class UiIconAtlas {
             case "context_audio-lines", "context_audio_lines" -> add(names, "audio-lines");
             case "context_reset", "reset" -> add(names, "reset_quest");
             case "context_editor", "edit", "toggle_editor" -> add(names, "editor");
-            case "auto_claim" -> add(names, "claim_all");
             case "context_inspector", "context_properties" -> add(names, "properties");
             case "context_minimap" -> add(names, "minimap");
             case "mode_items" -> add(names, "icon");

@@ -175,6 +175,8 @@
   "ui.questsandstuff.settings.full_screen_mode_desc": "Use the whole screen for the quest tablet canvas.",
   "ui.questsandstuff.settings.minimap": "Minimap",
   "ui.questsandstuff.settings.minimap_desc": "Show the quest minimap on the canvas.",
+  "ui.questsandstuff.settings.quest_effect_icons": "Quest Effect Icons",
+  "ui.questsandstuff.settings.quest_effect_icons_desc": "Show small icons on quest cards for hidden, locked, repeatable, and custom completion effects.",
   "ui.questsandstuff.settings.read_only_canvas_focus": "Focused Player Camera",
   "ui.questsandstuff.settings.read_only_canvas_focus_desc": "Center and limit player view around visible quest content.",
   "ui.questsandstuff.settings.minimap_animations": "Minimap Animations",

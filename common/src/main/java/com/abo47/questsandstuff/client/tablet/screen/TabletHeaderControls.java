@@ -6,7 +6,9 @@ import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.reward.QuestRewardClaimActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
@@ -16,6 +18,7 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
@@ -35,6 +38,9 @@ final class TabletHeaderControls {
     private final WidgetGroup hudEditBg;
     private final ButtonWidget hudEditHit;
     private final HeaderIconWidget hudEditIconWidget;
+    private final WidgetGroup claimAllBg;
+    private final ButtonWidget claimAllHit;
+    private final HeaderIconWidget claimAllIconWidget;
     private final WidgetGroup editorBg;
     private final ButtonWidget editorHit;
     private final HeaderIconWidget editorIconWidget;
@@ -53,6 +59,9 @@ final class TabletHeaderControls {
             WidgetGroup hudEditBg,
             ButtonWidget hudEditHit,
             HeaderIconWidget hudEditIconWidget,
+            WidgetGroup claimAllBg,
+            ButtonWidget claimAllHit,
+            HeaderIconWidget claimAllIconWidget,
             WidgetGroup editorBg,
             ButtonWidget editorHit,
             HeaderIconWidget editorIconWidget
@@ -69,12 +78,15 @@ final class TabletHeaderControls {
         this.hudEditBg = hudEditBg;
         this.hudEditHit = hudEditHit;
         this.hudEditIconWidget = hudEditIconWidget;
+        this.claimAllBg = claimAllBg;
+        this.claimAllHit = claimAllHit;
+        this.claimAllIconWidget = claimAllIconWidget;
         this.editorBg = editorBg;
         this.editorHit = editorHit;
         this.editorIconWidget = editorIconWidget;
     }
 
-    static TabletHeaderControls create(TabletUiState state, Runnable refresh, int contentInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int topY, int headerH) {
+    static TabletHeaderControls create(Player player, TabletUiState state, Runnable refresh, int contentInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int topY, int headerH) {
         TextFieldWidget chapterSearchField = new TextFieldWidget(contentInset, chapterTopY, Math.max(24, initialChapterW - contentInset * 2), chapterHeaderH, () -> state.chapterSearch, value -> {
             state.chapterSearch = SearchFilter.normalizeUserInput(value);
             state.chapterScroll = 0;
@@ -134,6 +146,18 @@ final class TabletHeaderControls {
         hudEditHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
         hudEditHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget hudEditIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "hud_layout.png");
+        WidgetGroup claimAllBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
+        ButtonWidget claimAllHit = flatHitButton(0, 0, toolsW, headerH, click -> {
+            ToolMenuAnimation.closeMain(state);
+            state.contextMenuOpen = false;
+            state.chapterMenuOpen = false;
+            state.assetContextOpen = false;
+            QuestRewardClaimActions.claimAll(player, "");
+            refresh.run();
+        });
+        claimAllHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        claimAllHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        HeaderIconWidget claimAllIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "claim_all.png");
         WidgetGroup editorBg = panel(0, 0, toolsW, headerH, withAlpha(ModColors.SURFACE_PANEL_ALT, 164), ModColors.BORDER_BASE);
         ButtonWidget editorHit = flatHitButton(0, 0, toolsW, headerH, click -> {
             if (!state.editorAvailable) {
@@ -152,7 +176,7 @@ final class TabletHeaderControls {
         editorHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget editorIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "editor.png");
 
-        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, hudEditBg, hudEditHit, hudEditIconWidget, editorBg, editorHit, editorIconWidget);
+        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, hudEditBg, hudEditHit, hudEditIconWidget, claimAllBg, claimAllHit, claimAllIconWidget, editorBg, editorHit, editorIconWidget);
     }
 
     TextFieldWidget chapterSearchField() {
@@ -180,6 +204,7 @@ final class TabletHeaderControls {
         boolean settingsActive = settingsActive(state);
         settingsBg.setBackground(Surfaces.bordered(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE));
         hudEditBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
+        claimAllBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         editorBg.setBackground(Surfaces.bordered(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }
 
@@ -194,7 +219,8 @@ final class TabletHeaderControls {
         boolean showEditorToggle = state.editorAvailable;
         boolean showToolsButton = true;
         int editorX = showEditorToggle ? toolsX - topGap - toolsW : toolsX;
-        int hudEditX = showEditorToggle ? editorX - topGap - toolsW : toolsX - topGap - toolsW;
+        int claimAllX = (showEditorToggle ? editorX : toolsX) - topGap - toolsW;
+        int hudEditX = claimAllX - topGap - toolsW;
         int settingsX = hudEditX - topGap - toolsW;
         int searchX = headerX;
         int searchEnd = settingsX - topGap;
@@ -221,6 +247,22 @@ final class TabletHeaderControls {
         editorHit.setActive(showEditorToggle);
         editorIconWidget.setVisible(showEditorToggle);
         editorIconWidget.setActive(false);
+
+        claimAllBg.setSelfPosition(claimAllX, topY);
+        claimAllBg.setSize(toolsW, headerH);
+        claimAllHit.setSelfPosition(claimAllX, topY);
+        claimAllHit.setSize(toolsW, headerH);
+        claimAllHit.setHoverTooltips(new Component[]{
+                QuestVocabulary.component(QuestVocabulary.CLAIM_ALL_REWARDS)
+        });
+        int claimAllIconSize = claimAllIconWidget.getSize().width;
+        claimAllIconWidget.setSelfPosition(claimAllX + (toolsW - claimAllIconSize) / 2, topY + (headerH - claimAllIconSize) / 2);
+        claimAllBg.setVisible(true);
+        claimAllBg.setActive(true);
+        claimAllHit.setVisible(true);
+        claimAllHit.setActive(true);
+        claimAllIconWidget.setVisible(true);
+        claimAllIconWidget.setActive(false);
 
         settingsBg.setSelfPosition(settingsX, topY);
         settingsBg.setSize(toolsW, headerH);
@@ -279,6 +321,9 @@ final class TabletHeaderControls {
         canvasPanel.addWidget(hudEditBg);
         canvasPanel.addWidget(hudEditHit);
         canvasPanel.addWidget(hudEditIconWidget);
+        canvasPanel.addWidget(claimAllBg);
+        canvasPanel.addWidget(claimAllHit);
+        canvasPanel.addWidget(claimAllIconWidget);
         canvasPanel.addWidget(editorBg);
         canvasPanel.addWidget(editorHit);
         canvasPanel.addWidget(editorIconWidget);

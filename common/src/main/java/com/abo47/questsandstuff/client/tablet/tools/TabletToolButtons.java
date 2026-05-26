@@ -27,6 +27,13 @@ final class TabletToolButtons {
         menu.addWidget(hit);
     }
 
+    static void addAction(WidgetGroup menu, int x, int y, int size, int border, String icon, int iconColor, Component[] tooltips, Runnable action) {
+        menu.addWidget(panel(x, y, size, size, withAlpha(ModColors.SURFACE_PANEL_ALT, 164), border));
+        addIcon(menu, x, y, size, icon, iconColor);
+        ButtonWidget hit = hit(x, y, size, tooltips, action);
+        menu.addWidget(hit);
+    }
+
     static void addOpacity(WidgetGroup menu, int x, int y, int size, int border, String icon, Component[] tooltips, java.util.function.Consumer<Boolean> action) {
         menu.addWidget(panel(x, y, size, size, withAlpha(ModColors.SURFACE_PANEL_ALT, 164), border));
         var texture = UiIconAtlas.iconTexture(icon);

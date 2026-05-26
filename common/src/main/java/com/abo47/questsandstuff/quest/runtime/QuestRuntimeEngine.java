@@ -10,7 +10,6 @@ import com.abo47.questsandstuff.quest.runtime.progress.CompletableQuestService;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
-import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardApplier;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
@@ -187,12 +186,6 @@ public final class QuestRuntimeEngine {
                 ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                 if (owner != null) {
                     syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
-                }
-            }
-            if (definition.settings().autoClaimRewards()) {
-                ServerPlayer rewardTarget = actor.server.getPlayerList().getPlayer(ownerId);
-                if (rewardTarget != null) {
-                    QuestRewardApplier.autoClaimNonSelectableRewards(rewardTarget, definition, progress, serverTick, syncService);
                 }
             }
         }

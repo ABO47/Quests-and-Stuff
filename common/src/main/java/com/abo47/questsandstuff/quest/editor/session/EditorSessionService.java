@@ -288,16 +288,8 @@ public final class EditorSessionService {
         questActions.toggleRepeatable(player);
     }
 
-    public void toggleAutoClaim(ServerPlayer player) {
-        questActions.toggleAutoClaim(player);
-    }
-
     public void toggleIndividual(ServerPlayer player) {
         questActions.toggleIndividual(player);
-    }
-
-    public void setQuestAutoClaim(ServerPlayer player, String questId, boolean enabled) {
-        questActions.setQuestAutoClaim(player, questId, enabled);
     }
 
     public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {

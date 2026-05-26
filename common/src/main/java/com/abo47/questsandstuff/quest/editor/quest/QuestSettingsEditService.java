@@ -17,36 +17,8 @@ public final class QuestSettingsEditService {
         toggleSetting(player, SettingSwitch.REPEATABLE);
     }
 
-    public void toggleAutoClaim(ServerPlayer player) {
-        toggleSetting(player, SettingSwitch.AUTO_CLAIM);
-    }
-
     public void toggleIndividual(ServerPlayer player) {
         toggleSetting(player, SettingSwitch.INDIVIDUAL);
-    }
-
-    public void setQuestAutoClaim(ServerPlayer player, String questId, boolean enabled) {
-        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
-        QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
-        if (quest == null) {
-            return;
-        }
-        QuestSettings old = quest.settings();
-        if (old.autoClaimRewards() == enabled) {
-            return;
-        }
-
-        EditorSessionService.EditorSession session = service.session(player);
-        service.captureUndo(session);
-        QuestSettings next = new QuestSettings(
-                old.individualProgress(),
-                old.hiddenMode(),
-                old.repeatable(),
-                enabled,
-                old.unlockNotification(),
-                old.showPrerequisiteArrow()
-        );
-        updateQuest(player, quest, next);
     }
 
     public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {
@@ -110,7 +82,6 @@ public final class QuestSettingsEditService {
         QuestSettings old = quest.settings();
         QuestSettings next = switch (toggle) {
             case REPEATABLE -> new QuestSettings(old.individualProgress(), old.hiddenMode(), !old.repeatable(), old.autoClaimRewards(), old.unlockNotification(), old.showPrerequisiteArrow());
-            case AUTO_CLAIM -> new QuestSettings(old.individualProgress(), old.hiddenMode(), old.repeatable(), !old.autoClaimRewards(), old.unlockNotification(), old.showPrerequisiteArrow());
             case INDIVIDUAL -> new QuestSettings(!old.individualProgress(), old.hiddenMode(), old.repeatable(), old.autoClaimRewards(), old.unlockNotification(), old.showPrerequisiteArrow());
         };
 
@@ -126,7 +97,6 @@ public final class QuestSettingsEditService {
 
     private enum SettingSwitch {
         REPEATABLE,
-        AUTO_CLAIM,
         INDIVIDUAL
     }
 }

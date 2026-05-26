@@ -106,10 +106,6 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestIcon(player, payload.getString("quest"), payload.getString("icon"));
                     return;
                 }
-                if (command.type() == EditorCommandType.QUEST_AUTO_CLAIM) {
-                    editor.setQuestAutoClaim(player, payload.getString("quest"), payload.getBoolean("enabled"));
-                    return;
-                }
                 if (command.type() == EditorCommandType.QUEST_REPEATABLE) {
                     editor.setQuestRepeatable(player, payload.getString("quest"), payload.getBoolean("enabled"));
                     return;

@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
@@ -22,7 +23,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterP
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.tools.TabletToolButtons.addToggle;
 
 final class MainCanvasToolsMenu {
     private MainCanvasToolsMenu() {
@@ -42,7 +42,7 @@ final class MainCanvasToolsMenu {
         final int menuPad = 1;
         final int toolGap = 2;
         final boolean editTools = state.canEdit;
-        final int toolCount = editTools ? 9 : 1;
+        final int toolCount = editTools ? 10 : 2;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -56,7 +56,9 @@ final class MainCanvasToolsMenu {
         int slotX = menuPad;
         int y = menuPad;
         if (!editTools) {
-            addReadOnlyTools(menu, state, refresh, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            addReadOnlyRows(rows, state, refresh);
+            addRewardRows(rows, refresh);
             addAnimatedMenu(toolsMenu, state, menu);
             rememberBounds(state, menuX, menuY, menuW, menuH);
             return;
@@ -64,6 +66,7 @@ final class MainCanvasToolsMenu {
 
         ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
         addEditRows(rows, state, player, refresh);
+        addRewardRows(rows, refresh);
 
         state.toolsGridSizeMenuOpen = false;
         state.toolsGridOpacityMenuOpen = false;
@@ -159,8 +162,25 @@ final class MainCanvasToolsMenu {
                 });
     }
 
-    private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int toolGap, int border) {
-        addToggle(menu, x, y, toolSlot, border, state.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
+    private static void addRewardRows(ToolMenuRows rows, Runnable refresh) {
+        boolean autoClaim = QuestsAndStuffConfig.autoClaimRewardsEnabled();
+        rows.toggle("auto_claim",
+                autoClaim ? ModColors.SUCCESS : ModColors.ERROR,
+                autoClaim,
+                new Component[]{
+                        QuestVocabulary.component(QuestVocabulary.AUTO_CLAIM_REWARDS),
+                        QuestVocabulary.component(autoClaim ? QuestVocabulary.COMMON_ENABLED : QuestVocabulary.COMMON_DISABLED)
+                },
+                () -> {
+                    boolean next = !QuestsAndStuffConfig.autoClaimRewardsEnabled();
+                    QuestsAndStuffConfig.setAutoClaimRewardsEnabled(next);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] global auto-claim rewards enabled={}", next);
+                    refresh.run();
+                });
+    }
+
+    private static void addReadOnlyRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
+        rows.toggle(state.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
                 state.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
                 !state.chapterSplitterLocked,
                 new Component[]{

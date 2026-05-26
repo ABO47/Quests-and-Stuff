@@ -58,7 +58,6 @@ public final class EditorQuestSessionActions {
             return "Settings: -";
         }
         return "R=" + yesNo(quest.settings().repeatable())
-                + " A=" + yesNo(quest.settings().autoClaimRewards())
                 + " I=" + yesNo(quest.settings().individualProgress())
                 + " H=" + quest.settings().hiddenMode().name();
     }
@@ -224,16 +223,8 @@ public final class EditorQuestSessionActions {
         settingsEdits.toggleRepeatable(player);
     }
 
-    public void toggleAutoClaim(ServerPlayer player) {
-        settingsEdits.toggleAutoClaim(player);
-    }
-
     public void toggleIndividual(ServerPlayer player) {
         settingsEdits.toggleIndividual(player);
-    }
-
-    public void setQuestAutoClaim(ServerPlayer player, String questId, boolean enabled) {
-        settingsEdits.setQuestAutoClaim(player, questId, enabled);
     }
 
     public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {

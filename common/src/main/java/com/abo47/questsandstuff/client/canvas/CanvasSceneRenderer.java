@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
@@ -197,6 +198,7 @@ final class CanvasSceneRenderer {
         renderLockedPreviewState(cardLayer, localCard);
         renderSearchState(cardLayer, state, localCard);
         renderHiddenEditState(cardLayer, state, localCard);
+        CanvasQuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
         if (questCardLayerSink != null) {
             questCardLayerSink.accept(card.questId(), cardLayer);

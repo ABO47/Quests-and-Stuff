@@ -28,6 +28,8 @@ public final class QuestsAndStuffConfig {
     private static boolean fullScreenMode;
     private static boolean minimap = true;
     private static boolean readOnlyCanvasFocus;
+    private static boolean questEffectIcons;
+    private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
 
     private QuestsAndStuffConfig() {
@@ -243,6 +245,32 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean questEffectIconsEnabled() {
+        load();
+        return questEffectIcons;
+    }
+
+    public static void setQuestEffectIconsEnabled(boolean enabled) {
+        load();
+        if (questEffectIcons != enabled) {
+            questEffectIcons = enabled;
+            save();
+        }
+    }
+
+    public static boolean autoClaimRewardsEnabled() {
+        load();
+        return autoClaimRewards;
+    }
+
+    public static void setAutoClaimRewardsEnabled(boolean enabled) {
+        load();
+        if (autoClaimRewards != enabled) {
+            autoClaimRewards = enabled;
+            save();
+        }
+    }
+
     public static boolean commandRewardsEnabled() {
         load();
         return commandRewards;
@@ -274,6 +302,10 @@ public final class QuestsAndStuffConfig {
         fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
         readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
+        questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
+
+        JsonObject rewards = object(root, "rewards");
+        autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
 
         JsonObject security = object(root, "security");
         commandRewards = bool(security, "commandRewards", commandRewards);
@@ -300,7 +332,12 @@ public final class QuestsAndStuffConfig {
         canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
         canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
+        canvas.addProperty("questEffectIcons", questEffectIcons);
         root.add("canvas", canvas);
+
+        JsonObject rewards = new JsonObject();
+        rewards.addProperty("autoClaimRewards", autoClaimRewards);
+        root.add("rewards", rewards);
 
         JsonObject security = new JsonObject();
         security.addProperty("commandRewards", commandRewards);

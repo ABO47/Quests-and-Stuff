@@ -188,10 +188,6 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.updateQuestDisplay(player, questId, title, subtitle);
     }
 
-    public static void setQuestAutoClaim(Player player, String questId, boolean enabled) {
-        EditorQuestCommandClient.setQuestAutoClaim(player, questId, enabled);
-    }
-
     public static void setQuestRepeatable(Player player, String questId, boolean enabled) {
         EditorQuestCommandClient.setQuestRepeatable(player, questId, enabled);
     }
