@@ -100,7 +100,7 @@ final class CanvasContextSelectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_hud_background"), "background", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> {
             state.contextQuestCompletionSoundMenuOpen = false;
             ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(
                     state,
