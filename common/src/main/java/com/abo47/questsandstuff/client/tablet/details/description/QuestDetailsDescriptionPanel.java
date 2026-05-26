@@ -20,7 +20,7 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
-        int bgAlpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent, 190);
+        int bgAlpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent);
         canvas.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, bgAlpha), ModColors.BORDER_BASE));
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);

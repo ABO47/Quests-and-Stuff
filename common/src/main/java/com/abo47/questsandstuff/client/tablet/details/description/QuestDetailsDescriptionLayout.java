@@ -11,12 +11,9 @@ final class QuestDetailsDescriptionLayout {
     private QuestDetailsDescriptionLayout() {
     }
 
-    static int opacityAlpha(int percent, int capBelowFull) {
+    static int opacityAlpha(int percent) {
         int clamped = Math.max(0, Math.min(100, percent));
-        if (clamped >= 100) {
-            return 255;
-        }
-        return Math.max(0, Math.min(capBelowFull, 255 * clamped / 100));
+        return Math.max(0, Math.min(255, 255 * clamped / 100));
     }
 
     static int[] gridFit(TabletUiState state, int w, int h) {

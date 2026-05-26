@@ -61,8 +61,10 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        int bgOpacity = Math.max(0, Math.min(100, model.canvasBgOpacityPercent));
-        int alpha = bgOpacity >= 100 ? 255 : Math.max(0, Math.min(220, 255 * bgOpacity / 100));
+        int alpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent);
+        if (alpha <= 0) {
+            return;
+        }
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha / 255.0f);

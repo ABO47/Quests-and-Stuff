@@ -102,20 +102,19 @@ final class CanvasSceneRenderer {
     }
 
     static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
-        int gutterFill = ModColors.SURFACE_BASE;
-        int paintW = contentW + 1;
-        int paintH = contentH + 1;
-        addSolidRect(canvasViewport, 0, 0, viewportW, contentY, gutterFill);
-        addSolidRect(canvasViewport, 0, contentY + paintH, viewportW, viewportH - contentY - paintH, gutterFill);
-        addSolidRect(canvasViewport, 0, contentY, contentX, paintH, gutterFill);
-        addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, gutterFill);
-
         int alphaPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
         int alpha = Math.max(0, Math.min(255, (255 * alphaPercent) / 100));
-        int background = withAlpha(ModColors.SURFACE_BASE, alpha);
-        addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, background);
+        int canvasFill = withAlpha(ModColors.SURFACE_BASE, alpha);
+        int paintW = contentW + 1;
+        int paintH = contentH + 1;
+        addSolidRect(canvasViewport, 0, 0, viewportW, contentY, canvasFill);
+        addSolidRect(canvasViewport, 0, contentY + paintH, viewportW, viewportH - contentY - paintH, canvasFill);
+        addSolidRect(canvasViewport, 0, contentY, contentX, paintH, canvasFill);
+        addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, canvasFill);
+
+        addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, canvasFill);
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
-        if (canvasBackground != null) {
+        if (canvasBackground != null && alpha > 0) {
             canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, alpha));
         }
     }
