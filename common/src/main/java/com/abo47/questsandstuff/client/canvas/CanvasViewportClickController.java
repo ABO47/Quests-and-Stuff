@@ -105,7 +105,7 @@ final class CanvasViewportClickController {
             refresher.run();
         }
 
-        if (state.canvasTextEditOpen && button == 0) {
+        if (state.canvasTextEditOpen && state.questDetailsTextEditTarget.isBlank() && button == 0) {
             CanvasTextLayer editingText = textEditor.activeText();
             boolean transformHandleHit = editingText != null
                     && (CanvasRenderer.isCanvasTextResizeHandleHit(state, editingText, localX, localY)

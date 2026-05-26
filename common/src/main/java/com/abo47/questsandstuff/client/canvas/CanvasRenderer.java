@@ -343,6 +343,20 @@ public final class CanvasRenderer {
         return state.transientCanvasTexts.getOrDefault(text.id(), text);
     }
 
+    public static CanvasImageLayer effectiveQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
+        if (state == null || image == null) {
+            return image;
+        }
+        return state.questDetailsTransientImages.getOrDefault(image.id(), image);
+    }
+
+    public static CanvasTextLayer effectiveQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null) {
+            return text;
+        }
+        return state.questDetailsTransientTexts.getOrDefault(text.id(), text);
+    }
+
     public static void putTransientCanvasImage(TabletUiState state, CanvasImageLayer image) {
         if (state == null || image == null || image.id().isBlank()) {
             return;
@@ -355,6 +369,20 @@ public final class CanvasRenderer {
             return;
         }
         state.transientCanvasTexts.put(text.id(), text);
+    }
+
+    public static void putTransientQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
+        if (state == null || image == null || image.id().isBlank()) {
+            return;
+        }
+        state.questDetailsTransientImages.put(image.id(), image);
+    }
+
+    public static void putTransientQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null || text.id().isBlank()) {
+            return;
+        }
+        state.questDetailsTransientTexts.put(text.id(), text);
     }
 
     public static boolean commitTransientCanvasImage(TabletUiState state, String group, String imageId) {
@@ -396,6 +424,14 @@ public final class CanvasRenderer {
         }
         state.transientCanvasImages.clear();
         state.transientCanvasTexts.clear();
+    }
+
+    public static void clearTransientQuestDetailsTransforms(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
+        state.questDetailsTransientImages.clear();
+        state.questDetailsTransientTexts.clear();
     }
 
     public static void updateCanvasText(TabletUiState state, String group, String textId, java.util.function.UnaryOperator<CanvasTextLayer> updater) {

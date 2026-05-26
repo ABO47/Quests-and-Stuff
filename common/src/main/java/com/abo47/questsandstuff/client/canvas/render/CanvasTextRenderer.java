@@ -38,7 +38,7 @@ public final class CanvasTextRenderer {
                 graphics.pose().pushPose();
                 graphics.pose().translate(x + w / 2.0f, y + h / 2.0f, 0.0f);
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
-                boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget);
+                boolean inlineEditing = isMainCanvasTextEditing(state, drawText);
                 drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing);
                 if (inlineEditing) {
                     drawCanvasTextCaret(graphics, state, drawText, w, h);
@@ -257,6 +257,12 @@ public final class CanvasTextRenderer {
 
     private static float fontScale(CanvasTextLayer text) {
         return Math.max(0.5f, text.fontSize() / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
+    }
+
+    private static boolean isMainCanvasTextEditing(TabletUiState state, CanvasTextLayer text) {
+        return state.canvasTextEditOpen
+                && state.questDetailsTextEditTarget.isBlank()
+                && text.id().equals(state.canvasTextEditTarget);
     }
 
     private static int layoutSize(int screenSize, float scale) {

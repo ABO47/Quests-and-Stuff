@@ -456,6 +456,8 @@ public class TabletUiState {
     public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
     public final Map<String, CanvasImageLayer> transientCanvasImages = new HashMap<>();
     public final Map<String, CanvasTextLayer> transientCanvasTexts = new HashMap<>();
+    public final Map<String, CanvasImageLayer> questDetailsTransientImages = new HashMap<>();
+    public final Map<String, CanvasTextLayer> questDetailsTransientTexts = new HashMap<>();
     public final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
     public boolean canvasQuestClipboardAvailable;
     public int canvasClipboardOriginX;

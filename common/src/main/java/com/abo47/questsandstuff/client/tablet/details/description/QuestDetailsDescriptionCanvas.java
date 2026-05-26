@@ -299,7 +299,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         String transformMode = state.questDetailsTransformMode;
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
         QuestDetailsDescriptionModel.save(player, questId, model);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details description transform commit quest={} kind={} id={} mode={}", questId, transformKind, transformId, transformMode);
         state.questDetailsTransformId = "";
@@ -323,14 +323,14 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if ("desc_text".equals(state.questDetailsTransformKind)) {
             CanvasTextLayer text = model.text(state.questDetailsTransformId);
             if (text != null) {
-                CanvasRenderer.putTransientCanvasText(state, text);
+                CanvasRenderer.putTransientQuestDetailsText(state, text);
             }
             return;
         }
         if ("desc_image".equals(state.questDetailsTransformKind)) {
             CanvasImageLayer image = model.image(state.questDetailsTransformId);
             if (image != null) {
-                CanvasRenderer.putTransientCanvasImage(state, image);
+                CanvasRenderer.putTransientQuestDetailsImage(state, image);
             }
             return;
         }
@@ -338,13 +338,13 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
                 CanvasTextLayer text = model.text(textId);
                 if (text != null) {
-                    CanvasRenderer.putTransientCanvasText(state, text);
+                    CanvasRenderer.putTransientQuestDetailsText(state, text);
                 }
             }
             for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
                 CanvasImageLayer image = model.image(imageId);
                 if (image != null) {
-                    CanvasRenderer.putTransientCanvasImage(state, image);
+                    CanvasRenderer.putTransientQuestDetailsImage(state, image);
                 }
             }
         }
@@ -506,7 +506,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         state.rotatePreviewAngle = 0.0;
         state.snapGuideXVisible = false;
         state.snapGuideYVisible = false;
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
     }
 
     private static void toggle(java.util.Set<String> values, String id) {

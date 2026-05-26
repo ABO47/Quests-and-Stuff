@@ -101,7 +101,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
-        CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+        CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
         int x = contentX + drawImage.x();
         int y = contentY + drawImage.y() - state.questDetailsDescScroll;
         if (y > contentY + contentH || y + drawImage.h() < contentY) {
@@ -114,7 +114,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
-        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        CanvasTextLayer drawText = CanvasRenderer.effectiveQuestDetailsText(state, text);
         int x = contentX + drawText.x();
         int y = contentY + drawText.y() - state.questDetailsDescScroll;
         if (y > contentY + contentH || y + drawText.h() < contentY) {

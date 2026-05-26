@@ -36,7 +36,7 @@ public final class QuestDetailsDescriptionTransform {
             beginSelectionTransform(model, lx, visibleY, "move");
             return;
         }
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
         state.questDetailsTransformKind = kind;
         state.questDetailsTransformId = id;
         state.questDetailsTransformStartMouseX = contentX.getAsInt() + lx;
@@ -66,7 +66,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     void beginSelectionTransform(QuestDetailsDescriptionModel model, int lx, int visibleY, String mode) {
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
         state.questDetailsTransformKind = "selection";
         state.questDetailsTransformId = "selection";
         state.questDetailsTransformMode = mode == null || mode.isBlank() ? "move" : mode;

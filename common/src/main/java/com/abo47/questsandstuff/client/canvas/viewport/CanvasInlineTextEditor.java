@@ -65,6 +65,8 @@ public final class CanvasInlineTextEditor {
     }
 
     public void begin(CanvasTextLayer text) {
+        state.questDetailsTextEditTarget = "";
+        state.questDetailsTextEditDraft = "";
         state.canvasTextEditOpen = true;
         state.canvasTextEditTarget = text.id();
         state.canvasTextEditDraft = text.text();
@@ -96,14 +98,14 @@ public final class CanvasInlineTextEditor {
     }
 
     public CanvasTextLayer activeText() {
-        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+        if (!mainCanvasTextEditOpen()) {
             return null;
         }
         return CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
-        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+        if (!mainCanvasTextEditOpen()) {
             return false;
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
@@ -188,7 +190,7 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean handleCharTyped(char codePoint) {
-        if (!state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+        if (!mainCanvasTextEditOpen()) {
             return false;
         }
         if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
@@ -200,7 +202,7 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean dragSelectionTo(int localX, int localY) {
-        if (!state.selectingCanvasTextRange || !state.canvasTextEditOpen || state.canvasTextEditTarget.isBlank()) {
+        if (!state.selectingCanvasTextRange || !mainCanvasTextEditOpen()) {
             return false;
         }
         CanvasTextLayer editingText = activeText();
@@ -212,6 +214,9 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean finishSelectionDrag() {
+        if (!state.questDetailsTextEditTarget.isBlank()) {
+            return false;
+        }
         if (!state.selectingCanvasTextRange) {
             return false;
         }
@@ -278,5 +283,11 @@ public final class CanvasInlineTextEditor {
         String id = state.canvasTextEditTarget;
         CanvasRenderer.updateCanvasText(state, group, id, text -> CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value)));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
+    }
+
+    private boolean mainCanvasTextEditOpen() {
+        return state.canvasTextEditOpen
+                && state.questDetailsTextEditTarget.isBlank()
+                && !state.canvasTextEditTarget.isBlank();
     }
 }
