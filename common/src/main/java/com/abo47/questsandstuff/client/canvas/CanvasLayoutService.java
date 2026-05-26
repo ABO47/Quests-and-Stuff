@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas;
 
 
+import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.model.QuestMatch;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
@@ -111,10 +112,9 @@ public final class CanvasLayoutService {
         List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of());
         List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of());
         if (cards.isEmpty() && images.isEmpty() && texts.isEmpty()) {
-            state.minimapWorldMinX = 0;
-            state.minimapWorldMinY = 0;
-            state.minimapWorldWidth = Math.max(1, Math.round(contentW / CanvasRenderer.clampZoom(state.canvasZoom)));
-            state.minimapWorldHeight = Math.max(1, Math.round(contentH / CanvasRenderer.clampZoom(state.canvasZoom)));
+            int worldW = Math.max(1, Math.round(contentW / CanvasRenderer.clampZoom(state.canvasZoom)));
+            int worldH = Math.max(1, Math.round(contentH / CanvasRenderer.clampZoom(state.canvasZoom)));
+            setCanvasWorldBounds(state, 0, 0, worldW, worldH);
             if (state.gridCanvasLocked) {
                 clampLockedCanvasOffset(state, contentW, contentH);
             }
@@ -146,13 +146,20 @@ public final class CanvasLayoutService {
             maxLogicalY = Math.max(maxLogicalY, text.y() + text.h());
         }
 
-        state.minimapWorldMinX = minLogicalX;
-        state.minimapWorldMinY = minLogicalY;
-        state.minimapWorldWidth = Math.max(1, maxLogicalX - minLogicalX);
-        state.minimapWorldHeight = Math.max(1, maxLogicalY - minLogicalY);
+        setCanvasWorldBounds(state, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY);
 
         if (!state.canEdit) {
-            clampOffsetToElementBounds(state, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY, contentW, contentH);
+            CanvasPoint clamped = CanvasCameraController.clampedOffsetToWorldBounds(
+                    state,
+                    state.canvasOffsetX,
+                    state.canvasOffsetY,
+                    minLogicalX,
+                    minLogicalY,
+                    maxLogicalX,
+                    maxLogicalY
+            );
+            state.canvasOffsetX = clamped.x;
+            state.canvasOffsetY = clamped.y;
             CanvasCameraController.rememberCurrentGroup(state);
             return;
         }
@@ -162,29 +169,17 @@ public final class CanvasLayoutService {
         CanvasCameraController.rememberCurrentGroup(state);
     }
 
-    private static void clampOffsetToElementBounds(TabletUiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY, int contentW, int contentH) {
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
-        int pad = 24;
-        int boundsW = Math.max(1, maxLogicalX - minLogicalX);
-        int boundsH = Math.max(1, maxLogicalY - minLogicalY);
-        int scaledBoundsW = Math.round(boundsW * zoom);
-        int scaledBoundsH = Math.round(boundsH * zoom);
-
-        if (scaledBoundsW + pad * 2 <= contentW) {
-            state.canvasOffsetX = Math.round((contentW - scaledBoundsW) / 2.0f - minLogicalX * zoom);
-        } else {
-            int minOffset = Math.round(contentW - pad - maxLogicalX * zoom);
-            int maxOffset = Math.round(pad - minLogicalX * zoom);
-            state.canvasOffsetX = Math.max(minOffset, Math.min(maxOffset, state.canvasOffsetX));
-        }
-
-        if (scaledBoundsH + pad * 2 <= contentH) {
-            state.canvasOffsetY = Math.round((contentH - scaledBoundsH) / 2.0f - minLogicalY * zoom);
-        } else {
-            int minOffset = Math.round(contentH - pad - maxLogicalY * zoom);
-            int maxOffset = Math.round(pad - minLogicalY * zoom);
-            state.canvasOffsetY = Math.max(minOffset, Math.min(maxOffset, state.canvasOffsetY));
-        }
+    private static void setCanvasWorldBounds(TabletUiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY) {
+        int width = Math.max(1, maxLogicalX - minLogicalX);
+        int height = Math.max(1, maxLogicalY - minLogicalY);
+        state.minimapWorldMinX = minLogicalX;
+        state.minimapWorldMinY = minLogicalY;
+        state.minimapWorldWidth = width;
+        state.minimapWorldHeight = height;
+        state.canvasNavigationMinX = minLogicalX;
+        state.canvasNavigationMinY = minLogicalY;
+        state.canvasNavigationWidth = width;
+        state.canvasNavigationHeight = height;
     }
 
     private static void clampLockedCanvasOffset(TabletUiState state, int contentW, int contentH) {

@@ -582,6 +582,10 @@ public class TabletUiState {
     public int minimapWorldMinY;
     public int minimapWorldWidth = 1;
     public int minimapWorldHeight = 1;
+    public int canvasNavigationMinX;
+    public int canvasNavigationMinY;
+    public int canvasNavigationWidth = 1;
+    public int canvasNavigationHeight = 1;
     public int canvasContentX = 6;
     public int canvasContentY = 6;
     public int canvasContentW;

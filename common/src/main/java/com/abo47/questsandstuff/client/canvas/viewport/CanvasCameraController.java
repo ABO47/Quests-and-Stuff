@@ -77,7 +77,17 @@ public final class CanvasCameraController {
     }
 
     public static CanvasPoint clampedOffset(TabletUiState state, int offsetX, int offsetY) {
-        if (state == null || !state.gridCanvasLocked) {
+        if (state == null) {
+            return new CanvasPoint(offsetX, offsetY);
+        }
+        if (!state.canEdit) {
+            int minLogicalX = state.canvasNavigationMinX;
+            int minLogicalY = state.canvasNavigationMinY;
+            int maxLogicalX = minLogicalX + Math.max(1, state.canvasNavigationWidth);
+            int maxLogicalY = minLogicalY + Math.max(1, state.canvasNavigationHeight);
+            return clampedOffsetToWorldBounds(state, offsetX, offsetY, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY);
+        }
+        if (!state.gridCanvasLocked) {
             return new CanvasPoint(offsetX, offsetY);
         }
         float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
@@ -91,6 +101,48 @@ public final class CanvasCameraController {
                 Math.max(minX, Math.min(0, offsetX)),
                 Math.max(minY, Math.min(0, offsetY))
         );
+    }
+
+    public static CanvasPoint clampedOffsetToWorldBounds(
+            TabletUiState state,
+            int offsetX,
+            int offsetY,
+            int minLogicalX,
+            int minLogicalY,
+            int maxLogicalX,
+            int maxLogicalY
+    ) {
+        if (state == null) {
+            return new CanvasPoint(offsetX, offsetY);
+        }
+        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
+        int pad = 24;
+        int contentW = Math.max(1, state.canvasContentW);
+        int contentH = Math.max(1, state.canvasContentH);
+        int boundsW = Math.max(1, maxLogicalX - minLogicalX);
+        int boundsH = Math.max(1, maxLogicalY - minLogicalY);
+        int scaledBoundsW = Math.round(boundsW * zoom);
+        int scaledBoundsH = Math.round(boundsH * zoom);
+
+        int clampedX;
+        if (scaledBoundsW + pad * 2 <= contentW) {
+            clampedX = Math.round((contentW - scaledBoundsW) / 2.0f - minLogicalX * zoom);
+        } else {
+            int minOffset = Math.round(contentW - pad - maxLogicalX * zoom);
+            int maxOffset = Math.round(pad - minLogicalX * zoom);
+            clampedX = Math.max(minOffset, Math.min(maxOffset, offsetX));
+        }
+
+        int clampedY;
+        if (scaledBoundsH + pad * 2 <= contentH) {
+            clampedY = Math.round((contentH - scaledBoundsH) / 2.0f - minLogicalY * zoom);
+        } else {
+            int minOffset = Math.round(contentH - pad - maxLogicalY * zoom);
+            int maxOffset = Math.round(pad - minLogicalY * zoom);
+            clampedY = Math.max(minOffset, Math.min(maxOffset, offsetY));
+        }
+
+        return new CanvasPoint(clampedX, clampedY);
     }
 
     public static void clampCameraOffset(TabletUiState state) {
