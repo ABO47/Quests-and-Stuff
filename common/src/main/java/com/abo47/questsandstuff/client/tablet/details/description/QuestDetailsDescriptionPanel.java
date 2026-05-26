@@ -19,6 +19,7 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionModel.applyToolsToState(state, model);
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
+        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampReadOnlyScroll(state, model, fit[1] - 1, state.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
         int bgAlpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent);
         canvas.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, bgAlpha), ModColors.BORDER_BASE));

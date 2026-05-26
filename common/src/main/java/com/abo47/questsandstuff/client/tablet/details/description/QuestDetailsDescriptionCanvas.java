@@ -75,7 +75,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (!isMouseOverElement(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        state.questDetailsDescScroll = Math.max(0, state.questDetailsDescScroll + (wheelDelta < 0 ? 18 : -18));
+        setScroll(state.questDetailsDescScroll + (wheelDelta < 0 ? 18 : -18));
         return true;
     }
 
@@ -225,7 +225,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         }
         if (state.questDetailsPanning) {
             int dy = (int) Math.round(mouseY) - state.questDetailsPanStartY;
-            state.questDetailsDescScroll = Math.max(0, state.questDetailsPanStartScroll - dy);
+            setScroll(state.questDetailsPanStartScroll - dy);
             return true;
         }
         if (!QuestDetailsEditState.canEdit(state)) {
@@ -461,6 +461,11 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     private int contentH() {
         return Math.max(1, getSizeHeight() - 1);
+    }
+
+    private void setScroll(int scroll) {
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampReadOnlyScroll(state, model, contentH(), scroll);
     }
 
     private void storeContextPosition(double mouseX, double mouseY, int lx, int ly) {
