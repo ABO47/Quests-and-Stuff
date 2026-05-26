@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class TabletUiState {
+    public boolean fullScreenMode;
+    public int tabletRootWidth = 544;
+    public int tabletRootHeight = 352;
     public String selectedGroup = "";
     public String search = "";
     public boolean searchFocused;

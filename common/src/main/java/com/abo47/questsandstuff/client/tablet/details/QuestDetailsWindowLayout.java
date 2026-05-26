@@ -117,7 +117,7 @@ final class QuestDetailsWindowLayout {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
-        modal.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+        modal.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,

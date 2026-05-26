@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.screen;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
@@ -176,6 +177,21 @@ public final class TabletClientHooks {
         }
     }
 
+    public static void applyQuestTabletLayoutMode(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        TabletUiFactory.applyRootSize(state, rootW, rootH, fullScreen);
+        if (minecraft.screen instanceof ModularUIGuiContainer container) {
+            container.modularUI.setSize(rootW, rootH);
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] tablet layout mode fullscreen={} width={} height={}", fullScreen, rootW, rootH);
+    }
+
     private static void resetSessionLocalState() {
         ClientQuestCache.resetStateForTests();
         rememberedQuestDetailsOpen = false;
@@ -189,11 +205,28 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
-        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player), IUIHolder.EMPTY, player);
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
         ModularUIGuiContainer modularUiGui = new ModularUIGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
         QuestsAndStuffMod.debugLog("[QnS:UI] keybind open ui direct");
+    }
+
+    private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {
+        if (!fullScreen || minecraft == null) {
+            return TabletUiFactory.ROOT_W;
+        }
+        return Math.max(1, minecraft.getWindow().getGuiScaledWidth());
+    }
+
+    private static int targetRootHeight(Minecraft minecraft, boolean fullScreen) {
+        if (!fullScreen || minecraft == null) {
+            return TabletUiFactory.ROOT_H;
+        }
+        return Math.max(1, minecraft.getWindow().getGuiScaledHeight());
     }
 }

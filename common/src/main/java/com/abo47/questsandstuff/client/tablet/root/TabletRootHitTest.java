@@ -13,7 +13,7 @@ public final class TabletRootHitTest {
         if (state.chapterTextMenuTarget.isBlank()) {
             return false;
         }
-        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : TabletUiFactory.CHAPTER_H - 12;
+        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : TabletUiFactory.chapterHeight(state) - 12;
         int fy = TabletUiFactory.chapterTextMenuY(state, listHeight);
         int menuX = TabletUiFactory.chapterTextMenuX(state);
         int absX = rootX + TabletUiFactory.CHAPTER_X + state.chapterListOriginX + menuX;
@@ -37,7 +37,7 @@ public final class TabletRootHitTest {
         if (!state.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.ROOT_W, TabletUiFactory.ROOT_H);
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.rootWidth(state), TabletUiFactory.rootHeight(state));
         int absMenuX = rootX + layout.menuX();
         int absMenuY = rootY + layout.menuY();
         return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()
@@ -69,10 +69,12 @@ public final class TabletRootHitTest {
         if (!state.assetContextOpen || !state.assetPickerOpen) {
             return false;
         }
-        int w = Math.min(432, TabletUiFactory.ROOT_W - 32);
-        int h = Math.min(260, TabletUiFactory.ROOT_H - 32);
-        int mx = (TabletUiFactory.ROOT_W - w) / 2;
-        int my = (TabletUiFactory.ROOT_H - h) / 2;
+        int rootW = TabletUiFactory.rootWidth(state);
+        int rootH = TabletUiFactory.rootHeight(state);
+        int w = Math.max(1, Math.min(432, rootW - 32));
+        int h = Math.max(1, Math.min(260, rootH - 32));
+        int mx = (rootW - w) / 2;
+        int my = (rootH - h) / 2;
         int ctxX = Math.max(170, Math.min(166 + state.assetContextX, w - TabletUiFactory.SHARED_MENU_W - 6));
         int ctxY = Math.max(26, Math.min(22 + state.assetContextY, h - (state.assetRenameOpen ? 120 : 66)));
         int ctxW = TabletUiFactory.SHARED_MENU_W;
@@ -94,7 +96,7 @@ public final class TabletRootHitTest {
         int x = rootX + TabletUiFactory.CHAPTER_X;
         int y = rootY + TabletUiFactory.CHAPTER_Y;
         int w = TabletUiFactory.chapterPanelWidth(state);
-        int h = TabletUiFactory.CHAPTER_H;
+        int h = TabletUiFactory.chapterHeight(state);
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 }

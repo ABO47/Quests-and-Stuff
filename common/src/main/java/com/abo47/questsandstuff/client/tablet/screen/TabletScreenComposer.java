@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
@@ -36,11 +34,16 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_SIZ
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.applyRootSize;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasPanelX;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.rootHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.rootWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletRefresh;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletState;
 
@@ -48,25 +51,35 @@ public final class TabletScreenComposer {
     private TabletScreenComposer() {
     }
     public static WidgetGroup create(Player player) {
-        TabletUiState state = TabletScreenBootstrap.prepare(player);
+        return create(player, ROOT_W, ROOT_H, false);
+    }
 
-        TabletRootWidget root = new TabletRootWidget(0, 0, ROOT_W, ROOT_H, state);
+    public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
+        TabletUiState state = TabletScreenBootstrap.prepare(player);
+        applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
+
+        int initialRootW = rootWidth(state);
+        int initialRootH = rootHeight(state);
+        int initialChapterH = chapterHeight(state);
+        int initialCanvasH = canvasHeight(state);
+
+        TabletRootWidget root = new TabletRootWidget(0, 0, initialRootW, initialRootH, state);
         root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
-        WidgetGroup rootMaskTop = new WidgetGroup(0, 0, ROOT_W, 0);
+        WidgetGroup rootMaskTop = new WidgetGroup(0, 0, initialRootW, 0);
         rootMaskTop.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         WidgetGroup rootMaskLeft = new WidgetGroup(0, 0, 0, 0);
         rootMaskLeft.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         WidgetGroup rootMaskRight = new WidgetGroup(0, 0, 0, 0);
         rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-        WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, ROOT_W, 0);
+        WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, initialRootW, 0);
         rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         int initialChapterW = chapterPanelWidth(state);
         boolean initialChapterCollapsed = isChapterPanelCollapsed(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, initialChapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
+        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, initialChapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
-        WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, CANVAS_H) {
+        WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, state);
@@ -85,23 +98,23 @@ public final class TabletScreenComposer {
         final int chapterListGap = contentInset;
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
-        WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), CHAPTER_H - chapterListY - contentInset - 1);
+        WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), Math.max(1, initialChapterH - chapterListY - contentInset - 1));
         chapterList.setBackground(initialChapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, ROOT_W, ROOT_H);
+        WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, initialRootW, initialRootH);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
         Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
-        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
+        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
-        CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), CANVAS_H - initialTop - contentInset * 2, state, player);
+        CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), Math.max(32, initialCanvasH - initialTop - contentInset * 2), state, player);
         canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
         TabletHeaderControls headers = TabletHeaderControls.create(state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
-        WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
-        WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, ROOT_W, ROOT_H, state, () -> refresh[0].run());
+        WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
+        WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         refresh[0] = () -> {
             root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
@@ -121,6 +134,11 @@ public final class TabletScreenComposer {
             }
             TabletScreenBootstrap.keepSelectedGroupValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;
+            int currentRootW = rootWidth(state);
+            int currentRootH = rootHeight(state);
+            int chapterH = chapterHeight(state);
+            int canvasH = canvasHeight(state);
+            root.setSize(currentRootW, currentRootH);
             state.chapterPanelWidth = chapterPanelWidth(state);
             state.chapterPanelCollapsed = isChapterPanelCollapsed(state);
             int chapterW = chapterPanelWidth(state);
@@ -132,35 +150,37 @@ public final class TabletScreenComposer {
             int collapsedChapterInset = 0;
             int dynamicListX = chapterCollapsed ? collapsedChapterInset : chapterSideInset;
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
-            int dynamicListH = chapterCollapsed ? CHAPTER_H : CHAPTER_H - dynamicListY - contentInset - 1;
+            int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - contentInset - 1);
 
             chapterPanelRef[0].setBackground(Surfaces.bordered(chapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
             chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);
 
-            chapterPanelRef[0].setSize(chapterW, CHAPTER_H);
+            chapterPanelRef[0].setSize(chapterW, chapterH);
             headers.layoutChapter(chapterCollapsed, dynamicListX, dynamicListW, chapterTopY, chapterHeaderH);
             chapterList.setSelfPosition(dynamicListX, dynamicListY);
             chapterList.setSize(dynamicListW, dynamicListH);
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
-            canvasPanel.setSize(canvasW, CANVAS_H);
-            toolsMenu.setSize(ROOT_W, ROOT_H);
-            questDetailsLayer.setSize(ROOT_W, ROOT_H);
+            canvasPanel.setSize(canvasW, canvasH);
+            chapterMenuOverlay.setSize(currentRootW, currentRootH);
+            toolsMenu.setSize(currentRootW, currentRootH);
+            questDetailsLayer.setSize(currentRootW, currentRootH);
+            modalLayer.setSize(currentRootW, currentRootH);
             if (splitterRef[0] != null) {
                 int splitterX = CHAPTER_X + chapterW + Math.max(0, (GAP - SPLITTER_W) / 2);
                 splitterRef[0].setSelfPosition(splitterX, CHAPTER_Y);
-                splitterRef[0].setSize(SPLITTER_W, CHAPTER_H);
+                splitterRef[0].setSize(SPLITTER_W, chapterH);
             }
 
             state.canvasPanelX = canvasX;
             state.canvasPanelY = CANVAS_Y;
             state.canvasPanelW = canvasW;
-            state.canvasPanelH = CANVAS_H;
+            state.canvasPanelH = canvasH;
 
             int availableViewportW = canvasW - contentInset * 2;
-            int availableViewportH = CANVAS_H - topH - contentInset * 2;
+            int availableViewportH = canvasH - topH - contentInset * 2;
             int innerAvailableW = Math.max(1, availableViewportW - 1);
             int innerAvailableH = Math.max(1, availableViewportH - 1);
             state.gridSizeIndex = clampGridSizeIndex(state.gridSizeIndex);
@@ -185,13 +205,13 @@ public final class TabletScreenComposer {
             int holeW = viewportW;
             int holeH = viewportH;
             rootMaskTop.setSelfPosition(0, 0);
-            rootMaskTop.setSize(ROOT_W, Math.max(0, holeY));
+            rootMaskTop.setSize(currentRootW, Math.max(0, holeY));
             rootMaskLeft.setSelfPosition(0, holeY);
             rootMaskLeft.setSize(Math.max(0, holeX), holeH);
             rootMaskRight.setSelfPosition(holeX + holeW, holeY);
-            rootMaskRight.setSize(Math.max(0, ROOT_W - (holeX + holeW)), holeH);
+            rootMaskRight.setSize(Math.max(0, currentRootW - (holeX + holeW)), holeH);
             rootMaskBottom.setSelfPosition(0, holeY + holeH);
-            rootMaskBottom.setSize(ROOT_W, Math.max(0, ROOT_H - (holeY + holeH)));
+            rootMaskBottom.setSize(currentRootW, Math.max(0, currentRootH - (holeY + holeH)));
 
             int headerX = viewportX;
             int headerW = viewportW;
@@ -217,7 +237,7 @@ public final class TabletScreenComposer {
         root.setCanvasViewport(canvasViewport);
 
         root.setUndoRedoActions(TabletScreenBootstrap.undoAction(state, player), TabletScreenBootstrap.redoAction(state, player));
-        chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, CHAPTER_H, state, player, refresh[0], refreshChapterViews[0]);
+        chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;
 

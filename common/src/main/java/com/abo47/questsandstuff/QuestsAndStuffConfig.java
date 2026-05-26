@@ -25,6 +25,7 @@ public final class QuestsAndStuffConfig {
     private static boolean popupWindowAnimations = true;
     private static boolean connectionAnimations = true;
     private static boolean chapterSwitchAnimations = true;
+    private static boolean fullScreenMode;
     private static boolean minimap = true;
     private static boolean commandRewards = true;
 
@@ -202,6 +203,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean fullScreenModeEnabled() {
+        load();
+        return fullScreenMode;
+    }
+
+    public static void setFullScreenModeEnabled(boolean enabled) {
+        load();
+        if (fullScreenMode != enabled) {
+            fullScreenMode = enabled;
+            save();
+        }
+    }
+
     public static boolean minimapEnabled() {
         load();
         return minimap;
@@ -243,6 +257,7 @@ public final class QuestsAndStuffConfig {
         chapterSwitchAnimations = bool(animations, "chapterSwitchAnimations", chapterSwitchAnimations);
 
         JsonObject canvas = object(root, "canvas");
+        fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
 
         JsonObject security = object(root, "security");
@@ -267,6 +282,7 @@ public final class QuestsAndStuffConfig {
         root.add("animations", animations);
 
         JsonObject canvas = new JsonObject();
+        canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
         root.add("canvas", canvas);
 

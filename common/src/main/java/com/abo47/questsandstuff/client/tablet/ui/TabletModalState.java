@@ -113,8 +113,8 @@ public final class TabletModalState {
                 && now - state.modalWindowLastPointerAtMs <= POINTER_SOURCE_MAX_AGE_MS;
         boolean insideRoot = state.modalWindowLastPointerX >= 0
                 && state.modalWindowLastPointerY >= 0
-                && state.modalWindowLastPointerX <= TabletUiFactory.ROOT_W
-                && state.modalWindowLastPointerY <= TabletUiFactory.ROOT_H;
+                && state.modalWindowLastPointerX <= TabletUiFactory.rootWidth(state)
+                && state.modalWindowLastPointerY <= TabletUiFactory.rootHeight(state);
         if (!recentPointer || !insideRoot) {
             state.modalWindowAnimationHasSource = false;
             state.modalWindowAnimationSourceX = 0;
@@ -124,9 +124,11 @@ public final class TabletModalState {
             return;
         }
         int half = POINTER_SOURCE_SIZE / 2;
+        int rootW = TabletUiFactory.rootWidth(state);
+        int rootH = TabletUiFactory.rootHeight(state);
         state.modalWindowAnimationHasSource = true;
-        state.modalWindowAnimationSourceX = Math.max(0, Math.min(TabletUiFactory.ROOT_W - POINTER_SOURCE_SIZE, state.modalWindowLastPointerX - half));
-        state.modalWindowAnimationSourceY = Math.max(0, Math.min(TabletUiFactory.ROOT_H - POINTER_SOURCE_SIZE, state.modalWindowLastPointerY - half));
+        state.modalWindowAnimationSourceX = Math.max(0, Math.min(rootW - POINTER_SOURCE_SIZE, state.modalWindowLastPointerX - half));
+        state.modalWindowAnimationSourceY = Math.max(0, Math.min(rootH - POINTER_SOURCE_SIZE, state.modalWindowLastPointerY - half));
         state.modalWindowAnimationSourceW = POINTER_SOURCE_SIZE;
         state.modalWindowAnimationSourceH = POINTER_SOURCE_SIZE;
     }

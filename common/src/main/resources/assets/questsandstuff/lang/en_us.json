@@ -154,6 +154,8 @@
   "ui.questsandstuff.settings.debug_logging": "Debug Logging",
   "ui.questsandstuff.settings.debug_logging_desc": "Write verbose Quests and Stuff debug logs and files.",
   "ui.questsandstuff.settings.empty": "No settings found",
+  "ui.questsandstuff.settings.full_screen_mode": "Full Screen Mode",
+  "ui.questsandstuff.settings.full_screen_mode_desc": "Use the whole screen for the quest tablet canvas.",
   "ui.questsandstuff.settings.minimap": "Minimap",
   "ui.questsandstuff.settings.minimap_desc": "Show the quest minimap on the canvas.",
   "ui.questsandstuff.settings.minimap_animations": "Minimap Animations",

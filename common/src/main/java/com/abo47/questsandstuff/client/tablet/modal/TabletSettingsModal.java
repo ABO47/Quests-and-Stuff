@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
+import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -73,7 +74,7 @@ public final class TabletSettingsModal {
                 listW,
                 listH,
                 ROW_H,
-                options(state.settingsTab),
+                options(state.settingsTab, state),
                 TabletModalPanel.tr("ui.questsandstuff.settings.empty"),
                 ScrollState.bind(
                         () -> state.settingsScroll,
@@ -146,18 +147,27 @@ public final class TabletSettingsModal {
         modal.addWidget(soft);
     }
 
-    private static List<SettingOption> options(int tab) {
+    private static List<SettingOption> options(int tab, TabletUiState state) {
         if (tab == TAB_DEBUG) {
             return debugOptions();
         }
         if (tab == TAB_CANVAS) {
-            return canvasOptions();
+            return canvasOptions(state);
         }
         return animationOptions();
     }
 
-    private static List<SettingOption> canvasOptions() {
+    private static List<SettingOption> canvasOptions(TabletUiState state) {
         return List.of(
+                new SettingOption(
+                        "fullScreenMode",
+                        "ui.questsandstuff.settings.full_screen_mode",
+                        "ui.questsandstuff.settings.full_screen_mode_desc",
+                        QuestsAndStuffConfig::fullScreenModeEnabled,
+                        enabled -> setFullScreenMode(state, enabled),
+                        false,
+                        false
+                ),
                 new SettingOption(
                         "minimap",
                         "ui.questsandstuff.settings.minimap",
@@ -168,6 +178,11 @@ public final class TabletSettingsModal {
                         false
                 )
         );
+    }
+
+    private static void setFullScreenMode(TabletUiState state, boolean enabled) {
+        QuestsAndStuffConfig.setFullScreenModeEnabled(enabled);
+        TabletClientHooks.applyQuestTabletLayoutMode(state);
     }
 
     private static List<SettingOption> animationOptions() {

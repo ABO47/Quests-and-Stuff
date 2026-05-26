@@ -62,6 +62,39 @@ final class TabletLayout {
     private TabletLayout() {
     }
 
+    static void applyRootSize(TabletUiState state, int width, int height, boolean fullScreenMode) {
+        if (state == null) {
+            return;
+        }
+        state.fullScreenMode = fullScreenMode;
+        state.tabletRootWidth = Math.max(1, width);
+        state.tabletRootHeight = Math.max(1, height);
+    }
+
+    static int rootWidth(TabletUiState state) {
+        return state == null || state.tabletRootWidth <= 0 ? ROOT_W : state.tabletRootWidth;
+    }
+
+    static int rootHeight(TabletUiState state) {
+        return state == null || state.tabletRootHeight <= 0 ? ROOT_H : state.tabletRootHeight;
+    }
+
+    static int bodyWidth(TabletUiState state) {
+        return Math.max(160, rootWidth(state) - PAD * 2);
+    }
+
+    static int bodyHeight(TabletUiState state) {
+        return Math.max(120, rootHeight(state) - BODY_Y - PAD_Y);
+    }
+
+    static int chapterHeight(TabletUiState state) {
+        return bodyHeight(state);
+    }
+
+    static int canvasHeight(TabletUiState state) {
+        return bodyHeight(state);
+    }
+
     static int chapterPanelWidth(TabletUiState state) {
         if (state == null) {
             return CHAPTER_W;
@@ -82,7 +115,7 @@ final class TabletLayout {
     }
 
     static int canvasPanelWidth(TabletUiState state) {
-        return Math.max(120, BODY_W - chapterPanelWidth(state) - GAP);
+        return Math.max(120, bodyWidth(state) - chapterPanelWidth(state) - GAP);
     }
 
     static int indexAtY(int localY, TabletUiState state) {
@@ -205,7 +238,7 @@ final class TabletLayout {
     }
 
     static int[] chapterTextFontSizeSliderBounds(TabletUiState state) {
-        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : CHAPTER_H - 12;
+        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : chapterHeight(state) - 12;
         int fx = chapterTextMenuX(state);
         int fy = chapterTextMenuY(state, listHeight);
         int fw = Math.min(Math.max(1, state.chapterListWidth - fx - 1), chapterTextMenuWidth(state));
