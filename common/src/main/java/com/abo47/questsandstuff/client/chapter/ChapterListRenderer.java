@@ -52,7 +52,10 @@ final class ChapterListRenderer {
         int totalHeight = (collapsed ? 0 : 16) + baseRows * rowStep;
         state.chapterScrollMax = Math.max(0, totalHeight - (listH - 8));
         state.chapterScroll = ScrollController.clamp(state.chapterScroll, state.chapterScrollMax);
-        boolean showScrollBar = state.chapterScrollMax > 0;
+        boolean showScrollBar = !collapsed && state.chapterScrollMax > 0;
+        if (collapsed) {
+            state.chapterScrollDragging = false;
+        }
 
         ChapterListMetrics.Layout layout = ChapterListMetrics.Layout.create(listW, collapsed, showScrollBar);
         ChapterListMetrics.remember(state, listOriginX, listOriginY, listW, listH, layout, trackY, trackH, rowStartY);

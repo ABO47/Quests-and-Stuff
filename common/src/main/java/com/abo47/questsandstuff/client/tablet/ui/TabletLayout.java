@@ -165,6 +165,9 @@ final class TabletLayout {
         if (state.chapterScrollMax <= 0) {
             return false;
         }
+        if (isChapterPanelCollapsed(state) || state.chapterListWidth <= 54) {
+            return false;
+        }
         int listLeft = state.chapterListOriginX;
         int listRight = listLeft + Math.max(0, state.chapterListWidth);
         int x = Math.max(listLeft, state.chapterScrollTrackX - 3);
