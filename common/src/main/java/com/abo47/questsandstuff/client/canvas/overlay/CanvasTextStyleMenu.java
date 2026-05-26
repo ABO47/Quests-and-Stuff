@@ -34,6 +34,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selected
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class CanvasTextStyleMenu {
+    private static final int STYLE_MENU_HIT_PAD = 2;
+
     private CanvasTextStyleMenu() {
     }
 
@@ -91,6 +93,7 @@ public final class CanvasTextStyleMenu {
         state.questDetailsTextStyleMenuY = y;
         state.questDetailsTextStyleMenuW = bounds[2];
         state.questDetailsTextStyleMenuH = hitH;
+        addQuestDetailsMenuShield(parent, state, x, y, bounds[2], hitH);
         renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[4], bounds[5], "quest details", refresh, updateText, openColorPicker);
     }
 
@@ -153,6 +156,35 @@ public final class CanvasTextStyleMenu {
         if (text.id().equals(textFontSizeSliderTarget(state, logScope))) {
             addFontSizePopover(parent, state, logScope, text, x + sizeX, y + sizeY + 16 + FONT_SIZE_SLIDER_POPOVER_GAP, btnW, value -> updateText.accept(CanvasTextRenderer.fitTextHeight(text.withFontSize(value))), refresh);
         }
+    }
+
+    private static void addQuestDetailsMenuShield(WidgetGroup parent, TabletUiState state, int x, int y, int width, int height) {
+        int shieldX = x - STYLE_MENU_HIT_PAD;
+        int shieldY = y - STYLE_MENU_HIT_PAD;
+        int shieldW = Math.max(1, width + STYLE_MENU_HIT_PAD * 2);
+        int shieldH = Math.max(1, height + STYLE_MENU_HIT_PAD * 2);
+        WidgetGroup shield = new WidgetGroup(shieldX, shieldY, shieldW, shieldH) {
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                if (!isMouseOverElement(mouseX, mouseY)) {
+                    return false;
+                }
+                state.questDetailsTextStyleInteractionAtMs = System.currentTimeMillis();
+                return true;
+            }
+
+            @Override
+            public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+                return isMouseOverElement(mouseX, mouseY);
+            }
+
+            @Override
+            public boolean mouseReleased(double mouseX, double mouseY, int button) {
+                return isMouseOverElement(mouseX, mouseY);
+            }
+        };
+        shield.setBackground(Surfaces.fill(0x00000000));
+        parent.addWidget(shield);
     }
 
     private static void updateStyle(TabletUiState state, String logScope, CanvasTextLayer oldText, CanvasTextLayer next, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
