@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 
+import com.abo47.questsandstuff.client.hud.QuestHudLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -48,6 +49,8 @@ public final class TabletAssetPickerModal {
         boolean soundPicker = (state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
                 || !state.modalQuestCompletionSoundTargets.isEmpty())
                 && state.assetBrowseDir != null && state.assetBrowseDir.startsWith("sounds");
+        boolean hudPicker = isHudBackgroundPicker(state);
+        boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker;
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr(soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library"), w, state, refresh);
         String dir = state.assetBrowseDir == null ? "" : state.assetBrowseDir;
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.assetSearch));
@@ -75,13 +78,14 @@ public final class TabletAssetPickerModal {
         } else {
             preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ModColors.TEXT_MUTED));
             addQuestBackgroundOptions(preview, state, refresh, leftW, previewH);
+            addHudBackgroundOptions(preview, state, refresh, leftW, previewH);
         }
         if (!selected.isBlank() && dims != null) {
             boolean grayscale = isQuestBackgroundPicker(state) && state.modalQuestBackgroundGrayscale;
             IGuiTexture texture = chapterBackgroundTexture(selected, grayscale);
             if (texture != null) {
                 int areaW = leftW - 16;
-                int areaH = Math.max(1, h - (isQuestBackgroundPicker(state) ? 124 : 100));
+                int areaH = Math.max(1, h - (bottomPreviewControls ? 132 : 100));
                 float scale = Math.min(1f, Math.min((float) areaW / Math.max(1, dims.width()), (float) areaH / Math.max(1, dims.height())));
                 int drawW = Math.max(1, Math.round(dims.width() * scale));
                 int drawH = Math.max(1, Math.round(dims.height() * scale));
@@ -223,6 +227,51 @@ public final class TabletAssetPickerModal {
     private static boolean isQuestBackgroundPicker(TabletUiState state) {
         return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank()
                 || !state.modalQuestBackgroundTargets.isEmpty();
+    }
+
+    private static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
+        QuestHudLayout.Element element = hudElement(state);
+        if (element == null) {
+            return;
+        }
+        int rowY = Math.max(58, previewH - 56);
+        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.hud.opacity"), ModColors.TEXT_SECONDARY));
+        PercentSliderControls.add(
+                preview,
+                8,
+                rowY + 12,
+                leftW - 16,
+                QuestHudLayout.opacityPercent(element),
+                next -> {
+                    QuestHudLayout.setOpacityPercent(element, next);
+                    state.modalHudBackgroundOpacityDraft = QuestHudLayout.opacityPercent(element);
+                    refresh.run();
+                },
+                refresh,
+                () -> state.modalHudBackgroundOpacityDragging,
+                dragging -> state.modalHudBackgroundOpacityDragging = dragging,
+                new Component[]{Component.translatable("ui.questsandstuff.hud.opacity")}
+        );
+        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, TabletModalPanel.tr("ui.questsandstuff.hud.remove_background"), ModColors.SURFACE_PANEL_ALT, ModColors.WARNING, click -> {
+            QuestHudLayout.setBackground(element, "");
+            state.assetSelected = "";
+            refresh.run();
+        }));
+    }
+
+    private static boolean isHudBackgroundPicker(TabletUiState state) {
+        return hudElement(state) != null;
+    }
+
+    private static QuestHudLayout.Element hudElement(TabletUiState state) {
+        String target = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
+        if ("completion".equalsIgnoreCase(target)) {
+            return QuestHudLayout.Element.COMPLETION;
+        }
+        if ("pinned".equalsIgnoreCase(target)) {
+            return QuestHudLayout.Element.PINNED;
+        }
+        return null;
     }
 
     private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int rightX, int rightW, int h, List<AssetLibrary.AssetEntry> assets) {

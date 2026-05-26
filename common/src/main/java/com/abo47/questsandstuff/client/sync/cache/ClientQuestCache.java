@@ -94,6 +94,10 @@ public final class ClientQuestCache {
         return ClientQuestState.pinnedSnapshot();
     }
 
+    public static void togglePinnedLocal(String questId) {
+        ClientQuestState.togglePinned(questId);
+    }
+
     public static Map<String, String> advancementDisplays() {
         return ClientDisplayState.advancementDisplays();
     }

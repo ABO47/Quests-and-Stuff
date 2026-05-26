@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.hud.PinnedQuestHudOverlay;
 import com.abo47.questsandstuff.client.hud.QuestCompletionNotificationOverlay;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,6 +52,7 @@ public final class ForgeClientEvents {
         @SubscribeEvent
         public static void onRenderGui(RenderGuiOverlayEvent.Post event) {
             QuestCompletionNotificationOverlay.render(event.getGuiGraphics());
+            PinnedQuestHudOverlay.render(event.getGuiGraphics());
         }
     }
 }

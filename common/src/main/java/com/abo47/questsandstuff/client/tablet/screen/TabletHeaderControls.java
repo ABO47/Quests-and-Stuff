@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.screen;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -13,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
@@ -30,6 +32,9 @@ final class TabletHeaderControls {
     private final WidgetGroup settingsBg;
     private final ButtonWidget settingsHit;
     private final HeaderIconWidget settingsIconWidget;
+    private final WidgetGroup hudEditBg;
+    private final ButtonWidget hudEditHit;
+    private final HeaderIconWidget hudEditIconWidget;
     private final WidgetGroup editorBg;
     private final ButtonWidget editorHit;
     private final HeaderIconWidget editorIconWidget;
@@ -45,6 +50,9 @@ final class TabletHeaderControls {
             WidgetGroup settingsBg,
             ButtonWidget settingsHit,
             HeaderIconWidget settingsIconWidget,
+            WidgetGroup hudEditBg,
+            ButtonWidget hudEditHit,
+            HeaderIconWidget hudEditIconWidget,
             WidgetGroup editorBg,
             ButtonWidget editorHit,
             HeaderIconWidget editorIconWidget
@@ -58,6 +66,9 @@ final class TabletHeaderControls {
         this.settingsBg = settingsBg;
         this.settingsHit = settingsHit;
         this.settingsIconWidget = settingsIconWidget;
+        this.hudEditBg = hudEditBg;
+        this.hudEditHit = hudEditHit;
+        this.hudEditIconWidget = hudEditIconWidget;
         this.editorBg = editorBg;
         this.editorHit = editorHit;
         this.editorIconWidget = editorIconWidget;
@@ -111,6 +122,18 @@ final class TabletHeaderControls {
         settingsHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
         settingsHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget settingsIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "settings-2.png");
+        WidgetGroup hudEditBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
+        ButtonWidget hudEditHit = flatHitButton(0, 0, toolsW, headerH, click -> {
+            ToolMenuAnimation.closeMain(state);
+            state.contextMenuOpen = false;
+            state.chapterMenuOpen = false;
+            state.assetContextOpen = false;
+            Minecraft.getInstance().setScreen(new QuestHudLayoutEditScreen());
+            QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from main header");
+        });
+        hudEditHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        hudEditHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        HeaderIconWidget hudEditIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "hud_layout.png");
         WidgetGroup editorBg = panel(0, 0, toolsW, headerH, withAlpha(ModColors.SURFACE_PANEL_ALT, 164), ModColors.BORDER_BASE);
         ButtonWidget editorHit = flatHitButton(0, 0, toolsW, headerH, click -> {
             if (!state.editorAvailable) {
@@ -129,7 +152,7 @@ final class TabletHeaderControls {
         editorHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget editorIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "editor.png");
 
-        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, editorBg, editorHit, editorIconWidget);
+        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, hudEditBg, hudEditHit, hudEditIconWidget, editorBg, editorHit, editorIconWidget);
     }
 
     TextFieldWidget chapterSearchField() {
@@ -156,6 +179,7 @@ final class TabletHeaderControls {
         toolsBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         boolean settingsActive = settingsActive(state);
         settingsBg.setBackground(Surfaces.bordered(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE));
+        hudEditBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         editorBg.setBackground(Surfaces.bordered(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }
 
@@ -170,7 +194,8 @@ final class TabletHeaderControls {
         boolean showEditorToggle = state.editorAvailable;
         boolean showToolsButton = true;
         int editorX = showEditorToggle ? toolsX - topGap - toolsW : toolsX;
-        int settingsX = showEditorToggle ? editorX - topGap - toolsW : toolsX - topGap - toolsW;
+        int hudEditX = showEditorToggle ? editorX - topGap - toolsW : toolsX - topGap - toolsW;
+        int settingsX = hudEditX - topGap - toolsW;
         int searchX = headerX;
         int searchEnd = settingsX - topGap;
         int searchW = Math.max(60, searchEnd - searchX);
@@ -214,6 +239,23 @@ final class TabletHeaderControls {
         settingsIconWidget.setVisible(true);
         settingsIconWidget.setActive(false);
 
+        hudEditBg.setSelfPosition(hudEditX, topY);
+        hudEditBg.setSize(toolsW, headerH);
+        hudEditHit.setSelfPosition(hudEditX, topY);
+        hudEditHit.setSize(toolsW, headerH);
+        hudEditHit.setHoverTooltips(new Component[]{
+                Component.translatable("ui.questsandstuff.hud.layout.button"),
+                Component.translatable("ui.questsandstuff.hud.layout.button_tooltip")
+        });
+        int hudIconSize = hudEditIconWidget.getSize().width;
+        hudEditIconWidget.setSelfPosition(hudEditX + (toolsW - hudIconSize) / 2, topY + (headerH - hudIconSize) / 2);
+        hudEditBg.setVisible(true);
+        hudEditBg.setActive(true);
+        hudEditHit.setVisible(true);
+        hudEditHit.setActive(true);
+        hudEditIconWidget.setVisible(true);
+        hudEditIconWidget.setActive(false);
+
         toolsBg.setSelfPosition(toolsX, topY);
         toolsBg.setSize(toolsW, headerH);
         toolsHit.setSelfPosition(toolsX, topY);
@@ -234,6 +276,9 @@ final class TabletHeaderControls {
         canvasPanel.addWidget(settingsBg);
         canvasPanel.addWidget(settingsHit);
         canvasPanel.addWidget(settingsIconWidget);
+        canvasPanel.addWidget(hudEditBg);
+        canvasPanel.addWidget(hudEditHit);
+        canvasPanel.addWidget(hudEditIconWidget);
         canvasPanel.addWidget(editorBg);
         canvasPanel.addWidget(editorHit);
         canvasPanel.addWidget(editorIconWidget);

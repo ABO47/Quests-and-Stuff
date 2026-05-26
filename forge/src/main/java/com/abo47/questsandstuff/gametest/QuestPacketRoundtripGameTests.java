@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.network.QuestPacketContext;
 import com.abo47.questsandstuff.network.editor.C2SEditorAddQuestPacket;
 import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.network.runtime.C2SClaimSelectableRewardPacket;
+import com.abo47.questsandstuff.network.runtime.C2STogglePinPacket;
 import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
@@ -97,6 +98,11 @@ public final class QuestPacketRoundtripGameTests {
         S2CQuestEventPacket event = roundtrip(new S2CQuestEventPacket(17L, "quest_unlocked", "quest/a", "reward/x"));
         if (event.sequence() != 17L || !"quest_unlocked".equals(event.eventType()) || !"quest/a".equals(event.questId()) || !"reward/x".equals(event.rewardId())) {
             throw new GameTestAssertException("Quest event packet roundtrip mismatch");
+        }
+
+        C2STogglePinPacket togglePin = roundtrip(new C2STogglePinPacket("quest/a"));
+        if (!"quest/a".equals(togglePin.questId())) {
+            throw new GameTestAssertException("Toggle pin packet roundtrip mismatch");
         }
         helper.succeed();
     }
@@ -300,6 +306,12 @@ public final class QuestPacketRoundtripGameTests {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
         return S2CQuestEventPacket.decode(buf);
+    }
+
+    private static C2STogglePinPacket roundtrip(C2STogglePinPacket packet) {
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        packet.encode(buf);
+        return C2STogglePinPacket.decode(buf);
     }
 
     private static ServerPlayer detachedPlayer(GameTestHelper helper) {

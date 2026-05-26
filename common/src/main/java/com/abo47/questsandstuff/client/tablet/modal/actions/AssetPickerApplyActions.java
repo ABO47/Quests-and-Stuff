@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.hud.QuestHudLayout;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
@@ -49,6 +50,14 @@ public final class AssetPickerApplyActions {
             EditorCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
             state.modalQuestBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
+            return;
+        }
+        String hudTarget = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
+        QuestHudLayout.Element hudElement = hudElement(hudTarget);
+        if (hudElement != null) {
+            QuestHudLayout.setBackground(hudElement, background);
+            state.modalHudBackgroundTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] hud background picked target={} asset={}", hudTarget, background);
             return;
         }
         String detailsTarget = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget.trim();
@@ -109,5 +118,15 @@ public final class AssetPickerApplyActions {
         int width = Math.max(8, (int) Math.round(dimensions.width() * scale));
         int height = Math.max(8, (int) Math.round(dimensions.height() * scale));
         return new int[]{width, height};
+    }
+
+    private static QuestHudLayout.Element hudElement(String target) {
+        if ("completion".equalsIgnoreCase(target)) {
+            return QuestHudLayout.Element.COMPLETION;
+        }
+        if ("pinned".equalsIgnoreCase(target)) {
+            return QuestHudLayout.Element.PINNED;
+        }
+        return null;
     }
 }

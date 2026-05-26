@@ -148,6 +148,7 @@ public final class UiIconAtlas {
             case "style_color" -> add(names, "color");
             case "palette_add" -> add(names, "add");
             case "palette_remove" -> add(names, "delete");
+            case "pin" -> add(names, "window_pin");
             default -> {
             }
         }

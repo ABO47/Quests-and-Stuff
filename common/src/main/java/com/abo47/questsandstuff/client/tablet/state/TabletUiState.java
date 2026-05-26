@@ -150,6 +150,9 @@ public class TabletUiState {
     public String modalQuestBackgroundTarget = "";
     public final Set<String> modalQuestBackgroundTargets = new java.util.LinkedHashSet<>();
     public boolean modalQuestBackgroundGrayscale;
+    public String modalHudBackgroundTarget = "";
+    public int modalHudBackgroundOpacityDraft = 68;
+    public boolean modalHudBackgroundOpacityDragging;
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
     public String entityVariantFolder = "";

@@ -331,6 +331,25 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
+    public static void openHudBackgroundPicker(TabletUiState state, String target, String currentBackground, int currentOpacity) {
+        closeBeforeOpen(state);
+        state.modalHudBackgroundTarget = target == null ? "" : target.trim();
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalQuestBackgroundTarget = "";
+        state.modalQuestBackgroundTargets.clear();
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        state.modalHudBackgroundOpacityDraft = Math.max(0, Math.min(100, currentOpacity));
+        state.modalHudBackgroundOpacityDragging = false;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
     public static void openCanvasImagePicker(TabletUiState state, String group, int logicalX, int logicalY) {
         closeBeforeOpen(state);
         state.modalCanvasImageTarget = group == null ? "" : group;

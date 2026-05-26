@@ -145,6 +145,8 @@ public final class TabletModalState {
         state.modalQuestBackgroundTarget = "";
         state.modalQuestBackgroundTargets.clear();
         state.modalQuestBackgroundGrayscale = false;
+        state.modalHudBackgroundTarget = "";
+        state.modalHudBackgroundOpacityDragging = false;
         state.entityVariantTarget = "";
         state.entityVariantSelected = "";
         state.entityVariantFolder = "";
@@ -164,6 +166,7 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
         state.iconAllItemsMode = false;
@@ -204,6 +207,7 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
         state.biomeSearchFocused = false;

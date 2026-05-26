@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.screen;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -38,6 +39,12 @@ public final class TabletClientHooks {
             GLFW.GLFW_KEY_F3,
             CATEGORY
     );
+    private static final KeyMapping EDIT_HUD = new KeyMapping(
+            "key.questsandstuff.edit_hud",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
     private static final KeyMapping GIZMO_MOVE = new KeyMapping(
             "key.questsandstuff.gizmo_move",
             InputConstants.Type.KEYSYM,
@@ -69,6 +76,7 @@ public final class TabletClientHooks {
         registrar.accept(OPEN_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
+        registrar.accept(EDIT_HUD);
         registrar.accept(GIZMO_MOVE);
         registrar.accept(GIZMO_RESIZE);
         registrar.accept(GIZMO_ROTATE);
@@ -167,6 +175,11 @@ public final class TabletClientHooks {
                 continue;
             }
             openQuestTabletUi(minecraft, minecraft.player);
+            break;
+        }
+        while (EDIT_HUD.consumeClick()) {
+            minecraft.setScreen(new QuestHudLayoutEditScreen());
+            QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from keybind");
             break;
         }
     }

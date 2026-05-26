@@ -121,6 +121,15 @@ public final class CanvasGeometry {
         return Math.round((float) value / (float) step) * step;
     }
 
+    public static int snapValueToGrid(int value, int grid) {
+        int safeGrid = Math.max(1, grid);
+        return Math.round((float) value / (float) safeGrid) * safeGrid;
+    }
+
+    public static int slotSpanForVisualSize(int visualSize) {
+        return slotLogicalSpan(Math.max(1, visualSize));
+    }
+
     public static int[] rotatedBounds(int x, int y, int width, int height, int rotationDegrees) {
         double centerX = x + width / 2.0;
         double centerY = y + height / 2.0;
@@ -290,11 +299,11 @@ public final class CanvasGeometry {
     }
 
     public static int slotLogicalWidth(TabletUiState state, float scale) {
-        return slotLogicalSpan(state, visualLogicalWidth(scale));
+        return slotSpanForVisualSize(visualLogicalWidth(scale));
     }
 
     public static int slotLogicalHeight(TabletUiState state, float scale) {
-        return slotLogicalSpan(state, visualLogicalHeight(scale));
+        return slotSpanForVisualSize(visualLogicalHeight(scale));
     }
 
     public static int gridSize(TabletUiState state) {
@@ -302,15 +311,10 @@ public final class CanvasGeometry {
         return Math.max(1, TabletUiFactory.GRID_SIZES[index]);
     }
 
-    private static int slotLogicalSpan(TabletUiState state, int visualLogicalSize) {
+    private static int slotLogicalSpan(int visualLogicalSize) {
         int needed = Math.max(1, visualLogicalSize + QUEST_CELL_MARGIN);
         int cells = Math.max(1, (needed + QUEST_SLOT_SIZE - 1) / QUEST_SLOT_SIZE);
         return Math.max(QUEST_SLOT_SIZE, cells * QUEST_SLOT_SIZE);
-    }
-
-    private static int snapValueToGrid(int value, int grid) {
-        int safeGrid = Math.max(1, grid);
-        return Math.round((float) value / (float) safeGrid) * safeGrid;
     }
 
     private static int snapSpanToGrid(int value, int grid, int min) {

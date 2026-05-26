@@ -7,8 +7,10 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -20,6 +22,14 @@ public final class QuestCompletionNotificationOverlay {
     private static final Deque<Notification> NOTIFICATIONS = new ArrayDeque<>();
 
     private QuestCompletionNotificationOverlay() {
+    }
+
+    public static int width() {
+        return WIDTH;
+    }
+
+    public static int height() {
+        return HEIGHT;
     }
 
     public static void push(String questId) {
@@ -51,21 +61,70 @@ public final class QuestCompletionNotificationOverlay {
 
         Window window = minecraft.getWindow();
         float age = Math.max(0.0f, Math.min(1.0f, (now - notification.startedAtMs()) / (float) DISPLAY_MS));
-        int x = window.getGuiScaledWidth() / 2 - WIDTH / 2;
-        int y = window.getGuiScaledHeight() - 76 - Math.round((1.0f - easeOut(age)) * 12.0f);
+        float heightScale = QuestHudLayout.heightScale(QuestHudLayout.Element.COMPLETION);
+        QuestHudLayout.HudBox box = QuestHudLayout.completionBox(
+                window.getGuiScaledWidth(),
+                window.getGuiScaledHeight(),
+                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
+                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT)
+        );
+        int x = box.x();
+        int y = box.y() - Math.round((1.0f - easeOut(age)) * 12.0f * heightScale);
         int alpha = age > 0.78f ? Math.max(0, Math.round(255.0f * (1.0f - (age - 0.78f) / 0.22f))) : 255;
-        int panel = TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL, Math.min(235, alpha));
-        int border = TabletUiFactory.withAlpha(ModColors.BORDER_ACCENT, alpha);
-        int text = TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, alpha);
-        int success = TabletUiFactory.withAlpha(ModColors.SUCCESS, alpha);
+        drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), alpha, age, false);
+    }
 
-        graphics.fill(x, y, x + WIDTH, y + HEIGHT, panel);
-        graphics.renderOutline(x, y, WIDTH, HEIGHT, border);
-        int barW = Math.max(1, Math.min(WIDTH - 8, Math.round((WIDTH - 8) * Math.min(1.0f, age * 1.8f))));
-        graphics.fill(x + 4, y + HEIGHT - 8, x + 4 + barW, y + HEIGHT - 3, success);
-        graphics.drawString(minecraft.font, "Quest completed", x + 7, y + 4, text, false);
-        String title = crop(notification.title(), 22);
-        graphics.drawString(minecraft.font, title, x + 7, y + 14, TabletUiFactory.withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
+    public static void renderPreview(GuiGraphics graphics, int x, int y, boolean selected) {
+        renderPreview(
+                graphics,
+                x,
+                y,
+                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
+                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT),
+                selected
+        );
+    }
+
+    public static void renderPreview(GuiGraphics graphics, int x, int y, int width, int height, boolean selected) {
+        drawNotification(
+                graphics,
+                x,
+                y,
+                width,
+                height,
+                Component.translatable("ui.questsandstuff.hud.completion_preview").getString(),
+                255,
+                0.85f,
+                selected
+        );
+    }
+
+    private static void drawNotification(GuiGraphics graphics, int x, int y, int width, int height, String titleValue, int alpha, float age, boolean selected) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        int safeW = Math.max(1, width);
+        int safeH = Math.max(1, height);
+        int contentW = Math.max(0, safeW - 14);
+        int text = TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, alpha);
+
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected);
+        if (safeH >= 10) {
+            int barH = safeH < 24 ? 4 : 6;
+            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, Math.min(1.0f, age * 1.8f), ModColors.SUCCESS, alpha);
+        }
+        if (contentW <= 0 || safeH < 12) {
+            return;
+        }
+
+        String completed = cropToWidth(font, Component.translatable("ui.questsandstuff.hud.quest_completed").getString(), contentW);
+        if (safeH >= 27) {
+            graphics.drawString(font, completed, x + 7, y + 4, text, false);
+            String title = cropToWidth(font, titleValue, contentW);
+            graphics.drawString(font, title, x + 7, y + 14, TabletUiFactory.withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
+            return;
+        }
+        String title = cropToWidth(font, titleValue == null || titleValue.isBlank() ? completed : titleValue, contentW);
+        graphics.drawString(font, title, x + 7, y + Math.max(2, (safeH - 8) / 2), text, false);
     }
 
     private static float easeOut(float value) {
@@ -73,9 +132,27 @@ public final class QuestCompletionNotificationOverlay {
         return 1.0f - (1.0f - t) * (1.0f - t);
     }
 
-    private static String crop(String value, int max) {
+    private static String cropToWidth(Font font, String value, int width) {
         String safe = value == null ? "" : value;
-        return safe.length() <= max ? safe : safe.substring(0, Math.max(0, max - 3)) + "...";
+        if (width <= 0 || safe.isBlank()) {
+            return "";
+        }
+        if (font.width(safe) <= width) {
+            return safe;
+        }
+        String ellipsis = "...";
+        if (font.width(ellipsis) > width) {
+            String cropped = safe;
+            while (!cropped.isEmpty() && font.width(cropped) > width) {
+                cropped = cropped.substring(0, cropped.length() - 1);
+            }
+            return cropped;
+        }
+        String cropped = safe;
+        while (!cropped.isEmpty() && font.width(cropped + ellipsis) > width) {
+            cropped = cropped.substring(0, cropped.length() - 1);
+        }
+        return cropped.isEmpty() ? ellipsis : cropped + ellipsis;
     }
 
     private static int completionSoundVolume(CompoundTag quest) {

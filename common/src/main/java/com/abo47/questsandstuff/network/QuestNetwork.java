@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.network.runtime.C2SManualItemSubmitPacket;
 import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.runtime.C2SManualXpSubmitPacket;
 import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.runtime.C2STogglePinPacket;
 import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
 import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
@@ -112,7 +113,8 @@ public final class QuestNetwork {
         packets.add(type(id++, C2SManualTaskPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2SManualTaskPacket::encode, C2SManualTaskPacket::decode, C2SManualTaskPacket::handle));
         packets.add(type(id++, C2SManualItemSubmitPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2SManualItemSubmitPacket::encode, C2SManualItemSubmitPacket::decode, C2SManualItemSubmitPacket::handle));
         packets.add(type(id++, C2SManualXpSubmitPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2SManualXpSubmitPacket::encode, C2SManualXpSubmitPacket::decode, C2SManualXpSubmitPacket::handle));
-        packets.add(type(id, C2SResetQuestPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2SResetQuestPacket::encode, C2SResetQuestPacket::decode, C2SResetQuestPacket::handle));
+        packets.add(type(id++, C2SResetQuestPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2SResetQuestPacket::encode, C2SResetQuestPacket::decode, C2SResetQuestPacket::handle));
+        packets.add(type(id, C2STogglePinPacket.class, QuestPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
         return List.copyOf(packets);
     }
 
