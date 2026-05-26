@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -55,6 +56,7 @@ final class CanvasSelectionDragController {
                 state.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
+        CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
         CanvasSmartSnapper.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
         state.dragStartBoundsLeft = bounds.left();
         state.dragStartBoundsTop = bounds.top();
