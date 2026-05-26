@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
@@ -118,9 +120,6 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     void beginCanvasPan() {
-        if (livePanX != 0 || livePanY != 0) {
-            shiftCardCache(-livePanX, -livePanY);
-        }
         livePanX = 0;
         livePanY = 0;
         state.canvasLivePanX = 0;
@@ -135,12 +134,12 @@ public final class CanvasViewport extends WidgetGroup {
         if (canvasContentLayer == null) {
             return false;
         }
-        livePanX += dx;
-        livePanY += dy;
+        CanvasPoint nextLivePan = CanvasCameraController.previewPanDelta(state, livePanX + dx, livePanY + dy);
+        livePanX = nextLivePan.x;
+        livePanY = nextLivePan.y;
         state.canvasLivePanX = livePanX;
         state.canvasLivePanY = livePanY;
         applyLivePanToLayer();
-        shiftCardCache(dx, dy);
         return true;
     }
 
@@ -225,8 +224,7 @@ public final class CanvasViewport extends WidgetGroup {
         if (livePanX == 0 && livePanY == 0) {
             return;
         }
-        state.canvasOffsetX += livePanX;
-        state.canvasOffsetY += livePanY;
+        CanvasCameraController.panByScreen(state, livePanX, livePanY, true);
         livePanX = 0;
         livePanY = 0;
         state.canvasLivePanX = 0;
@@ -239,21 +237,6 @@ public final class CanvasViewport extends WidgetGroup {
             return;
         }
         canvasContentLayer.setSelfPosition(canvasContentLayerBaseX + livePanX, canvasContentLayerBaseY + livePanY);
-    }
-
-    private void shiftCardCache(int dx, int dy) {
-        if (cards.isEmpty()) {
-            return;
-        }
-        List<QuestCardLayout> shifted = new ArrayList<>(cards.size());
-        Map<String, QuestCardLayout> shiftedByQuestId = new HashMap<>();
-        for (QuestCardLayout card : cards) {
-            QuestCardLayout shiftedCard = shiftCard(card, dx, dy);
-            shifted.add(shiftedCard);
-            shiftedByQuestId.put(shiftedCard.questId(), shiftedCard);
-        }
-        cards = List.copyOf(shifted);
-        byQuestId = Map.copyOf(shiftedByQuestId);
     }
 
     private static List<QuestCardLayout> shiftedCards(List<QuestCardLayout> cards, int dx, int dy) {

@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -42,9 +43,11 @@ public final class CanvasRenderer {
     private CanvasRenderer() {
     }
     public static void rebuildQuestCanvas(CanvasViewport canvasViewport, TabletUiState state) {
+        CanvasCameraController.beforeCanvasRebuild(state);
         canvasViewport.clearAllWidgets();
+        String selectedGroup = selectedGroupName(state);
         state.canvasZoom = clampZoom(state.canvasZoom);
-        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroupName(state));
+        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.quests().entrySet());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
@@ -66,6 +69,7 @@ public final class CanvasRenderer {
         state.canvasContentY = contentY;
         state.canvasContentW = contentW;
         state.canvasContentH = contentH;
+        CanvasCameraController.afterCanvasLayout(state, selectedGroup);
         CanvasSceneRenderer.renderCanvasSurfaces(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
         if (state.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
@@ -76,6 +80,10 @@ public final class CanvasRenderer {
         List<QuestCardLayout> visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
         CanvasLayoutService.clampCanvasOffset(state, visibleCards, contentW, contentH);
         visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
+        if (CanvasCameraController.consumePendingQuestFocus(state, visibleCards, selectedGroup)) {
+            visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
+        }
+        CanvasCameraController.rememberCurrentGroup(state);
 
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : visibleCards) {
@@ -488,8 +496,7 @@ public final class CanvasRenderer {
         if (Float.isNaN(zoom) || Float.isInfinite(zoom)) {
             return 1.0f;
         }
-        float clamped = Math.max(MIN_CANVAS_ZOOM, Math.min(MAX_CANVAS_ZOOM, zoom));
-        return Math.max(MIN_CANVAS_ZOOM, Math.min(MAX_CANVAS_ZOOM, Math.round(clamped * 16.0f) / 16.0f));
+        return Math.max(MIN_CANVAS_ZOOM, Math.min(MAX_CANVAS_ZOOM, zoom));
     }
 
 }

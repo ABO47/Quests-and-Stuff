@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
@@ -75,8 +76,7 @@ final class TabletRootKeyboardRouter {
         }
         if (keyCode == GLFW.GLFW_KEY_Z && !root.isCtrlDown()) {
             if (state.canvasZoom != 1.0f) {
-                state.canvasZoom = 1.0f;
-                TabletUiFactory.persistUiState(state);
+                CanvasCameraController.resetZoom(state, true);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas zoom reset key=Z");
                 refresher.run();
             }

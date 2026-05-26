@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -139,8 +140,7 @@ final class MainCanvasToolsMenu {
         CanvasToolRows.canvasLock(rows, state.gridCanvasLocked, () -> {
                     state.gridCanvasLocked = !state.gridCanvasLocked;
                     if (state.gridCanvasLocked) {
-                        state.canvasOffsetX = 0;
-                        state.canvasOffsetY = 0;
+                        CanvasCameraController.setOffset(state, 0, 0, false);
                     }
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-canvas enabled={}", state.gridCanvasLocked);

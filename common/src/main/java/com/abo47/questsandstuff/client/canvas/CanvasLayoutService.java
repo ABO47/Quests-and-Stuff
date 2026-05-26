@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.canvas;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.model.QuestMatch;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -21,7 +22,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistU
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
 
 public final class CanvasLayoutService {
-    private static final int MIN_PAN_RENDER_OVERSCAN = 96;
+    private static final int MIN_PAN_RENDER_OVERSCAN = 192;
 
     private CanvasLayoutService() {
     }
@@ -56,6 +57,8 @@ public final class CanvasLayoutService {
         }
         state.selectedGroup = selected.group();
         state.lastJumpQuest = selected.questId();
+        state.pendingCameraGroup = selected.group();
+        state.pendingCameraQuestId = selected.questId();
         persistUiState(state);
         return true;
     }
@@ -88,11 +91,11 @@ public final class CanvasLayoutService {
     }
 
     public static int panRenderOverscanX(int viewportW) {
-        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportW);
+        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportW * 3);
     }
 
     public static int panRenderOverscanY(int viewportH) {
-        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportH);
+        return Math.max(MIN_PAN_RENDER_OVERSCAN, viewportH * 3);
     }
 
     public static boolean intersectsPanRenderWindow(QuestCardLayout card, int viewportW, int viewportH) {
@@ -115,6 +118,7 @@ public final class CanvasLayoutService {
             if (state.gridCanvasLocked) {
                 clampLockedCanvasOffset(state, contentW, contentH);
             }
+            CanvasCameraController.rememberCurrentGroup(state);
             return;
         }
 
@@ -149,11 +153,13 @@ public final class CanvasLayoutService {
 
         if (!state.canEdit) {
             clampOffsetToElementBounds(state, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY, contentW, contentH);
+            CanvasCameraController.rememberCurrentGroup(state);
             return;
         }
         if (state.gridCanvasLocked) {
             clampLockedCanvasOffset(state, contentW, contentH);
         }
+        CanvasCameraController.rememberCurrentGroup(state);
     }
 
     private static void clampOffsetToElementBounds(TabletUiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY, int contentW, int contentH) {

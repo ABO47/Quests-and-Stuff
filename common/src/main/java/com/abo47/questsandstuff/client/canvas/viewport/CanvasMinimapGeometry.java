@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -47,10 +46,10 @@ public final class CanvasMinimapGeometry {
     }
 
     public static WorldBounds worldBounds(TabletUiState state, List<QuestCardLayout> cards) {
-        int minX = (int) Math.floor(CanvasGeometry.screenToLogicalX(state, state.canvasContentX));
-        int minY = (int) Math.floor(CanvasGeometry.screenToLogicalY(state, state.canvasContentY));
-        int maxX = (int) Math.ceil(CanvasGeometry.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW)));
-        int maxY = (int) Math.ceil(CanvasGeometry.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH)));
+        int minX = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, state.canvasContentX, true));
+        int minY = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, state.canvasContentY, true));
+        int maxX = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW), true));
+        int maxY = (int) Math.ceil(CanvasCameraController.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH), true));
 
         for (QuestCardLayout card : cards) {
             minX = Math.min(minX, card.visualLogicalX());

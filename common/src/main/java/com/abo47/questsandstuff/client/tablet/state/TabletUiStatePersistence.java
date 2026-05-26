@@ -46,6 +46,7 @@ public final class TabletUiStatePersistence {
             state.canvasBgOpacityIndex = readInt(root, "canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             state.canvasBgOpacityPercent = readInt(root, "canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             state.canvasZoom = readFloat(root, "canvas_zoom", state.canvasZoom);
+            readCanvasCameras(root, state);
             state.minimapCollapsed = readBoolean(root, "minimap_collapsed", state.minimapCollapsed);
             state.selectedGroup = readString(root, "last_selected_group", state.selectedGroup);
             state.chapterPanelWidth = readInt(root, "chapter_panel_width", state.chapterPanelWidth);
@@ -85,6 +86,7 @@ public final class TabletUiStatePersistence {
             root.addProperty("canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             root.addProperty("canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             root.addProperty("canvas_zoom", state.canvasZoom);
+            root.add("canvas_cameras", writeCanvasCameras(state));
             root.addProperty("minimap_collapsed", state.minimapCollapsed);
             root.addProperty("last_selected_group", state.selectedGroup == null ? "" : state.selectedGroup);
             root.addProperty("chapter_panel_width", chapterPanelWidth(state));
@@ -152,6 +154,51 @@ public final class TabletUiStatePersistence {
         } catch (Exception ignored) {
             return fallback;
         }
+    }
+
+    private static void readCanvasCameras(JsonObject root, TabletUiState state) {
+        if (root == null || state == null || !root.has("canvas_cameras") || !root.get("canvas_cameras").isJsonObject()) {
+            return;
+        }
+        JsonObject cameras = root.getAsJsonObject("canvas_cameras");
+        for (String group : cameras.keySet()) {
+            if (group == null || group.isBlank()) {
+                continue;
+            }
+            try {
+                JsonObject camera = cameras.getAsJsonObject(group);
+                double centerX = camera.has("center_x") ? camera.get("center_x").getAsDouble() : 0.0D;
+                double centerY = camera.has("center_y") ? camera.get("center_y").getAsDouble() : 0.0D;
+                float zoom = camera.has("zoom") ? camera.get("zoom").getAsFloat() : state.canvasZoom;
+                if (Double.isFinite(centerX) && Double.isFinite(centerY) && Float.isFinite(zoom)) {
+                    state.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint(centerX, centerY));
+                    state.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private static JsonObject writeCanvasCameras(TabletUiState state) {
+        JsonObject cameras = new JsonObject();
+        if (state == null) {
+            return cameras;
+        }
+        for (String group : state.canvasCameraCentersByGroup.keySet()) {
+            if (group == null || group.isBlank()) {
+                continue;
+            }
+            com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint center = state.canvasCameraCentersByGroup.get(group);
+            if (center == null || !Double.isFinite(center.x()) || !Double.isFinite(center.y())) {
+                continue;
+            }
+            JsonObject camera = new JsonObject();
+            camera.addProperty("center_x", center.x());
+            camera.addProperty("center_y", center.y());
+            camera.addProperty("zoom", Math.max(0.5f, Math.min(3.0f, state.canvasCameraZoomsByGroup.getOrDefault(group, state.canvasZoom))));
+            cameras.add(group, camera);
+        }
+        return cameras;
     }
 
     private static int clampQuestDetailsLeftWidth(int width) {

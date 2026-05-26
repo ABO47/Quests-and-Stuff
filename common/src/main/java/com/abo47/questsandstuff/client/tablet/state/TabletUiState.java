@@ -36,6 +36,11 @@ public class TabletUiState {
     public int chapterSplitterDragStartX;
     public int chapterSplitterStartWidth;
     public String lastJumpQuest = "";
+    public String pendingCameraQuestId = "";
+    public String pendingCameraGroup = "";
+    public String canvasCameraGroup = "";
+    public final Map<String, CanvasDoublePoint> canvasCameraCentersByGroup = new HashMap<>();
+    public final Map<String, Float> canvasCameraZoomsByGroup = new HashMap<>();
     public final SelectionModel<String> questSelection = new SelectionModel<>();
     public final Set<String> selectedQuestIds = questSelection.values();
     public final Map<String, CanvasPoint> transientQuestPositions = new HashMap<>();

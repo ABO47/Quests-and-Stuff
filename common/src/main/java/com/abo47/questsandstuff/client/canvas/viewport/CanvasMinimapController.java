@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -59,6 +58,8 @@ public final class CanvasMinimapController {
             return false;
         }
         state.draggingMinimap = false;
+        CanvasCameraController.rememberCurrentGroup(state);
+        persistUiState(state);
         return true;
     }
 
@@ -109,8 +110,6 @@ public final class CanvasMinimapController {
     private static void centerCanvasOnMinimapPoint(TabletUiState state, int localX, int localY) {
         int worldX = CanvasMinimapGeometry.mapWorldX(state, localX);
         int worldY = CanvasMinimapGeometry.mapWorldY(state, localY);
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
-        state.canvasOffsetX = (state.canvasContentW / 2) - Math.round(worldX * zoom);
-        state.canvasOffsetY = (state.canvasContentH / 2) - Math.round(worldY * zoom);
+        CanvasCameraController.centerOn(state, worldX, worldY, false);
     }
 }
