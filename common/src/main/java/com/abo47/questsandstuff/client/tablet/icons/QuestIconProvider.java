@@ -39,14 +39,14 @@ public final class QuestIconProvider {
                         .collect(Collectors.toList());
                 if (!items.isEmpty()) {
                     ItemStack[] stacks = items.stream().map(ItemStack::new).toArray(ItemStack[]::new);
-                    ItemStackTexture texture = new ItemStackTexture(stacks);
+                    ItemStackTexture texture = new ScopedItemStackTexture(stacks);
                     ICON_TEXTURE_CACHE.put(keyValue, texture);
                     return texture;
                 }
                 List<Item> blockItems = blockTagItems(tagId);
                 if (!blockItems.isEmpty()) {
                     ItemStack[] stacks = blockItems.stream().map(ItemStack::new).toArray(ItemStack[]::new);
-                    ItemStackTexture texture = new ItemStackTexture(stacks);
+                    ItemStackTexture texture = new ScopedItemStackTexture(stacks);
                     ICON_TEXTURE_CACHE.put(keyValue, texture);
                     return texture;
                 }
@@ -58,7 +58,7 @@ public final class QuestIconProvider {
         if (item == null || item == Items.AIR) {
             item = Items.BOOK;
         }
-        ItemStackTexture texture = new ItemStackTexture(item);
+        ItemStackTexture texture = new ScopedItemStackTexture(item);
         ICON_TEXTURE_CACHE.put(keyValue, texture);
         return texture;
     }

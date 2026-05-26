@@ -1,13 +1,16 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.hud.PinnedQuestHudOverlay;
-import com.abo47.questsandstuff.client.hud.QuestCompletionNotificationOverlay;
+import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
+import com.abo47.questsandstuff.client.hud.QuestHudOverlayRenderer;
+import com.abo47.questsandstuff.client.tablet.screen.QuestTabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -50,9 +53,22 @@ public final class ForgeClientEvents {
         }
 
         @SubscribeEvent
+        public static void onRenderGuiPre(RenderGuiOverlayEvent.Pre event) {
+            if (VanillaGuiOverlay.HOTBAR.id().equals(event.getOverlay().id()) && isQuestScreenOpen()) {
+                event.setCanceled(true);
+            }
+        }
+
+        @SubscribeEvent
         public static void onRenderGui(RenderGuiOverlayEvent.Post event) {
-            QuestCompletionNotificationOverlay.render(event.getGuiGraphics());
-            PinnedQuestHudOverlay.render(event.getGuiGraphics());
+            if (VanillaGuiOverlay.CHAT_PANEL.id().equals(event.getOverlay().id())) {
+                QuestHudOverlayRenderer.render(event.getGuiGraphics());
+            }
+        }
+
+        private static boolean isQuestScreenOpen() {
+            return Minecraft.getInstance().screen instanceof QuestTabletGuiContainer
+                    || Minecraft.getInstance().screen instanceof QuestHudLayoutEditScreen;
         }
     }
 }

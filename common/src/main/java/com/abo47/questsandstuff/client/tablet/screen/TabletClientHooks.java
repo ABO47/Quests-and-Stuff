@@ -9,7 +9,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -199,7 +198,7 @@ public final class TabletClientHooks {
         int rootW = targetRootWidth(minecraft, fullScreen);
         int rootH = targetRootHeight(minecraft, fullScreen);
         TabletUiFactory.applyRootSize(state, rootW, rootH, fullScreen);
-        if (minecraft.screen instanceof ModularUIGuiContainer container) {
+        if (minecraft.screen instanceof QuestTabletGuiContainer container) {
             container.modularUI.setSize(rootW, rootH);
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] tablet layout mode fullscreen={} width={} height={}", fullScreen, rootW, rootH);
@@ -223,7 +222,7 @@ public final class TabletClientHooks {
         int rootH = targetRootHeight(minecraft, fullScreen);
         ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
-        ModularUIGuiContainer modularUiGui = new ModularUIGuiContainer(uiTemplate, player.containerMenu.containerId);
+        QuestTabletGuiContainer modularUiGui = new QuestTabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
         QuestsAndStuffMod.debugLog("[QnS:UI] keybind open ui direct");

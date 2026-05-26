@@ -22,6 +22,8 @@ public final class QuestHudLayoutEditScreen extends Screen {
     private static final int BUTTON_H = 20;
     private static final int BUTTON_GAP = 8;
     private static final int HANDLE_SIZE = 6;
+    private static final int HOTBAR_RESERVED_W = 184;
+    private static final int HOTBAR_RESERVED_H = 24;
 
     private final QuestHudLayout.Snapshot original;
     private QuestHudLayout.Element selected = QuestHudLayout.Element.PINNED;
@@ -92,6 +94,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderEditSurface(graphics);
         renderHudPreviews(graphics, mouseX, mouseY);
+        QuestHudOverlayRenderer.resetGuiState(graphics);
         if (contextElement != null) {
             renderContextMenu(graphics, mouseX, mouseY);
         }
@@ -230,18 +233,52 @@ public final class QuestHudLayoutEditScreen extends Screen {
     }
 
     private void renderEditSurface(GuiGraphics graphics) {
-        graphics.fill(0, 0, width, height, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 86));
+        QuestHudLayout.HudBox hotbar = hotbarReservedBox();
+        fillOutsideHotbar(graphics, hotbar, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 86));
         int lightLine = TabletUiFactory.withAlpha(ModColors.BORDER_BASE, 62);
         int strongLine = TabletUiFactory.withAlpha(ModColors.BORDER_ACCENT, 78);
         for (int x = 0; x <= width; x += GRID_STEP) {
-            graphics.fill(x, 0, x + 1, height, x % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
+            drawVerticalGridLine(graphics, x, x % (GRID_STEP * 4) == 0 ? strongLine : lightLine, hotbar);
         }
         for (int y = 0; y <= height; y += GRID_STEP) {
-            graphics.fill(0, y, width, y + 1, y % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
+            drawHorizontalGridLine(graphics, y, y % (GRID_STEP * 4) == 0 ? strongLine : lightLine, hotbar);
         }
         Minecraft minecraft = Minecraft.getInstance();
         String title = getTitle().getString();
         graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, 230), false);
+    }
+
+    private QuestHudLayout.HudBox hotbarReservedBox() {
+        int reservedW = Math.min(width, HOTBAR_RESERVED_W);
+        int reservedH = Math.min(height, HOTBAR_RESERVED_H);
+        int x = Math.max(0, width / 2 - reservedW / 2);
+        int y = Math.max(0, height - reservedH);
+        return new QuestHudLayout.HudBox(x, y, reservedW, reservedH);
+    }
+
+    private void fillOutsideHotbar(GuiGraphics graphics, QuestHudLayout.HudBox hotbar, int color) {
+        graphics.fill(0, 0, width, hotbar.y(), color);
+        graphics.fill(0, hotbar.y(), hotbar.x(), height, color);
+        graphics.fill(hotbar.x() + hotbar.width(), hotbar.y(), width, height, color);
+    }
+
+    private void drawVerticalGridLine(GuiGraphics graphics, int x, int color, QuestHudLayout.HudBox hotbar) {
+        int right = x + 1;
+        if (right <= hotbar.x() || x >= hotbar.x() + hotbar.width()) {
+            graphics.fill(x, 0, right, height, color);
+            return;
+        }
+        graphics.fill(x, 0, right, hotbar.y(), color);
+    }
+
+    private void drawHorizontalGridLine(GuiGraphics graphics, int y, int color, QuestHudLayout.HudBox hotbar) {
+        int bottom = y + 1;
+        if (bottom <= hotbar.y() || y >= hotbar.y() + hotbar.height()) {
+            graphics.fill(0, y, width, bottom, color);
+            return;
+        }
+        graphics.fill(0, y, hotbar.x(), bottom, color);
+        graphics.fill(hotbar.x() + hotbar.width(), y, width, bottom, color);
     }
 
     private void renderHudPreviews(GuiGraphics graphics, int mouseX, int mouseY) {

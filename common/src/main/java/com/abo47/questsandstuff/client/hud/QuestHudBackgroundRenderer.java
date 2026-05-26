@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.hud;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 
 final class QuestHudBackgroundRenderer {
@@ -15,14 +16,16 @@ final class QuestHudBackgroundRenderer {
 
     static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride) {
         int opacity = QuestHudLayout.opacityPercent(element);
-        String background = backgroundOverride == null || backgroundOverride.isBlank() ? QuestHudLayout.background(element) : backgroundOverride.trim();
+        String override = normalizeBackground(backgroundOverride);
+        String background = override.isBlank() ? normalizeBackground(QuestHudLayout.background(element)) : override;
         if (!background.isBlank()) {
             IGuiTexture texture = TabletUiFactory.chapterBackgroundTexture(background);
             if (texture != null && opacity > 0) {
+                resetTextureState(graphics);
                 float alpha = opacity / 100.0f;
                 graphics.setColor(1.0f, 1.0f, 1.0f, alpha);
                 texture.draw(graphics, 0, 0, x, y, width, height);
-                graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+                resetTextureState(graphics);
                 graphics.fill(x, y, x + width, y + height, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * alpha)));
             }
         } else {
@@ -35,6 +38,23 @@ final class QuestHudBackgroundRenderer {
         if (borderAlpha > 0) {
             graphics.renderOutline(x, y, width, height, TabletUiFactory.withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
         }
+    }
+
+    private static String normalizeBackground(String background) {
+        if (background == null || background.isBlank()) {
+            return "";
+        }
+        String value = background.trim();
+        return "default".equals(value) ? "" : value;
+    }
+
+    private static void resetTextureState(GuiGraphics graphics) {
+        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
     }
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {

@@ -5,10 +5,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
+import com.abo47.questsandstuff.client.tablet.screen.QuestTabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -66,7 +66,7 @@ final class QuestHudAssetLibraryBridge {
 
         ModularUI uiTemplate = new ModularUI(root, IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
-        ModularUIGuiContainer screen = new ModularUIGuiContainer(uiTemplate, player.containerMenu.containerId);
+        QuestTabletGuiContainer screen = new QuestTabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(screen);
         player.containerMenu = screen.getMenu();
         return true;
