@@ -19,7 +19,7 @@ public final class QuestHudLayout {
     private static final int DEFAULT_SCALE = 100;
     private static final int MIN_SCALE = 60;
     private static final int MAX_SCALE = 2000;
-    private static final int DEFAULT_OPACITY = 68;
+    private static final int DEFAULT_OPACITY = 0;
 
     private static boolean loaded;
     private static int completionX = UNSET;
