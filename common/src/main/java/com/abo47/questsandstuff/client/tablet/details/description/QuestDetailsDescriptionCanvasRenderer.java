@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -13,7 +14,6 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
@@ -55,21 +55,18 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawDescriptionBackground(GuiGraphics graphics, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
-        IGuiTexture texture = chapterBackgroundTexture(model.canvasBackground);
-        if (texture == null) {
-            return;
-        }
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        int alpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent);
-        if (alpha <= 0) {
+        int opacityPercent = Math.max(0, Math.min(100, model.canvasBgOpacityPercent));
+        if (CanvasBackgroundOpacity.alpha(opacityPercent) <= 0) {
             return;
         }
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha / 255.0f);
-        texture.draw(graphics, 0, 0, contentX, contentY, paintW, paintH);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        IGuiTexture texture = chapterBackgroundTexture(model.canvasBackground);
+        if (texture == null) {
+            CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, ModColors.SURFACE_BASE, opacityPercent);
+            return;
+        }
+        CanvasBackgroundOpacity.drawTexture(graphics, texture, 0, 0, contentX, contentY, paintW, paintH, opacityPercent);
     }
 
     private static void drawElements(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {

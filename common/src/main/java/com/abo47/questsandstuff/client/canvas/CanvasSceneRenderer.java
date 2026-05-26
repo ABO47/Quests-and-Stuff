@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas;
 
 
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -25,7 +26,6 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
@@ -102,9 +102,8 @@ final class CanvasSceneRenderer {
     }
 
     static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
-        int alphaPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
-        int alpha = Math.max(0, Math.min(255, (255 * alphaPercent) / 100));
-        int canvasFill = withAlpha(ModColors.SURFACE_BASE, alpha);
+        int opacityPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
+        int canvasFill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, opacityPercent);
         int paintW = contentW + 1;
         int paintH = contentH + 1;
         addSolidRect(canvasViewport, 0, 0, viewportW, contentY, canvasFill);
@@ -112,10 +111,11 @@ final class CanvasSceneRenderer {
         addSolidRect(canvasViewport, 0, contentY, contentX, paintH, canvasFill);
         addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, canvasFill);
 
-        addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, canvasFill);
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
-        if (canvasBackground != null && alpha > 0) {
-            canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, alpha));
+        if (canvasBackground == null) {
+            addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, canvasFill);
+        } else if (CanvasBackgroundOpacity.alpha(opacityPercent) > 0) {
+            canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, opacityPercent));
         }
     }
 
@@ -425,16 +425,11 @@ final class CanvasSceneRenderer {
         parent.addWidget(rect);
     }
 
-    private static WidgetGroup alphaTexture(int x, int y, int width, int height, IGuiTexture texture, int alpha) {
-        int safeAlpha = Math.max(0, Math.min(255, alpha));
+    private static WidgetGroup alphaTexture(int x, int y, int width, int height, IGuiTexture texture, int opacityPercent) {
         return new WidgetGroup(x, y, width, height) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
-                texture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                CanvasBackgroundOpacity.drawTexture(graphics, texture, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), opacityPercent);
             }
         };
     }

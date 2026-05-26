@@ -14,11 +14,6 @@ final class QuestDetailsDescriptionLayout {
     private QuestDetailsDescriptionLayout() {
     }
 
-    static int opacityAlpha(int percent) {
-        int clamped = Math.max(0, Math.min(100, percent));
-        return Math.max(0, Math.min(255, 255 * clamped / 100));
-    }
-
     static int clampReadOnlyScroll(TabletUiState state, QuestDetailsDescriptionModel model, int viewportH, int scroll) {
         int current = Math.max(0, scroll);
         if (QuestDetailsEditState.canEdit(state)) {
