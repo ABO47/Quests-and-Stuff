@@ -31,6 +31,7 @@ final class QuestDefinitionNormalizer {
                         definition.display().iconBackground(),
                         definition.display().completionSound(),
                         definition.display().completionSoundVolume(),
+                        definition.display().completionHudBackground(),
                         definition.display().visualHidden(),
                         definition.display().questBackground(),
                         definition.display().questBackgroundGrayscale()

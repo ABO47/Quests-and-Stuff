@@ -43,6 +43,7 @@ public final class QuestDefinitionEdits {
                             source.display().iconBackground(),
                             source.display().completionSound(),
                             source.display().completionSoundVolume(),
+                            source.display().completionHudBackground(),
                             source.display().visualHidden(),
                             source.display().questBackground(),
                             source.display().questBackgroundGrayscale()
@@ -183,6 +184,7 @@ public final class QuestDefinitionEdits {
                 definition.display().iconBackground(),
                 definition.display().completionSound(),
                 definition.display().completionSoundVolume(),
+                definition.display().completionHudBackground(),
                 definition.display().visualHidden(),
                 definition.display().questBackground(),
                 definition.display().questBackgroundGrayscale()

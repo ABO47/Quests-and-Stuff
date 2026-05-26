@@ -317,6 +317,39 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
+    public static void openQuestCompletionHudBackgroundPicker(TabletUiState state, String questId, String currentBackground) {
+        closeBeforeOpen(state);
+        state.modalQuestCompletionHudBackgroundTarget = questId == null ? "" : questId;
+        state.modalQuestCompletionHudBackgroundTargets.clear();
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openBatchQuestCompletionHudBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground) {
+        closeBeforeOpen(state);
+        state.modalQuestCompletionHudBackgroundTarget = "";
+        state.modalQuestCompletionHudBackgroundTargets.clear();
+        state.modalQuestCompletionHudBackgroundTargets.addAll(normalizedTargets(questIds));
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetSelected = currentBackground == null ? "" : currentBackground;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
     public static void openCanvasBackgroundPicker(TabletUiState state, String group, String currentBackground) {
         closeBeforeOpen(state);
         state.modalCanvasBackgroundTarget = group == null ? "" : group;

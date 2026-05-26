@@ -19,6 +19,8 @@ public enum EditorCommandType {
     QUEST_CHANGE_COMPLETION_SOUND_MANY("quest_change_completion_sound_many"),
     QUEST_CHANGE_COMPLETION_SOUND_VOLUME("quest_change_completion_sound_volume"),
     QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY("quest_change_completion_sound_volume_many"),
+    QUEST_COMPLETION_HUD_BACKGROUND("quest_completion_hud_background"),
+    QUEST_COMPLETION_HUD_BACKGROUND_MANY("quest_completion_hud_background_many"),
     QUEST_BACKGROUND("quest_background"),
     QUEST_BACKGROUND_MANY("quest_background_many"),
     DESCRIPTION_PUT("description_put"),

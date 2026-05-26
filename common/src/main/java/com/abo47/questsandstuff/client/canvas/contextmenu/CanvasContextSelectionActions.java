@@ -11,10 +11,12 @@ import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +41,7 @@ final class CanvasContextSelectionActions {
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
-            addBatchQuestActions(actions, canvasViewport, state);
+            addBatchQuestActions(actions, canvasViewport, state, player);
             addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedGroup, canvasViewport.cardLookup())) {
@@ -72,7 +74,7 @@ final class CanvasContextSelectionActions {
         return false;
     }
 
-    private static void addBatchQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
+    private static void addBatchQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
         Set<String> questIds = state.selectedQuestIds;
         if (questIds.size() <= 1) {
             return;
@@ -98,6 +100,25 @@ final class CanvasContextSelectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
             canvasViewport.refresh();
         }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_hud_background"), "background", ModColors.INTERACTIVE, () -> {
+            state.contextQuestCompletionSoundMenuOpen = false;
+            ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(
+                    state,
+                    targets,
+                    first.getString("completion_hud_background")
+            );
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+        if (selectionHasCompletionHudBackground(targets)) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), "delete", ModColors.WARNING, () -> {
+                EditorCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_completion_hud_background quests={}", targets.size());
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void addBatchCompletionSoundSubmenu(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
@@ -127,6 +148,16 @@ final class CanvasContextSelectionActions {
             }
         }
         return new CompoundTag();
+    }
+
+    private static boolean selectionHasCompletionHudBackground(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestCache.quest(questId);
+            if (quest != null && !QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(quest.getString("completion_hud_background")))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void addSelectionLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {

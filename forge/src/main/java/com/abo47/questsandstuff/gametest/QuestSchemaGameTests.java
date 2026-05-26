@@ -53,7 +53,20 @@ public final class QuestSchemaGameTests {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "test/roundtrip",
-                new QuestDisplay("Roundtrip", "", List.of(), Map.of("Main", ChapterDefinition.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay(
+                        "Roundtrip",
+                        "",
+                        List.of(),
+                        Map.of("Main", ChapterDefinition.DEFAULT),
+                        "minecraft:book",
+                        "minecraft:barrier",
+                        QuestDisplay.DEFAULT_COMPLETION_SOUND,
+                        QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME,
+                        "hud/roundtrip.png",
+                        false,
+                        QuestDisplay.DEFAULT_QUEST_BACKGROUND,
+                        false
+                ),
                 new QuestSettings(false, QuestVisibilityMode.PREREQUISITES_VISIBLE, false, false, false, true),
                 Set.of(),
                 Map.of(task.id(), task),
@@ -72,6 +85,9 @@ public final class QuestSchemaGameTests {
 
         if (!definition.id().equals(decoded.id()) || decoded.tasks().isEmpty() || decoded.rewards().isEmpty()) {
             throw new GameTestAssertException("Quest schema roundtrip mismatch");
+        }
+        if (!"hud/roundtrip.png".equals(decoded.display().completionHudBackground())) {
+            throw new GameTestAssertException("Completion HUD background did not roundtrip");
         }
 
         helper.succeed();

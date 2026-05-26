@@ -97,6 +97,8 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
     public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
+    public static final String CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.change_completion_hud_background";
+    public static final String CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.remove_completion_hud_background";
     public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
     public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
     public static final String SOUND_LEVEL = "ui.questsandstuff.sound.level";

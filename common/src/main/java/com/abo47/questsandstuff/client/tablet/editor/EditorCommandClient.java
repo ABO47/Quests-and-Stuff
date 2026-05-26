@@ -116,6 +116,14 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questIds, volume);
     }
 
+    public static void setQuestCompletionHudBackground(Player player, String questId, String background) {
+        EditorQuestCommandClient.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public static void setQuestCompletionHudBackground(Player player, Set<String> questIds, String background) {
+        EditorQuestCommandClient.setQuestCompletionHudBackground(player, questIds, background);
+    }
+
     public static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
         EditorQuestCommandClient.setQuestBackground(player, questId, background, grayscale);
     }

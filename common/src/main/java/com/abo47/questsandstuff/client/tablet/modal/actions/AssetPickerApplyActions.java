@@ -52,6 +52,20 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
             return;
         }
+        String completionHudTarget = state.modalQuestCompletionHudBackgroundTarget == null ? "" : state.modalQuestCompletionHudBackgroundTarget.trim();
+        if (!state.modalQuestCompletionHudBackgroundTargets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionHudBackground(player, state.modalQuestCompletionHudBackgroundTargets, background);
+            int count = state.modalQuestCompletionHudBackgroundTargets.size();
+            state.modalQuestCompletionHudBackgroundTargets.clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion hud background picked quests={} asset={}", count, background);
+            return;
+        }
+        if (!completionHudTarget.isBlank()) {
+            EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTarget, background);
+            state.modalQuestCompletionHudBackgroundTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest completion hud background picked quest={} asset={}", completionHudTarget, background);
+            return;
+        }
         String hudTarget = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
         QuestHudLayout.Element hudElement = hudElement(hudTarget);
         if (hudElement != null) {

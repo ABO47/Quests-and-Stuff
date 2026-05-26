@@ -10,8 +10,12 @@ final class QuestHudBackgroundRenderer {
     }
 
     static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected) {
+        draw(graphics, element, x, y, width, height, selected, "");
+    }
+
+    static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride) {
         int opacity = QuestHudLayout.opacityPercent(element);
-        String background = QuestHudLayout.background(element);
+        String background = backgroundOverride == null || backgroundOverride.isBlank() ? QuestHudLayout.background(element) : backgroundOverride.trim();
         if (!background.isBlank()) {
             IGuiTexture texture = TabletUiFactory.chapterBackgroundTexture(background);
             if (texture != null && opacity > 0) {

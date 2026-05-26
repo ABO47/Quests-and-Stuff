@@ -94,6 +94,7 @@ final class QuestSyncPayloadBuilder {
         questTag.putString("icon_background", definition.display().iconBackground());
         questTag.putString("completion_sound", definition.display().completionSound());
         questTag.putInt("completion_sound_volume", definition.display().completionSoundVolume());
+        questTag.putString("completion_hud_background", definition.display().completionHudBackground());
         questTag.putBoolean("visual_hidden", definition.display().visualHidden());
         questTag.putString("quest_background", definition.display().questBackground());
         questTag.putBoolean("quest_background_grayscale", definition.display().questBackgroundGrayscale());

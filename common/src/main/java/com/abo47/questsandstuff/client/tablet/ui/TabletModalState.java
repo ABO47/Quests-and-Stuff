@@ -145,6 +145,8 @@ public final class TabletModalState {
         state.modalQuestBackgroundTarget = "";
         state.modalQuestBackgroundTargets.clear();
         state.modalQuestBackgroundGrayscale = false;
+        state.modalQuestCompletionHudBackgroundTarget = "";
+        state.modalQuestCompletionHudBackgroundTargets.clear();
         state.modalHudBackgroundTarget = "";
         state.modalHudBackgroundOpacityDragging = false;
         state.entityVariantTarget = "";

@@ -328,6 +328,14 @@ public final class EditorSessionService {
         questActions.setQuestCompletionSoundVolume(player, questIds, volume);
     }
 
+    public void setQuestCompletionHudBackground(ServerPlayer player, String questId, String background) {
+        questActions.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
+        questActions.setQuestCompletionHudBackground(player, questIds, background);
+    }
+
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
         questActions.setQuestBackground(player, questId, background, grayscale);
     }

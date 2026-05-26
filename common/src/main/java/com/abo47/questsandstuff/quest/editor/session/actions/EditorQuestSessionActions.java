@@ -180,6 +180,14 @@ public final class EditorQuestSessionActions {
         displayEdits.setQuestCompletionSoundVolume(player, questIds, volume);
     }
 
+    public void setQuestCompletionHudBackground(ServerPlayer player, String questId, String background) {
+        displayEdits.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
+        displayEdits.setQuestCompletionHudBackground(player, questIds, background);
+    }
+
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
         displayEdits.setQuestBackground(player, questId, background, grayscale);
     }

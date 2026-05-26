@@ -126,6 +126,34 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, targets, normalizedVolume));
     }
 
+    static void setQuestCompletionHudBackground(Player player, String questId, String background) {
+        String normalizedQuestId = EditorCommandSender.id(questId);
+        String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
+        if (normalizedQuestId.isBlank()) {
+            return;
+        }
+        ClientQuestCache.setQuestCompletionHudBackgroundLocal(normalizedQuestId, normalizedBackground);
+        CompoundTag payload = EditorCommandSender.questPayload(normalizedQuestId);
+        payload.putString("background", normalizedBackground);
+        EditorCommandSender.run(player, "quest_completion_hud_background", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionHudBackground(serverPlayer, normalizedQuestId, normalizedBackground));
+    }
+
+    static void setQuestCompletionHudBackground(Player player, Set<String> questIds, String background) {
+        Set<String> targets = normalizedQuestIds(questIds);
+        String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
+        if (targets.isEmpty()) {
+            return;
+        }
+        for (String questId : targets) {
+            ClientQuestCache.setQuestCompletionHudBackgroundLocal(questId, normalizedBackground);
+        }
+        CompoundTag payload = questIdsPayload(targets);
+        payload.putString("background", normalizedBackground);
+        EditorCommandSender.run(player, "quest_completion_hud_background_many", payload,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionHudBackground(serverPlayer, targets, normalizedBackground));
+    }
+
     static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);

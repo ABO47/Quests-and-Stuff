@@ -228,6 +228,17 @@ public final class ClientQuestLocalMutations {
         quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
     }
 
+    public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putString("completion_hud_background", QuestDisplay.normalizeCompletionHudBackground(background));
+    }
+
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
         if (questId == null || questId.isBlank()) {
             return;
@@ -333,6 +344,7 @@ public final class ClientQuestLocalMutations {
         quest.putString("icon_background", "minecraft:barrier");
         quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
         quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
+        quest.putString("completion_hud_background", QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
         quest.putBoolean("visual_hidden", false);
         quest.putString("quest_background", QuestDisplay.DEFAULT_QUEST_BACKGROUND);
         quest.putBoolean("quest_background_grayscale", false);

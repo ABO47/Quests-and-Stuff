@@ -138,6 +138,14 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestCompletionSoundVolume(player, questIdsFromPayload(payload), payload.getInt("volume"));
                     return;
                 }
+                if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND) {
+                    editor.setQuestCompletionHudBackground(player, payload.getString("quest"), payload.getString("background"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY) {
+                    editor.setQuestCompletionHudBackground(player, questIdsFromPayload(payload), payload.getString("background"));
+                    return;
+                }
                 if (command.type() == EditorCommandType.QUEST_BACKGROUND) {
                     editor.setQuestBackground(player, payload.getString("quest"), payload.getString("background"), payload.getBoolean("grayscale"));
                     return;

@@ -38,8 +38,9 @@ public final class QuestCompletionNotificationOverlay {
         }
         CompoundTag quest = ClientQuestCache.quest(questId);
         String title = quest.getString("title");
+        String background = quest.getString("completion_hud_background");
         QuestCompletionSoundPlayer.play(quest.getString("completion_sound"), completionSoundVolume(quest));
-        NOTIFICATIONS.addLast(new Notification(title == null || title.isBlank() ? questId : title, System.currentTimeMillis()));
+        NOTIFICATIONS.addLast(new Notification(title == null || title.isBlank() ? questId : title, background, System.currentTimeMillis()));
         while (NOTIFICATIONS.size() > 3) {
             NOTIFICATIONS.removeFirst();
         }
@@ -71,7 +72,7 @@ public final class QuestCompletionNotificationOverlay {
         int x = box.x();
         int y = box.y() - Math.round((1.0f - easeOut(age)) * 12.0f * heightScale);
         int alpha = age > 0.78f ? Math.max(0, Math.round(255.0f * (1.0f - (age - 0.78f) / 0.22f))) : 255;
-        drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), alpha, age, false);
+        drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
     }
 
     public static void renderPreview(GuiGraphics graphics, int x, int y, boolean selected) {
@@ -93,13 +94,14 @@ public final class QuestCompletionNotificationOverlay {
                 width,
                 height,
                 Component.translatable("ui.questsandstuff.hud.completion_preview").getString(),
+                "",
                 255,
                 0.85f,
                 selected
         );
     }
 
-    private static void drawNotification(GuiGraphics graphics, int x, int y, int width, int height, String titleValue, int alpha, float age, boolean selected) {
+    private static void drawNotification(GuiGraphics graphics, int x, int y, int width, int height, String titleValue, String background, int alpha, float age, boolean selected) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         int safeW = Math.max(1, width);
@@ -107,7 +109,7 @@ public final class QuestCompletionNotificationOverlay {
         int contentW = Math.max(0, safeW - 14);
         int text = TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, alpha);
 
-        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected);
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected, background);
         if (safeH >= 10) {
             int barH = safeH < 24 ? 4 : 6;
             QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, Math.min(1.0f, age * 1.8f), ModColors.SUCCESS, alpha);
@@ -162,6 +164,6 @@ public final class QuestCompletionNotificationOverlay {
         return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
-    private record Notification(String title, long startedAtMs) {
+    private record Notification(String title, String background, long startedAtMs) {
     }
 }
