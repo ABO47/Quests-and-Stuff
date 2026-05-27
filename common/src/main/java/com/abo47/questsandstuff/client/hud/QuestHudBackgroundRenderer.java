@@ -15,26 +15,31 @@ final class QuestHudBackgroundRenderer {
     }
 
     static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride) {
+        draw(graphics, element, x, y, width, height, selected, backgroundOverride, 255);
+    }
+
+    static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride, int alpha) {
         int opacity = QuestHudLayout.opacityPercent(element);
+        float animationAlpha = Math.max(0, Math.min(255, alpha)) / 255.0f;
+        float effectiveOpacity = opacity / 100.0f * animationAlpha;
         String override = normalizeBackground(backgroundOverride);
         String background = override.isBlank() ? normalizeBackground(QuestHudLayout.background(element)) : override;
         if (!background.isBlank()) {
             IGuiTexture texture = TabletUiFactory.chapterBackgroundTexture(background);
-            if (texture != null && opacity > 0) {
+            if (texture != null && effectiveOpacity > 0.0f) {
                 resetTextureState(graphics);
-                float alpha = opacity / 100.0f;
-                graphics.setColor(1.0f, 1.0f, 1.0f, alpha);
+                graphics.setColor(1.0f, 1.0f, 1.0f, effectiveOpacity);
                 texture.draw(graphics, 0, 0, x, y, width, height);
                 resetTextureState(graphics);
-                graphics.fill(x, y, x + width, y + height, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * alpha)));
+                graphics.fill(x, y, x + width, y + height, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity)));
             }
         } else {
-            int panelAlpha = Math.round(224.0f * opacity / 100.0f);
+            int panelAlpha = Math.round(224.0f * effectiveOpacity);
             if (panelAlpha > 0) {
                 graphics.fill(x, y, x + width, y + height, TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL, panelAlpha));
             }
         }
-        int borderAlpha = selected ? 240 : Math.round(150.0f * opacity / 100.0f);
+        int borderAlpha = Math.round((selected ? 240.0f : 150.0f * opacity / 100.0f) * animationAlpha);
         if (borderAlpha > 0) {
             graphics.renderOutline(x, y, width, height, TabletUiFactory.withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
         }
