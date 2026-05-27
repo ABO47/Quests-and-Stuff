@@ -210,6 +210,24 @@ public final class TabletSettingsModal {
     private static List<SettingOption> hudOptions() {
         return List.of(
                 new SettingOption(
+                        "completionHud",
+                        "ui.questsandstuff.settings.completion_hud",
+                        "ui.questsandstuff.settings.completion_hud_desc",
+                        QuestsAndStuffConfig::completionHudEnabled,
+                        QuestsAndStuffConfig::setCompletionHudEnabled,
+                        false,
+                        false
+                ),
+                new SettingOption(
+                        "completionHudSound",
+                        "ui.questsandstuff.settings.completion_hud_sound",
+                        "ui.questsandstuff.settings.completion_hud_sound_desc",
+                        QuestsAndStuffConfig::completionHudSoundEnabled,
+                        QuestsAndStuffConfig::setCompletionHudSoundEnabled,
+                        false,
+                        false
+                ),
+                new SettingOption(
                         "completionHudDurationMs",
                         "ui.questsandstuff.settings.completion_hud_duration",
                         "ui.questsandstuff.settings.completion_hud_duration_desc",

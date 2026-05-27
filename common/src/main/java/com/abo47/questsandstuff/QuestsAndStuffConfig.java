@@ -34,6 +34,8 @@ public final class QuestsAndStuffConfig {
     private static boolean questEffectIcons;
     private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
+    private static boolean completionHud = true;
+    private static boolean completionHudSound = true;
     private static int completionHudDurationMs = DEFAULT_COMPLETION_HUD_DURATION_MS;
 
     private QuestsAndStuffConfig() {
@@ -288,6 +290,32 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean completionHudEnabled() {
+        load();
+        return completionHud;
+    }
+
+    public static void setCompletionHudEnabled(boolean enabled) {
+        load();
+        if (completionHud != enabled) {
+            completionHud = enabled;
+            save();
+        }
+    }
+
+    public static boolean completionHudSoundEnabled() {
+        load();
+        return completionHudSound;
+    }
+
+    public static void setCompletionHudSoundEnabled(boolean enabled) {
+        load();
+        if (completionHudSound != enabled) {
+            completionHudSound = enabled;
+            save();
+        }
+    }
+
     public static int completionHudDurationMs() {
         load();
         return completionHudDurationMs;
@@ -330,6 +358,8 @@ public final class QuestsAndStuffConfig {
         autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
 
         JsonObject hud = object(root, "hud");
+        completionHud = bool(hud, "completionHud", completionHud);
+        completionHudSound = bool(hud, "completionHudSound", completionHudSound);
         completionHudDurationMs = normalizeCompletionHudDurationMs(intValue(hud, "completionHudDurationMs", completionHudDurationMs));
 
         JsonObject security = object(root, "security");
@@ -365,6 +395,8 @@ public final class QuestsAndStuffConfig {
         root.add("rewards", rewards);
 
         JsonObject hud = new JsonObject();
+        hud.addProperty("completionHud", completionHud);
+        hud.addProperty("completionHudSound", completionHudSound);
         hud.addProperty("completionHudDurationMs", completionHudDurationMs);
         root.add("hud", hud);
 

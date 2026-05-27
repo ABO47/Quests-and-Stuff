@@ -38,7 +38,7 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     public static void push(String questId) {
-        if (questId == null || questId.isBlank()) {
+        if (!QuestsAndStuffConfig.completionHudEnabled() || questId == null || questId.isBlank()) {
             return;
         }
         CompoundTag quest = ClientQuestCache.quest(questId);
@@ -58,6 +58,13 @@ public final class QuestCompletionNotificationOverlay {
         if (minecraft.player == null) {
             clear();
             return;
+        }
+        if (!QuestsAndStuffConfig.completionHudEnabled()) {
+            clear();
+            return;
+        }
+        if (!QuestsAndStuffConfig.completionHudSoundEnabled()) {
+            fadeOutActiveSound();
         }
         long now = System.currentTimeMillis();
         long displayMs = QuestsAndStuffConfig.completionHudDurationMs();
@@ -212,14 +219,20 @@ public final class QuestCompletionNotificationOverlay {
         if (pending == null) {
             return;
         }
-        activeSound = QuestCompletionSoundPlayer.play(pending.soundId(), pending.soundVolume());
+        activeSound = QuestsAndStuffConfig.completionHudSoundEnabled()
+                ? QuestCompletionSoundPlayer.play(pending.soundId(), pending.soundVolume())
+                : null;
         activeNotification = new ActiveNotification(pending.title(), pending.background(), now);
     }
 
     private static void finishActiveNotification() {
+        fadeOutActiveSound();
+        activeNotification = null;
+    }
+
+    private static void fadeOutActiveSound() {
         QuestCompletionSoundPlayer.fadeOut(activeSound);
         activeSound = null;
-        activeNotification = null;
     }
 
     private static void clear() {
