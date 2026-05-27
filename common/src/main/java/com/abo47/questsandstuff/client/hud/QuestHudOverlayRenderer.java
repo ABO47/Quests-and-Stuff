@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.hud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 public final class QuestHudOverlayRenderer {
@@ -8,6 +9,9 @@ public final class QuestHudOverlayRenderer {
     }
 
     public static void render(GuiGraphics graphics) {
+        if (Minecraft.getInstance().screen != null) {
+            return;
+        }
         resetGuiState(graphics);
         QuestCompletionNotificationOverlay.render(graphics);
         PinnedQuestHudOverlay.render(graphics);

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -50,27 +51,12 @@ public final class ScopedItemStackTexture extends ItemStackTexture {
             return;
         }
 
-        applyColor();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0.0f);
         graphics.pose().scale(width / 16.0f, height / 16.0f, 1.0f);
-        Minecraft minecraft = Minecraft.getInstance();
-        graphics.renderItem(stack, 0, 0);
-        graphics.renderItemDecorations(minecraft.font, stack, 0, 0);
+        DrawerHelper.drawItemStack(graphics, stack, 0, 0, getColor(), null);
         graphics.pose().popPose();
-        graphics.flush();
         restoreGuiState(graphics);
-    }
-
-    private void applyColor() {
-        int color = getColor();
-        float alpha = ((color >>> 24) & 0xFF) / 255.0f;
-        float red = ((color >>> 16) & 0xFF) / 255.0f;
-        float green = ((color >>> 8) & 0xFF) / 255.0f;
-        float blue = (color & 0xFF) / 255.0f;
-        RenderSystem.setShaderColor(red, green, blue, alpha);
     }
 
     private static void restoreGuiState(GuiGraphics graphics) {
