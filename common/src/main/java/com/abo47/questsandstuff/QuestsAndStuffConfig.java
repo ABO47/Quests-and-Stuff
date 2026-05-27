@@ -14,6 +14,9 @@ import java.nio.file.StandardOpenOption;
 
 public final class QuestsAndStuffConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = 2600;
+    public static final int MIN_COMPLETION_HUD_DURATION_MS = 500;
+    public static final int MAX_COMPLETION_HUD_DURATION_MS = 60000;
 
     private static boolean loaded;
     private static boolean debugLogging;
@@ -31,6 +34,7 @@ public final class QuestsAndStuffConfig {
     private static boolean questEffectIcons;
     private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
+    private static int completionHudDurationMs = DEFAULT_COMPLETION_HUD_DURATION_MS;
 
     private QuestsAndStuffConfig() {
     }
@@ -284,6 +288,24 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static int completionHudDurationMs() {
+        load();
+        return completionHudDurationMs;
+    }
+
+    public static void setCompletionHudDurationMs(int durationMs) {
+        load();
+        int normalized = normalizeCompletionHudDurationMs(durationMs);
+        if (completionHudDurationMs != normalized) {
+            completionHudDurationMs = normalized;
+            save();
+        }
+    }
+
+    public static int normalizeCompletionHudDurationMs(int durationMs) {
+        return Math.max(MIN_COMPLETION_HUD_DURATION_MS, Math.min(MAX_COMPLETION_HUD_DURATION_MS, durationMs));
+    }
+
     private static void read(JsonObject root) {
         JsonObject debug = object(root, "debug");
         debugLogging = bool(debug, "debugLogging", debugLogging);
@@ -306,6 +328,9 @@ public final class QuestsAndStuffConfig {
 
         JsonObject rewards = object(root, "rewards");
         autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
+
+        JsonObject hud = object(root, "hud");
+        completionHudDurationMs = normalizeCompletionHudDurationMs(intValue(hud, "completionHudDurationMs", completionHudDurationMs));
 
         JsonObject security = object(root, "security");
         commandRewards = bool(security, "commandRewards", commandRewards);
@@ -339,6 +364,10 @@ public final class QuestsAndStuffConfig {
         rewards.addProperty("autoClaimRewards", autoClaimRewards);
         root.add("rewards", rewards);
 
+        JsonObject hud = new JsonObject();
+        hud.addProperty("completionHudDurationMs", completionHudDurationMs);
+        root.add("hud", hud);
+
         JsonObject security = new JsonObject();
         security.addProperty("commandRewards", commandRewards);
         root.add("security", security);
@@ -370,6 +399,17 @@ public final class QuestsAndStuffConfig {
         if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
             try {
                 return root.get(key).getAsBoolean();
+            } catch (Exception ignored) {
+                return fallback;
+            }
+        }
+        return fallback;
+    }
+
+    private static int intValue(JsonObject root, String key, int fallback) {
+        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
+            try {
+                return root.get(key).getAsInt();
             } catch (Exception ignored) {
                 return fallback;
             }

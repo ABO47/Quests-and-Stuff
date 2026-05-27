@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.hud;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -17,7 +18,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public final class QuestCompletionNotificationOverlay {
-    private static final long DISPLAY_MS = 2600L;
     private static final int WIDTH = 128;
     private static final int HEIGHT = 32;
     private static final int MAX_NOTIFICATIONS = 3;
@@ -59,14 +59,15 @@ public final class QuestCompletionNotificationOverlay {
             return;
         }
         long now = System.currentTimeMillis();
-        updateActiveNotification(now);
+        long displayMs = QuestsAndStuffConfig.completionHudDurationMs();
+        updateActiveNotification(now, displayMs);
         ActiveNotification notification = activeNotification;
         if (notification == null) {
             return;
         }
 
         Window window = minecraft.getWindow();
-        float age = Math.max(0.0f, Math.min(1.0f, (now - notification.startedAtMs()) / (float) DISPLAY_MS));
+        float age = Math.max(0.0f, Math.min(1.0f, (now - notification.startedAtMs()) / (float) displayMs));
         float heightScale = QuestHudLayout.heightScale(QuestHudLayout.Element.COMPLETION);
         QuestHudLayout.HudBox box = QuestHudLayout.completionBox(
                 window.getGuiScaledWidth(),
@@ -173,8 +174,8 @@ public final class QuestCompletionNotificationOverlay {
         return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
-    private static void updateActiveNotification(long now) {
-        if (activeNotification != null && now - activeNotification.startedAtMs() > DISPLAY_MS) {
+    private static void updateActiveNotification(long now, long displayMs) {
+        if (activeNotification != null && now - activeNotification.startedAtMs() > displayMs) {
             finishActiveNotification();
         }
         if (activeNotification == null) {
