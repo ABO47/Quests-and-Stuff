@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.screen;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -35,6 +36,12 @@ public final class TabletClientHooks {
             "key.questsandstuff.rename_selected",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_F3,
+            CATEGORY
+    );
+    private static final KeyMapping EDIT_HUD = new KeyMapping(
+            "key.questsandstuff.edit_hud",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
             CATEGORY
     );
     private static final KeyMapping GIZMO_MOVE = new KeyMapping(
@@ -68,6 +75,7 @@ public final class TabletClientHooks {
         registrar.accept(OPEN_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
+        registrar.accept(EDIT_HUD);
         registrar.accept(GIZMO_MOVE);
         registrar.accept(GIZMO_RESIZE);
         registrar.accept(GIZMO_ROTATE);
@@ -168,12 +176,32 @@ public final class TabletClientHooks {
             openQuestTabletUi(minecraft, minecraft.player);
             break;
         }
+        while (EDIT_HUD.consumeClick()) {
+            minecraft.setScreen(new QuestHudLayoutEditScreen());
+            QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from keybind");
+            break;
+        }
     }
 
     public static void openQuestTabletUiFromItem(Player player) {
         if (player instanceof LocalPlayer localPlayer) {
             openQuestTabletUi(Minecraft.getInstance(), localPlayer);
         }
+    }
+
+    public static void applyQuestTabletLayoutMode(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        TabletUiFactory.applyRootSize(state, rootW, rootH, fullScreen);
+        if (minecraft.screen instanceof QuestTabletGuiContainer container) {
+            container.modularUI.setSize(rootW, rootH);
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] tablet layout mode fullscreen={} width={} height={}", fullScreen, rootW, rootH);
     }
 
     private static void resetSessionLocalState() {
@@ -189,11 +217,28 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
-        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player), IUIHolder.EMPTY, player);
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
-        ModularUIGuiContainer modularUiGui = new ModularUIGuiContainer(uiTemplate, player.containerMenu.containerId);
+        QuestTabletGuiContainer modularUiGui = new QuestTabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
         QuestsAndStuffMod.debugLog("[QnS:UI] keybind open ui direct");
+    }
+
+    private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {
+        if (!fullScreen || minecraft == null) {
+            return TabletUiFactory.ROOT_W;
+        }
+        return Math.max(1, minecraft.getWindow().getGuiScaledWidth());
+    }
+
+    private static int targetRootHeight(Minecraft minecraft, boolean fullScreen) {
+        if (!fullScreen || minecraft == null) {
+            return TabletUiFactory.ROOT_H;
+        }
+        return Math.max(1, minecraft.getWindow().getGuiScaledHeight());
     }
 }

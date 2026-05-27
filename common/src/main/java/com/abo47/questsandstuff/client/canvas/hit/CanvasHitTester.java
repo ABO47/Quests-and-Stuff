@@ -27,6 +27,9 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.FONT_SIZ
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
 
 public final class CanvasHitTester {
+    private static final int TEXT_MENU_GAP = 1;
+    private static final int TEXT_MENU_MARGIN = 4;
+
     private CanvasHitTester() {
     }
 
@@ -178,23 +181,17 @@ public final class CanvasHitTester {
     }
 
     public static int[] canvasTextMenuBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
-        int sx = CanvasGeometry.screenX(state, text.x());
-        int sy = CanvasGeometry.screenY(state, text.y());
-        int sh = CanvasGeometry.screenSpan(state, text.h());
         int buttonW = 18;
         int usableColumns = Math.max(1, (Math.max(1, viewportW) - 12) / buttonW);
         int columns = Math.max(4, Math.min(toolCount, usableColumns));
         int rows = Math.max(1, (toolCount + columns - 1) / columns);
         int menuW = columns * buttonW + 4;
         int menuH = rows * 16 + 4;
-        int x = Math.max(4, Math.min(sx, viewportW - menuW - 4));
-        int below = sy + sh + 3;
-        int above = sy - menuH - 3;
-        int y = below + menuH <= viewportH - 4
-                ? below
-                : above >= 4
-                ? above
-                : Math.max(4, Math.min(below, viewportH - menuH - 4));
+        int occupiedH = menuH + activeFontSizeSliderHeight(state, text);
+        int[] textBounds = rotatedTextScreenBounds(state, text);
+        MenuCandidate best = bestMenuCandidate(textBounds, viewportW, viewportH, menuW, occupiedH);
+        int x = best.x();
+        int y = best.y();
         return new int[]{x, y, menuW, menuH, buttonW, columns};
     }
 
@@ -246,6 +243,119 @@ public final class CanvasHitTester {
         List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
         texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(order, CanvasLayerOrdering.textKey(text.id()))));
         return texts;
+    }
+
+    private static int activeFontSizeSliderHeight(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null) {
+            return 0;
+        }
+        String id = text.id();
+        boolean mainCanvasSliderOpen = state.canvasTextMenuOpen && id.equals(state.canvasTextFontSizeSliderTarget);
+        boolean questDetailsSliderOpen = (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeSliderTarget.isBlank())
+                && id.equals(state.questDetailsTextFontSizeSliderTarget);
+        if (mainCanvasSliderOpen || questDetailsSliderOpen) {
+            return FONT_SIZE_SLIDER_POPOVER_GAP + FONT_SIZE_SLIDER_POPOVER_H;
+        }
+        return 0;
+    }
+
+    private static int[] rotatedTextScreenBounds(TabletUiState state, CanvasTextLayer text) {
+        int sx = CanvasGeometry.screenX(state, text.x());
+        int sy = CanvasGeometry.screenY(state, text.y());
+        int sw = CanvasGeometry.screenSpan(state, text.w());
+        int sh = CanvasGeometry.screenSpan(state, text.h());
+        double centerX = sx + sw / 2.0D;
+        double centerY = sy + sh / 2.0D;
+        double radians = Math.toRadians(text.rotation());
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        double[][] corners = {
+                {sx, sy},
+                {sx + sw, sy},
+                {sx + sw, sy + sh},
+                {sx, sy + sh}
+        };
+        for (double[] corner : corners) {
+            double localX = corner[0] - centerX;
+            double localY = corner[1] - centerY;
+            double x = centerX + localX * cos - localY * sin;
+            double y = centerY + localX * sin + localY * cos;
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+        }
+        return new int[]{
+                (int) Math.floor(minX),
+                (int) Math.floor(minY),
+                (int) Math.ceil(maxX),
+                (int) Math.ceil(maxY)
+        };
+    }
+
+    private static MenuCandidate bestMenuCandidate(int[] avoidBounds, int viewportW, int viewportH, int menuW, int occupiedH) {
+        int safeViewportW = Math.max(1, viewportW);
+        int safeViewportH = Math.max(1, viewportH);
+        int targetCenterX = (avoidBounds[0] + avoidBounds[2]) / 2;
+        int targetCenterY = (avoidBounds[1] + avoidBounds[3]) / 2;
+        int[][] rawCandidates = {
+                {targetCenterX - menuW / 2, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
+                {targetCenterX - menuW / 2, avoidBounds[3] + TEXT_MENU_GAP},
+                {avoidBounds[0] - menuW - TEXT_MENU_GAP, targetCenterY - occupiedH / 2},
+                {avoidBounds[2] + TEXT_MENU_GAP, targetCenterY - occupiedH / 2},
+                {avoidBounds[0] - menuW - TEXT_MENU_GAP, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
+                {avoidBounds[2] + TEXT_MENU_GAP, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
+                {avoidBounds[0] - menuW - TEXT_MENU_GAP, avoidBounds[3] + TEXT_MENU_GAP},
+                {avoidBounds[2] + TEXT_MENU_GAP, avoidBounds[3] + TEXT_MENU_GAP}
+        };
+
+        MenuCandidate best = null;
+        for (int i = 0; i < rawCandidates.length; i++) {
+            int rawX = rawCandidates[i][0];
+            int rawY = rawCandidates[i][1];
+            int x = clamp(rawX, TEXT_MENU_MARGIN, Math.max(TEXT_MENU_MARGIN, safeViewportW - menuW - TEXT_MENU_MARGIN));
+            int y = clamp(rawY, TEXT_MENU_MARGIN, Math.max(TEXT_MENU_MARGIN, safeViewportH - occupiedH - TEXT_MENU_MARGIN));
+            int overlap = overlapArea(x, y, menuW, occupiedH, avoidBounds);
+            int overflow = overflowAmount(x, y, menuW, occupiedH, safeViewportW, safeViewportH);
+            int shift = Math.abs(x - rawX) + Math.abs(y - rawY);
+            long score = (long) overlap * 100_000L + (long) overflow * 1_000L + (long) shift * 10L + i;
+            MenuCandidate candidate = new MenuCandidate(x, y, score);
+            if (best == null || candidate.score() < best.score()) {
+                best = candidate;
+            }
+        }
+        return best == null ? new MenuCandidate(TEXT_MENU_MARGIN, TEXT_MENU_MARGIN, 0L) : best;
+    }
+
+    private static int clamp(int value, int min, int max) {
+        if (max < min) {
+            return min;
+        }
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private static int overlapArea(int x, int y, int w, int h, int[] bounds) {
+        int left = Math.max(x, bounds[0]);
+        int top = Math.max(y, bounds[1]);
+        int right = Math.min(x + w, bounds[2]);
+        int bottom = Math.min(y + h, bounds[3]);
+        if (right <= left || bottom <= top) {
+            return 0;
+        }
+        return (right - left) * (bottom - top);
+    }
+
+    private static int overflowAmount(int x, int y, int w, int h, int viewportW, int viewportH) {
+        int overflow = 0;
+        overflow += Math.max(0, TEXT_MENU_MARGIN - x);
+        overflow += Math.max(0, TEXT_MENU_MARGIN - y);
+        overflow += Math.max(0, x + w + TEXT_MENU_MARGIN - viewportW);
+        overflow += Math.max(0, y + h + TEXT_MENU_MARGIN - viewportH);
+        return overflow;
     }
 
     private static boolean nearHorizontal(int x, int y, int lineY, int x1, int x2, int tolerance) {
@@ -306,5 +416,8 @@ public final class CanvasHitTester {
 
     private static int toolY(int index, int columns) {
         return 2 + (index / Math.max(1, columns)) * 16;
+    }
+
+    private record MenuCandidate(int x, int y, long score) {
     }
 }

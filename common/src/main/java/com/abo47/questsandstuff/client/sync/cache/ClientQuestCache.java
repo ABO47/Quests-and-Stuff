@@ -94,6 +94,10 @@ public final class ClientQuestCache {
         return ClientQuestState.pinnedSnapshot();
     }
 
+    public static void togglePinnedLocal(String questId) {
+        ClientQuestState.togglePinned(questId);
+    }
+
     public static Map<String, String> advancementDisplays() {
         return ClientDisplayState.advancementDisplays();
     }
@@ -356,10 +360,6 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setQuestIconLocal(questId, icon);
     }
 
-    public static void setQuestAutoClaimLocal(String questId, boolean enabled) {
-        ClientQuestLocalMutations.setQuestAutoClaimLocal(questId, enabled);
-    }
-
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
         ClientQuestLocalMutations.setQuestRepeatableLocal(questId, enabled);
     }
@@ -378,6 +378,10 @@ public final class ClientQuestCache {
 
     public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
         ClientQuestLocalMutations.setQuestCompletionSoundVolumeLocal(questId, volume);
+    }
+
+    public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
+        ClientQuestLocalMutations.setQuestCompletionHudBackgroundLocal(questId, background);
     }
 
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {

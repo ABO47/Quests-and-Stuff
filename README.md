@@ -36,6 +36,10 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Grid, snapping, center guides, and other editor tools
 - Quest minimap for quests and connections
 - Custom UI themes
+- Full screen quest tablet canvas mode
+- Pinned quest HUD for tracking Requirements without opening the tablet.
+- HUD layout editor with move, resize, snap-to-grid, reset, cancel, and background styling controls.
+- Per-quest completion HUD backgrounds.
 
 ## Dependencies
 
@@ -45,7 +49,6 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 ## WIP
 
 - Full coordinate/radius UI for location requirements
-- more customizable quest completion HUD
 - Blueprint system for reusable quest layouts
 - Import and export for quest packs
 

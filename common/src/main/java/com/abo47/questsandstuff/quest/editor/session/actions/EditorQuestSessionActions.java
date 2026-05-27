@@ -58,7 +58,6 @@ public final class EditorQuestSessionActions {
             return "Settings: -";
         }
         return "R=" + yesNo(quest.settings().repeatable())
-                + " A=" + yesNo(quest.settings().autoClaimRewards())
                 + " I=" + yesNo(quest.settings().individualProgress())
                 + " H=" + quest.settings().hiddenMode().name();
     }
@@ -180,6 +179,14 @@ public final class EditorQuestSessionActions {
         displayEdits.setQuestCompletionSoundVolume(player, questIds, volume);
     }
 
+    public void setQuestCompletionHudBackground(ServerPlayer player, String questId, String background) {
+        displayEdits.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
+        displayEdits.setQuestCompletionHudBackground(player, questIds, background);
+    }
+
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {
         displayEdits.setQuestBackground(player, questId, background, grayscale);
     }
@@ -216,16 +223,8 @@ public final class EditorQuestSessionActions {
         settingsEdits.toggleRepeatable(player);
     }
 
-    public void toggleAutoClaim(ServerPlayer player) {
-        settingsEdits.toggleAutoClaim(player);
-    }
-
     public void toggleIndividual(ServerPlayer player) {
         settingsEdits.toggleIndividual(player);
-    }
-
-    public void setQuestAutoClaim(ServerPlayer player, String questId, boolean enabled) {
-        settingsEdits.setQuestAutoClaim(player, questId, enabled);
     }
 
     public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {

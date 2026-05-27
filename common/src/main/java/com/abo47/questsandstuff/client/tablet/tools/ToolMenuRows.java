@@ -35,6 +35,11 @@ final class ToolMenuRows {
         advance();
     }
 
+    void action(String iconName, int accentColor, Component[] tooltip, Runnable action) {
+        TabletToolButtons.addAction(menu, x, y, slot, border, iconName, accentColor, tooltip, action);
+        advance();
+    }
+
     void opacity(String iconName, Component[] tooltip, Consumer<Boolean> action) {
         TabletToolButtons.addOpacity(menu, x, y, slot, border, iconName, tooltip, action);
         advance();

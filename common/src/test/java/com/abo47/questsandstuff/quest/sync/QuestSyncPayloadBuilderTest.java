@@ -28,7 +28,20 @@ class QuestSyncPayloadBuilderTest {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "quest_a",
-                new QuestDisplay("Title", "Subtitle", java.util.List.of(), Map.of("main", ChapterDefinition.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay(
+                        "Title",
+                        "Subtitle",
+                        java.util.List.of(),
+                        Map.of("main", ChapterDefinition.DEFAULT),
+                        "minecraft:book",
+                        "minecraft:barrier",
+                        QuestDisplay.DEFAULT_COMPLETION_SOUND,
+                        QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME,
+                        "hud/quest_a.png",
+                        false,
+                        QuestDisplay.DEFAULT_QUEST_BACKGROUND,
+                        false
+                ),
                 QuestSettings.DEFAULT,
                 Set.of("z_parent", "a_parent"),
                 Map.of(),
@@ -47,6 +60,7 @@ class QuestSyncPayloadBuilderTest {
         CompoundTag modes = payload.getCompound("connection_modes");
         assertEquals("grid", modes.getString("a_parent"));
         assertFalse(modes.contains("z_parent"));
+        assertEquals("hud/quest_a.png", payload.getString("completion_hud_background"));
 
         ListTag hidden = payload.getList("hidden_connections", net.minecraft.nbt.Tag.TAG_STRING);
         assertEquals("a_parent", hidden.getString(0));

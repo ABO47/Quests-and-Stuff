@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class TabletUiState {
+    public boolean fullScreenMode;
+    public int tabletRootWidth = 544;
+    public int tabletRootHeight = 352;
     public String selectedGroup = "";
     public String search = "";
     public boolean searchFocused;
@@ -33,6 +36,11 @@ public class TabletUiState {
     public int chapterSplitterDragStartX;
     public int chapterSplitterStartWidth;
     public String lastJumpQuest = "";
+    public String pendingCameraQuestId = "";
+    public String pendingCameraGroup = "";
+    public String canvasCameraGroup = "";
+    public final Map<String, CanvasDoublePoint> canvasCameraCentersByGroup = new HashMap<>();
+    public final Map<String, Float> canvasCameraZoomsByGroup = new HashMap<>();
     public final SelectionModel<String> questSelection = new SelectionModel<>();
     public final Set<String> selectedQuestIds = questSelection.values();
     public final Map<String, CanvasPoint> transientQuestPositions = new HashMap<>();
@@ -75,7 +83,7 @@ public class TabletUiState {
     public int gridSizeIndex = 2;
     public int gridOpacityIndex = 2;
     public int gridOpacityPercent = 50;
-    public int canvasBgOpacityIndex = 2;
+    public int canvasBgOpacityIndex = 4;
     public int canvasBgOpacityPercent = 60;
     public float canvasZoom = 1.0f;
     public boolean canvasLimitEnabled;
@@ -142,6 +150,11 @@ public class TabletUiState {
     public String modalQuestBackgroundTarget = "";
     public final Set<String> modalQuestBackgroundTargets = new java.util.LinkedHashSet<>();
     public boolean modalQuestBackgroundGrayscale;
+    public String modalQuestCompletionHudBackgroundTarget = "";
+    public final Set<String> modalQuestCompletionHudBackgroundTargets = new java.util.LinkedHashSet<>();
+    public String modalHudBackgroundTarget = "";
+    public int modalHudBackgroundOpacityDraft = 68;
+    public boolean modalHudBackgroundOpacityDragging;
     public String entityVariantTarget = "";
     public String entityVariantSelected = "";
     public String entityVariantFolder = "";
@@ -448,6 +461,8 @@ public class TabletUiState {
     public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
     public final Map<String, CanvasImageLayer> transientCanvasImages = new HashMap<>();
     public final Map<String, CanvasTextLayer> transientCanvasTexts = new HashMap<>();
+    public final Map<String, CanvasImageLayer> questDetailsTransientImages = new HashMap<>();
+    public final Map<String, CanvasTextLayer> questDetailsTransientTexts = new HashMap<>();
     public final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
     public boolean canvasQuestClipboardAvailable;
     public int canvasClipboardOriginX;
@@ -574,6 +589,10 @@ public class TabletUiState {
     public int minimapWorldMinY;
     public int minimapWorldWidth = 1;
     public int minimapWorldHeight = 1;
+    public int canvasNavigationMinX;
+    public int canvasNavigationMinY;
+    public int canvasNavigationWidth = 1;
+    public int canvasNavigationHeight = 1;
     public int canvasContentX = 6;
     public int canvasContentY = 6;
     public int canvasContentW;

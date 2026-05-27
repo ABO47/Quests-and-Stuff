@@ -14,6 +14,9 @@ import java.nio.file.StandardOpenOption;
 
 public final class QuestsAndStuffConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = 2600;
+    public static final int MIN_COMPLETION_HUD_DURATION_MS = 0;
+    public static final int MAX_COMPLETION_HUD_DURATION_MS = 60000;
 
     private static boolean loaded;
     private static boolean debugLogging;
@@ -25,8 +28,15 @@ public final class QuestsAndStuffConfig {
     private static boolean popupWindowAnimations = true;
     private static boolean connectionAnimations = true;
     private static boolean chapterSwitchAnimations = true;
+    private static boolean fullScreenMode;
     private static boolean minimap = true;
+    private static boolean readOnlyCanvasFocus;
+    private static boolean questEffectIcons;
+    private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
+    private static boolean completionHud = true;
+    private static boolean completionHudSound = true;
+    private static int completionHudDurationMs = DEFAULT_COMPLETION_HUD_DURATION_MS;
 
     private QuestsAndStuffConfig() {
     }
@@ -202,6 +212,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean fullScreenModeEnabled() {
+        load();
+        return fullScreenMode;
+    }
+
+    public static void setFullScreenModeEnabled(boolean enabled) {
+        load();
+        if (fullScreenMode != enabled) {
+            fullScreenMode = enabled;
+            save();
+        }
+    }
+
     public static boolean minimapEnabled() {
         load();
         return minimap;
@@ -211,6 +234,45 @@ public final class QuestsAndStuffConfig {
         load();
         if (minimap != enabled) {
             minimap = enabled;
+            save();
+        }
+    }
+
+    public static boolean readOnlyCanvasFocusEnabled() {
+        load();
+        return readOnlyCanvasFocus;
+    }
+
+    public static void setReadOnlyCanvasFocusEnabled(boolean enabled) {
+        load();
+        if (readOnlyCanvasFocus != enabled) {
+            readOnlyCanvasFocus = enabled;
+            save();
+        }
+    }
+
+    public static boolean questEffectIconsEnabled() {
+        load();
+        return questEffectIcons;
+    }
+
+    public static void setQuestEffectIconsEnabled(boolean enabled) {
+        load();
+        if (questEffectIcons != enabled) {
+            questEffectIcons = enabled;
+            save();
+        }
+    }
+
+    public static boolean autoClaimRewardsEnabled() {
+        load();
+        return autoClaimRewards;
+    }
+
+    public static void setAutoClaimRewardsEnabled(boolean enabled) {
+        load();
+        if (autoClaimRewards != enabled) {
+            autoClaimRewards = enabled;
             save();
         }
     }
@@ -228,6 +290,50 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean completionHudEnabled() {
+        load();
+        return completionHud;
+    }
+
+    public static void setCompletionHudEnabled(boolean enabled) {
+        load();
+        if (completionHud != enabled) {
+            completionHud = enabled;
+            save();
+        }
+    }
+
+    public static boolean completionHudSoundEnabled() {
+        load();
+        return completionHudSound;
+    }
+
+    public static void setCompletionHudSoundEnabled(boolean enabled) {
+        load();
+        if (completionHudSound != enabled) {
+            completionHudSound = enabled;
+            save();
+        }
+    }
+
+    public static int completionHudDurationMs() {
+        load();
+        return completionHudDurationMs;
+    }
+
+    public static void setCompletionHudDurationMs(int durationMs) {
+        load();
+        int normalized = normalizeCompletionHudDurationMs(durationMs);
+        if (completionHudDurationMs != normalized) {
+            completionHudDurationMs = normalized;
+            save();
+        }
+    }
+
+    public static int normalizeCompletionHudDurationMs(int durationMs) {
+        return Math.max(MIN_COMPLETION_HUD_DURATION_MS, Math.min(MAX_COMPLETION_HUD_DURATION_MS, durationMs));
+    }
+
     private static void read(JsonObject root) {
         JsonObject debug = object(root, "debug");
         debugLogging = bool(debug, "debugLogging", debugLogging);
@@ -243,7 +349,18 @@ public final class QuestsAndStuffConfig {
         chapterSwitchAnimations = bool(animations, "chapterSwitchAnimations", chapterSwitchAnimations);
 
         JsonObject canvas = object(root, "canvas");
+        fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
+        readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
+        questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
+
+        JsonObject rewards = object(root, "rewards");
+        autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
+
+        JsonObject hud = object(root, "hud");
+        completionHud = bool(hud, "completionHud", completionHud);
+        completionHudSound = bool(hud, "completionHudSound", completionHudSound);
+        completionHudDurationMs = normalizeCompletionHudDurationMs(intValue(hud, "completionHudDurationMs", completionHudDurationMs));
 
         JsonObject security = object(root, "security");
         commandRewards = bool(security, "commandRewards", commandRewards);
@@ -267,8 +384,21 @@ public final class QuestsAndStuffConfig {
         root.add("animations", animations);
 
         JsonObject canvas = new JsonObject();
+        canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
+        canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
+        canvas.addProperty("questEffectIcons", questEffectIcons);
         root.add("canvas", canvas);
+
+        JsonObject rewards = new JsonObject();
+        rewards.addProperty("autoClaimRewards", autoClaimRewards);
+        root.add("rewards", rewards);
+
+        JsonObject hud = new JsonObject();
+        hud.addProperty("completionHud", completionHud);
+        hud.addProperty("completionHudSound", completionHudSound);
+        hud.addProperty("completionHudDurationMs", completionHudDurationMs);
+        root.add("hud", hud);
 
         JsonObject security = new JsonObject();
         security.addProperty("commandRewards", commandRewards);
@@ -301,6 +431,17 @@ public final class QuestsAndStuffConfig {
         if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
             try {
                 return root.get(key).getAsBoolean();
+            } catch (Exception ignored) {
+                return fallback;
+            }
+        }
+        return fallback;
+    }
+
+    private static int intValue(JsonObject root, String key, int fallback) {
+        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
+            try {
+                return root.get(key).getAsInt();
             } catch (Exception ignored) {
                 return fallback;
             }

@@ -91,6 +91,7 @@ final class CanvasContextQuestActions {
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
         addQuestVisualHiddenAction(actions, canvasViewport, state, player, questTag);
         addCompletionSoundActions(actions, canvasViewport, state, questTag);
+        addCompletionHudBackgroundActions(actions, canvasViewport, state, player, questTag);
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextQuestId));
             state.contextDeleteConfirmKey = "";
@@ -156,6 +157,24 @@ final class CanvasContextQuestActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_custom quest={} sound={}", state.contextQuestId, sound);
             canvasViewport.refresh();
         }));
+    }
+
+    private static void addCompletionHudBackgroundActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+        String currentBackground = questTag == null ? "" : questTag.getString("completion_hud_background");
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openQuestCompletionHudBackgroundPicker(state, state.contextQuestId, currentBackground);
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextQuestId);
+            canvasViewport.refresh();
+        }));
+        if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), "delete", ModColors.WARNING, () -> {
+                EditorCommandClient.setQuestCompletionHudBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextQuestId);
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {

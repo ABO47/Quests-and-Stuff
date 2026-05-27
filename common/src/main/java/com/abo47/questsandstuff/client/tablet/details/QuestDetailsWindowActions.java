@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
@@ -8,12 +7,9 @@ import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDe
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.reward.QuestRewardClaimActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.runtime.C2SClaimAllRewardsPacket;
-import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -182,12 +178,7 @@ final class QuestDetailsWindowActions {
             return;
         }
         String trimmed = questId.trim();
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuestServices.engine(serverPlayer.server).claimAllRewards(serverPlayer, trimmed);
-        } else {
-            QuestNetwork.sendToServer(new C2SClaimAllRewardsPacket(trimmed));
-        }
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details claim_all quest={}", trimmed);
+        QuestRewardClaimActions.claimAll(player, trimmed);
     }
 
     static void openIconPicker(TabletUiState state, String target) {

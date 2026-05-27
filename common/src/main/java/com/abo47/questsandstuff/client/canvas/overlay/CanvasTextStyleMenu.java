@@ -1,11 +1,8 @@
 package com.abo47.questsandstuff.client.canvas.overlay;
 
-
-import com.abo47.questsandstuff.client.canvas.CanvasViewport;
-
-import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.FontSizeSliderWidget;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
@@ -225,7 +222,7 @@ public final class CanvasTextStyleMenu {
                 value -> {
                     markStyleInteraction(state, logScope);
                     updateFontSize.accept(value);
-                QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size id={} size={}", logScope, text.id(), value);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size id={} size={}", logScope, text.id(), value);
                 },
                 refresh,
                 () -> textFontSizeSliderDragging(state, logScope) && text.id().equals(textFontSizeSliderDragTarget(state, logScope)),

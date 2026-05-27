@@ -1,8 +1,10 @@
 package com.abo47.questsandstuff.client.canvas.contextmenu;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -18,9 +20,25 @@ final class CanvasContextGlobalActions {
     }
 
     static void addGlobalActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_all"), "open", ModColors.INTERACTIVE, () -> {
+            if (CanvasCameraController.fitAll(state, canvasViewport.cardCache(), true)) {
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_all");
+                canvasViewport.refresh();
+            }
+        }));
+        if (CanvasRenderer.totalCanvasSelectionCount(state) > 0) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_selection"), "open", ModColors.INTERACTIVE, () -> {
+                if (CanvasCameraController.fitSelection(state, canvasViewport.cardCache(), true)) {
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_selection");
+                    canvasViewport.refresh();
+                }
+            }));
+        }
         if (state.canvasZoom != 1.0f) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_zoom"), "reset_zoom", ModColors.INTERACTIVE, () -> {
-                state.canvasZoom = 1.0f;
+                CanvasCameraController.resetZoom(state, true);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_zoom");
                 canvasViewport.refresh();

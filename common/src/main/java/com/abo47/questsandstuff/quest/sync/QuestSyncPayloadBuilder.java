@@ -94,6 +94,7 @@ final class QuestSyncPayloadBuilder {
         questTag.putString("icon_background", definition.display().iconBackground());
         questTag.putString("completion_sound", definition.display().completionSound());
         questTag.putInt("completion_sound_volume", definition.display().completionSoundVolume());
+        questTag.putString("completion_hud_background", definition.display().completionHudBackground());
         questTag.putBoolean("visual_hidden", definition.display().visualHidden());
         questTag.putString("quest_background", definition.display().questBackground());
         questTag.putBoolean("quest_background_grayscale", definition.display().questBackgroundGrayscale());
@@ -104,7 +105,6 @@ final class QuestSyncPayloadBuilder {
             questTag.putFloat("progress", progressPercent(definition, progress));
         }
         questTag.putBoolean("repeatable", definition.settings().repeatable());
-        questTag.putBoolean("auto_claim_rewards", definition.settings().autoClaimRewards());
         questTag.putString("hidden_mode", definition.settings().hiddenMode().serializedName());
         questTag.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, definition.settings().showPrerequisiteArrow());
         questTag.put("tasks", taskDefinitionsTag(definition, progress));

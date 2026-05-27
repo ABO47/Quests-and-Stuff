@@ -2,10 +2,13 @@ package com.abo47.questsandstuff.client.canvas;
 
 
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -24,7 +27,6 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
@@ -60,51 +62,61 @@ final class CanvasSceneRenderer {
     }
 
     static void renderGridOverlay(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        int alphaPercent = Math.max(0, Math.min(100, state.gridOpacityPercent));
-        int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
-        int lineColor = (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
-        int cell = CanvasGeometry.gridSize(state);
-        int firstCol = (int) Math.floor(CanvasGeometry.screenToLogicalX(state, contentX) / cell) - 1;
-        int lastCol = (int) Math.ceil(CanvasGeometry.screenToLogicalX(state, contentX + contentW) / cell) + 1;
-        int firstRow = (int) Math.floor(CanvasGeometry.screenToLogicalY(state, contentY) / cell) - 1;
-        int lastRow = (int) Math.ceil(CanvasGeometry.screenToLogicalY(state, contentY + contentH) / cell) + 1;
+        if (contentW <= 0 || contentH <= 0) {
+            return;
+        }
+        canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int alphaPercent = Math.max(0, Math.min(100, state.gridOpacityPercent));
+                int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
+                int lineColor = (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
+                int cell = CanvasGeometry.gridSize(state);
+                int originX = getPositionX();
+                int originY = getPositionY();
+                int visibleLeft = contentX - state.canvasLivePanX;
+                int visibleTop = contentY - state.canvasLivePanY;
+                int visibleRight = contentX + contentW - state.canvasLivePanX;
+                int visibleBottom = contentY + contentH - state.canvasLivePanY;
 
-        for (int col = firstCol; col <= lastCol; col++) {
-            int x = CanvasGeometry.screenX(state, col * cell);
-            if (x < contentX || x > contentX + contentW) {
-                continue;
+                int firstCol = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, contentX, true) / cell) - 1;
+                int lastCol = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, contentX + contentW, true) / cell) + 1;
+                int firstRow = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, contentY, true) / cell) - 1;
+                int lastRow = (int) Math.ceil(CanvasCameraController.screenToLogicalY(state, contentY + contentH, true) / cell) + 1;
+
+                for (int col = firstCol; col <= lastCol; col++) {
+                    int x = CanvasGeometry.screenX(state, col * cell);
+                    if (x < visibleLeft || x > visibleRight) {
+                        continue;
+                    }
+                    graphics.fill(originX + x, originY + visibleTop, originX + x + 1, originY + visibleBottom + 1, lineColor);
+                }
+                for (int row = firstRow; row <= lastRow; row++) {
+                    int y = CanvasGeometry.screenY(state, row * cell);
+                    if (y < visibleTop || y > visibleBottom) {
+                        continue;
+                    }
+                    graphics.fill(originX + visibleLeft, originY + y, originX + visibleRight + 1, originY + y + 1, lineColor);
+                }
             }
-            WidgetGroup line = new WidgetGroup(x, contentY, 1, contentH + 1);
-            line.setBackground(Surfaces.fill(lineColor));
-            canvasViewport.addWidget(line);
-        }
-        for (int row = firstRow; row <= lastRow; row++) {
-            int y = CanvasGeometry.screenY(state, row * cell);
-            if (y < contentY || y > contentY + contentH) {
-                continue;
-            }
-            WidgetGroup line = new WidgetGroup(contentX, y, contentW + 1, 1);
-            line.setBackground(Surfaces.fill(lineColor));
-            canvasViewport.addWidget(line);
-        }
+        });
     }
 
     static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
-        int gutterFill = ModColors.SURFACE_BASE;
+        int opacityPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
+        int canvasFill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, opacityPercent);
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        addSolidRect(canvasViewport, 0, 0, viewportW, contentY, gutterFill);
-        addSolidRect(canvasViewport, 0, contentY + paintH, viewportW, viewportH - contentY - paintH, gutterFill);
-        addSolidRect(canvasViewport, 0, contentY, contentX, paintH, gutterFill);
-        addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, gutterFill);
+        addSolidRect(canvasViewport, 0, 0, viewportW, contentY, canvasFill);
+        addSolidRect(canvasViewport, 0, contentY + paintH, viewportW, viewportH - contentY - paintH, canvasFill);
+        addSolidRect(canvasViewport, 0, contentY, contentX, paintH, canvasFill);
+        addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, canvasFill);
 
-        int alphaPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
-        int alpha = Math.max(0, Math.min(255, (255 * alphaPercent) / 100));
-        int background = withAlpha(ModColors.SURFACE_BASE, alpha);
-        addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, background);
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
-        if (canvasBackground != null) {
-            canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, alpha));
+        if (canvasBackground == null) {
+            addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, canvasFill);
+        } else if (CanvasBackgroundOpacity.alpha(opacityPercent) > 0) {
+            canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, opacityPercent));
         }
     }
 
@@ -186,6 +198,7 @@ final class CanvasSceneRenderer {
         renderLockedPreviewState(cardLayer, localCard);
         renderSearchState(cardLayer, state, localCard);
         renderHiddenEditState(cardLayer, state, localCard);
+        CanvasQuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
         if (questCardLayerSink != null) {
             questCardLayerSink.accept(card.questId(), cardLayer);
@@ -414,16 +427,11 @@ final class CanvasSceneRenderer {
         parent.addWidget(rect);
     }
 
-    private static WidgetGroup alphaTexture(int x, int y, int width, int height, IGuiTexture texture, int alpha) {
-        int safeAlpha = Math.max(0, Math.min(255, alpha));
+    private static WidgetGroup alphaTexture(int x, int y, int width, int height, IGuiTexture texture, int opacityPercent) {
         return new WidgetGroup(x, y, width, height) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
-                texture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                CanvasBackgroundOpacity.drawTexture(graphics, texture, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), opacityPercent);
             }
         };
     }

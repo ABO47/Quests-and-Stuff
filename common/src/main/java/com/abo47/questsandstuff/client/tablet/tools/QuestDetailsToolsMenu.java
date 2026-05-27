@@ -2,14 +2,11 @@ package com.abo47.questsandstuff.client.tablet.tools;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
@@ -33,7 +30,7 @@ final class QuestDetailsToolsMenu {
         final int menuPad = 1;
         final int toolGap = 2;
         final boolean editTools = QuestDetailsEditState.canEdit(state);
-        final int toolCount = editTools ? 10 : 2;
+        final int toolCount = editTools ? 9 : 1;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -47,16 +44,13 @@ final class QuestDetailsToolsMenu {
         menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
 
         if (!editTools) {
-            addReadOnlyTools(menu, state, player, questId, refresh, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            addReadOnlyTools(menu, state, refresh, slotX, y, toolSlot, toolButtonBorder);
             addAnimatedMenu(toolsMenu, state, menu);
             return;
         }
 
         ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
         addEditRows(rows, state, player, refresh, questId);
-
-        addQuestAutoClaimToggle(menu, state, player, refresh, questId, slotX, rows.y(), toolSlot, toolButtonBorder);
-        rows.advancePastCustomRow();
 
         addAnimatedMenu(toolsMenu, state, menu);
     }
@@ -130,23 +124,7 @@ final class QuestDetailsToolsMenu {
                 });
     }
 
-    private static void addQuestAutoClaimToggle(WidgetGroup menu, TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int toolSlot, int border) {
-        boolean autoClaim = ClientQuestCache.quest(questId).getBoolean("auto_claim_rewards");
-        addToggle(menu, x, y, toolSlot, border, "claim_all",
-                autoClaim ? ModColors.SUCCESS : ModColors.ERROR,
-                autoClaim,
-                new Component[]{
-                        QuestVocabulary.component(QuestVocabulary.AUTO_CLAIM_REWARDS),
-                        QuestVocabulary.component(autoClaim ? QuestVocabulary.COMMON_ENABLED : QuestVocabulary.COMMON_DISABLED)
-                },
-                () -> {
-                    EditorCommandClient.setQuestAutoClaim(player, questId, !autoClaim);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details auto-claim toggle quest={} enabled={}", questId, !autoClaim);
-                    refresh.run();
-                });
-    }
-
-    private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Player player, String questId, Runnable refresh, int x, int y, int toolSlot, int toolGap, int border) {
+    private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int border) {
         addToggle(menu, x, y, toolSlot, border, state.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
                 state.questDetailsSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
                 !state.questDetailsSplitterLocked,
@@ -163,8 +141,6 @@ final class QuestDetailsToolsMenu {
                     persistUiState(state);
                     refresh.run();
                 });
-        y += toolSlot + toolGap;
-        addQuestAutoClaimToggle(menu, state, player, refresh, questId, x, y, toolSlot, border);
     }
 
     private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {

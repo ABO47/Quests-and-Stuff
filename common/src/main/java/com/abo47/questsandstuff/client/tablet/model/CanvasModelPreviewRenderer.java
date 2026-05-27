@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.model;
 
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.mojang.blaze3d.platform.Lighting;
@@ -235,7 +236,7 @@ public final class CanvasModelPreviewRenderer {
             return null;
         }
         String key = asset == null ? "" : asset.trim();
-        return ITEM_TEXTURE_CACHE.computeIfAbsent(key, ignored -> new ItemStackTexture(stacks));
+        return ITEM_TEXTURE_CACHE.computeIfAbsent(key, ignored -> new ScopedItemStackTexture(stacks));
     }
 
     private static ItemStack[] createStacksForAsset(String asset) {

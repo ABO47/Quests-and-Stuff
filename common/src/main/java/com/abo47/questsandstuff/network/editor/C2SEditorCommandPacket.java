@@ -106,10 +106,6 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     editor.setQuestIcon(player, payload.getString("quest"), payload.getString("icon"));
                     return;
                 }
-                if (command.type() == EditorCommandType.QUEST_AUTO_CLAIM) {
-                    editor.setQuestAutoClaim(player, payload.getString("quest"), payload.getBoolean("enabled"));
-                    return;
-                }
                 if (command.type() == EditorCommandType.QUEST_REPEATABLE) {
                     editor.setQuestRepeatable(player, payload.getString("quest"), payload.getBoolean("enabled"));
                     return;
@@ -136,6 +132,14 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 }
                 if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY) {
                     editor.setQuestCompletionSoundVolume(player, questIdsFromPayload(payload), payload.getInt("volume"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND) {
+                    editor.setQuestCompletionHudBackground(player, payload.getString("quest"), payload.getString("background"));
+                    return;
+                }
+                if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY) {
+                    editor.setQuestCompletionHudBackground(player, questIdsFromPayload(payload), payload.getString("background"));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_BACKGROUND) {

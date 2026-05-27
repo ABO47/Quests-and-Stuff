@@ -161,17 +161,6 @@ public final class ClientQuestLocalMutations {
         quest.putString("icon", normalized);
     }
 
-    public static void setQuestAutoClaimLocal(String questId, boolean enabled) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putBoolean("auto_claim_rewards", enabled);
-    }
-
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
         if (questId == null || questId.isBlank()) {
             return;
@@ -226,6 +215,17 @@ public final class ClientQuestLocalMutations {
             return;
         }
         quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
+    }
+
+    public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        if (quest == null) {
+            return;
+        }
+        quest.putString("completion_hud_background", QuestDisplay.normalizeCompletionHudBackground(background));
     }
 
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
@@ -333,6 +333,7 @@ public final class ClientQuestLocalMutations {
         quest.putString("icon_background", "minecraft:barrier");
         quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
         quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
+        quest.putString("completion_hud_background", QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
         quest.putBoolean("visual_hidden", false);
         quest.putString("quest_background", QuestDisplay.DEFAULT_QUEST_BACKGROUND);
         quest.putBoolean("quest_background_grayscale", false);
@@ -341,7 +342,6 @@ public final class ClientQuestLocalMutations {
         quest.putBoolean("claimed", false);
         quest.putFloat("progress", 0.0f);
         quest.putBoolean("repeatable", false);
-        quest.putBoolean("auto_claim_rewards", false);
         quest.putString("hidden_mode", (ClientChapterState.groupLockUntilUnlocked(normalizedGroup) ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName());
         quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, true);
         quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());

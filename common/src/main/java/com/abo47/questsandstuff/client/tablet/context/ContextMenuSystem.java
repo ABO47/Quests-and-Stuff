@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -19,6 +20,8 @@ import java.util.function.Consumer;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
 
 public final class ContextMenuSystem {
+    private static final int OUTER_PAD = 4;
+
     private ContextMenuSystem() {
     }
 
@@ -39,6 +42,35 @@ public final class ContextMenuSystem {
         hit.setHoverTexture(Surfaces.bordered(UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 64), UiThemeTokens.withAlpha(ModColors.BORDER_ACCENT, 220)));
         hit.setClickedTexture(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
+    }
+
+    public static int rowHeight() {
+        return UiThemeTokens.CONTEXT_ROW_H;
+    }
+
+    public static int outerPad() {
+        return OUTER_PAD;
+    }
+
+    public static int menuHeightForRows(int rows) {
+        return OUTER_PAD * 2 + Math.max(1, rows) * rowHeight();
+    }
+
+    public static void drawVanillaPanel(GuiGraphics graphics, int x, int y, int width, int height, int borderColor) {
+        graphics.fill(x, y, x + width, y + height, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 246));
+        graphics.renderOutline(x, y, width, height, borderColor);
+    }
+
+    public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, boolean hovered) {
+        int rowX = menuX + OUTER_PAD;
+        int rowH = rowHeight();
+        graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 84));
+        if (hovered) {
+            graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 64));
+            graphics.renderOutline(rowX, rowY, rowWidth, rowH, UiThemeTokens.withAlpha(ModColors.BORDER_ACCENT, 220));
+        }
+        drawVanillaIcon(graphics, menuX + 8, rowY, icon);
+        graphics.drawString(Minecraft.getInstance().font, text == null ? "" : text, menuX + 24, rowY + 3, ModColors.TEXT_PRIMARY, false);
     }
 
     public static void addContextIcon(WidgetGroup menu, int x, int y, String icon) {
@@ -91,6 +123,21 @@ public final class ContextMenuSystem {
         }
         menu.addWidget(new ImageWidget(x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE, texture));
         return true;
+    }
+
+    private static void drawVanillaIcon(GuiGraphics graphics, int x, int y, String icon) {
+        String key = contextIconFileKey(icon);
+        var texture = UiIconAtlas.iconTexture("context_" + key);
+        if (texture == null) {
+            texture = UiIconAtlas.iconTexture(key);
+        }
+        if (texture != null) {
+            texture.draw(graphics, 0, 0, x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE);
+            return;
+        }
+        int color = UiThemeManager.iconColor("context_" + key);
+        int centerY = y + ACTION_ICON_SIZE / 2;
+        graphics.fill(x + 2, centerY, x + ACTION_ICON_SIZE - 2, centerY + 1, color);
     }
 
     private static WidgetGroup drawContextIcon(int x, int y, String icon) {

@@ -141,7 +141,7 @@ public final class QuestDetailsDescriptionSelection {
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (CanvasTextLayer text : model.texts.values()) {
-            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+            CanvasTextLayer drawText = CanvasRenderer.effectiveQuestDetailsText(state, text);
             if (isSelectedText(drawText.id())) {
                 int[] box = bounds(drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 minX = Math.min(minX, box[0]);
@@ -151,7 +151,7 @@ public final class QuestDetailsDescriptionSelection {
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
-            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+            CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
             if (isSelectedImage(drawImage.id())) {
                 int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
                 minX = Math.min(minX, box[0]);

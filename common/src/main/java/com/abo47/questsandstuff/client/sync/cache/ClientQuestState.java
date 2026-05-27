@@ -107,6 +107,16 @@ public final class ClientQuestState {
         PINNED.remove(normalizeQuestId(questId));
     }
 
+    public static void togglePinned(String questId) {
+        String normalized = normalizeQuestId(questId);
+        if (normalized.isBlank()) {
+            return;
+        }
+        if (!PINNED.add(normalized)) {
+            PINNED.remove(normalized);
+        }
+    }
+
     public static int completedCount() {
         int count = 0;
         for (CompoundTag quest : QUESTS.values()) {

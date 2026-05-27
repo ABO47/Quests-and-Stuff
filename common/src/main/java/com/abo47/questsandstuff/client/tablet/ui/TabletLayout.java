@@ -49,7 +49,7 @@ final class TabletLayout {
     static final int CONTEXT_ROW_H = 14;
     static final int[] GRID_SIZES = {16};
     static final int[] GRID_OPACITY = {20, 35, 50, 65, 80};
-    static final int[] CANVAS_BG_OPACITY = {30, 45, 60, 75, 100};
+    static final int[] CANVAS_BG_OPACITY = {0, 15, 30, 45, 60, 75, 90, 100};
     static final int[] CANVAS_LIMIT_WIDTH = {132, 164, 196, 228};
     static final int[] CANVAS_LIMIT_HEIGHT = {64, 78, 92, 104};
     static final String[] CANVAS_LIMIT_LABELS = {"S", "M", "L", "XL"};
@@ -60,6 +60,39 @@ final class TabletLayout {
     static final int FONT_SIZE_SLIDER_POPOVER_GAP = 3;
 
     private TabletLayout() {
+    }
+
+    static void applyRootSize(TabletUiState state, int width, int height, boolean fullScreenMode) {
+        if (state == null) {
+            return;
+        }
+        state.fullScreenMode = fullScreenMode;
+        state.tabletRootWidth = Math.max(1, width);
+        state.tabletRootHeight = Math.max(1, height);
+    }
+
+    static int rootWidth(TabletUiState state) {
+        return state == null || state.tabletRootWidth <= 0 ? ROOT_W : state.tabletRootWidth;
+    }
+
+    static int rootHeight(TabletUiState state) {
+        return state == null || state.tabletRootHeight <= 0 ? ROOT_H : state.tabletRootHeight;
+    }
+
+    static int bodyWidth(TabletUiState state) {
+        return Math.max(160, rootWidth(state) - PAD * 2);
+    }
+
+    static int bodyHeight(TabletUiState state) {
+        return Math.max(120, rootHeight(state) - BODY_Y - PAD_Y);
+    }
+
+    static int chapterHeight(TabletUiState state) {
+        return bodyHeight(state);
+    }
+
+    static int canvasHeight(TabletUiState state) {
+        return bodyHeight(state);
     }
 
     static int chapterPanelWidth(TabletUiState state) {
@@ -82,7 +115,7 @@ final class TabletLayout {
     }
 
     static int canvasPanelWidth(TabletUiState state) {
-        return Math.max(120, BODY_W - chapterPanelWidth(state) - GAP);
+        return Math.max(120, bodyWidth(state) - chapterPanelWidth(state) - GAP);
     }
 
     static int indexAtY(int localY, TabletUiState state) {
@@ -130,6 +163,9 @@ final class TabletLayout {
 
     static boolean isChapterScrollBarHit(int localX, int localY, TabletUiState state) {
         if (state.chapterScrollMax <= 0) {
+            return false;
+        }
+        if (isChapterPanelCollapsed(state) || state.chapterListWidth <= 54) {
             return false;
         }
         int listLeft = state.chapterListOriginX;
@@ -205,7 +241,7 @@ final class TabletLayout {
     }
 
     static int[] chapterTextFontSizeSliderBounds(TabletUiState state) {
-        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : CHAPTER_H - 12;
+        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : chapterHeight(state) - 12;
         int fx = chapterTextMenuX(state);
         int fy = chapterTextMenuY(state, listHeight);
         int fw = Math.min(Math.max(1, state.chapterListWidth - fx - 1), chapterTextMenuWidth(state));

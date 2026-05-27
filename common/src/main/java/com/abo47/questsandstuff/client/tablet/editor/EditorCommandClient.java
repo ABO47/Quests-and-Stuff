@@ -116,6 +116,14 @@ public final class EditorCommandClient {
         EditorQuestCommandClient.setQuestCompletionSoundVolume(player, questIds, volume);
     }
 
+    public static void setQuestCompletionHudBackground(Player player, String questId, String background) {
+        EditorQuestCommandClient.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public static void setQuestCompletionHudBackground(Player player, Set<String> questIds, String background) {
+        EditorQuestCommandClient.setQuestCompletionHudBackground(player, questIds, background);
+    }
+
     public static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
         EditorQuestCommandClient.setQuestBackground(player, questId, background, grayscale);
     }
@@ -178,10 +186,6 @@ public final class EditorCommandClient {
 
     public static void updateQuestDisplay(Player player, String questId, String title, String subtitle) {
         EditorQuestCommandClient.updateQuestDisplay(player, questId, title, subtitle);
-    }
-
-    public static void setQuestAutoClaim(Player player, String questId, boolean enabled) {
-        EditorQuestCommandClient.setQuestAutoClaim(player, questId, enabled);
     }
 
     public static void setQuestRepeatable(Player player, String questId, boolean enabled) {

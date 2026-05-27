@@ -9,6 +9,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
+import com.abo47.questsandstuff.network.QuestNetwork;
+import com.abo47.questsandstuff.network.runtime.C2STogglePinPacket;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +35,8 @@ final class QuestDetailsHeader {
         boolean showEditor = QuestDetailsEditState.editorAvailable(state);
         int editorX = showEditor ? toolsX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE : toolsX;
         int navigationRightX = showEditor ? editorX : toolsX;
-        int nextX = navigationRightX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
+        int pinX = navigationRightX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
+        int nextX = pinX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int previousX = nextX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int titleW = Math.max(24, previousX - QuestDetailsWindow.HEADER_GAP - viewportX);
         addQuestTitleField(canvasPanel, state, player, refresh, questId, viewportX, QuestDetailsWindow.TOP_Y, titleW, QuestDetailsWindow.HEADER_H);
@@ -46,6 +49,13 @@ final class QuestDetailsHeader {
         addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", ModColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, 1);
             ToolMenuAnimation.finishQuestDetails(state);
+            QuestDetailsTransientState.closeContext(state);
+            refresh.run();
+        });
+        boolean pinned = ClientQuestCache.pinned().contains(questId);
+        addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? ModColors.SUCCESS : ModColors.INTERACTIVE, pinned, click -> {
+            ClientQuestCache.togglePinnedLocal(questId);
+            QuestNetwork.sendToServer(new C2STogglePinPacket(questId));
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });

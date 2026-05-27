@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.client.hud.QuestCompletionNotificationOverlay;
+import com.abo47.questsandstuff.client.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -16,6 +16,6 @@ public final class QuestsAndStuffFabricClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> TabletClientHooks.onClientLogin());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> TabletClientHooks.onClientLogout());
         ClientTickEvents.END_CLIENT_TICK.register(client -> TabletClientHooks.onClientTick());
-        HudRenderCallback.EVENT.register((graphics, tickDelta) -> QuestCompletionNotificationOverlay.render(graphics));
+        HudRenderCallback.EVENT.register((graphics, tickDelta) -> QuestHudOverlayRenderer.render(graphics));
     }
 }

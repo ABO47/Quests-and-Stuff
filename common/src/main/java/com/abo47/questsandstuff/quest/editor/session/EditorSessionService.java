@@ -288,16 +288,8 @@ public final class EditorSessionService {
         questActions.toggleRepeatable(player);
     }
 
-    public void toggleAutoClaim(ServerPlayer player) {
-        questActions.toggleAutoClaim(player);
-    }
-
     public void toggleIndividual(ServerPlayer player) {
         questActions.toggleIndividual(player);
-    }
-
-    public void setQuestAutoClaim(ServerPlayer player, String questId, boolean enabled) {
-        questActions.setQuestAutoClaim(player, questId, enabled);
     }
 
     public void setQuestRepeatable(ServerPlayer player, String questId, boolean enabled) {
@@ -326,6 +318,14 @@ public final class EditorSessionService {
 
     public void setQuestCompletionSoundVolume(ServerPlayer player, Set<String> questIds, int volume) {
         questActions.setQuestCompletionSoundVolume(player, questIds, volume);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, String questId, String background) {
+        questActions.setQuestCompletionHudBackground(player, questId, background);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
+        questActions.setQuestCompletionHudBackground(player, questIds, background);
     }
 
     public void setQuestBackground(ServerPlayer player, String questId, String background, boolean grayscale) {

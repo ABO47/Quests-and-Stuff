@@ -7,7 +7,6 @@ import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDe
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -53,13 +52,13 @@ final class QuestDetailsWindowLayout {
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
         rememberFrame(layer, state, frame);
         addDimLayer(layer, state);
-        WidgetGroup modal = addModal(layer, state, frame);
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = CHAPTER_X + leftW + Math.max(0, (GAP - SPLITTER_W) / 2);
         int canvasX = CHAPTER_X + leftW + GAP;
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
+        WidgetGroup modal = addModal(layer, state, frame, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3]);
         addObjectivePanel(modal, state, player, refresh, questId, quest, leftW);
         modal.addWidget(new QuestDetailsSplitterWidget(splitterX, state, refresh));
 
@@ -110,14 +109,14 @@ final class QuestDetailsWindowLayout {
         return Math.round(120 * amount);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
+    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int holeX, int holeY, int holeW, int holeH) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+                drawModalSurface(graphics, this, holeX, holeY, holeW, holeH);
+                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
-        modal.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,
@@ -129,6 +128,36 @@ final class QuestDetailsWindowLayout {
             layer.addWidget(modal);
         }
         return modal;
+    }
+
+    private static void drawModalSurface(GuiGraphics graphics, WidgetGroup modal, int holeX, int holeY, int holeW, int holeH) {
+        int x = modal.getPositionX();
+        int y = modal.getPositionY();
+        int w = modal.getSizeWidth();
+        int h = modal.getSizeHeight();
+        int left = x + 1;
+        int top = y + 1;
+        int right = x + Math.max(1, w - 1);
+        int bottom = y + Math.max(1, h - 1);
+        int holeLeft = Math.max(left, Math.min(right, x + holeX));
+        int holeTop = Math.max(top, Math.min(bottom, y + holeY));
+        int holeRight = Math.max(left, Math.min(right, x + holeX + Math.max(0, holeW)));
+        int holeBottom = Math.max(top, Math.min(bottom, y + holeY + Math.max(0, holeH)));
+        if (holeRight <= holeLeft || holeBottom <= holeTop) {
+            fillModalRect(graphics, left, top, right, bottom);
+        } else {
+            fillModalRect(graphics, left, top, right, holeTop);
+            fillModalRect(graphics, left, holeBottom, right, bottom);
+            fillModalRect(graphics, left, holeTop, holeLeft, holeBottom);
+            fillModalRect(graphics, holeRight, holeTop, right, holeBottom);
+        }
+        graphics.renderOutline(x, y, w, h, ModColors.BORDER_BASE);
+    }
+
+    private static void fillModalRect(GuiGraphics graphics, int left, int top, int right, int bottom) {
+        if (right > left && bottom > top) {
+            graphics.fill(left, top, right, bottom, ModColors.SURFACE_BASE);
+        }
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {

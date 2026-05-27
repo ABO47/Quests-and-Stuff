@@ -10,7 +10,6 @@ import com.abo47.questsandstuff.quest.runtime.progress.CompletableQuestService;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
-import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardApplier;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
@@ -189,12 +188,6 @@ public final class QuestRuntimeEngine {
                     syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
                 }
             }
-            if (definition.settings().autoClaimRewards()) {
-                ServerPlayer rewardTarget = actor.server.getPlayerList().getPlayer(ownerId);
-                if (rewardTarget != null) {
-                    QuestRewardApplier.autoClaimNonSelectableRewards(rewardTarget, definition, progress, serverTick, syncService);
-                }
-            }
         }
         return justCompleted;
     }
@@ -220,13 +213,17 @@ public final class QuestRuntimeEngine {
 
                 if (shouldBeUnlocked) {
                     completableQuests.initializeUnlockTasks(actor, ownerId, definition, progress);
-                    if (recomputeCompletion(actor, ownerId, state, definition.id(), tick, false)) {
+                    boolean justCompleted = recomputeCompletion(actor, ownerId, state, definition.id(), tick, false);
+                    if (justCompleted) {
                         changedQuestIds.add(definition.id());
                     }
                     if (announce && syncService != null) {
                         ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                         if (owner != null) {
                             syncService.sendQuestEvent(owner, "quest_unlocked", definition.id(), "");
+                            if (justCompleted) {
+                                syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
+                            }
                         }
                     }
                 }

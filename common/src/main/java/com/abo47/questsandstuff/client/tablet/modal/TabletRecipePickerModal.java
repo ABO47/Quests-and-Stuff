@@ -5,12 +5,12 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
@@ -111,7 +111,7 @@ public final class TabletRecipePickerModal {
         if (entry.previews().length == 0) {
             surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry.tag() ? "name_tag" : "recipe"));
         } else {
-            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ItemStackTexture(entry.previews())));
+            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
         }
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             if (!entry.value().isBlank()) {

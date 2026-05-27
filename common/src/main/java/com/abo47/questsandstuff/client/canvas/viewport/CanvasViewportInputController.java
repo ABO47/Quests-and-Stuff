@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasInlineTextEditor;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportZoom;
@@ -75,8 +76,7 @@ final class CanvasViewportInputController {
                     viewport.refreshCanvas();
                 }
             } else {
-                state.canvasOffsetX += dx;
-                state.canvasOffsetY += dy;
+                CanvasCameraController.panByScreen(state, dx, dy, true);
                 viewport.refreshCanvas();
             }
             return true;

@@ -24,7 +24,7 @@ public final class DisplayIconWidget extends WidgetGroup {
         super(x, y, width, height);
         this.iconId = "";
         this.stack = stack == null ? ItemStack.EMPTY : stack.copy();
-        this.stackTexture = this.stack.isEmpty() ? null : new ItemStackTexture(this.stack);
+        this.stackTexture = this.stack.isEmpty() ? null : new ScopedItemStackTexture(this.stack);
     }
 
     @Override

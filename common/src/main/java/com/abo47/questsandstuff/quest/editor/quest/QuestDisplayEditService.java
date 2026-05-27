@@ -39,6 +39,7 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
+                source.display().completionHudBackground(),
                 source.display().visualHidden(),
                 source.display().questBackground(),
                 source.display().questBackgroundGrayscale()
@@ -68,6 +69,7 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
+                source.display().completionHudBackground(),
                 source.display().visualHidden(),
                 source.display().questBackground(),
                 source.display().questBackgroundGrayscale()
@@ -94,6 +96,7 @@ public final class QuestDisplayEditService {
                 source.display().iconBackground(),
                 source.display().completionSound(),
                 source.display().completionSoundVolume(),
+                source.display().completionHudBackground(),
                 source.display().visualHidden(),
                 source.display().questBackground(),
                 source.display().questBackgroundGrayscale()
@@ -121,6 +124,7 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 old.completionSound(),
                 old.completionSoundVolume(),
+                old.completionHudBackground(),
                 hidden,
                 old.questBackground(),
                 old.questBackgroundGrayscale()
@@ -151,6 +155,7 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 normalizedSound,
                 old.completionSoundVolume(),
+                old.completionHudBackground(),
                 old.visualHidden(),
                 old.questBackground(),
                 old.questBackgroundGrayscale()
@@ -175,6 +180,7 @@ public final class QuestDisplayEditService {
                     old.iconBackground(),
                     normalizedSound,
                     old.completionSoundVolume(),
+                    old.completionHudBackground(),
                     old.visualHidden(),
                     old.questBackground(),
                     old.questBackgroundGrayscale()
@@ -207,6 +213,7 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 old.completionSound(),
                 normalizedVolume,
+                old.completionHudBackground(),
                 old.visualHidden(),
                 old.questBackground(),
                 old.questBackgroundGrayscale()
@@ -231,6 +238,65 @@ public final class QuestDisplayEditService {
                     old.iconBackground(),
                     old.completionSound(),
                     normalizedVolume,
+                    old.completionHudBackground(),
+                    old.visualHidden(),
+                    old.questBackground(),
+                    old.questBackgroundGrayscale()
+            );
+            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+        }
+        updateQuests(player, updated);
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, String questId, String background) {
+        String normalizedQuestId = EditorSessionService.normalizeQuestId(questId);
+        QuestDefinition quest = service.definitionStore().quests().get(normalizedQuestId);
+        if (quest == null) {
+            return;
+        }
+        String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
+        if (quest.display().completionHudBackground().equals(normalizedBackground)) {
+            return;
+        }
+
+        EditorSessionService.EditorSession session = service.session(player);
+        service.captureUndo(session);
+        QuestDisplay old = quest.display();
+        QuestDisplay display = new QuestDisplay(
+                old.title(),
+                old.subtitle(),
+                old.description(),
+                old.groups(),
+                old.icon(),
+                old.iconBackground(),
+                old.completionSound(),
+                old.completionSoundVolume(),
+                normalizedBackground,
+                old.visualHidden(),
+                old.questBackground(),
+                old.questBackgroundGrayscale()
+        );
+        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+    }
+
+    public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
+        String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
+        List<QuestDefinition> updated = new ArrayList<>();
+        for (QuestDefinition quest : selectedQuests(questIds)) {
+            QuestDisplay old = quest.display();
+            if (old.completionHudBackground().equals(normalizedBackground)) {
+                continue;
+            }
+            QuestDisplay display = new QuestDisplay(
+                    old.title(),
+                    old.subtitle(),
+                    old.description(),
+                    old.groups(),
+                    old.icon(),
+                    old.iconBackground(),
+                    old.completionSound(),
+                    old.completionSoundVolume(),
+                    normalizedBackground,
                     old.visualHidden(),
                     old.questBackground(),
                     old.questBackgroundGrayscale()
@@ -263,6 +329,7 @@ public final class QuestDisplayEditService {
                 old.iconBackground(),
                 old.completionSound(),
                 old.completionSoundVolume(),
+                old.completionHudBackground(),
                 old.visualHidden(),
                 normalizedBackground,
                 grayscale
@@ -287,6 +354,7 @@ public final class QuestDisplayEditService {
                     old.iconBackground(),
                     old.completionSound(),
                     old.completionSoundVolume(),
+                    old.completionHudBackground(),
                     old.visualHidden(),
                     normalizedBackground,
                     grayscale

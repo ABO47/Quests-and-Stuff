@@ -48,7 +48,7 @@ public final class ChapterContextMenu {
         if (!state.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.ROOT_W, TabletUiFactory.ROOT_H);
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.rootWidth(state), TabletUiFactory.rootHeight(state));
         return ChapterContextMenuRows.click(layout, state, player, refresh, x, y);
     }
 }

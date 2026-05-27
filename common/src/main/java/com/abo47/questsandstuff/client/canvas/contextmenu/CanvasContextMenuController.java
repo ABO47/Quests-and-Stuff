@@ -27,8 +27,14 @@ public final class CanvasContextMenuController {
         CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextEdgeActions.addEdgeActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
-        CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
+        if (!exclusiveSubmenuOpen(state)) {
+            CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
+        }
         return actions;
+    }
+
+    private static boolean exclusiveSubmenuOpen(TabletUiState state) {
+        return state.contextQuestCompletionSoundMenuOpen;
     }
 
     public static List<EdgeRef> selectedConnectedEdges(TabletUiState state, String group) {

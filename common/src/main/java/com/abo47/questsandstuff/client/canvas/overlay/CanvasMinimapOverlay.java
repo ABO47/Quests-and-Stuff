@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.canvas.overlay;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
@@ -108,7 +108,7 @@ final class CanvasMinimapOverlay {
                             originY + layout.panelY(),
                             clipW,
                             layout.panelH(),
-                            () -> drawSnapshot(graphics, snapshot, originX, originY)
+                            () -> drawSnapshot(graphics, state, snapshot, originX, originY)
                     );
                 }
             }
@@ -193,8 +193,7 @@ final class CanvasMinimapOverlay {
             }
         }
 
-        MiniRect viewport = projectViewport(state, projection);
-        return new MiniSnapshot(List.copyOf(questRects), List.copyOf(connections), viewport);
+        return new MiniSnapshot(List.copyOf(questRects), List.copyOf(connections), projection);
     }
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
@@ -220,10 +219,10 @@ final class CanvasMinimapOverlay {
     }
 
     private static MiniRect projectViewport(TabletUiState state, CanvasMinimapGeometry.Projection projection) {
-        double left = CanvasGeometry.screenToLogicalX(state, state.canvasContentX);
-        double top = CanvasGeometry.screenToLogicalY(state, state.canvasContentY);
-        double right = CanvasGeometry.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW));
-        double bottom = CanvasGeometry.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH));
+        double left = CanvasCameraController.screenToLogicalX(state, state.canvasContentX, true);
+        double top = CanvasCameraController.screenToLogicalY(state, state.canvasContentY, true);
+        double right = CanvasCameraController.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW), true);
+        double bottom = CanvasCameraController.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH), true);
         int x1 = clamp(CanvasMinimapGeometry.mapX(projection, left), projection.drawX(), projection.drawX() + projection.drawW());
         int y1 = clamp(CanvasMinimapGeometry.mapY(projection, top), projection.drawY(), projection.drawY() + projection.drawH());
         int x2 = clamp(CanvasMinimapGeometry.mapX(projection, right), projection.drawX(), projection.drawX() + projection.drawW());
@@ -289,7 +288,7 @@ final class CanvasMinimapOverlay {
         return staged * staged * (3.0f - 2.0f * staged);
     }
 
-    private static void drawSnapshot(GuiGraphics graphics, MiniSnapshot snapshot, int originX, int originY) {
+    private static void drawSnapshot(GuiGraphics graphics, TabletUiState state, MiniSnapshot snapshot, int originX, int originY) {
         for (MiniConnection connection : snapshot.connections()) {
             drawMiniLine(
                     graphics,
@@ -303,7 +302,7 @@ final class CanvasMinimapOverlay {
         for (MiniRect quest : snapshot.quests()) {
             drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
         }
-        MiniRect viewport = snapshot.viewport();
+        MiniRect viewport = projectViewport(state, snapshot.projection());
         drawBorder(graphics, originX + viewport.x(), originY + viewport.y(), viewport.w(), viewport.h(), withAlpha(viewport.color(), viewport.alpha()));
     }
 
@@ -398,7 +397,7 @@ final class CanvasMinimapOverlay {
         return Math.max(min, Math.min(max, value));
     }
 
-    private record MiniSnapshot(List<MiniRect> quests, List<MiniConnection> connections, MiniRect viewport) {
+    private record MiniSnapshot(List<MiniRect> quests, List<MiniConnection> connections, CanvasMinimapGeometry.Projection projection) {
     }
 
     private record MiniRect(int x, int y, int w, int h, int color, int alpha) {

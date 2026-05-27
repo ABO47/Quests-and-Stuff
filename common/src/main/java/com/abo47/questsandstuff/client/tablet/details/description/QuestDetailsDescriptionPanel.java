@@ -8,8 +8,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
-
 public final class QuestDetailsDescriptionPanel {
     private QuestDetailsDescriptionPanel() {
     }
@@ -19,9 +17,9 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionModel.applyToolsToState(state, model);
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
+        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampReadOnlyScroll(state, model, fit[1] - 1, state.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
-        int bgAlpha = QuestDetailsDescriptionLayout.opacityAlpha(model.canvasBgOpacityPercent, 190);
-        canvas.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, bgAlpha), ModColors.BORDER_BASE));
+        canvas.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
         QuestDetailsDescriptionMenus.renderContextMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);

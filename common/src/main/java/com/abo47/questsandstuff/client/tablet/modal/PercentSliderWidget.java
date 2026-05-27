@@ -12,7 +12,7 @@ import java.util.function.IntConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
-final class SoundVolumeSliderWidget extends WidgetGroup {
+final class PercentSliderWidget extends WidgetGroup {
     private static final int TRACK_PAD_X = 5;
     private static final int KNOB_W = 5;
 
@@ -23,7 +23,7 @@ final class SoundVolumeSliderWidget extends WidgetGroup {
     private int currentValue;
     private boolean dragging;
 
-    SoundVolumeSliderWidget(
+    PercentSliderWidget(
             int x,
             int y,
             int width,
