@@ -4,6 +4,7 @@ import com.mojang.blaze3d.audio.OggAudioStream;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.client.sounds.SoundManager;
@@ -23,10 +24,11 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public final class AssetSoundInstance extends AbstractSoundInstance {
+public final class AssetSoundInstance extends AbstractSoundInstance implements TickableSoundInstance, FadeableQuestSound {
     private final Path path;
     private final String extension;
     private final WeighedSoundEvents event;
+    private final SoundFadeState fade = new SoundFadeState();
 
     public AssetSoundInstance(ResourceLocation id, Path path) {
         this(id, path, 1.0f);
@@ -65,6 +67,27 @@ public final class AssetSoundInstance extends AbstractSoundInstance {
 
     public CompletableFuture<AudioStream> getStream(SoundBufferLibrary library, Sound sound, boolean looping) {
         return openAudioStream();
+    }
+
+    @Override
+    public void tick() {
+        volume = fade.tick(volume);
+    }
+
+    @Override
+    public boolean isStopped() {
+        return fade.stopped();
+    }
+
+    @Override
+    public void fadeOut(int ticks) {
+        fade.fadeOut(volume, ticks);
+    }
+
+    @Override
+    public void stopImmediately() {
+        fade.stopImmediately();
+        volume = 0.0f;
     }
 
     private CompletableFuture<AudioStream> openAudioStream() {

@@ -10,6 +10,7 @@ public final class QuestHudOverlayRenderer {
 
     public static void render(GuiGraphics graphics) {
         if (Minecraft.getInstance().screen != null) {
+            QuestCompletionNotificationOverlay.onHudHidden();
             return;
         }
         resetGuiState(graphics);

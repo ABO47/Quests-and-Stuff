@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
@@ -19,7 +20,10 @@ public final class QuestCompletionNotificationOverlay {
     private static final long DISPLAY_MS = 2600L;
     private static final int WIDTH = 128;
     private static final int HEIGHT = 32;
-    private static final Deque<Notification> NOTIFICATIONS = new ArrayDeque<>();
+    private static final int MAX_NOTIFICATIONS = 3;
+    private static final Deque<PendingNotification> PENDING = new ArrayDeque<>();
+    private static ActiveNotification activeNotification;
+    private static SoundInstance activeSound;
 
     private QuestCompletionNotificationOverlay() {
     }
@@ -39,23 +43,24 @@ public final class QuestCompletionNotificationOverlay {
         CompoundTag quest = ClientQuestCache.quest(questId);
         String title = quest.getString("title");
         String background = quest.getString("completion_hud_background");
-        QuestCompletionSoundPlayer.play(quest.getString("completion_sound"), completionSoundVolume(quest));
-        NOTIFICATIONS.addLast(new Notification(title == null || title.isBlank() ? questId : title, background, System.currentTimeMillis()));
-        while (NOTIFICATIONS.size() > 3) {
-            NOTIFICATIONS.removeFirst();
-        }
+        PENDING.addLast(new PendingNotification(
+                title == null || title.isBlank() ? questId : title,
+                background,
+                quest.getString("completion_sound"),
+                completionSoundVolume(quest)
+        ));
+        trimPendingNotifications();
     }
 
     public static void render(GuiGraphics graphics) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || NOTIFICATIONS.isEmpty()) {
+        if (minecraft.player == null) {
+            clear();
             return;
         }
         long now = System.currentTimeMillis();
-        while (!NOTIFICATIONS.isEmpty() && now - NOTIFICATIONS.peekFirst().startedAtMs() > DISPLAY_MS) {
-            NOTIFICATIONS.removeFirst();
-        }
-        Notification notification = NOTIFICATIONS.peekFirst();
+        updateActiveNotification(now);
+        ActiveNotification notification = activeNotification;
         if (notification == null) {
             return;
         }
@@ -73,6 +78,10 @@ public final class QuestCompletionNotificationOverlay {
         int y = box.y() - Math.round((1.0f - easeOut(age)) * 12.0f * heightScale);
         int alpha = age > 0.78f ? Math.max(0, Math.round(255.0f * (1.0f - (age - 0.78f) / 0.22f))) : 255;
         drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
+    }
+
+    public static void onHudHidden() {
+        finishActiveNotification();
     }
 
     public static void renderPreview(GuiGraphics graphics, int x, int y, boolean selected) {
@@ -164,6 +173,44 @@ public final class QuestCompletionNotificationOverlay {
         return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
-    private record Notification(String title, String background, long startedAtMs) {
+    private static void updateActiveNotification(long now) {
+        if (activeNotification != null && now - activeNotification.startedAtMs() > DISPLAY_MS) {
+            finishActiveNotification();
+        }
+        if (activeNotification == null) {
+            startNextNotification(now);
+        }
+    }
+
+    private static void startNextNotification(long now) {
+        PendingNotification pending = PENDING.pollFirst();
+        if (pending == null) {
+            return;
+        }
+        activeSound = QuestCompletionSoundPlayer.play(pending.soundId(), pending.soundVolume());
+        activeNotification = new ActiveNotification(pending.title(), pending.background(), now);
+    }
+
+    private static void finishActiveNotification() {
+        QuestCompletionSoundPlayer.fadeOut(activeSound);
+        activeSound = null;
+        activeNotification = null;
+    }
+
+    private static void clear() {
+        PENDING.clear();
+        finishActiveNotification();
+    }
+
+    private static void trimPendingNotifications() {
+        while (PENDING.size() + (activeNotification == null ? 0 : 1) > MAX_NOTIFICATIONS) {
+            PENDING.removeFirst();
+        }
+    }
+
+    private record PendingNotification(String title, String background, String soundId, int soundVolume) {
+    }
+
+    private record ActiveNotification(String title, String background, long startedAtMs) {
     }
 }

@@ -46,8 +46,8 @@ public final class ClientSyncPacketHandler {
             ClientQuestCache.noteQuestCompletedForChapterNotices(questId, TabletUiFactory.activeSelectedGroup());
             QuestCompletionNotificationOverlay.push(questId);
             if (QuestsAndStuffConfig.autoClaimRewardsEnabled() && questId != null && !questId.isBlank()) {
-                QuestNetwork.sendToServer(new C2SClaimAllRewardsPacket(questId));
-                QuestsAndStuffMod.debugLog("[QnS:UI] global auto-claim quest={}", questId);
+                QuestNetwork.sendToServer(new C2SClaimAllRewardsPacket(""));
+                QuestsAndStuffMod.debugLog("[QnS:UI] global auto-claim triggered by quest={}", questId);
             }
             TabletUiFactory.refreshActiveTablet();
         }

@@ -213,13 +213,17 @@ public final class QuestRuntimeEngine {
 
                 if (shouldBeUnlocked) {
                     completableQuests.initializeUnlockTasks(actor, ownerId, definition, progress);
-                    if (recomputeCompletion(actor, ownerId, state, definition.id(), tick, false)) {
+                    boolean justCompleted = recomputeCompletion(actor, ownerId, state, definition.id(), tick, false);
+                    if (justCompleted) {
                         changedQuestIds.add(definition.id());
                     }
                     if (announce && syncService != null) {
                         ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                         if (owner != null) {
                             syncService.sendQuestEvent(owner, "quest_unlocked", definition.id(), "");
+                            if (justCompleted) {
+                                syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
+                            }
                         }
                     }
                 }
