@@ -21,6 +21,8 @@ public final class QuestCompletionNotificationOverlay {
     private static final int WIDTH = 128;
     private static final int HEIGHT = 32;
     private static final int MAX_NOTIFICATIONS = 3;
+    private static final long ENTER_MS = 220L;
+    private static final float DIRECTIONAL_FADE_BAND = 0.38f;
     private static final Deque<PendingNotification> PENDING = new ArrayDeque<>();
     private static ActiveNotification activeNotification;
     private static SoundInstance activeSound;
@@ -67,7 +69,10 @@ public final class QuestCompletionNotificationOverlay {
         }
 
         Window window = minecraft.getWindow();
-        float age = Math.max(0.0f, Math.min(1.0f, (now - notification.startedAtMs()) / (float) displayMs));
+        long elapsedMs = Math.max(0L, now - notification.startedAtMs());
+        float age = progress(elapsedMs, displayMs);
+        float enterProgress = enterProgress(elapsedMs, displayMs);
+        float slideDownProgress = slideDownProgress(elapsedMs, displayMs);
         float heightScale = QuestHudLayout.heightScale(QuestHudLayout.Element.COMPLETION);
         QuestHudLayout.HudBox box = QuestHudLayout.completionBox(
                 window.getGuiScaledWidth(),
@@ -76,9 +81,10 @@ public final class QuestCompletionNotificationOverlay {
                 QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT)
         );
         int x = box.x();
-        int y = box.y() - Math.round((1.0f - easeOut(age)) * 12.0f * heightScale);
-        int alpha = age > 0.78f ? Math.max(0, Math.round(255.0f * (1.0f - (age - 0.78f) / 0.22f))) : 255;
-        drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
+        float slideDistance = 12.0f * heightScale;
+        int y = notificationY(box.y(), slideDistance, enterProgress, slideDownProgress);
+        int alpha = notificationAlpha(enterProgress, slideDownProgress);
+        drawAnimatedNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, enterProgress, slideDownProgress);
     }
 
     public static void onHudHidden() {
@@ -122,7 +128,7 @@ public final class QuestCompletionNotificationOverlay {
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected, background);
         if (safeH >= 10) {
             int barH = safeH < 24 ? 4 : 6;
-            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, Math.min(1.0f, age * 1.8f), ModColors.SUCCESS, alpha);
+            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, ModColors.SUCCESS, alpha);
         }
         if (contentW <= 0 || safeH < 12) {
             return;
@@ -139,9 +145,106 @@ public final class QuestCompletionNotificationOverlay {
         graphics.drawString(font, title, x + 7, y + Math.max(2, (safeH - 8) / 2), text, false);
     }
 
+    private static void drawAnimatedNotification(
+            GuiGraphics graphics,
+            int x,
+            int y,
+            int width,
+            int height,
+            String titleValue,
+            String background,
+            int alpha,
+            float age,
+            float enterProgress,
+            float slideDownProgress
+    ) {
+        int safeW = Math.max(1, width);
+        int safeH = Math.max(1, height);
+        if ((enterProgress >= 1.0f && slideDownProgress <= 0.0f) || safeH <= 1) {
+            drawNotification(graphics, x, y, safeW, safeH, titleValue, background, alpha, age, false);
+            return;
+        }
+        for (int row = 0; row < safeH; row++) {
+            float rowCenter = (row + 0.5f) / safeH;
+            int rowAlpha = Math.round(alpha * directionalAlpha(rowCenter, enterProgress, slideDownProgress));
+            if (rowAlpha <= 0) {
+                continue;
+            }
+            graphics.enableScissor(x, y + row, x + safeW, y + row + 1);
+            try {
+                drawNotification(graphics, x, y, safeW, safeH, titleValue, background, rowAlpha, age, false);
+            } finally {
+                graphics.disableScissor();
+            }
+        }
+    }
+
     private static float easeOut(float value) {
         float t = Math.max(0.0f, Math.min(1.0f, value));
         return 1.0f - (1.0f - t) * (1.0f - t);
+    }
+
+    private static float easeIn(float value) {
+        float t = Math.max(0.0f, Math.min(1.0f, value));
+        return t * t;
+    }
+
+    private static float smoothStep(float edge0, float edge1, float value) {
+        if (edge0 == edge1) {
+            return value < edge0 ? 0.0f : 1.0f;
+        }
+        float t = Math.max(0.0f, Math.min(1.0f, (value - edge0) / (edge1 - edge0)));
+        return t * t * (3.0f - 2.0f * t);
+    }
+
+    private static float progress(long elapsedMs, long durationMs) {
+        if (durationMs <= 0L) {
+            return 1.0f;
+        }
+        return Math.max(0.0f, Math.min(1.0f, elapsedMs / (float) durationMs));
+    }
+
+    private static long enterDuration(long displayMs) {
+        return Math.max(1L, Math.min(ENTER_MS, displayMs / 3L));
+    }
+
+    private static float enterProgress(long elapsedMs, long displayMs) {
+        long enterMs = enterDuration(displayMs);
+        if (elapsedMs >= enterMs) {
+            return 1.0f;
+        }
+        return progress(elapsedMs, enterMs);
+    }
+
+    private static float slideDownProgress(long elapsedMs, long displayMs) {
+        long enterMs = enterDuration(displayMs);
+        if (elapsedMs <= enterMs) {
+            return 0.0f;
+        }
+        return progress(elapsedMs - enterMs, Math.max(1L, displayMs - enterMs));
+    }
+
+    private static int notificationY(int restingY, float slideDistance, float enterProgress, float slideDownProgress) {
+        float enterOffset = (1.0f - easeOut(enterProgress)) * -slideDistance;
+        float exitOffset = easeIn(slideDownProgress) * slideDistance;
+        return restingY + Math.round(enterOffset + exitOffset);
+    }
+
+    private static int notificationAlpha(float enterProgress, float slideDownProgress) {
+        float alpha = easeOut(enterProgress) * (1.0f - easeIn(slideDownProgress));
+        return Math.max(0, Math.min(255, Math.round(255.0f * alpha)));
+    }
+
+    private static float directionalAlpha(float rowCenter, float enterProgress, float slideDownProgress) {
+        float distanceFromBottom = 1.0f - Math.max(0.0f, Math.min(1.0f, rowCenter));
+        float factor = 1.0f;
+        if (enterProgress < 1.0f) {
+            factor *= smoothStep(distanceFromBottom - DIRECTIONAL_FADE_BAND, distanceFromBottom, enterProgress);
+        }
+        if (slideDownProgress > 0.0f) {
+            factor *= 1.0f - smoothStep(distanceFromBottom, distanceFromBottom + DIRECTIONAL_FADE_BAND, slideDownProgress);
+        }
+        return Math.max(0.0f, Math.min(1.0f, factor));
     }
 
     private static String cropToWidth(Font font, String value, int width) {
