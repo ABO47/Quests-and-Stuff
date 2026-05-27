@@ -15,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 public final class QuestsAndStuffConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = 2600;
-    public static final int MIN_COMPLETION_HUD_DURATION_MS = 500;
+    public static final int MIN_COMPLETION_HUD_DURATION_MS = 0;
     public static final int MAX_COMPLETION_HUD_DURATION_MS = 60000;
 
     private static boolean loaded;
