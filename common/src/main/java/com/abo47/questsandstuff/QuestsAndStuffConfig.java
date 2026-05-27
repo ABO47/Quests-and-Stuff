@@ -30,7 +30,7 @@ public final class QuestsAndStuffConfig {
     private static boolean chapterSwitchAnimations = true;
     private static boolean fullScreenMode;
     private static boolean minimap = true;
-    private static boolean readOnlyCanvasFocus;
+    private static boolean readOnlyCanvasFocus = true;
     private static boolean questEffectIcons;
     private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
