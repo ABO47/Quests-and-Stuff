@@ -35,6 +35,13 @@ public final class EditorCommandPayloadLimits {
             case MOVE_MANY -> !exceedsLimit(payload.getList("moves", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
             case SCALE_MANY -> !exceedsLimit(payload.getList("scales", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
             case COPY_MANY -> !exceedsLimit(payload.getList("quests", Tag.TAG_STRING), MAX_BULK_EDIT_ENTRIES);
+            case PASTE_BLUEPRINT -> {
+                CompoundTag blueprint = payload.getCompound("blueprint");
+                yield !exceedsLimit(blueprint.getList("quests", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList("images", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList("texts", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList("layer_order", Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
+            }
             case DESCRIPTION_PUT -> !exceedsLimit(payload.getList("description", Tag.TAG_STRING), MAX_DESCRIPTION_LINES);
             case TASK_PUT, REWARD_PUT -> !exceedsLength(payload.getString("json"), MAX_EDITOR_JSON_LENGTH);
             case CANVAS_TEXT_PUT -> !exceedsLimit(payload.getCompound("text").getList("spans", Tag.TAG_COMPOUND), MAX_TEXT_SPANS);

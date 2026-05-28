@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
@@ -22,6 +23,14 @@ public final class AssetPickerApplyActions {
     }
 
     public static void run(Player player, TabletUiState state, String background) {
+        String blueprintTarget = state.modalBlueprintTarget == null ? "" : state.modalBlueprintTarget.trim();
+        if (!blueprintTarget.isBlank()) {
+            CanvasBlueprintController.beginPlacement(state, background);
+            state.modalBlueprintTarget = "";
+            state.assetBrowseDir = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] picked blueprint target={} asset={}", blueprintTarget, background);
+            return;
+        }
         String soundTarget = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
         if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
             int count = state.modalQuestCompletionSoundTargets.size();

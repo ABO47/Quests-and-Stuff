@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.quest.editor.session;
 import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.canvas.PrerequisiteEditService;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
 import com.abo47.questsandstuff.quest.editor.quest.QuestContentEditService;
@@ -259,6 +260,10 @@ public final class EditorSessionService {
 
     public void pasteClipboardInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY) {
         canvasActions.pasteClipboardInGroup(player, groupName, anchorX, anchorY);
+    }
+
+    public void pasteBlueprintInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
+        canvasActions.pasteBlueprintInGroup(player, groupName, anchorX, anchorY, blueprint);
     }
     public void setQuestPrerequisite(ServerPlayer player, String questId, String prerequisiteId, boolean enabled) {
         questActions.setQuestPrerequisite(player, questId, prerequisiteId, enabled);

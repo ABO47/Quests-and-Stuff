@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.screen;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -35,6 +36,9 @@ final class TabletHeaderControls {
     private final WidgetGroup settingsBg;
     private final ButtonWidget settingsHit;
     private final HeaderIconWidget settingsIconWidget;
+    private final WidgetGroup blueprintBg;
+    private final ButtonWidget blueprintHit;
+    private final HeaderIconWidget blueprintIconWidget;
     private final WidgetGroup hudEditBg;
     private final ButtonWidget hudEditHit;
     private final HeaderIconWidget hudEditIconWidget;
@@ -56,6 +60,9 @@ final class TabletHeaderControls {
             WidgetGroup settingsBg,
             ButtonWidget settingsHit,
             HeaderIconWidget settingsIconWidget,
+            WidgetGroup blueprintBg,
+            ButtonWidget blueprintHit,
+            HeaderIconWidget blueprintIconWidget,
             WidgetGroup hudEditBg,
             ButtonWidget hudEditHit,
             HeaderIconWidget hudEditIconWidget,
@@ -75,6 +82,9 @@ final class TabletHeaderControls {
         this.settingsBg = settingsBg;
         this.settingsHit = settingsHit;
         this.settingsIconWidget = settingsIconWidget;
+        this.blueprintBg = blueprintBg;
+        this.blueprintHit = blueprintHit;
+        this.blueprintIconWidget = blueprintIconWidget;
         this.hudEditBg = hudEditBg;
         this.hudEditHit = hudEditHit;
         this.hudEditIconWidget = hudEditIconWidget;
@@ -134,6 +144,19 @@ final class TabletHeaderControls {
         settingsHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
         settingsHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget settingsIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "settings-2.png");
+        WidgetGroup blueprintBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
+        ButtonWidget blueprintHit = flatHitButton(0, 0, toolsW, headerH, click -> {
+            ToolMenuAnimation.closeMain(state);
+            state.contextMenuOpen = false;
+            state.chapterMenuOpen = false;
+            state.assetContextOpen = false;
+            CanvasBlueprintController.openBlueprintLibrary(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] library opened from main header");
+            refresh.run();
+        });
+        blueprintHit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
+        blueprintHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        HeaderIconWidget blueprintIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "scroll.png");
         WidgetGroup hudEditBg = panel(0, 0, toolsW, headerH, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
         ButtonWidget hudEditHit = flatHitButton(0, 0, toolsW, headerH, click -> {
             ToolMenuAnimation.closeMain(state);
@@ -176,7 +199,7 @@ final class TabletHeaderControls {
         editorHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget editorIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "editor.png");
 
-        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, hudEditBg, hudEditHit, hudEditIconWidget, claimAllBg, claimAllHit, claimAllIconWidget, editorBg, editorHit, editorIconWidget);
+        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, blueprintBg, blueprintHit, blueprintIconWidget, hudEditBg, hudEditHit, hudEditIconWidget, claimAllBg, claimAllHit, claimAllIconWidget, editorBg, editorHit, editorIconWidget);
     }
 
     TextFieldWidget chapterSearchField() {
@@ -203,6 +226,7 @@ final class TabletHeaderControls {
         toolsBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         boolean settingsActive = settingsActive(state);
         settingsBg.setBackground(Surfaces.bordered(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE));
+        blueprintBg.setBackground(Surfaces.bordered(state.blueprintPlacementActive ? withAlpha(ModColors.WARNING, 38) : ModColors.SURFACE_PANEL_ALT, state.blueprintPlacementActive ? ModColors.WARNING : ModColors.BORDER_BASE));
         hudEditBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         claimAllBg.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
         editorBg.setBackground(Surfaces.bordered(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
@@ -222,8 +246,9 @@ final class TabletHeaderControls {
         int claimAllX = (showEditorToggle ? editorX : toolsX) - topGap - toolsW;
         int hudEditX = claimAllX - topGap - toolsW;
         int settingsX = hudEditX - topGap - toolsW;
+        int blueprintX = settingsX - topGap - toolsW;
         int searchX = headerX;
-        int searchEnd = settingsX - topGap;
+        int searchEnd = blueprintX - topGap;
         int searchW = Math.max(60, searchEnd - searchX);
         canvasHeaderSurface.setSelfPosition(headerX, topY);
         canvasHeaderSurface.setSize(headerW, headerH);
@@ -281,6 +306,23 @@ final class TabletHeaderControls {
         settingsIconWidget.setVisible(true);
         settingsIconWidget.setActive(false);
 
+        blueprintBg.setSelfPosition(blueprintX, topY);
+        blueprintBg.setSize(toolsW, headerH);
+        blueprintHit.setSelfPosition(blueprintX, topY);
+        blueprintHit.setSize(toolsW, headerH);
+        blueprintHit.setHoverTooltips(new Component[]{
+                Component.translatable("ui.questsandstuff.blueprints.button"),
+                Component.translatable("ui.questsandstuff.blueprints.button_tooltip")
+        });
+        int blueprintIconSize = blueprintIconWidget.getSize().width;
+        blueprintIconWidget.setSelfPosition(blueprintX + (toolsW - blueprintIconSize) / 2, topY + (headerH - blueprintIconSize) / 2);
+        blueprintBg.setVisible(true);
+        blueprintBg.setActive(true);
+        blueprintHit.setVisible(true);
+        blueprintHit.setActive(true);
+        blueprintIconWidget.setVisible(true);
+        blueprintIconWidget.setActive(false);
+
         hudEditBg.setSelfPosition(hudEditX, topY);
         hudEditBg.setSize(toolsW, headerH);
         hudEditHit.setSelfPosition(hudEditX, topY);
@@ -318,6 +360,9 @@ final class TabletHeaderControls {
         canvasPanel.addWidget(settingsBg);
         canvasPanel.addWidget(settingsHit);
         canvasPanel.addWidget(settingsIconWidget);
+        canvasPanel.addWidget(blueprintBg);
+        canvasPanel.addWidget(blueprintHit);
+        canvasPanel.addWidget(blueprintIconWidget);
         canvasPanel.addWidget(hudEditBg);
         canvasPanel.addWidget(hudEditHit);
         canvasPanel.addWidget(hudEditIconWidget);

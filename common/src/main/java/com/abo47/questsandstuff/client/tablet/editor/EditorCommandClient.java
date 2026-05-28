@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.editor;
 
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -70,6 +71,10 @@ public final class EditorCommandClient {
 
     public static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
         EditorCanvasCommandClient.runCanvasPasteClipboardAction(player, groupName, x, y);
+    }
+
+    public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
+        EditorCanvasCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, x, y);
     }
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {

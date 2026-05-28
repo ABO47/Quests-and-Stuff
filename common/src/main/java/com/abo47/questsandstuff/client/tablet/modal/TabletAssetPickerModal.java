@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintMiniRenderer;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintStore;
 import com.abo47.questsandstuff.client.hud.QuestHudLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -14,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
@@ -49,11 +52,20 @@ public final class TabletAssetPickerModal {
         boolean soundPicker = (state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
                 || !state.modalQuestCompletionSoundTargets.isEmpty())
                 && state.assetBrowseDir != null && state.assetBrowseDir.startsWith("sounds");
+        boolean blueprintPicker = isBlueprintPicker(state);
         boolean hudPicker = isHudBackgroundPicker(state);
         boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker;
-        ModalShell.addTitleAndClose(modal, TabletModalPanel.tr(soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library"), w, state, refresh);
+        String title = blueprintPicker
+                ? "ui.questsandstuff.modal.blueprints"
+                : soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library";
+        ModalShell.addTitleAndClose(modal, TabletModalPanel.tr(title), w, state, refresh);
         String dir = state.assetBrowseDir == null ? "" : state.assetBrowseDir;
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.assetSearch));
+        if (!blueprintPicker) {
+            assets = assets.stream()
+                    .filter(entry -> !"blueprints".equals(entry.relativePath()) && !entry.relativePath().startsWith("blueprints/"))
+                    .toList();
+        }
 
         int leftW = 150;
         int rightX = 166;
@@ -63,9 +75,9 @@ public final class TabletAssetPickerModal {
         String selected = state.assetSelected == null ? "" : state.assetSelected;
         preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()
-                ? TabletModalPanel.tr(soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
+                ? TabletModalPanel.tr(blueprintPicker ? "ui.questsandstuff.blueprints.none_selected" : soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
                 : crop(selected, 22), ModColors.TEXT_SECONDARY));
-        AssetLibrary.AssetDimensions dims = soundPicker || selected.isBlank() ? null : assetDimensions(selected);
+        AssetLibrary.AssetDimensions dims = soundPicker || blueprintPicker || selected.isBlank() ? null : assetDimensions(selected);
         if (soundPicker) {
             String previewSound = selected.startsWith("sounds/") ? selected : "";
             if (!previewSound.isBlank()) {
@@ -74,6 +86,14 @@ public final class TabletAssetPickerModal {
                 int playH = Math.max(34, volumeY - playY - 8);
                 preview.addWidget(new SoundPreviewPlayerWidget(8, playY, leftW - 16, playH, previewSound, () -> state.soundVolumeDraft));
                 SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, leftW - 16, previewSound);
+            }
+        } else if (blueprintPicker) {
+            CanvasBlueprint blueprint = CanvasBlueprintStore.read(selected);
+            preview.addWidget(label(8, 32, blueprint.isEmpty()
+                    ? TabletModalPanel.tr("ui.questsandstuff.common.none_short")
+                    : TabletModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), ModColors.TEXT_MUTED));
+            if (!blueprint.isEmpty()) {
+                preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, leftW - 16, Math.max(24, previewH - 58), blueprint));
             }
         } else {
             preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ModColors.TEXT_MUTED));
@@ -164,6 +184,11 @@ public final class TabletAssetPickerModal {
                     if (soundIcon != null) {
                         tile.addWidget(new ImageWidget((tileW - 24) / 2, 8, 24, 24, soundIcon));
                     }
+                } else if (relative.startsWith("blueprints/")) {
+                    var blueprintIcon = UiIconAtlas.iconTexture("scroll");
+                    if (blueprintIcon != null) {
+                        tile.addWidget(new ImageWidget((tileW - 24) / 2, 8, 24, 24, blueprintIcon));
+                    }
                 }
             }
             tile.addWidget(label(5, 40, crop(entry.name(), 10), ModColors.TEXT_SECONDARY));
@@ -227,6 +252,10 @@ public final class TabletAssetPickerModal {
     private static boolean isQuestBackgroundPicker(TabletUiState state) {
         return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank()
                 || !state.modalQuestBackgroundTargets.isEmpty();
+    }
+
+    private static boolean isBlueprintPicker(TabletUiState state) {
+        return state.modalBlueprintTarget != null && !state.modalBlueprintTarget.trim().isBlank();
     }
 
     private static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {

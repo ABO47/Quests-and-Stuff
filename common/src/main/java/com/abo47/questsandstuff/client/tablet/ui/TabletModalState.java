@@ -142,6 +142,7 @@ public final class TabletModalState {
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
         state.modalCanvasModelTarget = "";
+        state.modalBlueprintTarget = "";
         state.modalQuestBackgroundTarget = "";
         state.modalQuestBackgroundTargets.clear();
         state.modalQuestBackgroundGrayscale = false;

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.client.canvas.overlay.CanvasOverlayController;
 
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
@@ -120,6 +121,10 @@ public final class CanvasRenderer {
         WidgetGroup canvasContentLayer = CanvasChapterSwitchAnimation.wrap(state, canvasContent);
         canvasViewport.setCanvasContentLayer(canvasContentLayer);
         canvasViewport.addWidget(canvasContentLayer);
+        WidgetGroup blueprintGhost = CanvasBlueprintController.placementGhost(canvasViewport, state);
+        if (blueprintGhost != null) {
+            canvasViewport.addWidget(blueprintGhost);
+        }
         renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
         canvasViewport.updateCardCache(visibleCards, byQuestId);
     }

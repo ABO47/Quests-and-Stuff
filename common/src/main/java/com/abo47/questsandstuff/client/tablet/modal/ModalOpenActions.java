@@ -193,6 +193,22 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
+    public static void openBlueprintPicker(TabletUiState state, String selectedBlueprint) {
+        closeBeforeOpen(state);
+        state.modalBlueprintTarget = "canvas";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetBrowseDir = "blueprints";
+        state.assetSelected = selectedBlueprint == null ? "" : selectedBlueprint;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
     public static void openQuestCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
         openQuestCustomCompletionSoundPicker(state, questId, currentSound);
     }

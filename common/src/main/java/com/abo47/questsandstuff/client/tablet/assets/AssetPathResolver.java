@@ -18,6 +18,7 @@ final class AssetPathResolver {
             Files.createDirectories(assetsRoot.resolve("pics"));
             Files.createDirectories(assetsRoot.resolve("gifs"));
             Files.createDirectories(assetsRoot.resolve("sounds"));
+            Files.createDirectories(assetsRoot.resolve("blueprints"));
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed creating assets dirs {}", assetsRoot, e);
         }
@@ -123,6 +124,9 @@ final class AssetPathResolver {
         if (dir.equals("sounds") || dir.startsWith("sounds/")) {
             return isSupportedSound(fileName);
         }
+        if (dir.equals("blueprints") || dir.startsWith("blueprints/")) {
+            return isSupportedBlueprint(fileName);
+        }
         return isSupportedImage(fileName);
     }
 
@@ -204,5 +208,9 @@ final class AssetPathResolver {
     private static boolean isSupportedSound(String fileName) {
         String ext = extension(fileName);
         return "ogg".equals(ext) || "wav".equals(ext);
+    }
+
+    private static boolean isSupportedBlueprint(String fileName) {
+        return "json".equals(extension(fileName));
     }
 }

@@ -147,6 +147,7 @@ public class TabletUiState {
     public String modalCanvasImageTarget = "";
     public String modalCanvasEntityTarget = "";
     public String modalCanvasModelTarget = "";
+    public String modalBlueprintTarget = "";
     public String modalQuestBackgroundTarget = "";
     public final Set<String> modalQuestBackgroundTargets = new java.util.LinkedHashSet<>();
     public boolean modalQuestBackgroundGrayscale;
@@ -467,6 +468,8 @@ public class TabletUiState {
     public boolean canvasQuestClipboardAvailable;
     public int canvasClipboardOriginX;
     public int canvasClipboardOriginY;
+    public boolean blueprintPlacementActive;
+    public String blueprintPlacementAsset = "";
     public final List<CanvasImageLayer> canvasImageClipboard = new ArrayList<>();
     public final List<CanvasTextLayer> canvasTextClipboard = new ArrayList<>();
     public final Set<String> pendingPastedCanvasImageIds = new java.util.LinkedHashSet<>();

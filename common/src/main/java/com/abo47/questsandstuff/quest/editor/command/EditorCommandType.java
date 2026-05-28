@@ -8,6 +8,7 @@ public enum EditorCommandType {
     SCALE_MANY("scale_many"),
     COPY_MANY("copy_many"),
     PASTE_CLIPBOARD("paste_clipboard"),
+    PASTE_BLUEPRINT("paste_blueprint"),
     PREREQUISITE_ADD("prerequisite_add"),
     PREREQUISITE_REMOVE("prerequisite_remove"),
     QUEST_ICON("quest_icon"),
