@@ -196,9 +196,14 @@ public final class TabletAssetPickerModal {
                         tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, soundIcon));
                     }
                 } else if (relative.startsWith("blueprints/")) {
-                    var blueprintIcon = UiIconAtlas.iconTexture("scroll");
-                    if (blueprintIcon != null) {
-                        tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
+                    CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
+                    if (!blueprint.isEmpty()) {
+                        tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget(4, 4, Math.max(12, cellW - 8), Math.max(16, iconAreaH - 4), blueprint));
+                    } else {
+                        var blueprintIcon = UiIconAtlas.iconTexture("scroll");
+                        if (blueprintIcon != null) {
+                            tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
+                        }
                     }
                 }
             }

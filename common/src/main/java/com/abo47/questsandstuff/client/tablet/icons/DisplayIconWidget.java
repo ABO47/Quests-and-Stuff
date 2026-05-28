@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,24 +34,44 @@ public final class DisplayIconWidget extends WidgetGroup {
             stackTexture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             return;
         }
-        ResourceTexture uiIcon = UiIconAtlas.iconTexture(iconId);
+        drawIcon(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), iconId, partialTicks, 255);
+    }
+
+    public static void drawIcon(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, String iconId, float partialTicks, int alpha) {
+        int safeAlpha = Math.max(0, Math.min(255, alpha));
+        if (safeAlpha <= 0 || width <= 0 || height <= 0) {
+            return;
+        }
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
+        try {
+            drawIconContent(graphics, mouseX, mouseY, x, y, width, height, iconId, partialTicks);
+        } finally {
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
+
+    private static void drawIconContent(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, String iconId, float partialTicks) {
+        String safeIconId = iconId == null ? "" : iconId;
+        ResourceTexture uiIcon = UiIconAtlas.iconTexture(safeIconId);
         if (uiIcon != null) {
-            uiIcon.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            uiIcon.draw(graphics, mouseX, mouseY, x, y, width, height);
             return;
         }
-        if (CanvasModelPreviewRenderer.isModelAsset(iconId)
-                && CanvasModelPreviewRenderer.renderModelAsset(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), iconId)) {
+        if (CanvasModelPreviewRenderer.isModelAsset(safeIconId)
+                && CanvasModelPreviewRenderer.renderModelAsset(graphics, x, y, width, height, safeIconId)) {
             return;
         }
-        String entityId = EntityPreviewRenderer.entityId(iconId);
+        String entityId = EntityPreviewRenderer.entityId(safeIconId);
         if (!entityId.isBlank()) {
-            int yaw = EntityPreviewRenderer.entityYaw(iconId);
-            int spin = EntityPreviewRenderer.entitySpinSpeed(iconId);
-            if (!EntityPreviewRenderer.renderEntityAsset(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), iconId, yaw, spin, partialTicks)) {
-                QuestIconProvider.iconTexture(EntityPreviewRenderer.spawnEggIcon(entityId)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            int yaw = EntityPreviewRenderer.entityYaw(safeIconId);
+            int spin = EntityPreviewRenderer.entitySpinSpeed(safeIconId);
+            if (!EntityPreviewRenderer.renderEntityAsset(graphics, x, y, width, height, safeIconId, yaw, spin, partialTicks)) {
+                QuestIconProvider.iconTexture(EntityPreviewRenderer.spawnEggIcon(entityId)).draw(graphics, mouseX, mouseY, x, y, width, height);
             }
             return;
         }
-        QuestIconProvider.iconTexture(iconId).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        QuestIconProvider.iconTexture(safeIconId).draw(graphics, mouseX, mouseY, x, y, width, height);
     }
 }

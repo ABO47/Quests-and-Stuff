@@ -130,6 +130,14 @@ public final class CanvasGeometry {
         return slotLogicalSpan(Math.max(1, visualSize));
     }
 
+    public static int visualInsetForSlot(int slotLogicalSize, int visualLogicalSize) {
+        if (slotLogicalSize <= visualLogicalSize) {
+            return 0;
+        }
+        int centered = (slotLogicalSize - visualLogicalSize) / 2;
+        return Math.min(slotLogicalSize - visualLogicalSize, Math.max(QUEST_CELL_MARGIN, centered));
+    }
+
     public static int[] rotatedBounds(int x, int y, int width, int height, int rotationDegrees) {
         double centerX = x + width / 2.0;
         double centerY = y + height / 2.0;
@@ -331,11 +339,7 @@ public final class CanvasGeometry {
     }
 
     private static int visualInset(int slotLogicalSize, int visualLogicalSize) {
-        if (slotLogicalSize <= visualLogicalSize) {
-            return 0;
-        }
-        int centered = (slotLogicalSize - visualLogicalSize) / 2;
-        return Math.min(slotLogicalSize - visualLogicalSize, Math.max(QUEST_CELL_MARGIN, centered));
+        return visualInsetForSlot(slotLogicalSize, visualLogicalSize);
     }
 
     private static int visualScreenSize(TabletUiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {

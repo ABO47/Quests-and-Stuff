@@ -1,31 +1,43 @@
 package com.abo47.questsandstuff.client.canvas.blueprint;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.phys.Vec2;
+import net.minecraft.resources.ResourceLocation;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class CanvasBlueprintMiniRenderer {
+    private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
+    private static final int GRID_CONNECTION_STEP = 16;
+
     private CanvasBlueprintMiniRenderer() {
     }
 
@@ -33,7 +45,7 @@ public final class CanvasBlueprintMiniRenderer {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawPreview(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), blueprint, 255);
+                drawPreview(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), blueprint, partialTicks);
             }
         };
     }
@@ -51,7 +63,9 @@ public final class CanvasBlueprintMiniRenderer {
                 int localX = mouseX - originX;
                 int localY = mouseY - originY;
                 CanvasBlueprintController.PlacementAnchor anchor = CanvasBlueprintController.placementAnchor(state, blueprint, localX, localY);
-                drawCanvasGhost(graphics, state, originX, originY, blueprint, anchor.x(), anchor.y());
+                int anchorScreenX = originX + CanvasGeometry.screenX(state, anchor.x());
+                int anchorScreenY = originY + CanvasGeometry.screenY(state, anchor.y());
+                drawBlueprint(graphics, mouseX, mouseY, anchorScreenX, anchorScreenY, CanvasRenderer.clampZoom(state.canvasZoom), blueprint, partialTicks, 150);
             }
         };
     }
@@ -83,12 +97,11 @@ public final class CanvasBlueprintMiniRenderer {
             maxY = Math.max(maxY, y + image.h());
         }
         for (CanvasTextLayer text : blueprint.texts()) {
-            int x = text.x() - blueprint.originX();
-            int y = text.y() - blueprint.originY();
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x + text.w());
-            maxY = Math.max(maxY, y + text.h());
+            int[] rotated = CanvasGeometry.rotatedBounds(text.x() - blueprint.originX(), text.y() - blueprint.originY(), text.w(), text.h(), text.rotation());
+            minX = Math.min(minX, rotated[0]);
+            minY = Math.min(minY, rotated[1]);
+            maxX = Math.max(maxX, rotated[2]);
+            maxY = Math.max(maxY, rotated[3]);
         }
         if (minX == Integer.MAX_VALUE) {
             return new BlueprintBounds(0, 0, 1, 1);
@@ -96,7 +109,7 @@ public final class CanvasBlueprintMiniRenderer {
         return new BlueprintBounds(minX, minY, Math.max(1, maxX - minX), Math.max(1, maxY - minY));
     }
 
-    private static void drawPreview(GuiGraphics graphics, int x, int y, int w, int h, CanvasBlueprint blueprint, int alpha) {
+    private static void drawPreview(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h, CanvasBlueprint blueprint, float partialTicks) {
         if (blueprint == null || blueprint.isEmpty()) {
             drawCenteredTextPlaceholder(graphics, x, y, w, h);
             return;
@@ -109,127 +122,206 @@ public final class CanvasBlueprintMiniRenderer {
         scale = Math.max(0.01f, scale);
         int offsetX = x + pad + Math.max(0, Math.round((drawW - bounds.width() * scale) / 2.0f));
         int offsetY = y + pad + Math.max(0, Math.round((drawH - bounds.height() * scale) / 2.0f));
-        Map<String, MiniRect> questBoxes = drawLayeredPreview(graphics, blueprint, bounds, offsetX, offsetY, scale, alpha);
-        drawPreviewConnections(graphics, blueprint, bounds, offsetX, offsetY, scale, questBoxes, alpha);
+        drawBlueprint(
+                graphics,
+                mouseX,
+                mouseY,
+                Math.round(offsetX - bounds.minX() * scale),
+                Math.round(offsetY - bounds.minY() * scale),
+                scale,
+                blueprint,
+                partialTicks,
+                255
+        );
     }
 
-    private static void drawCanvasGhost(GuiGraphics graphics, TabletUiState state, int originX, int originY, CanvasBlueprint blueprint, int anchorX, int anchorY) {
-        Map<String, MiniRect> questBoxes = new HashMap<>();
+    private static void drawBlueprint(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, float scale, CanvasBlueprint blueprint, float partialTicks, int alpha) {
+        int safeAlpha = Math.max(0, Math.min(255, alpha));
+        if (safeAlpha <= 0 || scale <= 0.0f) {
+            return;
+        }
+        Map<String, BlueprintRect> questBoxes = questBoxes(blueprint);
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0.0f);
+        graphics.pose().scale(scale, scale, 1.0f);
+        drawConnections(graphics, blueprint, questBoxes, safeAlpha);
         for (String key : layerOrder(blueprint)) {
             if (key.startsWith(CanvasLayerOrdering.IMAGE_PREFIX)) {
                 CanvasImageLayer image = imageById(blueprint, key.substring(CanvasLayerOrdering.IMAGE_PREFIX.length()));
                 if (image != null) {
-                    int x = originX + CanvasGeometry.screenX(state, anchorX + image.x() - blueprint.originX());
-                    int y = originY + CanvasGeometry.screenY(state, anchorY + image.y() - blueprint.originY());
-                    int right = originX + CanvasGeometry.screenX(state, anchorX + image.x() - blueprint.originX() + image.w());
-                    int bottom = originY + CanvasGeometry.screenY(state, anchorY + image.y() - blueprint.originY() + image.h());
-                    drawFilledBox(graphics, x, y, Math.max(1, right - x), Math.max(1, bottom - y), ModColors.TEXT_SECONDARY, 86);
+                    drawImage(graphics, mouseX, mouseY, blueprint, image, safeAlpha);
                 }
                 continue;
             }
             if (key.startsWith(CanvasLayerOrdering.TEXT_PREFIX)) {
                 CanvasTextLayer text = textById(blueprint, key.substring(CanvasLayerOrdering.TEXT_PREFIX.length()));
                 if (text != null) {
-                    int x = originX + CanvasGeometry.screenX(state, anchorX + text.x() - blueprint.originX());
-                    int y = originY + CanvasGeometry.screenY(state, anchorY + text.y() - blueprint.originY());
-                    int right = originX + CanvasGeometry.screenX(state, anchorX + text.x() - blueprint.originX() + text.w());
-                    int bottom = originY + CanvasGeometry.screenY(state, anchorY + text.y() - blueprint.originY() + text.h());
-                    drawOutlinedBox(graphics, x, y, Math.max(1, right - x), Math.max(1, bottom - y), ModColors.WARNING, 96);
+                    drawText(graphics, blueprint, text, safeAlpha);
                 }
                 continue;
             }
             if (key.startsWith(CanvasLayerOrdering.QUEST_PREFIX)) {
                 CanvasBlueprint.QuestEntry quest = questById(blueprint, key.substring(CanvasLayerOrdering.QUEST_PREFIX.length()));
                 if (quest != null) {
-                    int logicalX = anchorX + quest.sourceX() - blueprint.originX();
-                    int logicalY = anchorY + quest.sourceY() - blueprint.originY();
-                    int slotW = CanvasGeometry.slotSpanForVisualSize(CanvasGeometry.visualLogicalWidth(quest.scale()));
-                    int slotH = CanvasGeometry.slotSpanForVisualSize(CanvasGeometry.visualLogicalHeight(quest.scale()));
-                    int x = originX + CanvasGeometry.screenX(state, logicalX);
-                    int y = originY + CanvasGeometry.screenY(state, logicalY);
-                    int right = originX + CanvasGeometry.screenX(state, logicalX + slotW);
-                    int bottom = originY + CanvasGeometry.screenY(state, logicalY + slotH);
-                    MiniRect box = new MiniRect(x, y, Math.max(1, right - x), Math.max(1, bottom - y));
-                    questBoxes.put(quest.sourceId(), box);
-                    drawQuestBox(graphics, box.x(), box.y(), box.w(), box.h(), ModColors.INTERACTIVE, 118);
+                    BlueprintRect rect = questBoxes.get(quest.sourceId());
+                    if (rect != null) {
+                        drawQuest(graphics, mouseX, mouseY, quest, rect, partialTicks, safeAlpha);
+                    }
                 }
             }
         }
-        drawGhostConnections(graphics, blueprint, questBoxes);
+        graphics.pose().popPose();
     }
 
-    private static Map<String, MiniRect> drawLayeredPreview(GuiGraphics graphics, CanvasBlueprint blueprint, BlueprintBounds bounds, int offsetX, int offsetY, float scale, int alpha) {
-        Map<String, MiniRect> questBoxes = new HashMap<>();
-        for (String key : layerOrder(blueprint)) {
-            if (key.startsWith(CanvasLayerOrdering.IMAGE_PREFIX)) {
-                CanvasImageLayer image = imageById(blueprint, key.substring(CanvasLayerOrdering.IMAGE_PREFIX.length()));
-                if (image != null) {
-                    MiniRect rect = miniRect(image.x() - blueprint.originX(), image.y() - blueprint.originY(), image.w(), image.h(), bounds, offsetX, offsetY, scale);
-                    drawFilledBox(graphics, rect.x(), rect.y(), rect.w(), rect.h(), ModColors.TEXT_SECONDARY, Math.min(alpha, 120));
-                }
-                continue;
-            }
-            if (key.startsWith(CanvasLayerOrdering.TEXT_PREFIX)) {
-                CanvasTextLayer text = textById(blueprint, key.substring(CanvasLayerOrdering.TEXT_PREFIX.length()));
-                if (text != null) {
-                    MiniRect rect = miniRect(text.x() - blueprint.originX(), text.y() - blueprint.originY(), text.w(), text.h(), bounds, offsetX, offsetY, scale);
-                    drawOutlinedBox(graphics, rect.x(), rect.y(), rect.w(), rect.h(), ModColors.WARNING, Math.min(alpha, 150));
-                }
-                continue;
-            }
-            if (key.startsWith(CanvasLayerOrdering.QUEST_PREFIX)) {
-                CanvasBlueprint.QuestEntry quest = questById(blueprint, key.substring(CanvasLayerOrdering.QUEST_PREFIX.length()));
-                if (quest != null) {
-                    int slotW = CanvasGeometry.slotSpanForVisualSize(CanvasGeometry.visualLogicalWidth(quest.scale()));
-                    int slotH = CanvasGeometry.slotSpanForVisualSize(CanvasGeometry.visualLogicalHeight(quest.scale()));
-                    MiniRect rect = miniRect(quest.sourceX() - blueprint.originX(), quest.sourceY() - blueprint.originY(), slotW, slotH, bounds, offsetX, offsetY, scale);
-                    questBoxes.put(quest.sourceId(), rect);
-                    drawQuestBox(graphics, rect.x(), rect.y(), rect.w(), rect.h(), ModColors.INTERACTIVE, Math.min(alpha, 210));
-                }
-            }
+    private static Map<String, BlueprintRect> questBoxes(CanvasBlueprint blueprint) {
+        Map<String, BlueprintRect> questBoxes = new HashMap<>();
+        for (CanvasBlueprint.QuestEntry quest : blueprint.quests()) {
+            int visualW = CanvasGeometry.visualLogicalWidth(quest.scale());
+            int visualH = CanvasGeometry.visualLogicalHeight(quest.scale());
+            int slotW = CanvasGeometry.slotSpanForVisualSize(visualW);
+            int slotH = CanvasGeometry.slotSpanForVisualSize(visualH);
+            int x = quest.sourceX() - blueprint.originX() + CanvasGeometry.visualInsetForSlot(slotW, visualW);
+            int y = quest.sourceY() - blueprint.originY() + CanvasGeometry.visualInsetForSlot(slotH, visualH);
+            questBoxes.put(quest.sourceId(), new BlueprintRect(x, y, visualW, visualH));
         }
         return questBoxes;
     }
 
-    private static void drawPreviewConnections(GuiGraphics graphics, CanvasBlueprint blueprint, BlueprintBounds bounds, int offsetX, int offsetY, float scale, Map<String, MiniRect> questBoxes, int alpha) {
-        drawConnections(graphics, blueprint, questBoxes, Math.min(alpha, 170));
-    }
-
-    private static void drawGhostConnections(GuiGraphics graphics, CanvasBlueprint blueprint, Map<String, MiniRect> questBoxes) {
-        drawConnections(graphics, blueprint, questBoxes, 118);
-    }
-
-    private static void drawConnections(GuiGraphics graphics, CanvasBlueprint blueprint, Map<String, MiniRect> questBoxes, int alpha) {
+    private static void drawConnections(GuiGraphics graphics, CanvasBlueprint blueprint, Map<String, BlueprintRect> questBoxes, int alpha) {
+        int connectionAlpha = Math.min(alpha, 210);
         for (CanvasBlueprint.QuestEntry target : blueprint.quests()) {
-            MiniRect targetBox = questBoxes.get(target.sourceId());
+            QuestDefinition definition = target.definition();
+            if (definition == null || !definition.settings().showPrerequisiteArrow()) {
+                continue;
+            }
+            BlueprintRect targetBox = questBoxes.get(target.sourceId());
             if (targetBox == null) {
                 continue;
             }
-            for (String prerequisiteId : target.definition().prerequisites()) {
-                MiniRect sourceBox = questBoxes.get(prerequisiteId);
+            for (String prerequisiteId : definition.prerequisites()) {
+                BlueprintRect sourceBox = questBoxes.get(prerequisiteId);
                 if (sourceBox == null) {
                     continue;
                 }
-                int color = target.definition().connectionColors().getOrDefault(prerequisiteId, ModColors.TEXT_SECONDARY);
-                drawMiniLine(
-                        graphics,
-                        sourceBox.x() + sourceBox.w() / 2.0f,
-                        sourceBox.y() + sourceBox.h() / 2.0f,
-                        targetBox.x() + targetBox.w() / 2.0f,
-                        targetBox.y() + targetBox.h() / 2.0f,
-                        withAlpha(color, alpha)
-                );
+                boolean direct = !"grid".equals(definition.connectionModes().get(prerequisiteId));
+                int color = definition.connectionColors().getOrDefault(prerequisiteId, ModColors.TEXT_SECONDARY);
+                List<CanvasPoint> path = connectionPath(sourceBox, targetBox, direct);
+                ConnectionRenderer.drawStaticChevrons(graphics, path, color, connectionAlpha, -4096, -4096, 8192, 8192);
             }
         }
     }
 
-    private static MiniRect miniRect(int x, int y, int w, int h, BlueprintBounds bounds, int offsetX, int offsetY, float scale) {
-        return new MiniRect(
-                offsetX + Math.round((x - bounds.minX()) * scale),
-                offsetY + Math.round((y - bounds.minY()) * scale),
-                Math.max(2, Math.round(Math.max(1, w) * scale)),
-                Math.max(2, Math.round(Math.max(1, h) * scale))
+    private static List<CanvasPoint> connectionPath(BlueprintRect source, BlueprintRect target, boolean direct) {
+        int sourceX = source.centerX();
+        int sourceY = source.centerY();
+        int targetX = target.centerX();
+        int targetY = target.centerY();
+        if (direct) {
+            return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
+        }
+        int midX = CanvasGeometry.snapValueToGrid((sourceX + targetX) / 2, GRID_CONNECTION_STEP);
+        if (Math.abs(midX - sourceX) < GRID_CONNECTION_STEP / 2) {
+            midX += targetX >= sourceX ? GRID_CONNECTION_STEP : -GRID_CONNECTION_STEP;
+        }
+        return List.of(
+                new CanvasPoint(sourceX, sourceY),
+                new CanvasPoint(midX, sourceY),
+                new CanvasPoint(midX, targetY),
+                new CanvasPoint(targetX, targetY)
         );
+    }
+
+    private static void drawQuest(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint.QuestEntry quest, BlueprintRect rect, float partialTicks, int alpha) {
+        QuestDefinition definition = quest.definition();
+        QuestDisplay display = definition == null ? QuestDisplay.DEFAULT : definition.display();
+        drawQuestBackground(graphics, mouseX, mouseY, display, rect, alpha);
+        int min = Math.min(rect.w(), rect.h());
+        int pad = Math.max(1, Math.round(min * 0.16f));
+        int iconSize = Math.max(1, min - pad * 2);
+        int iconX = rect.x() + (rect.w() - iconSize) / 2;
+        int iconY = rect.y() + (rect.h() - iconSize) / 2;
+        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize, display.icon(), partialTicks, alpha);
+        if (display.visualHidden()) {
+            graphics.fill(rect.x(), rect.y(), rect.x() + rect.w(), rect.y() + rect.h(), withAlpha(ModColors.SURFACE_BASE, Math.min(130, alpha / 2)));
+        }
+    }
+
+    private static void drawQuestBackground(GuiGraphics graphics, int mouseX, int mouseY, QuestDisplay display, BlueprintRect rect, int alpha) {
+        String background = display.questBackground();
+        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
+            new ResourceTexture(DEFAULT_QUEST_BG)
+                    .setColor(withAlpha(display.visualHidden() ? ModColors.TEXT_SECONDARY : ModColors.INTERACTIVE, alpha))
+                    .draw(graphics, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h());
+            return;
+        }
+        IGuiTexture texture = chapterBackgroundTexture(background, display.questBackgroundGrayscale());
+        if (texture == null) {
+            new ResourceTexture(DEFAULT_QUEST_BG)
+                    .setColor(withAlpha(ModColors.INTERACTIVE, alpha))
+                    .draw(graphics, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h());
+            return;
+        }
+        drawTextureAlpha(graphics, texture, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h(), alpha);
+    }
+
+    private static void drawImage(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint blueprint, CanvasImageLayer image, int alpha) {
+        int x = image.x() - blueprint.originX();
+        int y = image.y() - blueprint.originY();
+        withShaderAlpha(alpha, () -> CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, image, x, y, image.w(), image.h(), image.pivotX(), image.pivotY()));
+    }
+
+    private static void drawText(GuiGraphics graphics, CanvasBlueprint blueprint, CanvasTextLayer text, int alpha) {
+        CanvasTextLayer drawText = textWithAlpha(text, alpha);
+        int x = drawText.x() - blueprint.originX();
+        int y = drawText.y() - blueprint.originY();
+        graphics.pose().pushPose();
+        graphics.pose().translate(x + drawText.w() / 2.0f, y + drawText.h() / 2.0f, 0.0f);
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
+        CanvasTextRenderer.drawTextLayer(graphics, null, drawText, drawText.w(), drawText.h(), false);
+        graphics.pose().popPose();
+    }
+
+    private static CanvasTextLayer textWithAlpha(CanvasTextLayer text, int alpha) {
+        if (alpha >= 255) {
+            return text;
+        }
+        List<CanvasTextStyleSpan> spans = new ArrayList<>();
+        for (CanvasTextStyleSpan span : text.spans()) {
+            spans.add(new CanvasTextStyleSpan(span.start(), span.end(), span.style(), withAlpha(span.color(), alpha)));
+        }
+        return new CanvasTextLayer(
+                text.id(),
+                text.text(),
+                text.x(),
+                text.y(),
+                text.w(),
+                text.h(),
+                text.rotation(),
+                text.align(),
+                text.style(),
+                withAlpha(text.color(), alpha),
+                text.fontSize(),
+                spans
+        );
+    }
+
+    private static void drawTextureAlpha(GuiGraphics graphics, IGuiTexture texture, int mouseX, int mouseY, int x, int y, int width, int height, int alpha) {
+        withShaderAlpha(alpha, () -> texture.draw(graphics, mouseX, mouseY, x, y, width, height));
+    }
+
+    private static void withShaderAlpha(int alpha, Runnable draw) {
+        int safeAlpha = Math.max(0, Math.min(255, alpha));
+        if (safeAlpha <= 0) {
+            return;
+        }
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
+        try {
+            draw.run();
+        } finally {
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
     }
 
     private static List<String> layerOrder(CanvasBlueprint blueprint) {
@@ -240,7 +332,7 @@ public final class CanvasBlueprintMiniRenderer {
     }
 
     private static List<String> defaultOrder(CanvasBlueprint blueprint) {
-        java.util.ArrayList<String> order = new java.util.ArrayList<>();
+        List<String> order = new ArrayList<>();
         for (CanvasImageLayer image : blueprint.images()) {
             order.add(CanvasLayerOrdering.imageKey(image.id()));
         }
@@ -286,50 +378,16 @@ public final class CanvasBlueprintMiniRenderer {
         graphics.fill(cx - 12, cy - 1, cx + 12, cy + 1, withAlpha(ModColors.TEXT_MUTED, 100));
     }
 
-    private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
-        drawFilledBox(graphics, x, y, w, h, ModColors.SURFACE_BASE, Math.min(220, alpha + 40));
-        if (w > 3 && h > 3) {
-            graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, alpha));
-        }
-    }
-
-    private static void drawFilledBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
-        graphics.fill(x, y, x + Math.max(1, w), y + Math.max(1, h), withAlpha(color, alpha));
-    }
-
-    private static void drawOutlinedBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
-        int right = x + Math.max(1, w);
-        int bottom = y + Math.max(1, h);
-        int line = withAlpha(color, alpha);
-        graphics.fill(x, y, right, y + 1, line);
-        graphics.fill(x, bottom - 1, right, bottom, line);
-        graphics.fill(x, y, x + 1, bottom, line);
-        graphics.fill(right - 1, y, right, bottom, line);
-    }
-
-    private static void drawMiniLine(GuiGraphics graphics, float x1, float y1, float x2, float y2, int color) {
-        Tesselator tessellator = Tesselator.getInstance();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        RenderBufferUtils.drawColorLines(
-                graphics.pose(),
-                buffer,
-                List.of(new Vec2(x1, y1), new Vec2(x2, y2)),
-                color,
-                color,
-                0.55f
-        );
-        tessellator.end();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
     public record BlueprintBounds(int minX, int minY, int width, int height) {
     }
 
-    private record MiniRect(int x, int y, int w, int h) {
+    private record BlueprintRect(int x, int y, int w, int h) {
+        int centerX() {
+            return x + w / 2;
+        }
+
+        int centerY() {
+            return y + h / 2;
+        }
     }
 }

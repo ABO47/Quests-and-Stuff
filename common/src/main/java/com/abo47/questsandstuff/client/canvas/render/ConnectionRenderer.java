@@ -263,6 +263,10 @@ public final class ConnectionRenderer {
         );
     }
 
+    public static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
+        drawTexturedChevrons(graphics, path, color, alpha, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
     private static void drawConnection(
             GuiGraphics graphics,
             int originX,
