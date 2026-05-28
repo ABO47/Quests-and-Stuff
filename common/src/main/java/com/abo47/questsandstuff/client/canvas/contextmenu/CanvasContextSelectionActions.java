@@ -36,7 +36,7 @@ final class CanvasContextSelectionActions {
         }
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 0) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ModColors.INTERACTIVE, () -> {
-                boolean saved = CanvasBlueprintController.saveSelectionAndOpen(canvasViewport, state);
+                boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextLastClickX, state.contextLastClickY);
                 state.contextMenuOpen = false;
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", CanvasRenderer.totalCanvasSelectionCount(state), saved);

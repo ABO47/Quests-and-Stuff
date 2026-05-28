@@ -203,6 +203,15 @@ public final class TabletSettingsModal {
                         QuestsAndStuffConfig::setQuestEffectIconsEnabled,
                         false,
                         false
+                ),
+                new SettingOption(
+                        "canvasMiniNotifications",
+                        "ui.questsandstuff.settings.canvas_mini_notifications",
+                        "ui.questsandstuff.settings.canvas_mini_notifications_desc",
+                        QuestsAndStuffConfig::canvasMiniNotificationsEnabled,
+                        QuestsAndStuffConfig::setCanvasMiniNotificationsEnabled,
+                        false,
+                        false
                 )
         );
     }

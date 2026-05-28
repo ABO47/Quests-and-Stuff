@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
@@ -292,6 +293,7 @@ public final class CanvasViewport extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        CanvasMiniNotificationController.rememberPointer(this, state, mouseX, mouseY);
         drawBackgroundTexture(graphics, mouseX, mouseY);
         CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }

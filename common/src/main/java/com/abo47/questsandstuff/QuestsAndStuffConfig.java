@@ -32,6 +32,7 @@ public final class QuestsAndStuffConfig {
     private static boolean minimap = true;
     private static boolean readOnlyCanvasFocus = true;
     private static boolean questEffectIcons;
+    private static boolean canvasMiniNotifications;
     private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
     private static boolean completionHud = true;
@@ -264,6 +265,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean canvasMiniNotificationsEnabled() {
+        load();
+        return canvasMiniNotifications;
+    }
+
+    public static void setCanvasMiniNotificationsEnabled(boolean enabled) {
+        load();
+        if (canvasMiniNotifications != enabled) {
+            canvasMiniNotifications = enabled;
+            save();
+        }
+    }
+
     public static boolean autoClaimRewardsEnabled() {
         load();
         return autoClaimRewards;
@@ -353,6 +367,7 @@ public final class QuestsAndStuffConfig {
         minimap = bool(canvas, "minimap", minimap);
         readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
         questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
+        canvasMiniNotifications = bool(canvas, "miniNotifications", canvasMiniNotifications);
 
         JsonObject rewards = object(root, "rewards");
         autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
@@ -388,6 +403,7 @@ public final class QuestsAndStuffConfig {
         canvas.addProperty("minimap", minimap);
         canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
         canvas.addProperty("questEffectIcons", questEffectIcons);
+        canvas.addProperty("miniNotifications", canvasMiniNotifications);
         root.add("canvas", canvas);
 
         JsonObject rewards = new JsonObject();

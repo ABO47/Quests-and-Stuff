@@ -281,6 +281,8 @@ public class TabletUiState {
     public int contextMenuScrollMax;
     public int contextMenuWidthPx;
     public int contextMenuHeightPx;
+    public int contextLastClickX;
+    public int contextLastClickY;
     public String contextDeleteConfirmKey = "";
     public boolean contextQuestCompletionSoundMenuOpen;
     public long contextMenuAnimationStartMs;
@@ -470,6 +472,13 @@ public class TabletUiState {
     public int canvasClipboardOriginY;
     public boolean blueprintPlacementActive;
     public String blueprintPlacementAsset = "";
+    public int canvasPointerX;
+    public int canvasPointerY;
+    public boolean canvasPointerKnown;
+    public String canvasMiniNotificationKey = "";
+    public int canvasMiniNotificationX;
+    public int canvasMiniNotificationY;
+    public long canvasMiniNotificationUntilMs;
     public final List<CanvasImageLayer> canvasImageClipboard = new ArrayList<>();
     public final List<CanvasTextLayer> canvasTextClipboard = new ArrayList<>();
     public final Set<String> pendingPastedCanvasImageIds = new java.util.LinkedHashSet<>();

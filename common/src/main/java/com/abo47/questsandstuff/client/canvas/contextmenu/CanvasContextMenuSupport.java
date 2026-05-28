@@ -95,6 +95,8 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
+            state.contextLastClickX = x;
+            state.contextLastClickY = y;
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
@@ -122,6 +124,8 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = promoted.get(i);
+            state.contextLastClickX = state.contextMenuX + relX;
+            state.contextLastClickY = state.contextMenuY + relY;
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {

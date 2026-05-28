@@ -1,28 +1,28 @@
 package com.abo47.questsandstuff.client.canvas;
 
-
-import com.abo47.questsandstuff.client.canvas.overlay.CanvasOverlayController;
-
 import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.canvas.layer.CanvasElementStore;
+import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -126,6 +126,10 @@ public final class CanvasRenderer {
             canvasViewport.addWidget(blueprintGhost);
         }
         renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
+        WidgetGroup miniNotification = CanvasMiniNotificationController.render(canvasViewport, state);
+        if (miniNotification != null) {
+            canvasViewport.addWidget(miniNotification);
+        }
         canvasViewport.updateCardCache(visibleCards, byQuestId);
     }
 

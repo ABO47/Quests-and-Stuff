@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.canvas.clipboard;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
@@ -30,11 +31,19 @@ public final class CanvasClipboardController {
     }
 
     public static boolean copyContextToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
-        return copyToClipboard(canvasViewport, state, contextSelection(state), "context");
+        boolean copied = copyToClipboard(canvasViewport, state, contextSelection(state), "context");
+        if (copied) {
+            CanvasMiniNotificationController.show(state, "ui.questsandstuff.canvas_notifications.copied", state.contextLastClickX, state.contextLastClickY);
+        }
+        return copied;
     }
 
     public static boolean copySelectionToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
-        return copyToClipboard(canvasViewport, state, currentSelection(state), "shortcut");
+        boolean copied = copyToClipboard(canvasViewport, state, currentSelection(state), "shortcut");
+        if (copied) {
+            CanvasMiniNotificationController.showAtPointer(state, canvasViewport, "ui.questsandstuff.canvas_notifications.copied");
+        }
+        return copied;
     }
 
     public static boolean hasClipboardContent(TabletUiState state) {

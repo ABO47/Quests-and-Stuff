@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
@@ -32,12 +33,12 @@ public final class CanvasBlueprintController {
         ModalOpenActions.openBlueprintPicker(state, state.blueprintPlacementAsset);
     }
 
-    public static boolean saveSelectionAndOpen(CanvasViewport canvasViewport, TabletUiState state) {
+    public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, TabletUiState state, int noticeX, int noticeY) {
         String saved = saveSelection(canvasViewport, state);
         if (saved.isBlank()) {
             return false;
         }
-        ModalOpenActions.openBlueprintPicker(state, saved);
+        CanvasMiniNotificationController.show(state, "ui.questsandstuff.canvas_notifications.saved", noticeX, noticeY);
         return true;
     }
 
