@@ -22,9 +22,12 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindowsContextRow;
@@ -138,20 +141,18 @@ public final class TabletAssetPickerModal {
 
         int listY = 22;
         int listH = h - 48;
-        int tileW = 62;
-        int tileH = 54;
-        int gap = 6;
+        TileMetrics tileMetrics = tileMetrics(rightW, listH, assets.size());
         TiledPickerPanel.add(
                 modal,
                 rightX,
                 listY,
                 rightW,
                 listH,
-                tileW,
-                tileH,
-                gap,
-                8,
-                8,
+                tileMetrics.tileW(),
+                tileMetrics.tileH(),
+                tileMetrics.gap(),
+                tileMetrics.pad(),
+                tileMetrics.pad(),
                 assets,
                 "No assets",
                 ScrollState.bind(
@@ -167,33 +168,43 @@ public final class TabletAssetPickerModal {
                 refresh,
                 (surface, entry, index, x, y, cellW, cellH, layout) -> {
             String relative = entry.relativePath();
-            WidgetGroup tile = panel(x, y, tileW, tileH, relative.equals(selected) ? withAlpha(ModColors.INTERACTIVE, 86) : withAlpha(ModColors.SURFACE_BASE, 46), ModColors.BORDER_BASE);
+            WidgetGroup tile = new WidgetGroup(x, y, cellW, cellH);
+            if (relative.equals(selected)) {
+                tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 54)));
+            }
+            int labelH = 14;
+            int iconAreaH = Math.max(24, cellH - labelH - 8);
+            int iconSize = Math.max(24, Math.min(96, Math.min(cellW - 24, iconAreaH - 12)));
+            int iconX = Math.max(0, (cellW - iconSize) / 2);
+            int iconY = Math.max(4, (iconAreaH - iconSize) / 2);
             if (entry.directory()) {
                 var folderIcon = UiIconAtlas.iconTexture("folder");
                 if (folderIcon != null) {
-                    tile.addWidget(new ImageWidget((tileW - 24) / 2, 8, 24, 24, folderIcon));
+                    tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
                 } else {
-                    tile.addWidget(label(5, 8, "[dir]", ModColors.TEXT_MUTED));
+                    tile.addWidget(centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", ModColors.TEXT_MUTED));
                 }
             } else {
                 IGuiTexture thumb = assetThumbnailTexture(relative);
                 if (thumb != null) {
-                    tile.addWidget(new ImageWidget(5, 4, tileW - 10, 32, thumb));
+                    int thumbW = Math.max(12, cellW - 14);
+                    int thumbH = Math.max(16, iconAreaH - 4);
+                    tile.addWidget(new ImageWidget((cellW - thumbW) / 2, 4, thumbW, thumbH, thumb));
                 } else if (relative.startsWith("sounds/")) {
                     var soundIcon = UiIconAtlas.iconTexture("audio-lines");
                     if (soundIcon != null) {
-                        tile.addWidget(new ImageWidget((tileW - 24) / 2, 8, 24, 24, soundIcon));
+                        tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, soundIcon));
                     }
                 } else if (relative.startsWith("blueprints/")) {
                     var blueprintIcon = UiIconAtlas.iconTexture("scroll");
                     if (blueprintIcon != null) {
-                        tile.addWidget(new ImageWidget((tileW - 24) / 2, 8, 24, 24, blueprintIcon));
+                        tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
                     }
                 }
             }
-            tile.addWidget(label(5, 40, crop(entry.name(), 10), ModColors.TEXT_SECONDARY));
+            tile.addWidget(centeredLabel(2, cellH - labelH, cellW - 4, entry.name(), ModColors.TEXT_SECONDARY));
             surface.addWidget(tile);
-            ButtonWidget hit = flatHitButton(x, y, tileW, tileH, click -> {
+            ButtonWidget hit = flatHitButton(x, y, cellW, cellH, click -> {
                 if (click.button == 1) {
                     state.assetContextOpen = true;
                     state.assetContextFile = relative;
@@ -217,7 +228,7 @@ public final class TabletAssetPickerModal {
                 }
                 refresh.run();
             });
-            hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)));
+            hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 38)));
             surface.addWidget(hit);
                 });
 
@@ -225,6 +236,64 @@ public final class TabletAssetPickerModal {
             addContext(modal, state, player, refresh, rightX, rightW, h, assets);
         }
         return search;
+    }
+
+    private static TileMetrics tileMetrics(int panelW, int panelH, int entryCount) {
+        int pad = 10;
+        int gap = 10;
+        int count = Math.max(1, entryCount);
+        int contentW = Math.max(1, panelW - pad * 2);
+        int contentH = Math.max(1, panelH - pad * 2);
+        int bestCols = 1;
+        int bestRows = count;
+        int bestScore = Integer.MIN_VALUE;
+        int maxCols = Math.max(1, Math.min(count, (contentW + gap) / (72 + gap)));
+        for (int cols = 1; cols <= maxCols; cols++) {
+            int rows = (count + cols - 1) / cols;
+            int tileW = (contentW - gap * (cols - 1)) / cols;
+            int tileH = (contentH - gap * (rows - 1)) / rows;
+            if (tileW < 48 || tileH < 48) {
+                continue;
+            }
+            int emptySlots = cols * rows - count;
+            int balance = Math.min(tileW, tileH);
+            int area = tileW * tileH / 100;
+            int aspectPenalty = Math.abs(tileW - tileH) / 4;
+            int score = balance * 10 + area - aspectPenalty - emptySlots * 12;
+            if (score > bestScore) {
+                bestScore = score;
+                bestCols = cols;
+                bestRows = rows;
+            }
+        }
+        int tileW = Math.max(48, (contentW - gap * (bestCols - 1)) / bestCols);
+        int tileH = Math.max(48, (contentH - gap * (bestRows - 1)) / bestRows);
+        return new TileMetrics(tileW, tileH, gap, pad);
+    }
+
+    private static WidgetGroup centeredLabel(int x, int y, int w, String text, int color) {
+        String safeText = text == null ? "" : text;
+        return new WidgetGroup(x, y, w, 10) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                var font = Minecraft.getInstance().font;
+                String fitted = fitText(safeText, Math.max(1, getSizeWidth()));
+                int drawX = getPositionX() + Math.max(0, (getSizeWidth() - font.width(fitted)) / 2);
+                graphics.drawString(font, fitted, drawX, getPositionY(), color, true);
+            }
+        };
+    }
+
+    private static String fitText(String text, int width) {
+        var font = Minecraft.getInstance().font;
+        if (font.width(text) <= width) {
+            return text;
+        }
+        String suffix = "..";
+        return font.plainSubstrByWidth(text, Math.max(1, width - font.width(suffix))) + suffix;
+    }
+
+    private record TileMetrics(int tileW, int tileH, int gap, int pad) {
     }
 
     private static void addQuestBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
