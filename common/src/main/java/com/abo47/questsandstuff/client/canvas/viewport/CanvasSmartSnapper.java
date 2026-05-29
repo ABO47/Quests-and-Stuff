@@ -21,7 +21,7 @@ final class CanvasSmartSnapper {
     }
 
     static Bounds boundsForText(TabletUiState state, CanvasTextLayer text) {
-        int[] bounds = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+        int[] bounds = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
         return new Bounds(bounds[0], bounds[1], bounds[2], bounds[3]);
     }
 

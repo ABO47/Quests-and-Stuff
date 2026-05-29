@@ -154,7 +154,7 @@ public final class QuestDetailsDescriptionTextEdit {
         withSelectionGeometry(() -> {
             CanvasTextLayer draft = text.withText(state.canvasTextEditDraft);
             double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, draft, lx, visibleY);
-            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, draft.x(), draft.y(), draft.w(), draft.h());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, draft.x(), draft.y(), draft.w(), draft.h(), draft.rotation());
             hit[0] = local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
         });
         return hit[0];

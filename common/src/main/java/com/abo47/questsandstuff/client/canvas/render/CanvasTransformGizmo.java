@@ -86,7 +86,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static Hit hitAt(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return null;
         }
@@ -126,7 +126,7 @@ public final class CanvasTransformGizmo {
     }
 
     public static boolean boundsHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         LocalPoint point = toLocalPoint(geometry, rotationDegrees, hitX, hitY);
         return point.x() >= geometry.left() - HIT_PAD
                 && point.x() <= geometry.right() + HIT_PAD
@@ -143,7 +143,7 @@ public final class CanvasTransformGizmo {
     }
 
     public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return;
         }
@@ -498,8 +498,8 @@ public final class CanvasTransformGizmo {
         return Math.max(24, Math.min(70, Math.max(width, height) / 2 + 12));
     }
 
-    private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+    private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         return new Geometry(box.centerX(), box.centerY(), box.width(), box.height(), box.left(), box.top(), box.right(), box.bottom());
     }
 

@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -326,7 +327,7 @@ public final class CanvasCameraController {
         if (image == null) {
             return;
         }
-        int[] box = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+        int[] box = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
         bounds.add(box[0], box[1], box[2], box[3]);
     }
 
@@ -334,7 +335,7 @@ public final class CanvasCameraController {
         if (text == null) {
             return;
         }
-        int[] box = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+        int[] box = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
         bounds.add(box[0], box[1], box[2], box[3]);
     }
 

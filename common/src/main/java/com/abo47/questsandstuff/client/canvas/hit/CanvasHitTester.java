@@ -48,7 +48,7 @@ public final class CanvasHitTester {
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
             CanvasImageLayer image = CanvasRenderer.effectiveCanvasImage(state, images.get(i));
-            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             double[] local = canvasImageLocalScreenPoint(state, image, x, y);
             if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
                 return image;
@@ -76,7 +76,7 @@ public final class CanvasHitTester {
         if (!gizmoSupported && (isCanvasImageResizeHandleHit(state, image, x, y) || isCanvasImageRotateHandleHit(state, image, x, y))) {
             return image;
         }
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
         double[] local = canvasImageLocalScreenPoint(state, image, x, y);
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? image : null;
     }
@@ -122,7 +122,7 @@ public final class CanvasHitTester {
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
             CanvasTextLayer text = CanvasRenderer.effectiveCanvasText(state, texts.get(i));
-            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
             double[] local = canvasTextLocalScreenPoint(state, text, x, y);
             if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
                 return text;
@@ -146,7 +146,7 @@ public final class CanvasHitTester {
         if (isCanvasTextResizeHandleHit(state, text, x, y) || isCanvasTextRotateHandleHit(state, text, x, y)) {
             return text;
         }
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double[] local = canvasTextLocalScreenPoint(state, text, x, y);
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? text : null;
     }
@@ -160,7 +160,7 @@ public final class CanvasHitTester {
     }
 
     public static double[] canvasTextLocalScreenPoint(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double dx = x - box.centerX();
         double dy = y - box.centerY();
         double radians = Math.toRadians(-text.rotation());
@@ -204,7 +204,7 @@ public final class CanvasHitTester {
     }
 
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
         double dx = x - box.centerX();
         double dy = y - box.centerY();
         double radians = Math.toRadians(-image.rotation());

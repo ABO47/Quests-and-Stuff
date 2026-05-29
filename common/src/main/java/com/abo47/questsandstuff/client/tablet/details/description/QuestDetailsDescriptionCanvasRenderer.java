@@ -103,12 +103,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
         CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
-        int x = contentX + drawImage.x();
-        int y = contentY + drawImage.y() - state.questDetailsDescScroll;
-        if (y > contentY + contentH || y + drawImage.h() < contentY) {
-            return;
-        }
-        CanvasImageLayerRenderer.draw(graphics, 0, 0, drawImage, x, y, drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY());
+        withSelectionGeometry(state, contentW, contentH, () -> drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH));
         if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
         }
@@ -125,8 +120,19 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
     }
 
+    private static void drawImageAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasImageLayer drawImage, int contentX, int contentY, int contentH) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+        int y = (int) Math.round(box.centerY() + box.top());
+        if (y > contentH || y + box.height() < 0) {
+            return;
+        }
+        int x = contentX + (int) Math.round(box.centerX() + box.left());
+        int screenY = contentY + y;
+        CanvasImageLayerRenderer.draw(graphics, 0, 0, drawImage, x, screenY, box.width(), box.height(), -box.left(), -box.top());
+    }
+
     private static void drawTextAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, geometryText.x(), geometryText.y(), geometryText.w(), geometryText.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, geometryText.x(), geometryText.y(), geometryText.w(), geometryText.h(), geometryText.rotation());
         int y = (int) Math.round(box.centerY() + box.top());
         if (y > contentH || y + box.height() < 0) {
             return;

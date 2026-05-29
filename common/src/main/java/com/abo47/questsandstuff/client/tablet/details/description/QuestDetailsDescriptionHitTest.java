@@ -140,7 +140,7 @@ final class QuestDetailsDescriptionHitTest {
     private boolean elementLocalHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
         withSelectionGeometry(() -> {
-            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, w, h, pivotX, pivotY);
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, w, h, pivotX, pivotY, rotation);
             CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotation, px, visibleY);
             hit[0] = point.x() >= box.left() && point.x() <= box.right()
                     && point.y() >= box.top() && point.y() <= box.bottom();

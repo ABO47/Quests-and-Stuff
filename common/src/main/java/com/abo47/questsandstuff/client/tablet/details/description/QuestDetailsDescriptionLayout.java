@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -50,23 +51,22 @@ final class QuestDetailsDescriptionLayout {
 
     static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
         int grid = Math.max(1, CanvasGeometry.gridSize(state));
-        int width = CanvasGeometry.snapVisualSpanToGridSlot(text.w(), grid, 24);
-        int height = CanvasGeometry.snapVisualSpanToGridSlot(text.h(), grid, 14);
-        if (text.rotation() == 0) {
+        int rotation = CanvasGeometry.normalizeDegrees(text.rotation());
+        if (rotation == 0) {
             CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), grid, 24, 14);
             return new CanvasTextLayer(text.id(), text.text(), Math.max(0, box.x()), Math.max(0, box.y()), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
         }
-        var anchor = CanvasGeometry.fitRotatedAnchorToGrid(text.x(), text.y(), text.w(), text.h(), width, height, text.rotation(), grid);
-        return new CanvasTextLayer(text.id(), text.text(), Math.max(0, anchor.x), Math.max(0, anchor.y), width, height, text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, rotation, grid, 24, 14);
+        return new CanvasTextLayer(text.id(), text.text(), Math.max(0, fit.x()), Math.max(0, fit.y()), fit.width(), fit.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
     }
 
     static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
         int grid = Math.max(1, CanvasGeometry.gridSize(state));
-        int width = CanvasGeometry.snapVisualSpanToGridSlot(image.w(), grid, 8);
-        int height = CanvasGeometry.snapVisualSpanToGridSlot(image.h(), grid, 8);
-        if (image.rotation() != 0) {
-            var anchor = CanvasGeometry.fitRotatedAnchorToGrid(image.x(), image.y(), image.w(), image.h(), width, height, image.rotation(), grid);
-            return image.withBounds(Math.max(0, anchor.x), Math.max(0, anchor.y), width, height);
+        int rotation = CanvasGeometry.normalizeDegrees(image.rotation());
+        if (rotation != 0) {
+            CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), rotation, grid, 8, 8);
+            CanvasImageLayer resized = image.withBounds(image.x(), image.y(), fit.width(), fit.height());
+            return resized.moveTo(Math.max(0, fit.x()), Math.max(0, fit.y()));
         }
         CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(image.x(), image.y(), image.w(), image.h(), grid, 8, 8);
         return image.withBounds(Math.max(0, box.x()), Math.max(0, box.y()), box.width(), box.height());
@@ -88,12 +88,12 @@ final class QuestDetailsDescriptionLayout {
         int minY = Integer.MAX_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (CanvasTextLayer text : model.texts.values()) {
-            int[] bounds = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+            int[] bounds = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
             minY = Math.min(minY, bounds[1]);
             maxY = Math.max(maxY, bounds[3]);
         }
         for (CanvasImageLayer image : model.images.values()) {
-            int[] bounds = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+            int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             minY = Math.min(minY, bounds[1]);
             maxY = Math.max(maxY, bounds[3]);
         }
@@ -102,4 +102,5 @@ final class QuestDetailsDescriptionLayout {
         }
         return new int[]{minY, maxY};
     }
+
 }

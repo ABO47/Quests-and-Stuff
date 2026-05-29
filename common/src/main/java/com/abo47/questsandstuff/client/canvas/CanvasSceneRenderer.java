@@ -365,7 +365,7 @@ final class CanvasSceneRenderer {
                 CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY());
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 int x = originX + (int) Math.round(box.centerX() + box.left());
                 int y = originY + (int) Math.round(box.centerY() + box.top());
                 int w = box.width();
@@ -410,8 +410,8 @@ final class CanvasSceneRenderer {
                                 state.canvasImageStartY,
                                 state.canvasImageStartW,
                                 state.canvasImageStartH,
-                                drawImage.pivotX(),
-                                drawImage.pivotY(),
+                                state.canvasImageStartPivotX,
+                                state.canvasImageStartPivotY,
                                 state.canvasImageStartRotation
                         );
                     } else {

@@ -438,6 +438,8 @@ public class TabletUiState {
     public int questDetailsTransformStartY;
     public int questDetailsTransformStartW;
     public int questDetailsTransformStartH;
+    public int questDetailsTransformStartPivotX;
+    public int questDetailsTransformStartPivotY;
     public int questDetailsTransformStartRotation;
     public int questDetailsTransformStartYaw;
     public int questDetailsTransformStartPitch;
@@ -516,6 +518,8 @@ public class TabletUiState {
     public int canvasImageStartY;
     public int canvasImageStartW;
     public int canvasImageStartH;
+    public int canvasImageStartPivotX;
+    public int canvasImageStartPivotY;
     public int canvasImageStartRotation;
     public int canvasImageStartYaw;
     public int canvasImageStartPitch;

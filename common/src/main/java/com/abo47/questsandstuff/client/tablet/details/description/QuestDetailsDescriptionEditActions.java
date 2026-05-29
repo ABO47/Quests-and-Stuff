@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -248,7 +248,7 @@ final class QuestDetailsDescriptionEditActions {
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                int[] box = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+                int[] box = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1]);
                 maxX = Math.max(maxX, box[2]);
@@ -258,7 +258,7 @@ final class QuestDetailsDescriptionEditActions {
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                int[] box = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+                int[] box = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1]);
                 maxX = Math.max(maxX, box[2]);

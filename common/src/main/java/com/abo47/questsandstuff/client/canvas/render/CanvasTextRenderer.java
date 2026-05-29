@@ -30,7 +30,7 @@ public final class CanvasTextRenderer {
                 CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h());
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 int w = box.width();
                 int h = box.height();
                 graphics.pose().pushPose();
@@ -84,7 +84,7 @@ public final class CanvasTextRenderer {
     }
 
     public static int canvasTextCursorAt(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, x, y);
         float scale = fontScale(text);
         int layoutW = layoutSize(box.width(), scale);

@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -89,15 +90,22 @@ public final class CanvasBlueprintMiniRenderer {
             maxY = Math.max(maxY, y + h);
         }
         for (CanvasImageLayer image : blueprint.images()) {
-            int x = image.x() - blueprint.originX();
-            int y = image.y() - blueprint.originY();
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x + image.w());
-            maxY = Math.max(maxY, y + image.h());
+            int[] rotated = CanvasElementGeometry.logicalBoundsAtPivot(
+                    image.x() - blueprint.originX(),
+                    image.y() - blueprint.originY(),
+                    image.w(),
+                    image.h(),
+                    image.pivotX(),
+                    image.pivotY(),
+                    image.rotation()
+            );
+            minX = Math.min(minX, rotated[0]);
+            minY = Math.min(minY, rotated[1]);
+            maxX = Math.max(maxX, rotated[2]);
+            maxY = Math.max(maxY, rotated[3]);
         }
         for (CanvasTextLayer text : blueprint.texts()) {
-            int[] rotated = CanvasGeometry.rotatedBounds(text.x() - blueprint.originX(), text.y() - blueprint.originY(), text.w(), text.h(), text.rotation());
+            int[] rotated = CanvasElementGeometry.logicalBounds(text.x() - blueprint.originX(), text.y() - blueprint.originY(), text.w(), text.h(), text.rotation());
             minX = Math.min(minX, rotated[0]);
             minY = Math.min(minY, rotated[1]);
             maxX = Math.max(maxX, rotated[2]);
@@ -275,7 +283,11 @@ public final class CanvasBlueprintMiniRenderer {
         int x = drawText.x() - blueprint.originX();
         int y = drawText.y() - blueprint.originY();
         graphics.pose().pushPose();
-        graphics.pose().translate(x + drawText.w() / 2.0f, y + drawText.h() / 2.0f, 0.0f);
+        graphics.pose().translate(
+                x + CanvasElementGeometry.defaultPivot(drawText.w()),
+                y + CanvasElementGeometry.defaultPivot(drawText.h()),
+                0.0f
+        );
         graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
         CanvasTextRenderer.drawTextLayer(graphics, null, drawText, drawText.w(), drawText.h(), false);
         graphics.pose().popPose();

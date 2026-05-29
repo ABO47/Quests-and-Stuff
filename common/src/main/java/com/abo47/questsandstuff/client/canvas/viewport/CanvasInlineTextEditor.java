@@ -32,7 +32,7 @@ public final class CanvasInlineTextEditor {
         if (text == null) {
             return false;
         }
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, localX, localY);
         return local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
     }

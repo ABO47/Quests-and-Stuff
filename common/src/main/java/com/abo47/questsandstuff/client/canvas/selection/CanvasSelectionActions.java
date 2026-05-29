@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -104,7 +105,7 @@ public final class CanvasSelectionActions {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
-            int[] box = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+            int[] box = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             bounds.include(box[0], box[1], box[2], box[3]);
         }
 
@@ -113,7 +114,7 @@ public final class CanvasSelectionActions {
             if (!textIds.contains(text.id())) {
                 continue;
             }
-            int[] box = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+            int[] box = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
             bounds.include(box[0], box[1], box[2], box[3]);
         }
         return bounds;

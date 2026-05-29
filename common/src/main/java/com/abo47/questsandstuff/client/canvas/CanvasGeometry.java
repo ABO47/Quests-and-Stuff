@@ -164,22 +164,28 @@ public final class CanvasGeometry {
     }
 
     public static int[] rotatedBounds(int x, int y, int width, int height, int rotationDegrees) {
-        double centerX = x + width / 2.0;
-        double centerY = y + height / 2.0;
+        return rotatedBoundsAtPivot(x, y, width, height, Math.max(1, width) / 2, Math.max(1, height) / 2, rotationDegrees);
+    }
+
+    public static int[] rotatedBoundsAtPivot(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        int safeWidth = Math.max(1, width);
+        int safeHeight = Math.max(1, height);
+        int safePivotX = Math.max(0, Math.min(safeWidth, pivotX));
+        int safePivotY = Math.max(0, Math.min(safeHeight, pivotY));
+        double centerX = x + safePivotX;
+        double centerY = y + safePivotY;
         double radians = Math.toRadians(normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        double halfW = width / 2.0;
-        double halfH = height / 2.0;
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
         double maxX = -Double.MAX_VALUE;
         double maxY = -Double.MAX_VALUE;
         double[][] corners = {
-                {-halfW, -halfH},
-                {halfW, -halfH},
-                {halfW, halfH},
-                {-halfW, halfH}
+                {-safePivotX, -safePivotY},
+                {safeWidth - safePivotX, -safePivotY},
+                {safeWidth - safePivotX, safeHeight - safePivotY},
+                {-safePivotX, safeHeight - safePivotY}
         };
         for (double[] corner : corners) {
             double sx = centerX + corner[0] * cos - corner[1] * sin;
@@ -198,12 +204,111 @@ public final class CanvasGeometry {
     }
 
     public static CanvasPoint fitRotatedAnchorToGrid(int x, int y, int oldWidth, int oldHeight, int newWidth, int newHeight, int rotationDegrees, int grid) {
+        return fitRotatedAnchorToGridAtPivot(
+                x,
+                y,
+                oldWidth,
+                oldHeight,
+                newWidth,
+                newHeight,
+                Math.max(1, oldWidth) / 2,
+                Math.max(1, oldHeight) / 2,
+                Math.max(1, newWidth) / 2,
+                Math.max(1, newHeight) / 2,
+                rotationDegrees,
+                grid
+        );
+    }
+
+    public static CanvasPoint fitRotatedAnchorToGridAtPivot(
+            int x,
+            int y,
+            int oldWidth,
+            int oldHeight,
+            int newWidth,
+            int newHeight,
+            int oldPivotX,
+            int oldPivotY,
+            int newPivotX,
+            int newPivotY,
+            int rotationDegrees,
+            int grid
+    ) {
         int safeGrid = Math.max(1, grid);
-        int[] oldBounds = rotatedBounds(x, y, oldWidth, oldHeight, rotationDegrees);
+        int[] oldBounds = rotatedBoundsAtPivot(x, y, oldWidth, oldHeight, oldPivotX, oldPivotY, rotationDegrees);
         int targetLeft = snapValueToGrid(oldBounds[0], safeGrid);
         int targetTop = snapValueToGrid(oldBounds[1], safeGrid);
-        int[] nextBounds = rotatedBounds(x, y, newWidth, newHeight, rotationDegrees);
+        int[] nextBounds = rotatedBoundsAtPivot(x, y, newWidth, newHeight, newPivotX, newPivotY, rotationDegrees);
         return new CanvasPoint(x + targetLeft - nextBounds[0], y + targetTop - nextBounds[1]);
+    }
+
+    public static CanvasPoint fitRotatedBoundsToGridSlotAtPivot(
+            int x,
+            int y,
+            int width,
+            int height,
+            int pivotX,
+            int pivotY,
+            int rotationDegrees,
+            int grid,
+            int minBoundsWidth,
+            int minBoundsHeight
+    ) {
+        int[] bounds = rotatedBoundsAtPivot(x, y, width, height, pivotX, pivotY, rotationDegrees);
+        GridVisualBox box = fitVisualBoxToGridSlot(
+                bounds[0],
+                bounds[1],
+                Math.max(1, bounds[2] - bounds[0]),
+                Math.max(1, bounds[3] - bounds[1]),
+                grid,
+                minBoundsWidth,
+                minBoundsHeight
+        );
+        return new CanvasPoint(x + box.x() - bounds[0], y + box.y() - bounds[1]);
+    }
+
+    public static GridFittedBox fitRotatedElementToGridSlotAtPivot(
+            int x,
+            int y,
+            int width,
+            int height,
+            int pivotX,
+            int pivotY,
+            int rotationDegrees,
+            int grid,
+            int minWidth,
+            int minHeight
+    ) {
+        int safeRotation = normalizeDegrees(rotationDegrees);
+        int nextW = snapVisualSpanToGridSlot(width, grid, minWidth);
+        int nextH = snapVisualSpanToGridSlot(height, grid, minHeight);
+        if (isQuarterTurn(safeRotation)) {
+            int[] bounds = rotatedBoundsAtPivot(x, y, width, height, pivotX, pivotY, safeRotation);
+            int boundsW = Math.max(1, bounds[2] - bounds[0]);
+            int boundsH = Math.max(1, bounds[3] - bounds[1]);
+            nextW = snapVisualSpanToGridSlot(boundsH, grid, minWidth);
+            nextH = snapVisualSpanToGridSlot(boundsW, grid, minHeight);
+        }
+        int nextPivotX = scaledPivot(pivotX, width, nextW);
+        int nextPivotY = scaledPivot(pivotY, height, nextH);
+        CanvasPoint anchor = fitRotatedBoundsToGridSlotAtPivot(
+                x,
+                y,
+                nextW,
+                nextH,
+                nextPivotX,
+                nextPivotY,
+                safeRotation,
+                grid,
+                isQuarterTurn(safeRotation) ? minHeight : minWidth,
+                isQuarterTurn(safeRotation) ? minWidth : minHeight
+        );
+        return new GridFittedBox(anchor.x, anchor.y, nextW, nextH);
+    }
+
+    public static boolean isQuarterTurn(int rotationDegrees) {
+        int normalized = normalizeDegrees(rotationDegrees);
+        return normalized == 90 || normalized == 270;
     }
 
     public static ResizedBox resizeRotatedFromBottomRight(
@@ -256,6 +361,48 @@ public final class CanvasGeometry {
     ) {
         int safeStartWidth = Math.max(1, startWidth);
         int safeStartHeight = Math.max(1, startHeight);
+        return resizeRotatedFromCornerAtPivot(
+                mouseX,
+                mouseY,
+                startX,
+                startY,
+                startWidth,
+                startHeight,
+                safeStartWidth / 2,
+                safeStartHeight / 2,
+                rotationDegrees,
+                minWidth,
+                minHeight,
+                grid,
+                snapSizeToGrid,
+                preserveAspect,
+                cornerX,
+                cornerY
+        );
+    }
+
+    public static ResizedBox resizeRotatedFromCornerAtPivot(
+            double mouseX,
+            double mouseY,
+            int startX,
+            int startY,
+            int startWidth,
+            int startHeight,
+            int pivotX,
+            int pivotY,
+            int rotationDegrees,
+            int minWidth,
+            int minHeight,
+            int grid,
+            boolean snapSizeToGrid,
+            boolean preserveAspect,
+            int cornerX,
+            int cornerY
+    ) {
+        int safeStartWidth = Math.max(1, startWidth);
+        int safeStartHeight = Math.max(1, startHeight);
+        int safePivotX = Math.max(0, Math.min(safeStartWidth, pivotX));
+        int safePivotY = Math.max(0, Math.min(safeStartHeight, pivotY));
         int safeMinWidth = Math.max(1, minWidth);
         int safeMinHeight = Math.max(1, minHeight);
         int sx = cornerX < 0 ? -1 : 1;
@@ -263,10 +410,12 @@ public final class CanvasGeometry {
         double radians = Math.toRadians(normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        double centerX = startX + safeStartWidth / 2.0;
-        double centerY = startY + safeStartHeight / 2.0;
-        double fixedX = centerX - sx * safeStartWidth * cos / 2.0 + sy * safeStartHeight * sin / 2.0;
-        double fixedY = centerY - sx * safeStartWidth * sin / 2.0 - sy * safeStartHeight * cos / 2.0;
+        double pivotWorldX = startX + safePivotX;
+        double pivotWorldY = startY + safePivotY;
+        double fixedLocalX = sx >= 0 ? -safePivotX : safeStartWidth - safePivotX;
+        double fixedLocalY = sy >= 0 ? -safePivotY : safeStartHeight - safePivotY;
+        double fixedX = pivotWorldX + fixedLocalX * cos - fixedLocalY * sin;
+        double fixedY = pivotWorldY + fixedLocalX * sin + fixedLocalY * cos;
         double vectorX = mouseX - fixedX;
         double vectorY = mouseY - fixedY;
         double nextWidth = sx * (vectorX * cos + vectorY * sin);
@@ -284,10 +433,14 @@ public final class CanvasGeometry {
             roundedWidth = snapSpanToGrid(roundedWidth, grid, safeMinWidth);
             roundedHeight = snapSpanToGrid(roundedHeight, grid, safeMinHeight);
         }
-        double nextCenterX = fixedX + sx * roundedWidth * cos / 2.0 - sy * roundedHeight * sin / 2.0;
-        double nextCenterY = fixedY + sx * roundedWidth * sin / 2.0 + sy * roundedHeight * cos / 2.0;
-        int nextX = (int) Math.round(nextCenterX - roundedWidth / 2.0);
-        int nextY = (int) Math.round(nextCenterY - roundedHeight / 2.0);
+        int nextPivotX = scaledPivot(safePivotX, safeStartWidth, roundedWidth);
+        int nextPivotY = scaledPivot(safePivotY, safeStartHeight, roundedHeight);
+        double nextFixedLocalX = sx >= 0 ? -nextPivotX : roundedWidth - nextPivotX;
+        double nextFixedLocalY = sy >= 0 ? -nextPivotY : roundedHeight - nextPivotY;
+        double nextPivotWorldX = fixedX - nextFixedLocalX * cos + nextFixedLocalY * sin;
+        double nextPivotWorldY = fixedY - nextFixedLocalX * sin - nextFixedLocalY * cos;
+        int nextX = (int) Math.round(nextPivotWorldX - nextPivotX);
+        int nextY = (int) Math.round(nextPivotWorldY - nextPivotY);
         return new ResizedBox(nextX, nextY, roundedWidth, roundedHeight);
     }
 
@@ -359,7 +512,17 @@ public final class CanvasGeometry {
         return snapped;
     }
 
-    private static int normalizeDegrees(int degrees) {
+    private static int scaledPivot(int pivot, int oldSpan, int newSpan) {
+        int safeOld = Math.max(1, oldSpan);
+        int safeNew = Math.max(1, newSpan);
+        int safePivot = Math.max(0, Math.min(safeOld, pivot));
+        if (safePivot == safeOld / 2) {
+            return safeNew / 2;
+        }
+        return Math.max(0, Math.min(safeNew, Math.round(safePivot * (float) safeNew / (float) safeOld)));
+    }
+
+    public static int normalizeDegrees(int degrees) {
         return ((degrees % 360) + 360) % 360;
     }
 
@@ -404,5 +567,8 @@ public final class CanvasGeometry {
     }
 
     public record GridVisualBox(int x, int y, int width, int height, int slotX, int slotY, int slotWidth, int slotHeight) {
+    }
+
+    public record GridFittedBox(int x, int y, int width, int height) {
     }
 }

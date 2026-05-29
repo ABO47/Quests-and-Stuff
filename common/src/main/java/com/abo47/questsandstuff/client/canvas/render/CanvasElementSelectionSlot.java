@@ -24,12 +24,12 @@ public final class CanvasElementSelectionSlot {
     }
 
     public static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, x, y, width, height);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, x, y, width, height, rotationDegrees);
         drawBox(graphics, originX, originY, box, rotationDegrees);
     }
 
     public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         drawBox(graphics, originX, originY, box, rotationDegrees);
     }
 
@@ -46,7 +46,7 @@ public final class CanvasElementSelectionSlot {
             int startHeight,
             int rotationDegrees
     ) {
-        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBox(state, startX, startY, startWidth, startHeight);
+        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBox(state, startX, startY, startWidth, startHeight, rotationDegrees);
         double dx = CanvasGeometry.screenX(state, currentX) - CanvasGeometry.screenX(state, startX);
         double dy = CanvasGeometry.screenY(state, currentY) - CanvasGeometry.screenY(state, startY);
         drawBox(graphics, originX, originY, startBox.moved(dx, dy), rotationDegrees);
@@ -67,7 +67,7 @@ public final class CanvasElementSelectionSlot {
             int pivotY,
             int rotationDegrees
     ) {
-        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBoxAtPivot(state, startX, startY, startWidth, startHeight, pivotX, pivotY);
+        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBoxAtPivot(state, startX, startY, startWidth, startHeight, pivotX, pivotY, rotationDegrees);
         double dx = CanvasGeometry.screenX(state, currentX) - CanvasGeometry.screenX(state, startX);
         double dy = CanvasGeometry.screenY(state, currentY) - CanvasGeometry.screenY(state, startY);
         drawBox(graphics, originX, originY, startBox.moved(dx, dy), rotationDegrees);
@@ -90,7 +90,7 @@ public final class CanvasElementSelectionSlot {
     }
 
     public static boolean resizeHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
         return point.x() >= box.right() - HANDLE_SIZE - 1 && point.x() <= box.right() + 1
                 && point.y() >= box.bottom() - HANDLE_SIZE - 1 && point.y() <= box.bottom() + 1;
@@ -101,7 +101,7 @@ public final class CanvasElementSelectionSlot {
     }
 
     public static boolean rotateHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
         return point.x() >= box.right() - HANDLE_SIZE - 1 && point.x() <= box.right() + 1
                 && point.y() >= box.top() - 1 && point.y() <= box.top() + HANDLE_SIZE + 1;

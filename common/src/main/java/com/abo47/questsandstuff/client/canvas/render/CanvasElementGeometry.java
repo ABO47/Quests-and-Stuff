@@ -12,6 +12,10 @@ public final class CanvasElementGeometry {
         return screenBoxAtPivot(state, x, y, width, height, width / 2, height / 2);
     }
 
+    public static Box screenBox(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
+        return screenBoxAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees);
+    }
+
     public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
         int safeWidth = Math.max(1, width);
         int safeHeight = Math.max(1, height);
@@ -29,28 +33,76 @@ public final class CanvasElementGeometry {
         );
     }
 
-    public static int[] screenBounds(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
-        return rotatedBounds(screenBox(state, x, y, width, height), rotationDegrees);
-    }
-
-    public static int[] screenBoundsAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        return rotatedBounds(screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY), rotationDegrees);
-    }
-
-    public static int[] logicalBoundsAtPivot(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        int rotation = normalize(rotationDegrees);
+        if (rotation == 0 || (rotation != 90 && rotation != 180 && rotation != 270)) {
+            return screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+        }
         int safeWidth = Math.max(1, width);
         int safeHeight = Math.max(1, height);
         int safePivotX = clamp(pivotX, 0, safeWidth);
         int safePivotY = clamp(pivotY, 0, safeHeight);
-        return rotatedBounds(
-                x + safePivotX,
-                y + safePivotY,
-                -safePivotX,
-                -safePivotY,
-                safeWidth - safePivotX,
-                safeHeight - safePivotY,
-                rotationDegrees
+        int[] bounds = logicalBoundsAtPivot(x, y, safeWidth, safeHeight, safePivotX, safePivotY, rotation);
+        ScreenAxis boundsX = screenAxis(state, bounds[0], Math.max(1, bounds[2] - bounds[0]), 0, true);
+        ScreenAxis boundsY = screenAxis(state, bounds[1], Math.max(1, bounds[3] - bounds[1]), 0, false);
+        int screenW = rotation == 180 ? boundsX.size() : boundsY.size();
+        int screenH = rotation == 180 ? boundsY.size() : boundsX.size();
+        int screenPivotX = pivotForScreenSize(screenW, safePivotX, safeWidth);
+        int screenPivotY = pivotForScreenSize(screenH, safePivotY, safeHeight);
+        int startX;
+        int startY;
+        if (rotation == 180) {
+            startX = boundsX.start() + screenW - 2 * screenPivotX;
+            startY = boundsY.start() + screenH - 2 * screenPivotY;
+        } else if (rotation == 90) {
+            startX = boundsX.start() + screenH - screenPivotY - screenPivotX;
+            startY = boundsY.start() + screenPivotX - screenPivotY;
+        } else {
+            startX = boundsX.start() + screenPivotY - screenPivotX;
+            startY = boundsY.start() + screenW - screenPivotX - screenPivotY;
+        }
+        return new Box(
+                startX + screenPivotX,
+                startY + screenPivotY,
+                screenW,
+                screenH,
+                -screenPivotX,
+                -screenPivotY,
+                screenW - screenPivotX,
+                screenH - screenPivotY
         );
+    }
+
+    public static int[] screenBounds(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
+        return rotatedBounds(screenBox(state, x, y, width, height, rotationDegrees), rotationDegrees);
+    }
+
+    public static int[] screenBoundsAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        return rotatedBounds(screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees), rotationDegrees);
+    }
+
+    public static int[] logicalBoundsAtPivot(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        return CanvasGeometry.rotatedBoundsAtPivot(x, y, width, height, pivotX, pivotY, rotationDegrees);
+    }
+
+    public static int[] logicalBounds(int x, int y, int width, int height, int rotationDegrees) {
+        return logicalBoundsAtPivot(x, y, width, height, defaultPivot(width), defaultPivot(height), rotationDegrees);
+    }
+
+    public static int defaultPivot(int size) {
+        return Math.max(1, size) / 2;
+    }
+
+    public static double logicalPivot(int start, int size, int pivot) {
+        return start + clamp(pivot, 0, Math.max(1, size));
+    }
+
+    public static double logicalPivotX(int x, int width, int pivotX) {
+        return logicalPivot(x, width, pivotX);
+    }
+
+    public static double logicalPivotY(int y, int height, int pivotY) {
+        return logicalPivot(y, height, pivotY);
     }
 
     public static LocalPoint toLocalPoint(Box box, int rotationDegrees, int hitX, int hitY) {
@@ -103,18 +155,27 @@ public final class CanvasElementGeometry {
         int grid = CanvasGeometry.gridSize(state);
         int slotSize = CanvasGeometry.slotSpanForVisualSize(safeSize);
         int inset = CanvasGeometry.visualInsetForSlot(slotSize, safeSize);
-        boolean gridFitted = safeSize == CanvasGeometry.snapVisualSpanToGridSlot(safeSize, grid, 1)
-                && Math.floorMod(start - inset, grid) == 0;
-        if (!gridFitted) {
+        boolean gridSized = safeSize == CanvasGeometry.snapVisualSpanToGridSlot(safeSize, grid, 1);
+        if (!gridSized) {
             int rawPivot = Math.max(0, Math.min(rawSize, screenCoordinate(state, start + safePivot, horizontal) - rawStart));
             return new ScreenAxis(rawStart, rawSize, rawPivot);
         }
 
-        int slotStart = start - inset;
-        int slotScreenStart = screenCoordinate(state, slotStart, horizontal);
-        int slotScreenSize = Math.max(1, screenCoordinate(state, slotStart + slotSize, horizontal) - slotScreenStart);
+        boolean gridAnchored = Math.floorMod(start - inset, grid) == 0;
+        int slotScreenSize;
+        int visualStart;
+        if (gridAnchored) {
+            int slotStart = start - inset;
+            int slotScreenStart = screenCoordinate(state, slotStart, horizontal);
+            slotScreenSize = Math.max(1, screenCoordinate(state, slotStart + slotSize, horizontal) - slotScreenStart);
+            int visualScreenSize = visualScreenSize(state, safeSize, slotSize, slotScreenSize);
+            visualStart = slotScreenStart + visualScreenInset(slotScreenSize, visualScreenSize);
+            int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (safePivot / (double) safeSize))));
+            return new ScreenAxis(visualStart, visualScreenSize, visualPivot);
+        }
+        slotScreenSize = CanvasGeometry.screenSpan(state, slotSize);
         int visualScreenSize = visualScreenSize(state, safeSize, slotSize, slotScreenSize);
-        int visualStart = slotScreenStart + visualScreenInset(slotScreenSize, visualScreenSize);
+        visualStart = rawStart;
         int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (safePivot / (double) safeSize))));
         return new ScreenAxis(visualStart, visualScreenSize, visualPivot);
     }
@@ -138,6 +199,12 @@ public final class CanvasElementGeometry {
         }
         int centered = (slotScreenSize - visualScreenSize) / 2;
         return Math.min(slotScreenSize - visualScreenSize, Math.max(1, centered));
+    }
+
+    private static int pivotForScreenSize(int screenSize, int pivot, int logicalSize) {
+        int safeLogicalSize = Math.max(1, logicalSize);
+        int safePivot = clamp(pivot, 0, safeLogicalSize);
+        return Math.max(0, Math.min(screenSize, (int) Math.round(screenSize * (safePivot / (double) safeLogicalSize))));
     }
 
     private static int clamp(int value, int min, int max) {
