@@ -381,7 +381,7 @@ public final class CanvasElementTransformController {
                 minW,
                 minH,
                 CanvasGeometry.gridSize(state),
-                state.gridSnapLocked || isShiftDown(),
+                (state.gridSnapLocked || isShiftDown()) && CanvasGeometry.isCardinalTurn(rotation),
                 preserveAspect,
                 cornerX,
                 cornerY
@@ -391,11 +391,11 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
+        return state.gridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation()) ? CanvasGridFitController.fittedImage(state, image) : image;
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+        return state.gridSnapLocked && CanvasGeometry.isCardinalTurn(text.rotation()) ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private record ResizedBox(int x, int y, int width, int height) {

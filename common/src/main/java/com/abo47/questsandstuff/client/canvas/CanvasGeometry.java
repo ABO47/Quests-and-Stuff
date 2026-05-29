@@ -311,6 +311,11 @@ public final class CanvasGeometry {
         return normalized == 90 || normalized == 270;
     }
 
+    public static boolean isCardinalTurn(int rotationDegrees) {
+        int normalized = normalizeDegrees(rotationDegrees);
+        return normalized == 0 || normalized == 90 || normalized == 180 || normalized == 270;
+    }
+
     public static ResizedBox resizeRotatedFromBottomRight(
             double mouseX,
             double mouseY,

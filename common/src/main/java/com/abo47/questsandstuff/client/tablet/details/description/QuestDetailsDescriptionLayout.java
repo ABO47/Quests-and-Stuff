@@ -52,6 +52,9 @@ final class QuestDetailsDescriptionLayout {
     static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
         int grid = Math.max(1, CanvasGeometry.gridSize(state));
         int rotation = CanvasGeometry.normalizeDegrees(text.rotation());
+        if (!CanvasGeometry.isCardinalTurn(rotation)) {
+            return text;
+        }
         if (rotation == 0) {
             CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), grid, 24, 14);
             return new CanvasTextLayer(text.id(), text.text(), Math.max(0, box.x()), Math.max(0, box.y()), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
@@ -63,6 +66,9 @@ final class QuestDetailsDescriptionLayout {
     static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
         int grid = Math.max(1, CanvasGeometry.gridSize(state));
         int rotation = CanvasGeometry.normalizeDegrees(image.rotation());
+        if (!CanvasGeometry.isCardinalTurn(rotation)) {
+            return image;
+        }
         if (rotation != 0) {
             CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), rotation, grid, 8, 8);
             CanvasImageLayer resized = image.withBounds(image.x(), image.y(), fit.width(), fit.height());

@@ -361,7 +361,7 @@ public final class QuestDetailsDescriptionTransform {
                 minW,
                 minH,
                 CanvasGeometry.gridSize(state),
-                state.questDetailsGridSnapLocked || isShiftDown(),
+                (state.questDetailsGridSnapLocked || isShiftDown()) && CanvasGeometry.isCardinalTurn(state.questDetailsTransformStartRotation),
                 preserveAspect,
                 cornerX,
                 cornerY
@@ -369,11 +369,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
-        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedText(state, text) : text;
+        return state.questDetailsGridSnapLocked && CanvasGeometry.isCardinalTurn(text.rotation()) ? QuestDetailsDescriptionLayout.fittedText(state, text) : text;
     }
 
     private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
-        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedImage(state, image) : image;
+        return state.questDetailsGridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation()) ? QuestDetailsDescriptionLayout.fittedImage(state, image) : image;
     }
 
     private int rotation(int mouseX, int mouseY) {

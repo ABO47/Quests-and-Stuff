@@ -176,6 +176,9 @@ public final class CanvasGridFitController {
     public static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
         int grid = CanvasGeometry.gridSize(state);
         int rotation = CanvasGeometry.normalizeDegrees(image.rotation());
+        if (!CanvasGeometry.isCardinalTurn(rotation)) {
+            return image;
+        }
         if (rotation != 0) {
             CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), rotation, grid, 8, 8);
             CanvasImageLayer resized = image.withBounds(image.x(), image.y(), fit.width(), fit.height());
@@ -196,6 +199,9 @@ public final class CanvasGridFitController {
     public static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
         int grid = CanvasGeometry.gridSize(state);
         int rotation = CanvasGeometry.normalizeDegrees(text.rotation());
+        if (!CanvasGeometry.isCardinalTurn(rotation)) {
+            return text;
+        }
         if (rotation == 0) {
             CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), grid, 24, 14);
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
