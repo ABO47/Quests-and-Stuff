@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.modal.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -33,9 +35,10 @@ final class EntityVariantTiles {
     static final int RIGHT_X = 166;
     private static final int PAD = 8;
     private static final int LEFT_W = 150;
-    private static final int TILE_W = 62;
-    private static final int TILE_H = 54;
+    private static final int TILE_COLUMNS = 3;
+    private static final int TILE_ROWS = 3;
     private static final int TILE_GAP = 6;
+    private static final int TILE_PAD = 8;
     private static final int ENTITY_FRONT_YAW = EntityPreviewRenderer.FRONT_ENTITY_YAW;
     private static final int PREVIEW_SPIN_SPEED = 36;
 
@@ -71,17 +74,19 @@ final class EntityVariantTiles {
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
         int rightW = w - 174;
+        int listH = h - 48;
+        TileMetrics metrics = tileMetrics(rightW, listH, model.tiles().size());
         TiledPickerPanel.add(
                 modal,
                 RIGHT_X,
                 22,
                 rightW,
-                h - 48,
-                TILE_W,
-                TILE_H,
+                listH,
+                metrics.tileW(),
+                metrics.tileH(),
                 TILE_GAP,
-                8,
-                8,
+                TILE_PAD,
+                TILE_PAD,
                 model.tiles(),
                 model.emptyText(),
                 ScrollState.bind(
@@ -92,22 +97,32 @@ final class EntityVariantTiles {
                 ),
                 null,
                 refresh,
-                (surface, tileEntry, index, tileX, tileY, tileW, tileH, layout) -> addTile(surface, player, state, refresh, model, tileEntry, tileX, tileY)
+                (surface, tileEntry, index, tileX, tileY, tileW, tileH, layout) -> addTile(surface, player, state, refresh, model, tileEntry, tileX, tileY, tileW, tileH)
         );
     }
 
-    private static void addTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantTile tileEntry, int tileX, int tileY) {
-        if (tileEntry.folder()) {
-            addFolderTile(surface, state, refresh, model, tileEntry.folderEntry(), tileX, tileY);
-            return;
-        }
-        addVariantTile(surface, player, state, refresh, model, tileEntry.variantEntry(), tileX, tileY);
+    private static TileMetrics tileMetrics(int rightW, int listH, int count) {
+        int safeCount = Math.max(1, count);
+        boolean showScroll = safeCount > TILE_COLUMNS * TILE_ROWS;
+        int contentW = Math.max(1, rightW - TILE_PAD * 2 - (showScroll ? DragScrollBarWidget.RESERVED_WIDTH + TILE_GAP : 0));
+        int contentH = Math.max(1, listH - TILE_PAD * 2);
+        int tileW = Math.max(54, (contentW - TILE_GAP * (TILE_COLUMNS - 1)) / TILE_COLUMNS);
+        int tileH = Math.max(60, (contentH - TILE_GAP * (TILE_ROWS - 1)) / TILE_ROWS);
+        return new TileMetrics(tileW, tileH);
     }
 
-    private static void addFolderTile(WidgetGroup surface, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantFolder folder, int tileX, int tileY) {
+    private static void addTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantTile tileEntry, int tileX, int tileY, int tileW, int tileH) {
+        if (tileEntry.folder()) {
+            addFolderTile(surface, state, refresh, model, tileEntry.folderEntry(), tileX, tileY, tileW, tileH);
+            return;
+        }
+        addVariantTile(surface, player, state, refresh, model, tileEntry.variantEntry(), tileX, tileY, tileW, tileH);
+    }
+
+    private static void addFolderTile(WidgetGroup surface, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantFolder folder, int tileX, int tileY, int tileW, int tileH) {
         boolean active = folder.key().equals(EntityVariantCatalog.variantFolderFor(model.entityId(), model.selected()));
-        surface.addWidget(folderTile(folder, active, tileX, tileY));
-        ButtonWidget hit = flatHitButton(tileX, tileY, TILE_W, TILE_H, click -> {
+        surface.addWidget(folderTile(folder, active, tileX, tileY, tileW, tileH));
+        ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
             state.entityVariantFolder = folder.key();
             state.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
             state.entityVariantSearch = "";
@@ -121,10 +136,10 @@ final class EntityVariantTiles {
         surface.addWidget(hit);
     }
 
-    private static void addVariantTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantEntry entry, int tileX, int tileY) {
+    private static void addVariantTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantEntry entry, int tileX, int tileY, int tileW, int tileH) {
         boolean active = entry.key().equals(model.selected());
-        surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, model.activeFolder()));
-        ButtonWidget hit = flatHitButton(tileX, tileY, TILE_W, TILE_H, click -> {
+        surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, tileW, tileH, model.activeFolder()));
+        ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
             state.entityVariantSelected = entry.key();
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant selected target={} entity={} variant={}", model.target(), model.entityId(), entry.key());
             if (click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
@@ -138,24 +153,37 @@ final class EntityVariantTiles {
         surface.addWidget(hit);
     }
 
-    private static WidgetGroup folderTile(EntityVariantCatalog.VariantFolder folder, boolean active, int x, int y) {
-        WidgetGroup tile = panel(x, y, TILE_W, TILE_H, active ? withAlpha(ModColors.INTERACTIVE, 86) : withAlpha(ModColors.SURFACE_BASE, 46), active ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE);
+    private static WidgetGroup folderTile(EntityVariantCatalog.VariantFolder folder, boolean active, int x, int y, int tileW, int tileH) {
+        WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
+        if (active) {
+            tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 86)));
+        }
+        int labelH = 14;
+        int iconAreaH = Math.max(24, tileH - labelH - 8);
+        int iconSize = Math.max(20, Math.min(44, Math.min(tileW - 18, iconAreaH - 8)));
+        int iconX = Math.max(0, (tileW - iconSize) / 2);
+        int iconY = Math.max(4, (iconAreaH - iconSize) / 2);
         var folderIcon = UiIconAtlas.iconTexture("folder");
         if (folderIcon != null) {
-            tile.addWidget(new ImageWidget((TILE_W - 24) / 2, 8, 24, 24, folderIcon));
+            tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
         } else {
-            tile.addWidget(label(5, 12, "[dir]", ModColors.TEXT_MUTED));
+            tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, tileW, "[dir]", ModColors.TEXT_MUTED));
         }
-        tile.addWidget(label(5, 40, crop(folder.label(), 10), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, folder.label(), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
         return tile;
     }
 
-    private static WidgetGroup variantTile(String entityId, EntityVariantCatalog.VariantEntry entry, boolean active, int x, int y, String folderKey) {
-        WidgetGroup tile = panel(x, y, TILE_W, TILE_H, active ? withAlpha(ModColors.INTERACTIVE, 86) : withAlpha(ModColors.SURFACE_BASE, 46), active ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE);
-        tile.addWidget(new WidgetGroup(5, 4, TILE_W - 10, 32) {
+    private static WidgetGroup variantTile(String entityId, EntityVariantCatalog.VariantEntry entry, boolean active, int x, int y, int tileW, int tileH, String folderKey) {
+        WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
+        if (active) {
+            tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 86)));
+        }
+        int labelH = 14;
+        int previewH = Math.max(28, tileH - labelH - 8);
+        tile.addWidget(new WidgetGroup(3, 2, Math.max(16, tileW - 6), previewH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                EntityPreviewRenderer.renderEntityAsset(
+                EntityPreviewRenderer.renderTileEntityAsset(
                         graphics,
                         getPositionX(),
                         getPositionY(),
@@ -164,11 +192,12 @@ final class EntityVariantTiles {
                         EntityPreviewRenderer.entityAsset(entityId, entry.key()),
                         ENTITY_FRONT_YAW,
                         0,
+                        0,
                         0.0F
                 );
             }
         });
-        tile.addWidget(label(5, 40, crop(tileLabel(entityId, entry, folderKey), 10), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, tileLabel(entityId, entry, folderKey), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
         return tile;
     }
 
@@ -190,5 +219,8 @@ final class EntityVariantTiles {
             return label.substring(0, label.length() - " villager".length());
         }
         return label;
+    }
+
+    private record TileMetrics(int tileW, int tileH) {
     }
 }

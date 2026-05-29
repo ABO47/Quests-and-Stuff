@@ -5,7 +5,6 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
@@ -41,7 +40,6 @@ final class QuestDetailsWindowLifecycle {
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
-        QuestDetailsDescriptionModel.applyToolsToState(state, QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetailsQuestId)));
         CompoundTag quest = ClientQuestCache.quest(state.questDetailsQuestId);
         state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = quest == null ? "" : quest.getString("title");

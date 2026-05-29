@@ -1,8 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -29,14 +28,6 @@ public final class QuestDetailsDescriptionModel {
     final Map<String, CanvasTextLayer> texts = new HashMap<>();
     final Map<String, CanvasImageLayer> images = new HashMap<>();
     final List<String> order = new ArrayList<>();
-    boolean gridEnabled;
-    boolean gridSnapLocked;
-    boolean centerSnapXEnabled;
-    boolean centerSnapYEnabled;
-    boolean objectSnapEnabled;
-    boolean canvasLocked;
-    int gridOpacityPercent = 50;
-    int canvasBgOpacityPercent = 60;
     String canvasBackground = "default";
 
     public CanvasTextLayer text(String id) {
@@ -133,37 +124,6 @@ public final class QuestDetailsDescriptionModel {
         return lines;
     }
 
-    public static void applyToolsToState(TabletUiState state, QuestDetailsDescriptionModel model) {
-        state.questDetailsGridEnabled = model.gridEnabled;
-        state.questDetailsGridSnapLocked = model.gridSnapLocked;
-        state.questDetailsCenterSnapXEnabled = model.centerSnapXEnabled;
-        state.questDetailsCenterSnapYEnabled = model.centerSnapYEnabled;
-        state.questDetailsObjectSnapEnabled = model.objectSnapEnabled;
-        state.questDetailsCanvasLocked = model.canvasLocked;
-        state.questDetailsGridOpacityPercent = model.gridOpacityPercent;
-        state.questDetailsCanvasBgOpacityPercent = model.canvasBgOpacityPercent;
-    }
-
-    public static void copyTools(QuestDetailsDescriptionModel target, TabletUiState state) {
-        target.gridEnabled = state.questDetailsGridEnabled;
-        target.gridSnapLocked = state.questDetailsGridSnapLocked;
-        target.centerSnapXEnabled = state.questDetailsCenterSnapXEnabled;
-        target.centerSnapYEnabled = state.questDetailsCenterSnapYEnabled;
-        target.objectSnapEnabled = state.questDetailsObjectSnapEnabled;
-        target.canvasLocked = state.questDetailsCanvasLocked;
-        target.gridOpacityPercent = clampPercent(state.questDetailsGridOpacityPercent, 50);
-        target.canvasBgOpacityPercent = clampPercent(state.questDetailsCanvasBgOpacityPercent, 60);
-        if (target.canvasBackground == null || target.canvasBackground.isBlank()) {
-            target.canvasBackground = "default";
-        }
-    }
-
-    public static void saveTools(Player player, String questId, TabletUiState state) {
-        QuestDetailsDescriptionModel model = decode(ClientQuestCache.quest(questId));
-        copyTools(model, state);
-        save(player, questId, model);
-    }
-
     public static void save(Player player, String questId, QuestDetailsDescriptionModel model) {
         EditorCommandClient.updateQuestDescription(player, questId, encode(model));
     }
@@ -195,14 +155,6 @@ public final class QuestDetailsDescriptionModel {
 
     private static CompoundTag metaTag(QuestDetailsDescriptionModel model) {
         CompoundTag tag = new CompoundTag();
-        tag.putBoolean("grid", model.gridEnabled);
-        tag.putBoolean("snap", model.gridSnapLocked);
-        tag.putBoolean("center_x", model.centerSnapXEnabled);
-        tag.putBoolean("center_y", model.centerSnapYEnabled);
-        tag.putBoolean("object_snap", model.objectSnapEnabled);
-        tag.putBoolean("canvas_locked", model.canvasLocked);
-        tag.putInt("grid_opacity", clampPercent(model.gridOpacityPercent, 50));
-        tag.putInt("bg_opacity", clampPercent(model.canvasBgOpacityPercent, 60));
         tag.putString("background", model.canvasBackground == null || model.canvasBackground.isBlank() ? "default" : model.canvasBackground);
         return tag;
     }
@@ -210,28 +162,11 @@ public final class QuestDetailsDescriptionModel {
     private static void parseMeta(QuestDetailsDescriptionModel model, String snbt) {
         try {
             CompoundTag tag = TagParser.parseTag(snbt);
-            model.gridEnabled = readBoolean(tag, "grid", model.gridEnabled);
-            model.gridSnapLocked = readBoolean(tag, "snap", model.gridSnapLocked);
-            model.centerSnapXEnabled = readBoolean(tag, "center_x", model.centerSnapXEnabled);
-            model.centerSnapYEnabled = readBoolean(tag, "center_y", model.centerSnapYEnabled);
-            model.objectSnapEnabled = readBoolean(tag, "object_snap", model.objectSnapEnabled);
-            model.canvasLocked = readBoolean(tag, "canvas_locked", model.canvasLocked);
-            model.gridOpacityPercent = clampPercent(tag.contains("grid_opacity", Tag.TAG_INT) ? tag.getInt("grid_opacity") : 50, 50);
-            model.canvasBgOpacityPercent = clampPercent(tag.contains("bg_opacity", Tag.TAG_INT) ? tag.getInt("bg_opacity") : 60, 60);
             model.canvasBackground = tag.contains("background", Tag.TAG_STRING) ? tag.getString("background") : "default";
             if (model.canvasBackground.isBlank()) {
                 model.canvasBackground = "default";
             }
         } catch (Exception ignored) {
         }
-    }
-
-    private static boolean readBoolean(CompoundTag tag, String key, boolean fallback) {
-        return tag.contains(key, Tag.TAG_BYTE) ? tag.getBoolean(key) : fallback;
-    }
-
-    private static int clampPercent(int value, int fallback) {
-        int safe = value < 0 || value > 100 ? fallback : value;
-        return Math.max(0, Math.min(100, safe));
     }
 }

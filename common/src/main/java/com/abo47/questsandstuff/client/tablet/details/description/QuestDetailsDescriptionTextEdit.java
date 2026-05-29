@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -154,9 +154,8 @@ public final class QuestDetailsDescriptionTextEdit {
         withSelectionGeometry(() -> {
             CanvasTextLayer draft = text.withText(state.canvasTextEditDraft);
             double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, draft, lx, visibleY);
-            int sw = CanvasGeometry.screenSpan(state, draft.w());
-            int sh = CanvasGeometry.screenSpan(state, draft.h());
-            hit[0] = local[0] >= 0 && local[0] <= sw && local[1] >= 0 && local[1] <= sh;
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, draft.x(), draft.y(), draft.w(), draft.h());
+            hit[0] = local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
         });
         return hit[0];
     }

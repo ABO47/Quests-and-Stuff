@@ -337,6 +337,9 @@ public final class CanvasElementTransformController {
                 CanvasTransformGizmo.resizeCornerY(state.canvasImageTransformAxis),
                 CanvasTransformGizmo.supports(image.asset()) || isShiftDown()
         );
+        if (state.gridSnapLocked && image.rotation() == 0 && !CanvasTransformGizmo.supports(image.asset())) {
+            box = fitResizedImageToGridSlot(box);
+        }
         return image.withBounds(box.x(), box.y(), box.width(), box.height());
     }
 
@@ -377,6 +380,20 @@ public final class CanvasElementTransformController {
         );
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, resized.x(), resized.y(), resized.width(), resized.height());
         return new ResizedBox(clamped.x, clamped.y, resized.width(), resized.height());
+    }
+
+    private ResizedBox fitResizedImageToGridSlot(ResizedBox box) {
+        CanvasGeometry.GridVisualBox fitted = CanvasGeometry.fitVisualBoxToGridSlot(
+                box.x(),
+                box.y(),
+                box.width(),
+                box.height(),
+                CanvasGeometry.gridSize(state),
+                8,
+                8
+        );
+        CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.width(), fitted.height());
+        return new ResizedBox(clamped.x, clamped.y, fitted.width(), fitted.height());
     }
 
     private record ResizedBox(int x, int y, int width, int height) {

@@ -107,8 +107,18 @@ public final class AssetPickerApplyActions {
         int[] imageSize = canvasImageSpawnSize(state, asset);
         int imageW = imageSize[0];
         int imageH = imageSize[1];
-        int x = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalX - imageW / 2);
-        int y = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalY - imageH / 2);
+        int x = state.canvasImageLogicalX - imageW / 2;
+        int y = state.canvasImageLogicalY - imageH / 2;
+        if (state.gridSnapLocked) {
+            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(x, y, imageW, imageH, CanvasGeometry.gridSize(state), 8, 8);
+            x = box.x();
+            y = box.y();
+            imageW = box.width();
+            imageH = box.height();
+        } else {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, imageW, imageH);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, imageW, imageH, 0);
         CanvasRenderer.putCanvasImage(state, group, image);

@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -49,6 +50,9 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isAnyModalOpen()) {
+            if (!TabletRootWindowController.isTextInputActive(state, root) && TabletAssetPickerModal.handleKeyPressed(state, refresher, keyCode)) {
+                return true;
+            }
             if (modalLayer != null) {
                 modalLayer.keyPressed(keyCode, scanCode, modifiers);
             }

@@ -126,6 +126,31 @@ public final class CanvasGeometry {
         return Math.round((float) value / (float) safeGrid) * safeGrid;
     }
 
+    public static int snapVisualSpanToGridSlot(int value, int grid, int min) {
+        int safeGrid = Math.max(1, grid);
+        int safeMin = Math.max(1, min);
+        int slot = Math.max(safeGrid, Math.round((float) (Math.max(1, value) + QUEST_CELL_MARGIN) / (float) safeGrid) * safeGrid);
+        int visual = Math.max(1, slot - QUEST_CELL_MARGIN);
+        while (visual < safeMin) {
+            slot += safeGrid;
+            visual = Math.max(1, slot - QUEST_CELL_MARGIN);
+        }
+        return visual;
+    }
+
+    public static GridVisualBox fitVisualBoxToGridSlot(int x, int y, int width, int height, int grid, int minWidth, int minHeight) {
+        int safeGrid = Math.max(1, grid);
+        int visualW = snapVisualSpanToGridSlot(width, safeGrid, minWidth);
+        int visualH = snapVisualSpanToGridSlot(height, safeGrid, minHeight);
+        int slotW = slotSpanForVisualSize(visualW);
+        int slotH = slotSpanForVisualSize(visualH);
+        int insetX = visualInsetForSlot(slotW, visualW);
+        int insetY = visualInsetForSlot(slotH, visualH);
+        int slotX = snapValueToGrid(x - insetX, safeGrid);
+        int slotY = snapValueToGrid(y - insetY, safeGrid);
+        return new GridVisualBox(slotX + insetX, slotY + insetY, visualW, visualH, slotX, slotY, slotW, slotH);
+    }
+
     public static int slotSpanForVisualSize(int visualSize) {
         return slotLogicalSpan(Math.max(1, visualSize));
     }
@@ -376,5 +401,8 @@ public final class CanvasGeometry {
     }
 
     public record ResizedBox(int x, int y, int width, int height) {
+    }
+
+    public record GridVisualBox(int x, int y, int width, int height, int slotX, int slotY, int slotWidth, int slotHeight) {
     }
 }

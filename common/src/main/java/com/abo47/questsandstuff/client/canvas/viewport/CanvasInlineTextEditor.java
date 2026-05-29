@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -31,10 +32,9 @@ public final class CanvasInlineTextEditor {
         if (text == null) {
             return false;
         }
-        int w = Math.max(24, Math.round(text.w() * CanvasRenderer.clampZoom(state.canvasZoom)));
-        int h = Math.max(14, Math.round(text.h() * CanvasRenderer.clampZoom(state.canvasZoom)));
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, localX, localY);
-        return local[0] >= 0 && local[0] <= w && local[1] >= 0 && local[1] <= h;
+        return local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
     }
 
     public boolean isMenuHit(int localX, int localY) {

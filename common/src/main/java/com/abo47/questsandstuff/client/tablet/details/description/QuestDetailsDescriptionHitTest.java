@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
@@ -24,17 +25,17 @@ final class QuestDetailsDescriptionHitTest {
         this.contentH = contentH;
     }
 
-    Hit hit(QuestDetailsDescriptionModel model, int lx, int visibleY, int ly) {
+    Hit hit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
         for (int i = model.order.size() - 1; i >= 0; i--) {
             String key = model.order.get(i);
             if (key.startsWith(QuestDetailsDescriptionModel.ORDER_TEXT)) {
                 CanvasTextLayer text = model.text(key.substring(QuestDetailsDescriptionModel.ORDER_TEXT.length()));
-                if (text != null && hitsText(text, lx, visibleY, ly)) {
+                if (text != null && hitsText(text, lx, visibleY)) {
                     return new Hit("desc_text", text.id());
                 }
             } else if (key.startsWith(QuestDetailsDescriptionModel.ORDER_IMAGE)) {
                 CanvasImageLayer image = model.image(key.substring(QuestDetailsDescriptionModel.ORDER_IMAGE.length()));
-                if (image != null && hitsImage(image, lx, visibleY, ly)) {
+                if (image != null && hitsImage(image, lx, visibleY)) {
                     return new Hit("desc_image", image.id());
                 }
             }
@@ -48,15 +49,15 @@ final class QuestDetailsDescriptionHitTest {
             return new Rect(text.x(), text.y(), text.w(), text.h(), text.rotation());
         }
         CanvasImageLayer image = model.image(hit.id());
-        return new Rect(image.x(), image.y(), image.w(), image.h(), image.rotation());
+        return new Rect(image.x(), image.y(), image.w(), image.h(), image.rotation(), image.pivotX(), image.pivotY());
     }
 
     boolean inResizeHandle(Rect rect, int px, int visibleY) {
-        return selectionResizeHit(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation(), px, visibleY);
+        return selectionResizeHit(rect.x(), rect.y(), rect.w(), rect.h(), rect.pivotX(), rect.pivotY(), rect.rotation(), px, visibleY);
     }
 
     boolean inRotateHandle(Rect rect, int px, int visibleY) {
-        return selectionRotateHit(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation(), px, visibleY);
+        return selectionRotateHit(rect.x(), rect.y(), rect.w(), rect.h(), rect.pivotX(), rect.pivotY(), rect.rotation(), px, visibleY);
     }
 
     CanvasTransformMode imageGizmoMode(QuestDetailsDescriptionModel model, Hit hit, int px, int visibleY) {
@@ -88,16 +89,16 @@ final class QuestDetailsDescriptionHitTest {
         return "desc_text".equals(hit.kind()) ? selection.isSelectedText(hit.id()) : selection.isSelectedImage(hit.id());
     }
 
-    private boolean hitsText(CanvasTextLayer text, int lx, int visibleY, int ly) {
+    private boolean hitsText(CanvasTextLayer text, int lx, int visibleY) {
         return selectedControlHit(text.x(), text.y(), text.w(), text.h(), text.rotation(), lx, visibleY, selection.isSelectedText(text.id()))
                 || elementBoundsHit(text.x(), text.y(), text.w(), text.h(), text.rotation(), lx, visibleY)
-                || contains(text.x(), text.y(), text.w(), text.h(), lx, ly);
+                || elementLocalHit(text.x(), text.y(), text.w(), text.h(), text.rotation(), lx, visibleY);
     }
 
-    private boolean hitsImage(CanvasImageLayer image, int lx, int visibleY, int ly) {
+    private boolean hitsImage(CanvasImageLayer image, int lx, int visibleY) {
         return selectedImageControlHit(image, lx, visibleY)
-                || elementBoundsHit(image.x(), image.y(), image.w(), image.h(), image.rotation(), lx, visibleY)
-                || contains(image.x(), image.y(), image.w(), image.h(), lx, ly);
+                || elementBoundsHit(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), lx, visibleY)
+                || elementLocalHit(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), lx, visibleY);
     }
 
     private boolean selectedImageControlHit(CanvasImageLayer image, int px, int visibleY) {
@@ -107,32 +108,55 @@ final class QuestDetailsDescriptionHitTest {
         if (CanvasTransformGizmo.supports(image.asset())) {
             return imageGizmoMode(image, px, visibleY) != null;
         }
-        return selectedControlHit(image.x(), image.y(), image.w(), image.h(), image.rotation(), px, visibleY, true);
+        return selectedControlHit(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), px, visibleY, true);
     }
 
     private boolean selectedControlHit(int x, int y, int w, int h, int rotation, int px, int visibleY, boolean selected) {
-        return selected && (selectionResizeHit(x, y, w, h, rotation, px, visibleY)
-                || selectionRotateHit(x, y, w, h, rotation, px, visibleY));
+        return selectedControlHit(x, y, w, h, w / 2, h / 2, rotation, px, visibleY, selected);
+    }
+
+    private boolean selectedControlHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY, boolean selected) {
+        return selected && (selectionResizeHit(x, y, w, h, pivotX, pivotY, rotation, px, visibleY)
+                || selectionRotateHit(x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
     }
 
     private boolean elementBoundsHit(int x, int y, int w, int h, int rotation, int px, int visibleY) {
+        return elementBoundsHit(x, y, w, h, w / 2, h / 2, rotation, px, visibleY);
+    }
+
+    private boolean elementBoundsHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
         withSelectionGeometry(() -> {
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, x, y, w, h, rotation);
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, x, y, w, h, pivotX, pivotY, rotation);
             hit[0] = px >= bounds[0] && px <= bounds[2] && visibleY >= bounds[1] && visibleY <= bounds[3];
         });
         return hit[0];
     }
 
-    private boolean selectionResizeHit(int x, int y, int w, int h, int rotation, int px, int visibleY) {
+    private boolean elementLocalHit(int x, int y, int w, int h, int rotation, int px, int visibleY) {
+        return elementLocalHit(x, y, w, h, w / 2, h / 2, rotation, px, visibleY);
+    }
+
+    private boolean elementLocalHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
-        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.resizeHandleHit(state, x, y, w, h, rotation, px, visibleY));
+        withSelectionGeometry(() -> {
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, w, h, pivotX, pivotY);
+            CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotation, px, visibleY);
+            hit[0] = point.x() >= box.left() && point.x() <= box.right()
+                    && point.y() >= box.top() && point.y() <= box.bottom();
+        });
         return hit[0];
     }
 
-    private boolean selectionRotateHit(int x, int y, int w, int h, int rotation, int px, int visibleY) {
+    private boolean selectionResizeHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
-        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.rotateHandleHit(state, x, y, w, h, rotation, px, visibleY));
+        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
+        return hit[0];
+    }
+
+    private boolean selectionRotateHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
+        final boolean[] hit = new boolean[1];
+        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
         return hit[0];
     }
 
@@ -154,10 +178,6 @@ final class QuestDetailsDescriptionHitTest {
             }
         });
         return mode[0];
-    }
-
-    private static boolean contains(int x, int y, int w, int h, int px, int py) {
-        return px >= x && px <= x + w && py >= y && py <= y + h;
     }
 
     private void withSelectionGeometry(Runnable draw) {
@@ -194,6 +214,9 @@ final class QuestDetailsDescriptionHitTest {
     record Hit(String kind, String id) {
     }
 
-    record Rect(int x, int y, int w, int h, int rotation) {
+    record Rect(int x, int y, int w, int h, int rotation, int pivotX, int pivotY) {
+        Rect(int x, int y, int w, int h, int rotation) {
+            this(x, y, w, h, rotation, w / 2, h / 2);
+        }
     }
 }

@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.canvas.hit;
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
@@ -48,10 +48,9 @@ public final class CanvasHitTester {
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
             CanvasImageLayer image = CanvasRenderer.effectiveCanvasImage(state, images.get(i));
-            int sw = CanvasGeometry.screenSpan(state, image.w());
-            int sh = CanvasGeometry.screenSpan(state, image.h());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
             double[] local = canvasImageLocalScreenPoint(state, image, x, y);
-            if (local[0] >= 0 && local[0] <= sw && local[1] >= 0 && local[1] <= sh) {
+            if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
                 return image;
             }
         }
@@ -77,10 +76,9 @@ public final class CanvasHitTester {
         if (!gizmoSupported && (isCanvasImageResizeHandleHit(state, image, x, y) || isCanvasImageRotateHandleHit(state, image, x, y))) {
             return image;
         }
-        int sw = CanvasGeometry.screenSpan(state, image.w());
-        int sh = CanvasGeometry.screenSpan(state, image.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
         double[] local = canvasImageLocalScreenPoint(state, image, x, y);
-        return local[0] >= -3 && local[0] <= sw + 3 && local[1] >= -3 && local[1] <= sh + 3 ? image : null;
+        return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? image : null;
     }
 
     public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
@@ -124,10 +122,9 @@ public final class CanvasHitTester {
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
             CanvasTextLayer text = CanvasRenderer.effectiveCanvasText(state, texts.get(i));
-            int sw = CanvasGeometry.screenSpan(state, text.w());
-            int sh = CanvasGeometry.screenSpan(state, text.h());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
             double[] local = canvasTextLocalScreenPoint(state, text, x, y);
-            if (local[0] >= 0 && local[0] <= sw && local[1] >= 0 && local[1] <= sh) {
+            if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
                 return text;
             }
         }
@@ -149,10 +146,9 @@ public final class CanvasHitTester {
         if (isCanvasTextResizeHandleHit(state, text, x, y) || isCanvasTextRotateHandleHit(state, text, x, y)) {
             return text;
         }
-        int sw = CanvasGeometry.screenSpan(state, text.w());
-        int sh = CanvasGeometry.screenSpan(state, text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
         double[] local = canvasTextLocalScreenPoint(state, text, x, y);
-        return local[0] >= -3 && local[0] <= sw + 3 && local[1] >= -3 && local[1] <= sh + 3 ? text : null;
+        return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? text : null;
     }
 
     public static boolean isCanvasTextResizeHandleHit(TabletUiState state, CanvasTextLayer text, int x, int y) {
@@ -164,19 +160,14 @@ public final class CanvasHitTester {
     }
 
     public static double[] canvasTextLocalScreenPoint(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        int sx = CanvasGeometry.screenX(state, text.x());
-        int sy = CanvasGeometry.screenY(state, text.y());
-        int sw = CanvasGeometry.screenSpan(state, text.w());
-        int sh = CanvasGeometry.screenSpan(state, text.h());
-        double cx = sx + sw / 2.0;
-        double cy = sy + sh / 2.0;
-        double dx = x - cx;
-        double dy = y - cy;
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
+        double dx = x - box.centerX();
+        double dy = y - box.centerY();
         double radians = Math.toRadians(-text.rotation());
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin + sw / 2.0;
-        double localY = dx * sin + dy * cos + sh / 2.0;
+        double localX = dx * cos - dy * sin - box.left();
+        double localY = dx * sin + dy * cos - box.top();
         return new double[]{localX, localY};
     }
 
@@ -205,29 +196,22 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasImageResizeHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHit(state, image.x(), image.y(), image.w(), image.h(), image.rotation(), x, y);
+        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
     }
 
     public static boolean isCanvasImageRotateHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        return CanvasElementSelectionSlot.rotateHandleHit(state, image.x(), image.y(), image.w(), image.h(), image.rotation(), x, y);
+        return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
     }
 
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        int sx = CanvasGeometry.screenX(state, image.x());
-        int sy = CanvasGeometry.screenY(state, image.y());
-        int sw = Math.max(1, CanvasGeometry.screenX(state, image.x() + image.w()) - sx);
-        int sh = Math.max(1, CanvasGeometry.screenY(state, image.y() + image.h()) - sy);
-        int pivotX = CanvasGeometry.screenX(state, image.x() + image.pivotX()) - sx;
-        int pivotY = CanvasGeometry.screenY(state, image.y() + image.pivotY()) - sy;
-        double cx = sx + pivotX;
-        double cy = sy + pivotY;
-        double dx = x - cx;
-        double dy = y - cy;
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY());
+        double dx = x - box.centerX();
+        double dy = y - box.centerY();
         double radians = Math.toRadians(-image.rotation());
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin + pivotX;
-        double localY = dx * sin + dy * cos + pivotY;
+        double localX = dx * cos - dy * sin - box.left();
+        double localY = dx * sin + dy * cos - box.top();
         return new double[]{localX, localY};
     }
 
@@ -260,41 +244,7 @@ public final class CanvasHitTester {
     }
 
     private static int[] rotatedTextScreenBounds(TabletUiState state, CanvasTextLayer text) {
-        int sx = CanvasGeometry.screenX(state, text.x());
-        int sy = CanvasGeometry.screenY(state, text.y());
-        int sw = CanvasGeometry.screenSpan(state, text.w());
-        int sh = CanvasGeometry.screenSpan(state, text.h());
-        double centerX = sx + sw / 2.0D;
-        double centerY = sy + sh / 2.0D;
-        double radians = Math.toRadians(text.rotation());
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-        double minX = Double.MAX_VALUE;
-        double minY = Double.MAX_VALUE;
-        double maxX = -Double.MAX_VALUE;
-        double maxY = -Double.MAX_VALUE;
-        double[][] corners = {
-                {sx, sy},
-                {sx + sw, sy},
-                {sx + sw, sy + sh},
-                {sx, sy + sh}
-        };
-        for (double[] corner : corners) {
-            double localX = corner[0] - centerX;
-            double localY = corner[1] - centerY;
-            double x = centerX + localX * cos - localY * sin;
-            double y = centerY + localX * sin + localY * cos;
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x);
-            maxY = Math.max(maxY, y);
-        }
-        return new int[]{
-                (int) Math.floor(minX),
-                (int) Math.floor(minY),
-                (int) Math.ceil(maxX),
-                (int) Math.ceil(maxY)
-        };
+        return CanvasElementGeometry.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
     }
 
     private static MenuCandidate bestMenuCandidate(int[] avoidBounds, int viewportW, int viewportH, int menuW, int occupiedH) {

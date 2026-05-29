@@ -14,7 +14,6 @@ public final class QuestDetailsDescriptionPanel {
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(quest);
-        QuestDetailsDescriptionModel.applyToolsToState(state, model);
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
         state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampReadOnlyScroll(state, model, fit[1] - 1, state.questDetailsDescScroll);

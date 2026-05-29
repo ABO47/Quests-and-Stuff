@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -66,7 +66,7 @@ public final class QuestDetailsDescriptionSelection {
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
-            if (intersects(bounds(image.x(), image.y(), image.w(), image.h(), image.rotation()), minX, minY, maxX, maxY)) {
+            if (intersects(bounds(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation()), minX, minY, maxX, maxY)) {
                 state.questDetailsSelectedImageIds.add(image.id());
                 state.questDetailsSelectedImageId = image.id();
             }
@@ -153,7 +153,7 @@ public final class QuestDetailsDescriptionSelection {
         for (CanvasImageLayer image : model.images.values()) {
             CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
             if (isSelectedImage(drawImage.id())) {
-                int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
+                int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1] - state.questDetailsDescScroll);
                 maxX = Math.max(maxX, box[2]);
@@ -184,7 +184,11 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     private static int[] bounds(int x, int y, int w, int h, int rotation) {
-        return CanvasGeometry.rotatedBounds(x, y, w, h, rotation);
+        return bounds(x, y, w, h, w / 2, h / 2, rotation);
+    }
+
+    private static int[] bounds(int x, int y, int w, int h, int pivotX, int pivotY, int rotation) {
+        return CanvasElementGeometry.logicalBoundsAtPivot(x, y, w, h, pivotX, pivotY, rotation);
     }
 
     private static boolean intersects(int[] bounds, int minX, int minY, int maxX, int maxY) {

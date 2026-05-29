@@ -23,6 +23,9 @@ final class QuestDetailsDescriptionEditActions {
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 16);
         CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", ModColors.TEXT_PRIMARY);
+        if (state.questDetailsGridSnapLocked) {
+            text = QuestDetailsDescriptionLayout.fittedText(state, text);
+        }
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
         QuestDetailsDescriptionModel.save(player, questId, model);

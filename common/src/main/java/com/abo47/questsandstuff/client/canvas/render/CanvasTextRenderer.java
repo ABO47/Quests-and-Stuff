@@ -1,12 +1,11 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -31,12 +30,11 @@ public final class CanvasTextRenderer {
                 CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int x = originX + CanvasGeometry.screenX(state, drawText.x());
-                int y = originY + CanvasGeometry.screenY(state, drawText.y());
-                int w = CanvasGeometry.screenSpan(state, drawText.w());
-                int h = CanvasGeometry.screenSpan(state, drawText.h());
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h());
+                int w = box.width();
+                int h = box.height();
                 graphics.pose().pushPose();
-                graphics.pose().translate(x + w / 2.0f, y + h / 2.0f, 0.0f);
+                graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
                 boolean inlineEditing = isMainCanvasTextEditing(state, drawText);
                 drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing);
@@ -86,13 +84,12 @@ public final class CanvasTextRenderer {
     }
 
     public static int canvasTextCursorAt(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        int sw = CanvasGeometry.screenSpan(state, text.w());
-        int sh = CanvasGeometry.screenSpan(state, text.h());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, x, y);
         float scale = fontScale(text);
-        int layoutW = layoutSize(sw, scale);
-        int layoutH = layoutSize(sh, scale);
-        return cursorAtLocalPoint(text, layoutW, layoutH, (local[0] - sw / 2.0) / scale, (local[1] - sh / 2.0) / scale);
+        int layoutW = layoutSize(box.width(), scale);
+        int layoutH = layoutSize(box.height(), scale);
+        return cursorAtLocalPoint(text, layoutW, layoutH, (local[0] - box.width() / 2.0) / scale, (local[1] - box.height() / 2.0) / scale);
     }
 
     public static int textCursorAtLocal(CanvasTextLayer text, int width, int height, double localX, double localY) {

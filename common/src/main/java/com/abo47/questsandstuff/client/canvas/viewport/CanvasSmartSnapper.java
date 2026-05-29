@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.canvas.viewport;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -15,7 +16,7 @@ final class CanvasSmartSnapper {
     }
 
     static Bounds boundsForImage(TabletUiState state, CanvasImageLayer image) {
-        int[] bounds = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+        int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
         return new Bounds(bounds[0], bounds[1], bounds[2], bounds[3]);
     }
 

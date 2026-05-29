@@ -227,6 +227,10 @@ public class TabletUiState {
     public String assetContextFile = "";
     public int assetContextX;
     public int assetContextY;
+    public int assetContextMenuX;
+    public int assetContextMenuY;
+    public int assetContextMenuW;
+    public int assetContextMenuH;
     public boolean assetRenameOpen;
     public String assetRenameDraft = "";
     public boolean chapterDragActive;

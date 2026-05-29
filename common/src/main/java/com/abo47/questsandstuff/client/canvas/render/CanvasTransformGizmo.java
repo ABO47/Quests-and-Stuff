@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -190,8 +189,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static void drawResizeGizmo(GuiGraphics graphics, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         graphics.fill(left, top, right, bottom, withAlpha(ModColors.INTERACTIVE, 18));
@@ -394,8 +393,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static String resizeAxisAt(LocalPoint point, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         int inset = HANDLE / 2;
@@ -415,8 +414,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static LocalPoint resizeHandlePoint(String axis, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         int inset = HANDLE / 2;
@@ -500,19 +499,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
-        int safePivotX = Math.max(0, Math.min(Math.max(1, width), pivotX));
-        int safePivotY = Math.max(0, Math.min(Math.max(1, height), pivotY));
-        int screenLeft = CanvasGeometry.screenX(state, x);
-        int screenTop = CanvasGeometry.screenY(state, y);
-        int screenWidth = Math.max(1, CanvasGeometry.screenX(state, x + width) - screenLeft);
-        int screenHeight = Math.max(1, CanvasGeometry.screenY(state, y + height) - screenTop);
-        int screenPivotX = CanvasGeometry.screenX(state, x + safePivotX) - screenLeft;
-        int screenPivotY = CanvasGeometry.screenY(state, y + safePivotY) - screenTop;
-        int left = -screenPivotX;
-        int top = -screenPivotY;
-        int right = screenWidth - screenPivotX;
-        int bottom = screenHeight - screenPivotY;
-        return new Geometry(screenLeft + screenPivotX, screenTop + screenPivotY, screenWidth, screenHeight, left, top, right, bottom);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
+        return new Geometry(box.centerX(), box.centerY(), box.width(), box.height(), box.left(), box.top(), box.right(), box.bottom());
     }
 
     private static ScreenPoint screenPoint(int originX, int originY, Geometry geometry, int rotationDegrees, double localX, double localY) {

@@ -94,7 +94,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -244,7 +244,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
             drawClippedRect(
                     graphics,
                     originX,

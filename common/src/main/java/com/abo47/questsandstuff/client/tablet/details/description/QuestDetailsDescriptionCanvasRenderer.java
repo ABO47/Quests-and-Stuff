@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasBackgroundOpacity;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -27,18 +28,18 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     public static void drawContent(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
-        drawDescriptionBackground(graphics, model, contentX, contentY, contentW, contentH);
-        drawGrid(graphics, state, model, contentX, contentY, contentW, contentH);
+        drawDescriptionBackground(graphics, state, model, contentX, contentY, contentW, contentH);
+        drawGrid(graphics, state, contentX, contentY, contentW, contentH);
         drawElements(graphics, state, model, contentX, contentY, contentW, contentH);
         drawGuides(graphics, state, contentX, contentY, contentW, contentH);
     }
 
-    private static void drawGrid(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
-        if (!model.gridEnabled || !QuestDetailsEditState.canEdit(state)) {
+    private static void drawGrid(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+        if (!state.questDetailsGridEnabled || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
-        int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, model.gridOpacityPercent))) / 100));
+        int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, state.questDetailsGridOpacityPercent))) / 100));
         int color = (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
         int spanW = contentW;
         int spanH = contentH;
@@ -54,10 +55,10 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         graphics.fill(contentX + spanW, contentY, contentX + spanW + 1, contentY + paintH, color);
     }
 
-    private static void drawDescriptionBackground(GuiGraphics graphics, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawDescriptionBackground(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        int opacityPercent = Math.max(0, Math.min(100, model.canvasBgOpacityPercent));
+        int opacityPercent = Math.max(0, Math.min(100, state.questDetailsCanvasBgOpacityPercent));
         if (CanvasBackgroundOpacity.alpha(opacityPercent) <= 0) {
             return;
         }
@@ -115,22 +116,26 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasRenderer.effectiveQuestDetailsText(state, text);
-        int x = contentX + drawText.x();
-        int y = contentY + drawText.y() - state.questDetailsDescScroll;
-        if (y > contentY + contentH || y + drawText.h() < contentY) {
-            return;
-        }
         boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget)
                 && drawText.id().equals(state.questDetailsTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvasTextEditDraft) : drawText;
-        graphics.pose().pushPose();
-        graphics.pose().translate(x + drawText.w() / 2.0f, y + drawText.h() / 2.0f, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
-        CanvasTextRenderer.drawTextLayer(graphics, state, rendered, drawText.w(), drawText.h(), inlineEditing);
-        graphics.pose().popPose();
+        withSelectionGeometry(state, contentW, contentH, () -> drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing));
         if (isSelectedText(state, drawText.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
         }
+    }
+
+    private static void drawTextAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, geometryText.x(), geometryText.y(), geometryText.w(), geometryText.h());
+        int y = (int) Math.round(box.centerY() + box.top());
+        if (y > contentH || y + box.height() < 0) {
+            return;
+        }
+        graphics.pose().pushPose();
+        graphics.pose().translate(contentX + box.centerX(), contentY + box.centerY(), 0.0f);
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(geometryText.rotation())));
+        CanvasTextRenderer.drawTextLayer(graphics, state, rendered, box.width(), box.height(), inlineEditing);
+        graphics.pose().popPose();
     }
 
     private static void drawSelection(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int x, int y, int w, int h, int rotation) {
@@ -142,7 +147,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             if (CanvasTransformGizmo.supports(image.asset())) {
                 CanvasTransformGizmo.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
             } else {
-                CanvasElementSelectionSlot.draw(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.rotation());
+                CanvasElementSelectionSlot.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             }
         });
     }

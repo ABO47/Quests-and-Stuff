@@ -106,7 +106,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         int visibleY = localY(mouseY);
         int ly = visibleY + state.questDetailsDescScroll;
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY, ly);
+        QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY);
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "rotate");

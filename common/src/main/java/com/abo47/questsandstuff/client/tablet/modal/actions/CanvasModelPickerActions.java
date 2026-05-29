@@ -63,8 +63,17 @@ public final class CanvasModelPickerActions {
     private static void addModel(TabletUiState state, ModalTargetParser.Target parsed, String group, String asset) {
         String id = StableIdAllocator.nextId(parsed.isCanvasBlockNew() ? "blk" : "itm", canvasImageIds(state, group));
         int size = Math.max(MIN_MODEL_SIZE, CanvasGeometry.gridSize(state) * 3);
-        int x = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalX - size / 2);
-        int y = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalY - size / 2);
+        int x = state.canvasImageLogicalX - size / 2;
+        int y = state.canvasImageLogicalY - size / 2;
+        if (state.gridSnapLocked) {
+            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(x, y, size, size, CanvasGeometry.gridSize(state), MIN_MODEL_SIZE - 1, MIN_MODEL_SIZE - 1);
+            x = box.x();
+            y = box.y();
+            size = Math.min(box.width(), box.height());
+        } else {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, size, size);
         CanvasImageLayer image = CanvasModelPreviewRenderer.isBlockModelAsset(asset)
                 ? new CanvasImageLayer(id, asset, clamped.x, clamped.y, size, size, 0, CanvasModelPreviewRenderer.DEFAULT_BLOCK_YAW, CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED, CanvasModelPreviewRenderer.DEFAULT_BLOCK_PITCH)

@@ -37,6 +37,8 @@ public final class EntityPreviewRenderer {
     private static final int DEFAULT_ICON_ENTITY_SPIN_SPEED = 0;
     private static final double ICON_ENTITY_FILL = 0.82D;
     private static final double ICON_ENTITY_MAX_SCALE = 96.0D;
+    private static final double TILE_ENTITY_FILL = 0.86D;
+    private static final double TILE_ENTITY_MAX_SCALE = 112.0D;
     private static final double CANVAS_ENTITY_FILL = 0.94D;
     private static final double CANVAS_ENTITY_MAX_SCALE = 2048.0D;
 
@@ -203,6 +205,10 @@ public final class EntityPreviewRenderer {
 
     public static boolean renderCanvasEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
         return renderEntityAssetAtCenter(graphics, centerX, centerY, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks, CANVAS_ENTITY_FILL, CANVAS_ENTITY_MAX_SCALE);
+    }
+
+    public static boolean renderTileEntityAsset(GuiGraphics graphics, int x, int y, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks) {
+        return renderEntityAssetAtCenter(graphics, x + width / 2, y + height / 2, width, height, asset, yawDegrees, spinSpeed, pitchDegrees, partialTicks, TILE_ENTITY_FILL, TILE_ENTITY_MAX_SCALE);
     }
 
     private static boolean renderEntityAssetAtCenter(GuiGraphics graphics, int centerX, int centerY, int width, int height, String asset, int yawDegrees, int spinSpeed, int pitchDegrees, float partialTicks, double fill, double maxScale) {

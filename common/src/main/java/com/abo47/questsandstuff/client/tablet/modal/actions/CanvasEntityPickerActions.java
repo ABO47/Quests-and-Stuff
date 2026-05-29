@@ -55,8 +55,17 @@ public final class CanvasEntityPickerActions {
     private static void addEntity(TabletUiState state, String entityId, String group) {
         String id = StableIdAllocator.nextId("ent", canvasImageIds(state, group));
         int size = Math.max(48, CanvasGeometry.gridSize(state) * 4);
-        int x = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalX - size / 2);
-        int y = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalY - size / 2);
+        int x = state.canvasImageLogicalX - size / 2;
+        int y = state.canvasImageLogicalY - size / 2;
+        if (state.gridSnapLocked) {
+            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(x, y, size, size, CanvasGeometry.gridSize(state), 47, 47);
+            x = box.x();
+            y = box.y();
+            size = Math.min(box.width(), box.height());
+        } else {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, size, size);
         CanvasImageLayer image = new CanvasImageLayer(id, EntityPreviewRenderer.entityAsset(entityId), clamped.x, clamped.y, size, size, 0);
         CanvasRenderer.putCanvasImage(state, group, image);
