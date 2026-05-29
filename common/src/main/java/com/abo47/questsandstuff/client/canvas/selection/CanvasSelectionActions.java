@@ -149,19 +149,19 @@ public final class CanvasSelectionActions {
     }
 
     private static CanvasImageLayer movedImage(TabletUiState state, CanvasImageLayer image, int offset, boolean verticalCenterLine) {
-        CanvasPoint clamped = movedElementPosition(state, image.x(), image.y(), image.w(), image.h(), offset, verticalCenterLine);
+        CanvasPoint clamped = movedElementPosition(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), offset, verticalCenterLine);
         return image.moveTo(clamped.x, clamped.y);
     }
 
     private static CanvasTextLayer movedText(TabletUiState state, CanvasTextLayer text, int offset, boolean verticalCenterLine) {
-        CanvasPoint clamped = movedElementPosition(state, text.x(), text.y(), text.w(), text.h(), offset, verticalCenterLine);
+        CanvasPoint clamped = movedElementPosition(state, text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation(), offset, verticalCenterLine);
         return new CanvasTextLayer(text.id(), text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
     }
 
-    private static CanvasPoint movedElementPosition(TabletUiState state, int x, int y, int width, int height, int offset, boolean verticalCenterLine) {
+    private static CanvasPoint movedElementPosition(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotation, int offset, boolean verticalCenterLine) {
         int movedX = verticalCenterLine ? x + offset : x;
         int movedY = verticalCenterLine ? y : y + offset;
-        return CanvasGeometry.clampAnchorToCanvas(state, movedX, movedY, width, height);
+        return CanvasGeometry.clampRotatedAnchorToCanvas(state, movedX, movedY, width, height, pivotX, pivotY, rotation);
     }
 
     private static final class SelectionBounds {

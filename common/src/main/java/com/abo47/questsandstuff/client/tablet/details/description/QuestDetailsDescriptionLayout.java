@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasElementGridFit;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -50,32 +51,11 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
-        int grid = Math.max(1, CanvasGeometry.gridSize(state));
-        int rotation = CanvasGeometry.normalizeDegrees(text.rotation());
-        if (!CanvasGeometry.isCardinalTurn(rotation)) {
-            return text;
-        }
-        if (rotation == 0) {
-            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), grid, 24, 14);
-            return new CanvasTextLayer(text.id(), text.text(), Math.max(0, box.x()), Math.max(0, box.y()), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
-        }
-        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, rotation, grid, 24, 14);
-        return new CanvasTextLayer(text.id(), text.text(), Math.max(0, fit.x()), Math.max(0, fit.y()), fit.width(), fit.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+        return CanvasElementGridFit.fittedText(text, CanvasGeometry.gridSize(state), CanvasElementGridFit::nonNegativeClamp);
     }
 
     static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
-        int grid = Math.max(1, CanvasGeometry.gridSize(state));
-        int rotation = CanvasGeometry.normalizeDegrees(image.rotation());
-        if (!CanvasGeometry.isCardinalTurn(rotation)) {
-            return image;
-        }
-        if (rotation != 0) {
-            CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), rotation, grid, 8, 8);
-            CanvasImageLayer resized = image.withBounds(image.x(), image.y(), fit.width(), fit.height());
-            return resized.moveTo(Math.max(0, fit.x()), Math.max(0, fit.y()));
-        }
-        CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(image.x(), image.y(), image.w(), image.h(), grid, 8, 8);
-        return image.withBounds(Math.max(0, box.x()), Math.max(0, box.y()), box.width(), box.height());
+        return CanvasElementGridFit.fittedImage(image, CanvasGeometry.gridSize(state), CanvasElementGridFit::nonNegativeClamp);
     }
 
     static int[] imageSpawnSize(String asset) {

@@ -191,7 +191,7 @@ public final class QuestDetailsDescriptionTextEdit {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         CanvasTextLayer text = model.text(state.canvasTextEditTarget);
         if (text != null) {
-            model.putText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft)));
+            model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft))));
             QuestDetailsDescriptionModel.save(Minecraft.getInstance().player, questId, model);
         } else {
             previewTextDraft();
@@ -215,7 +215,7 @@ public final class QuestDetailsDescriptionTextEdit {
             return;
         }
         state.questDetailsTextEditDraft = state.canvasTextEditDraft;
-        model.putText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft)));
+        model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft))));
         QuestDetailsDescriptionModel.preview(questId, model);
         refresh.run();
     }
@@ -261,10 +261,14 @@ public final class QuestDetailsDescriptionTextEdit {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         CanvasTextLayer text = model.text(state.canvasTextEditTarget);
         if (text != null) {
-            model.putText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, insert)));
+            model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, insert))));
             QuestDetailsDescriptionModel.preview(questId, model);
         }
         refresh.run();
+    }
+
+    private CanvasTextLayer fitEditedText(CanvasTextLayer text) {
+        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedText(state, text) : text;
     }
 
     private void moveTextCursor(int cursor, boolean extendSelection) {

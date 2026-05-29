@@ -16,8 +16,12 @@ public final class CanvasImageLayerRenderer {
     }
 
     public static void draw(GuiGraphics graphics, int mouseX, int mouseY, CanvasImageLayer image, int x, int y, int width, int height, int pivotX, int pivotY) {
+        drawAtPivot(graphics, mouseX, mouseY, image, x + pivotX, y + pivotY, width, height, pivotX, pivotY);
+    }
+
+    public static void drawAtPivot(GuiGraphics graphics, int mouseX, int mouseY, CanvasImageLayer image, double pivotScreenX, double pivotScreenY, int width, int height, int pivotX, int pivotY) {
         graphics.pose().pushPose();
-        graphics.pose().translate(x + pivotX, y + pivotY, 0.0f);
+        graphics.pose().translate(pivotScreenX, pivotScreenY, 0.0f);
         graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
         drawContent(graphics, mouseX, mouseY, image, width, height, pivotX, pivotY);
         graphics.pose().popPose();

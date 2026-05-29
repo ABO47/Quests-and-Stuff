@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
@@ -281,8 +282,12 @@ public final class CanvasInlineTextEditor {
         state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
         String group = TabletUiFactory.selectedGroupName(state);
         String id = state.canvasTextEditTarget;
-        CanvasRenderer.updateCanvasText(state, group, id, text -> CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value)));
+        CanvasRenderer.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
+    }
+
+    private CanvasTextLayer fitEditedText(CanvasTextLayer text) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private boolean mainCanvasTextEditOpen() {

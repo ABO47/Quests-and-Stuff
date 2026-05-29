@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas.clipboard;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
@@ -260,8 +261,11 @@ public final class CanvasClipboardController {
             String id = uniqueLayerId("img", existingImageIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.canvasClipboardOriginX);
             int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.canvasClipboardOriginY);
-            CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, image.w(), image.h());
+            CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
+            if (state.gridSnapLocked) {
+                duplicate = CanvasGridFitController.fittedImage(state, duplicate);
+            }
             CanvasRenderer.putCanvasImage(state, group, duplicate);
             state.selectedCanvasImageIds.add(id);
             state.selectedCanvasImageId = id;
@@ -273,8 +277,11 @@ public final class CanvasClipboardController {
             String id = uniqueLayerId("txt", existingTextIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + text.x() - state.canvasClipboardOriginX);
             int y = TabletUiFactory.snapToGrid(state, anchorY + text.y() - state.canvasClipboardOriginY);
-            CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, text.w(), text.h());
+            CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
             CanvasTextLayer duplicate = new CanvasTextLayer(id, text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+            if (state.gridSnapLocked) {
+                duplicate = CanvasGridFitController.fittedText(state, duplicate);
+            }
             CanvasRenderer.putCanvasText(state, group, duplicate);
             state.selectedCanvasTextIds.add(id);
             state.selectedCanvasTextId = id;

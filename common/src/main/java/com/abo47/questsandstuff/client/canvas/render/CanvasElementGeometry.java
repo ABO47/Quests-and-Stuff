@@ -35,42 +35,10 @@ public final class CanvasElementGeometry {
 
     public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         int rotation = normalize(rotationDegrees);
-        if (rotation == 0 || (rotation != 90 && rotation != 180 && rotation != 270)) {
+        if (!CanvasGeometry.isCardinalTurn(rotation) || rotation == 0) {
             return screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
         }
-        int safeWidth = Math.max(1, width);
-        int safeHeight = Math.max(1, height);
-        int safePivotX = clamp(pivotX, 0, safeWidth);
-        int safePivotY = clamp(pivotY, 0, safeHeight);
-        int[] bounds = logicalBoundsAtPivot(x, y, safeWidth, safeHeight, safePivotX, safePivotY, rotation);
-        ScreenAxis boundsX = screenAxis(state, bounds[0], Math.max(1, bounds[2] - bounds[0]), 0, true);
-        ScreenAxis boundsY = screenAxis(state, bounds[1], Math.max(1, bounds[3] - bounds[1]), 0, false);
-        int screenW = rotation == 180 ? boundsX.size() : boundsY.size();
-        int screenH = rotation == 180 ? boundsY.size() : boundsX.size();
-        int screenPivotX = pivotForScreenSize(screenW, safePivotX, safeWidth);
-        int screenPivotY = pivotForScreenSize(screenH, safePivotY, safeHeight);
-        int startX;
-        int startY;
-        if (rotation == 180) {
-            startX = boundsX.start() + screenW - 2 * screenPivotX;
-            startY = boundsY.start() + screenH - 2 * screenPivotY;
-        } else if (rotation == 90) {
-            startX = boundsX.start() + screenH - screenPivotY - screenPivotX;
-            startY = boundsY.start() + screenPivotX - screenPivotY;
-        } else {
-            startX = boundsX.start() + screenPivotY - screenPivotX;
-            startY = boundsY.start() + screenW - screenPivotX - screenPivotY;
-        }
-        return new Box(
-                startX + screenPivotX,
-                startY + screenPivotY,
-                screenW,
-                screenH,
-                -screenPivotX,
-                -screenPivotY,
-                screenW - screenPivotX,
-                screenH - screenPivotY
-        );
+        return cardinalScreenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotation);
     }
 
     public static int[] screenBounds(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
@@ -94,7 +62,9 @@ public final class CanvasElementGeometry {
     }
 
     public static double logicalPivot(int start, int size, int pivot) {
-        return start + clamp(pivot, 0, Math.max(1, size));
+        int safeSize = Math.max(1, size);
+        int safePivot = clamp(pivot, 0, safeSize);
+        return start + (safePivot == safeSize / 2 ? safeSize / 2.0D : safePivot);
     }
 
     public static double logicalPivotX(int x, int width, int pivotX) {
@@ -119,7 +89,8 @@ public final class CanvasElementGeometry {
     }
 
     private static int[] rotatedBounds(double centerX, double centerY, double left, double top, double right, double bottom, int rotationDegrees) {
-        double radians = Math.toRadians(normalize(rotationDegrees));
+        int rotation = normalize(rotationDegrees);
+        double radians = Math.toRadians(rotation);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double minX = Double.MAX_VALUE;
@@ -133,14 +104,22 @@ public final class CanvasElementGeometry {
                 {left, bottom}
         };
         for (double[] corner : corners) {
-            double sx = centerX + corner[0] * cos - corner[1] * sin;
-            double sy = centerY + corner[0] * sin + corner[1] * cos;
+            double sx;
+            double sy;
+            if (CanvasGeometry.isCardinalTurn(rotation)) {
+                double[] rotated = rotateCardinalLocal(corner[0], corner[1], rotation);
+                sx = centerX + rotated[0];
+                sy = centerY + rotated[1];
+            } else {
+                sx = centerX + corner[0] * cos - corner[1] * sin;
+                sy = centerY + corner[0] * sin + corner[1] * cos;
+            }
             minX = Math.min(minX, sx);
             minY = Math.min(minY, sy);
             maxX = Math.max(maxX, sx);
             maxY = Math.max(maxY, sy);
         }
-        return new int[]{(int) Math.floor(minX), (int) Math.floor(minY), (int) Math.ceil(maxX), (int) Math.ceil(maxY)};
+        return new int[]{floorClean(minX), floorClean(minY), ceilClean(maxX), ceilClean(maxY)};
     }
 
     private static int normalize(int rotationDegrees) {
@@ -150,6 +129,7 @@ public final class CanvasElementGeometry {
     private static ScreenAxis screenAxis(TabletUiState state, int start, int size, int pivot, boolean horizontal) {
         int safeSize = Math.max(1, size);
         int safePivot = clamp(pivot, 0, safeSize);
+        double effectivePivot = effectivePivot(safePivot, safeSize);
         int rawStart = screenCoordinate(state, start, horizontal);
         int rawSize = Math.max(1, screenCoordinate(state, start + safeSize, horizontal) - rawStart);
         int grid = CanvasGeometry.gridSize(state);
@@ -157,7 +137,7 @@ public final class CanvasElementGeometry {
         int inset = CanvasGeometry.visualInsetForSlot(slotSize, safeSize);
         boolean gridSized = safeSize == CanvasGeometry.snapVisualSpanToGridSlot(safeSize, grid, 1);
         if (!gridSized) {
-            int rawPivot = Math.max(0, Math.min(rawSize, screenCoordinate(state, start + safePivot, horizontal) - rawStart));
+            int rawPivot = Math.max(0, Math.min(rawSize, screenCoordinate(state, start + effectivePivot, horizontal) - rawStart));
             return new ScreenAxis(rawStart, rawSize, rawPivot);
         }
 
@@ -170,17 +150,91 @@ public final class CanvasElementGeometry {
             slotScreenSize = Math.max(1, screenCoordinate(state, slotStart + slotSize, horizontal) - slotScreenStart);
             int visualScreenSize = visualScreenSize(state, safeSize, slotSize, slotScreenSize);
             visualStart = slotScreenStart + visualScreenInset(slotScreenSize, visualScreenSize);
-            int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (safePivot / (double) safeSize))));
+            int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (effectivePivot / (double) safeSize))));
             return new ScreenAxis(visualStart, visualScreenSize, visualPivot);
         }
+
         slotScreenSize = CanvasGeometry.screenSpan(state, slotSize);
         int visualScreenSize = visualScreenSize(state, safeSize, slotSize, slotScreenSize);
         visualStart = rawStart;
-        int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (safePivot / (double) safeSize))));
+        int visualPivot = Math.max(0, Math.min(visualScreenSize, (int) Math.round(visualScreenSize * (effectivePivot / (double) safeSize))));
         return new ScreenAxis(visualStart, visualScreenSize, visualPivot);
     }
 
+    private static Box cardinalScreenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        int safeWidth = Math.max(1, width);
+        int safeHeight = Math.max(1, height);
+        int safePivotX = clamp(pivotX, 0, safeWidth);
+        int safePivotY = clamp(pivotY, 0, safeHeight);
+        int[] logicalBounds = CanvasGeometry.rotatedBoundsAtPivot(x, y, safeWidth, safeHeight, safePivotX, safePivotY, rotationDegrees);
+        int logicalBoundsW = Math.max(1, logicalBounds[2] - logicalBounds[0]);
+        int logicalBoundsH = Math.max(1, logicalBounds[3] - logicalBounds[1]);
+        ScreenAxis boundsX = screenAxis(state, logicalBounds[0], logicalBoundsW, 0, true);
+        ScreenAxis boundsY = screenAxis(state, logicalBounds[1], logicalBoundsH, 0, false);
+        int screenW = CanvasGeometry.isQuarterTurn(rotationDegrees) ? boundsY.size() : boundsX.size();
+        int screenH = CanvasGeometry.isQuarterTurn(rotationDegrees) ? boundsX.size() : boundsY.size();
+        int screenPivotX = screenPivot(screenW, effectivePivot(safePivotX, safeWidth), safeWidth);
+        int screenPivotY = screenPivot(screenH, effectivePivot(safePivotY, safeHeight), safeHeight);
+        double[] relative = rotatedRelativeBounds(screenW, screenH, screenPivotX, screenPivotY, rotationDegrees);
+        double centerX = boundsX.start() - relative[0];
+        double centerY = boundsY.start() - relative[1];
+        return new Box(
+                centerX,
+                centerY,
+                screenW,
+                screenH,
+                -screenPivotX,
+                -screenPivotY,
+                screenW - screenPivotX,
+                screenH - screenPivotY
+        );
+    }
+
+    private static double[] rotatedRelativeBounds(int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        int rotation = normalize(rotationDegrees);
+        double radians = Math.toRadians(rotation);
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        double[][] corners = {
+                {-pivotX, -pivotY},
+                {width - pivotX, -pivotY},
+                {width - pivotX, height - pivotY},
+                {-pivotX, height - pivotY}
+        };
+        for (double[] corner : corners) {
+            double sx;
+            double sy;
+            if (CanvasGeometry.isCardinalTurn(rotation)) {
+                double[] rotated = rotateCardinalLocal(corner[0], corner[1], rotation);
+                sx = rotated[0];
+                sy = rotated[1];
+            } else {
+                sx = corner[0] * cos - corner[1] * sin;
+                sy = corner[0] * sin + corner[1] * cos;
+            }
+            minX = Math.min(minX, sx);
+            minY = Math.min(minY, sy);
+            maxX = Math.max(maxX, sx);
+            maxY = Math.max(maxY, sy);
+        }
+        return new double[]{clean(minX), clean(minY), clean(maxX), clean(maxY)};
+    }
+
+    private static int screenPivot(int screenSize, double logicalPivot, int logicalSize) {
+        int safeLogicalSize = Math.max(1, logicalSize);
+        int safeScreenSize = Math.max(1, screenSize);
+        return clamp((int) Math.round(safeScreenSize * (logicalPivot / safeLogicalSize)), 0, safeScreenSize);
+    }
+
     private static int screenCoordinate(TabletUiState state, int value, boolean horizontal) {
+        return horizontal ? CanvasGeometry.screenX(state, value) : CanvasGeometry.screenY(state, value);
+    }
+
+    private static int screenCoordinate(TabletUiState state, double value, boolean horizontal) {
         return horizontal ? CanvasGeometry.screenX(state, value) : CanvasGeometry.screenY(state, value);
     }
 
@@ -201,20 +255,39 @@ public final class CanvasElementGeometry {
         return Math.min(slotScreenSize - visualScreenSize, Math.max(1, centered));
     }
 
-    private static int pivotForScreenSize(int screenSize, int pivot, int logicalSize) {
-        int safeLogicalSize = Math.max(1, logicalSize);
-        int safePivot = clamp(pivot, 0, safeLogicalSize);
-        return Math.max(0, Math.min(screenSize, (int) Math.round(screenSize * (safePivot / (double) safeLogicalSize))));
-    }
-
     private static int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
 
+    private static double effectivePivot(int pivot, int span) {
+        int safeSpan = Math.max(1, span);
+        int safePivot = clamp(pivot, 0, safeSpan);
+        return safePivot == safeSpan / 2 ? safeSpan / 2.0D : safePivot;
+    }
+
+    private static double[] rotateCardinalLocal(double x, double y, int rotation) {
+        return switch (rotation) {
+            case 90 -> new double[]{-y, x};
+            case 180 -> new double[]{-x, -y};
+            case 270 -> new double[]{y, -x};
+            default -> new double[]{x, y};
+        };
+    }
+
+    private static double clean(double value) {
+        double nearest = Math.rint(value);
+        return Math.abs(value - nearest) < 1.0E-7D ? nearest : value;
+    }
+
+    private static int floorClean(double value) {
+        return (int) Math.floor(clean(value));
+    }
+
+    private static int ceilClean(double value) {
+        return (int) Math.ceil(clean(value));
+    }
+
     public record Box(double centerX, double centerY, int width, int height, int left, int top, int right, int bottom) {
-        public Box moved(double dx, double dy) {
-            return new Box(centerX + dx, centerY + dy, width, height, left, top, right, bottom);
-        }
     }
 
     public record LocalPoint(double x, double y) {

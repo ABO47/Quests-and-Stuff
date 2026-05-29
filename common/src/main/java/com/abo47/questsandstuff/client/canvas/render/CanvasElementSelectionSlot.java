@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
-
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,46 +29,6 @@ public final class CanvasElementSelectionSlot {
     public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         drawBox(graphics, originX, originY, box, rotationDegrees);
-    }
-
-    public static void drawDragging(
-            GuiGraphics graphics,
-            TabletUiState state,
-            int originX,
-            int originY,
-            int currentX,
-            int currentY,
-            int startX,
-            int startY,
-            int startWidth,
-            int startHeight,
-            int rotationDegrees
-    ) {
-        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBox(state, startX, startY, startWidth, startHeight, rotationDegrees);
-        double dx = CanvasGeometry.screenX(state, currentX) - CanvasGeometry.screenX(state, startX);
-        double dy = CanvasGeometry.screenY(state, currentY) - CanvasGeometry.screenY(state, startY);
-        drawBox(graphics, originX, originY, startBox.moved(dx, dy), rotationDegrees);
-    }
-
-    public static void drawDraggingAtPivot(
-            GuiGraphics graphics,
-            TabletUiState state,
-            int originX,
-            int originY,
-            int currentX,
-            int currentY,
-            int startX,
-            int startY,
-            int startWidth,
-            int startHeight,
-            int pivotX,
-            int pivotY,
-            int rotationDegrees
-    ) {
-        CanvasElementGeometry.Box startBox = CanvasElementGeometry.screenBoxAtPivot(state, startX, startY, startWidth, startHeight, pivotX, pivotY, rotationDegrees);
-        double dx = CanvasGeometry.screenX(state, currentX) - CanvasGeometry.screenX(state, startX);
-        double dy = CanvasGeometry.screenY(state, currentY) - CanvasGeometry.screenY(state, startY);
-        drawBox(graphics, originX, originY, startBox.moved(dx, dy), rotationDegrees);
     }
 
     private static void drawBox(GuiGraphics graphics, int originX, int originY, CanvasElementGeometry.Box box, int rotationDegrees) {

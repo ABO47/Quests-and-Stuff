@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal.actions;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.hud.QuestHudLayout;
@@ -109,18 +110,15 @@ public final class AssetPickerApplyActions {
         int imageH = imageSize[1];
         int x = state.canvasImageLogicalX - imageW / 2;
         int y = state.canvasImageLogicalY - imageH / 2;
-        if (state.gridSnapLocked) {
-            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(x, y, imageW, imageH, CanvasGeometry.gridSize(state), 8, 8);
-            x = box.x();
-            y = box.y();
-            imageW = box.width();
-            imageH = box.height();
-        } else {
+        if (!state.gridSnapLocked) {
             x = TabletUiFactory.snapToGrid(state, x);
             y = TabletUiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, imageW, imageH);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, imageW, imageH, 0);
+        if (state.gridSnapLocked) {
+            image = CanvasGridFitController.fittedImage(state, image);
+        }
         CanvasRenderer.putCanvasImage(state, group, image);
         state.selectedCanvasImageId = id;
         state.selectedQuestIds.clear();

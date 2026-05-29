@@ -60,7 +60,7 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetailsTextStyleOpen = true;
         state.questDetailsTextStyleTarget = text.id();
         CanvasTextStyleMenu.renderQuestDetails(modal, state, text, x, y, w, h, state.questDetailsDescScroll, next -> {
-            updateText(player, questId, model, next);
+            updateText(player, state, questId, model, next);
             state.questDetailsTextStyleOpen = true;
             state.questDetailsTextStyleTarget = next.id();
         }, () -> {
@@ -346,7 +346,10 @@ public final class QuestDetailsDescriptionMenus {
                 + QuestDetailsDescriptionSelectionState.selectedTextIds(state).size();
     }
 
-    private static void updateText(Player player, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next) {
+    private static void updateText(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next) {
+        if (state.questDetailsGridSnapLocked) {
+            next = QuestDetailsDescriptionLayout.fittedText(state, next);
+        }
         model.putText(next);
         QuestDetailsDescriptionModel.preview(questId, model);
         QuestDetailsDescriptionModel.save(player, questId, model);

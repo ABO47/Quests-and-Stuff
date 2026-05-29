@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
@@ -135,15 +136,37 @@ final class CanvasSelectionRotateController {
                 state.rotatePivotX,
                 state.rotatePivotY,
                 delta,
-                state.gridSnapLocked,
-                CanvasGeometry.gridSize(state),
-                (x, y, width, height) -> CanvasGeometry.clampAnchorToCanvas(state, x, y, width, height)
+                (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation)
         );
         for (CanvasImageLayer image : result.images().values()) {
-            CanvasRenderer.putTransientCanvasImage(state, image);
+            CanvasRenderer.putTransientCanvasImage(state, clampRotationPreviewImage(image));
         }
         for (CanvasTextLayer text : result.texts().values()) {
-            CanvasRenderer.putTransientCanvasText(state, text);
+            CanvasRenderer.putTransientCanvasText(state, clampRotationPreviewText(text));
         }
+    }
+
+    private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
+    }
+
+    private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+    }
+
+    private CanvasImageLayer clampRotationPreviewImage(CanvasImageLayer image) {
+        CanvasImageLayer preview = state.gridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation())
+                ? fittedImageIfGridLocked(image)
+                : image;
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), preview.pivotX(), preview.pivotY(), preview.rotation());
+        return preview.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasTextLayer clampRotationPreviewText(CanvasTextLayer text) {
+        CanvasTextLayer preview = state.gridSnapLocked && CanvasGeometry.isCardinalTurn(text.rotation())
+                ? fittedTextIfGridLocked(text)
+                : text;
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), preview.w() / 2, preview.h() / 2, preview.rotation());
+        return preview.moveTo(clamped.x, clamped.y);
     }
 }

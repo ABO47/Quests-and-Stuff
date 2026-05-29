@@ -126,9 +126,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         if (y > contentH || y + box.height() < 0) {
             return;
         }
-        int x = contentX + (int) Math.round(box.centerX() + box.left());
-        int screenY = contentY + y;
-        CanvasImageLayerRenderer.draw(graphics, 0, 0, drawImage, x, screenY, box.width(), box.height(), -box.left(), -box.top());
+        CanvasImageLayerRenderer.drawAtPivot(graphics, 0, 0, drawImage, contentX + box.centerX(), contentY + box.centerY(), box.width(), box.height(), -box.left(), -box.top());
     }
 
     private static void drawTextAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {

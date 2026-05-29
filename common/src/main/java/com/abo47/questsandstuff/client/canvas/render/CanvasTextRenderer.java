@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.canvas.render;
 
 
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -46,38 +45,7 @@ public final class CanvasTextRenderer {
                     if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    CanvasPoint selectionDragStart = state.dragStartTextPositions.get(drawText.id());
-                    if (state.draggingSelection && selectionDragStart != null) {
-                        CanvasElementSelectionSlot.drawDragging(
-                                graphics,
-                                state,
-                                originX,
-                                originY,
-                                drawText.x(),
-                                drawText.y(),
-                                selectionDragStart.x,
-                                selectionDragStart.y,
-                                drawText.w(),
-                                drawText.h(),
-                                drawText.rotation()
-                        );
-                    } else if (state.draggingCanvasText && drawText.id().equals(state.selectedCanvasTextId)) {
-                        CanvasElementSelectionSlot.drawDragging(
-                                graphics,
-                                state,
-                                originX,
-                                originY,
-                                drawText.x(),
-                                drawText.y(),
-                                state.canvasTextStartX,
-                                state.canvasTextStartY,
-                                state.canvasTextStartW,
-                                state.canvasTextStartH,
-                                state.canvasTextStartRotation
-                        );
-                    } else {
-                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
-                    }
+                    CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 }
             }
         });

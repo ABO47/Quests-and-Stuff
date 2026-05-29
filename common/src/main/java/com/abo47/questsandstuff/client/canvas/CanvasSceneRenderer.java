@@ -11,7 +11,6 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
@@ -366,13 +365,11 @@ final class CanvasSceneRenderer {
                 int originX = getPositionX();
                 int originY = getPositionY();
                 CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
-                int x = originX + (int) Math.round(box.centerX() + box.left());
-                int y = originY + (int) Math.round(box.centerY() + box.top());
                 int w = box.width();
                 int h = box.height();
                 int pivotX = -box.left();
                 int pivotY = -box.top();
-                CanvasImageLayerRenderer.draw(graphics, mouseX, mouseY, drawImage, x, y, w, h, pivotX, pivotY);
+                CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
                 if (state.canEdit && CanvasRenderer.isImageSelected(state, drawImage.id())) {
                     if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
                         return;
@@ -381,42 +378,7 @@ final class CanvasSceneRenderer {
                         CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation(), drawImage.entityYaw(), drawImage.modelPitch());
                         return;
                     }
-                    CanvasPoint selectionDragStart = state.dragStartImagePositions.get(drawImage.id());
-                    if (state.draggingSelection && selectionDragStart != null) {
-                        CanvasElementSelectionSlot.drawDraggingAtPivot(
-                                graphics,
-                                state,
-                                originX,
-                                originY,
-                                drawImage.x(),
-                                drawImage.y(),
-                                selectionDragStart.x,
-                                selectionDragStart.y,
-                                drawImage.w(),
-                                drawImage.h(),
-                                drawImage.pivotX(),
-                                drawImage.pivotY(),
-                                drawImage.rotation()
-                        );
-                    } else if (state.draggingCanvasImage && drawImage.id().equals(state.selectedCanvasImageId)) {
-                        CanvasElementSelectionSlot.drawDraggingAtPivot(
-                                graphics,
-                                state,
-                                originX,
-                                originY,
-                                drawImage.x(),
-                                drawImage.y(),
-                                state.canvasImageStartX,
-                                state.canvasImageStartY,
-                                state.canvasImageStartW,
-                                state.canvasImageStartH,
-                                state.canvasImageStartPivotX,
-                                state.canvasImageStartPivotY,
-                                state.canvasImageStartRotation
-                        );
-                    } else {
-                        CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
-                    }
+                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 }
             }
         });

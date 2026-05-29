@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -37,8 +36,7 @@ final class QuestDetailsDescriptionPickActions {
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
             int[] size = QuestDetailsDescriptionLayout.imageSpawnSize(asset);
-            int[] bounds = fittedNewImageBounds(state, state.questDetailsGridSnapLocked, x, y, size[0], size[1], 8, 8);
-            model.putImage(new CanvasImageLayer(id, asset, bounds[0], bounds[1], bounds[2], bounds[3], 0));
+            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, asset, x, y, size[0], size[1], 0)));
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             QuestDetailsDescriptionModel.save(player, questId, model);
             QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
@@ -80,8 +78,7 @@ final class QuestDetailsDescriptionPickActions {
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
             int size = 64;
-            int[] bounds = fittedNewImageBounds(state, state.questDetailsGridSnapLocked, x, y, size, size, 47, 47);
-            model.putImage(new CanvasImageLayer(id, EntityPreviewRenderer.entityAsset(entityId), bounds[0], bounds[1], bounds[2], bounds[3], 0));
+            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, EntityPreviewRenderer.entityAsset(entityId), x, y, size, size, 0)));
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             QuestDetailsDescriptionModel.save(player, questId, model);
             QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
@@ -120,8 +117,8 @@ final class QuestDetailsDescriptionPickActions {
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
-            int[] bounds = fittedNewImageBounds(state, state.questDetailsGridSnapLocked, x, y, MODEL_SIZE, MODEL_SIZE, MODEL_SIZE - 1, MODEL_SIZE - 1);
-            model.putImage(new CanvasImageLayer(id, asset, bounds[0], bounds[1], bounds[2], bounds[3], 0, CanvasModelPreviewRenderer.DEFAULT_BLOCK_YAW, CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED, CanvasModelPreviewRenderer.DEFAULT_BLOCK_PITCH));
+            CanvasImageLayer image = new CanvasImageLayer(id, asset, x, y, MODEL_SIZE, MODEL_SIZE, 0, CanvasModelPreviewRenderer.DEFAULT_BLOCK_YAW, CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED, CanvasModelPreviewRenderer.DEFAULT_BLOCK_PITCH);
+            model.putImage(fittedNewImage(state, image));
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             QuestDetailsDescriptionModel.save(player, questId, model);
             QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
@@ -170,8 +167,7 @@ final class QuestDetailsDescriptionPickActions {
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
-            int[] bounds = fittedNewImageBounds(state, state.questDetailsGridSnapLocked, x, y, MODEL_SIZE, MODEL_SIZE, MODEL_SIZE - 1, MODEL_SIZE - 1);
-            model.putImage(new CanvasImageLayer(id, asset, bounds[0], bounds[1], bounds[2], bounds[3], 0));
+            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, asset, x, y, MODEL_SIZE, MODEL_SIZE, 0)));
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             QuestDetailsDescriptionModel.save(player, questId, model);
             QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
@@ -229,11 +225,7 @@ final class QuestDetailsDescriptionPickActions {
         }
     }
 
-    private static int[] fittedNewImageBounds(TabletUiState state, boolean snapToGrid, int x, int y, int width, int height, int minWidth, int minHeight) {
-        if (!snapToGrid) {
-            return new int[]{x, y, width, height};
-        }
-        CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(x, y, width, height, CanvasGeometry.gridSize(state), minWidth, minHeight);
-        return new int[]{box.x(), box.y(), box.width(), box.height()};
+    private static CanvasImageLayer fittedNewImage(TabletUiState state, CanvasImageLayer image) {
+        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedImage(state, image) : image;
     }
 }
