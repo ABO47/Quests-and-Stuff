@@ -23,9 +23,7 @@ final class QuestDetailsDescriptionEditActions {
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 16);
         CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", ModColors.TEXT_PRIMARY);
-        if (state.questDetailsGridSnapLocked) {
-            text = QuestDetailsDescriptionLayout.fittedText(state, text);
-        }
+        text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -81,7 +79,8 @@ final class QuestDetailsDescriptionEditActions {
         if (text == null) {
             return;
         }
-        model.putText(QuestDetailsDescriptionLayout.fittedText(state, text));
+        CanvasTextLayer fitted = QuestDetailsDescriptionLayout.fittedText(state, text);
+        model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
         state.questDetailsSelectedTextId = id;
     }
@@ -91,22 +90,26 @@ final class QuestDetailsDescriptionEditActions {
         if (image == null) {
             return;
         }
-        model.putImage(QuestDetailsDescriptionLayout.fittedImage(state, image));
+        CanvasImageLayer fitted = QuestDetailsDescriptionLayout.fittedImage(state, image);
+        model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
         state.questDetailsSelectedImageId = id;
     }
 
     static void fitSelectionToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+        int contentW = QuestDetailsWindow.descriptionContentWidth(state);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                model.putText(QuestDetailsDescriptionLayout.fittedText(state, text));
+                CanvasTextLayer fitted = QuestDetailsDescriptionLayout.fittedText(state, text);
+                model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, fitted, contentW));
             }
         }
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                model.putImage(QuestDetailsDescriptionLayout.fittedImage(state, image));
+                CanvasImageLayer fitted = QuestDetailsDescriptionLayout.fittedImage(state, image);
+                model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, fitted, contentW));
             }
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -123,10 +126,11 @@ final class QuestDetailsDescriptionEditActions {
         if (delta == 0) {
             return;
         }
+        int contentW = Math.max(1, viewportW - 1);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                model.putText(new CanvasTextLayer(
+                CanvasTextLayer moved = new CanvasTextLayer(
                         text.id(),
                         text.text(),
                         horizontal ? Math.max(0, text.x() + delta) : text.x(),
@@ -139,16 +143,18 @@ final class QuestDetailsDescriptionEditActions {
                         text.color(),
                         text.fontSize(),
                         text.spans()
-                ));
+                );
+                model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, moved, contentW));
             }
         }
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                model.putImage(image.moveTo(
+                CanvasImageLayer moved = image.moveTo(
                         horizontal ? Math.max(0, image.x() + delta) : image.x(),
                         horizontal ? image.y() : Math.max(0, image.y() + delta)
-                ));
+                );
+                model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, moved, contentW));
             }
         }
         QuestDetailsDescriptionModel.save(player, questId, model);

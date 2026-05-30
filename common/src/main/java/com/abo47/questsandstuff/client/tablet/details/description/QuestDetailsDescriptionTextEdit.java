@@ -268,7 +268,7 @@ public final class QuestDetailsDescriptionTextEdit {
     }
 
     private CanvasTextLayer fitEditedText(CanvasTextLayer text) {
-        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedText(state, text) : text;
+        return QuestDetailsDescriptionLayout.fitAndClampText(state, text, contentW.getAsInt());
     }
 
     private void moveTextCursor(int cursor, boolean extendSelection) {

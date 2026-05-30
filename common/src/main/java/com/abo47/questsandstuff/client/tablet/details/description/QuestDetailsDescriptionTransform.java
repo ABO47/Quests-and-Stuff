@@ -158,7 +158,7 @@ public final class QuestDetailsDescriptionTransform {
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = model.image(entry.getKey());
             if (image != null) {
-                CanvasPoint clamped = clampImageAnchor(entry.getValue().x + snappedDx, entry.getValue().y + snappedDy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+                CanvasPoint clamped = clampImageAnchor(image.moveTo(entry.getValue().x + snappedDx, entry.getValue().y + snappedDy));
                 model.putImage(image.moveTo(clamped.x, clamped.y));
             }
         }
@@ -232,10 +232,10 @@ public final class QuestDetailsDescriptionTransform {
                 CanvasGeometry.gridSize(state),
                 state.questDetailsGridSnapLocked || isShiftDown(),
                 isShiftDown(),
-                0,
-                0,
-                state.questDetailsCanvasLocked ? contentW.getAsInt() : CanvasGroupResizeTransform.UNBOUNDED,
-                state.questDetailsCanvasLocked ? state.questDetailsDescScroll + contentH.getAsInt() : CanvasGroupResizeTransform.UNBOUNDED
+                QuestDetailsDescriptionLayout.visibleLeftEdge(),
+                QuestDetailsDescriptionLayout.visibleTopEdge(state),
+                contentW.getAsInt(),
+                CanvasGroupResizeTransform.UNBOUNDED
         );
     }
 
@@ -297,7 +297,7 @@ public final class QuestDetailsDescriptionTransform {
                     snapped = new SnapMove(x, snapped.y());
                     state.snapGuideXVisible = false;
                 }
-                CanvasPoint clamped = clampImageAnchor(snapped.x(), snapped.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+                CanvasPoint clamped = clampImageAnchor(image.moveTo(snapped.x(), snapped.y()));
                 yield image.moveTo(clamped.x, clamped.y);
             }
         };
@@ -391,15 +391,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasTextLayer fitAndClampText(CanvasTextLayer text) {
-        CanvasTextLayer fitted = fittedTextIfGridLocked(text);
-        CanvasPoint clamped = clampTextAnchor(fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.rotation());
-        return fitted.moveTo(clamped.x, clamped.y);
+        return QuestDetailsDescriptionLayout.fitAndClampText(state, text, contentW.getAsInt());
     }
 
     private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {
-        CanvasImageLayer fitted = fittedImageIfGridLocked(image);
-        CanvasPoint clamped = clampImageAnchor(fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.pivotX(), fitted.pivotY(), fitted.rotation());
-        return fitted.moveTo(clamped.x, clamped.y);
+        return QuestDetailsDescriptionLayout.fitAndClampImage(state, image, contentW.getAsInt());
     }
 
     private CanvasTextLayer clampRotationPreviewText(CanvasTextLayer text) {
@@ -414,7 +410,7 @@ public final class QuestDetailsDescriptionTransform {
         CanvasImageLayer preview = state.questDetailsGridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation())
                 ? fittedImageIfGridLocked(image)
                 : image;
-        CanvasPoint clamped = clampImageAnchor(preview.x(), preview.y(), preview.w(), preview.h(), preview.pivotX(), preview.pivotY(), preview.rotation());
+        CanvasPoint clamped = clampImageAnchor(preview);
         return preview.moveTo(clamped.x, clamped.y);
     }
 
@@ -447,48 +443,16 @@ public final class QuestDetailsDescriptionTransform {
         return Math.round((float) delta / (float) step) * step;
     }
 
-    private int clampX(int x, int w) {
-        if (!state.questDetailsCanvasLocked) {
-            return Math.max(0, x);
-        }
-        return Math.max(0, Math.min(Math.max(0, contentW.getAsInt() - Math.max(1, w)), x));
-    }
-
-    private int clampY(int y, int h) {
-        if (!state.questDetailsCanvasLocked) {
-            return Math.max(0, y);
-        }
-        int maxY = Math.max(0, state.questDetailsDescScroll + contentH.getAsInt() - Math.max(1, h));
-        return Math.max(0, Math.min(maxY, y));
-    }
-
     private CanvasPoint clampTextAnchor(int x, int y, int width, int height, int rotationDegrees) {
         return clampRotated(x, y, width, height, CanvasElementGeometry.defaultPivot(width), CanvasElementGeometry.defaultPivot(height), rotationDegrees);
     }
 
-    private CanvasPoint clampImageAnchor(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        return clampRotated(x, y, width, height, pivotX, pivotY, rotationDegrees);
+    private CanvasPoint clampImageAnchor(CanvasImageLayer image) {
+        return QuestDetailsDescriptionLayout.clampImageAnchorToColumn(state, image, contentW.getAsInt());
     }
 
     private CanvasPoint clampRotated(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(x, y, width, height, pivotX, pivotY, rotationDegrees);
-        int boundsWidth = Math.max(1, bounds[2] - bounds[0]);
-        int boundsHeight = Math.max(1, bounds[3] - bounds[1]);
-        int targetLeft;
-        int targetTop;
-        if (state.questDetailsCanvasLocked) {
-            targetLeft = boundsWidth > contentW.getAsInt()
-                    ? 0
-                    : Math.max(0, Math.min(Math.max(0, contentW.getAsInt() - boundsWidth), bounds[0]));
-            int maxBottom = Math.max(1, state.questDetailsDescScroll + contentH.getAsInt());
-            targetTop = boundsHeight > maxBottom
-                    ? 0
-                    : Math.max(0, Math.min(Math.max(0, maxBottom - boundsHeight), bounds[1]));
-        } else {
-            targetLeft = Math.max(0, bounds[0]);
-            targetTop = Math.max(0, bounds[1]);
-        }
-        return new CanvasPoint(x + targetLeft - bounds[0], y + targetTop - bounds[1]);
+        return QuestDetailsDescriptionLayout.clampAnchorToColumn(state, x, y, width, height, pivotX, pivotY, rotationDegrees, contentW.getAsInt());
     }
 
     private SnapMove snapMove(QuestDetailsDescriptionModel model, String movingId, int x, int y, int w, int h, int pivotX, int pivotY, int rotation) {

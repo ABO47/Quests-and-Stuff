@@ -75,9 +75,10 @@ final class TabletShortcutActions {
             state.snapGuideYVisible = false;
             changed = true;
         }
-        if (state.questDetailsBoxSelecting || state.questDetailsPanning || !state.questDetailsTransformKind.isBlank()) {
+        if (state.questDetailsBoxSelecting || state.questDetailsPanning || state.questDetailsDescScrollDragging || !state.questDetailsTransformKind.isBlank()) {
             state.questDetailsBoxSelecting = false;
             state.questDetailsPanning = false;
+            state.questDetailsDescScrollDragging = false;
             state.questDetailsTransformKind = "";
             state.questDetailsTransformId = "";
             state.questDetailsTransformMode = "";

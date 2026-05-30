@@ -107,6 +107,8 @@ final class QuestDetailsWindowLifecycle {
         QuestDetailsTransientState.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsDraggingSplitter = false;
+        state.questDetailsDescScrollDragging = false;
+        state.questDetailsPanning = false;
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
         clearSelectionState(state);
@@ -160,6 +162,8 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextLastClickId = "";
         state.questDetailsTextLastClickAtMs = 0L;
         state.questDetailsDraggingSplitter = false;
+        state.questDetailsDescScrollDragging = false;
+        state.questDetailsPanning = false;
         clearSelectionState(state);
         state.boxSelecting = false;
         state.draggingCanvas = false;

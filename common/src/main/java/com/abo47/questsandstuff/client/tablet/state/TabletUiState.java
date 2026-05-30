@@ -355,6 +355,7 @@ public class TabletUiState {
     public int questDetailsGridOpacityPercent = 50;
     public int questDetailsCanvasBgOpacityPercent = 60;
     public int questDetailsDescScroll;
+    public boolean questDetailsDescScrollDragging;
     public boolean questDetailsPanning;
     public int questDetailsPanStartX;
     public int questDetailsPanStartY;

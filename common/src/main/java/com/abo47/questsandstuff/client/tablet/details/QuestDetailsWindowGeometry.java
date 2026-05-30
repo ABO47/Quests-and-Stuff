@@ -40,4 +40,11 @@ final class QuestDetailsWindowGeometry {
         int viewportY = topH + QuestDetailsWindow.CONTENT_INSET + Math.max(0, (availableViewportH - viewportH) / 2);
         return new int[]{viewportX, viewportY, viewportW, viewportH};
     }
+
+    static int descriptionContentWidth(TabletUiState state) {
+        int leftW = leftPanelWidth(state);
+        int canvasW = canvasPanelWidth(leftW);
+        int[] viewport = mainCanvasViewport(state, canvasW);
+        return Math.max(1, viewport[2] - 1);
+    }
 }

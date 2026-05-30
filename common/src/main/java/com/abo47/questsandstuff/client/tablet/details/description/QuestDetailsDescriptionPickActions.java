@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
@@ -226,6 +227,6 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     private static CanvasImageLayer fittedNewImage(TabletUiState state, CanvasImageLayer image) {
-        return state.questDetailsGridSnapLocked ? QuestDetailsDescriptionLayout.fittedImage(state, image) : image;
+        return QuestDetailsDescriptionLayout.fitAndClampImage(state, image, QuestDetailsWindow.descriptionContentWidth(state));
     }
 }

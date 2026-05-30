@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -42,7 +42,7 @@ public final class QuestDetailsDescriptionClipboard {
     public static void pasteAtContext(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
         int anchorX = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX);
         int anchorY = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll);
-        pasteAt(player, state, questId, model, anchorX, anchorY);
+        pasteAt(player, state, questId, model, anchorX, anchorY, QuestDetailsWindow.descriptionContentWidth(state));
     }
 
     public static boolean pasteFromKeyboard(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
@@ -50,7 +50,7 @@ public final class QuestDetailsDescriptionClipboard {
             return false;
         }
         int[] anchor = keyboardPasteAnchor(state, model, viewportW, viewportH);
-        pasteAt(player, state, questId, model, anchor[0], anchor[1]);
+        pasteAt(player, state, questId, model, anchor[0], anchor[1], Math.max(1, viewportW - 1));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] quest details pasted shortcut quest={} texts={} images={} anchor={},{}",
                 questId, state.canvasTextClipboard.size(), state.canvasImageClipboard.size(), anchor[0], anchor[1]);
         return true;
@@ -60,18 +60,19 @@ public final class QuestDetailsDescriptionClipboard {
         if (state == null || model == null || dx == 0 && dy == 0 || !QuestDetailsDescriptionSelectionState.hasSelection(state)) {
             return false;
         }
+        int contentW = QuestDetailsWindow.descriptionContentWidth(state);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                CanvasPoint point = nonNegativeRotated(text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
+                CanvasPoint point = QuestDetailsDescriptionLayout.clampAnchorToColumn(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation(), contentW);
                 model.putText(text.moveTo(point.x, point.y));
             }
         }
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                CanvasPoint point = nonNegativeRotated(image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-                model.putImage(image.moveTo(point.x, point.y));
+                CanvasImageLayer moved = image.moveTo(image.x() + dx, image.y() + dy);
+                model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, moved, contentW));
             }
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -79,19 +80,14 @@ public final class QuestDetailsDescriptionClipboard {
         return true;
     }
 
-    private static void pasteAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int anchorX, int anchorY) {
+    private static void pasteAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int anchorX, int anchorY, int contentW) {
         int dx = anchorX - state.canvasClipboardOriginX;
         int dy = anchorY - state.canvasClipboardOriginY;
         QuestDetailsDescriptionSelectionState.clear(state);
         for (CanvasTextLayer text : state.canvasTextClipboard) {
             String id = StableIdAllocator.nextId("txt", model.texts.keySet());
-            CanvasPoint point = nonNegativeRotated(text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
-            CanvasTextLayer pasted = new CanvasTextLayer(id, text.text(), point.x, point.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
-            if (state.questDetailsGridSnapLocked) {
-                pasted = QuestDetailsDescriptionLayout.fittedText(state, pasted);
-            }
-            point = nonNegativeRotated(pasted.x(), pasted.y(), pasted.w(), pasted.h(), pasted.w() / 2, pasted.h() / 2, pasted.rotation());
-            pasted = pasted.moveTo(point.x, point.y);
+            CanvasTextLayer pasted = new CanvasTextLayer(id, text.text(), text.x() + dx, text.y() + dy, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+            pasted = QuestDetailsDescriptionLayout.fitAndClampText(state, pasted, contentW);
             model.putText(pasted);
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
             state.questDetailsSelectedTextIds.add(id);
@@ -99,24 +95,14 @@ public final class QuestDetailsDescriptionClipboard {
         }
         for (CanvasImageLayer image : state.canvasImageClipboard) {
             String id = StableIdAllocator.nextId(imageIdPrefix(image), model.images.keySet());
-            CanvasPoint point = nonNegativeRotated(image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-            CanvasImageLayer pasted = new CanvasImageLayer(id, image.asset(), point.x, point.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
-            if (state.questDetailsGridSnapLocked) {
-                pasted = QuestDetailsDescriptionLayout.fittedImage(state, pasted);
-            }
-            point = nonNegativeRotated(pasted.x(), pasted.y(), pasted.w(), pasted.h(), pasted.pivotX(), pasted.pivotY(), pasted.rotation());
-            pasted = pasted.moveTo(point.x, point.y);
+            CanvasImageLayer pasted = new CanvasImageLayer(id, image.asset(), image.x() + dx, image.y() + dy, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
+            pasted = QuestDetailsDescriptionLayout.fitAndClampImage(state, pasted, contentW);
             model.putImage(pasted);
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             state.questDetailsSelectedImageIds.add(id);
             state.questDetailsSelectedImageId = id;
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
-    }
-
-    private static CanvasPoint nonNegativeRotated(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(x, y, width, height, pivotX, pivotY, rotationDegrees);
-        return new CanvasPoint(x + Math.max(0, -bounds[0]), y + Math.max(0, -bounds[1]));
     }
 
     private static String imageIdPrefix(CanvasImageLayer image) {
