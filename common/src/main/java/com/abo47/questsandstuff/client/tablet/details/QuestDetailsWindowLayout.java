@@ -43,8 +43,12 @@ final class QuestDetailsWindowLayout {
         }
 
         String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
-        CompoundTag quest = ClientQuestCache.quests().get(questId);
-        if (questId.isBlank() || quest == null || (!state.canEdit && (ClientQuestCache.questLockedPreview(quest) || ClientQuestCache.questHiddenPreview(quest)))) {
+        if (questId.isBlank() || !ClientQuestCache.containsQuest(questId)) {
+            QuestDetailsWindowLifecycle.finishClose(state);
+            return;
+        }
+        CompoundTag quest = ClientQuestCache.quest(questId);
+        if (!state.canEdit && (ClientQuestCache.questLockedPreview(quest) || ClientQuestCache.questHiddenPreview(quest))) {
             QuestDetailsWindowLifecycle.finishClose(state);
             return;
         }

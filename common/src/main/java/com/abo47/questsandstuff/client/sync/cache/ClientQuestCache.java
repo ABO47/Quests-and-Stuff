@@ -78,6 +78,19 @@ public final class ClientQuestCache {
         return ClientQuestState.questSnapshot();
     }
 
+    // Read-only hot-path view; callers must not mutate the returned tags.
+    public static List<Map.Entry<String, CompoundTag>> questEntries() {
+        return ClientQuestState.questEntries();
+    }
+
+    public static Set<String> questIds() {
+        return ClientQuestState.questIdsSnapshot();
+    }
+
+    public static boolean containsQuest(String questId) {
+        return ClientQuestState.containsQuest(questId);
+    }
+
     public static CompoundTag quest(String questId) {
         return ClientQuestState.questCopy(questId);
     }
@@ -170,7 +183,8 @@ public final class ClientQuestCache {
         if (!groupLockUntilUnlocked(group)) {
             return false;
         }
-        for (CompoundTag quest : quests().values()) {
+        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
+            CompoundTag quest = entry.getValue();
             if (!quest.getCompound("groups").contains(group)) {
                 continue;
             }
@@ -185,7 +199,8 @@ public final class ClientQuestCache {
         if (!groupHideUntilUnlocked(group)) {
             return false;
         }
-        for (CompoundTag quest : quests().values()) {
+        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
+            CompoundTag quest = entry.getValue();
             if (!quest.getCompound("groups").contains(group)) {
                 continue;
             }

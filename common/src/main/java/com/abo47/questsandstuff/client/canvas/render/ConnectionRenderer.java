@@ -48,7 +48,10 @@ public final class ConnectionRenderer {
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return connectionColor(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("connection_colors", Tag.TAG_COMPOUND)) {
             CompoundTag colorsTag = target.getCompound("connection_colors");
             if (colorsTag.contains(sourceQuestId, Tag.TAG_INT)) {
@@ -69,7 +72,10 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("hidden_connections", Tag.TAG_LIST)) {
             ListTag hiddenTag = target.getList("hidden_connections", Tag.TAG_STRING);
             for (int i = 0; i < hiddenTag.size(); i++) {
@@ -104,7 +110,10 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("connection_modes", Tag.TAG_COMPOUND)) {
             String mode = target.getCompound("connection_modes").getString(sourceQuestId);
             if ("grid".equals(mode)) {
@@ -164,7 +173,7 @@ public final class ConnectionRenderer {
                         && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId());
+                boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId(), questTag);
 
                 lines.add(new ConnectionLine(
                         edgeId,
@@ -182,9 +191,9 @@ public final class ConnectionRenderer {
                         prerequisite.centerY(),
                         quest.centerX(),
                         quest.centerY(),
-                        isConnectionDirect(state, group, prerequisiteId, quest.questId()),
+                        isConnectionDirect(state, group, prerequisiteId, quest.questId(), questTag),
                         false,
-                        connectionColor(state, group, prerequisiteId, quest.questId()),
+                        connectionColor(state, group, prerequisiteId, quest.questId(), questTag),
                         hidden,
                         hidden ? 64 : 245
                 ));

@@ -18,7 +18,6 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore.EditorSnapshot;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import com.abo47.questsandstuff.util.QuestClipboardDebugLog;
@@ -28,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -355,7 +355,7 @@ public final class EditorSessionService {
 
     public QuestDefinition currentQuest(ServerPlayer player) {
         EditorSession session = session(player);
-        return definitionStore.quests().get(session.currentQuest);
+        return definitionStore.quest(session.currentQuest);
     }
 
     public QuestDefinitionStore definitionStore() {
@@ -398,7 +398,7 @@ public final class EditorSessionService {
     }
 
     public List<String> questIdsInGroup(String group) {
-        return definitionStore.quests().values().stream()
+        return definitionStore.questDefinitions().stream()
                 .filter(quest -> quest.display().groups().containsKey(group))
                 .map(QuestDefinition::id)
                 .sorted(Comparator.naturalOrder())
@@ -406,11 +406,11 @@ public final class EditorSessionService {
     }
 
     public String nextQuestId(String group) {
-        return nextQuestId(group, definitionStore.quests().keySet());
+        return QuestNaming.nextQuestId(group, definitionStore.questIds());
     }
 
     public String nextQuestId(String group, Set<String> reservedIds) {
-        Set<String> reserved = new HashSet<>(definitionStore.quests().keySet());
+        Set<String> reserved = new HashSet<>(definitionStore.questIds());
         if (reservedIds != null) {
             reserved.addAll(reservedIds);
         }
@@ -425,8 +425,22 @@ public final class EditorSessionService {
         undoRedoActions.captureUndo(session);
     }
 
+    public void capturePasteUndo(
+            EditorSession session,
+            Collection<String> questIds,
+            Collection<String> imageIds,
+            Collection<String> textIds,
+            String group
+    ) {
+        undoRedoActions.capturePasteUndo(session, questIds, imageIds, textIds, group);
+    }
+
     public void postMutation(ServerPlayer player) {
         undoRedoActions.postMutation(player);
+    }
+
+    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedGroups) {
+        undoRedoActions.postMutationDelta(player, changedQuestIds, changedGroups);
     }
 
     public void ensureGroupExists(String rawGroup) {
@@ -461,7 +475,7 @@ public final class EditorSessionService {
         public String currentQuest;
         public EditorMode mode = EditorMode.MOVE;
         public ClipboardSnapshot clipboardSnapshot = ClipboardSnapshot.empty();
-        public final Deque<EditorSnapshot> undo = new ArrayDeque<>();
-        public final Deque<EditorSnapshot> redo = new ArrayDeque<>();
+        public final Deque<EditorUndoRedoActions.EditorHistoryEntry> undo = new ArrayDeque<>();
+        public final Deque<EditorUndoRedoActions.EditorHistoryEntry> redo = new ArrayDeque<>();
     }
 }

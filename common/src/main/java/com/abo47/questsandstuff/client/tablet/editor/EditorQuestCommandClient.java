@@ -197,7 +197,7 @@ final class EditorQuestCommandClient {
     }
 
     static String predictNextQuestId(TabletUiState state) {
-        return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedGroupName(state), ClientQuestCache.quests().keySet());
+        return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedGroupName(state), ClientQuestCache.questIds());
     }
 
     static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
@@ -227,10 +227,10 @@ final class EditorQuestCommandClient {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quests().get(questId);
-        if (quest == null) {
+        if (!ClientQuestCache.containsQuest(questId)) {
             return;
         }
+        CompoundTag quest = ClientQuestCache.quest(questId);
         state.pendingQuestTitleChangeId = questId;
         state.questTitleDraft = quest.getString("title");
         QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questTitleDraft);
@@ -250,11 +250,11 @@ final class EditorQuestCommandClient {
         if (questId.isBlank()) {
             return false;
         }
-        CompoundTag quest = ClientQuestCache.quests().get(questId);
-        if (quest == null) {
+        if (!ClientQuestCache.containsQuest(questId)) {
             cancelQuestTitleChange(state);
             return false;
         }
+        CompoundTag quest = ClientQuestCache.quest(questId);
         String oldTitle = quest.getString("title");
         String subtitle = quest.getString("subtitle");
         String title = sanitizeQuestTitle(state.questTitleDraft, oldTitle);
@@ -450,7 +450,8 @@ final class EditorQuestCommandClient {
     }
 
     private static boolean isOccupied(String group, int x, int y) {
-        for (CompoundTag quest : ClientQuestCache.quests().values()) {
+        for (var entry : ClientQuestCache.questEntries()) {
+            CompoundTag quest = entry.getValue();
             CompoundTag groups = quest.getCompound("groups");
             if (!groups.contains(group)) {
                 continue;

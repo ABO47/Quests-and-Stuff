@@ -21,7 +21,7 @@ public final class CanvasConnectionSelection {
         }
         java.util.Set<String> selected = new java.util.LinkedHashSet<>(state.selectedQuestIds);
         List<CanvasContextMenuController.EdgeRef> edges = new ArrayList<>();
-        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.quests().entrySet()) {
+        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.questEntries()) {
             String questId = entry.getKey();
             CompoundTag quest = entry.getValue();
             if (quest == null || !quest.getCompound("groups").contains(group)) {

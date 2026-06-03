@@ -227,7 +227,7 @@ final class CanvasContextQuestActions {
             return 0;
         }
         int count = 0;
-        for (var entry : ClientQuestCache.quests().entrySet()) {
+        for (var entry : ClientQuestCache.questEntries()) {
             if (questId.equals(entry.getKey()) || !hasPrerequisite(entry.getValue(), questId)) {
                 continue;
             }

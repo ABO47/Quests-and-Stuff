@@ -95,7 +95,7 @@ public final class CanvasHitTester {
                 if (prerequisite == null) {
                     continue;
                 }
-                if (ConnectionRenderer.isConnectionHidden(state, group, prerequisiteId, quest.questId()) && !state.canEdit) {
+                if (ConnectionRenderer.isConnectionHidden(state, group, prerequisiteId, quest.questId(), quest.tag()) && !state.canEdit) {
                     continue;
                 }
 
@@ -107,7 +107,7 @@ public final class CanvasHitTester {
                         prerequisite.centerY(),
                         quest.centerX(),
                         quest.centerY(),
-                        ConnectionRenderer.isConnectionDirect(state, group, prerequisiteId, quest.questId())
+                        ConnectionRenderer.isConnectionDirect(state, group, prerequisiteId, quest.questId(), quest.tag())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new EdgeHit(prerequisiteId, quest.questId());
@@ -218,14 +218,16 @@ public final class CanvasHitTester {
     private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String group) {
         List<CanvasImageLayer> images = new ArrayList<>(state.canvasImagesByGroup.getOrDefault(group, List.of()));
         List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
-        images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(order, CanvasLayerOrdering.imageKey(image.id()))));
+        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
+        images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
         return images;
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String group) {
         List<CanvasTextLayer> texts = new ArrayList<>(state.canvasTextsByGroup.getOrDefault(group, List.of()));
         List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
-        texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(order, CanvasLayerOrdering.textKey(text.id()))));
+        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
+        texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.textKey(text.id()))));
         return texts;
     }
 

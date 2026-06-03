@@ -137,7 +137,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
-        List<String> ids = new ArrayList<>(ClientQuestCache.quests().keySet());
+        List<String> ids = new ArrayList<>(ClientQuestCache.questIds());
         if (ids.isEmpty()) {
             return;
         }

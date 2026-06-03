@@ -23,7 +23,6 @@ import net.minecraft.world.level.storage.loot.LootDataType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
@@ -82,18 +81,37 @@ public final class QuestSyncService {
     }
 
     public void syncDelta(ServerPlayer player, Set<String> changedQuests) {
-        if (changedQuests.isEmpty()) {
+        syncDelta(player, changedQuests, false);
+    }
+
+    public void syncDeltaWithMetadata(List<ServerPlayer> players, Set<String> changedQuests, Set<String> changedGroups) {
+        if (players == null || players.isEmpty()) {
+            return;
+        }
+        for (ServerPlayer player : players) {
+            syncDelta(player, changedQuests, changedGroups, true);
+        }
+    }
+
+    private void syncDelta(ServerPlayer player, Set<String> changedQuests, boolean forceMetadata) {
+        syncDelta(player, changedQuests, Set.of(), forceMetadata);
+    }
+
+    private void syncDelta(ServerPlayer player, Set<String> changedQuests, Set<String> changedGroups, boolean forceMetadata) {
+        Set<String> safeChangedQuests = changedQuests == null ? Set.of() : changedQuests;
+        Set<String> safeChangedGroups = changedGroups == null ? Set.of() : changedGroups;
+        boolean includeMetadata = forceMetadata && !safeChangedGroups.isEmpty();
+        if (safeChangedQuests.isEmpty() && !includeMetadata) {
             return;
         }
 
         PlayerQuestState playerState = progressData.state(player.getUUID());
         boolean editorGraphVisible = canSeeEditorGraph(player);
-        Set<String> syncedQuestIds = syncedQuestIds(player, playerState);
         Set<String> existingChanged = new HashSet<>();
         Set<String> descriptionChanged = new HashSet<>();
         Set<String> removed = new HashSet<>();
-        for (String questId : changedQuests) {
-            QuestDefinition definition = definitionStore.quests().get(questId);
+        for (String questId : safeChangedQuests) {
+            QuestDefinition definition = definitionStore.quest(questId);
             if (definition == null) {
                 removed.add(questId);
                 continue;
@@ -118,9 +136,9 @@ public final class QuestSyncService {
             CompoundTag payload = new CompoundTag();
 
             Set<String> changedIds = i < changedChunks.size() ? changedChunks.get(i) : Set.of();
-            if (i == 0) {
-                payload.put("groups", payloads.groupsTag(syncedQuestIds, editorGraphVisible));
-                payload.put("group_props", payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
+            if (i == 0 && includeMetadata) {
+                payload.put("groups", payloads.groupsTag());
+                payload.put("group_props", payloads.groupPropsTagForGroups(safeChangedGroups));
             }
             payload.put("changed", payloads.questPayload(playerState, changedIds));
 
@@ -194,12 +212,12 @@ public final class QuestSyncService {
 
     private Set<String> visibleQuestIds(ServerPlayer player, PlayerQuestState playerState) {
         if (canSeeEditorGraph(player)) {
-            return new HashSet<>(definitionStore.quests().keySet());
+            return new HashSet<>(definitionStore.questIds());
         }
         Set<String> visible = new HashSet<>();
-        for (Map.Entry<String, QuestDefinition> entry : definitionStore.quests().entrySet()) {
-            if (visibilityFilter.test(playerState, entry.getValue())) {
-                visible.add(entry.getKey());
+        for (QuestDefinition definition : definitionStore.questDefinitions()) {
+            if (visibilityFilter.test(playerState, definition)) {
+                visible.add(definition.id());
             }
         }
         return visible;
@@ -207,13 +225,12 @@ public final class QuestSyncService {
 
     private Set<String> syncedQuestIds(ServerPlayer player, PlayerQuestState playerState) {
         if (canSeeEditorGraph(player)) {
-            return new HashSet<>(definitionStore.quests().keySet());
+            return new HashSet<>(definitionStore.questIds());
         }
         Set<String> synced = new HashSet<>();
-        for (Map.Entry<String, QuestDefinition> entry : definitionStore.quests().entrySet()) {
-            QuestDefinition definition = entry.getValue();
+        for (QuestDefinition definition : definitionStore.questDefinitions()) {
             if (visibilityFilter.test(playerState, definition) || shouldSyncLockedPreview(playerState, definition)) {
-                synced.add(entry.getKey());
+                synced.add(definition.id());
             }
         }
         return synced;
@@ -251,7 +268,7 @@ public final class QuestSyncService {
             CompoundTag payload = new CompoundTag();
             CompoundTag descriptions = new CompoundTag();
             for (String questId : chunks.get(i)) {
-                QuestDefinition definition = definitionStore.quests().get(questId);
+                QuestDefinition definition = definitionStore.quest(questId);
                 if (definition == null) {
                     continue;
                 }

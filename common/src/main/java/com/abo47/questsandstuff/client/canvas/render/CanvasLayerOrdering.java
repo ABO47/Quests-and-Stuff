@@ -6,9 +6,11 @@ import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class CanvasLayerOrdering {
@@ -172,9 +174,25 @@ public final class CanvasLayerOrdering {
         }
     }
 
-    public static int layerIndex(List<String> order, String key) {
-        int index = order.indexOf(key);
-        return index < 0 ? Integer.MAX_VALUE : index;
+    public static Map<String, Integer> indexMap(List<String> order) {
+        if (order == null || order.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> indexes = new HashMap<>();
+        for (int i = 0; i < order.size(); i++) {
+            String key = order.get(i);
+            if (key != null && !key.isBlank()) {
+                indexes.putIfAbsent(key, i);
+            }
+        }
+        return indexes;
+    }
+
+    public static int layerIndex(Map<String, Integer> indexes, String key) {
+        if (indexes == null || indexes.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+        return indexes.getOrDefault(key, Integer.MAX_VALUE);
     }
 
     public static String questKey(String questId) {

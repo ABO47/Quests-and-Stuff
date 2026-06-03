@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.util.QuestNaming;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -60,7 +61,7 @@ public final class ClipboardEditService {
             if (sourceId.isBlank()) {
                 continue;
             }
-            QuestDefinition definition = owner.definitionStore().quests().get(sourceId);
+            QuestDefinition definition = owner.definitionStore().quest(sourceId);
             if (definition != null) {
                 QuestDefinition snapshot = deepCopyDefinition(definition);
                 ChapterDefinition view = group.isBlank() ? null : definition.display().groups().get(group);
@@ -118,13 +119,13 @@ public final class ClipboardEditService {
         owner.clipboardDebug("PASTE read entries=" + entries.size() + " sources=" + clipboardSourceSummary(entries) + " droppedExternalPrerequisiteEdges=" + droppedExternalPrerequisiteEdges);
 
         Map<String, String> allocatedIds = new LinkedHashMap<>();
-        Set<String> reservedIds = new HashSet<>(owner.definitionStore().quests().keySet());
+        Set<String> reservedIds = new HashSet<>(owner.definitionStore().questIds());
         reservedIds.addAll(snapshot.sourceIds());
         for (ClipboardSnapshot.Entry entry : entries) {
             if (entry == null || entry.sourceId().isBlank() || entry.definition() == null) {
                 continue;
             }
-            String newId = owner.nextQuestId(request.targetChapter(), reservedIds);
+            String newId = QuestNaming.nextQuestId(request.targetChapter(), reservedIds);
             allocatedIds.put(entry.sourceId(), newId);
             reservedIds.add(newId);
         }
@@ -136,7 +137,7 @@ public final class ClipboardEditService {
 
         int minX = snapshot.minSourceX();
         int minY = snapshot.minSourceY();
-        owner.captureUndo(session);
+        owner.capturePasteUndo(session, allocatedIds.values(), List.of(), List.of(), "");
         List<QuestDefinition> pastedSnapshots = new ArrayList<>();
         for (ClipboardSnapshot.Entry entry : entries) {
             String newId = allocatedIds.get(entry.sourceId());
@@ -171,7 +172,10 @@ public final class ClipboardEditService {
         owner.definitionStore().upsertAll(pastedSnapshots);
         List<QuestDefinition> created = new ArrayList<>();
         for (QuestDefinition duplicate : pastedSnapshots) {
-            QuestDefinition saved = owner.definitionStore().quests().getOrDefault(duplicate.id(), duplicate);
+            QuestDefinition saved = owner.definitionStore().quest(duplicate.id());
+            if (saved == null) {
+                saved = duplicate;
+            }
             created.add(saved);
             owner.clipboardDebug("PASTE finalSaved id=" + saved.id()
                     + " prerequisites=" + sortedStrings(saved.prerequisites())
@@ -181,12 +185,15 @@ public final class ClipboardEditService {
                     + " groups=" + sortedStrings(saved.display().groups().keySet()));
         }
         ClipboardPasteResult result = new ClipboardPasteResult(created, allocatedIds, droppedExternalPrerequisiteEdges);
-        owner.definitionStore().saveAll();
+        owner.definitionStore().saveNow(result.selectionIds());
         owner.clipboardDebug("PASTE flushed files created=" + result.selectionIds().stream().sorted().toList());
         session.currentGroup = request.targetChapter();
-        owner.postMutation(player);
+        owner.postMutationDelta(player, Set.copyOf(result.selectionIds()), Set.of(request.targetChapter()));
         for (QuestDefinition definition : result.createdQuests()) {
-            QuestDefinition synced = owner.definitionStore().quests().getOrDefault(definition.id(), definition);
+            QuestDefinition synced = owner.definitionStore().quest(definition.id());
+            if (synced == null) {
+                synced = definition;
+            }
             owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "add", synced);
         }
         CompoundTag selection = new CompoundTag();
@@ -222,7 +229,7 @@ public final class ClipboardEditService {
             return;
         }
 
-        owner.captureUndo(session);
+        owner.capturePasteUndo(session, allocatedQuestIds.values(), allocatedImageIds.values(), allocatedTextIds.values(), group);
         List<QuestDefinition> pastedQuests = pasteBlueprintQuests(group, anchorX, anchorY, blueprint, allocatedQuestIds);
         if (!pastedQuests.isEmpty()) {
             owner.definitionStore().upsertAll(pastedQuests);
@@ -230,12 +237,15 @@ public final class ClipboardEditService {
         }
         List<CanvasImageLayer> pastedImages = pasteBlueprintImages(group, anchorX, anchorY, blueprint, allocatedImageIds);
         List<CanvasTextLayer> pastedTexts = pasteBlueprintTexts(group, anchorX, anchorY, blueprint, allocatedTextIds);
-        owner.definitionStore().setCanvasLayerOrder(group, remappedLayerOrder(group, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds));
-        owner.definitionStore().saveAll();
+        owner.definitionStore().putCanvasLayers(group, pastedImages, pastedTexts, remappedLayerOrder(group, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds));
+        owner.definitionStore().saveNow(allocatedQuestIds.values());
         session.currentGroup = group;
-        owner.postMutation(player);
+        owner.postMutationDelta(player, Set.copyOf(allocatedQuestIds.values()), Set.of(group));
         for (QuestDefinition definition : pastedQuests) {
-            QuestDefinition synced = owner.definitionStore().quests().getOrDefault(definition.id(), definition);
+            QuestDefinition synced = owner.definitionStore().quest(definition.id());
+            if (synced == null) {
+                synced = definition;
+            }
             owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "add", synced);
         }
         CompoundTag selection = selectionPayload(group, pastedQuests, pastedImages, pastedTexts);
@@ -246,12 +256,12 @@ public final class ClipboardEditService {
 
     private Map<String, String> allocateQuestIds(String group, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
-        Set<String> reservedIds = new HashSet<>(owner.definitionStore().quests().keySet());
+        Set<String> reservedIds = new HashSet<>(owner.definitionStore().questIds());
         for (CanvasBlueprint.QuestEntry entry : blueprint.quests()) {
             if (entry == null || entry.sourceId().isBlank() || entry.definition() == null) {
                 continue;
             }
-            String newId = owner.nextQuestId(group, reservedIds);
+            String newId = QuestNaming.nextQuestId(group, reservedIds);
             allocatedIds.put(entry.sourceId(), newId);
             reservedIds.add(newId);
         }
@@ -332,7 +342,6 @@ public final class ClipboardEditService {
                     image.pivotX(),
                     image.pivotY()
             );
-            owner.definitionStore().putCanvasImage(group, duplicate);
             pasted.add(duplicate);
         }
         return pasted;
@@ -359,7 +368,6 @@ public final class ClipboardEditService {
                     text.fontSize(),
                     text.spans()
             );
-            owner.definitionStore().putCanvasText(group, duplicate);
             pasted.add(duplicate);
         }
         return pasted;

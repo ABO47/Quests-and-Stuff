@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,30 +235,34 @@ public final class ChapterMetadataStore {
     }
 
     public void putCanvasImage(String group, CanvasImageLayer image) {
-        if (image != null && ChapterCanvasLayerMutations.put(state, group, image, image.id(), "image:" + image.id(), state.canvasImagesByGroup, CanvasImageLayer::id)) {
-            save();
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (image != null && ChapterCanvasLayerMutations.put(state, normalized, image, image.id(), "image:" + image.id(), state.canvasImagesByGroup, CanvasImageLayer::id)) {
+            saveGroup(normalized);
         }
     }
 
     public boolean removeCanvasImage(String group, String imageId) {
-        if (!ChapterCanvasLayerMutations.remove(state, group, imageId, "image:" + imageId, state.canvasImagesByGroup, CanvasImageLayer::id)) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, imageId, "image:" + imageId, state.canvasImagesByGroup, CanvasImageLayer::id)) {
             return false;
         }
-        save();
+        saveGroup(normalized);
         return true;
     }
 
     public void putCanvasText(String group, CanvasTextLayer text) {
-        if (text != null && ChapterCanvasLayerMutations.put(state, group, text, text.id(), "text:" + text.id(), state.canvasTextsByGroup, CanvasTextLayer::id)) {
-            save();
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (text != null && ChapterCanvasLayerMutations.put(state, normalized, text, text.id(), "text:" + text.id(), state.canvasTextsByGroup, CanvasTextLayer::id)) {
+            saveGroup(normalized);
         }
     }
 
     public boolean removeCanvasText(String group, String textId) {
-        if (!ChapterCanvasLayerMutations.remove(state, group, textId, "text:" + textId, state.canvasTextsByGroup, CanvasTextLayer::id)) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, textId, "text:" + textId, state.canvasTextsByGroup, CanvasTextLayer::id)) {
             return false;
         }
-        save();
+        saveGroup(normalized);
         return true;
     }
 
@@ -267,7 +272,30 @@ public final class ChapterMetadataStore {
             return;
         }
         ChapterCanvasLayerMutations.setOrder(state, normalized, order);
-        save();
+        saveGroup(normalized);
+    }
+
+    public void putCanvasLayers(String group, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> order) {
+        String normalized = state.ensureGroup(group);
+        if (normalized.isBlank()) {
+            return;
+        }
+        if (images != null) {
+            for (CanvasImageLayer image : images) {
+                if (image != null) {
+                    ChapterCanvasLayerMutations.put(state, normalized, image, image.id(), "image:" + image.id(), state.canvasImagesByGroup, CanvasImageLayer::id);
+                }
+            }
+        }
+        if (texts != null) {
+            for (CanvasTextLayer text : texts) {
+                if (text != null) {
+                    ChapterCanvasLayerMutations.put(state, normalized, text, text.id(), "text:" + text.id(), state.canvasTextsByGroup, CanvasTextLayer::id);
+                }
+            }
+        }
+        ChapterCanvasLayerMutations.setOrder(state, normalized, order);
+        saveGroup(normalized);
     }
 
     public void load(Set<String> discoveredGroups) {
@@ -288,6 +316,17 @@ public final class ChapterMetadataStore {
 
     public void save() {
         ChapterMetadataWriter.save(chaptersDir, state, GSON);
+    }
+
+    public void saveGroup(String group) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (!normalized.isBlank()) {
+            ChapterMetadataWriter.saveGroups(chaptersDir, state, GSON, List.of(normalized));
+        }
+    }
+
+    public void saveGroups(Collection<String> groups) {
+        ChapterMetadataWriter.saveGroups(chaptersDir, state, GSON, groups);
     }
 
     public void reconcile(Set<String> discoveredGroups) {

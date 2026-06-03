@@ -44,10 +44,10 @@ public final class CanvasSelectionActions {
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new LinkedHashMap<>();
         for (String questId : state.selectedQuestIds) {
-            CompoundTag tag = ClientQuestCache.quests().get(questId);
-            if (tag == null) {
+            if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
+            CompoundTag tag = ClientQuestCache.quest(questId);
             QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
             CanvasPoint aligned = movedQuestPosition(state, card, offset, verticalCenterLine);
             if (aligned.x != card.logicalX() || aligned.y != card.logicalY()) {
@@ -92,10 +92,10 @@ public final class CanvasSelectionActions {
     private static SelectionBounds selectedBounds(TabletUiState state, String group) {
         SelectionBounds bounds = new SelectionBounds();
         for (String questId : state.selectedQuestIds) {
-            CompoundTag tag = ClientQuestCache.quests().get(questId);
-            if (tag == null) {
+            if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
+            CompoundTag tag = ClientQuestCache.quest(questId);
             QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }

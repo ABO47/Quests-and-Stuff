@@ -71,7 +71,7 @@ public final class CanvasClipboardController {
         }
         Map<String, QuestCardLayout> byQuestId = canvasViewport.cardLookup();
         for (String questId : selection.questIds()) {
-            if (byQuestId.containsKey(questId) || ClientQuestCache.quests().containsKey(questId)) {
+            if (byQuestId.containsKey(questId) || ClientQuestCache.containsQuest(questId)) {
                 return true;
             }
         }
@@ -162,7 +162,7 @@ public final class CanvasClipboardController {
             if (normalized.isBlank()) {
                 continue;
             }
-            if (byQuestId.containsKey(normalized) || ClientQuestCache.quests().containsKey(normalized)) {
+            if (byQuestId.containsKey(normalized) || ClientQuestCache.containsQuest(normalized)) {
                 copiedIds.add(normalized);
             }
         }

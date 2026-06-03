@@ -359,7 +359,7 @@ public final class TabletPrerequisitesManagerModal {
     }
 
     private static void addOutgoingRows(Map<String, ConnectionRow> rows, String questId, String sourceTitle) {
-        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.quests().entrySet()) {
+        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.questEntries()) {
             String targetId = entry.getKey();
             if (questId.equals(targetId)) {
                 continue;

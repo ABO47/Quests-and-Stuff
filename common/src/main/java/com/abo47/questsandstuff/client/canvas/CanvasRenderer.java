@@ -50,7 +50,7 @@ public final class CanvasRenderer {
         state.canvasZoom = clampZoom(state.canvasZoom);
         CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.quests().entrySet());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
 
         int viewportW = canvasViewport.getSize().width;
@@ -91,10 +91,10 @@ public final class CanvasRenderer {
             byQuestId.put(card.questId(), card);
         }
         state.selectedQuestIds.retainAll(byQuestId.keySet());
-        if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.quests().containsKey(state.connectSourceQuestId)) {
+        if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.containsQuest(state.connectSourceQuestId)) {
             state.connectSourceQuestId = "";
         }
-        state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.quests().containsKey(questId));
+        state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.containsQuest(questId));
         WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
         if (state.canEdit && state.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
