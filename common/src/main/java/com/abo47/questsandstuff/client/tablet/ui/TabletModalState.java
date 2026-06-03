@@ -30,6 +30,7 @@ public final class TabletModalState {
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
+        state.prerequisitesManagerOpen = flags.prerequisitesManagerOpen();
         state.settingsPanelOpen = flags.settingsOpen();
     }
 
@@ -169,6 +170,7 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        clearPrerequisitesManagerState(state);
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
@@ -211,6 +213,10 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerHoveredConnectionKey = "";
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
@@ -243,6 +249,25 @@ public final class TabletModalState {
         state.colorPaletteScrollDragging = false;
         state.themeScrollDragging = false;
         state.settingsScrollDragging = false;
+    }
+
+    private static void clearPrerequisitesManagerState(TabletUiState state) {
+        state.prerequisitesManagerQuestId = "";
+        state.prerequisitesManagerSearch = "";
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerExternalMode = false;
+        state.prerequisitesManagerScroll = 0;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerContextPrerequisiteId = "";
+        state.prerequisitesManagerSelectedConnectionKey = "";
+        state.prerequisitesManagerHoveredConnectionKey = "";
+        state.prerequisitesManagerContextX = 0;
+        state.prerequisitesManagerContextY = 0;
+        state.prerequisitesManagerContextMenuX = 0;
+        state.prerequisitesManagerContextMenuY = 0;
+        state.prerequisitesManagerContextMenuW = 0;
+        state.prerequisitesManagerContextMenuH = 0;
     }
 
     private static void clearAnimationState(TabletUiState state) {

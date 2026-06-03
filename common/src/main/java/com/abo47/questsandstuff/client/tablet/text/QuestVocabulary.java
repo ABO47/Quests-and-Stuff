@@ -19,6 +19,15 @@ public final class QuestVocabulary {
     public static final String REWARDS = "ui.questsandstuff.quest.rewards";
     public static final String PREREQUISITES = "ui.questsandstuff.quest.prerequisites";
     public static final String NO_PREREQUISITES = "ui.questsandstuff.quest.no_prerequisites";
+    public static final String PREREQUISITES_CONNECTION_COUNT = "ui.questsandstuff.prerequisites.connection_count";
+    public static final String CONNECTIONS_EXTERNAL_COUNT = "ui.questsandstuff.connections.external_count";
+    public static final String CONNECTIONS_LOCAL_COUNT = "ui.questsandstuff.connections.local_count";
+    public static final String CONNECTIONS_MODE_EXTERNAL = "ui.questsandstuff.connections.mode.external";
+    public static final String CONNECTIONS_MODE_LOCAL = "ui.questsandstuff.connections.mode.local";
+    public static final String PREREQUISITES_INCOMING = "ui.questsandstuff.prerequisites.incoming";
+    public static final String PREREQUISITES_NO_CONNECTIONS = "ui.questsandstuff.prerequisites.no_connections";
+    public static final String PREREQUISITES_OUTGOING = "ui.questsandstuff.prerequisites.outgoing";
+    public static final String PREREQUISITES_REMOVE_CONNECTION = "ui.questsandstuff.prerequisites.remove_connection";
 
     public static final String ADD_REQUIREMENT = "ui.questsandstuff.quest.add_requirement";
     public static final String ADD_REWARD = "ui.questsandstuff.quest.add_reward";
@@ -120,6 +129,7 @@ public final class QuestVocabulary {
     public static final String CONTEXT_MOVE_DOWN = "ui.questsandstuff.context.move_down";
     public static final String CONTEXT_MOVE_UP = "ui.questsandstuff.context.move_up";
     public static final String CONTEXT_PASTE = "ui.questsandstuff.context.paste";
+    public static final String CONTEXT_PREREQUISITES_MANAGER = "ui.questsandstuff.context.prerequisites_manager";
     public static final String CONTEXT_REMOVE_BACKGROUND = "ui.questsandstuff.context.remove_background";
     public static final String CONTEXT_REMOVE_PREREQUISITE = "ui.questsandstuff.context.remove_prerequisite";
     public static final String CONTEXT_MAKE_QUEST_REPEATABLE = "ui.questsandstuff.context.make_quest_repeatable";
@@ -150,6 +160,8 @@ public final class QuestVocabulary {
     public static final String TYPE_VISIT_LOCATION = "ui.questsandstuff.quest.type.visit_location";
     public static final String TYPE_VISIT_STRUCTURE = "ui.questsandstuff.quest.type.visit_structure";
     public static final String TYPE_XP = "ui.questsandstuff.quest.type.xp";
+
+    public static final String MODAL_CONNECTIONS_MANAGER = "ui.questsandstuff.modal.connections_manager";
 
     private QuestVocabulary() {
     }

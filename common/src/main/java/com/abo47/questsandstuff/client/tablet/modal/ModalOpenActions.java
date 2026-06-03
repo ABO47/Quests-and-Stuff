@@ -181,6 +181,23 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL);
     }
 
+    public static void openPrerequisitesManager(TabletUiState state, String questId) {
+        closeBeforeOpen(state);
+        state.prerequisitesManagerQuestId = questId == null ? "" : questId.trim();
+        state.prerequisitesManagerSearch = "";
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerExternalMode = false;
+        state.prerequisitesManagerScroll = 0;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerContextPrerequisiteId = "";
+        state.prerequisitesManagerSelectedConnectionKey = "";
+        state.prerequisitesManagerHoveredConnectionKey = "";
+        state.contextDeleteConfirmKey = "";
+        state.contextMenuOpen = false;
+        openModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER);
+    }
+
     public static void openAssetPicker(TabletUiState state, String target) {
         openAssetPicker(state, target, "");
     }

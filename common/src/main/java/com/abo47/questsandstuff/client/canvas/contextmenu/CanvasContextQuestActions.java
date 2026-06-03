@@ -87,7 +87,7 @@ final class CanvasContextQuestActions {
             canvasViewport.refresh();
         }));
         addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
-        addQuestPrerequisiteActions(actions, canvasViewport, state, player, questTag);
+        addQuestPrerequisiteActions(actions, canvasViewport, state, questTag);
         addQuestVisibilityAction(actions, canvasViewport, state, player, questTag);
         addQuestVisualHiddenAction(actions, canvasViewport, state, player, questTag);
         addCompletionSoundActions(actions, canvasViewport, state, questTag);
@@ -202,18 +202,51 @@ final class CanvasContextQuestActions {
         );
     }
 
-    private static void addQuestPrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addQuestPrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
+        int connectionCount = prerequisiteCount(questTag) + outgoingConnectionCount(state.contextQuestId);
+        if (connectionCount <= 0) {
+            return;
+        }
+        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openPrerequisitesManager(state, state.contextQuestId);
+            state.contextDeleteConfirmKey = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextQuestId, connectionCount);
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static int prerequisiteCount(CompoundTag questTag) {
+        if (questTag == null) {
+            return 0;
+        }
+        return questTag.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING).size();
+    }
+
+    private static int outgoingConnectionCount(String questId) {
+        if (questId == null || questId.isBlank()) {
+            return 0;
+        }
+        int count = 0;
+        for (var entry : ClientQuestCache.quests().entrySet()) {
+            if (questId.equals(entry.getKey()) || !hasPrerequisite(entry.getValue(), questId)) {
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    private static boolean hasPrerequisite(CompoundTag questTag, String prerequisiteId) {
+        if (questTag == null || prerequisiteId == null || prerequisiteId.isBlank()) {
+            return false;
+        }
         ListTag prerequisites = questTag.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
         for (int i = 0; i < prerequisites.size(); i++) {
-            String prerequisiteId = prerequisites.getString(i);
-            String prerequisiteTitle = CanvasContextMenuSupport.readableQuestTitle(prerequisiteId);
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_prerequisite", prerequisiteTitle), "delete", ModColors.WARNING, () -> {
-                EditorCommandClient.runPrerequisiteAction(player, state.contextQuestId, prerequisiteId, false);
-                state.contextDeleteConfirmKey = "";
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_prerequisite quest={} prerequisite={}", state.contextQuestId, prerequisiteId);
-                canvasViewport.refresh();
-            }));
+            if (prerequisiteId.equals(prerequisites.getString(i))) {
+                return true;
+            }
         }
+        return false;
     }
 
     private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

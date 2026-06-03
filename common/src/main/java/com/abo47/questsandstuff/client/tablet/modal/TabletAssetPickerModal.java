@@ -42,7 +42,6 @@ import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.deleteAssetFile;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.renameAssetFile;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.searchAssetEntries;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
@@ -70,11 +69,12 @@ public final class TabletAssetPickerModal {
                     .toList();
         }
 
-        int leftW = 150;
-        int rightX = 166;
-        int rightW = w - 174;
-        int previewH = h - 48;
-        WidgetGroup preview = panel(8, 22, leftW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
+        ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
+        int leftW = libraryLayout.leftW();
+        int rightX = libraryLayout.rightX();
+        int rightW = libraryLayout.rightW();
+        int previewH = libraryLayout.bodyH();
+        WidgetGroup preview = ModalLibraryLayout.previewPanel(libraryLayout);
         String selected = state.assetSelected == null ? "" : state.assetSelected;
         preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()
@@ -139,8 +139,8 @@ public final class TabletAssetPickerModal {
             }));
         }
 
-        int listY = 22;
-        int listH = h - 48;
+        int listY = libraryLayout.bodyY();
+        int listH = libraryLayout.bodyH();
         PickerTileMetrics.Metrics tileMetrics = PickerTileMetrics.calculate(rightW, listH, assets.size());
         TiledPickerPanel.add(
                 modal,
@@ -249,7 +249,7 @@ public final class TabletAssetPickerModal {
 
         if (state.assetContextOpen && !state.assetContextFile.isBlank()) {
             addAssetContextDismissLayer(modal, state, refresh, w, h);
-            addContext(modal, state, player, refresh, rightW, assets);
+            addContext(modal, state, player, refresh, w, h, rightW, assets);
         }
         return search;
     }
@@ -266,8 +266,8 @@ public final class TabletAssetPickerModal {
     private static void addAssetContextDismissLayer(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
         int rootW = TabletUiFactory.rootWidth(state);
         int rootH = TabletUiFactory.rootHeight(state);
-        int modalX = modalX(state, w);
-        int modalY = modalY(state, h);
+        int modalX = ModalContextMenuPlacement.modalX(state, w);
+        int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.assetContextOpen = false;
             state.assetRenameOpen = false;
@@ -309,16 +309,8 @@ public final class TabletAssetPickerModal {
     }
 
     private static void anchorAssetContextAtPointer(TabletUiState state, int modalW, int modalH) {
-        state.assetContextX = state.modalWindowLastPointerX - modalX(state, modalW);
-        state.assetContextY = state.modalWindowLastPointerY - modalY(state, modalH);
-    }
-
-    private static int modalX(TabletUiState state, int modalW) {
-        return (TabletUiFactory.rootWidth(state) - modalW) / 2;
-    }
-
-    private static int modalY(TabletUiState state, int modalH) {
-        return (TabletUiFactory.rootHeight(state) - modalH) / 2;
+        state.assetContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
+        state.assetContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
     }
 
     private static void addQuestBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
@@ -397,15 +389,16 @@ public final class TabletAssetPickerModal {
         return null;
     }
 
-    private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int rightW, List<AssetLibrary.AssetEntry> assets) {
+    private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH, int rightW, List<AssetLibrary.AssetEntry> assets) {
         boolean isDir = assets.stream().anyMatch(asset -> asset.relativePath().equals(state.assetContextFile) && asset.directory());
         List<ContextAction> actions = assetContextActions(state, player, isDir);
-        int ctxW = Math.min(150, rightW - 8);
+        int ctxW = Math.min(150, Math.max(96, rightW - 8));
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        int ctxX = state.assetContextX;
-        int ctxY = state.assetContextY;
+        ModalContextMenuPlacement.Placement placement = ModalContextMenuPlacement.fitToRootFromModal(state, state.assetContextX, state.assetContextY, ctxW, menuH, modalW, modalH);
+        int ctxX = placement.x();
+        int ctxY = placement.y();
         state.assetContextMenuX = ctxX;
         state.assetContextMenuY = ctxY;
         state.assetContextMenuW = ctxW;

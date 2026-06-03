@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-final class ClientQuestDefinitionSnapshots {
+public final class ClientQuestDefinitionSnapshots {
     private ClientQuestDefinitionSnapshots() {
     }
 
-    static QuestDefinition fromClientTag(String questId, CompoundTag tag) {
+    public static QuestDefinition fromClientTag(String questId, CompoundTag tag) {
         if (questId == null || questId.isBlank() || tag == null || tag.isEmpty()) {
             return null;
         }
