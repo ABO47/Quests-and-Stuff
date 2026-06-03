@@ -75,6 +75,10 @@ public final class TabletModalPanel {
     }
 
     static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        addModeToggleIconButton(parent, x, y, w, h, iconName, null, callback);
+    }
+
+    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, Component[] tooltip, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         WidgetGroup base = panel(x, y, w, h, withAlpha(ModColors.INTERACTIVE, 120), ModColors.BORDER_ACCENT);
         parent.addWidget(base);
         var texture = UiIconAtlas.iconTexture(iconName);
@@ -87,6 +91,9 @@ public final class TabletModalPanel {
         ButtonWidget hit = flatHitButton(x, y, w, h, callback);
         hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        if (tooltip != null && tooltip.length > 0) {
+            hit.setHoverTooltips(tooltip);
+        }
         parent.addWidget(hit);
     }
 

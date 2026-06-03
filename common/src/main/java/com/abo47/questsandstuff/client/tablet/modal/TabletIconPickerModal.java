@@ -18,6 +18,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -93,7 +94,7 @@ public final class TabletIconPickerModal {
         }, focused -> state.iconSearchFocused = focused);
 
         if (itemModelPicker) {
-            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, state.iconTagMode ? "mode_tags" : "mode_items", click -> {
+            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, state.iconTagMode ? "mode_tags" : "mode_items", iconModeTooltip(state, false, useItemPicker), click -> {
                 int direction = iconCycleDirection(click.button);
                 cycleModelItemMode(state, direction);
                 state.iconScroll = 0;
@@ -101,7 +102,7 @@ public final class TabletIconPickerModal {
                 refresh.run();
             });
         } else if (!entityPicker) {
-            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, iconModeIcon(state, useItemPicker), click -> {
+            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, iconModeIcon(state, useItemPicker), iconModeTooltip(state, false, useItemPicker), click -> {
                 int direction = iconCycleDirection(click.button);
                 cycleIconMode(state, supportsEntityIcons, supportsInventoryIcons, useItemPicker, direction);
                 state.iconScroll = 0;
@@ -357,6 +358,11 @@ public final class TabletIconPickerModal {
             return "tags";
         }
         return useItemPicker && !state.iconAllItemsMode ? "usable_items" : "items";
+    }
+
+    private static Component[] iconModeTooltip(TabletUiState state, boolean entityPicker, boolean useItemPicker) {
+        String mode = iconModeName(state, entityPicker, useItemPicker);
+        return new Component[]{Component.translatable("ui.questsandstuff.icon_picker.mode." + mode)};
     }
 
     private static String pickedEntityIcon(String entry) {
