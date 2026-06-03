@@ -174,6 +174,7 @@ public final class TabletModalState {
         state.iconSearchFocused = false;
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
+        state.iconInventoryMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;

@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -16,7 +17,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -224,27 +224,10 @@ final class QuestObjectiveCardRenderer {
         List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         lines.add(Component.literal(itemId).withStyle(ChatFormatting.DARK_GRAY));
-        String summary = nbtSummary(stack);
+        String summary = ItemStackIconCodec.nbtSummary(stack);
         if (!summary.isBlank()) {
             lines.add(Component.literal("NBT: " + summary).withStyle(ChatFormatting.GOLD));
         }
         return lines.toArray(Component[]::new);
-    }
-
-    private static String nbtSummary(ItemStack stack) {
-        if (stack == null || !stack.hasTag()) {
-            return "";
-        }
-        CompoundTag tag = stack.getTag();
-        if (tag == null || tag.isEmpty()) {
-            return "";
-        }
-        List<String> keys = new ArrayList<>(tag.getAllKeys());
-        int limit = Math.min(3, keys.size());
-        String summary = String.join(", ", keys.subList(0, limit));
-        if (keys.size() > limit) {
-            summary += ", ...";
-        }
-        return summary;
     }
 }

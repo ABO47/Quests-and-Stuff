@@ -95,4 +95,13 @@ class ModalTargetParserTest {
         assertTrue(ModalTargetParser.parse(ModalTargets.rewardIcon("quest", "reward")).supportsEntityIconSelection());
         assertFalse(ModalTargetParser.parse(ModalTargets.descImage("quest", "image")).isEntityIconPickerTarget());
     }
+
+    @Test
+    void inventoryIconPredicateCoversIconTargetsOnly() {
+        assertTrue(ModalTargetParser.parse(ModalTargets.questIcon("quest")).supportsInventoryIconSelection());
+        assertTrue(ModalTargetParser.parse(ModalTargets.chapterIcon("chapter")).supportsInventoryIconSelection());
+        assertTrue(ModalTargetParser.parse(ModalTargets.taskIcon("quest", "task")).supportsInventoryIconSelection());
+        assertTrue(ModalTargetParser.parse(ModalTargets.rewardIcon("quest", "reward")).supportsInventoryIconSelection());
+        assertFalse(ModalTargetParser.parse(ModalTargets.taskItem("quest", "task", "questsandstuff:item")).supportsInventoryIconSelection());
+    }
 }

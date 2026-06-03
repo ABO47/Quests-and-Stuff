@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -92,10 +93,44 @@ public final class QuestObjectiveEditActions {
             return;
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        String icon = ItemStackIconCodec.iconFromStack(stack);
+        if (icon.isBlank()) {
+            return;
+        }
+        if (parsed.isQuestIcon() && parsed.hasAtLeast(2)) {
+            EditorCommandClient.runQuestIconAction(player, parsed.questId(), icon);
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest inventory icon picked quest={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isChapterIcon() && parsed.hasAtLeast(2)) {
+            EditorCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter inventory icon picked chapter={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isTaskIcon() && parsed.hasAtLeast(3)) {
+            putObjectiveIcon(player, parsed.questId(), parsed.entryId(), icon, true);
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details task inventory icon picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isRewardIcon() && parsed.hasAtLeast(3)) {
+            putObjectiveIcon(player, parsed.questId(), parsed.entryId(), icon, false);
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward inventory icon picked quest={} reward={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+            return;
+        }
+        if (parsed.isRewardCommandEditorIcon() && parsed.hasAtLeast(3)) {
+            state.questDetailsCommandRewardIcon = icon;
+            state.questDetailsPickTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details command reward inventory icon picked quest={} reward={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
+            return;
+        }
         if (!parsed.hasAtLeast(4)) {
             return;
         }
-        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         if (parsed.isTaskInventoryItem()) {
             JsonObject json = new JsonObject();
             json.addProperty("id", parsed.entryId());

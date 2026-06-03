@@ -138,6 +138,7 @@ public final class UiIconAtlas {
             case "context_minimap" -> add(names, "minimap");
             case "mode_items" -> add(names, "icon");
             case "mode_tags" -> add(names, "name_tag");
+            case "mode_inventory" -> add(names, "box");
             case "picker_search" -> add(names, "search");
             case "style_align_left" -> add(names, "align-left");
             case "style_align_center" -> add(names, "align-center");

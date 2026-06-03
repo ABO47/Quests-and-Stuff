@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -16,13 +17,13 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
@@ -72,20 +73,24 @@ public final class TabletItemInventoryPickerModal {
                 ),
                 null,
                 refresh,
-                (surface, stack, index, x, y, tileW, tileH, layout) -> renderStackTile(surface, state, player, refresh, stack, x, y)
+                (surface, stack, index, x, y, tileW, tileH, layout) -> renderStackTile(surface, stack, x, y, picked -> {
+                    QuestDetailsWindow.applyInventoryItemPick(player, state, picked);
+                    closeAll(state);
+                    refresh.run();
+                })
         );
         return search;
     }
 
-    private static void renderStackTile(WidgetGroup surface, TabletUiState state, Player player, Runnable refresh, ItemStack stack, int x, int y) {
+    static void renderStackTile(WidgetGroup surface, ItemStack stack, int x, int y, Consumer<ItemStack> onPick) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         ItemStack preview = stack.copy();
         preview.setCount(1);
         surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
-            QuestDetailsWindow.applyInventoryItemPick(player, state, stack);
-            closeAll(state);
-            refresh.run();
+            if (onPick != null) {
+                onPick.accept(stack.copy());
+            }
         });
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
@@ -93,7 +98,7 @@ public final class TabletItemInventoryPickerModal {
         surface.addWidget(hit);
     }
 
-    private static List<ItemStack> inventoryEntries(Player player, String query) {
+    static List<ItemStack> inventoryEntries(Player player, String query) {
         List<ItemStack> entries = new ArrayList<>();
         if (player == null) {
             return entries;
@@ -104,41 +109,21 @@ public final class TabletItemInventoryPickerModal {
             }
             String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             String name = stack.getHoverName().getString();
-            if (SearchFilter.matches(query, id, name) || SearchFilter.matches(query, nbtSummary(stack))) {
+            if (SearchFilter.matches(query, id, name) || SearchFilter.matches(query, ItemStackIconCodec.nbtSummary(stack))) {
                 entries.add(stack.copy());
             }
         }
         return entries;
     }
 
-    private static Component[] tooltip(ItemStack stack) {
+    static Component[] tooltip(ItemStack stack) {
         String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         List<Component> lines = new ArrayList<>();
         lines.addAll(List.of(PickerTooltips.nameAndId(stack.getHoverName().getString(), id)));
-        String summary = nbtSummary(stack);
+        String summary = ItemStackIconCodec.nbtSummary(stack);
         if (!summary.isBlank()) {
             lines.add(Component.literal("NBT: " + summary).withStyle(ChatFormatting.GOLD));
         }
         return lines.toArray(Component[]::new);
-    }
-
-    private static String nbtSummary(ItemStack stack) {
-        if (stack == null || !stack.hasTag()) {
-            return "";
-        }
-        CompoundTag tag = stack.getTag();
-        if (tag == null || tag.isEmpty()) {
-            return "";
-        }
-        List<String> keys = new ArrayList<>(tag.getAllKeys());
-        if (keys.isEmpty()) {
-            return "";
-        }
-        int limit = Math.min(3, keys.size());
-        String summary = String.join(", ", keys.subList(0, limit));
-        if (keys.size() > limit) {
-            summary += ", ...";
-        }
-        return summary;
     }
 }

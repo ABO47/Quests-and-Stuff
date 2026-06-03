@@ -207,6 +207,10 @@ public final class ModalTargetParser {
             return isTaskIcon() || isRewardIcon() || isRewardCommandEditorIcon();
         }
 
+        public boolean supportsInventoryIconSelection() {
+            return isQuestIcon() || isChapterIcon() || isTaskIcon() || isRewardIcon() || isRewardCommandEditorIcon();
+        }
+
         public boolean hasAtLeast(int count) {
             return parts != null && parts.length >= count;
         }

@@ -30,6 +30,14 @@ public final class QuestIconProvider {
         if (cached != null) {
             return cached;
         }
+        if (ItemStackIconCodec.isStackIcon(keyValue)) {
+            ItemStack stack = ItemStackIconCodec.stackFromIcon(keyValue);
+            if (!stack.isEmpty()) {
+                ItemStackTexture texture = new ScopedItemStackTexture(stack);
+                ICON_TEXTURE_CACHE.put(keyValue, texture);
+                return texture;
+            }
+        }
         if (keyValue.startsWith("#")) {
             ResourceLocation tagId = ResourceLocation.tryParse(keyValue.substring(1));
             if (tagId != null) {

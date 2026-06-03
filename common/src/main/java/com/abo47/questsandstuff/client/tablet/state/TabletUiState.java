@@ -168,6 +168,7 @@ public class TabletUiState {
     public boolean iconTagMode;
     public boolean iconAllItemsMode;
     public boolean iconEntityMode;
+    public boolean iconInventoryMode;
     public int iconScroll;
     public boolean iconScrollDragging;
     public String iconLastLoggedQuery = "";
