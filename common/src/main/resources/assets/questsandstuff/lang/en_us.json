@@ -202,6 +202,8 @@
   "ui.questsandstuff.settings.full_screen_mode_desc": "Use the whole screen for the quest tablet canvas.",
   "ui.questsandstuff.settings.minimap": "Minimap",
   "ui.questsandstuff.settings.minimap_desc": "Show the quest minimap on the canvas.",
+  "ui.questsandstuff.settings.visual_minimap": "Visual Minimap",
+  "ui.questsandstuff.settings.visual_minimap_desc": "Draw quest backgrounds and icons in the minimap.",
   "ui.questsandstuff.settings.canvas_mini_notifications": "Mini Notifications",
   "ui.questsandstuff.settings.canvas_mini_notifications_desc": "Show small cursor-side text for quick canvas actions.",
   "ui.questsandstuff.settings.quest_effect_icons": "Quest Effect Icons",

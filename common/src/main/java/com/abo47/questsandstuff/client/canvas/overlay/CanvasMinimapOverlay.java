@@ -2,17 +2,23 @@ package com.abo47.questsandstuff.client.canvas.overlay;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,6 +30,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
 import javax.annotation.Nonnull;
@@ -35,11 +42,15 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
+    private static final int VISUAL_CONNECTION_GRID_STEP = 16;
+    private static final float MINIMAP_CHEVRON_SCALE = 0.45f;
     private static final float BODY_REVEAL_START = 0.48f;
+    private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
 
     private CanvasMinimapOverlay() {
     }
@@ -108,7 +119,7 @@ final class CanvasMinimapOverlay {
                             originY + layout.panelY(),
                             clipW,
                             layout.panelH(),
-                            () -> drawSnapshot(graphics, state, snapshot, originX, originY)
+                            () -> drawSnapshot(graphics, state, snapshot, originX, originY, mouseX, mouseY, partialTicks)
                     );
                 }
             }
@@ -136,6 +147,7 @@ final class CanvasMinimapOverlay {
     ) {
         Map<String, MiniRect> questBoxes = new HashMap<>();
         List<MiniRect> questRects = new ArrayList<>();
+        boolean visualMode = QuestsAndStuffConfig.visualMinimapEnabled();
         for (QuestCardLayout card : cards) {
             MiniRect box = projectRect(
                     projection,
@@ -145,7 +157,9 @@ final class CanvasMinimapOverlay {
                     card.logicalHeight(),
                     MIN_QUEST_SIZE,
                     questColor(state, card),
-                    cardAlpha(state, card)
+                    visualMode ? visualCardAlpha(state, card) : cardAlpha(state, card),
+                    card.questId(),
+                    card.tag()
             );
             questBoxes.put(card.questId(), box);
             questRects.add(box);
@@ -188,7 +202,8 @@ final class CanvasMinimapOverlay {
                         targetCenterX,
                         targetCenterY,
                         ConnectionRenderer.connectionColor(state, group, sourceId, target.questId()),
-                        hidden ? 70 : 190
+                        hidden ? 70 : 190,
+                        ConnectionRenderer.isConnectionDirect(state, group, sourceId, target.questId())
                 ));
             }
         }
@@ -218,6 +233,14 @@ final class CanvasMinimapOverlay {
         return 220;
     }
 
+    private static int visualCardAlpha(TabletUiState state, QuestCardLayout card) {
+        CompoundTag tag = card.tag();
+        if (state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
+            return 130;
+        }
+        return 255;
+    }
+
     private static MiniRect projectViewport(TabletUiState state, CanvasMinimapGeometry.Projection projection) {
         double left = CanvasCameraController.screenToLogicalX(state, state.canvasContentX, true);
         double top = CanvasCameraController.screenToLogicalY(state, state.canvasContentY, true);
@@ -229,7 +252,7 @@ final class CanvasMinimapOverlay {
         int y2 = clamp(CanvasMinimapGeometry.mapY(projection, bottom), projection.drawY(), projection.drawY() + projection.drawH());
         int x = Math.min(x1, x2);
         int y = Math.min(y1, y2);
-        return new MiniRect(x, y, Math.max(1, Math.abs(x2 - x1)), Math.max(1, Math.abs(y2 - y1)), ModColors.TEXT_PRIMARY, 230);
+        return new MiniRect(x, y, Math.max(1, Math.abs(x2 - x1)), Math.max(1, Math.abs(y2 - y1)), ModColors.TEXT_PRIMARY, 230, null, null);
     }
 
     private static MiniRect projectRect(
@@ -240,7 +263,9 @@ final class CanvasMinimapOverlay {
             int logicalH,
             int minSize,
             int color,
-            int alpha
+            int alpha,
+            String questId,
+            CompoundTag tag
     ) {
         int x = clamp(CanvasMinimapGeometry.mapX(projection, logicalX), projection.drawX(), projection.drawX() + projection.drawW() - 1);
         int y = clamp(CanvasMinimapGeometry.mapY(projection, logicalY), projection.drawY(), projection.drawY() + projection.drawH() - 1);
@@ -248,7 +273,7 @@ final class CanvasMinimapOverlay {
         int h = Math.max(minSize, Math.round(Math.max(1, logicalH) * projection.scale()));
         w = Math.max(1, Math.min(w, projection.drawX() + projection.drawW() - x));
         h = Math.max(1, Math.min(h, projection.drawY() + projection.drawH() - y));
-        return new MiniRect(x, y, w, h, color, alpha);
+        return new MiniRect(x, y, w, h, color, alpha, questId, tag);
     }
 
     private static void drawPanel(
@@ -288,22 +313,119 @@ final class CanvasMinimapOverlay {
         return staged * staged * (3.0f - 2.0f * staged);
     }
 
-    private static void drawSnapshot(GuiGraphics graphics, TabletUiState state, MiniSnapshot snapshot, int originX, int originY) {
+    private static void drawSnapshot(GuiGraphics graphics, TabletUiState state, MiniSnapshot snapshot, int originX, int originY, int mouseX, int mouseY, float partialTicks) {
+        boolean visualMode = QuestsAndStuffConfig.visualMinimapEnabled();
         for (MiniConnection connection : snapshot.connections()) {
-            drawMiniLine(
-                    graphics,
-                    originX + connection.x1(),
-                    originY + connection.y1(),
-                    originX + connection.x2(),
-                    originY + connection.y2(),
-                    withAlpha(connection.color(), connection.alpha())
-            );
+            if (visualMode) {
+                drawMiniChevrons(graphics, connection, originX, originY);
+            } else {
+                drawMiniLine(
+                        graphics,
+                        originX + connection.x1(),
+                        originY + connection.y1(),
+                        originX + connection.x2(),
+                        originY + connection.y2(),
+                        withAlpha(connection.color(), connection.alpha())
+                );
+            }
         }
         for (MiniRect quest : snapshot.quests()) {
-            drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
+            if (visualMode) {
+                drawQuestPreview(graphics, state, quest, originX, originY, mouseX, mouseY, partialTicks);
+            } else {
+                drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
+            }
         }
         MiniRect viewport = projectViewport(state, snapshot.projection());
         drawBorder(graphics, originX + viewport.x(), originY + viewport.y(), viewport.w(), viewport.h(), withAlpha(viewport.color(), viewport.alpha()));
+    }
+
+    private static void drawQuestPreview(GuiGraphics graphics, TabletUiState state, MiniRect quest, int originX, int originY, int mouseX, int mouseY, float partialTicks) {
+        CompoundTag tag = quest.tag();
+        int x = originX + quest.x();
+        int y = originY + quest.y();
+        if (tag == null) {
+            drawQuestBox(graphics, x, y, quest.w(), quest.h(), quest.color(), quest.alpha());
+            return;
+        }
+
+        drawQuestBackground(graphics, tag, x, y, quest.w(), quest.h(), mouseX, mouseY, quest.alpha());
+        int min = Math.min(quest.w(), quest.h());
+        int pad = Math.max(1, Math.round(min * 0.16f));
+        int iconSize = Math.max(1, min - pad * 2);
+        int iconX = x + (quest.w() - iconSize) / 2;
+        int iconY = y + (quest.h() - iconSize) / 2;
+        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize, tag.getString("icon"), partialTicks, quest.alpha());
+
+        if (state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
+            graphics.fill(x, y, x + quest.w(), y + quest.h(), withAlpha(ModColors.SURFACE_BASE, Math.min(120, quest.alpha() / 2)));
+        }
+        if (quest.questId() != null && state.selectedQuestIds.contains(quest.questId())) {
+            drawHighlightBorder(graphics, x, y, quest.w(), quest.h(), quest.alpha());
+        }
+    }
+
+    private static void drawQuestBackground(GuiGraphics graphics, CompoundTag tag, int x, int y, int w, int h, int mouseX, int mouseY, int alpha) {
+        String background = tag.getString("quest_background");
+        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
+            drawTextureAlpha(graphics, new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag)), mouseX, mouseY, x, y, w, h, alpha);
+            return;
+        }
+        IGuiTexture texture = chapterBackgroundTexture(background, tag.getBoolean("quest_background_grayscale"));
+        if (texture == null) {
+            drawTextureAlpha(graphics, new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag)), mouseX, mouseY, x, y, w, h, alpha);
+            return;
+        }
+        drawTextureAlpha(graphics, texture, mouseX, mouseY, x, y, w, h, alpha);
+        int filter = questBackgroundFilter(tag, alpha);
+        if ((filter >>> 24) != 0) {
+            graphics.fill(x, y, x + w, y + h, filter);
+        }
+    }
+
+    private static int defaultQuestBackgroundTint(CompoundTag tag) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return withAlpha(ModColors.TEXT_SECONDARY, 255);
+        }
+        if (tag.getBoolean("claimed")) {
+            return withAlpha(ModColors.WARNING, 255);
+        }
+        if (tag.getBoolean("completed")) {
+            return withAlpha(ModColors.SUCCESS, 255);
+        }
+        return tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
+    }
+
+    private static int questBackgroundFilter(CompoundTag tag, int alpha) {
+        if (ClientQuestCache.questLockedPreview(tag)) {
+            return scaledAlpha(ModColors.SURFACE_BASE, 138, alpha);
+        }
+        if (tag.getBoolean("claimed")) {
+            return scaledAlpha(ModColors.WARNING, 94, alpha);
+        }
+        if (tag.getBoolean("completed")) {
+            return scaledAlpha(ModColors.SUCCESS, 82, alpha);
+        }
+        return 0x00000000;
+    }
+
+    private static int scaledAlpha(int color, int baseAlpha, int alpha) {
+        return withAlpha(color, Math.max(0, Math.min(255, Math.round(baseAlpha * (Math.max(0, Math.min(255, alpha)) / 255.0f)))));
+    }
+
+    private static void drawTextureAlpha(GuiGraphics graphics, IGuiTexture texture, int mouseX, int mouseY, int x, int y, int w, int h, int alpha) {
+        int safeAlpha = Math.max(0, Math.min(255, alpha));
+        if (texture == null || safeAlpha <= 0) {
+            return;
+        }
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
+        try {
+            texture.draw(graphics, mouseX, mouseY, x, y, w, h);
+        } finally {
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
     }
 
     private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
@@ -313,6 +435,42 @@ final class CanvasMinimapOverlay {
         }
         graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 255));
         graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
+    }
+
+    private static void drawMiniChevrons(GuiGraphics graphics, MiniConnection connection, int originX, int originY) {
+        List<CanvasPoint> path = visualConnectionPath(
+                Math.round(originX + connection.x1()),
+                Math.round(originY + connection.y1()),
+                Math.round(originX + connection.x2()),
+                Math.round(originY + connection.y2()),
+                connection.direct()
+        );
+        ConnectionRenderer.drawStaticChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, -4096, -4096, 8192, 8192);
+    }
+
+    private static List<CanvasPoint> visualConnectionPath(int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
+        if (direct) {
+            return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
+        }
+        int midX = snapToStep((sourceX + targetX) / 2, VISUAL_CONNECTION_GRID_STEP);
+        if (Math.abs(midX - sourceX) < VISUAL_CONNECTION_GRID_STEP / 2) {
+            midX += targetX >= sourceX ? VISUAL_CONNECTION_GRID_STEP : -VISUAL_CONNECTION_GRID_STEP;
+        }
+        return List.of(
+                new CanvasPoint(sourceX, sourceY),
+                new CanvasPoint(midX, sourceY),
+                new CanvasPoint(midX, targetY),
+                new CanvasPoint(targetX, targetY)
+        );
+    }
+
+    private static int snapToStep(int value, int step) {
+        return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
+    }
+
+    private static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int w, int h, int alpha) {
+        int color = withAlpha(ModColors.BORDER_ACCENT, Math.min(255, alpha));
+        drawBorder(graphics, x, y, w, h, color);
     }
 
     private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {
@@ -400,9 +558,9 @@ final class CanvasMinimapOverlay {
     private record MiniSnapshot(List<MiniRect> quests, List<MiniConnection> connections, CanvasMinimapGeometry.Projection projection) {
     }
 
-    private record MiniRect(int x, int y, int w, int h, int color, int alpha) {
+    private record MiniRect(int x, int y, int w, int h, int color, int alpha, String questId, CompoundTag tag) {
     }
 
-    private record MiniConnection(float x1, float y1, float x2, float y2, int color, int alpha) {
+    private record MiniConnection(float x1, float y1, float x2, float y2, int color, int alpha, boolean direct) {
     }
 }

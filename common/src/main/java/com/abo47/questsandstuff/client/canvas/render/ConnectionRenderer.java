@@ -267,6 +267,10 @@ public final class ConnectionRenderer {
         drawTexturedChevrons(graphics, path, color, alpha, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
+    public static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
+        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, scale, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
     private static void drawConnection(
             GuiGraphics graphics,
             int originX,
@@ -386,8 +390,24 @@ public final class ConnectionRenderer {
             int clipMaxX,
             int clipMaxY
     ) {
-        int glyphW = 5;
-        int glyphH = 9;
+        drawTexturedChevrons(graphics, path, color, alpha, progress, 1.0f, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
+    private static void drawTexturedChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            int color,
+            int alpha,
+            float progress,
+            float scale,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        float safeScale = Math.max(0.25f, Math.min(2.0f, scale));
+        int glyphW = Math.max(1, Math.round(5 * safeScale));
+        int glyphH = Math.max(1, Math.round(9 * safeScale));
         double spacing = Math.max(1.0, glyphW - 1.0);
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {

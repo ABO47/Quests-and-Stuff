@@ -191,6 +191,15 @@ public final class TabletSettingsModal {
                         false
                 ),
                 new SettingOption(
+                        "visualMinimap",
+                        "ui.questsandstuff.settings.visual_minimap",
+                        "ui.questsandstuff.settings.visual_minimap_desc",
+                        QuestsAndStuffConfig::visualMinimapEnabled,
+                        QuestsAndStuffConfig::setVisualMinimapEnabled,
+                        false,
+                        false
+                ),
+                new SettingOption(
                         "readOnlyCanvasFocus",
                         "ui.questsandstuff.settings.read_only_canvas_focus",
                         "ui.questsandstuff.settings.read_only_canvas_focus_desc",

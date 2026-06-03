@@ -30,6 +30,7 @@ public final class QuestsAndStuffConfig {
     private static boolean chapterSwitchAnimations = true;
     private static boolean fullScreenMode;
     private static boolean minimap = true;
+    private static boolean visualMinimap;
     private static boolean readOnlyCanvasFocus = true;
     private static boolean questEffectIcons;
     private static boolean canvasMiniNotifications;
@@ -239,6 +240,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean visualMinimapEnabled() {
+        load();
+        return visualMinimap;
+    }
+
+    public static void setVisualMinimapEnabled(boolean enabled) {
+        load();
+        if (visualMinimap != enabled) {
+            visualMinimap = enabled;
+            save();
+        }
+    }
+
     public static boolean readOnlyCanvasFocusEnabled() {
         load();
         return readOnlyCanvasFocus;
@@ -365,6 +379,7 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = object(root, "canvas");
         fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
+        visualMinimap = bool(canvas, "visualMinimap", visualMinimap);
         readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
         questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
         canvasMiniNotifications = bool(canvas, "miniNotifications", canvasMiniNotifications);
@@ -401,6 +416,7 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = new JsonObject();
         canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
+        canvas.addProperty("visualMinimap", visualMinimap);
         canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
         canvas.addProperty("questEffectIcons", questEffectIcons);
         canvas.addProperty("miniNotifications", canvasMiniNotifications);
