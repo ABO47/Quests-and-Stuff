@@ -108,17 +108,12 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             return null;
         }
         Object recipeManager = runtime.getClass().getMethod("getRecipeManager").invoke(runtime);
-        Object recipeType = optionalValue(invokeFirst(recipeManager, "getRecipeType", recipeTypeId));
-        if (recipeType == null) {
-            return null;
-        }
-        Object category = invokeFirst(recipeManager, "getRecipeCategory", recipeType);
         Object focusGroup = emptyFocusGroup(runtime);
-        Object recipe = findJeiRecipe(recipeManager, recipeType, category, recipeId);
-        if (recipe == null) {
+        RecipeMatch match = findJeiRecipeMatch(recipeManager, recipeTypeId, recipeId);
+        if (match == null) {
             return null;
         }
-        Object layout = createLayout(recipeManager, category, recipe, focusGroup);
+        Object layout = createLayout(recipeManager, match.category(), match.recipe(), focusGroup);
         if (layout == null) {
             return null;
         }
@@ -138,6 +133,65 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
                 throw new IllegalStateException(exception);
             }
         });
+    }
+
+    private RecipeMatch findJeiRecipeMatch(Object recipeManager, ResourceLocation preferredRecipeTypeId, ResourceLocation recipeId) throws ReflectiveOperationException {
+        try {
+            RecipeMatch preferred = findJeiRecipeMatchByTypeId(recipeManager, preferredRecipeTypeId, recipeId);
+            if (preferred != null) {
+                return preferred;
+            }
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+        }
+        Object lookup;
+        try {
+            lookup = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "createRecipeCategoryLookup", 0).invoke(recipeManager);
+        } catch (NoSuchMethodException exception) {
+            return null;
+        }
+        try {
+            RecipeViewerReflection.firstMethod(lookup.getClass(), "includeHidden", 0).invoke(lookup);
+        } catch (NoSuchMethodException ignored) {
+        }
+        Object value = lookup.getClass().getMethod("get").invoke(lookup);
+        if (!(value instanceof Stream<?> stream)) {
+            return null;
+        }
+        try (stream) {
+            List<?> categories = stream.toList();
+            for (Object category : categories) {
+                RecipeMatch match = findJeiRecipeMatchByCategory(recipeManager, category, recipeId);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
+    }
+
+    private RecipeMatch findJeiRecipeMatchByTypeId(Object recipeManager, ResourceLocation recipeTypeId, ResourceLocation recipeId) throws ReflectiveOperationException {
+        if (recipeTypeId == null) {
+            return null;
+        }
+        Object recipeType = optionalValue(invokeFirst(recipeManager, "getRecipeType", recipeTypeId));
+        if (recipeType == null) {
+            return null;
+        }
+        Object category = invokeFirst(recipeManager, "getRecipeCategory", recipeType);
+        return findJeiRecipeMatchByCategory(recipeManager, category, recipeId);
+    }
+
+    private RecipeMatch findJeiRecipeMatchByCategory(Object recipeManager, Object category, ResourceLocation recipeId) {
+        if (category == null) {
+            return null;
+        }
+        try {
+            Object recipeType = RecipeViewerReflection.firstMethod(category.getClass(), "getRecipeType", 0).invoke(category);
+            Object recipe = findJeiRecipe(recipeManager, recipeType, category, recipeId);
+            return recipe == null ? null : new RecipeMatch(category, recipe);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
     }
 
     private Object findJeiRecipe(Object recipeManager, Object recipeType, Object category, ResourceLocation recipeId) throws ReflectiveOperationException {
@@ -237,5 +291,8 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             }
         }
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
+    }
+
+    private record RecipeMatch(Object category, Object recipe) {
     }
 }
