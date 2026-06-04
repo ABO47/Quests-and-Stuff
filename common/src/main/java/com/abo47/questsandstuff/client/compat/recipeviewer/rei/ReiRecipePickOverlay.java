@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverl
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -45,7 +46,7 @@ public final class ReiRecipePickOverlay {
         }
         for (ButtonTarget target : targets(screen)) {
             if (RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
-                return RecipeViewerSelectionBridge.pickRecipe(target.recipeId(), "REI");
+                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "REI", target.viewerTypeId());
             }
         }
         return false;
@@ -88,14 +89,15 @@ public final class ReiRecipePickOverlay {
         List<ButtonTarget> targets = new ArrayList<>();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Rect2i bounds = rectangle(entry.getKey());
-            String recipeId = pickableRecipeId(displaySpec(entry.getValue()));
+            Object displaySpec = displaySpec(entry.getValue());
+            String recipeId = pickableRecipeId(displaySpec);
             if (bounds == null || recipeId.isBlank()) {
                 continue;
             }
             Rect2i defaultReiButton = new Rect2i(bounds.getX() + bounds.getWidth() + 2, bounds.getY() + bounds.getHeight() - 16, 10, 10);
             Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
             if (button != null) {
-                targets.add(new ButtonTarget(recipeId, bounds, button));
+                targets.add(new ButtonTarget(recipeId, viewerTypeId(displaySpec), bounds, button));
             }
         }
         return targets;
@@ -107,6 +109,7 @@ public final class ReiRecipePickOverlay {
         Rect2i screenBounds = rectangle(fieldValue(screen, "bounds"));
         Object display = invoke(displaySpec, "provideInternalDisplay");
         Object category = selectedCategory(screen);
+        String viewerTypeId = firstPresent(categoryId(category), viewerTypeId(displaySpec));
         int displayWidth = intInvoke(category, "getDisplayWidth", display);
         int displayHeight = intInvoke(category, "getDisplayHeight");
         if (recipeId.isBlank() || screenBounds == null || displayWidth <= 0 || displayHeight <= 0) {
@@ -120,7 +123,7 @@ public final class ReiRecipePickOverlay {
         );
         Rect2i defaultReiButton = new Rect2i(recipeBounds.getX() + recipeBounds.getWidth() + 2, recipeBounds.getY() + recipeBounds.getHeight() - 16, 10, 10);
         Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
-        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, recipeBounds, button));
+        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, viewerTypeId, recipeBounds, button));
     }
 
     private static Object selectedDisplaySpec(Object screen) {
@@ -177,7 +180,7 @@ public final class ReiRecipePickOverlay {
         if (ids instanceof Collection<?> collection) {
             for (Object id : collection) {
                 String recipeId = id == null ? "" : id.toString();
-                if (RecipeViewerSelectionBridge.canPickRecipe(recipeId)) {
+                if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
                     return recipeId;
                 }
             }
@@ -186,11 +189,46 @@ public final class ReiRecipePickOverlay {
         Object optional = invoke(display, "getDisplayLocation");
         if (optional instanceof Optional<?> location && location.isPresent()) {
             String recipeId = location.get().toString();
-            if (RecipeViewerSelectionBridge.canPickRecipe(recipeId)) {
+            if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
                 return recipeId;
             }
         }
         return "";
+    }
+
+    private static String viewerTypeId(Object displaySpec) {
+        Object display = invoke(displaySpec, "provideInternalDisplay");
+        return firstPresent(categoryId(display), categoryId(displaySpec));
+    }
+
+    private static String categoryId(Object owner) {
+        String fromCategory = resourceId(invoke(owner, "getCategoryIdentifier"));
+        if (!fromCategory.isBlank()) {
+            return fromCategory;
+        }
+        return resourceId(invoke(owner, "getIdentifier"));
+    }
+
+    private static String resourceId(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof ResourceLocation resourceLocation) {
+            return resourceLocation.toString();
+        }
+        Object identifier = invoke(value, "getIdentifier");
+        if (identifier != null && identifier != value) {
+            String nested = resourceId(identifier);
+            if (!nested.isBlank()) {
+                return nested;
+            }
+        }
+        ResourceLocation parsed = ResourceLocation.tryParse(value.toString());
+        return parsed == null ? "" : parsed.toString();
+    }
+
+    private static String firstPresent(String first, String second) {
+        return first == null || first.isBlank() ? second == null ? "" : second : first;
     }
 
     private static Rect2i rectangle(Object rectangle) {
@@ -272,7 +310,7 @@ public final class ReiRecipePickOverlay {
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
     }
 
-    private record ButtonTarget(String recipeId, Rect2i recipeBounds, Rect2i button) {
+    private record ButtonTarget(String recipeId, String viewerTypeId, Rect2i recipeBounds, Rect2i button) {
         private boolean isNativeRecipeHovered(int mouseX, int mouseY) {
             return RecipePickButtonOverlay.contains(recipeBounds, mouseX, mouseY);
         }

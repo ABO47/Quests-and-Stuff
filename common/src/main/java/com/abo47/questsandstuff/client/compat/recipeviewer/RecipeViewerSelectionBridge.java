@@ -94,18 +94,43 @@ public final class RecipeViewerSelectionBridge {
         return recipe != null && pending.mode().matches(pending.target(), recipe);
     }
 
+    public static boolean canPickVisibleRecipe(String recipeId) {
+        PendingSelection pending = pendingSelection;
+        if (pending == null) {
+            return false;
+        }
+        String normalized = normalizeRecipeId(recipeId);
+        if (normalized.isBlank()) {
+            return false;
+        }
+        RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
+        if (recipe != null && canPickRecipe(pending, normalized, recipe)) {
+            return true;
+        }
+        return pending.mode().allowsVisibleRecipeFallback();
+    }
+
     public static boolean pickRecipe(String recipeId, String providerName) {
+        return pickRecipe(recipeId, providerName, "", false);
+    }
+
+    public static boolean pickVisibleRecipe(String recipeId, String providerName, String viewerTypeId) {
+        return pickRecipe(recipeId, providerName, viewerTypeId, true);
+    }
+
+    private static boolean pickRecipe(String recipeId, String providerName, String viewerTypeId, boolean allowVisibleFallback) {
         PendingSelection pending = pendingSelection;
         String normalized = normalizeRecipeId(recipeId);
         if (pending == null || normalized.isBlank()) {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        if (recipe == null || !canPickRecipe(pending, normalized, recipe)) {
+        boolean knownRecipe = recipe != null && canPickRecipe(pending, normalized, recipe);
+        if (!knownRecipe && (!allowVisibleFallback || !pending.mode().allowsVisibleRecipeFallback())) {
             return false;
         }
-        String target = pending.mode().assetTarget(pending.target(), recipe);
-        String asset = CanvasRecipeCardAsset.assetForRecipe(target, normalized);
+        String target = knownRecipe ? pending.mode().assetTarget(pending.target(), recipe) : pending.target();
+        String asset = CanvasRecipeCardAsset.assetForRecipe(target, normalized, viewerTypeId);
         if (asset.isBlank()) {
             return false;
         }
@@ -124,6 +149,9 @@ public final class RecipeViewerSelectionBridge {
     }
 
     private static boolean canPickRecipe(PendingSelection pending, String normalized, RecipeView recipe) {
+        if (recipe == null) {
+            return false;
+        }
         if (pending.recipeIds().contains(normalized)) {
             return true;
         }
@@ -185,6 +213,11 @@ public final class RecipeViewerSelectionBridge {
             String logName() {
                 return "recipe";
             }
+
+            @Override
+            boolean allowsVisibleRecipeFallback() {
+                return true;
+            }
         },
         INPUT {
             @Override
@@ -201,6 +234,11 @@ public final class RecipeViewerSelectionBridge {
             String logName() {
                 return "uses";
             }
+
+            @Override
+            boolean allowsVisibleRecipeFallback() {
+                return false;
+            }
         };
 
         abstract boolean matches(String target, RecipeView recipe);
@@ -208,5 +246,7 @@ public final class RecipeViewerSelectionBridge {
         abstract String assetTarget(String target, RecipeView recipe);
 
         abstract String logName();
+
+        abstract boolean allowsVisibleRecipeFallback();
     }
 }

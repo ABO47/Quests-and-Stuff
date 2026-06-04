@@ -42,7 +42,7 @@ public final class EmiRecipePickOverlay {
         }
         for (ButtonTarget target : targets(screen)) {
             if (RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
-                return RecipeViewerSelectionBridge.pickRecipe(target.recipeId(), "EMI");
+                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "EMI", target.viewerTypeId());
             }
         }
         return false;
@@ -65,7 +65,7 @@ public final class EmiRecipePickOverlay {
         for (Object group : groups) {
             Object recipe = fieldValue(group, "recipe");
             String recipeId = recipeId(recipe);
-            if (recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickRecipe(recipeId)) {
+            if (recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
                 continue;
             }
             Rect2i recipeBounds = groupBounds(group);
@@ -74,7 +74,7 @@ public final class EmiRecipePickOverlay {
             }
             Rect2i button = RecipePickButtonOverlay.pickButtonAboveRightStack(recipeBounds, widgetBlockers(group, recipeBounds));
             if (button != null) {
-                targets.add(new ButtonTarget(recipeId, button));
+                targets.add(new ButtonTarget(recipeId, recipeTypeId(recipe), button));
             }
         }
         return targets;
@@ -132,6 +132,12 @@ public final class EmiRecipePickOverlay {
         return id == null ? "" : id.toString();
     }
 
+    private static String recipeTypeId(Object recipe) {
+        Object category = invoke(recipe, "getCategory");
+        Object id = invoke(category, "getId");
+        return id == null ? "" : id.toString();
+    }
+
     private static Object fieldValue(Object owner, String name) {
         if (owner == null) {
             return null;
@@ -184,6 +190,6 @@ public final class EmiRecipePickOverlay {
         return method;
     }
 
-    private record ButtonTarget(String recipeId, Rect2i button) {
+    private record ButtonTarget(String recipeId, String viewerTypeId, Rect2i button) {
     }
 }

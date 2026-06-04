@@ -38,9 +38,16 @@ public final class CanvasRecipeCardRecipes {
         }
         String recipeId = CanvasRecipeCardAsset.recipeId(asset);
         if (!recipeId.isBlank()) {
+            String viewerTypeId = CanvasRecipeCardAsset.viewerTypeId(asset);
             RecipeView exact = recipeById(recipeId);
             if (exact != null && CanvasRecipeCardAsset.matchesOutput(target, exact.output())) {
-                return List.of(exact);
+                return List.of(withViewerType(exact, viewerTypeId));
+            }
+            if (!viewerTypeId.isBlank()) {
+                RecipeView external = externalView(recipeId, viewerTypeId, CanvasRecipeCardAsset.outputStack(asset));
+                if (external != null) {
+                    return List.of(external);
+                }
             }
         }
         return recipesForTarget(target);
@@ -120,6 +127,45 @@ public final class CanvasRecipeCardRecipes {
                 false,
                 3,
                 3,
+                LayoutKind.GENERIC,
+                new ItemStack(Items.CRAFTING_TABLE)
+        );
+    }
+
+    private static RecipeView withViewerType(RecipeView recipe, String viewerTypeId) {
+        ResourceLocation id = ResourceLocation.tryParse(viewerTypeId == null ? "" : viewerTypeId.trim());
+        if (recipe == null || id == null || id.toString().equals(recipe.typeId())) {
+            return recipe;
+        }
+        return new RecipeView(
+                recipe.id(),
+                id.toString(),
+                DisplayNameFormatter.resourceLeaf(id.toString()),
+                recipe.output(),
+                recipe.ingredients(),
+                recipe.shaped(),
+                recipe.shapedWidth(),
+                recipe.shapedHeight(),
+                recipe.layoutKind(),
+                recipe.stationIcon()
+        );
+    }
+
+    private static RecipeView externalView(String recipeId, String viewerTypeId, ItemStack output) {
+        ResourceLocation recipe = ResourceLocation.tryParse(recipeId == null ? "" : recipeId.trim());
+        ResourceLocation type = ResourceLocation.tryParse(viewerTypeId == null ? "" : viewerTypeId.trim());
+        if (recipe == null || type == null || output == null || output.isEmpty()) {
+            return null;
+        }
+        return new RecipeView(
+                recipe.toString(),
+                type.toString(),
+                DisplayNameFormatter.resourceLeaf(type.toString()),
+                output.copy(),
+                List.of(),
+                false,
+                1,
+                1,
                 LayoutKind.GENERIC,
                 new ItemStack(Items.CRAFTING_TABLE)
         );

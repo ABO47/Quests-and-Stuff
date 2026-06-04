@@ -65,7 +65,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         if (recipe == null || recipe.id().isBlank()) {
             return false;
         }
-        String key = "rei-live:" + recipe.id();
+        String key = "rei-live:" + recipe.typeId() + ":" + recipe.id();
         return RecipeViewerSnapshotRenderer.renderLive(graphics, key, () -> createSnapshotPlan(recipe), width, height, pivotX, pivotY);
     }
 
@@ -91,8 +91,9 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         if (recipeId == null) {
             return null;
         }
+        ResourceLocation preferredCategoryId = ResourceLocation.tryParse(view.typeId() == null ? "" : view.typeId().trim());
         Object displayRegistry = Class.forName(DISPLAY_REGISTRY).getMethod("getInstance").invoke(null);
-        DisplayMatch match = findDisplay(displayRegistry, recipeId);
+        DisplayMatch match = findDisplay(displayRegistry, recipeId, preferredCategoryId);
         if (match == null) {
             return null;
         }
@@ -146,10 +147,16 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @SuppressWarnings("unchecked")
-    private static DisplayMatch findDisplay(Object displayRegistry, ResourceLocation recipeId) throws ReflectiveOperationException {
+    private static DisplayMatch findDisplay(Object displayRegistry, ResourceLocation recipeId, ResourceLocation preferredCategoryId) throws ReflectiveOperationException {
         Object all = RecipeViewerReflection.firstMethod(displayRegistry.getClass(), "getAll", 0).invoke(displayRegistry);
         if (!(all instanceof Map<?, ?> map)) {
             return null;
+        }
+        if (preferredCategoryId != null) {
+            DisplayMatch match = findDisplayInCategory(map, recipeId, preferredCategoryId);
+            if (match != null) {
+                return match;
+            }
         }
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (!(entry.getValue() instanceof List<?> displays)) {
@@ -163,6 +170,29 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
             }
         }
         return null;
+    }
+
+    private static DisplayMatch findDisplayInCategory(Map<?, ?> map, ResourceLocation recipeId, ResourceLocation categoryId) throws ReflectiveOperationException {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (!categoryMatches(entry.getKey(), categoryId) || !(entry.getValue() instanceof List<?> displays)) {
+                continue;
+            }
+            for (Object display : displays) {
+                Optional<?> location = displayLocation(display);
+                if (location.isPresent() && recipeId.equals(location.get())) {
+                    return new DisplayMatch(entry.getKey(), display);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean categoryMatches(Object category, ResourceLocation expected) {
+        if (category == null || expected == null) {
+            return false;
+        }
+        ResourceLocation id = ResourceLocation.tryParse(category.toString());
+        return expected.equals(id);
     }
 
     private static Optional<?> displayLocation(Object display) throws ReflectiveOperationException {

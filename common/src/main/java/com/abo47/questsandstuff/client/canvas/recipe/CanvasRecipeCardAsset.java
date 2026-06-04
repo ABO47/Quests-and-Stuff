@@ -11,6 +11,7 @@ import net.minecraft.world.item.Items;
 public final class CanvasRecipeCardAsset {
     public static final String PREFIX = "recipe_card:";
     private static final String RECIPE_MARKER = "@@recipe:";
+    private static final String VIEWER_TYPE_MARKER = "@@viewer_type:";
 
     private CanvasRecipeCardAsset() {
     }
@@ -19,19 +20,28 @@ public final class CanvasRecipeCardAsset {
         if (isRecipeCardAsset(pick)) {
             String target = target(pick);
             String recipeId = recipeId(pick);
-            return recipeId.isBlank() ? assetForTarget(target) : assetForRecipe(target, recipeId);
+            return recipeId.isBlank() ? assetForTarget(target) : assetForRecipe(target, recipeId, viewerTypeId(pick));
         }
         String target = normalizePick(pick);
         return assetForTarget(target);
     }
 
     public static String assetForRecipe(String pick, String recipeId) {
+        return assetForRecipe(pick, recipeId, isRecipeCardAsset(pick) ? viewerTypeId(pick) : "");
+    }
+
+    public static String assetForRecipe(String pick, String recipeId, String viewerTypeId) {
         String target = isRecipeCardAsset(pick) ? target(pick) : normalizePick(pick);
         String normalizedRecipeId = normalizeRecipeId(recipeId);
+        String normalizedViewerTypeId = normalizeRecipeId(viewerTypeId);
         if (target.isBlank()) {
             return "";
         }
-        return normalizedRecipeId.isBlank() ? assetForTarget(target) : PREFIX + target + RECIPE_MARKER + normalizedRecipeId;
+        if (normalizedRecipeId.isBlank()) {
+            return assetForTarget(target);
+        }
+        String asset = PREFIX + target + RECIPE_MARKER + normalizedRecipeId;
+        return normalizedViewerTypeId.isBlank() ? asset : asset + VIEWER_TYPE_MARKER + normalizedViewerTypeId;
     }
 
     public static boolean isRecipeCardAsset(String asset) {
@@ -42,7 +52,7 @@ public final class CanvasRecipeCardAsset {
         if (!isRecipeCardAsset(asset)) {
             return "";
         }
-        return normalizePick(stripRecipeId(asset.trim().substring(PREFIX.length())));
+        return normalizePick(stripMetadata(asset.trim().substring(PREFIX.length())));
     }
 
     public static String recipeId(String asset) {
@@ -50,11 +60,15 @@ public final class CanvasRecipeCardAsset {
             return "";
         }
         String body = asset.trim().substring(PREFIX.length());
-        int marker = body.lastIndexOf(RECIPE_MARKER);
-        if (marker < 0) {
+        return normalizeRecipeId(metadataValue(body, RECIPE_MARKER));
+    }
+
+    public static String viewerTypeId(String asset) {
+        if (!isRecipeCardAsset(asset)) {
             return "";
         }
-        return normalizeRecipeId(body.substring(marker + RECIPE_MARKER.length()));
+        String body = asset.trim().substring(PREFIX.length());
+        return normalizeRecipeId(metadataValue(body, VIEWER_TYPE_MARKER));
     }
 
     public static ItemStack outputStack(String asset) {
@@ -104,7 +118,7 @@ public final class CanvasRecipeCardAsset {
         if (value.isBlank()) {
             return "";
         }
-        value = stripRecipeId(value);
+        value = stripMetadata(value);
         if (ItemStackIconCodec.isStackIcon(value)) {
             ItemStack stack = ItemStackIconCodec.stackFromIcon(value);
             return stack.isEmpty() ? "" : ItemStackIconCodec.iconFromStack(stack);
@@ -124,9 +138,34 @@ public final class CanvasRecipeCardAsset {
         return target == null || target.isBlank() ? "" : PREFIX + target;
     }
 
-    private static String stripRecipeId(String value) {
-        int marker = value == null ? -1 : value.lastIndexOf(RECIPE_MARKER);
+    private static String stripMetadata(String value) {
+        int marker = firstMetadataMarker(value);
         return marker < 0 ? value : value.substring(0, marker).trim();
+    }
+
+    private static int firstMetadataMarker(String value) {
+        if (value == null) {
+            return -1;
+        }
+        int recipe = value.indexOf(RECIPE_MARKER);
+        int viewerType = value.indexOf(VIEWER_TYPE_MARKER);
+        if (recipe < 0) {
+            return viewerType;
+        }
+        if (viewerType < 0) {
+            return recipe;
+        }
+        return Math.min(recipe, viewerType);
+    }
+
+    private static String metadataValue(String body, String marker) {
+        int markerIndex = body == null ? -1 : body.lastIndexOf(marker);
+        if (markerIndex < 0) {
+            return "";
+        }
+        int start = markerIndex + marker.length();
+        int next = body.indexOf("@@", start);
+        return (next < 0 ? body.substring(start) : body.substring(start, next)).trim();
     }
 
     private static String normalizeRecipeId(String recipeId) {

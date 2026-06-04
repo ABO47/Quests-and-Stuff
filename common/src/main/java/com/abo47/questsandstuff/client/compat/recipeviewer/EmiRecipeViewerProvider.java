@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
 
 final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String EMI_API = "dev.emi.emi.api.EmiApi";
@@ -58,7 +60,7 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         if (recipe == null || recipe.id().isBlank()) {
             return false;
         }
-        String key = "emi-live:" + recipe.id();
+        String key = "emi-live:" + recipe.typeId() + ":" + recipe.id();
         return RecipeViewerSnapshotRenderer.renderLive(graphics, key, () -> createSnapshotPlan(recipe), width, height, pivotX, pivotY);
     }
 
@@ -84,7 +86,7 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         }
         Class<?> apiClass = Class.forName(EMI_API);
         Object recipeManager = apiClass.getMethod("getRecipeManager").invoke(null);
-        Object recipe = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getRecipe", 1).invoke(recipeManager, recipeId);
+        Object recipe = findRecipe(recipeManager, recipeId, view.typeId());
         if (recipe == null) {
             return null;
         }
@@ -107,6 +109,43 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
                 throw new IllegalStateException(exception);
             }
         });
+    }
+
+    private static Object findRecipe(Object recipeManager, Object recipeId, String typeId) throws ReflectiveOperationException {
+        Object recipe = findRecipeByCategory(recipeManager, recipeId, typeId);
+        if (recipe != null) {
+            return recipe;
+        }
+        return RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getRecipe", 1).invoke(recipeManager, recipeId);
+    }
+
+    private static Object findRecipeByCategory(Object recipeManager, Object recipeId, String typeId) throws ReflectiveOperationException {
+        Object categoryId = emiId(typeId);
+        if (categoryId == null) {
+            return null;
+        }
+        Object categories = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getCategories", 0).invoke(recipeManager);
+        if (!(categories instanceof List<?> list)) {
+            return null;
+        }
+        for (Object category : list) {
+            Object id = RecipeViewerReflection.firstMethod(category.getClass(), "getId", 0).invoke(category);
+            if (!Objects.equals(id, categoryId)) {
+                continue;
+            }
+            Object recipes = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getRecipes", 1).invoke(recipeManager, category);
+            if (!(recipes instanceof List<?> recipeList)) {
+                return null;
+            }
+            for (Object recipe : recipeList) {
+                Object idValue = RecipeViewerReflection.firstMethod(recipe.getClass(), "getId", 0).invoke(recipe);
+                if (Objects.equals(idValue, recipeId)) {
+                    return recipe;
+                }
+            }
+            return null;
+        }
+        return null;
     }
 
     private static int intValue(Object value) {

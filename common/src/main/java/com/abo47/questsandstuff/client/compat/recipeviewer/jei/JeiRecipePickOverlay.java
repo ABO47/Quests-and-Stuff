@@ -36,10 +36,10 @@ public final class JeiRecipePickOverlay {
         for (Object layoutWithButtons : recipeLayoutsWithButtons) {
             Object layout = recipeLayout(layoutWithButtons);
             String recipeId = recipeId(layout);
-            if (layout == null || recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickRecipe(recipeId)) {
+            if (layout == null || recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
                 continue;
             }
-            Rect2i button = buttonRect(layoutWithButtons);
+            Rect2i button = buttonRect(layoutWithButtons, layout);
             if (button == null) {
                 continue;
             }
@@ -61,7 +61,7 @@ public final class JeiRecipePickOverlay {
         for (Object layoutWithButtons : recipeLayoutsWithButtons) {
             Object layout = recipeLayout(layoutWithButtons);
             String recipeId = recipeId(layout);
-            Rect2i button = recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickRecipe(recipeId) ? null : buttonRect(layoutWithButtons);
+            Rect2i button = recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId) ? null : buttonRect(layoutWithButtons, layout);
             if (button != null
                     && RecipePickButtonOverlay.contains(button, mouseX, mouseY)
                     && !isNativeSlotHovered(layout, mouseX, mouseY)) {
@@ -82,9 +82,9 @@ public final class JeiRecipePickOverlay {
         for (Object layoutWithButtons : layouts) {
             Object layout = recipeLayout(layoutWithButtons);
             String recipeId = recipeId(layout);
-            Rect2i button = recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickRecipe(recipeId) ? null : buttonRect(layoutWithButtons);
+            Rect2i button = recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId) ? null : buttonRect(layoutWithButtons, layout);
             if (button != null && RecipePickButtonOverlay.contains(button, mouseX, mouseY)) {
-                return RecipeViewerSelectionBridge.pickRecipe(recipeId, "JEI");
+                return RecipeViewerSelectionBridge.pickVisibleRecipe(recipeId, "JEI", recipeTypeId(layout));
             }
         }
         return false;
@@ -155,26 +155,68 @@ public final class JeiRecipePickOverlay {
             Object category = layout.getClass().getMethod("getRecipeCategory").invoke(layout);
             Object recipe = layout.getClass().getMethod("getRecipe").invoke(layout);
             Object id = firstMethod(category.getClass(), "getRegistryName", 1).invoke(category, recipe);
-            return id instanceof ResourceLocation resourceLocation ? resourceLocation.toString() : "";
+            String registryName = resourceId(id);
+            if (!registryName.isBlank()) {
+                return registryName;
+            }
+            return firstPresent(
+                    resourceId(methodValue(recipe, "getId")),
+                    resourceId(fieldValueOrNull(recipe, "id")),
+                    resourceId(fieldValueOrNull(recipe, "originalId"))
+            );
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return "";
         }
     }
 
-    private static Rect2i buttonRect(Object layoutWithButtons) {
+    private static String recipeTypeId(Object layout) {
+        if (layout == null) {
+            return "";
+        }
+        try {
+            Object category = accessibleMethod(layout.getClass(), "getRecipeCategory").invoke(layout);
+            Object recipeType = accessibleMethod(category.getClass(), "getRecipeType").invoke(category);
+            Object uid = accessibleMethod(recipeType.getClass(), "getUid").invoke(recipeType);
+            return resourceId(uid);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return "";
+        }
+    }
+
+    private static Rect2i buttonRect(Object layoutWithButtons, Object layout) {
         if (layoutWithButtons == null) {
             return null;
         }
         try {
             Object bookmarkButton = accessibleMethod(layoutWithButtons.getClass(), "bookmarkButton").invoke(layoutWithButtons);
-            if (bookmarkButton == null || !isVisible(bookmarkButton)) {
+            if (bookmarkButton != null && isVisible(bookmarkButton)) {
+                Rect2i bookmark = buttonArea(bookmarkButton);
+                if (bookmark.getWidth() > 0 && bookmark.getHeight() > 0) {
+                    return RecipePickButtonOverlay.buttonAbove(bookmark);
+                }
+            }
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+        }
+        Rect2i bookmark = layoutBookmarkArea(layout);
+        return bookmark == null ? null : RecipePickButtonOverlay.buttonAbove(bookmark);
+    }
+
+    private static Rect2i layoutBookmarkArea(Object layout) {
+        if (layout == null) {
+            return null;
+        }
+        try {
+            Rect2i layoutArea = (Rect2i) accessibleMethod(layout.getClass(), "getRect").invoke(layout);
+            Rect2i bookmark = (Rect2i) accessibleMethod(layout.getClass(), "getRecipeBookmarkButtonArea").invoke(layout);
+            if (layoutArea == null || bookmark == null || bookmark.getWidth() <= 0 || bookmark.getHeight() <= 0) {
                 return null;
             }
-            Rect2i bookmark = buttonArea(bookmarkButton);
-            if (bookmark.getWidth() <= 0 || bookmark.getHeight() <= 0) {
-                return null;
-            }
-            return RecipePickButtonOverlay.buttonAbove(bookmark);
+            return new Rect2i(
+                    layoutArea.getX() + bookmark.getX(),
+                    layoutArea.getY() + bookmark.getY(),
+                    bookmark.getWidth(),
+                    bookmark.getHeight()
+            );
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return null;
         }
@@ -201,6 +243,46 @@ public final class JeiRecipePickOverlay {
         Field field = fieldInHierarchy(target.getClass(), name);
         field.setAccessible(true);
         return field.get(target);
+    }
+
+    private static Object fieldValueOrNull(Object target, String name) {
+        try {
+            return target == null ? null : fieldValue(target, name);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private static Object methodValue(Object target, String name) {
+        if (target == null) {
+            return null;
+        }
+        try {
+            return accessibleMethod(target.getClass(), name).invoke(target);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private static String resourceId(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof ResourceLocation resourceLocation) {
+            return resourceLocation.toString();
+        }
+        ResourceLocation parsed = ResourceLocation.tryParse(value.toString());
+        return parsed == null ? "" : parsed.toString();
+    }
+
+    private static String firstPresent(String first, String second, String third) {
+        if (first != null && !first.isBlank()) {
+            return first;
+        }
+        if (second != null && !second.isBlank()) {
+            return second;
+        }
+        return third == null ? "" : third;
     }
 
     private static Field fieldInHierarchy(Class<?> owner, String name) throws NoSuchFieldException {
