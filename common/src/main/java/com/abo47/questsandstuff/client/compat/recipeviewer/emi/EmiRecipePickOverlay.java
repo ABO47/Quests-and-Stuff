@@ -21,10 +21,17 @@ public final class EmiRecipePickOverlay {
             return;
         }
         List<ButtonTarget> targets = targets(screen);
+        boolean nativeTooltipActive = nativeTooltipActive(screen);
         for (ButtonTarget target : targets) {
+            if (nativeTooltipActive && !RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
+                continue;
+            }
             RecipePickButtonOverlay.draw(graphics, mouseX, mouseY, target.button());
         }
         for (ButtonTarget target : targets) {
+            if (nativeTooltipActive) {
+                continue;
+            }
             RecipePickButtonOverlay.renderTooltip(graphics, mouseX, mouseY, target.button());
         }
     }
@@ -43,6 +50,10 @@ public final class EmiRecipePickOverlay {
 
     private static boolean isRecipeScreen(Object screen) {
         return screen != null && EMI_RECIPE_SCREEN.equals(screen.getClass().getName());
+    }
+
+    private static boolean nativeTooltipActive(Object screen) {
+        return fieldValue(screen, "hoveredWidget") != null;
     }
 
     private static List<ButtonTarget> targets(Object screen) {

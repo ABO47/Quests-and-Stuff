@@ -26,9 +26,15 @@ public final class ReiRecipePickOverlay {
         }
         List<ButtonTarget> targets = targets(screen);
         for (ButtonTarget target : targets) {
+            if (target.isNativeRecipeHovered(mouseX, mouseY) && !RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
+                continue;
+            }
             RecipePickButtonOverlay.draw(graphics, mouseX, mouseY, target.button());
         }
         for (ButtonTarget target : targets) {
+            if (target.isNativeRecipeHovered(mouseX, mouseY)) {
+                continue;
+            }
             RecipePickButtonOverlay.renderTooltip(graphics, mouseX, mouseY, target.button());
         }
     }
@@ -89,7 +95,7 @@ public final class ReiRecipePickOverlay {
             Rect2i defaultReiButton = new Rect2i(bounds.getX() + bounds.getWidth() + 2, bounds.getY() + bounds.getHeight() - 16, 10, 10);
             Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
             if (button != null) {
-                targets.add(new ButtonTarget(recipeId, button));
+                targets.add(new ButtonTarget(recipeId, bounds, button));
             }
         }
         return targets;
@@ -114,7 +120,7 @@ public final class ReiRecipePickOverlay {
         );
         Rect2i defaultReiButton = new Rect2i(recipeBounds.getX() + recipeBounds.getWidth() + 2, recipeBounds.getY() + recipeBounds.getHeight() - 16, 10, 10);
         Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
-        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, button));
+        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, recipeBounds, button));
     }
 
     private static Object selectedDisplaySpec(Object screen) {
@@ -266,6 +272,9 @@ public final class ReiRecipePickOverlay {
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
     }
 
-    private record ButtonTarget(String recipeId, Rect2i button) {
+    private record ButtonTarget(String recipeId, Rect2i recipeBounds, Rect2i button) {
+        private boolean isNativeRecipeHovered(int mouseX, int mouseY) {
+            return RecipePickButtonOverlay.contains(recipeBounds, mouseX, mouseY);
+        }
     }
 }

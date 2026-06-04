@@ -43,6 +43,9 @@ public final class JeiRecipePickOverlay {
             if (button == null) {
                 continue;
             }
+            if (isNativeSlotHovered(layout, mouseX, mouseY) && !RecipePickButtonOverlay.contains(button, mouseX, mouseY)) {
+                continue;
+            }
             RecipePickButtonOverlay.draw(graphics, mouseX, mouseY, button);
         }
     }
@@ -59,7 +62,9 @@ public final class JeiRecipePickOverlay {
             Object layout = recipeLayout(layoutWithButtons);
             String recipeId = recipeId(layout);
             Rect2i button = recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickRecipe(recipeId) ? null : buttonRect(layoutWithButtons);
-            if (button != null && RecipePickButtonOverlay.contains(button, mouseX, mouseY)) {
+            if (button != null
+                    && RecipePickButtonOverlay.contains(button, mouseX, mouseY)
+                    && !isNativeSlotHovered(layout, mouseX, mouseY)) {
                 RecipePickButtonOverlay.renderTooltip(graphics, mouseX, mouseY, button);
                 return;
             }
@@ -88,6 +93,19 @@ public final class JeiRecipePickOverlay {
     public static boolean pickFromScreen(Object screen, double mouseX, double mouseY, int mouseButton) {
         Object layouts = layoutsFromScreen(screen);
         return layouts != null && pick(layouts, mouseX, mouseY, mouseButton);
+    }
+
+    private static boolean isNativeSlotHovered(Object layout, int mouseX, int mouseY) {
+        if (layout == null) {
+            return false;
+        }
+        try {
+            Object slot = accessibleMethod(layout.getClass(), "getSlotUnderMouse", double.class, double.class)
+                    .invoke(layout, (double) mouseX, (double) mouseY);
+            return slot instanceof java.util.Optional<?> optional && optional.isPresent();
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return false;
+        }
     }
 
     private static Object layoutsFromScreen(Object screen) {
@@ -211,6 +229,16 @@ public final class JeiRecipePickOverlay {
             return owner.getMethod(name);
         } catch (NoSuchMethodException ignored) {
             Method method = owner.getDeclaredMethod(name);
+            method.setAccessible(true);
+            return method;
+        }
+    }
+
+    private static Method accessibleMethod(Class<?> owner, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+        try {
+            return owner.getMethod(name, parameterTypes);
+        } catch (NoSuchMethodException ignored) {
+            Method method = owner.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
             return method;
         }
