@@ -188,6 +188,7 @@ public class TabletUiState {
     public boolean recipeInventoryMode;
     public int recipeScroll;
     public boolean recipeScrollDragging;
+    public String recipeHoveredPick = "";
     public String structureSearch = "";
     public boolean structureSearchFocused;
     public int structureScroll;

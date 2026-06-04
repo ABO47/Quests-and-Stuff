@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -42,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class TabletRecipePickerModal {
@@ -84,6 +84,7 @@ public final class TabletRecipePickerModal {
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", recipeModeName(state), direction < 0 ? "backward" : "forward");
             refresh.run();
         });
+        addRecipeViewerKeyHandler(modal, state, player, refresh);
 
         if (state.recipeInventoryMode) {
             List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.recipeSearch);
@@ -108,7 +109,7 @@ public final class TabletRecipePickerModal {
                     ),
                     null,
                     refresh,
-                    (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh))
+                    (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
             );
         } else {
             List<RecipeChoice> entries = recipes(state.recipeSearch, state.recipeTagMode);
@@ -146,15 +147,24 @@ public final class TabletRecipePickerModal {
         } else {
             surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
             if (!entry.value().isBlank()) {
                 applyRecipePick(player, state, entry.value(), refresh);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind={} value={} recipes={}", entry.tag() ? "tag" : "output", entry.value(), entry.recipeIds());
-        });
+        }) {
+            @Override
+            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+                if (isMouseOverElement(mouseX, mouseY)) {
+                    trackRecipeHover(state, entry.value());
+                }
+            }
+        };
         hit.setHoverTooltips(entry.tooltip());
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setClientSideWidget();
         surface.addWidget(hit);
     }
 
@@ -173,7 +183,7 @@ public final class TabletRecipePickerModal {
         }
         if (isRecipeCardTarget(state)) {
             String asset = CanvasRecipeCardAsset.assetForPick(value);
-            String target = CanvasRecipeCardAsset.target(asset);
+            String target = recipeTargetForPick(value, CanvasRecipeCardAsset.outputStack(asset));
             if (!target.isBlank()) {
                 List<RecipeView> recipes = CanvasRecipeCardRecipes.recipesForTarget(target);
                 if (!recipes.isEmpty() && CanvasRecipeCardAsset.recipeId(value).isBlank()) {
@@ -198,6 +208,81 @@ public final class TabletRecipePickerModal {
             return ItemStack.EMPTY;
         }
         return recipes.get(0).output().copy();
+    }
+
+    private static void addRecipeViewerKeyHandler(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh) {
+        state.recipeHoveredPick = "";
+        modal.addWidget(new WidgetGroup(0, 0, 0, 0) {
+            @Override
+            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                state.recipeHoveredPick = "";
+            }
+
+            @Override
+            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+                return handleRecipeViewerSelectionShortcut(player, state, refresh, keyCode, scanCode);
+            }
+        });
+    }
+
+    private static boolean handleRecipeViewerSelectionShortcut(Player player, TabletUiState state, Runnable refresh, int keyCode, int scanCode) {
+        if (state.recipeSearchFocused || !isRecipeCardTarget(state)) {
+            return false;
+        }
+        RecipeViewerIntegrations.SelectionKeybind keybind = RecipeViewerIntegrations.selectionKeybind(keyCode, scanCode);
+        if (keybind == null) {
+            return false;
+        }
+        String pick = state.recipeHoveredPick == null ? "" : state.recipeHoveredPick.trim();
+        if (pick.isBlank()) {
+            return false;
+        }
+        ItemStack stack = viewerStackForPick(pick);
+        if (stack.isEmpty()) {
+            return false;
+        }
+        String target = recipeTargetForPick(pick, stack);
+        if (target.isBlank()) {
+            return false;
+        }
+        List<RecipeView> recipes = keybind.recipes()
+                ? CanvasRecipeCardRecipes.recipesForTarget(target)
+                : CanvasRecipeCardRecipes.usesForTarget(target);
+        if (recipes.isEmpty()) {
+            return false;
+        }
+        boolean opened = RecipeViewerSelectionBridge.beginFromKeybind(player, state, target, recipes, stack, refresh, keybind);
+        if (opened) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker viewer key mode={} target={} provider={}", keybind.recipes() ? "recipes" : "uses", target, keybind.providerName());
+        }
+        return opened;
+    }
+
+    private static void trackRecipeHover(TabletUiState state, String pick) {
+        String value = pick == null ? "" : pick.trim();
+        if (!value.isBlank()) {
+            state.recipeHoveredPick = value;
+        }
+    }
+
+    private static ItemStack viewerStackForPick(String pick) {
+        ItemStack stack = CanvasRecipeCardAsset.outputStack(CanvasRecipeCardAsset.assetForPick(pick));
+        if (!stack.isEmpty()) {
+            stack.setCount(1);
+        }
+        return stack;
+    }
+
+    private static String recipeTargetForPick(String pick, ItemStack stack) {
+        String target = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(pick));
+        if (target.isBlank()) {
+            return "";
+        }
+        if (ItemStackIconCodec.isStackIcon(target) && stack != null && !stack.isEmpty()) {
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            return id == null ? "" : id.toString();
+        }
+        return target;
     }
 
     private static boolean isRecipeCardTarget(TabletUiState state) {

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
@@ -83,18 +82,31 @@ public final class TabletItemInventoryPickerModal {
     }
 
     static void renderStackTile(WidgetGroup surface, ItemStack stack, int x, int y, Consumer<ItemStack> onPick) {
+        renderStackTile(surface, stack, x, y, onPick, null);
+    }
+
+    static void renderStackTile(WidgetGroup surface, ItemStack stack, int x, int y, Consumer<ItemStack> onPick, Consumer<ItemStack> onHover) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         ItemStack preview = stack.copy();
         preview.setCount(1);
         surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
-        ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
             if (onPick != null) {
                 onPick.accept(stack.copy());
             }
-        });
+        }) {
+            @Override
+            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+                if (onHover != null && isMouseOverElement(mouseX, mouseY)) {
+                    onHover.accept(stack.copy());
+                }
+            }
+        };
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         hit.setHoverTooltips(tooltip(stack));
+        hit.setClientSideWidget();
         surface.addWidget(hit);
     }
 

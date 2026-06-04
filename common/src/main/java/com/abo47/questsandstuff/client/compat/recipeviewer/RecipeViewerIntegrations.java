@@ -33,6 +33,33 @@ public final class RecipeViewerIntegrations {
         return false;
     }
 
+    public static boolean showForSelection(ItemStack stack, SelectionKeybind keybind) {
+        if (stack == null || stack.isEmpty() || keybind == null || keybind.providerIndex() < 0 || keybind.providerIndex() >= PROVIDERS.size()) {
+            return false;
+        }
+        RecipeViewerProvider provider = PROVIDERS.get(keybind.providerIndex());
+        if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+            return false;
+        }
+        return showWithProvider(provider, stack, keybind.recipes());
+    }
+
+    public static SelectionKeybind selectionKeybind(int keyCode, int scanCode) {
+        for (int i = 0; i < PROVIDERS.size(); i++) {
+            RecipeViewerProvider provider = PROVIDERS.get(i);
+            if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+                continue;
+            }
+            if (provider.matchesRecipeKey(keyCode, scanCode)) {
+                return new SelectionKeybind(true, i, provider.name());
+            }
+            if (provider.matchesUsesKey(keyCode, scanCode)) {
+                return new SelectionKeybind(false, i, provider.name());
+            }
+        }
+        return null;
+    }
+
     public static boolean handleKeybind(ItemStack stack, int keyCode, int scanCode) {
         if (stack == null || stack.isEmpty()) {
             return false;
@@ -85,5 +112,8 @@ public final class RecipeViewerIntegrations {
             }
         }
         return null;
+    }
+
+    public record SelectionKeybind(boolean recipes, int providerIndex, String providerName) {
     }
 }

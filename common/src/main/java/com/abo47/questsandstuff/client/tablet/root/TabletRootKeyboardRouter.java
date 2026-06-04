@@ -46,6 +46,9 @@ final class TabletRootKeyboardRouter {
         if (!textInputActive && !root.isAnyModalOpen() && handleGizmoModeShortcut(state, refresher, keyCode, scanCode)) {
             return true;
         }
+        if (!textInputActive && root.isAnyModalOpen() && modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
         if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !textInputActive) {
             TabletClientHooks.closeQuestTabletUi(state, true, "keybind");
             return true;

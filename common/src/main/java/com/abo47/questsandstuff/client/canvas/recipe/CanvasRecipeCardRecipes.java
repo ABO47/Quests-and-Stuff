@@ -23,6 +23,7 @@ import java.util.Map;
 
 public final class CanvasRecipeCardRecipes {
     private static final Map<String, List<RecipeView>> CACHED_BY_TARGET = new HashMap<>();
+    private static final Map<String, List<RecipeView>> CACHED_USES_BY_TARGET = new HashMap<>();
     private static final Map<String, RecipeView> CACHED_BY_ID = new HashMap<>();
     private static RecipeManager cachedManager;
     private static RegistryAccess cachedRegistryAccess;
@@ -60,6 +61,36 @@ public final class CanvasRecipeCardRecipes {
             resetIfNeeded(manager, registryAccess);
             return CACHED_BY_TARGET.computeIfAbsent(normalized, ignored -> buildRecipes(normalized, manager, registryAccess));
         }
+    }
+
+    public static List<RecipeView> usesForTarget(String target) {
+        String normalized = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(target));
+        if (normalized.isBlank()) {
+            return List.of();
+        }
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        RecipeManager manager = connection == null ? null : connection.getRecipeManager();
+        RegistryAccess registryAccess = connection == null ? null : connection.registryAccess();
+        if (manager == null || registryAccess == null) {
+            return List.of();
+        }
+        synchronized (CanvasRecipeCardRecipes.class) {
+            resetIfNeeded(manager, registryAccess);
+            return CACHED_USES_BY_TARGET.computeIfAbsent(normalized, ignored -> buildUses(normalized, manager, registryAccess));
+        }
+    }
+
+    public static boolean recipeUsesTarget(String target, RecipeView recipe) {
+        String normalized = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(target));
+        if (normalized.isBlank() || recipe == null || recipe.ingredients() == null) {
+            return false;
+        }
+        for (Ingredient ingredient : recipe.ingredients()) {
+            if (ingredientUsesTarget(normalized, ingredient)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static RecipeView recipeById(String recipeId) {
@@ -101,6 +132,7 @@ public final class CanvasRecipeCardRecipes {
         cachedManager = manager;
         cachedRegistryAccess = registryAccess;
         CACHED_BY_TARGET.clear();
+        CACHED_USES_BY_TARGET.clear();
         CACHED_BY_ID.clear();
     }
 
@@ -116,6 +148,31 @@ public final class CanvasRecipeCardRecipes {
         found.sort(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(RecipeView::id));
         return List.copyOf(found);
+    }
+
+    private static List<RecipeView> buildUses(String target, RecipeManager manager, RegistryAccess registryAccess) {
+        List<RecipeView> found = new ArrayList<>();
+        for (Recipe<?> recipe : manager.getRecipes()) {
+            RecipeView view = of(recipe, resultItem(recipe, registryAccess));
+            if (recipeUsesTarget(target, view)) {
+                found.add(view);
+            }
+        }
+        found.sort(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(RecipeView::id));
+        return List.copyOf(found);
+    }
+
+    private static boolean ingredientUsesTarget(String target, Ingredient ingredient) {
+        if (ingredient == null || ingredient.isEmpty()) {
+            return false;
+        }
+        for (ItemStack stack : ingredient.getItems()) {
+            if (CanvasRecipeCardAsset.matchesOutput(target, stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static RecipeView buildRecipeById(ResourceLocation id, RecipeManager manager, RegistryAccess registryAccess) {
