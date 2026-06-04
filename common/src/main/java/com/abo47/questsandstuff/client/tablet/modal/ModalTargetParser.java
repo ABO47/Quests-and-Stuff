@@ -147,6 +147,14 @@ public final class ModalTargetParser {
             return is(ModalTargets.DESC_BLOCK_NEW);
         }
 
+        public boolean isDescRecipe() {
+            return is(ModalTargets.DESC_RECIPE);
+        }
+
+        public boolean isDescRecipeNew() {
+            return is(ModalTargets.DESC_RECIPE_NEW);
+        }
+
         public boolean isQuestDescText() {
             return is(ModalTargets.QUEST_DESC_TEXT);
         }
@@ -177,6 +185,14 @@ public final class ModalTargetParser {
 
         public boolean isCanvasBlockChange() {
             return is(ModalTargets.CANVAS_BLOCK_CHANGE);
+        }
+
+        public boolean isCanvasRecipeNew() {
+            return is(ModalTargets.CANVAS_RECIPE_NEW);
+        }
+
+        public boolean isCanvasRecipeChange() {
+            return is(ModalTargets.CANVAS_RECIPE_CHANGE);
         }
 
         public boolean isCanvasText() {

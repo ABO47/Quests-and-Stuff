@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -17,13 +17,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +55,11 @@ final class QuestObjectiveCardRenderer {
         addObjectiveIcon(parent, displayJson, icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), false, displayJson, icon, x + 8, y + 8);
         boolean renaming = QuestObjectiveInlineFields.isRenamingObjective(state, questId, entry.id(), false);
+        int titleX = x + 30;
         if (!renaming && !selectableReward && QuestObjectiveLootTableRewardEditor.isLootTable(entry.json())) {
-            QuestObjectiveLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, x + 30, y + 8, rewardTitleRightX(entry, x, w));
+            QuestObjectiveLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, titleX, y + 8, rewardTitleRightX(entry, x, w));
         } else {
-            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, displayEntry, false, x + 30, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY);
+            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, displayEntry, false, titleX, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY);
         }
         if (!renaming) {
             QuestObjectiveInlineFields.renderAmountField(parent, state, player, refresh, questId, displayEntry, x + w - 34, y + 9, 30, false);
@@ -70,7 +67,7 @@ final class QuestObjectiveCardRenderer {
     }
 
     private static void addObjectiveIcon(WidgetGroup parent, JsonObject json, String icon, int x, int y) {
-        ItemStack stack = itemStackIcon(json);
+        ItemStack stack = QuestObjectiveItemStacks.iconStack(json);
         if (!stack.isEmpty()) {
             parent.addWidget(new DisplayIconWidget(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, stack));
             return;
@@ -182,42 +179,8 @@ final class QuestObjectiveCardRenderer {
         return card;
     }
 
-    private static ItemStack itemStackIcon(JsonObject json) {
-        String itemId = QuestObjectiveJsons.firstPresent(json, "item", "fallback_item");
-        if (hasCustomIcon(json, itemId)) {
-            return ItemStack.EMPTY;
-        }
-        String nbt = QuestObjectiveJsons.asString(json, "nbt", "");
-        if (nbt.isBlank()) {
-            return ItemStack.EMPTY;
-        }
-        ResourceLocation id = ResourceLocation.tryParse(itemId);
-        if (id == null) {
-            return ItemStack.EMPTY;
-        }
-        Item item = BuiltInRegistries.ITEM.get(id);
-        if (item == Items.AIR && !"minecraft:air".equals(itemId)) {
-            return ItemStack.EMPTY;
-        }
-        ItemStack stack = new ItemStack(item);
-        try {
-            stack.setTag(TagParser.parseTag(nbt));
-        } catch (Exception ignored) {
-            return ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    private static boolean hasCustomIcon(JsonObject json, String itemId) {
-        String icon = QuestObjectiveJsons.asString(json, "icon", "");
-        if (icon.isBlank()) {
-            return false;
-        }
-        return !icon.equals(itemId) && !icon.equals(QuestObjectiveJsons.asString(json, "fallback_item", ""));
-    }
-
     private static Component[] iconTooltip(JsonObject json, String icon) {
-        ItemStack stack = itemStackIcon(json);
+        ItemStack stack = QuestObjectiveItemStacks.iconStack(json);
         if (stack.isEmpty()) {
             return TabletModalPanel.iconTooltip(icon);
         }

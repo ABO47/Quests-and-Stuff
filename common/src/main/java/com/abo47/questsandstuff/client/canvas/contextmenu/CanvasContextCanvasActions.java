@@ -104,6 +104,12 @@ final class CanvasContextCanvasActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_text_box group={} id={} logical={},{}", selectedGroup, id, x, y);
             canvasViewport.refresh();
         }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.add_recipe_card"), "recipe", ModColors.SUCCESS, () -> {
+            ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeNew(selectedGroup), state.contextPointerLogicalX, state.contextPointerLogicalY);
+            state.contextMenuOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_recipe_card group={} logical={},{}", selectedGroup, state.contextLogicalX, state.contextLogicalY);
+            canvasViewport.refresh();
+        }));
         if (!ClientQuestCache.groupCanvasBackground(selectedGroup).isBlank()
                 && !"default".equals(ClientQuestCache.groupCanvasBackground(selectedGroup))) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", ModColors.WARNING, () -> {

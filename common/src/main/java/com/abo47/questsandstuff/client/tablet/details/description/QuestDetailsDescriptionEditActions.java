@@ -15,6 +15,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 final class QuestDetailsDescriptionEditActions {
+    private static final int RECIPE_CARD_W = 136;
+    private static final int RECIPE_CARD_H = 92;
+
     private QuestDetailsDescriptionEditActions() {
     }
 
@@ -72,6 +75,14 @@ final class QuestDetailsDescriptionEditActions {
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
         QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlockNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add block model pending quest={} image={} pos={},{}", questId, id, x, y);
+    }
+
+    static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
+        String id = nextDescriptionRecipeId(modelForQuest(questId));
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - RECIPE_CARD_W / 2);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - RECIPE_CARD_H / 2);
+        QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipeNew(questId, id, Math.max(0, x), Math.max(0, y)));
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
@@ -299,5 +310,9 @@ final class QuestDetailsDescriptionEditActions {
 
     private static String nextDescriptionBlockId(QuestDetailsDescriptionModel model) {
         return StableIdAllocator.nextId("blk", model == null ? List.of() : model.images.keySet());
+    }
+
+    private static String nextDescriptionRecipeId(QuestDetailsDescriptionModel model) {
+        return StableIdAllocator.nextId("rcp", model == null ? List.of() : model.images.keySet());
     }
 }

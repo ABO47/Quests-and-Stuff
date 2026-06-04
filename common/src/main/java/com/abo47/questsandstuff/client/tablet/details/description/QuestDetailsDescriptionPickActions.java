@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -14,6 +15,8 @@ import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionPickActions {
     private static final int MODEL_SIZE = 48;
+    private static final int RECIPE_CARD_W = 136;
+    private static final int RECIPE_CARD_H = 92;
 
     private QuestDetailsDescriptionPickActions() {
     }
@@ -132,6 +135,45 @@ final class QuestDetailsDescriptionPickActions {
                 QuestDetailsDescriptionModel.save(player, questId, model);
                 QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details change block model quest={} image={} block={}", questId, id, block);
+            }
+        }
+        state.questDetailsPickTarget = "";
+        return true;
+    }
+
+    static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (target.isBlank() || recipe == null || recipe.isBlank() || (!parsed.isDescRecipe() && !parsed.isDescRecipeNew())) {
+            return false;
+        }
+        if (!parsed.hasAtLeast(3)) {
+            return false;
+        }
+        String asset = CanvasRecipeCardAsset.assetForPick(recipe);
+        if (asset.isBlank()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe card pick ignored target={} recipe={}", target, recipe);
+            return true;
+        }
+        String questId = parsed.questId();
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        if (parsed.isDescRecipeNew() && parsed.hasAtLeast(5)) {
+            String id = parsed.entryId();
+            int x = parseInt(parsed.part(3), 0);
+            int y = parseInt(parsed.part(4), 0);
+            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, asset, x, y, RECIPE_CARD_W, RECIPE_CARD_H, 0)));
+            model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
+            QuestDetailsDescriptionModel.save(player, questId, model);
+            QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card quest={} image={} recipe={} pos={},{}", questId, id, recipe, x, y);
+        } else if (parsed.isDescRecipe()) {
+            String id = parsed.entryId();
+            CanvasImageLayer image = model.image(id);
+            if (image != null) {
+                model.putImage(image.withAsset(asset));
+                QuestDetailsDescriptionModel.save(player, questId, model);
+                QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
+                QuestsAndStuffMod.debugLog("[QnS:UI] quest details change recipe card quest={} image={} recipe={}", questId, id, recipe);
             }
         }
         state.questDetailsPickTarget = "";

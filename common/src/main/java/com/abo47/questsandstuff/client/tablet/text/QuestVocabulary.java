@@ -73,6 +73,7 @@ public final class QuestVocabulary {
     public static final String NO_STRUCTURES = "ui.questsandstuff.quest.no_structures";
     public static final String NO_VARIANTS = "ui.questsandstuff.quest.no_variants";
     public static final String PICK_ITEM = "ui.questsandstuff.quest.pick_item";
+    public static final String RECIPE_VIEWER_ACTIVE = "ui.questsandstuff.recipe_viewer.active";
     public static final String INTERACT_TARGET = "ui.questsandstuff.quest.interact_target";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
     public static final String USE_TARGET = "ui.questsandstuff.quest.use_target";
@@ -91,6 +92,7 @@ public final class QuestVocabulary {
     public static final String CONTEXT_ADD_ITEM = "ui.questsandstuff.context.add_item";
     public static final String CONTEXT_ADD_BLOCK = "ui.questsandstuff.context.add_block";
     public static final String CONTEXT_ADD_IMAGE = "ui.questsandstuff.context.add_image";
+    public static final String CONTEXT_ADD_RECIPE_CARD = "ui.questsandstuff.context.add_recipe_card";
     public static final String CONTEXT_ADD_TEXT_BOX = "ui.questsandstuff.context.add_text_box";
     public static final String CONTEXT_ALIGN_HORIZONTAL_CENTER = "ui.questsandstuff.context.align_horizontal_center";
     public static final String CONTEXT_ALIGN_VERTICAL_CENTER = "ui.questsandstuff.context.align_vertical_center";
@@ -102,6 +104,7 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_BLOCK = "ui.questsandstuff.context.change_block";
     public static final String CONTEXT_CHANGE_ICON = "ui.questsandstuff.context.change_icon";
     public static final String CONTEXT_CHANGE_IMAGE = "ui.questsandstuff.context.change_image";
+    public static final String CONTEXT_CHANGE_RECIPE_CARD = "ui.questsandstuff.context.change_recipe_card";
     public static final String CONTEXT_CHANGE_QUEST_BACKGROUND = "ui.questsandstuff.context.change_quest_background";
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";

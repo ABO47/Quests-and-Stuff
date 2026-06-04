@@ -23,6 +23,14 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+def devRecipeViewers = (findProperty('dev_recipe_viewers') ?: '')
+        .split(',')
+        .collect { it.trim().toLowerCase() }
+        .findAll { !it.isEmpty() } as Set
+def useDevRecipeViewer = { String id ->
+    devRecipeViewers.contains('all') || devRecipeViewers.contains(id)
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     common(project(path: ':questsandstuff-common', configuration: 'namedElements')) {
@@ -33,6 +41,33 @@ dependencies {
     }
     modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") {
         transitive = false
+    }
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") {
+        transitive = false
+    }
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}") {
+        transitive = false
+    }
+    if (useDevRecipeViewer('jei')) {
+        modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    }
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}") {
+        transitive = false
+    }
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-forge:${rei_version}") {
+        transitive = false
+    }
+    compileOnly("me.shedaniel.cloth:basic-math:0.6.1") {
+        transitive = false
+    }
+    if (useDevRecipeViewer('rei')) {
+        modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
+    }
+    modCompileOnly("dev.emi:emi-forge:${emi_version}:api") {
+        transitive = false
+    }
+    if (useDevRecipeViewer('emi')) {
+        modRuntimeOnly("dev.emi:emi-forge:${emi_version}")
     }
     modRuntimeOnly("io.github.llamalad7:mixinextras-forge:${mixinextras_version}") {
         transitive = false

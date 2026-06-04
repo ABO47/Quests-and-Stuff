@@ -12,7 +12,10 @@ public final class CanvasViewportScissor {
         var realPos = trans.transform(new Vector4f(x, y, 0, 1));
         var realPos2 = trans.transform(new Vector4f(x + width, y + height, 0, 1));
         graphics.enableScissor((int) realPos.x, (int) realPos.y, (int) realPos2.x, (int) realPos2.y);
-        draw.run();
-        graphics.disableScissor();
+        try {
+            draw.run();
+        } finally {
+            graphics.disableScissor();
+        }
     }
 }

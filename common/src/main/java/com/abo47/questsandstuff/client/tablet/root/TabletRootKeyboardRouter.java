@@ -16,6 +16,8 @@ import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.mojang.blaze3d.platform.Window;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,6 +40,9 @@ final class TabletRootKeyboardRouter {
             int modifiers
     ) {
         boolean textInputActive = TabletRootWindowController.isTextInputActive(state, root);
+        if (!textInputActive && !root.isAnyModalOpen() && root.isFrontWindowOpen() && handleQuestDetailsRecipeViewerShortcut(state, keyCode, scanCode)) {
+            return true;
+        }
         if (!textInputActive && !root.isAnyModalOpen() && handleGizmoModeShortcut(state, refresher, keyCode, scanCode)) {
             return true;
         }
@@ -215,6 +220,11 @@ final class TabletRootKeyboardRouter {
         return changed;
     }
 
+    private static boolean handleQuestDetailsRecipeViewerShortcut(TabletUiState state, int keyCode, int scanCode) {
+        double[] mouse = currentMousePosition();
+        return QuestDetailsObjectivesPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
+    }
+
     private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
         if (!state.canEdit && !QuestDetailsEditState.canEdit(state)) {
             return false;
@@ -253,6 +263,14 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         return false;
+    }
+
+    private static double[] currentMousePosition() {
+        Minecraft minecraft = Minecraft.getInstance();
+        Window window = minecraft.getWindow();
+        double mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+        double mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
+        return new double[]{mouseX, mouseY};
     }
 
     private static boolean handleQuestDetailsClipboardShortcut(TabletRootWidget root, TabletUiState state, Runnable refresher, int keyCode) {

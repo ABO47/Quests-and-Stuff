@@ -72,6 +72,10 @@ public final class QuestDetailsDescriptionPanel {
         return QuestDetailsDescriptionPickActions.applyBlockPick(player, state, block);
     }
 
+    public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+        return QuestDetailsDescriptionPickActions.applyRecipePick(player, state, recipe);
+    }
+
     public static String imageAsset(String questId, String imageId) {
         return QuestDetailsDescriptionPickActions.imageAsset(questId, imageId);
     }
@@ -102,6 +106,10 @@ public final class QuestDetailsDescriptionPanel {
 
     public static void addBlockAt(TabletUiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addBlockAt(state, questId, panelX, panelY);
+    }
+
+    public static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
+        QuestDetailsDescriptionEditActions.addRecipeCardAt(state, questId, panelX, panelY);
     }
 
     public static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {

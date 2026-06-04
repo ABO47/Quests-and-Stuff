@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -64,6 +66,49 @@ public final class QuestDetailsObjectivesPanel {
         List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
         List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditState.canEdit(state));
         return isSectionCardHit(state, displayRewards, false, x, sectionsY + sectionH + SECTION_GAP, w, sectionsH - sectionH - SECTION_GAP, mouseX, mouseY);
+    }
+
+    public static ItemStack hoveredViewerStack(TabletUiState state, double mouseX, double mouseY) {
+        if (state == null || !state.questDetailsOpen) {
+            return ItemStack.EMPTY;
+        }
+        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        if (questId.isBlank()) {
+            return ItemStack.EMPTY;
+        }
+        CompoundTag quest = ClientQuestCache.quest(questId);
+        if (quest.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        int leftW = QuestDetailsWindow.leftPanelWidth(state);
+        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + QuestDetailsWindow.CONTENT_INSET;
+        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + QuestDetailsWindow.CONTENT_INSET;
+        int w = Math.max(1, leftW - QuestDetailsWindow.CONTENT_INSET * 2);
+        int h = Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2);
+        int sectionsY = y + HEADER_H + SECTION_GAP;
+        int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
+        int sectionH = (sectionsH - SECTION_GAP) / 2;
+
+        List<QuestDetailsObjectiveEntry> tasks = QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
+        ItemStack taskStack = hoveredSectionViewerStack(state, tasks, true, x, sectionsY, sectionH, mouseX, mouseY);
+        if (!taskStack.isEmpty()) {
+            return taskStack;
+        }
+        List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
+        List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditState.canEdit(state));
+        return hoveredSectionViewerStack(state, displayRewards, false, x, sectionsY + sectionH + SECTION_GAP, sectionsH - sectionH - SECTION_GAP, mouseX, mouseY);
+    }
+
+    public static boolean handleRecipeViewerShortcut(TabletUiState state, int keyCode, int scanCode, double mouseX, double mouseY) {
+        if (!RecipeViewerIntegrations.hasAvailableViewer()) {
+            return false;
+        }
+        ItemStack stack = hoveredViewerStack(state, mouseX, mouseY);
+        if (stack.isEmpty()) {
+            return false;
+        }
+        return RecipeViewerIntegrations.handleKeybind(stack, keyCode, scanCode);
     }
 
     public static boolean clearSelection(TabletUiState state, String reason) {
@@ -164,6 +209,36 @@ public final class QuestDetailsObjectivesPanel {
         int slot = contentY / rowH;
         int inSlot = contentY % rowH;
         return slot >= 0 && slot < entries.size() && inSlot < CARD_H;
+    }
+
+    private static ItemStack hoveredSectionViewerStack(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, boolean requirements, int x, int y, int h, double mouseX, double mouseY) {
+        if (entries.isEmpty() || h <= TITLE_H + 4) {
+            return ItemStack.EMPTY;
+        }
+        int visibleH = Math.max(1, h - TITLE_H - 4);
+        int maxStart = QuestObjectiveSectionWidget.scrollMax(entries, visibleH);
+        int scroll = requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        scroll = Math.max(0, Math.min(scroll, maxStart));
+        int listTop = y + TITLE_H;
+        int iconX = x + LIST_PAD + 8;
+        if (mouseX < iconX || mouseX >= iconX + ICON || mouseY < listTop || mouseY >= listTop + visibleH) {
+            return ItemStack.EMPTY;
+        }
+        int rowH = CARD_H + CARD_GAP;
+        for (int index = 0; index < entries.size(); index++) {
+            QuestDetailsObjectiveEntry entry = entries.get(index);
+            int cardY = listTop + LIST_PAD - scroll + index * rowH;
+            int iconY = cardY + 8;
+            if (mouseY < iconY || mouseY >= iconY + ICON) {
+                continue;
+            }
+            return QuestObjectiveItemStacks.viewerStack(viewerJson(entry));
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static JsonObject viewerJson(QuestDetailsObjectiveEntry entry) {
+        return QuestObjectiveSelectableRewards.isSelectable(entry.json()) ? QuestObjectiveSelectableRewards.displayJson(entry.json()) : entry.json();
     }
 
 }

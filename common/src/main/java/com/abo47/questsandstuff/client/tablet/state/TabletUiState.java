@@ -185,6 +185,7 @@ public class TabletUiState {
     public String recipeSearch = "";
     public boolean recipeSearchFocused;
     public boolean recipeTagMode;
+    public boolean recipeInventoryMode;
     public int recipeScroll;
     public boolean recipeScrollDragging;
     public String structureSearch = "";

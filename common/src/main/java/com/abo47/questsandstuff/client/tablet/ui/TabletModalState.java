@@ -182,6 +182,7 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeInventoryMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
@@ -225,6 +226,7 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeInventoryMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;

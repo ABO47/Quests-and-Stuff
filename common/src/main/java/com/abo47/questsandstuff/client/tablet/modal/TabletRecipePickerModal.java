@@ -1,10 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
@@ -72,37 +77,65 @@ public final class TabletRecipePickerModal {
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", recipeModeName(state), state.recipeSearch);
             refresh.run();
         }, focused -> state.recipeSearchFocused = focused);
-        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, state.recipeTagMode ? "mode_tags" : "mode_items", click -> {
-            state.recipeTagMode = !state.recipeTagMode;
+        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, recipeModeIcon(state), recipeModeTooltip(state), click -> {
+            int direction = click.button == 1 ? -1 : 1;
+            cycleRecipeMode(state, direction);
             state.recipeScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={}", recipeModeName(state));
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", recipeModeName(state), direction < 0 ? "backward" : "forward");
             refresh.run();
         });
 
-        List<RecipeChoice> entries = recipes(state.recipeSearch, state.recipeTagMode);
-        TiledPickerPanel.add(
-                modal,
-                gridX,
-                gridY,
-                gridW,
-                gridH,
-                TILE,
-                TILE,
-                0,
-                6,
-                6,
-                entries,
-                QuestVocabulary.text(QuestVocabulary.NO_RECIPES),
-                ScrollState.bind(
-                        () -> state.recipeScroll,
-                        value -> state.recipeScroll = value,
-                        () -> state.recipeScrollDragging,
-                        dragging -> state.recipeScrollDragging = dragging
-                ),
-                null,
-                refresh,
-                (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
-        );
+        if (state.recipeInventoryMode) {
+            List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.recipeSearch);
+            TiledPickerPanel.add(
+                    modal,
+                    gridX,
+                    gridY,
+                    gridW,
+                    gridH,
+                    TILE,
+                    TILE,
+                    0,
+                    6,
+                    6,
+                    entries,
+                    QuestVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                    ScrollState.bind(
+                            () -> state.recipeScroll,
+                            value -> state.recipeScroll = value,
+                            () -> state.recipeScrollDragging,
+                            dragging -> state.recipeScrollDragging = dragging
+                    ),
+                    null,
+                    refresh,
+                    (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh))
+            );
+        } else {
+            List<RecipeChoice> entries = recipes(state.recipeSearch, state.recipeTagMode);
+            TiledPickerPanel.add(
+                    modal,
+                    gridX,
+                    gridY,
+                    gridW,
+                    gridH,
+                    TILE,
+                    TILE,
+                    0,
+                    6,
+                    6,
+                    entries,
+                    QuestVocabulary.text(QuestVocabulary.NO_RECIPES),
+                    ScrollState.bind(
+                            () -> state.recipeScroll,
+                            value -> state.recipeScroll = value,
+                            () -> state.recipeScrollDragging,
+                            dragging -> state.recipeScrollDragging = dragging
+                    ),
+                    null,
+                    refresh,
+                    (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
+            );
+        }
         return search;
     }
 
@@ -115,16 +148,61 @@ public final class TabletRecipePickerModal {
         }
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             if (!entry.value().isBlank()) {
-                QuestDetailsWindow.applyRecipePick(player, state, entry.value());
+                applyRecipePick(player, state, entry.value(), refresh);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind={} value={} recipes={}", entry.tag() ? "tag" : "output", entry.value(), entry.recipeIds());
-            closeAll(state);
-            refresh.run();
         });
         hit.setHoverTooltips(entry.tooltip());
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
         hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
+    }
+
+    private static void applyInventoryRecipePick(Player player, TabletUiState state, ItemStack stack, Runnable refresh) {
+        String pick = ItemStackIconCodec.iconFromStack(stack);
+        if (!pick.isBlank()) {
+            applyRecipePick(player, state, pick, refresh);
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind=inventory value={} hasNbt={}", pick, stack != null && stack.hasTag());
+    }
+
+    private static void applyRecipePick(Player player, TabletUiState state, String pick, Runnable refresh) {
+        String value = pick == null ? "" : pick.trim();
+        if (value.isBlank()) {
+            return;
+        }
+        if (isRecipeCardTarget(state)) {
+            String asset = CanvasRecipeCardAsset.assetForPick(value);
+            String target = CanvasRecipeCardAsset.target(asset);
+            if (!target.isBlank()) {
+                List<RecipeView> recipes = CanvasRecipeCardRecipes.recipesForTarget(target);
+                if (!recipes.isEmpty() && CanvasRecipeCardAsset.recipeId(value).isBlank()) {
+                    if (recipes.size() > 1 && RecipeViewerSelectionBridge.begin(player, state, target, recipes, pickerStack(asset, recipes), refresh)) {
+                        return;
+                    }
+                    value = CanvasRecipeCardAsset.assetForRecipe(target, recipes.get(0).id());
+                }
+            }
+        }
+        QuestDetailsWindow.applyRecipePick(player, state, value);
+        closeAll(state);
+        refresh.run();
+    }
+
+    private static ItemStack pickerStack(String asset, List<RecipeView> recipes) {
+        ItemStack stack = CanvasRecipeCardAsset.outputStack(asset);
+        if (!stack.isEmpty()) {
+            return stack;
+        }
+        if (recipes == null || recipes.isEmpty() || recipes.get(0).output().isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return recipes.get(0).output().copy();
+    }
+
+    private static boolean isRecipeCardTarget(TabletUiState state) {
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(state.questDetailsPickTarget);
+        return parsed.isCanvasRecipeNew() || parsed.isCanvasRecipeChange() || parsed.isDescRecipe() || parsed.isDescRecipeNew();
     }
 
     private static List<RecipeChoice> recipes(String query, boolean tagMode) {
@@ -242,8 +320,29 @@ public final class TabletRecipePickerModal {
         return stacks.toArray(ItemStack[]::new);
     }
 
+    private static void cycleRecipeMode(TabletUiState state, int direction) {
+        int current = state.recipeInventoryMode ? 2 : state.recipeTagMode ? 1 : 0;
+        int next = Math.floorMod(current + direction, 3);
+        state.recipeTagMode = next == 1;
+        state.recipeInventoryMode = next == 2;
+    }
+
+    private static String recipeModeIcon(TabletUiState state) {
+        if (state.recipeInventoryMode) {
+            return "mode_inventory";
+        }
+        return state.recipeTagMode ? "mode_tags" : "mode_items";
+    }
+
     private static String recipeModeName(TabletUiState state) {
+        if (state.recipeInventoryMode) {
+            return "inventory";
+        }
         return state.recipeTagMode || (state.recipeSearch != null && state.recipeSearch.trim().startsWith("#")) ? "tags" : "items";
+    }
+
+    private static Component[] recipeModeTooltip(TabletUiState state) {
+        return new Component[]{Component.translatable("ui.questsandstuff.recipe_picker.mode." + recipeModeName(state))};
     }
 
     private record RecipeChoices(List<RecipeChoice> outputs, List<RecipeChoice> tags) {

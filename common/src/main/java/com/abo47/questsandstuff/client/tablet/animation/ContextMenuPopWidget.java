@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.animation;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,7 @@ import java.util.function.LongSupplier;
 public final class ContextMenuPopWidget extends WidgetGroup {
     private static final long MENU_MS = 95L;
     private static final float START_SCALE = 0.97f;
+    private static final float MENU_Z = 240.0f;
     private static final int SHADOW_ALPHA = 58;
     private static final int VEIL_ALPHA = 48;
 
@@ -63,18 +65,26 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         float scale = UiAnimationProgress.interpolate(START_SCALE, 1.0f, amount);
         int x = getPositionX();
         int y = getPositionY();
-        if (drawShadow) {
-            drawShadow(graphics, amount);
-        }
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
         graphics.pose().pushPose();
-        graphics.pose().translate(x, y, 0.0f);
-        graphics.pose().scale(scale, scale, 1.0f);
-        graphics.pose().translate(-x, -y, 0.0f);
-        draw.run();
-        if (drawVeil) {
-            drawVeil(graphics, amount);
+        graphics.pose().translate(0.0f, 0.0f, MENU_Z);
+        try {
+            if (drawShadow) {
+                drawShadow(graphics, amount);
+            }
+            graphics.pose().translate(x, y, 0.0f);
+            graphics.pose().scale(scale, scale, 1.0f);
+            graphics.pose().translate(-x, -y, 0.0f);
+            draw.run();
+            if (drawVeil) {
+                drawVeil(graphics, amount);
+            }
+        } finally {
+            graphics.pose().popPose();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
         }
-        graphics.pose().popPose();
     }
 
     private float openAmount() {

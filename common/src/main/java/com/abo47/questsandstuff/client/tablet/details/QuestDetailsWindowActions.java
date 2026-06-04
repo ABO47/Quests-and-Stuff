@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.details;
 
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
@@ -34,6 +35,12 @@ final class QuestDetailsWindowActions {
     }
 
     static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+        if (QuestDetailsDescriptionPanel.applyRecipePick(player, state, recipe)) {
+            return;
+        }
+        if (CanvasRecipeCardActions.applyRecipePick(player, state, recipe)) {
+            return;
+        }
         QuestDetailsObjectivesPanel.applyRecipePick(player, state, recipe);
     }
 

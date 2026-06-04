@@ -74,6 +74,7 @@ public final class ModalOpenActions {
         state.questDetailsPickTarget = target == null ? "" : target;
         state.recipeSearch = "";
         state.recipeTagMode = false;
+        state.recipeInventoryMode = false;
         state.recipeScroll = 0;
         state.recipeScrollDragging = false;
         state.recipeSearchFocused = false;
@@ -477,6 +478,26 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
+    public static void openCanvasRecipePicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        state.recipeSearch = "";
+        state.recipeTagMode = false;
+        state.recipeInventoryMode = false;
+        state.recipeScroll = 0;
+        state.recipeScrollDragging = false;
+        state.recipeSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+    }
+
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
         closeBeforeOpen(state);
         state.entityVariantTarget = target == null ? "" : target;
@@ -546,5 +567,11 @@ public final class ModalOpenActions {
 
     private static void closeBeforeOpen(TabletUiState state) {
         ModalCloseActions.closeAllImmediately(state);
+        state.contextMenuOpen = false;
+        state.contextQuestCompletionSoundMenuOpen = false;
+        state.questDetailsContextOpen = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.assetContextOpen = false;
+        state.colorPaletteContextOpen = false;
     }
 }
