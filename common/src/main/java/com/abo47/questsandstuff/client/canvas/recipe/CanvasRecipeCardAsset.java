@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.recipe;
 
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -79,6 +80,9 @@ public final class CanvasRecipeCardAsset {
         if (ItemStackIconCodec.isStackIcon(target)) {
             return ItemStackIconCodec.stackFromIcon(target);
         }
+        if (FluidIconCodec.isFluidIcon(target)) {
+            return FluidIconCodec.bucketStack(target);
+        }
         if (target.startsWith("#")) {
             return firstTagStack(target.substring(1));
         }
@@ -97,6 +101,10 @@ public final class CanvasRecipeCardAsset {
         if (ItemStackIconCodec.isStackIcon(target)) {
             ItemStack wanted = ItemStackIconCodec.stackFromIcon(target);
             return !wanted.isEmpty() && (wanted.hasTag() ? ItemStack.isSameItemSameTags(output, wanted) : output.is(wanted.getItem()));
+        }
+        if (FluidIconCodec.isFluidIcon(target)) {
+            ItemStack bucket = FluidIconCodec.bucketStack(target);
+            return !bucket.isEmpty() && output.is(bucket.getItem());
         }
         if (target.startsWith("#")) {
             ResourceLocation id = ResourceLocation.tryParse(target.substring(1));
@@ -122,6 +130,9 @@ public final class CanvasRecipeCardAsset {
         if (ItemStackIconCodec.isStackIcon(value)) {
             ItemStack stack = ItemStackIconCodec.stackFromIcon(value);
             return stack.isEmpty() ? "" : ItemStackIconCodec.iconFromStack(stack);
+        }
+        if (FluidIconCodec.isFluidIcon(value)) {
+            return FluidIconCodec.fluidId(value).isBlank() ? "" : value;
         }
         if (value.startsWith("#")) {
             return normalizeTag(value.substring(1));

@@ -75,6 +75,7 @@ public final class ModalOpenActions {
         state.recipeSearch = "";
         state.recipeTagMode = false;
         state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScroll = 0;
         state.recipeScrollDragging = false;
         state.recipeSearchFocused = false;
@@ -492,6 +493,7 @@ public final class ModalOpenActions {
         state.recipeSearch = "";
         state.recipeTagMode = false;
         state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScroll = 0;
         state.recipeScrollDragging = false;
         state.recipeSearchFocused = false;
@@ -518,6 +520,7 @@ public final class ModalOpenActions {
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
+        state.iconFluidMode = false;
         state.iconScroll = 0;
         state.iconScrollDragging = false;
     }

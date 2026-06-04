@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -106,6 +107,9 @@ public final class TabletModalPanel {
             if (tooltip.length > 0) {
                 return tooltip;
             }
+        }
+        if (FluidIconCodec.isFluidIcon(entry)) {
+            return FluidIconCodec.tooltip(entry);
         }
         if (entry.startsWith("#")) {
             return PickerTooltips.item(entry);

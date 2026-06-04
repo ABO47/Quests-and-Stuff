@@ -99,7 +99,6 @@ public final class CanvasRenderer {
         if (state.canEdit && state.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
         }
-        ConnectionRenderer.renderPrerequisiteConnections(canvasContent, state, visibleCards, byQuestId, viewportW, viewportH);
         CanvasSceneRenderer.renderCanvasElements(
                 canvasContent,
                 state,
@@ -110,6 +109,7 @@ public final class CanvasRenderer {
                 viewportH,
                 canvasViewport::registerQuestCardLayer
         );
+        ConnectionRenderer.renderPendingConnections(canvasContent, state, byQuestId, viewportW, viewportH);
         CanvasSelectionRenderer.renderAlignmentGuides(canvasContent, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {
@@ -197,6 +197,11 @@ public final class CanvasRenderer {
 
     public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
         CanvasLayerOrdering.moveTextLayer(state, group, textId, front);
+        CanvasElementStore.persistLayerOrder(state, group);
+    }
+
+    public static void moveConnectionLayer(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean front) {
+        CanvasLayerOrdering.moveConnectionLayer(state, group, ConnectionRenderer.edgeKey(sourceQuestId, targetQuestId), front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 

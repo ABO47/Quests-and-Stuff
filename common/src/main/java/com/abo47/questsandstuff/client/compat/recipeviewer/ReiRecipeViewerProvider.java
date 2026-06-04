@@ -1,16 +1,21 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String ENTRY_STACK = "me.shedaniel.rei.api.common.entry.EntryStack";
@@ -20,6 +25,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String DISPLAY_REGISTRY = "me.shedaniel.rei.api.client.registry.display.DisplayRegistry";
     private static final String DISPLAY_SPEC = "me.shedaniel.rei.impl.display.DisplaySpec";
     private static final String DISPLAY_TOOLTIP_COMPONENT = "me.shedaniel.rei.impl.client.gui.widget.DisplayTooltipComponent";
+    private static final String ENTRY_REGISTRY = "me.shedaniel.rei.api.client.registry.entry.EntryRegistry";
     private static final String RECTANGLE = "me.shedaniel.math.Rectangle";
     private static final String VIEW_SEARCH_BUILDER = "me.shedaniel.rei.api.client.view.ViewSearchBuilder";
 
@@ -46,6 +52,16 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
+    public boolean showRecipes(String target) {
+        return show(target, "addRecipesFor");
+    }
+
+    @Override
+    public boolean showUses(String target) {
+        return show(target, "addUsagesFor");
+    }
+
+    @Override
     public boolean supportsNativeRecipeSelection() {
         return true;
     }
@@ -69,6 +85,30 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         return RecipeViewerSnapshotRenderer.renderLive(graphics, key, () -> createSnapshotPlan(recipe), width, height, pivotX, pivotY);
     }
 
+    @Override
+    public List<String> fluidEntries() {
+        if (!isAvailable() || !RecipeViewerReflection.classPresent(ENTRY_REGISTRY)) {
+            return List.of();
+        }
+        try {
+            Object registry = Class.forName(ENTRY_REGISTRY).getMethod("getInstance").invoke(null);
+            Object value = RecipeViewerReflection.firstMethod(registry.getClass(), "getEntryStacks", 0).invoke(registry);
+            List<String> entries = new ArrayList<>();
+            if (value instanceof Stream<?> stream) {
+                try (stream) {
+                    stream.forEach(entry -> addFluidEntry(entries, fluidFromEntry(entry)));
+                }
+            } else if (value instanceof Iterable<?> iterable) {
+                for (Object entry : iterable) {
+                    addFluidEntry(entries, fluidFromEntry(entry));
+                }
+            }
+            return entries;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return List.of();
+        }
+    }
+
     private boolean show(ItemStack stack, String methodName) {
         if (stack == null || stack.isEmpty()) {
             return false;
@@ -76,6 +116,27 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         try {
             Class<?> entryStackClass = Class.forName(ENTRY_STACK);
             Object entry = Class.forName(ENTRY_STACKS).getMethod("of", ItemStack.class).invoke(null, stack.copy());
+            Class<?> builderClass = Class.forName(VIEW_SEARCH_BUILDER);
+            Object builder = builderClass.getMethod("builder").invoke(null);
+            builderClass.getMethod(methodName, entryStackClass).invoke(builder, entry);
+            Object opened = builderClass.getMethod("open").invoke(builder);
+            return !(opened instanceof Boolean value) || value;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    private boolean show(String target, String methodName) {
+        if (!FluidIconCodec.isFluidIcon(target)) {
+            return "addRecipesFor".equals(methodName) ? RecipeViewerProvider.super.showRecipes(target) : RecipeViewerProvider.super.showUses(target);
+        }
+        Fluid fluid = FluidIconCodec.fluidFromIcon(target);
+        if (fluid == Fluids.EMPTY) {
+            return false;
+        }
+        try {
+            Class<?> entryStackClass = Class.forName(ENTRY_STACK);
+            Object entry = Class.forName(ENTRY_STACKS).getMethod("of", Fluid.class).invoke(null, fluid);
             Class<?> builderClass = Class.forName(VIEW_SEARCH_BUILDER);
             Object builder = builderClass.getMethod("builder").invoke(null);
             builderClass.getMethod(methodName, entryStackClass).invoke(builder, entry);
@@ -214,6 +275,34 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
 
     private static int intValue(Object value) {
         return value instanceof Number number ? number.intValue() : 0;
+    }
+
+    private static Fluid fluidFromEntry(Object entry) {
+        Object value = invoke(entry, "getValue");
+        Object fluid = invoke(value, "getFluid");
+        return fluid instanceof Fluid typedFluid ? typedFluid : null;
+    }
+
+    private static Object invoke(Object owner, String name) {
+        if (owner == null) {
+            return null;
+        }
+        try {
+            Method method = RecipeViewerReflection.firstMethod(owner.getClass(), name, 0);
+            return method.invoke(owner);
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private static void addFluidEntry(List<String> entries, Fluid fluid) {
+        if (fluid == null || fluid == Fluids.EMPTY) {
+            return;
+        }
+        String icon = FluidIconCodec.iconFromFluid(fluid);
+        if (!icon.isBlank() && !entries.contains(icon)) {
+            entries.add(icon);
+        }
     }
 
     private record DisplayMatch(Object categoryId, Object display) {

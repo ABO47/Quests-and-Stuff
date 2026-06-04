@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -64,6 +65,11 @@ final class CanvasViewportContextRouter {
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             state.contextMenuTarget = ContextMenuTarget.SELECTION;
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+        } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit)) {
+            state.contextMenuTarget = ContextMenuTarget.EDGE;
+            state.contextEdgeSource = edgeHit.sourceQuestId();
+            state.contextEdgeTarget = edgeHit.targetQuestId();
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextEdgeSource, state.contextEdgeTarget);
         } else if (textHit != null) {
             state.contextMenuTarget = ContextMenuTarget.TEXT;
             state.contextCanvasTextId = textHit.id();
@@ -105,5 +111,29 @@ final class CanvasViewportContextRouter {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=canvas logicalX={} logicalY={}", logicalX, logicalY);
         }
         refresher.run();
+    }
+
+    private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit) {
+        if (state == null || edgeHit == null) {
+            return false;
+        }
+        String group = TabletUiFactory.selectedGroupName(state);
+        List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        String edgeKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.edgeKey(edgeHit.sourceQuestId(), edgeHit.targetQuestId()));
+        int edgeIndex = order.indexOf(edgeKey);
+        if (edgeIndex < 0) {
+            return false;
+        }
+        return above(order, edgeIndex, questHit == null ? "" : CanvasLayerOrdering.questKey(questHit.questId()))
+                && above(order, edgeIndex, imageHit == null ? "" : CanvasLayerOrdering.imageKey(imageHit.id()))
+                && above(order, edgeIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()));
+    }
+
+    private static boolean above(List<String> order, int edgeIndex, String otherKey) {
+        if (otherKey == null || otherKey.isBlank()) {
+            return true;
+        }
+        int otherIndex = order.indexOf(otherKey);
+        return otherIndex < 0 || edgeIndex > otherIndex;
     }
 }

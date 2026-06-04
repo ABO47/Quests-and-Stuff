@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -37,6 +38,14 @@ public final class QuestObjectiveEditActions {
         String id = parsed.entryId();
         String type = parsed.type();
         if (parsed.isTaskItem()) {
+            if (FluidIconCodec.isFluidIcon(entry)) {
+                JsonObject json = fluidItemJson(id, type, entry);
+                json.addProperty("collection", "automatic");
+                EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+                QuestsAndStuffMod.debugLog("[QnS:UI] quest details task fluid picked quest={} task={} fluid={}", questId, id, FluidIconCodec.fluidId(entry));
+                state.questDetailsPickTarget = "";
+                return;
+            }
             JsonObject json = new JsonObject();
             json.addProperty("id", id);
             json.addProperty("type", type);
@@ -68,6 +77,14 @@ public final class QuestObjectiveEditActions {
             putObjectiveIcon(player, questId, id, entry, true);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task icon changed quest={} task={} icon={}", questId, id, entry);
         } else if (parsed.isRewardItem() && !entry.startsWith("#")) {
+            if (FluidIconCodec.isFluidIcon(entry)) {
+                JsonObject json = fluidItemJson(id, type, entry);
+                preserveRewardSelectableFlag(questId, id, json);
+                EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+                QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward fluid picked quest={} reward={} fluid={}", questId, id, FluidIconCodec.fluidId(entry));
+                state.questDetailsPickTarget = "";
+                return;
+            }
             JsonObject json = new JsonObject();
             json.addProperty("id", id);
             json.addProperty("type", type);
@@ -156,6 +173,18 @@ public final class QuestObjectiveEditActions {
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory reward item picked quest={} reward={} item={} amount={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.getCount(), stack.hasTag());
         }
+    }
+
+    private static JsonObject fluidItemJson(String id, String type, String fluidIcon) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", id);
+        json.addProperty("type", type);
+        json.addProperty("item", "minecraft:air");
+        json.addProperty("amount", 1);
+        json.addProperty("nbt", "");
+        json.addProperty("icon", fluidIcon);
+        json.addProperty("title", FluidIconCodec.displayName(fluidIcon));
+        return json;
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {

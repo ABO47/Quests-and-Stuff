@@ -1,14 +1,18 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,6 +48,16 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
+    public boolean showRecipes(String target) {
+        return show(target, "OUTPUT");
+    }
+
+    @Override
+    public boolean showUses(String target) {
+        return show(target, "INPUT");
+    }
+
+    @Override
     public boolean supportsNativeRecipeSelection() {
         return true;
     }
@@ -59,6 +73,37 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
         }
         String key = "jei-live:" + recipeTypeId + ":" + recipe.id();
         return RecipeViewerSnapshotRenderer.renderLive(graphics, key, () -> createSnapshotPlan(recipe), width, height, pivotX, pivotY);
+    }
+
+    @Override
+    public List<String> fluidEntries() {
+        if (!isAvailable()) {
+            return List.of();
+        }
+        try {
+            Object runtime = Class.forName(INTERNAL).getMethod("getJeiRuntime").invoke(null);
+            Object helpers = runtime == null ? null : runtime.getClass().getMethod("getJeiHelpers").invoke(runtime);
+            Object fluidHelper = helpers == null ? null : helpers.getClass().getMethod("getPlatformFluidHelper").invoke(helpers);
+            Object fluidType = fluidHelper == null ? null : fluidHelper.getClass().getMethod("getFluidIngredientType").invoke(fluidHelper);
+            Object ingredientManager = runtime == null ? null : runtime.getClass().getMethod("getIngredientManager").invoke(runtime);
+            if (fluidType == null || ingredientManager == null) {
+                return List.of();
+            }
+            Object ingredients = firstCompatibleMethod(ingredientManager.getClass(), "getAllIngredients", 1).invoke(ingredientManager, fluidType);
+            if (!(ingredients instanceof Iterable<?> iterable)) {
+                return List.of();
+            }
+            List<String> entries = new ArrayList<>();
+            for (Object ingredient : iterable) {
+                Object base = firstCompatibleMethod(fluidType.getClass(), "getBase", 1).invoke(fluidType, ingredient);
+                if (base instanceof Fluid fluid) {
+                    addFluidEntry(entries, fluid);
+                }
+            }
+            return entries;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return List.of();
+        }
     }
 
     @Override
@@ -194,6 +239,40 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
         }
     }
 
+    private boolean show(String target, String roleName) {
+        if (!FluidIconCodec.isFluidIcon(target)) {
+            return "OUTPUT".equals(roleName) ? RecipeViewerProvider.super.showRecipes(target) : RecipeViewerProvider.super.showUses(target);
+        }
+        Fluid fluid = FluidIconCodec.fluidFromIcon(target);
+        return fluid != Fluids.EMPTY && showFluid(fluid, roleName);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private boolean showFluid(Fluid fluid, String roleName) {
+        try {
+            Class<?> internalClass = Class.forName(INTERNAL);
+            Object runtime = internalClass.getMethod("getJeiRuntime").invoke(null);
+            if (runtime == null) {
+                return false;
+            }
+            Object helpers = runtime.getClass().getMethod("getJeiHelpers").invoke(runtime);
+            Object focusFactory = helpers.getClass().getMethod("getFocusFactory").invoke(helpers);
+            Object fluidHelper = helpers.getClass().getMethod("getPlatformFluidHelper").invoke(helpers);
+            Object fluidType = fluidHelper.getClass().getMethod("getFluidIngredientType").invoke(fluidHelper);
+            long amount = longMethodOrDefault(fluidHelper, "bucketVolume", 1000L);
+            Object fluidIngredient = firstCompatibleMethod(fluidHelper.getClass(), "create", 2).invoke(fluidHelper, fluid, amount);
+            Class<?> roleClass = Class.forName(RECIPE_ROLE);
+            Object role = Enum.valueOf((Class<Enum>) roleClass.asSubclass(Enum.class), roleName);
+            Method createFocus = RecipeViewerReflection.firstMethod(focusFactory.getClass(), "createFocus", 3);
+            Object focus = createFocus.invoke(focusFactory, role, fluidType, fluidIngredient);
+            Object recipesGui = runtime.getClass().getMethod("getRecipesGui").invoke(runtime);
+            recipesGui.getClass().getMethod("show", List.class).invoke(recipesGui, List.of(focus));
+            return true;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return false;
+        }
+    }
+
     private Object findJeiRecipe(Object recipeManager, Object recipeType, Object category, ResourceLocation recipeId) throws ReflectiveOperationException {
         Object lookup = firstCompatibleMethod(recipeManager.getClass(), "createRecipeLookup", 1).invoke(recipeManager, recipeType);
         try {
@@ -284,6 +363,15 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
         }
     }
 
+    private static long longMethodOrDefault(Object owner, String name, long fallback) {
+        try {
+            Object value = firstCompatibleMethod(owner.getClass(), name, 0).invoke(owner);
+            return value instanceof Number number ? number.longValue() : fallback;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return fallback;
+        }
+    }
+
     private static Method firstCompatibleMethod(Class<?> owner, String name, int parameterCount) throws NoSuchMethodException {
         for (Method method : owner.getMethods()) {
             if (method.getName().equals(name) && method.getParameterCount() == parameterCount) {
@@ -291,6 +379,16 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             }
         }
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
+    }
+
+    private static void addFluidEntry(List<String> entries, Fluid fluid) {
+        if (fluid == null || fluid == Fluids.EMPTY) {
+            return;
+        }
+        String icon = FluidIconCodec.iconFromFluid(fluid);
+        if (!icon.isBlank() && !entries.contains(icon)) {
+            entries.add(icon);
+        }
     }
 
     private record RecipeMatch(Object category, Object recipe) {

@@ -177,12 +177,14 @@ public final class TabletModalState {
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
+        state.iconFluidMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
         state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
@@ -227,6 +229,7 @@ public final class TabletModalState {
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
         state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;

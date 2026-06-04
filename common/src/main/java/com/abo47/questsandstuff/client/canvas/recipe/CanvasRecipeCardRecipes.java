@@ -154,14 +154,14 @@ public final class CanvasRecipeCardRecipes {
     private static RecipeView externalView(String recipeId, String viewerTypeId, ItemStack output) {
         ResourceLocation recipe = ResourceLocation.tryParse(recipeId == null ? "" : recipeId.trim());
         ResourceLocation type = ResourceLocation.tryParse(viewerTypeId == null ? "" : viewerTypeId.trim());
-        if (recipe == null || type == null || output == null || output.isEmpty()) {
+        if (recipe == null || type == null) {
             return null;
         }
         return new RecipeView(
                 recipe.toString(),
                 type.toString(),
                 DisplayNameFormatter.resourceLeaf(type.toString()),
-                output.copy(),
+                output == null ? ItemStack.EMPTY : output.copy(),
                 List.of(),
                 false,
                 1,

@@ -170,6 +170,7 @@ public class TabletUiState {
     public boolean iconAllItemsMode;
     public boolean iconEntityMode;
     public boolean iconInventoryMode;
+    public boolean iconFluidMode;
     public int iconScroll;
     public boolean iconScrollDragging;
     public String iconLastLoggedQuery = "";
@@ -186,6 +187,7 @@ public class TabletUiState {
     public boolean recipeSearchFocused;
     public boolean recipeTagMode;
     public boolean recipeInventoryMode;
+    public boolean recipeFluidMode;
     public int recipeScroll;
     public boolean recipeScrollDragging;
     public String recipeHoveredPick = "";

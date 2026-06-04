@@ -31,7 +31,8 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Custom chapter canvas backgrounds
 - Game or custom completion sounds with previews and volume controls
 - Add text, images, items, blocks, and entity previews on the main canvas and quest details canvas
-- Add recipe cards to the canvas from item, tag, or inventory-stack picks
+- Fluid picker mode for icons, item Requirement/Reward cards, and recipe cards
+- Add recipe cards to the canvas from item, tag, fluid, or inventory-stack picks
 - Move, resize, rotate, and multi-select canvas elements
 - Move, resize, and rotate gizmos for entity and block models
 - Copy, paste, undo, and redo for quest and canvas edits

@@ -5,7 +5,10 @@ import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.Rec
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class RecipeViewerIntegrations {
     private static final List<RecipeViewerProvider> PROVIDERS = List.of(
@@ -33,6 +36,18 @@ public final class RecipeViewerIntegrations {
         return false;
     }
 
+    public static boolean showRecipesForSelection(String target) {
+        if (target == null || target.isBlank()) {
+            return false;
+        }
+        for (RecipeViewerProvider provider : PROVIDERS) {
+            if (provider.isAvailable() && provider.supportsNativeRecipeSelection()) {
+                return showWithProvider(provider, target, true);
+            }
+        }
+        return false;
+    }
+
     public static boolean showForSelection(ItemStack stack, SelectionKeybind keybind) {
         if (stack == null || stack.isEmpty() || keybind == null || keybind.providerIndex() < 0 || keybind.providerIndex() >= PROVIDERS.size()) {
             return false;
@@ -42,6 +57,17 @@ public final class RecipeViewerIntegrations {
             return false;
         }
         return showWithProvider(provider, stack, keybind.recipes());
+    }
+
+    public static boolean showForSelection(String target, SelectionKeybind keybind) {
+        if (target == null || target.isBlank() || keybind == null || keybind.providerIndex() < 0 || keybind.providerIndex() >= PROVIDERS.size()) {
+            return false;
+        }
+        RecipeViewerProvider provider = PROVIDERS.get(keybind.providerIndex());
+        if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+            return false;
+        }
+        return showWithProvider(provider, target, keybind.recipes());
     }
 
     public static SelectionKeybind selectionKeybind(int keyCode, int scanCode) {
@@ -97,10 +123,29 @@ public final class RecipeViewerIntegrations {
         return false;
     }
 
+    public static List<String> fluidEntries() {
+        Set<String> entries = new LinkedHashSet<>();
+        for (RecipeViewerProvider provider : PROVIDERS) {
+            if (!provider.isAvailable()) {
+                continue;
+            }
+            entries.addAll(provider.fluidEntries());
+        }
+        return new ArrayList<>(entries);
+    }
+
     private static boolean showWithProvider(RecipeViewerProvider provider, ItemStack stack, boolean recipes) {
         boolean opened = recipes ? provider.showRecipes(stack.copy()) : provider.showUses(stack.copy());
         if (opened) {
             QuestsAndStuffMod.debugLog("[QnS:Compat] opened {} in {}", recipes ? "recipes" : "uses", provider.name());
+        }
+        return opened;
+    }
+
+    private static boolean showWithProvider(RecipeViewerProvider provider, String target, boolean recipes) {
+        boolean opened = recipes ? provider.showRecipes(target) : provider.showUses(target);
+        if (opened) {
+            QuestsAndStuffMod.debugLog("[QnS:Compat] opened {} target={} in {}", recipes ? "recipes" : "uses", target, provider.name());
         }
         return opened;
     }

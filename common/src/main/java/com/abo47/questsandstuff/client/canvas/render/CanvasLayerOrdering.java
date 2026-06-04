@@ -17,6 +17,7 @@ public final class CanvasLayerOrdering {
     public static final String QUEST_PREFIX = "quest:";
     public static final String IMAGE_PREFIX = "image:";
     public static final String TEXT_PREFIX = "text:";
+    public static final String CONNECTION_PREFIX = "connection:";
 
     private CanvasLayerOrdering() {
     }
@@ -31,6 +32,10 @@ public final class CanvasLayerOrdering {
 
     public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
         moveLayer(state, group, textKey(textId), front);
+    }
+
+    public static void moveConnectionLayer(TabletUiState state, String group, String edgeId, boolean front) {
+        moveLayer(state, group, connectionKey(edgeId), front);
     }
 
     public static void moveLayers(TabletUiState state, String group, List<String> keys, boolean front) {
@@ -65,7 +70,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.addAll(0, moved);
         }
-        state.canvasLayerOrderByGroup.put(group, order);
+        state.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
     }
 
     public static boolean isImageAboveQuest(TabletUiState state, String group, String imageId, String questId) {
@@ -105,11 +110,27 @@ public final class CanvasLayerOrdering {
             List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts
     ) {
+        return normalize(state, group, cards, images, texts, List.of());
+    }
+
+    public static List<String> normalize(
+            TabletUiState state,
+            String group,
+            List<QuestCardLayout> cards,
+            List<CanvasImageLayer> images,
+            List<CanvasTextLayer> texts,
+            List<String> connectionKeys
+    ) {
         if (group == null || group.isBlank()) {
             return List.of();
         }
         Set<String> valid = new HashSet<>();
         List<String> defaults = new ArrayList<>();
+        for (String key : connectionKeys) {
+            if (key != null && key.startsWith(CONNECTION_PREFIX) && valid.add(key)) {
+                defaults.add(key);
+            }
+        }
         for (CanvasImageLayer image : images) {
             String key = imageKey(image.id());
             if (valid.add(key)) {
@@ -130,8 +151,9 @@ public final class CanvasLayerOrdering {
         }
         List<String> existing = state.canvasLayerOrderByGroup.get(group);
         if (existing == null || existing.isEmpty()) {
-            state.canvasLayerOrderByGroup.put(group, defaults);
-            return defaults;
+            List<String> orderedDefaults = keepConnectionsBehindQuests(defaults);
+            state.canvasLayerOrderByGroup.put(group, orderedDefaults);
+            return orderedDefaults;
         }
         List<String> normalized = new ArrayList<>();
         Set<String> seen = new HashSet<>();
@@ -145,8 +167,9 @@ public final class CanvasLayerOrdering {
                 normalized.add(key);
             }
         }
-        state.canvasLayerOrderByGroup.put(group, normalized);
-        return normalized;
+        List<String> ordered = keepConnectionsBehindQuests(normalized);
+        state.canvasLayerOrderByGroup.put(group, ordered);
+        return ordered;
     }
 
     public static void ensurePresent(TabletUiState state, String group, String key) {
@@ -207,17 +230,72 @@ public final class CanvasLayerOrdering {
         return TEXT_PREFIX + textId;
     }
 
+    public static String connectionKey(String edgeId) {
+        return CONNECTION_PREFIX + edgeId;
+    }
+
     private static void moveLayer(TabletUiState state, String group, String key, boolean front) {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
         List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
         order.remove(key);
-        if (front) {
+        if (front && key.startsWith(CONNECTION_PREFIX)) {
+            int firstQuestIndex = firstQuestIndex(order);
+            if (firstQuestIndex < 0) {
+                order.add(key);
+            } else {
+                order.add(firstQuestIndex, key);
+            }
+        } else if (front) {
             order.add(key);
         } else {
             order.add(0, key);
         }
         state.canvasLayerOrderByGroup.put(group, order);
+    }
+
+    private static List<String> keepConnectionsBehindQuests(List<String> order) {
+        if (order == null || order.isEmpty()) {
+            return List.of();
+        }
+        int firstQuestIndex = -1;
+        List<String> result = new ArrayList<>();
+        List<String> delayedConnections = new ArrayList<>();
+        for (String key : order) {
+            if (key == null || key.isBlank()) {
+                continue;
+            }
+            if (firstQuestIndex >= 0 && key.startsWith(CONNECTION_PREFIX)) {
+                delayedConnections.add(key);
+                continue;
+            }
+            if (firstQuestIndex < 0 && key.startsWith(QUEST_PREFIX)) {
+                firstQuestIndex = result.size();
+            }
+            result.add(key);
+        }
+        if (delayedConnections.isEmpty()) {
+            return order;
+        }
+        if (firstQuestIndex < 0) {
+            result.addAll(delayedConnections);
+        } else {
+            result.addAll(firstQuestIndex, delayedConnections);
+        }
+        return result;
+    }
+
+    private static int firstQuestIndex(List<String> order) {
+        if (order == null || order.isEmpty()) {
+            return -1;
+        }
+        for (int i = 0; i < order.size(); i++) {
+            String key = order.get(i);
+            if (key != null && key.startsWith(QUEST_PREFIX)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

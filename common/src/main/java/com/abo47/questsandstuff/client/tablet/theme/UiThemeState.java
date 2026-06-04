@@ -131,6 +131,7 @@ final class UiThemeState {
         iconRoles.put("mode_items", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("mode_tags", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("mode_inventory", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("mode_fluids", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("picker_search", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("picker_scroll_track", UiThemeManager.ROLE_ICON_SCROLL_TRACK);
         iconRoles.put("picker_scroll_thumb", UiThemeManager.ROLE_ICON_SCROLL_THUMB);

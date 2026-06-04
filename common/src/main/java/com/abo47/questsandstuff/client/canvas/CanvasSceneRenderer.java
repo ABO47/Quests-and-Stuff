@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -34,6 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,8 +150,23 @@ final class CanvasSceneRenderer {
         for (QuestCardLayout card : visibleCards) {
             cardsById.put(card.questId(), card);
         }
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, group, visibleCards, images, texts);
+        List<ConnectionRenderer.ConnectionLine> connections = ConnectionRenderer.prerequisiteConnectionLines(state, visibleCards, cardsById, viewportW, viewportH);
+        Map<String, ConnectionRenderer.ConnectionLine> connectionsByKey = new HashMap<>();
+        List<String> connectionKeys = new ArrayList<>();
+        for (ConnectionRenderer.ConnectionLine connection : connections) {
+            String key = CanvasLayerOrdering.connectionKey(connection.edgeId());
+            connectionsByKey.put(key, connection);
+            connectionKeys.add(key);
+        }
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, group, visibleCards, images, texts, connectionKeys);
         for (String key : layerOrder) {
+            if (key.startsWith(CanvasLayerOrdering.CONNECTION_PREFIX)) {
+                ConnectionRenderer.ConnectionLine connection = connectionsByKey.get(key);
+                if (connection != null) {
+                    ConnectionRenderer.renderConnectionLayer(canvasViewport, state, connection);
+                }
+                continue;
+            }
             if (key.startsWith(CanvasLayerOrdering.IMAGE_PREFIX)) {
                 CanvasImageLayer image = imagesById.get(key.substring(CanvasLayerOrdering.IMAGE_PREFIX.length()));
                 if (image != null) {

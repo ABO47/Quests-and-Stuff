@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.model.QuestMatch;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,7 +89,12 @@ public final class CanvasLayoutService {
         }
         List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
         List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts);
+        Map<String, QuestCardLayout> byQuestId = new HashMap<>();
+        for (QuestCardLayout card : visibleCards) {
+            byQuestId.put(card.questId(), card);
+        }
+        List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, visibleCards, byQuestId, 1_000_000, 1_000_000);
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts, connectionKeys);
         Map<String, Integer> layerIndexes = CanvasLayerOrdering.indexMap(layerOrder);
         visibleCards.sort(Comparator.comparingInt(card -> CanvasLayerOrdering.layerIndex(layerIndexes, CanvasLayerOrdering.questKey(card.questId()))));
         return visibleCards;

@@ -2,8 +2,12 @@ package com.abo47.questsandstuff.client.compat.recipeviewer.emi;
 
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -42,7 +46,7 @@ public final class EmiRecipePickOverlay {
         }
         for (ButtonTarget target : targets(screen)) {
             if (RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
-                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "EMI", target.viewerTypeId());
+                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "EMI", target.viewerTypeId(), target.outputTarget());
             }
         }
         return false;
@@ -65,7 +69,8 @@ public final class EmiRecipePickOverlay {
         for (Object group : groups) {
             Object recipe = fieldValue(group, "recipe");
             String recipeId = recipeId(recipe);
-            if (recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
+            String outputTarget = outputTarget(recipe);
+            if (recipeId.isBlank() || !RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId, outputTarget)) {
                 continue;
             }
             Rect2i recipeBounds = groupBounds(group);
@@ -74,10 +79,39 @@ public final class EmiRecipePickOverlay {
             }
             Rect2i button = RecipePickButtonOverlay.pickButtonAboveRightStack(recipeBounds, widgetBlockers(group, recipeBounds));
             if (button != null) {
-                targets.add(new ButtonTarget(recipeId, recipeTypeId(recipe), button));
+                targets.add(new ButtonTarget(recipeId, recipeTypeId(recipe), outputTarget, button));
             }
         }
         return targets;
+    }
+
+    private static String outputTarget(Object recipe) {
+        Object outputs = invoke(recipe, "getOutputs");
+        if (!(outputs instanceof List<?> list)) {
+            return "";
+        }
+        for (Object output : list) {
+            Object stack = invoke(output, "getItemStack");
+            if (stack instanceof ItemStack itemStack && !itemStack.isEmpty()) {
+                return itemTarget(itemStack);
+            }
+            String fluidTarget = fluidTarget(output);
+            if (!fluidTarget.isBlank()) {
+                return fluidTarget;
+            }
+        }
+        return "";
+    }
+
+    private static String itemTarget(ItemStack stack) {
+        ItemStack output = stack.copy();
+        output.setCount(1);
+        return ItemStackIconCodec.iconFromStack(output);
+    }
+
+    private static String fluidTarget(Object stack) {
+        Object key = invoke(stack, "getKey");
+        return key instanceof Fluid fluid ? FluidIconCodec.iconFromFluid(fluid) : "";
     }
 
     private static Rect2i groupBounds(Object group) {
@@ -190,6 +224,6 @@ public final class EmiRecipePickOverlay {
         return method;
     }
 
-    private record ButtonTarget(String recipeId, String viewerTypeId, Rect2i button) {
+    private record ButtonTarget(String recipeId, String viewerTypeId, String outputTarget, Rect2i button) {
     }
 }

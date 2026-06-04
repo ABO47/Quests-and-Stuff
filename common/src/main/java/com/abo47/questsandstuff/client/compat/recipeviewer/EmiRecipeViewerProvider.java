@@ -1,11 +1,15 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,6 +45,16 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
+    public boolean showRecipes(String target) {
+        return show(target, "displayRecipes");
+    }
+
+    @Override
+    public boolean showUses(String target) {
+        return show(target, "displayUses");
+    }
+
+    @Override
     public boolean supportsNativeRecipeSelection() {
         return true;
     }
@@ -64,6 +78,29 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         return RecipeViewerSnapshotRenderer.renderLive(graphics, key, () -> createSnapshotPlan(recipe), width, height, pivotX, pivotY);
     }
 
+    @Override
+    public List<String> fluidEntries() {
+        if (!isAvailable()) {
+            return List.of();
+        }
+        try {
+            Object stacks = Class.forName(EMI_API).getMethod("getIndexStacks").invoke(null);
+            if (!(stacks instanceof Iterable<?> iterable)) {
+                return List.of();
+            }
+            List<String> entries = new ArrayList<>();
+            for (Object stack : iterable) {
+                Object key = RecipeViewerReflection.firstMethod(stack.getClass(), "getKey", 0).invoke(stack);
+                if (key instanceof Fluid fluid) {
+                    addFluidEntry(entries, fluid);
+                }
+            }
+            return entries;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return List.of();
+        }
+    }
+
     private boolean show(ItemStack stack, String methodName) {
         if (stack == null || stack.isEmpty()) {
             return false;
@@ -77,6 +114,38 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return false;
         }
+    }
+
+    private boolean show(String target, String methodName) {
+        if (!FluidIconCodec.isFluidIcon(target)) {
+            return "displayRecipes".equals(methodName) ? RecipeViewerProvider.super.showRecipes(target) : RecipeViewerProvider.super.showUses(target);
+        }
+        Fluid fluid = FluidIconCodec.fluidFromIcon(target);
+        if (fluid == Fluids.EMPTY) {
+            return false;
+        }
+        try {
+            Class<?> emiStackClass = Class.forName(EMI_STACK);
+            Object ingredient = compatibleStaticMethod(emiStackClass, "of", fluid.getClass()).invoke(null, fluid);
+            Class<?> ingredientClass = Class.forName(EMI_INGREDIENT);
+            Class.forName(EMI_API).getMethod(methodName, ingredientClass).invoke(null, ingredient);
+            return true;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    private static Method compatibleStaticMethod(Class<?> owner, String name, Class<?> argumentType) throws NoSuchMethodException {
+        for (Method method : owner.getMethods()) {
+            if (!method.getName().equals(name) || method.getParameterCount() != 1) {
+                continue;
+            }
+            Class<?> parameter = method.getParameterTypes()[0];
+            if (parameter.isAssignableFrom(argumentType)) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException(owner.getName() + "#" + name + "(" + argumentType.getName() + ")");
     }
 
     private RecipeViewerSnapshotRenderer.SnapshotPlan createSnapshotPlan(RecipeView view) throws ReflectiveOperationException {
@@ -159,5 +228,15 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         }
         Class<?> portClass = Class.forName(EMI_PORT);
         return RecipeViewerReflection.firstMethod(portClass, "id", 1).invoke(null, id.toString());
+    }
+
+    private static void addFluidEntry(List<String> entries, Fluid fluid) {
+        if (fluid == null || fluid == Fluids.EMPTY) {
+            return;
+        }
+        String icon = FluidIconCodec.iconFromFluid(fluid);
+        if (!icon.isBlank() && !entries.contains(icon)) {
+            entries.add(icon);
+        }
     }
 }

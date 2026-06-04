@@ -55,10 +55,12 @@ public final class TabletIconPickerModal {
             state.iconAllItemsMode = false;
             state.iconEntityMode = true;
             state.iconInventoryMode = false;
+            state.iconFluidMode = false;
         } else if (itemModelPicker) {
             state.iconAllItemsMode = false;
             state.iconEntityMode = false;
             state.iconInventoryMode = false;
+            state.iconFluidMode = false;
         } else if (useItemPicker) {
             state.iconEntityMode = false;
         } else if (!supportsEntityIcons) {
@@ -72,6 +74,13 @@ public final class TabletIconPickerModal {
             state.iconTagMode = false;
             state.iconAllItemsMode = false;
             state.iconEntityMode = false;
+            state.iconFluidMode = false;
+        }
+        if (state.iconFluidMode) {
+            state.iconTagMode = false;
+            state.iconAllItemsMode = false;
+            state.iconEntityMode = false;
+            state.iconInventoryMode = false;
         }
         int headY = 22;
         int headH = 18;
@@ -113,6 +122,7 @@ public final class TabletIconPickerModal {
 
         boolean pickingEntityIcons = entityPicker || state.iconEntityMode;
         boolean pickingInventoryIcons = supportsInventoryIcons && state.iconInventoryMode && !entityPicker && !itemModelPicker;
+        boolean pickingFluidIcons = state.iconFluidMode && !entityPicker && !itemModelPicker;
         if (pickingInventoryIcons) {
             String inventoryTarget = inventoryIconTarget(detailsTarget, questTarget, chapterTarget);
             List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.iconSearch);
@@ -144,6 +154,8 @@ public final class TabletIconPickerModal {
                     ? searchableModelItemEntries(state.iconSearch, state.iconTagMode)
                     : pickingEntityIcons
                     ? EntityPreviewRenderer.searchableSpawnEggEntries(state.iconSearch)
+                    : pickingFluidIcons
+                    ? QuestIconProvider.searchableFluidEntries(state.iconSearch)
                     : searchableIconEntries(state, useItemPicker);
             TiledPickerPanel.add(
                     modal,
@@ -212,6 +224,9 @@ public final class TabletIconPickerModal {
     }
 
     private static List<String> searchableIconEntries(TabletUiState state, boolean useItemPicker) {
+        if (state.iconFluidMode) {
+            return QuestIconProvider.searchableFluidEntries(state.iconSearch);
+        }
         if (useItemPicker && !state.iconAllItemsMode && !state.iconTagMode && !state.iconInventoryMode) {
             return QuestIconProvider.searchableUsableItemEntries(state.iconSearch);
         }
@@ -292,6 +307,7 @@ public final class TabletIconPickerModal {
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
+        state.iconFluidMode = false;
         state.iconTagMode = next == 1;
     }
 
@@ -304,19 +320,22 @@ public final class TabletIconPickerModal {
     }
 
     private static void cycleUseItemIconMode(TabletUiState state, boolean supportsInventoryIcons, int direction) {
-        int modeCount = 3 + (supportsInventoryIcons ? 1 : 0);
-        int current = state.iconInventoryMode && supportsInventoryIcons ? 3 : state.iconTagMode ? 2 : state.iconAllItemsMode ? 1 : 0;
+        int modeCount = 4 + (supportsInventoryIcons ? 1 : 0);
+        int inventoryMode = supportsInventoryIcons ? 4 : -1;
+        int current = state.iconInventoryMode && supportsInventoryIcons ? inventoryMode : state.iconFluidMode ? 3 : state.iconTagMode ? 2 : state.iconAllItemsMode ? 1 : 0;
         int next = Math.floorMod(current + direction, modeCount);
         clearIconModeFlags(state);
         state.iconAllItemsMode = next == 1;
         state.iconTagMode = next == 2;
-        state.iconInventoryMode = supportsInventoryIcons && next == 3;
+        state.iconFluidMode = next == 3;
+        state.iconInventoryMode = supportsInventoryIcons && next == inventoryMode;
     }
 
     private static void cycleGeneralIconMode(TabletUiState state, boolean supportsEntityIcons, boolean supportsInventoryIcons, int direction) {
-        int modeCount = 2 + (supportsEntityIcons ? 1 : 0) + (supportsInventoryIcons ? 1 : 0);
+        int modeCount = 3 + (supportsEntityIcons ? 1 : 0) + (supportsInventoryIcons ? 1 : 0);
+        int entityMode = supportsEntityIcons ? 3 : -1;
         int inventoryMode = supportsInventoryIcons ? modeCount - 1 : -1;
-        int current = state.iconInventoryMode && supportsInventoryIcons ? inventoryMode : state.iconEntityMode && supportsEntityIcons ? 2 : state.iconTagMode ? 1 : 0;
+        int current = state.iconInventoryMode && supportsInventoryIcons ? inventoryMode : state.iconEntityMode && supportsEntityIcons ? entityMode : state.iconFluidMode ? 2 : state.iconTagMode ? 1 : 0;
         int next = Math.floorMod(current + direction, modeCount);
         clearIconModeFlags(state);
         if (next == inventoryMode) {
@@ -324,7 +343,8 @@ public final class TabletIconPickerModal {
             return;
         }
         state.iconTagMode = next == 1;
-        state.iconEntityMode = supportsEntityIcons && next == 2;
+        state.iconFluidMode = next == 2;
+        state.iconEntityMode = supportsEntityIcons && next == entityMode;
     }
 
     private static void clearIconModeFlags(TabletUiState state) {
@@ -332,11 +352,15 @@ public final class TabletIconPickerModal {
         state.iconTagMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
+        state.iconFluidMode = false;
     }
 
     private static String iconModeIcon(TabletUiState state, boolean useItemPicker) {
         if (state.iconInventoryMode) {
             return "mode_inventory";
+        }
+        if (state.iconFluidMode) {
+            return "mode_fluids";
         }
         if (state.iconEntityMode) {
             return "entity";
@@ -350,6 +374,9 @@ public final class TabletIconPickerModal {
     private static String iconModeName(TabletUiState state, boolean entityPicker, boolean useItemPicker) {
         if (state.iconInventoryMode) {
             return "inventory";
+        }
+        if (state.iconFluidMode) {
+            return "fluids";
         }
         if (entityPicker || state.iconEntityMode) {
             return "entities";

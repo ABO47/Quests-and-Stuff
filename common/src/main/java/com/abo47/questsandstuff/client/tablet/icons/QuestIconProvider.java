@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,11 +11,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,6 +39,14 @@ public final class QuestIconProvider {
             ItemStack stack = ItemStackIconCodec.stackFromIcon(keyValue);
             if (!stack.isEmpty()) {
                 ItemStackTexture texture = new ScopedItemStackTexture(stack);
+                ICON_TEXTURE_CACHE.put(keyValue, texture);
+                return texture;
+            }
+        }
+        if (FluidIconCodec.isFluidIcon(keyValue)) {
+            ItemStack bucket = FluidIconCodec.bucketStack(keyValue);
+            if (!bucket.isEmpty()) {
+                ItemStackTexture texture = new ScopedItemStackTexture(bucket);
                 ICON_TEXTURE_CACHE.put(keyValue, texture);
                 return texture;
             }
@@ -91,6 +104,40 @@ public final class QuestIconProvider {
         return searchableItemEntries(rawQuery, query, QuestIconProvider::isUsableItem);
     }
 
+    public static List<String> searchableFluidEntries(String filter) {
+        String rawQuery = SearchFilter.normalizeUserInput(filter);
+        String query = SearchFilter.normalizeKey(rawQuery);
+        List<String> entries = new ArrayList<>();
+        Set<String> candidates = new LinkedHashSet<>();
+        for (Fluid fluid : BuiltInRegistries.FLUID) {
+            if (fluid == null || fluid == Fluids.EMPTY) {
+                continue;
+            }
+            ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
+            if (id == null || isFlowingFluidId(id)) {
+                continue;
+            }
+            candidates.add(FluidIconCodec.iconFromFluid(fluid));
+        }
+        candidates.addAll(RecipeViewerIntegrations.fluidEntries());
+        for (String icon : candidates) {
+            if (!FluidIconCodec.isFluidIcon(icon) || FluidIconCodec.fluidId(icon).isBlank()) {
+                continue;
+            }
+            String key = FluidIconCodec.fluidId(icon);
+            String display = FluidIconCodec.displayName(icon);
+            String descKey = SearchFilter.normalizeKey(key);
+            boolean include = rawQuery.isBlank()
+                    || SearchFilter.matches(rawQuery, key, display)
+                    || descKey.contains(query);
+            if (include) {
+                entries.add(icon);
+            }
+        }
+        entries.sort(String::compareTo);
+        return entries;
+    }
+
     public static void clearCaches() {
         ICON_TEXTURE_CACHE.clear();
     }
@@ -143,6 +190,11 @@ public final class QuestIconProvider {
             return false;
         }
         return new ItemStack(item).getUseDuration() > 0;
+    }
+
+    private static boolean isFlowingFluidId(ResourceLocation id) {
+        String path = id == null ? "" : id.getPath();
+        return path.startsWith("flowing_") || path.startsWith("flowing/") || path.endsWith("_flowing");
     }
 
     private static List<Item> blockTagItems(ResourceLocation tagId) {

@@ -2,9 +2,13 @@ package com.abo47.questsandstuff.client.compat.recipeviewer.rei;
 
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -46,7 +50,7 @@ public final class ReiRecipePickOverlay {
         }
         for (ButtonTarget target : targets(screen)) {
             if (RecipePickButtonOverlay.contains(target.button(), mouseX, mouseY)) {
-                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "REI", target.viewerTypeId());
+                return RecipeViewerSelectionBridge.pickVisibleRecipe(target.recipeId(), "REI", target.viewerTypeId(), target.outputTarget());
             }
         }
         return false;
@@ -90,14 +94,15 @@ public final class ReiRecipePickOverlay {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Rect2i bounds = rectangle(entry.getKey());
             Object displaySpec = displaySpec(entry.getValue());
-            String recipeId = pickableRecipeId(displaySpec);
+            String outputTarget = outputTarget(displaySpec);
+            String recipeId = pickableRecipeId(displaySpec, outputTarget);
             if (bounds == null || recipeId.isBlank()) {
                 continue;
             }
             Rect2i defaultReiButton = new Rect2i(bounds.getX() + bounds.getWidth() + 2, bounds.getY() + bounds.getHeight() - 16, 10, 10);
             Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
             if (button != null) {
-                targets.add(new ButtonTarget(recipeId, viewerTypeId(displaySpec), bounds, button));
+                targets.add(new ButtonTarget(recipeId, viewerTypeId(displaySpec), outputTarget, bounds, button));
             }
         }
         return targets;
@@ -105,7 +110,8 @@ public final class ReiRecipePickOverlay {
 
     private static List<ButtonTarget> compositeTargets(Object screen) {
         Object displaySpec = selectedDisplaySpec(screen);
-        String recipeId = pickableRecipeId(displaySpec);
+        String outputTarget = outputTarget(displaySpec);
+        String recipeId = pickableRecipeId(displaySpec, outputTarget);
         Rect2i screenBounds = rectangle(fieldValue(screen, "bounds"));
         Object display = invoke(displaySpec, "provideInternalDisplay");
         Object category = selectedCategory(screen);
@@ -123,7 +129,7 @@ public final class ReiRecipePickOverlay {
         );
         Rect2i defaultReiButton = new Rect2i(recipeBounds.getX() + recipeBounds.getWidth() + 2, recipeBounds.getY() + recipeBounds.getHeight() - 16, 10, 10);
         Rect2i button = RecipePickButtonOverlay.buttonAbove(defaultReiButton);
-        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, viewerTypeId, recipeBounds, button));
+        return button == null ? List.of() : List.of(new ButtonTarget(recipeId, viewerTypeId, outputTarget, recipeBounds, button));
     }
 
     private static Object selectedDisplaySpec(Object screen) {
@@ -172,7 +178,7 @@ public final class ReiRecipePickOverlay {
         return fieldValue(pair, "left");
     }
 
-    private static String pickableRecipeId(Object displaySpec) {
+    private static String pickableRecipeId(Object displaySpec, String outputTarget) {
         if (displaySpec == null) {
             return "";
         }
@@ -180,7 +186,7 @@ public final class ReiRecipePickOverlay {
         if (ids instanceof Collection<?> collection) {
             for (Object id : collection) {
                 String recipeId = id == null ? "" : id.toString();
-                if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
+                if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId, outputTarget)) {
                     return recipeId;
                 }
             }
@@ -189,11 +195,60 @@ public final class ReiRecipePickOverlay {
         Object optional = invoke(display, "getDisplayLocation");
         if (optional instanceof Optional<?> location && location.isPresent()) {
             String recipeId = location.get().toString();
-            if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId)) {
+            if (RecipeViewerSelectionBridge.canPickVisibleRecipe(recipeId, outputTarget)) {
                 return recipeId;
             }
         }
         return "";
+    }
+
+    private static String outputTarget(Object displaySpec) {
+        Object display = invoke(displaySpec, "provideInternalDisplay");
+        Object outputs = invoke(display, "getOutputEntries");
+        if (!(outputs instanceof List<?> list)) {
+            return "";
+        }
+        for (Object ingredient : list) {
+            if (!(ingredient instanceof Iterable<?> entries)) {
+                continue;
+            }
+            for (Object entry : entries) {
+                String target = entryTarget(entry);
+                if (!target.isBlank()) {
+                    return target;
+                }
+            }
+        }
+        return "";
+    }
+
+    private static String entryTarget(Object entry) {
+        Object value = invoke(entry, "getValue");
+        String fluidTarget = fluidTarget(value);
+        if (!fluidTarget.isBlank()) {
+            return fluidTarget;
+        }
+        ItemStack stack = value instanceof ItemStack itemStack ? itemStack : ItemStack.EMPTY;
+        if (stack.isEmpty()) {
+            Object cheated = invoke(entry, "cheatsAs");
+            value = invoke(cheated, "getValue");
+            fluidTarget = fluidTarget(value);
+            if (!fluidTarget.isBlank()) {
+                return fluidTarget;
+            }
+            if (!(value instanceof ItemStack cheatedStack) || cheatedStack.isEmpty()) {
+                return "";
+            }
+            stack = cheatedStack;
+        }
+        ItemStack output = stack.copy();
+        output.setCount(1);
+        return ItemStackIconCodec.iconFromStack(output);
+    }
+
+    private static String fluidTarget(Object value) {
+        Object fluid = invoke(value, "getFluid");
+        return fluid instanceof Fluid typedFluid ? FluidIconCodec.iconFromFluid(typedFluid) : "";
     }
 
     private static String viewerTypeId(Object displaySpec) {
@@ -310,7 +365,7 @@ public final class ReiRecipePickOverlay {
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
     }
 
-    private record ButtonTarget(String recipeId, String viewerTypeId, Rect2i recipeBounds, Rect2i button) {
+    private record ButtonTarget(String recipeId, String viewerTypeId, String outputTarget, Rect2i recipeBounds, Rect2i button) {
         private boolean isNativeRecipeHovered(int mouseX, int mouseY) {
             return RecipePickButtonOverlay.contains(recipeBounds, mouseX, mouseY);
         }

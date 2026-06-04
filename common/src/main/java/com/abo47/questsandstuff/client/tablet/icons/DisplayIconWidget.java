@@ -2,12 +2,16 @@ package com.abo47.questsandstuff.client.tablet.icons;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;
@@ -63,6 +67,9 @@ public final class DisplayIconWidget extends WidgetGroup {
                 && CanvasModelPreviewRenderer.renderModelAsset(graphics, x, y, width, height, safeIconId)) {
             return;
         }
+        if (FluidIconCodec.isFluidIcon(safeIconId) && renderFluidIcon(graphics, x, y, width, height, safeIconId)) {
+            return;
+        }
         String entityId = EntityPreviewRenderer.entityId(safeIconId);
         if (!entityId.isBlank()) {
             int yaw = EntityPreviewRenderer.entityYaw(safeIconId);
@@ -73,5 +80,22 @@ public final class DisplayIconWidget extends WidgetGroup {
             return;
         }
         QuestIconProvider.iconTexture(safeIconId).draw(graphics, mouseX, mouseY, x, y, width, height);
+    }
+
+    private static boolean renderFluidIcon(GuiGraphics graphics, int x, int y, int width, int height, String iconId) {
+        Fluid fluid = FluidIconCodec.fluidFromIcon(iconId);
+        if (fluid == Fluids.EMPTY) {
+            return false;
+        }
+        int inset = Math.max(0, Math.min(width, height) / 12);
+        DrawerHelper.drawFluidForGui(
+                graphics,
+                FluidStack.create(fluid, 1000),
+                x + inset,
+                y + inset,
+                Math.max(1, width - inset * 2),
+                Math.max(1, height - inset * 2)
+        );
+        return true;
     }
 }

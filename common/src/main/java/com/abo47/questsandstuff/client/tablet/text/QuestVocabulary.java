@@ -65,6 +65,7 @@ public final class QuestVocabulary {
     public static final String NO_BIOMES = "ui.questsandstuff.quest.no_biomes";
     public static final String NO_BLOCKS = "ui.questsandstuff.quest.no_blocks";
     public static final String NO_DIMENSIONS = "ui.questsandstuff.quest.no_dimensions";
+    public static final String NO_FLUIDS = "ui.questsandstuff.quest.no_fluids";
     public static final String NO_LOOT_TABLES = "ui.questsandstuff.quest.no_loot_tables";
     public static final String NO_RECIPES = "ui.questsandstuff.quest.no_recipes";
     public static final String NO_SOUNDS = "ui.questsandstuff.quest.no_sounds";
