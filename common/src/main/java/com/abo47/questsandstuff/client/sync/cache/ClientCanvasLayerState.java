@@ -27,12 +27,32 @@ public final class ClientCanvasLayerState {
 
     public static void loadFromFullPayload(CompoundTag payload) {
         reset();
+        mergeFromDeltaPayload(payload);
+    }
+
+    public static void mergeFromDeltaPayload(CompoundTag payload) {
+        if (payload == null) {
+            return;
+        }
+        if (payload.contains("groups", Tag.TAG_LIST)) {
+            List<String> groups = ClientChapterState.groupOrderSnapshot();
+            GROUP_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
+            GROUP_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
+            GROUP_CANVAS_LAYER_ORDER.keySet().removeIf(group -> !groups.contains(group));
+            for (String group : groups) {
+                ensureGroup(group);
+            }
+        }
         CompoundTag groupProps = payload.getCompound("group_props");
         for (String group : groupProps.getAllKeys()) {
             CompoundTag props = groupProps.getCompound(group);
-            GROUP_CANVAS_IMAGES.put(group, List.copyOf(CanvasLayerNbt.imagesFromListTag(props.getList("canvas_images", Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_TEXTS.put(group, List.copyOf(CanvasLayerNbt.textsFromListTag(props.getList("canvas_texts", Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_LAYER_ORDER.put(group, List.copyOf(CanvasLayerNbt.stringsFromListTag(props.getList("canvas_layer_order", Tag.TAG_STRING))));
+            String normalized = ClientChapterState.normalizeGroup(group);
+            if (normalized.isBlank()) {
+                continue;
+            }
+            GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbt.imagesFromListTag(props.getList("canvas_images", Tag.TAG_COMPOUND))));
+            GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbt.textsFromListTag(props.getList("canvas_texts", Tag.TAG_COMPOUND))));
+            GROUP_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbt.stringsFromListTag(props.getList("canvas_layer_order", Tag.TAG_STRING))));
         }
     }
 

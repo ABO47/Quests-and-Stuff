@@ -41,25 +41,31 @@ public final class ClientChapterState {
 
     public static void loadFromFullPayload(CompoundTag payload) {
         reset();
+        mergeFromDeltaPayload(payload);
+    }
+
+    public static void mergeFromDeltaPayload(CompoundTag payload) {
+        if (payload == null) {
+            return;
+        }
         ListTag groupsTag = payload.getList("groups", Tag.TAG_STRING);
-        for (int i = 0; i < groupsTag.size(); i++) {
-            GROUP_ORDER.add(groupsTag.getString(i));
+        if (!groupsTag.isEmpty()) {
+            GROUP_ORDER.clear();
+            for (int i = 0; i < groupsTag.size(); i++) {
+                String group = normalizeGroup(groupsTag.getString(i));
+                if (!group.isBlank() && !GROUP_ORDER.contains(group)) {
+                    GROUP_ORDER.add(group);
+                }
+            }
+            removeGroupsOutsideOrder();
         }
 
         CompoundTag groupProps = payload.getCompound("group_props");
         for (String group : groupProps.getAllKeys()) {
-            CompoundTag props = groupProps.getCompound(group);
-            GROUP_ICONS.put(group, props.getString("icon"));
-            GROUP_BACKGROUNDS.put(group, props.getString("background"));
-            GROUP_CANVAS_BACKGROUNDS.put(group, props.contains("canvas_background") ? props.getString("canvas_background") : "default");
-            GROUP_TEXT_ALIGN.put(group, normalizeTextAlign(props.getString("text_align")));
-            if (props.contains("text_color")) {
-                GROUP_TEXT_COLOR.put(group, props.getInt("text_color"));
-            }
-            GROUP_TEXT_STYLE.put(group, normalizeTextStyle(props.contains("text_style") ? props.getString("text_style") : "normal"));
-            GROUP_TEXT_SIZE.put(group, clampTextSize(props.contains("text_size") ? props.getInt("text_size") : CanvasTextLayer.DEFAULT_FONT_SIZE));
-            GROUP_LOCK_UNTIL_UNLOCKED.put(group, props.getBoolean("lock_until_unlocked"));
-            GROUP_HIDE_UNTIL_UNLOCKED.put(group, props.getBoolean("hide_until_unlocked"));
+            mergeGroupProps(group, groupProps.getCompound(group));
+        }
+        for (String group : GROUP_ORDER) {
+            ensureGroupDefaults(group);
         }
     }
 
@@ -284,6 +290,51 @@ public final class ClientChapterState {
         }
         GROUP_ORDER.remove(index);
         GROUP_ORDER.add(next, group);
+    }
+
+    private static void mergeGroupProps(String rawGroup, CompoundTag props) {
+        String group = normalizeGroup(rawGroup);
+        if (group.isBlank()) {
+            return;
+        }
+        if (!GROUP_ORDER.contains(group)) {
+            GROUP_ORDER.add(group);
+        }
+        GROUP_ICONS.put(group, props.getString("icon"));
+        GROUP_BACKGROUNDS.put(group, props.getString("background"));
+        GROUP_CANVAS_BACKGROUNDS.put(group, props.contains("canvas_background") ? props.getString("canvas_background") : "default");
+        GROUP_TEXT_ALIGN.put(group, normalizeTextAlign(props.getString("text_align")));
+        if (props.contains("text_color")) {
+            GROUP_TEXT_COLOR.put(group, props.getInt("text_color"));
+        }
+        GROUP_TEXT_STYLE.put(group, normalizeTextStyle(props.contains("text_style") ? props.getString("text_style") : "normal"));
+        GROUP_TEXT_SIZE.put(group, clampTextSize(props.contains("text_size") ? props.getInt("text_size") : CanvasTextLayer.DEFAULT_FONT_SIZE));
+        GROUP_LOCK_UNTIL_UNLOCKED.put(group, props.getBoolean("lock_until_unlocked"));
+        GROUP_HIDE_UNTIL_UNLOCKED.put(group, props.getBoolean("hide_until_unlocked"));
+    }
+
+    private static void ensureGroupDefaults(String group) {
+        GROUP_ICONS.putIfAbsent(group, "");
+        GROUP_BACKGROUNDS.putIfAbsent(group, "default");
+        GROUP_CANVAS_BACKGROUNDS.putIfAbsent(group, "default");
+        GROUP_TEXT_ALIGN.putIfAbsent(group, "center");
+        GROUP_TEXT_COLOR.putIfAbsent(group, 0xFFFFFFFF);
+        GROUP_TEXT_STYLE.putIfAbsent(group, "normal");
+        GROUP_TEXT_SIZE.putIfAbsent(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
+        GROUP_LOCK_UNTIL_UNLOCKED.putIfAbsent(group, false);
+        GROUP_HIDE_UNTIL_UNLOCKED.putIfAbsent(group, false);
+    }
+
+    private static void removeGroupsOutsideOrder() {
+        GROUP_ICONS.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_BACKGROUNDS.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_CANVAS_BACKGROUNDS.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_TEXT_ALIGN.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_TEXT_COLOR.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_TEXT_STYLE.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_TEXT_SIZE.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_LOCK_UNTIL_UNLOCKED.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
+        GROUP_HIDE_UNTIL_UNLOCKED.keySet().removeIf(group -> !GROUP_ORDER.contains(group));
     }
 
     private static void moveStringProp(Map<String, String> props, String source, String target, String fallback) {

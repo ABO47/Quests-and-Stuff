@@ -201,6 +201,10 @@ public final class QuestDetailsWindow {
         return QuestDetailsWindowGeometry.leftPanelWidth(state);
     }
 
+    public static int descriptionContentWidth(TabletUiState state) {
+        return QuestDetailsWindowGeometry.descriptionContentWidth(state);
+    }
+
     static int canvasPanelWidth(int leftW) {
         return QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
     }

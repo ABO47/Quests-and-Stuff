@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -45,6 +46,24 @@ final class CanvasViewportClickController {
         }
         int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvasPanelX + state.canvasViewportX, mouseX);
         int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+
+        if (state.blueprintPlacementActive) {
+            if (!state.canEdit) {
+                CanvasBlueprintController.cancelPlacement(state);
+                refresher.run();
+                return true;
+            }
+            if (button == 0) {
+                CanvasBlueprintController.placeAt(player, state, localX, localY);
+                refresher.run();
+                return true;
+            }
+            if (button == 1) {
+                CanvasBlueprintController.cancelPlacement(state);
+                refresher.run();
+                return true;
+            }
+        }
 
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
             if (EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {

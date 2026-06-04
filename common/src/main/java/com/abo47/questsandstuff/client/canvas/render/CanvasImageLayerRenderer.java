@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -16,8 +18,12 @@ public final class CanvasImageLayerRenderer {
     }
 
     public static void draw(GuiGraphics graphics, int mouseX, int mouseY, CanvasImageLayer image, int x, int y, int width, int height, int pivotX, int pivotY) {
+        drawAtPivot(graphics, mouseX, mouseY, image, x + pivotX, y + pivotY, width, height, pivotX, pivotY);
+    }
+
+    public static void drawAtPivot(GuiGraphics graphics, int mouseX, int mouseY, CanvasImageLayer image, double pivotScreenX, double pivotScreenY, int width, int height, int pivotX, int pivotY) {
         graphics.pose().pushPose();
-        graphics.pose().translate(x + pivotX, y + pivotY, 0.0f);
+        graphics.pose().translate(pivotScreenX, pivotScreenY, 0.0f);
         graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(image.rotation())));
         drawContent(graphics, mouseX, mouseY, image, width, height, pivotX, pivotY);
         graphics.pose().popPose();
@@ -25,6 +31,12 @@ public final class CanvasImageLayerRenderer {
 
     private static void drawContent(GuiGraphics graphics, int mouseX, int mouseY, CanvasImageLayer image, int width, int height, int pivotX, int pivotY) {
         String asset = image.asset();
+        if (CanvasRecipeCardAsset.isRecipeCardAsset(asset)) {
+            if (!CanvasRecipeCardRenderer.render(graphics, asset, width, height, pivotX, pivotY)) {
+                drawFallback(graphics, width, height, pivotX, pivotY);
+            }
+            return;
+        }
         String entityId = EntityPreviewRenderer.entityId(asset);
         if (!entityId.isBlank()) {
             if (!EntityPreviewRenderer.renderCanvasEntityAssetAtCenter(graphics, 0, 0, width, height, asset, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), 0.0F)) {

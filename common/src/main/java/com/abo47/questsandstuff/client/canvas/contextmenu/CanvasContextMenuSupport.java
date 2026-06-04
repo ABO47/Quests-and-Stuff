@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
@@ -19,7 +20,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTEXT_ROW_H;
 
@@ -95,6 +98,8 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
+            state.contextLastClickX = x;
+            state.contextLastClickY = y;
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
@@ -122,6 +127,8 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = promoted.get(i);
+            state.contextLastClickX = state.contextMenuX + relX;
+            state.contextLastClickY = state.contextMenuY + relY;
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
@@ -162,7 +169,7 @@ public final class CanvasContextMenuSupport {
         if (questId == null || questId.isBlank()) {
             return false;
         }
-        for (String candidate : ClientQuestCache.quests().keySet()) {
+        for (String candidate : ClientQuestCache.questIds()) {
             if (!questId.equals(candidate)) {
                 return true;
             }
@@ -176,7 +183,13 @@ public final class CanvasContextMenuSupport {
         }
         List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(group, List.of());
         List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(group, List.of());
-        List<String> order = CanvasLayerOrdering.normalize(state, group, canvasViewport.cardCache(), images, texts);
+        List<QuestCardLayout> cards = canvasViewport.cardCache();
+        Map<String, QuestCardLayout> byQuestId = new HashMap<>();
+        for (QuestCardLayout card : cards) {
+            byQuestId.put(card.questId(), card);
+        }
+        List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, cards, byQuestId, canvasViewport.getSize().width, canvasViewport.getSize().height);
+        List<String> order = CanvasLayerOrdering.normalize(state, group, cards, images, texts, connectionKeys);
         int index = order.indexOf(key);
         if (index < 0 || order.size() <= 1) {
             return false;

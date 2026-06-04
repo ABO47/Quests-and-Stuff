@@ -6,8 +6,10 @@ import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.overlay.CanvasTextStyleMenu;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
@@ -60,7 +62,7 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetailsTextStyleOpen = true;
         state.questDetailsTextStyleTarget = text.id();
         CanvasTextStyleMenu.renderQuestDetails(modal, state, text, x, y, w, h, state.questDetailsDescScroll, next -> {
-            updateText(player, questId, model, next);
+            updateText(player, state, questId, model, next, Math.max(1, w - 1));
             state.questDetailsTextStyleOpen = true;
             state.questDetailsTextStyleTarget = next.id();
         }, () -> {
@@ -127,6 +129,12 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
+        if (RecipeViewerIntegrations.hasAvailableViewer()) {
+            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
+            }));
+        }
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
@@ -197,7 +205,8 @@ public final class QuestDetailsDescriptionMenus {
         boolean entityImage = contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset());
         boolean itemImage = contextImage != null && (CanvasModelPreviewRenderer.isItemAsset(contextImage.asset()) || CanvasModelPreviewRenderer.isItemTagAsset(contextImage.asset()));
         boolean blockImage = contextImage != null && CanvasModelPreviewRenderer.isBlockModelAsset(contextImage.asset());
-        actions.add(ContextActions.action(changeImageLabel(entityImage, itemImage, blockImage), changeImageIcon(entityImage, itemImage, blockImage), ModColors.INTERACTIVE, () -> {
+        boolean recipeImage = contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset());
+        actions.add(ContextActions.action(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, state.questDetailsContextId));
@@ -205,6 +214,8 @@ public final class QuestDetailsDescriptionMenus {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descItem(questId, state.questDetailsContextId));
             } else if (blockImage) {
                 QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlock(questId, state.questDetailsContextId));
+            } else if (recipeImage) {
+                QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipe(questId, state.questDetailsContextId));
             } else {
                 QuestDetailsWindow.openAssetPicker(state, ModalTargets.descImage(questId, state.questDetailsContextId));
             }
@@ -268,7 +279,7 @@ public final class QuestDetailsDescriptionMenus {
         }));
     }
 
-    private static String changeImageLabel(boolean entityImage, boolean itemImage, boolean blockImage) {
+    private static String changeImageLabel(boolean entityImage, boolean itemImage, boolean blockImage, boolean recipeImage) {
         if (entityImage) {
             return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ENTITY);
         }
@@ -278,10 +289,13 @@ public final class QuestDetailsDescriptionMenus {
         if (blockImage) {
             return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BLOCK);
         }
+        if (recipeImage) {
+            return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_RECIPE_CARD);
+        }
         return QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_IMAGE);
     }
 
-    private static String changeImageIcon(boolean entityImage, boolean itemImage, boolean blockImage) {
+    private static String changeImageIcon(boolean entityImage, boolean itemImage, boolean blockImage, boolean recipeImage) {
         if (entityImage) {
             return "entity";
         }
@@ -290,6 +304,9 @@ public final class QuestDetailsDescriptionMenus {
         }
         if (blockImage) {
             return "box";
+        }
+        if (recipeImage) {
+            return "recipe";
         }
         return "image";
     }
@@ -346,7 +363,8 @@ public final class QuestDetailsDescriptionMenus {
                 + QuestDetailsDescriptionSelectionState.selectedTextIds(state).size();
     }
 
-    private static void updateText(Player player, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next) {
+    private static void updateText(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next, int contentW) {
+        next = QuestDetailsDescriptionLayout.fitAndClampText(state, next, contentW);
         model.putText(next);
         QuestDetailsDescriptionModel.preview(questId, model);
         QuestDetailsDescriptionModel.save(player, questId, model);

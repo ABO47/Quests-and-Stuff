@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -92,6 +93,17 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     int x = payload == null ? 0 : payload.getInt("x");
                     int y = payload == null ? 0 : payload.getInt("y");
                     editor.pasteClipboardInGroup(player, group, x, y);
+                    return;
+                }
+                if (command.type() == EditorCommandType.PASTE_BLUEPRINT) {
+                    String group = payload == null ? "" : payload.getString("group");
+                    int x = payload == null ? 0 : payload.getInt("x");
+                    int y = payload == null ? 0 : payload.getInt("y");
+                    CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(payload == null ? null : payload.getCompound("blueprint"));
+                    if (blueprint.isEmpty()) {
+                        return;
+                    }
+                    editor.pasteBlueprintInGroup(player, group, x, y, blueprint);
                     return;
                 }
                 if (command.type() == EditorCommandType.PREREQUISITE_ADD) {

@@ -55,6 +55,14 @@ public final class TabletUiStatePersistence {
             state.chapterPanelLastExpandedWidth = readInt(root, "chapter_panel_last_expanded_width", state.chapterPanelLastExpandedWidth);
             state.questDetailsLeftPanelWidth = clampQuestDetailsLeftWidth(readInt(root, "quest_details_left_panel_width", state.questDetailsLeftPanelWidth));
             state.questDetailsSplitterLocked = readBoolean(root, "quest_details_splitter_locked", state.questDetailsSplitterLocked);
+            state.questDetailsGridEnabled = readBoolean(root, "quest_details_grid_enabled", state.questDetailsGridEnabled);
+            state.questDetailsGridSnapLocked = readBoolean(root, "quest_details_grid_snap_locked", state.questDetailsGridSnapLocked);
+            state.questDetailsCenterSnapXEnabled = readBoolean(root, "quest_details_center_snap_x_enabled", state.questDetailsCenterSnapXEnabled);
+            state.questDetailsCenterSnapYEnabled = readBoolean(root, "quest_details_center_snap_y_enabled", state.questDetailsCenterSnapYEnabled);
+            state.questDetailsObjectSnapEnabled = readBoolean(root, "quest_details_object_snap_enabled", state.questDetailsObjectSnapEnabled);
+            state.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetailsCanvasLocked);
+            state.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetailsGridOpacityPercent);
+            state.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetailsCanvasBgOpacityPercent);
         } catch (Exception ignored) {
         }
     }
@@ -95,6 +103,14 @@ public final class TabletUiStatePersistence {
             root.addProperty("chapter_panel_last_expanded_width", Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelLastExpandedWidth)));
             root.addProperty("quest_details_left_panel_width", clampQuestDetailsLeftWidth(state.questDetailsLeftPanelWidth));
             root.addProperty("quest_details_splitter_locked", state.questDetailsSplitterLocked);
+            root.addProperty("quest_details_grid_enabled", state.questDetailsGridEnabled);
+            root.addProperty("quest_details_grid_snap_locked", state.questDetailsGridSnapLocked);
+            root.addProperty("quest_details_center_snap_x_enabled", state.questDetailsCenterSnapXEnabled);
+            root.addProperty("quest_details_center_snap_y_enabled", state.questDetailsCenterSnapYEnabled);
+            root.addProperty("quest_details_object_snap_enabled", state.questDetailsObjectSnapEnabled);
+            root.addProperty("quest_details_canvas_locked", state.questDetailsCanvasLocked);
+            root.addProperty("quest_details_grid_opacity_percent", state.questDetailsGridOpacityPercent);
+            root.addProperty("quest_details_canvas_bg_opacity_percent", state.questDetailsCanvasBgOpacityPercent);
             Files.writeString(UI_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed persisting UI state", e);

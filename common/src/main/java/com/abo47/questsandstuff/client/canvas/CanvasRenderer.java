@@ -1,27 +1,28 @@
 package com.abo47.questsandstuff.client.canvas;
 
-
-import com.abo47.questsandstuff.client.canvas.overlay.CanvasOverlayController;
-
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.canvas.layer.CanvasElementStore;
+import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasSelectionSet;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public final class CanvasRenderer {
         state.canvasZoom = clampZoom(state.canvasZoom);
         CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.quests().entrySet());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
 
         int viewportW = canvasViewport.getSize().width;
@@ -90,15 +91,14 @@ public final class CanvasRenderer {
             byQuestId.put(card.questId(), card);
         }
         state.selectedQuestIds.retainAll(byQuestId.keySet());
-        if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.quests().containsKey(state.connectSourceQuestId)) {
+        if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.containsQuest(state.connectSourceQuestId)) {
             state.connectSourceQuestId = "";
         }
-        state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.quests().containsKey(questId));
+        state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.containsQuest(questId));
         WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
         if (state.canEdit && state.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
         }
-        ConnectionRenderer.renderPrerequisiteConnections(canvasContent, state, visibleCards, byQuestId, viewportW, viewportH);
         CanvasSceneRenderer.renderCanvasElements(
                 canvasContent,
                 state,
@@ -109,6 +109,7 @@ public final class CanvasRenderer {
                 viewportH,
                 canvasViewport::registerQuestCardLayer
         );
+        ConnectionRenderer.renderPendingConnections(canvasContent, state, byQuestId, viewportW, viewportH);
         CanvasSelectionRenderer.renderAlignmentGuides(canvasContent, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {
@@ -120,7 +121,15 @@ public final class CanvasRenderer {
         WidgetGroup canvasContentLayer = CanvasChapterSwitchAnimation.wrap(state, canvasContent);
         canvasViewport.setCanvasContentLayer(canvasContentLayer);
         canvasViewport.addWidget(canvasContentLayer);
+        WidgetGroup blueprintGhost = CanvasBlueprintController.placementGhost(canvasViewport, state);
+        if (blueprintGhost != null) {
+            canvasViewport.addWidget(blueprintGhost);
+        }
         renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
+        WidgetGroup miniNotification = CanvasMiniNotificationController.render(canvasViewport, state);
+        if (miniNotification != null) {
+            canvasViewport.addWidget(miniNotification);
+        }
         canvasViewport.updateCardCache(visibleCards, byQuestId);
     }
 
@@ -188,6 +197,11 @@ public final class CanvasRenderer {
 
     public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
         CanvasLayerOrdering.moveTextLayer(state, group, textId, front);
+        CanvasElementStore.persistLayerOrder(state, group);
+    }
+
+    public static void moveConnectionLayer(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean front) {
+        CanvasLayerOrdering.moveConnectionLayer(state, group, ConnectionRenderer.edgeKey(sourceQuestId, targetQuestId), front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 

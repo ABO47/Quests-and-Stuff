@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.viewport;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
@@ -112,12 +113,11 @@ final class CanvasSelectionResizeController {
             state.transientQuestPositions.put(questId, new CanvasPoint(anchor.x, anchor.y));
             state.transientQuestScales.put(questId, targetScale);
         }
-        String group = TabletUiFactory.selectedGroupName(state);
         for (CanvasImageLayer image : resize.images().values()) {
-            CanvasRenderer.putTransientCanvasImage(state, image);
+            CanvasRenderer.putTransientCanvasImage(state, fitAndClampImage(image));
         }
         for (CanvasTextLayer text : resize.texts().values()) {
-            CanvasRenderer.putTransientCanvasText(state, text);
+            CanvasRenderer.putTransientCanvasText(state, fitAndClampText(text));
         }
     }
 
@@ -144,5 +144,25 @@ final class CanvasSelectionResizeController {
         return state.resizeStartScales.size() == 1
                 && state.resizeStartImageLayers.isEmpty()
                 && state.resizeStartTextLayers.isEmpty();
+    }
+
+    private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
+    }
+
+    private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+    }
+
+    private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {
+        CanvasImageLayer fitted = fittedImageIfGridLocked(image);
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.pivotX(), fitted.pivotY(), fitted.rotation());
+        return fitted.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasTextLayer fitAndClampText(CanvasTextLayer text) {
+        CanvasTextLayer fitted = fittedTextIfGridLocked(text);
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.w() / 2, fitted.h() / 2, fitted.rotation());
+        return fitted.moveTo(clamped.x, clamped.y);
     }
 }

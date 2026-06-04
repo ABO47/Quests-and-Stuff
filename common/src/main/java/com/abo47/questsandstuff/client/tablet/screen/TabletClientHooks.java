@@ -123,7 +123,7 @@ public final class TabletClientHooks {
         if (state == null || !rememberedQuestDetailsOpen || rememberedQuestDetailsQuestId.isBlank()) {
             return;
         }
-        if (ClientQuestCache.quests().containsKey(rememberedQuestDetailsQuestId)) {
+        if (ClientQuestCache.containsQuest(rememberedQuestDetailsQuestId)) {
             QuestDetailsWindow.open(state, rememberedQuestDetailsQuestId);
         } else {
             rememberedQuestDetailsOpen = false;

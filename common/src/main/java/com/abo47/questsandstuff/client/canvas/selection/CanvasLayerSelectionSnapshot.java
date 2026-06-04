@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.canvas.selection;
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -39,7 +39,7 @@ public record CanvasLayerSelectionSnapshot(
                     continue;
                 }
                 selectedImages.put(image.id(), image);
-                int[] bounds = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+                int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 minX = Math.min(minX, bounds[0]);
                 minY = Math.min(minY, bounds[1]);
                 maxX = Math.max(maxX, bounds[2]);
@@ -54,7 +54,7 @@ public record CanvasLayerSelectionSnapshot(
                     continue;
                 }
                 selectedTexts.put(text.id(), text);
-                int[] bounds = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+                int[] bounds = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
                 minX = Math.min(minX, bounds[0]);
                 minY = Math.min(minY, bounds[1]);
                 maxX = Math.max(maxX, bounds[2]);

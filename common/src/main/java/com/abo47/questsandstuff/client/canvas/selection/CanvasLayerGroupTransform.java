@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.canvas.selection;
 
 import com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -17,8 +18,6 @@ public final class CanvasLayerGroupTransform {
             double pivotX,
             double pivotY,
             double radians,
-            boolean snapToGrid,
-            int grid,
             BoundsClamp clamp
     ) {
         double cos = Math.cos(radians);
@@ -27,26 +26,36 @@ public final class CanvasLayerGroupTransform {
         Map<String, CanvasImageLayer> images = new LinkedHashMap<>();
         Map<String, CanvasTextLayer> texts = new LinkedHashMap<>();
         for (CanvasImageLayer image : snapshot.images().values()) {
-            CanvasDoublePoint rotatedPivot = rotatePoint(image.x() + image.pivotX(), image.y() + image.pivotY(), pivotX, pivotY, cos, sin);
-            int targetX = (int) Math.round(rotatedPivot.x() - image.pivotX());
-            int targetY = (int) Math.round(rotatedPivot.y() - image.pivotY());
-            if (snapToGrid) {
-                targetX = snapValue(targetX, grid);
-                targetY = snapValue(targetY, grid);
-            }
-            CanvasPoint clamped = clamp.clamp(targetX, targetY, image.w(), image.h());
-            images.put(image.id(), image.moveTo(clamped.x, clamped.y).rotateTo(image.rotation() + deltaDegrees));
+            CanvasDoublePoint rotatedPivot = rotatePoint(
+                    CanvasElementGeometry.logicalPivotX(image.x(), image.w(), image.pivotX()),
+                    CanvasElementGeometry.logicalPivotY(image.y(), image.h(), image.pivotY()),
+                    pivotX,
+                    pivotY,
+                    cos,
+                    sin
+            );
+            int targetX = (int) Math.round(rotatedPivot.x() - effectivePivot(image.pivotX(), image.w()));
+            int targetY = (int) Math.round(rotatedPivot.y() - effectivePivot(image.pivotY(), image.h()));
+            int targetRotation = image.rotation() + deltaDegrees;
+            CanvasPoint clamped = clamp.clamp(targetX, targetY, image.w(), image.h(), image.pivotX(), image.pivotY(), targetRotation);
+            images.put(image.id(), image.moveTo(clamped.x, clamped.y).rotateTo(targetRotation));
         }
         for (CanvasTextLayer text : snapshot.texts().values()) {
-            CanvasDoublePoint rotatedCenter = rotatePoint(text.x() + text.w() / 2.0, text.y() + text.h() / 2.0, pivotX, pivotY, cos, sin);
-            int targetX = (int) Math.round(rotatedCenter.x() - text.w() / 2.0);
-            int targetY = (int) Math.round(rotatedCenter.y() - text.h() / 2.0);
-            if (snapToGrid) {
-                targetX = snapValue(targetX, grid);
-                targetY = snapValue(targetY, grid);
-            }
-            CanvasPoint clamped = clamp.clamp(targetX, targetY, text.w(), text.h());
-            texts.put(text.id(), text.moveTo(clamped.x, clamped.y).rotateTo(text.rotation() + deltaDegrees));
+            int textPivotX = CanvasElementGeometry.defaultPivot(text.w());
+            int textPivotY = CanvasElementGeometry.defaultPivot(text.h());
+            CanvasDoublePoint rotatedCenter = rotatePoint(
+                    CanvasElementGeometry.logicalPivotX(text.x(), text.w(), textPivotX),
+                    CanvasElementGeometry.logicalPivotY(text.y(), text.h(), textPivotY),
+                    pivotX,
+                    pivotY,
+                    cos,
+                    sin
+            );
+            int targetX = (int) Math.round(rotatedCenter.x() - effectivePivot(textPivotX, text.w()));
+            int targetY = (int) Math.round(rotatedCenter.y() - effectivePivot(textPivotY, text.h()));
+            int targetRotation = text.rotation() + deltaDegrees;
+            CanvasPoint clamped = clamp.clamp(targetX, targetY, text.w(), text.h(), textPivotX, textPivotY, targetRotation);
+            texts.put(text.id(), text.moveTo(clamped.x, clamped.y).rotateTo(targetRotation));
         }
         return new Result(images, texts);
     }
@@ -60,13 +69,14 @@ public final class CanvasLayerGroupTransform {
         );
     }
 
-    private static int snapValue(int value, int grid) {
-        int safeGrid = Math.max(1, grid);
-        return Math.round((float) value / (float) safeGrid) * safeGrid;
+    private static double effectivePivot(int pivot, int span) {
+        int safeSpan = Math.max(1, span);
+        int safePivot = Math.max(0, Math.min(safeSpan, pivot));
+        return safePivot == safeSpan / 2 ? safeSpan / 2.0D : safePivot;
     }
 
     public interface BoundsClamp {
-        CanvasPoint clamp(int x, int y, int width, int height);
+        CanvasPoint clamp(int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees);
     }
 
     public record Result(Map<String, CanvasImageLayer> images, Map<String, CanvasTextLayer> texts) {

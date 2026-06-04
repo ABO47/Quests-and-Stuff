@@ -60,7 +60,9 @@ final class TabletActiveState {
 
     static void selectPastedQuests(CompoundTag payload) {
         ListTag ids = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
-        if (activeTabletState == null || ids == null || ids.isEmpty()) {
+        ListTag images = payload == null ? new ListTag() : payload.getList("images", Tag.TAG_STRING);
+        ListTag texts = payload == null ? new ListTag() : payload.getList("texts", Tag.TAG_STRING);
+        if (activeTabletState == null) {
             refreshActiveTablet();
             return;
         }
@@ -85,15 +87,35 @@ final class TabletActiveState {
                 activeTabletState.lastJumpQuest = questId;
             }
         }
+        for (int i = 0; i < images.size(); i++) {
+            String imageId = images.getString(i);
+            if (imageId != null && !imageId.isBlank()) {
+                activeTabletState.selectedCanvasImageIds.add(imageId);
+                activeTabletState.selectedCanvasImageId = imageId;
+            }
+        }
+        for (int i = 0; i < texts.size(); i++) {
+            String textId = texts.getString(i);
+            if (textId != null && !textId.isBlank()) {
+                activeTabletState.selectedCanvasTextIds.add(textId);
+                activeTabletState.selectedCanvasTextId = textId;
+            }
+        }
         activeTabletState.selectedCanvasImageIds.addAll(activeTabletState.pendingPastedCanvasImageIds);
         activeTabletState.selectedCanvasTextIds.addAll(activeTabletState.pendingPastedCanvasTextIds);
-        activeTabletState.selectedCanvasImageId = activeTabletState.pendingPastedCanvasImageIds.stream().reduce((first, second) -> second).orElse("");
-        activeTabletState.selectedCanvasTextId = activeTabletState.pendingPastedCanvasTextIds.stream().reduce((first, second) -> second).orElse("");
+        String pendingImage = activeTabletState.pendingPastedCanvasImageIds.stream().reduce((first, second) -> second).orElse("");
+        String pendingText = activeTabletState.pendingPastedCanvasTextIds.stream().reduce((first, second) -> second).orElse("");
+        if (!pendingImage.isBlank()) {
+            activeTabletState.selectedCanvasImageId = pendingImage;
+        }
+        if (!pendingText.isBlank()) {
+            activeTabletState.selectedCanvasTextId = pendingText;
+        }
         activeTabletState.pendingPastedCanvasImageIds.clear();
         activeTabletState.pendingPastedCanvasTextIds.clear();
         activeTabletState.recentlyCreatedGroups.remove(TabletEditorActions.selectedGroupName(activeTabletState));
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} count={} ids={}",
-                TabletEditorActions.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedQuestIds);
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={}",
+                TabletEditorActions.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedCanvasImageIds.size(), activeTabletState.selectedCanvasTextIds.size());
         refreshActiveTablet();
     }
 }

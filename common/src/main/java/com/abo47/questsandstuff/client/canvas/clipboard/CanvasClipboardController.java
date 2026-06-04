@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.client.canvas.clipboard;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
@@ -30,11 +32,19 @@ public final class CanvasClipboardController {
     }
 
     public static boolean copyContextToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
-        return copyToClipboard(canvasViewport, state, contextSelection(state), "context");
+        boolean copied = copyToClipboard(canvasViewport, state, contextSelection(state), "context");
+        if (copied) {
+            CanvasMiniNotificationController.show(state, "ui.questsandstuff.canvas_notifications.copied", state.contextLastClickX, state.contextLastClickY);
+        }
+        return copied;
     }
 
     public static boolean copySelectionToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
-        return copyToClipboard(canvasViewport, state, currentSelection(state), "shortcut");
+        boolean copied = copyToClipboard(canvasViewport, state, currentSelection(state), "shortcut");
+        if (copied) {
+            CanvasMiniNotificationController.showAtPointer(state, canvasViewport, "ui.questsandstuff.canvas_notifications.copied");
+        }
+        return copied;
     }
 
     public static boolean hasClipboardContent(TabletUiState state) {
@@ -61,7 +71,7 @@ public final class CanvasClipboardController {
         }
         Map<String, QuestCardLayout> byQuestId = canvasViewport.cardLookup();
         for (String questId : selection.questIds()) {
-            if (byQuestId.containsKey(questId) || ClientQuestCache.quests().containsKey(questId)) {
+            if (byQuestId.containsKey(questId) || ClientQuestCache.containsQuest(questId)) {
                 return true;
             }
         }
@@ -152,7 +162,7 @@ public final class CanvasClipboardController {
             if (normalized.isBlank()) {
                 continue;
             }
-            if (byQuestId.containsKey(normalized) || ClientQuestCache.quests().containsKey(normalized)) {
+            if (byQuestId.containsKey(normalized) || ClientQuestCache.containsQuest(normalized)) {
                 copiedIds.add(normalized);
             }
         }
@@ -251,8 +261,11 @@ public final class CanvasClipboardController {
             String id = uniqueLayerId("img", existingImageIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.canvasClipboardOriginX);
             int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.canvasClipboardOriginY);
-            CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, image.w(), image.h());
+            CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
+            if (state.gridSnapLocked) {
+                duplicate = CanvasGridFitController.fittedImage(state, duplicate);
+            }
             CanvasRenderer.putCanvasImage(state, group, duplicate);
             state.selectedCanvasImageIds.add(id);
             state.selectedCanvasImageId = id;
@@ -264,8 +277,11 @@ public final class CanvasClipboardController {
             String id = uniqueLayerId("txt", existingTextIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + text.x() - state.canvasClipboardOriginX);
             int y = TabletUiFactory.snapToGrid(state, anchorY + text.y() - state.canvasClipboardOriginY);
-            CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, text.w(), text.h());
+            CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
             CanvasTextLayer duplicate = new CanvasTextLayer(id, text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+            if (state.gridSnapLocked) {
+                duplicate = CanvasGridFitController.fittedText(state, duplicate);
+            }
             CanvasRenderer.putCanvasText(state, group, duplicate);
             state.selectedCanvasTextIds.add(id);
             state.selectedCanvasTextId = id;

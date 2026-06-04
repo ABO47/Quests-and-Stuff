@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.canvas.render;
 
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -87,7 +86,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static Hit hitAt(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return null;
         }
@@ -127,7 +126,7 @@ public final class CanvasTransformGizmo {
     }
 
     public static boolean boundsHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         LocalPoint point = toLocalPoint(geometry, rotationDegrees, hitX, hitY);
         return point.x() >= geometry.left() - HIT_PAD
                 && point.x() <= geometry.right() + HIT_PAD
@@ -144,7 +143,7 @@ public final class CanvasTransformGizmo {
     }
 
     public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees) {
-        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY);
+        Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return;
         }
@@ -190,8 +189,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static void drawResizeGizmo(GuiGraphics graphics, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         graphics.fill(left, top, right, bottom, withAlpha(ModColors.INTERACTIVE, 18));
@@ -394,8 +393,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static String resizeAxisAt(LocalPoint point, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         int inset = HANDLE / 2;
@@ -415,8 +414,8 @@ public final class CanvasTransformGizmo {
     }
 
     private static LocalPoint resizeHandlePoint(String axis, int boxLeft, int boxTop, int boxRight, int boxBottom) {
-        int left = boxLeft + 1;
-        int top = boxTop + 1;
+        int left = boxLeft;
+        int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
         int inset = HANDLE / 2;
@@ -499,20 +498,9 @@ public final class CanvasTransformGizmo {
         return Math.max(24, Math.min(70, Math.max(width, height) / 2 + 12));
     }
 
-    private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
-        int safePivotX = Math.max(0, Math.min(Math.max(1, width), pivotX));
-        int safePivotY = Math.max(0, Math.min(Math.max(1, height), pivotY));
-        int screenLeft = CanvasGeometry.screenX(state, x);
-        int screenTop = CanvasGeometry.screenY(state, y);
-        int screenWidth = Math.max(1, CanvasGeometry.screenX(state, x + width) - screenLeft);
-        int screenHeight = Math.max(1, CanvasGeometry.screenY(state, y + height) - screenTop);
-        int screenPivotX = CanvasGeometry.screenX(state, x + safePivotX) - screenLeft;
-        int screenPivotY = CanvasGeometry.screenY(state, y + safePivotY) - screenTop;
-        int left = -screenPivotX;
-        int top = -screenPivotY;
-        int right = screenWidth - screenPivotX;
-        int bottom = screenHeight - screenPivotY;
-        return new Geometry(screenLeft + screenPivotX, screenTop + screenPivotY, screenWidth, screenHeight, left, top, right, bottom);
+    private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
+        return new Geometry(box.centerX(), box.centerY(), box.width(), box.height(), box.left(), box.top(), box.right(), box.bottom());
     }
 
     private static ScreenPoint screenPoint(int originX, int originY, Geometry geometry, int rotationDegrees, double localX, double localY) {

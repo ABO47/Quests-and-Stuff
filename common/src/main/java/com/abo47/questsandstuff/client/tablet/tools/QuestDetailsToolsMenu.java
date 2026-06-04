@@ -4,7 +4,6 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -50,64 +49,64 @@ final class QuestDetailsToolsMenu {
         }
 
         ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
-        addEditRows(rows, state, player, refresh, questId);
+        addEditRows(rows, state, refresh);
 
         addAnimatedMenu(toolsMenu, state, menu);
     }
 
-    private static void addEditRows(ToolMenuRows rows, TabletUiState state, Player player, Runnable refresh, String questId) {
+    private static void addEditRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
         CanvasToolRows.grid(rows, state.questDetailsGridEnabled, () -> {
                     state.questDetailsGridEnabled = !state.questDetailsGridEnabled;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid enabled={}", state.questDetailsGridEnabled);
                     refresh.run();
                 });
 
         CanvasToolRows.snap(rows, state.questDetailsGridSnapLocked, () -> {
                     state.questDetailsGridSnapLocked = !state.questDetailsGridSnapLocked;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool snap-to-grid enabled={}", state.questDetailsGridSnapLocked);
                     refresh.run();
                 });
 
         CanvasToolRows.centerX(rows, state.questDetailsCenterSnapXEnabled, () -> {
                     state.questDetailsCenterSnapXEnabled = !state.questDetailsCenterSnapXEnabled;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool vertical-guide enabled={}", state.questDetailsCenterSnapXEnabled);
                     refresh.run();
                 });
 
         CanvasToolRows.centerY(rows, state.questDetailsCenterSnapYEnabled, () -> {
                     state.questDetailsCenterSnapYEnabled = !state.questDetailsCenterSnapYEnabled;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool horizontal-guide enabled={}", state.questDetailsCenterSnapYEnabled);
                     refresh.run();
                 });
 
         CanvasToolRows.objectSnap(rows, state.questDetailsObjectSnapEnabled, () -> {
                     state.questDetailsObjectSnapEnabled = !state.questDetailsObjectSnapEnabled;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool object-guide enabled={}", state.questDetailsObjectSnapEnabled);
                     refresh.run();
                 });
 
         CanvasToolRows.gridOpacity(rows, state.questDetailsGridOpacityPercent, rightClick -> {
                     state.questDetailsGridOpacityPercent = cyclePercent(state.questDetailsGridOpacityPercent, toolPercentStep(), rightClick);
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid-opacity percent={}", state.questDetailsGridOpacityPercent);
                     refresh.run();
                 });
 
         CanvasToolRows.backgroundOpacity(rows, state.questDetailsCanvasBgOpacityPercent, rightClick -> {
                     state.questDetailsCanvasBgOpacityPercent = cyclePercent(state.questDetailsCanvasBgOpacityPercent, toolPercentStep(), rightClick);
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool bg-opacity percent={}", state.questDetailsCanvasBgOpacityPercent);
                     refresh.run();
                 });
 
         CanvasToolRows.canvasLock(rows, state.questDetailsCanvasLocked, () -> {
                     state.questDetailsCanvasLocked = !state.questDetailsCanvasLocked;
-                    QuestDetailsDescriptionModel.saveTools(player, questId, state);
+                    persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool lock-canvas enabled={}", state.questDetailsCanvasLocked);
                     refresh.run();
                 });

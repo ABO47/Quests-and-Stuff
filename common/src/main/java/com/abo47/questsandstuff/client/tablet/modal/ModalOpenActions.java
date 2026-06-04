@@ -74,6 +74,8 @@ public final class ModalOpenActions {
         state.questDetailsPickTarget = target == null ? "" : target;
         state.recipeSearch = "";
         state.recipeTagMode = false;
+        state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScroll = 0;
         state.recipeScrollDragging = false;
         state.recipeSearchFocused = false;
@@ -181,6 +183,23 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL);
     }
 
+    public static void openPrerequisitesManager(TabletUiState state, String questId) {
+        closeBeforeOpen(state);
+        state.prerequisitesManagerQuestId = questId == null ? "" : questId.trim();
+        state.prerequisitesManagerSearch = "";
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerExternalMode = false;
+        state.prerequisitesManagerScroll = 0;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerContextPrerequisiteId = "";
+        state.prerequisitesManagerSelectedConnectionKey = "";
+        state.prerequisitesManagerHoveredConnectionKey = "";
+        state.contextDeleteConfirmKey = "";
+        state.contextMenuOpen = false;
+        openModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER);
+    }
+
     public static void openAssetPicker(TabletUiState state, String target) {
         openAssetPicker(state, target, "");
     }
@@ -190,6 +209,22 @@ public final class ModalOpenActions {
         state.questDetailsAssetPickTarget = target == null ? "" : target;
         resetAssetPicker(state);
         state.assetSelected = selectedAsset == null ? "" : selectedAsset;
+        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+    }
+
+    public static void openBlueprintPicker(TabletUiState state, String selectedBlueprint) {
+        closeBeforeOpen(state);
+        state.modalBlueprintTarget = "canvas";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        resetAssetPicker(state);
+        state.assetBrowseDir = "blueprints";
+        state.assetSelected = selectedBlueprint == null ? "" : selectedBlueprint;
         openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
     }
 
@@ -444,6 +479,27 @@ public final class ModalOpenActions {
         openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
+    public static void openCanvasRecipePicker(TabletUiState state, String target, int logicalX, int logicalY) {
+        closeBeforeOpen(state);
+        state.modalCanvasModelTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalChapterTarget = "";
+        state.modalQuestTarget = "";
+        state.questDetailsPickTarget = target == null ? "" : target;
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
+        state.recipeSearch = "";
+        state.recipeTagMode = false;
+        state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
+        state.recipeScroll = 0;
+        state.recipeScrollDragging = false;
+        state.recipeSearchFocused = false;
+        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+    }
+
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
         closeBeforeOpen(state);
         state.entityVariantTarget = target == null ? "" : target;
@@ -463,6 +519,8 @@ public final class ModalOpenActions {
         state.iconTagMode = false;
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
+        state.iconInventoryMode = false;
+        state.iconFluidMode = false;
         state.iconScroll = 0;
         state.iconScrollDragging = false;
     }
@@ -512,5 +570,11 @@ public final class ModalOpenActions {
 
     private static void closeBeforeOpen(TabletUiState state) {
         ModalCloseActions.closeAllImmediately(state);
+        state.contextMenuOpen = false;
+        state.contextQuestCompletionSoundMenuOpen = false;
+        state.questDetailsContextOpen = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.assetContextOpen = false;
+        state.colorPaletteContextOpen = false;
     }
 }

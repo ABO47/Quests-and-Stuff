@@ -5,7 +5,6 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
@@ -41,7 +40,6 @@ final class QuestDetailsWindowLifecycle {
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
-        QuestDetailsDescriptionModel.applyToolsToState(state, QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetailsQuestId)));
         CompoundTag quest = ClientQuestCache.quest(state.questDetailsQuestId);
         state.pendingQuestTitleChangeId = "";
         state.questTitleDraft = quest == null ? "" : quest.getString("title");
@@ -109,6 +107,8 @@ final class QuestDetailsWindowLifecycle {
         QuestDetailsTransientState.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         state.questDetailsDraggingSplitter = false;
+        state.questDetailsDescScrollDragging = false;
+        state.questDetailsPanning = false;
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
         clearSelectionState(state);
@@ -137,7 +137,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
-        List<String> ids = new ArrayList<>(ClientQuestCache.quests().keySet());
+        List<String> ids = new ArrayList<>(ClientQuestCache.questIds());
         if (ids.isEmpty()) {
             return;
         }
@@ -162,6 +162,8 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextLastClickId = "";
         state.questDetailsTextLastClickAtMs = 0L;
         state.questDetailsDraggingSplitter = false;
+        state.questDetailsDescScrollDragging = false;
+        state.questDetailsPanning = false;
         clearSelectionState(state);
         state.boxSelecting = false;
         state.draggingCanvas = false;

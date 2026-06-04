@@ -30,8 +30,10 @@ public final class QuestsAndStuffConfig {
     private static boolean chapterSwitchAnimations = true;
     private static boolean fullScreenMode;
     private static boolean minimap = true;
+    private static boolean visualMinimap;
     private static boolean readOnlyCanvasFocus = true;
     private static boolean questEffectIcons;
+    private static boolean canvasMiniNotifications;
     private static boolean autoClaimRewards;
     private static boolean commandRewards = true;
     private static boolean completionHud = true;
@@ -238,6 +240,19 @@ public final class QuestsAndStuffConfig {
         }
     }
 
+    public static boolean visualMinimapEnabled() {
+        load();
+        return visualMinimap;
+    }
+
+    public static void setVisualMinimapEnabled(boolean enabled) {
+        load();
+        if (visualMinimap != enabled) {
+            visualMinimap = enabled;
+            save();
+        }
+    }
+
     public static boolean readOnlyCanvasFocusEnabled() {
         load();
         return readOnlyCanvasFocus;
@@ -260,6 +275,19 @@ public final class QuestsAndStuffConfig {
         load();
         if (questEffectIcons != enabled) {
             questEffectIcons = enabled;
+            save();
+        }
+    }
+
+    public static boolean canvasMiniNotificationsEnabled() {
+        load();
+        return canvasMiniNotifications;
+    }
+
+    public static void setCanvasMiniNotificationsEnabled(boolean enabled) {
+        load();
+        if (canvasMiniNotifications != enabled) {
+            canvasMiniNotifications = enabled;
             save();
         }
     }
@@ -351,8 +379,10 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = object(root, "canvas");
         fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
         minimap = bool(canvas, "minimap", minimap);
+        visualMinimap = bool(canvas, "visualMinimap", visualMinimap);
         readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
         questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
+        canvasMiniNotifications = bool(canvas, "miniNotifications", canvasMiniNotifications);
 
         JsonObject rewards = object(root, "rewards");
         autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
@@ -386,8 +416,10 @@ public final class QuestsAndStuffConfig {
         JsonObject canvas = new JsonObject();
         canvas.addProperty("fullScreenMode", fullScreenMode);
         canvas.addProperty("minimap", minimap);
+        canvas.addProperty("visualMinimap", visualMinimap);
         canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
         canvas.addProperty("questEffectIcons", questEffectIcons);
+        canvas.addProperty("miniNotifications", canvasMiniNotifications);
         root.add("canvas", canvas);
 
         JsonObject rewards = new JsonObject();

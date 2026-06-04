@@ -48,7 +48,10 @@ public final class ConnectionRenderer {
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return connectionColor(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("connection_colors", Tag.TAG_COMPOUND)) {
             CompoundTag colorsTag = target.getCompound("connection_colors");
             if (colorsTag.contains(sourceQuestId, Tag.TAG_INT)) {
@@ -69,7 +72,10 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("hidden_connections", Tag.TAG_LIST)) {
             ListTag hiddenTag = target.getList("hidden_connections", Tag.TAG_STRING);
             for (int i = 0; i < hiddenTag.size(); i++) {
@@ -104,7 +110,10 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        CompoundTag target = ClientQuestCache.quests().get(targetQuestId);
+        return isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         if (target != null && target.contains("connection_modes", Tag.TAG_COMPOUND)) {
             String mode = target.getCompound("connection_modes").getString(sourceQuestId);
             if ("grid".equals(mode)) {
@@ -139,6 +148,18 @@ public final class ConnectionRenderer {
             int viewportW,
             int viewportH
     ) {
+        List<ConnectionLine> lines = new ArrayList<>(prerequisiteConnectionLines(state, cards, byQuestId, viewportW, viewportH));
+        lines.addAll(pendingConnectionLines(state, byQuestId, viewportW, viewportH));
+        renderConnectionLines(canvasViewport, state, lines);
+    }
+
+    public static List<ConnectionLine> prerequisiteConnectionLines(
+            TabletUiState state,
+            List<QuestCardLayout> cards,
+            Map<String, QuestCardLayout> byQuestId,
+            int viewportW,
+            int viewportH
+    ) {
         List<ConnectionLine> lines = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
         String group = selectedGroupName(state);
@@ -164,7 +185,7 @@ public final class ConnectionRenderer {
                         && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId());
+                boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId(), questTag);
 
                 lines.add(new ConnectionLine(
                         edgeId,
@@ -182,14 +203,53 @@ public final class ConnectionRenderer {
                         prerequisite.centerY(),
                         quest.centerX(),
                         quest.centerY(),
-                        isConnectionDirect(state, group, prerequisiteId, quest.questId()),
+                        isConnectionDirect(state, group, prerequisiteId, quest.questId(), questTag),
                         false,
-                        connectionColor(state, group, prerequisiteId, quest.questId()),
+                        connectionColor(state, group, prerequisiteId, quest.questId(), questTag),
                         hidden,
                         hidden ? 64 : 245
                 ));
             }
         }
+        return lines;
+    }
+
+    public static List<String> prerequisiteConnectionLayerKeys(
+            TabletUiState state,
+            List<QuestCardLayout> cards,
+            Map<String, QuestCardLayout> byQuestId,
+            int viewportW,
+            int viewportH
+    ) {
+        List<ConnectionLine> lines = prerequisiteConnectionLines(state, cards, byQuestId, viewportW, viewportH);
+        List<String> keys = new ArrayList<>();
+        for (ConnectionLine line : lines) {
+            keys.add(CanvasLayerOrdering.connectionKey(line.edgeId()));
+        }
+        return keys;
+    }
+
+    public static void renderConnectionLayer(WidgetGroup canvasViewport, TabletUiState state, ConnectionLine line) {
+        renderConnectionLines(canvasViewport, state, line == null ? List.of() : List.of(line));
+    }
+
+    public static void renderPendingConnections(
+            WidgetGroup canvasViewport,
+            TabletUiState state,
+            Map<String, QuestCardLayout> byQuestId,
+            int viewportW,
+            int viewportH
+    ) {
+        renderConnectionLines(canvasViewport, state, pendingConnectionLines(state, byQuestId, viewportW, viewportH));
+    }
+
+    private static List<ConnectionLine> pendingConnectionLines(
+            TabletUiState state,
+            Map<String, QuestCardLayout> byQuestId,
+            int viewportW,
+            int viewportH
+    ) {
+        List<ConnectionLine> lines = new ArrayList<>();
         if (state.canEdit) {
             Set<String> pendingSources = new HashSet<>(state.connectSourceQuestIds);
             if (!state.connectSourceQuestId.isBlank()) {
@@ -223,6 +283,10 @@ public final class ConnectionRenderer {
                 }
             }
         }
+        return lines;
+    }
+
+    private static void renderConnectionLines(WidgetGroup canvasViewport, TabletUiState state, List<ConnectionLine> lines) {
         if (lines.isEmpty()) {
             return;
         }
@@ -261,6 +325,14 @@ public final class ConnectionRenderer {
                 new CanvasPoint(midX, targetY),
                 new CanvasPoint(targetX, targetY)
         );
+    }
+
+    public static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
+        drawTexturedChevrons(graphics, path, color, alpha, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
+    public static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
+        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, scale, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     private static void drawConnection(
@@ -382,8 +454,24 @@ public final class ConnectionRenderer {
             int clipMaxX,
             int clipMaxY
     ) {
-        int glyphW = 5;
-        int glyphH = 9;
+        drawTexturedChevrons(graphics, path, color, alpha, progress, 1.0f, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
+    private static void drawTexturedChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            int color,
+            int alpha,
+            float progress,
+            float scale,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        float safeScale = Math.max(0.25f, Math.min(2.0f, scale));
+        int glyphW = Math.max(1, Math.round(5 * safeScale));
+        int glyphH = Math.max(1, Math.round(9 * safeScale));
         double spacing = Math.max(1.0, glyphW - 1.0);
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
@@ -555,7 +643,7 @@ public final class ConnectionRenderer {
         buffer.vertex(matrix, x, y, 0.0f).uv(u, v).color(glyph.color()).endVertex();
     }
 
-    private record ConnectionLine(
+    public record ConnectionLine(
             String edgeId,
             String sourceQuestId,
             String targetQuestId,

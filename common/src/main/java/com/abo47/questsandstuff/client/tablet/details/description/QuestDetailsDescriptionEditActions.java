@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -15,6 +15,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 final class QuestDetailsDescriptionEditActions {
+    private static final int RECIPE_CARD_W = 136;
+    private static final int RECIPE_CARD_H = 92;
+
     private QuestDetailsDescriptionEditActions() {
     }
 
@@ -23,6 +26,7 @@ final class QuestDetailsDescriptionEditActions {
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 16);
         CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", ModColors.TEXT_PRIMARY);
+        text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -73,12 +77,21 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add block model pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
+    static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
+        String id = nextDescriptionRecipeId(modelForQuest(questId));
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - RECIPE_CARD_W / 2);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - RECIPE_CARD_H / 2);
+        QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipeNew(questId, id, Math.max(0, x), Math.max(0, y)));
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card pending quest={} image={} pos={},{}", questId, id, x, y);
+    }
+
     static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         CanvasTextLayer text = model.text(id);
         if (text == null) {
             return;
         }
-        model.putText(QuestDetailsDescriptionLayout.fittedText(state, text));
+        CanvasTextLayer fitted = QuestDetailsDescriptionLayout.fittedText(state, text);
+        model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
         state.questDetailsSelectedTextId = id;
     }
@@ -88,22 +101,26 @@ final class QuestDetailsDescriptionEditActions {
         if (image == null) {
             return;
         }
-        model.putImage(QuestDetailsDescriptionLayout.fittedImage(state, image));
+        CanvasImageLayer fitted = QuestDetailsDescriptionLayout.fittedImage(state, image);
+        model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
         state.questDetailsSelectedImageId = id;
     }
 
     static void fitSelectionToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+        int contentW = QuestDetailsWindow.descriptionContentWidth(state);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                model.putText(QuestDetailsDescriptionLayout.fittedText(state, text));
+                CanvasTextLayer fitted = QuestDetailsDescriptionLayout.fittedText(state, text);
+                model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, fitted, contentW));
             }
         }
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                model.putImage(QuestDetailsDescriptionLayout.fittedImage(state, image));
+                CanvasImageLayer fitted = QuestDetailsDescriptionLayout.fittedImage(state, image);
+                model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, fitted, contentW));
             }
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -120,10 +137,11 @@ final class QuestDetailsDescriptionEditActions {
         if (delta == 0) {
             return;
         }
+        int contentW = Math.max(1, viewportW - 1);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                model.putText(new CanvasTextLayer(
+                CanvasTextLayer moved = new CanvasTextLayer(
                         text.id(),
                         text.text(),
                         horizontal ? Math.max(0, text.x() + delta) : text.x(),
@@ -136,16 +154,18 @@ final class QuestDetailsDescriptionEditActions {
                         text.color(),
                         text.fontSize(),
                         text.spans()
-                ));
+                );
+                model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, moved, contentW));
             }
         }
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                model.putImage(image.moveTo(
+                CanvasImageLayer moved = image.moveTo(
                         horizontal ? Math.max(0, image.x() + delta) : image.x(),
                         horizontal ? image.y() : Math.max(0, image.y() + delta)
-                ));
+                );
+                model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, moved, contentW));
             }
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -245,7 +265,7 @@ final class QuestDetailsDescriptionEditActions {
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                int[] box = CanvasGeometry.rotatedBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
+                int[] box = CanvasElementGeometry.logicalBounds(text.x(), text.y(), text.w(), text.h(), text.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1]);
                 maxX = Math.max(maxX, box[2]);
@@ -255,7 +275,7 @@ final class QuestDetailsDescriptionEditActions {
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                int[] box = CanvasGeometry.rotatedBounds(image.x(), image.y(), image.w(), image.h(), image.rotation());
+                int[] box = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 minX = Math.min(minX, box[0]);
                 minY = Math.min(minY, box[1]);
                 maxX = Math.max(maxX, box[2]);
@@ -290,5 +310,9 @@ final class QuestDetailsDescriptionEditActions {
 
     private static String nextDescriptionBlockId(QuestDetailsDescriptionModel model) {
         return StableIdAllocator.nextId("blk", model == null ? List.of() : model.images.keySet());
+    }
+
+    private static String nextDescriptionRecipeId(QuestDetailsDescriptionModel model) {
+        return StableIdAllocator.nextId("rcp", model == null ? List.of() : model.images.keySet());
     }
 }

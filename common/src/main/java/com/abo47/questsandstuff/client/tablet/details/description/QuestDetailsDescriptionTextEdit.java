@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -154,9 +154,8 @@ public final class QuestDetailsDescriptionTextEdit {
         withSelectionGeometry(() -> {
             CanvasTextLayer draft = text.withText(state.canvasTextEditDraft);
             double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, draft, lx, visibleY);
-            int sw = CanvasGeometry.screenSpan(state, draft.w());
-            int sh = CanvasGeometry.screenSpan(state, draft.h());
-            hit[0] = local[0] >= 0 && local[0] <= sw && local[1] >= 0 && local[1] <= sh;
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, draft.x(), draft.y(), draft.w(), draft.h(), draft.rotation());
+            hit[0] = local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
         });
         return hit[0];
     }
@@ -192,7 +191,7 @@ public final class QuestDetailsDescriptionTextEdit {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         CanvasTextLayer text = model.text(state.canvasTextEditTarget);
         if (text != null) {
-            model.putText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft)));
+            model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft))));
             QuestDetailsDescriptionModel.save(Minecraft.getInstance().player, questId, model);
         } else {
             previewTextDraft();
@@ -216,7 +215,7 @@ public final class QuestDetailsDescriptionTextEdit {
             return;
         }
         state.questDetailsTextEditDraft = state.canvasTextEditDraft;
-        model.putText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft)));
+        model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvasTextEditDraft))));
         QuestDetailsDescriptionModel.preview(questId, model);
         refresh.run();
     }
@@ -262,10 +261,14 @@ public final class QuestDetailsDescriptionTextEdit {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         CanvasTextLayer text = model.text(state.canvasTextEditTarget);
         if (text != null) {
-            model.putText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, insert)));
+            model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, insert))));
             QuestDetailsDescriptionModel.preview(questId, model);
         }
         refresh.run();
+    }
+
+    private CanvasTextLayer fitEditedText(CanvasTextLayer text) {
+        return QuestDetailsDescriptionLayout.fitAndClampText(state, text, contentW.getAsInt());
     }
 
     private void moveTextCursor(int cursor, boolean extendSelection) {

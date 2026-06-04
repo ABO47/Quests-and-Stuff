@@ -17,6 +17,8 @@ import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,13 @@ public final class QuestRuntimeEngine {
         this.index = new QuestRuntimeIndex(definitionStore.quests());
     }
 
+    public void refreshIndex(Set<String> questIds) {
+        if (questIds == null || questIds.isEmpty()) {
+            return;
+        }
+        index.upsertAll(definitionsForIds(questIds));
+    }
+
     public void preparePlayerForFullSync(ServerPlayer player) {
         if (player == null || progressData == null) {
             return;
@@ -63,6 +72,35 @@ public final class QuestRuntimeEngine {
         if (!changedQuestIds.isEmpty()) {
             progressData.setDirty();
         }
+    }
+
+    public Set<String> preparePlayersForDeltaSync(List<ServerPlayer> players, Set<String> seedQuestIds) {
+        Set<String> changedQuestIds = new HashSet<>();
+        if (seedQuestIds != null) {
+            changedQuestIds.addAll(seedQuestIds);
+        }
+        if (players == null || players.isEmpty() || progressData == null || changedQuestIds.isEmpty()) {
+            return changedQuestIds;
+        }
+
+        List<QuestDefinition> definitions = definitionsForIds(changedQuestIds);
+        if (definitions.isEmpty()) {
+            return changedQuestIds;
+        }
+
+        for (ServerPlayer player : players) {
+            if (player == null) {
+                continue;
+            }
+            Set<String> playerChanged = new HashSet<>();
+            PlayerQuestState state = progressData.state(player.getUUID());
+            reconcileUnlocks(player, player.getUUID(), state, playerChanged, player.server.getTickCount(), false, definitions);
+            if (!playerChanged.isEmpty()) {
+                changedQuestIds.addAll(playerChanged);
+                progressData.setDirty();
+            }
+        }
+        return changedQuestIds;
     }
 
     public void preparePlayersForFullSync(List<ServerPlayer> players) {
@@ -145,11 +183,11 @@ public final class QuestRuntimeEngine {
     }
 
     public boolean hasQuest(String questId) {
-        return definitionStore.quests().containsKey(questId);
+        return definitionStore.containsQuest(questId);
     }
 
     public Set<String> questIds() {
-        return definitionStore.quests().keySet();
+        return definitionStore.questIds();
     }
 
     public boolean isQuestCompleted(UUID playerId, String questId) {
@@ -161,7 +199,7 @@ public final class QuestRuntimeEngine {
     }
 
     boolean recomputeCompletion(ServerPlayer actor, UUID ownerId, PlayerQuestState state, String questId, long serverTick, boolean announce) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = definitionStore.quest(questId);
         if (definition == null) {
             return false;
         }
@@ -197,10 +235,18 @@ public final class QuestRuntimeEngine {
     }
 
     private void reconcileUnlocks(ServerPlayer actor, UUID ownerId, PlayerQuestState state, Set<String> changedQuestIds, long tick, boolean announce) {
-        int passes = Math.max(1, definitionStore.quests().size());
+        reconcileUnlocks(actor, ownerId, state, changedQuestIds, tick, announce, definitionStore.questDefinitions());
+    }
+
+    private void reconcileUnlocks(ServerPlayer actor, UUID ownerId, PlayerQuestState state, Set<String> changedQuestIds, long tick, boolean announce, Collection<QuestDefinition> definitions) {
+        Collection<QuestDefinition> candidates = definitions == null ? List.of() : definitions;
+        int passes = Math.max(1, candidates.size());
         for (int pass = 0; pass < passes; pass++) {
             boolean changedThisPass = false;
-            for (QuestDefinition definition : definitionStore.quests().values()) {
+            for (QuestDefinition definition : candidates) {
+                if (definition == null) {
+                    continue;
+                }
                 QuestProgressState progress = state.quest(definition.id());
                 boolean shouldBeUnlocked = shouldBeUnlocked(state, definition, progress);
                 if (progress.unlocked() == shouldBeUnlocked) {
@@ -233,6 +279,20 @@ public final class QuestRuntimeEngine {
                 return;
             }
         }
+    }
+
+    private List<QuestDefinition> definitionsForIds(Set<String> questIds) {
+        if (questIds == null || questIds.isEmpty()) {
+            return List.of();
+        }
+        List<QuestDefinition> definitions = new ArrayList<>();
+        for (String questId : questIds) {
+            QuestDefinition definition = definitionStore.quest(questId);
+            if (definition != null) {
+                definitions.add(definition);
+            }
+        }
+        return definitions;
     }
 
     private boolean shouldBeUnlocked(PlayerQuestState state, QuestDefinition definition, QuestProgressState progress) {

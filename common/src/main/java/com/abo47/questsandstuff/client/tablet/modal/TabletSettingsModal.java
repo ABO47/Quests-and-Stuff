@@ -2,18 +2,22 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
+import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -187,6 +191,15 @@ public final class TabletSettingsModal {
                         false
                 ),
                 new SettingOption(
+                        "visualMinimap",
+                        "ui.questsandstuff.settings.visual_minimap",
+                        "ui.questsandstuff.settings.visual_minimap_desc",
+                        QuestsAndStuffConfig::visualMinimapEnabled,
+                        QuestsAndStuffConfig::setVisualMinimapEnabled,
+                        false,
+                        false
+                ),
+                new SettingOption(
                         "readOnlyCanvasFocus",
                         "ui.questsandstuff.settings.read_only_canvas_focus",
                         "ui.questsandstuff.settings.read_only_canvas_focus_desc",
@@ -203,12 +216,30 @@ public final class TabletSettingsModal {
                         QuestsAndStuffConfig::setQuestEffectIconsEnabled,
                         false,
                         false
+                ),
+                new SettingOption(
+                        "canvasMiniNotifications",
+                        "ui.questsandstuff.settings.canvas_mini_notifications",
+                        "ui.questsandstuff.settings.canvas_mini_notifications_desc",
+                        QuestsAndStuffConfig::canvasMiniNotificationsEnabled,
+                        QuestsAndStuffConfig::setCanvasMiniNotificationsEnabled,
+                        false,
+                        false
                 )
         );
     }
 
     private static List<SettingOption> hudOptions() {
         return List.of(
+                new SettingOption(
+                        "editHudLayout",
+                        "ui.questsandstuff.hud.layout.button",
+                        "ui.questsandstuff.hud.layout.button_tooltip",
+                        () -> {
+                            Minecraft.getInstance().setScreen(new QuestHudLayoutEditScreen());
+                            QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from settings");
+                        }
+                ),
                 new SettingOption(
                         "completionHud",
                         "ui.questsandstuff.settings.completion_hud",
@@ -338,6 +369,10 @@ public final class TabletSettingsModal {
     }
 
     private static void renderOptionRow(WidgetGroup list, SettingOption option, int rowY, int rowW, Runnable refresh) {
+        if (option.isAction()) {
+            renderActionOptionRow(list, option, rowY, rowW);
+            return;
+        }
         if (option.number()) {
             renderNumberOptionRow(list, option, rowY, rowW, refresh);
             return;
@@ -372,6 +407,28 @@ public final class TabletSettingsModal {
                 refresh,
                 tooltips
         ));
+        list.addWidget(hit);
+    }
+
+    private static void renderActionOptionRow(WidgetGroup list, SettingOption option, int rowY, int rowW) {
+        int rowX = ROW_INSET;
+        int rowH = ROW_H - ROW_INSET;
+        int cardW = Math.max(1, rowW - ROW_INSET * 2);
+        list.addWidget(panel(rowX, rowY, cardW, rowH, withAlpha(ModColors.INTERACTIVE, 28), ModColors.BORDER_BASE));
+        Component[] tooltips = tooltips(option);
+        int iconSize = 14;
+        int iconX = rowX + cardW - iconSize - SWITCH_GAP;
+        var texture = UiIconAtlas.iconTexture("hud_layout");
+        if (texture != null) {
+            list.addWidget(new ImageWidget(iconX, rowY + Math.max(1, (rowH - iconSize) / 2), iconSize, iconSize, texture));
+        }
+        int textW = Math.max(16, iconX - rowX - 14);
+        int crop = Math.max(14, textW / 6);
+        list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), ModColors.TEXT_PRIMARY));
+        ButtonWidget hit = flatHitButton(rowX, rowY, cardW, rowH, click -> option.runAction());
+        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 58), ModColors.BORDER_ACCENT));
+        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82)));
+        hit.setHoverTooltips(tooltips);
         list.addWidget(hit);
     }
 
@@ -452,6 +509,12 @@ public final class TabletSettingsModal {
     }
 
     private static Component[] tooltips(SettingOption option) {
+        if (option.isAction()) {
+            return new Component[]{
+                    Component.translatable(option.labelKey()).withStyle(ChatFormatting.WHITE),
+                    Component.translatable(option.descriptionKey()).withStyle(ChatFormatting.GRAY)
+            };
+        }
         if (!option.requiresGlobalAnimation()) {
             return new Component[]{
                     Component.translatable(option.labelKey()).withStyle(ChatFormatting.WHITE),
@@ -483,6 +546,7 @@ public final class TabletSettingsModal {
             Consumer<Boolean> setter,
             IntSupplier intGetter,
             IntConsumer intSetter,
+            Runnable action,
             int min,
             int max,
             int maxLength,
@@ -505,6 +569,7 @@ public final class TabletSettingsModal {
                     SettingOptionKind.TOGGLE,
                     getter,
                     setter,
+                    null,
                     null,
                     null,
                     0,
@@ -535,12 +600,41 @@ public final class TabletSettingsModal {
                     null,
                     intGetter,
                     intSetter,
+                    null,
                     min,
                     max,
                     maxLength,
                     restartRequired,
                     false
             );
+        }
+
+        SettingOption(
+                String id,
+                String labelKey,
+                String descriptionKey,
+                Runnable action
+        ) {
+            this(
+                    id,
+                    labelKey,
+                    descriptionKey,
+                    SettingOptionKind.ACTION,
+                    null,
+                    null,
+                    null,
+                    null,
+                    action,
+                    0,
+                    0,
+                    0,
+                    false,
+                    false
+            );
+        }
+
+        boolean isAction() {
+            return kind == SettingOptionKind.ACTION;
         }
 
         boolean number() {
@@ -562,12 +656,17 @@ public final class TabletSettingsModal {
         void setIntValue(int value) {
             intSetter.accept(value);
         }
+
+        void runAction() {
+            action.run();
+        }
     }
 
     private record SettingTab(int id, String logName, String labelKey) {
     }
 
     private enum SettingOptionKind {
+        ACTION,
         TOGGLE,
         NUMBER
     }

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.selection;
 
+import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -101,6 +103,28 @@ public final class CanvasGroupResizeTransform {
     ) {
         Map<String, CanvasImageLayer> resized = new LinkedHashMap<>();
         for (CanvasImageLayer image : source.values()) {
+            int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+            int targetLeft = (int) Math.round(target.left() + (bounds[0] - start.left()) * scaleX);
+            int targetTop = (int) Math.round(target.top() + (bounds[1] - start.top()) * scaleY);
+            int targetRight = (int) Math.round(target.left() + (bounds[2] - start.left()) * scaleX);
+            int targetBottom = (int) Math.round(target.top() + (bounds[3] - start.top()) * scaleY);
+            if (CanvasGeometry.isCardinalTurn(image.rotation())) {
+                CanvasGeometry.ResizedBox box = CanvasGeometry.fitRotatedElementToVisualBoundsAtPivot(
+                        targetLeft,
+                        targetTop,
+                        Math.max(1, targetRight - targetLeft),
+                        Math.max(1, targetBottom - targetTop),
+                        image.w(),
+                        image.h(),
+                        image.pivotX(),
+                        image.pivotY(),
+                        image.rotation(),
+                        8,
+                        8
+                );
+                resized.put(image.id(), image.withBounds(box.x(), box.y(), box.width(), box.height()));
+                continue;
+            }
             int targetW = Math.max(8, (int) Math.round(image.w() * scaleX));
             int targetH = Math.max(8, (int) Math.round(image.h() * scaleY));
             double centerX = target.left() + (image.x() + image.w() / 2.0D - start.left()) * scaleX;
@@ -121,6 +145,30 @@ public final class CanvasGroupResizeTransform {
     ) {
         Map<String, CanvasTextLayer> resized = new LinkedHashMap<>();
         for (CanvasTextLayer text : source.values()) {
+            int textPivotX = CanvasElementGeometry.defaultPivot(text.w());
+            int textPivotY = CanvasElementGeometry.defaultPivot(text.h());
+            int[] bounds = CanvasElementGeometry.logicalBoundsAtPivot(text.x(), text.y(), text.w(), text.h(), textPivotX, textPivotY, text.rotation());
+            int targetLeft = (int) Math.round(target.left() + (bounds[0] - start.left()) * scaleX);
+            int targetTop = (int) Math.round(target.top() + (bounds[1] - start.top()) * scaleY);
+            int targetRight = (int) Math.round(target.left() + (bounds[2] - start.left()) * scaleX);
+            int targetBottom = (int) Math.round(target.top() + (bounds[3] - start.top()) * scaleY);
+            if (CanvasGeometry.isCardinalTurn(text.rotation())) {
+                CanvasGeometry.ResizedBox box = CanvasGeometry.fitRotatedElementToVisualBoundsAtPivot(
+                        targetLeft,
+                        targetTop,
+                        Math.max(1, targetRight - targetLeft),
+                        Math.max(1, targetBottom - targetTop),
+                        text.w(),
+                        text.h(),
+                        textPivotX,
+                        textPivotY,
+                        text.rotation(),
+                        24,
+                        14
+                );
+                resized.put(text.id(), text.moveTo(box.x(), box.y()).resizeTo(box.width(), box.height()));
+                continue;
+            }
             int targetW = Math.max(24, (int) Math.round(text.w() * scaleX));
             int targetH = Math.max(14, (int) Math.round(text.h() * scaleY));
             double centerX = target.left() + (text.x() + text.w() / 2.0D - start.left()) * scaleX;

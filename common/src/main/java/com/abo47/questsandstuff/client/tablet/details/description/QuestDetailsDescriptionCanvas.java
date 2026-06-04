@@ -75,7 +75,11 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (!isMouseOverElement(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        setScroll(state.questDetailsDescScroll + (wheelDelta < 0 ? 18 : -18));
+        int previous = state.questDetailsDescScroll;
+        setScroll(previous + (wheelDelta < 0 ? 18 : -18));
+        if (state.questDetailsDescScroll != previous) {
+            refresh.run();
+        }
         return true;
     }
 
@@ -106,7 +110,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         int visibleY = localY(mouseY);
         int ly = visibleY + state.questDetailsDescScroll;
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY, ly);
+        QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY);
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "rotate");
@@ -465,7 +469,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     private void setScroll(int scroll) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampReadOnlyScroll(state, model, contentH(), scroll);
+        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, contentH(), scroll);
     }
 
     private void storeContextPosition(double mouseX, double mouseY, int lx, int ly) {

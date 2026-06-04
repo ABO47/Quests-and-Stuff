@@ -2,9 +2,11 @@ package com.abo47.questsandstuff.client.canvas.contextmenu;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
@@ -83,6 +85,9 @@ final class CanvasContextCanvasActions {
             int x = snapToGrid(state, state.contextPointerLogicalX - textW / 2);
             int y = snapToGrid(state, state.contextPointerLogicalY - textH / 2);
             CanvasTextLayer text = new CanvasTextLayer(id, "Text", x, y, textW, textH, 0, "left", "normal", ModColors.TEXT_PRIMARY);
+            if (state.gridSnapLocked) {
+                text = CanvasGridFitController.fittedText(state, text);
+            }
             CanvasRenderer.putCanvasText(state, selectedGroup, text);
             state.selectedCanvasTextId = id;
             state.selectedCanvasImageId = "";
@@ -100,6 +105,14 @@ final class CanvasContextCanvasActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_text_box group={} id={} logical={},{}", selectedGroup, id, x, y);
             canvasViewport.refresh();
         }));
+        if (RecipeViewerIntegrations.hasAvailableViewer()) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.add_recipe_card"), "recipe", ModColors.SUCCESS, () -> {
+                ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeNew(selectedGroup), state.contextPointerLogicalX, state.contextPointerLogicalY);
+                state.contextMenuOpen = false;
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_recipe_card group={} logical={},{}", selectedGroup, state.contextLogicalX, state.contextLogicalY);
+                canvasViewport.refresh();
+            }));
+        }
         if (!ClientQuestCache.groupCanvasBackground(selectedGroup).isBlank()
                 && !"default".equals(ClientQuestCache.groupCanvasBackground(selectedGroup))) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", ModColors.WARNING, () -> {

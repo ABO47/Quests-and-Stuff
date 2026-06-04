@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
@@ -63,12 +64,19 @@ public final class CanvasModelPickerActions {
     private static void addModel(TabletUiState state, ModalTargetParser.Target parsed, String group, String asset) {
         String id = StableIdAllocator.nextId(parsed.isCanvasBlockNew() ? "blk" : "itm", canvasImageIds(state, group));
         int size = Math.max(MIN_MODEL_SIZE, CanvasGeometry.gridSize(state) * 3);
-        int x = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalX - size / 2);
-        int y = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalY - size / 2);
+        int x = state.canvasImageLogicalX - size / 2;
+        int y = state.canvasImageLogicalY - size / 2;
+        if (!state.gridSnapLocked) {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, size, size);
         CanvasImageLayer image = CanvasModelPreviewRenderer.isBlockModelAsset(asset)
                 ? new CanvasImageLayer(id, asset, clamped.x, clamped.y, size, size, 0, CanvasModelPreviewRenderer.DEFAULT_BLOCK_YAW, CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED, CanvasModelPreviewRenderer.DEFAULT_BLOCK_PITCH)
                 : new CanvasImageLayer(id, asset, clamped.x, clamped.y, size, size, 0);
+        if (state.gridSnapLocked) {
+            image = CanvasGridFitController.fittedImage(state, image);
+        }
         CanvasRenderer.putCanvasImage(state, group, image);
         selectOnlyImage(state, id);
         state.draggingCanvasImage = false;

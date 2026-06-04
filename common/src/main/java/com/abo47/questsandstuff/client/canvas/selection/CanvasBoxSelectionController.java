@@ -78,7 +78,7 @@ public final class CanvasBoxSelectionController {
         state.selectedCanvasImageIds.addAll(state.boxSelectionBaseCanvasImageIds);
         String lastImageId = "";
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, image.x(), image.y(), image.w(), image.h(), image.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
                 state.selectedCanvasImageIds.add(image.id());

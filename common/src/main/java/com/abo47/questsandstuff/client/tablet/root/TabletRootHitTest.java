@@ -69,19 +69,19 @@ public final class TabletRootHitTest {
         if (!state.assetContextOpen || !state.assetPickerOpen) {
             return false;
         }
+        if (state.assetContextMenuW <= 0 || state.assetContextMenuH <= 0) {
+            return false;
+        }
         int rootW = TabletUiFactory.rootWidth(state);
         int rootH = TabletUiFactory.rootHeight(state);
         int w = Math.max(1, Math.min(432, rootW - 32));
         int h = Math.max(1, Math.min(260, rootH - 32));
         int mx = (rootW - w) / 2;
         int my = (rootH - h) / 2;
-        int ctxX = Math.max(170, Math.min(166 + state.assetContextX, w - TabletUiFactory.SHARED_MENU_W - 6));
-        int ctxY = Math.max(26, Math.min(22 + state.assetContextY, h - (state.assetRenameOpen ? 120 : 66)));
-        int ctxW = TabletUiFactory.SHARED_MENU_W;
-        int ctxH = state.assetRenameOpen ? 106 : 52;
-        int absX = rootX + mx + ctxX;
-        int absY = rootY + my + ctxY;
-        return mouseX >= absX && mouseX <= absX + ctxW && mouseY >= absY && mouseY <= absY + ctxH;
+        int absX = rootX + mx + state.assetContextMenuX;
+        int absY = rootY + my + state.assetContextMenuY;
+        return mouseX >= absX && mouseX <= absX + state.assetContextMenuW
+                && mouseY >= absY && mouseY <= absY + state.assetContextMenuH;
     }
 
     public static boolean isInsideCanvasViewport(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {

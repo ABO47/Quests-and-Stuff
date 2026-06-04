@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.hud.QuestHudLayout;
@@ -22,6 +24,14 @@ public final class AssetPickerApplyActions {
     }
 
     public static void run(Player player, TabletUiState state, String background) {
+        String blueprintTarget = state.modalBlueprintTarget == null ? "" : state.modalBlueprintTarget.trim();
+        if (!blueprintTarget.isBlank()) {
+            CanvasBlueprintController.beginPlacement(state, background);
+            state.modalBlueprintTarget = "";
+            state.assetBrowseDir = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] picked blueprint target={} asset={}", blueprintTarget, background);
+            return;
+        }
         String soundTarget = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
         if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
             int count = state.modalQuestCompletionSoundTargets.size();
@@ -98,10 +108,17 @@ public final class AssetPickerApplyActions {
         int[] imageSize = canvasImageSpawnSize(state, asset);
         int imageW = imageSize[0];
         int imageH = imageSize[1];
-        int x = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalX - imageW / 2);
-        int y = TabletUiFactory.snapToGrid(state, state.canvasImageLogicalY - imageH / 2);
+        int x = state.canvasImageLogicalX - imageW / 2;
+        int y = state.canvasImageLogicalY - imageH / 2;
+        if (!state.gridSnapLocked) {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, imageW, imageH);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, imageW, imageH, 0);
+        if (state.gridSnapLocked) {
+            image = CanvasGridFitController.fittedImage(state, image);
+        }
         CanvasRenderer.putCanvasImage(state, group, image);
         state.selectedCanvasImageId = id;
         state.selectedQuestIds.clear();

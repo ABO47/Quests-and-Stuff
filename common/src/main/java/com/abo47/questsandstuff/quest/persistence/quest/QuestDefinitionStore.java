@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,22 @@ public final class QuestDefinitionStore {
 
     public Map<String, QuestDefinition> quests() {
         return Map.copyOf(quests);
+    }
+
+    public QuestDefinition quest(String questId) {
+        return quests.get(normalizeQuestId(questId));
+    }
+
+    public boolean containsQuest(String questId) {
+        return quests.containsKey(normalizeQuestId(questId));
+    }
+
+    public Set<String> questIds() {
+        return Set.copyOf(quests.keySet());
+    }
+
+    public List<QuestDefinition> questDefinitions() {
+        return List.copyOf(quests.values());
     }
 
     public Path clipboardDir() {
@@ -185,6 +202,10 @@ public final class QuestDefinitionStore {
         chapters.setCanvasLayerOrder(group, order);
     }
 
+    public void putCanvasLayers(String group, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> order) {
+        chapters.putCanvasLayers(group, images, texts, order);
+    }
+
     public void replaceAll(Map<String, QuestDefinition> replacement) {
         Set<String> previousIds = new HashSet<>(quests.keySet());
 
@@ -306,6 +327,14 @@ public final class QuestDefinitionStore {
         String canonicalId = normalizeQuestId(questId);
         QuestDefinition definition = quests.get(canonicalId);
         saveQueue.saveNow(canonicalId, definition);
+    }
+
+    public void saveNow(Collection<String> questIds) {
+        if (questIds != null) {
+            for (String questId : questIds) {
+                saveNow(questId);
+            }
+        }
     }
 
     public void saveAll() {

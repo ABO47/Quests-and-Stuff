@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -57,5 +58,9 @@ public final class EditorCanvasSessionActions {
 
     public void pasteClipboardInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY) {
         clipboardEdits.pasteClipboardInGroup(player, groupName, anchorX, anchorY);
+    }
+
+    public void pasteBlueprintInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
+        clipboardEdits.pasteBlueprintInGroup(player, groupName, anchorX, anchorY, blueprint);
     }
 }

@@ -30,6 +30,7 @@ public final class TabletModalState {
         state.colorPickerOpen = flags.colorOpen();
         state.themePickerOpen = flags.themeOpen();
         state.entityVariantPickerOpen = flags.entityVariantOpen();
+        state.prerequisitesManagerOpen = flags.prerequisitesManagerOpen();
         state.settingsPanelOpen = flags.settingsOpen();
     }
 
@@ -142,6 +143,7 @@ public final class TabletModalState {
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
         state.modalCanvasModelTarget = "";
+        state.modalBlueprintTarget = "";
         state.modalQuestBackgroundTarget = "";
         state.modalQuestBackgroundTargets.clear();
         state.modalQuestBackgroundGrayscale = false;
@@ -168,16 +170,21 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        clearPrerequisitesManagerState(state);
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
+        state.iconInventoryMode = false;
+        state.iconFluidMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
@@ -209,6 +216,10 @@ public final class TabletModalState {
         state.assetRenameOpen = false;
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerHoveredConnectionKey = "";
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
@@ -217,6 +228,8 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
@@ -241,6 +254,25 @@ public final class TabletModalState {
         state.colorPaletteScrollDragging = false;
         state.themeScrollDragging = false;
         state.settingsScrollDragging = false;
+    }
+
+    private static void clearPrerequisitesManagerState(TabletUiState state) {
+        state.prerequisitesManagerQuestId = "";
+        state.prerequisitesManagerSearch = "";
+        state.prerequisitesManagerSearchFocused = false;
+        state.prerequisitesManagerExternalMode = false;
+        state.prerequisitesManagerScroll = 0;
+        state.prerequisitesManagerScrollDragging = false;
+        state.prerequisitesManagerContextOpen = false;
+        state.prerequisitesManagerContextPrerequisiteId = "";
+        state.prerequisitesManagerSelectedConnectionKey = "";
+        state.prerequisitesManagerHoveredConnectionKey = "";
+        state.prerequisitesManagerContextX = 0;
+        state.prerequisitesManagerContextY = 0;
+        state.prerequisitesManagerContextMenuX = 0;
+        state.prerequisitesManagerContextMenuY = 0;
+        state.prerequisitesManagerContextMenuW = 0;
+        state.prerequisitesManagerContextMenuH = 0;
     }
 
     private static void clearAnimationState(TabletUiState state) {

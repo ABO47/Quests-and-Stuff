@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.overlay;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTextRenderer;
@@ -55,7 +56,7 @@ public final class CanvasTextStyleMenu {
         int btnW = bounds[4];
         int columns = bounds[5];
 
-        renderShared(canvasViewport, state, text, x, y, menuW, menuH, btnW, columns, "canvas", refresh, next -> CanvasRenderer.putCanvasText(state, group, next), () -> {
+        renderShared(canvasViewport, state, text, x, y, menuW, menuH, btnW, columns, "canvas", refresh, next -> CanvasRenderer.putCanvasText(state, group, fitCanvasText(state, next)), () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(group, text.id()), text.color());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker group={} id={}", group, text.id());
             refresh.run();
@@ -158,6 +159,10 @@ public final class CanvasTextStyleMenu {
         keepQuestDetailsStyleMenuOpen(state, logScope, next.id());
         QuestsAndStuffMod.debugLog("[QnS:UI] {} text style id={}", logScope, oldText.id());
         refresh.run();
+    }
+
+    private static CanvasTextLayer fitCanvasText(TabletUiState state, CanvasTextLayer text) {
+        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private static void addTextStyleButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, int baseColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {

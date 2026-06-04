@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.QuestNetwork;
 import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -143,6 +144,25 @@ final class EditorCanvasCommandClient {
         payload.putInt("x", x);
         payload.putInt("y", y);
         QuestNetwork.sendToServer(new C2SEditorCommandPacket("paste_clipboard", payload));
+    }
+
+    static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank() || blueprint == null || blueprint.isEmpty()) {
+            return;
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request group={} anchor={},{} entries={} integratedServer={}",
+                group, x, y, blueprint.contentCount(), player instanceof ServerPlayer);
+        if (player instanceof ServerPlayer serverPlayer) {
+            QuestServices.editor(serverPlayer.server).pasteBlueprintInGroup(serverPlayer, group, x, y, blueprint);
+            return;
+        }
+        CompoundTag payload = new CompoundTag();
+        payload.putString("group", group);
+        payload.putInt("x", x);
+        payload.putInt("y", y);
+        payload.put("blueprint", blueprint.toPacketTag());
+        QuestNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.PASTE_BLUEPRINT.wireName(), payload));
     }
 
     static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {

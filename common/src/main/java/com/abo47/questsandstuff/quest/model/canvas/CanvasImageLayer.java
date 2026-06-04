@@ -90,6 +90,9 @@ public record CanvasImageLayer(String id, String asset, int x, int y, int w, int
         if (oldSpan <= 0) {
             return centerPivot(newSpan);
         }
+        if (pivot == centerPivot(oldSpan)) {
+            return centerPivot(newSpan);
+        }
         return Math.round((float) pivot * (float) Math.max(1, newSpan) / (float) oldSpan);
     }
 }

@@ -32,6 +32,8 @@ public final class ModalTargets {
     public static final String DESC_ITEM_NEW = "desc_item_new";
     public static final String DESC_BLOCK = "desc_block";
     public static final String DESC_BLOCK_NEW = "desc_block_new";
+    public static final String DESC_RECIPE = "desc_recipe";
+    public static final String DESC_RECIPE_NEW = "desc_recipe_new";
     public static final String QUEST_DESC_TEXT = "quest_desc_text";
     public static final String CANVAS_ENTITY_NEW = "new";
     public static final String CANVAS_ENTITY_CHANGE = "change";
@@ -39,6 +41,8 @@ public final class ModalTargets {
     public static final String CANVAS_ITEM_CHANGE = "item_change";
     public static final String CANVAS_BLOCK_NEW = "block_new";
     public static final String CANVAS_BLOCK_CHANGE = "block_change";
+    public static final String CANVAS_RECIPE_NEW = "recipe_new";
+    public static final String CANVAS_RECIPE_CHANGE = "recipe_change";
     public static final String CANVAS_IMAGE = "canvas";
     public static final String CANVAS_TEXT = "canvas_text";
     public static final String CONNECTION = "connection";
@@ -181,6 +185,14 @@ public final class ModalTargets {
         return of(DESC_BLOCK_NEW, questId, imageId, x, y);
     }
 
+    public static String descRecipe(String questId, String imageId) {
+        return of(DESC_RECIPE, questId, imageId);
+    }
+
+    public static String descRecipeNew(String questId, String imageId, int x, int y) {
+        return of(DESC_RECIPE_NEW, questId, imageId, x, y);
+    }
+
     public static String questDescText(String questId, String textId) {
         return of(QUEST_DESC_TEXT, questId, textId);
     }
@@ -207,6 +219,14 @@ public final class ModalTargets {
 
     public static String canvasBlockChange(String group, String imageId) {
         return of(CANVAS_BLOCK_CHANGE, group, imageId);
+    }
+
+    public static String canvasRecipeNew(String group) {
+        return of(CANVAS_RECIPE_NEW, group);
+    }
+
+    public static String canvasRecipeChange(String group, String imageId) {
+        return of(CANVAS_RECIPE_CHANGE, group, imageId);
     }
 
     public static String canvasImage(String group, String imageId) {

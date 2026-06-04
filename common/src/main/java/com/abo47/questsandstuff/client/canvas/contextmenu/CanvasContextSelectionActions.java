@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.canvas.contextmenu;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
@@ -32,6 +33,15 @@ final class CanvasContextSelectionActions {
     static void addSelectionActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
         if (state.contextMenuTarget != ContextMenuTarget.SELECTION || selectedGroup.isBlank()) {
             return;
+        }
+        if (CanvasRenderer.totalCanvasSelectionCount(state) > 0) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ModColors.INTERACTIVE, () -> {
+                boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextLastClickX, state.contextLastClickY);
+                state.contextMenuOpen = false;
+                state.contextDeleteConfirmKey = "";
+                QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", CanvasRenderer.totalCanvasSelectionCount(state), saved);
+                canvasViewport.refresh();
+            }));
         }
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
             if (state.contextQuestCompletionSoundMenuOpen && state.selectedQuestIds.size() > 1) {

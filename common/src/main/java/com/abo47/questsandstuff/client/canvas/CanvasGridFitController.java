@@ -173,34 +173,12 @@ public final class CanvasGridFitController {
         return changed;
     }
 
-    private static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
-        int grid = CanvasGeometry.gridSize(state);
-        int nextW = snapSpanToGrid(image.w(), grid, 8);
-        int nextH = snapSpanToGrid(image.h(), grid, 8);
-        CanvasPoint anchor = CanvasGeometry.fitRotatedAnchorToGrid(image.x(), image.y(), image.w(), image.h(), nextW, nextH, image.rotation(), grid);
-        CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
-                state,
-                anchor.x,
-                anchor.y,
-                nextW,
-                nextH
-        );
-        return image.withBounds(clamped.x, clamped.y, nextW, nextH);
+    public static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
+        return CanvasElementGridFit.fittedImage(image, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
-    private static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
-        int grid = CanvasGeometry.gridSize(state);
-        int nextW = snapSpanToGrid(text.w(), grid, 24);
-        int nextH = snapSpanToGrid(text.h(), grid, 14);
-        CanvasPoint anchor = CanvasGeometry.fitRotatedAnchorToGrid(text.x(), text.y(), text.w(), text.h(), nextW, nextH, text.rotation(), grid);
-        CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
-                state,
-                anchor.x,
-                anchor.y,
-                nextW,
-                nextH
-        );
-        return new CanvasTextLayer(text.id(), text.text(), clamped.x, clamped.y, nextW, nextH, text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+    public static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
+        return CanvasElementGridFit.fittedText(text, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
     private static FittedQuest fittedQuest(TabletUiState state, QuestCardLayout card) {
@@ -233,15 +211,6 @@ public final class CanvasGridFitController {
                 .filter(image -> image.id().equals(imageId))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private static int snapSpanToGrid(int value, int grid, int min) {
-        int safeGrid = Math.max(1, grid);
-        int snapped = Math.max(safeGrid, Math.round((float) Math.max(1, value) / (float) safeGrid) * safeGrid);
-        while (snapped < min) {
-            snapped += safeGrid;
-        }
-        return snapped;
     }
 
     private static int snapToGrid(int value, int grid) {

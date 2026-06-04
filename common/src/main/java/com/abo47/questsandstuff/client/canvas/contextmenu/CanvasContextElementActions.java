@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
@@ -31,7 +32,15 @@ final class CanvasContextElementActions {
             return;
         }
         CanvasImageLayer contextImage = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
-        if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
+        if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
+                ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                state.contextDeleteConfirmKey = "";
+                state.contextMenuOpen = false;
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card group={} image={}", selectedGroup, state.contextCanvasImageId);
+                canvasViewport.refresh();
+            }));
+        } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";

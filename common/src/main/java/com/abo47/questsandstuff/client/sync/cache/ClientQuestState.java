@@ -2,8 +2,10 @@ package com.abo47.questsandstuff.client.sync.cache;
 
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,6 +60,18 @@ public final class ClientQuestState {
 
     public static boolean containsQuest(String questId) {
         return QUESTS.containsKey(normalizeQuestId(questId));
+    }
+
+    public static List<Map.Entry<String, CompoundTag>> questEntries() {
+        List<Map.Entry<String, CompoundTag>> entries = new ArrayList<>(QUESTS.size());
+        for (Map.Entry<String, CompoundTag> entry : QUESTS.entrySet()) {
+            entries.add(Map.entry(entry.getKey(), entry.getValue()));
+        }
+        return List.copyOf(entries);
+    }
+
+    public static Set<String> questIdsSnapshot() {
+        return Collections.unmodifiableSet(new TreeSet<>(QUESTS.keySet()));
     }
 
     public static boolean removeQuest(String questId) {

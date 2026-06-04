@@ -16,6 +16,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,31 +45,50 @@ final class QuestSyncPayloadBuilder {
     }
 
     CompoundTag groupPropsTag(Set<String> visibleQuestIds, boolean includeAllGroups) {
+        return groupPropsTagForGroups(Set.copyOf(definitionStore.groupOrder()));
+    }
+
+    CompoundTag groupPropsTagForGroups(Set<String> groups) {
         CompoundTag groupProps = new CompoundTag();
+        if (groups == null || groups.isEmpty()) {
+            return groupProps;
+        }
+        Set<String> pending = new HashSet<>(groups);
         for (String group : definitionStore.groupOrder()) {
-            CompoundTag entry = new CompoundTag();
-            entry.putString("icon", definitionStore.groupIcon(group));
-            entry.putString("background", definitionStore.groupBackground(group));
-            entry.putString("canvas_background", definitionStore.groupCanvasBackground(group));
-            entry.putString("text_align", definitionStore.groupTextAlign(group));
-            entry.putInt("text_color", definitionStore.groupTextColor(group));
-            entry.putString("text_style", definitionStore.groupTextStyle(group));
-            entry.putInt("text_size", definitionStore.groupTextSize(group));
-            entry.putBoolean("lock_until_unlocked", definitionStore.groupLockUntilUnlocked(group));
-            entry.putBoolean("hide_until_unlocked", definitionStore.groupHideUntilUnlocked(group));
-            entry.put("canvas_images", CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
-            entry.put("canvas_texts", CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
-            entry.put("canvas_layer_order", CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));
-            groupProps.put(group, entry);
+            if (pending.remove(group)) {
+                groupProps.put(group, groupPropsEntry(group));
+            }
+        }
+        for (String group : pending) {
+            if (group != null && !group.isBlank()) {
+                groupProps.put(group, groupPropsEntry(group));
+            }
         }
         return groupProps;
+    }
+
+    private CompoundTag groupPropsEntry(String group) {
+        CompoundTag entry = new CompoundTag();
+        entry.putString("icon", definitionStore.groupIcon(group));
+        entry.putString("background", definitionStore.groupBackground(group));
+        entry.putString("canvas_background", definitionStore.groupCanvasBackground(group));
+        entry.putString("text_align", definitionStore.groupTextAlign(group));
+        entry.putInt("text_color", definitionStore.groupTextColor(group));
+        entry.putString("text_style", definitionStore.groupTextStyle(group));
+        entry.putInt("text_size", definitionStore.groupTextSize(group));
+        entry.putBoolean("lock_until_unlocked", definitionStore.groupLockUntilUnlocked(group));
+        entry.putBoolean("hide_until_unlocked", definitionStore.groupHideUntilUnlocked(group));
+        entry.put("canvas_images", CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
+        entry.put("canvas_texts", CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
+        entry.put("canvas_layer_order", CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));
+        return entry;
     }
 
     CompoundTag questPayload(PlayerQuestState playerState, Set<String> questIds) {
         CompoundTag questsTag = new CompoundTag();
 
         for (String questId : questIds) {
-            QuestDefinition definition = definitionStore.quests().get(questId);
+            QuestDefinition definition = definitionStore.quest(questId);
             if (definition == null) {
                 continue;
             }

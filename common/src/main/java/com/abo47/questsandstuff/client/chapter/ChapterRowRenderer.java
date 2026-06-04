@@ -282,6 +282,8 @@ final class ChapterRowRenderer {
             state.iconTagMode = false;
             state.iconAllItemsMode = false;
             state.iconEntityMode = false;
+            state.iconInventoryMode = false;
+            state.iconFluidMode = false;
             state.iconScroll = 0;
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(group));
             TabletUiFactory.persistUiState(state);

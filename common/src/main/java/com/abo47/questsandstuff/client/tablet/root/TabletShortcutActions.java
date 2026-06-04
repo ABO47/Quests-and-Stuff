@@ -75,9 +75,10 @@ final class TabletShortcutActions {
             state.snapGuideYVisible = false;
             changed = true;
         }
-        if (state.questDetailsBoxSelecting || state.questDetailsPanning || !state.questDetailsTransformKind.isBlank()) {
+        if (state.questDetailsBoxSelecting || state.questDetailsPanning || state.questDetailsDescScrollDragging || !state.questDetailsTransformKind.isBlank()) {
             state.questDetailsBoxSelecting = false;
             state.questDetailsPanning = false;
+            state.questDetailsDescScrollDragging = false;
             state.questDetailsTransformKind = "";
             state.questDetailsTransformId = "";
             state.questDetailsTransformMode = "";
@@ -202,7 +203,7 @@ final class TabletShortcutActions {
         for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
             CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, group, imageId);
             if (image != null) {
-                CanvasPoint point = CanvasGeometry.clampAnchorToCanvas(state, image.x() + dx, image.y() + dy, image.w(), image.h());
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 CanvasRenderer.putCanvasImage(state, group, image.moveTo(point.x, point.y));
                 changed = true;
             }
@@ -210,7 +211,7 @@ final class TabletShortcutActions {
         for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
             CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, textId);
             if (text != null) {
-                CanvasPoint point = CanvasGeometry.clampAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h());
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
                 CanvasRenderer.putCanvasText(state, group, text.moveTo(point.x, point.y));
                 changed = true;
             }
