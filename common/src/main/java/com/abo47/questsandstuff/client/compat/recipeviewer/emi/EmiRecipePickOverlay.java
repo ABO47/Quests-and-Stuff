@@ -124,6 +124,10 @@ public final class EmiRecipePickOverlay {
     }
 
     private static String recipeId(Object recipe) {
+        Object originalId = fieldValue(recipe, "originalId");
+        if (originalId != null) {
+            return originalId.toString();
+        }
         Object id = invoke(recipe, "getId");
         return id == null ? "" : id.toString();
     }
