@@ -20,9 +20,12 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 
 final class QuestDetailsSplitterWidget extends WidgetGroup {
     private static final int MIN_DETAILS_LEFT_W = 120;
+    private static final long HOVER_PULSE_MS = 900L;
 
     private final TabletUiState state;
     private final Runnable refresh;
+    private boolean hoverActive;
+    private long hoverPulseStartMs;
 
     QuestDetailsSplitterWidget(int x, TabletUiState state, Runnable refresh) {
         super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H);
@@ -32,18 +35,19 @@ final class QuestDetailsSplitterWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        boolean hovered = !state.questDetailsSplitterLocked && (state.questDetailsDraggingSplitter || isMouseOverElement(mouseX, mouseY));
-        TabletResizeCursor.update(hovered);
+        boolean hovered = state.questDetailsDraggingSplitter || isMouseOverElement(mouseX, mouseY);
+        boolean resizeHovered = hovered && !state.questDetailsSplitterLocked;
+        TabletResizeCursor.update(resizeHovered);
+        updateHoverPulse(hovered);
 
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();
         int height = getSizeHeight();
-        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, 96) : ModColors.SURFACE_BASE;
-        int border = hovered ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
+        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha()) : ModColors.SURFACE_BASE;
         graphics.fill(left, top, left + width, top + height, fill);
-        graphics.fill(left, top, left + width, top + 1, border);
-        graphics.fill(left, top + height - 1, left + width, top + height, border);
+        graphics.fill(left, top, left + width, top + 1, ModColors.BORDER_BASE);
+        graphics.fill(left, top + height - 1, left + width, top + height, ModColors.BORDER_BASE);
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }
@@ -96,5 +100,19 @@ final class QuestDetailsSplitterWidget extends WidgetGroup {
 
     static int clampDetailsLeftWidth(int width) {
         return Math.max(MIN_DETAILS_LEFT_W, Math.min(CHAPTER_W_MAX, Math.max(CHAPTER_W_MIN, width)));
+    }
+
+    private void updateHoverPulse(boolean hovered) {
+        if (hovered && !hoverActive) {
+            hoverPulseStartMs = System.currentTimeMillis();
+        }
+        hoverActive = hovered;
+    }
+
+    private int hoverPulseAlpha() {
+        long elapsed = Math.max(0L, System.currentTimeMillis() - hoverPulseStartMs);
+        double phase = (elapsed % HOVER_PULSE_MS) / (double) HOVER_PULSE_MS;
+        double wave = 0.5D + Math.sin(phase * Math.PI * 2.0D) * 0.5D;
+        return 56 + (int) Math.round(wave * 62.0D);
     }
 }

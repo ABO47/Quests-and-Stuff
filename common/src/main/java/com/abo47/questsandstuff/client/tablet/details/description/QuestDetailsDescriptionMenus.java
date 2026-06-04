@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.canvas.overlay.CanvasTextStyleMenu;
 import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
@@ -128,10 +129,12 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
-            QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
-        }));
+        if (RecipeViewerIntegrations.hasAvailableViewer()) {
+            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
+                state.contextDeleteConfirmKey = "";
+                QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
+            }));
+        }
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
