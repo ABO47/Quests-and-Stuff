@@ -109,6 +109,9 @@ public final class UiIconAtlas {
             case "context_image" -> add(names, "image");
             case "context_grid" -> add(names, "grid");
             case "context_fit_grid" -> add(names, "fit_grid");
+            case "context_focus" -> add(names, "focus");
+            case "context_backpack" -> add(names, "backpack");
+            case "context_selectable" -> add(names, "selectable");
             case "context_size" -> add(names, "size");
             case "context_reset_zoom" -> add(names, "reset_zoom");
             case "context_reset_quest" -> add(names, "reset_quest");
@@ -139,7 +142,7 @@ public final class UiIconAtlas {
             case "context_minimap" -> add(names, "minimap");
             case "mode_items" -> add(names, "icon");
             case "mode_tags" -> add(names, "name_tag");
-            case "mode_inventory" -> add(names, "box");
+            case "mode_inventory" -> add(names, "backpack");
             case "mode_fluids" -> add(names, "droplet");
             case "picker_search" -> add(names, "search");
             case "style_align_left" -> add(names, "align-left");

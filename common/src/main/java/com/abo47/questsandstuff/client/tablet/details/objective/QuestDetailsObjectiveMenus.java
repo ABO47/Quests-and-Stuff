@@ -123,7 +123,7 @@ public final class QuestDetailsObjectiveMenus {
             QuestDetailsTransientState.closeItemSourcePicker(state);
             QuestDetailsWindow.openIconPicker(state, target);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.FROM_INVENTORY), "open", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.FROM_INVENTORY), "backpack", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsTransientState.closeItemSourcePicker(state);
             QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
@@ -209,7 +209,7 @@ public final class QuestDetailsObjectiveMenus {
             }));
         }
         if (!selectable) {
-            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "claim_all", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "selectable", ModColors.INTERACTIVE, () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));

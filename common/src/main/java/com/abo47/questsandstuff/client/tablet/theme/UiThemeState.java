@@ -121,6 +121,9 @@ final class UiThemeState {
         iconRoles.put("context_grid", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_fit_grid", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("fit_grid", UiThemeManager.ROLE_ICON_DEFAULT);
+        iconRoles.put("context_focus", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        iconRoles.put("context_backpack", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        iconRoles.put("context_selectable", UiThemeManager.ROLE_ICON_INTERACTIVE);
         iconRoles.put("context_snap", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_inspector", UiThemeManager.ROLE_ICON_DEFAULT);
         iconRoles.put("context_minimap", UiThemeManager.ROLE_ICON_DEFAULT);

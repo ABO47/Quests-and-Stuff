@@ -81,7 +81,7 @@ final class TabletAssets {
         TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(
                 "tools", "grid", "editor", "scroll", "align-center-horizontal", "align-center-vertical", "objects", "entity", "close", "search", "add", "rename", "delete",
                 "copy", "paste", "connect", "settings-2", "stat", "recipe", "item_use", "item_interact",
-                "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open", "file-up", "file-down", "manual_check",
+                "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open", "focus", "context_focus", "backpack", "context_backpack", "selectable", "context_selectable", "file-up", "file-down", "manual_check",
                 "size", "opacity", "magnet", "lock", "unlock", "lock_canvas", "unlock_canvas", "lock_separator", "unlock_separator",
                 "lock_quest", "unlock_quest", "lock_chapter", "unlock_chapter",
                 "background_opacity", "reset_zoom", "reset_quest", "repeat", "repeat-off", "variant", "motion", "properties", "minimap",
