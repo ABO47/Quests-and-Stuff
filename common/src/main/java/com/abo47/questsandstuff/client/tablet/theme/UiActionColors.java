@@ -30,8 +30,10 @@ public final class UiActionColors {
     }
 
     private static boolean warning(String key, String text) {
-        return containsAny(key, "warning", "reset", "close", "cut", "eye-off", "lock", "repeat-off")
-                || containsAny(text, "reset", "cancel", "hide", "lock", "disable", "non-repeatable", "not repeatable");
+        return containsAny(key, "warning", "reset", "close", "cut", "eye-off", "repeat-off")
+                || containsToken(key, "lock")
+                || containsAny(text, "reset", "cancel", "hide", "disable", "non-repeatable", "not repeatable")
+                || containsToken(text, "lock");
     }
 
     private static boolean positive(String key, String text) {
@@ -51,6 +53,28 @@ public final class UiActionColors {
             }
         }
         return false;
+    }
+
+    private static boolean containsToken(String value, String token) {
+        int start = 0;
+        while (start < value.length()) {
+            while (start < value.length() && isTokenSeparator(value.charAt(start))) {
+                start++;
+            }
+            int end = start;
+            while (end < value.length() && !isTokenSeparator(value.charAt(end))) {
+                end++;
+            }
+            if (end - start == token.length() && value.regionMatches(start, token, 0, token.length())) {
+                return true;
+            }
+            start = end + 1;
+        }
+        return false;
+    }
+
+    private static boolean isTokenSeparator(char c) {
+        return !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'));
     }
 
     private static String normalize(String value) {
