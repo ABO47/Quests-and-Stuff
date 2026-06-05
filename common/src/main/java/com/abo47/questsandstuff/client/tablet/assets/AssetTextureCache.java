@@ -47,6 +47,9 @@ final class AssetTextureCache {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
+        if (!AssetPathResolver.hasImageThumbnail(background)) {
+            return null;
+        }
         IGuiTexture out = "gif".equals(ext) ? loadGifTexture(path, cacheKey, grayscale) : loadStaticTexture(path, cacheKey, grayscale);
         if (out != null) {
             TEXTURE_CACHE.put(cacheKey, out);
@@ -62,6 +65,9 @@ final class AssetTextureCache {
                 return null;
             }
             String ext = AssetPathResolver.extension(path.getFileName().toString());
+            if (!AssetPathResolver.hasImageThumbnail(relativePath)) {
+                return null;
+            }
             if ("gif".equals(ext)) {
                 AssetLibrary.AssetDimensions gifDimensions = gifDimensions(path);
                 if (gifDimensions != null) {
@@ -93,6 +99,9 @@ final class AssetTextureCache {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
+        if (!AssetPathResolver.hasImageThumbnail(relativePath)) {
+            return null;
+        }
         IGuiTexture out = "gif".equals(ext) ? loadGifFallbackStatic(path, relativePath + "_thumb", false) : loadStaticTexture(path, relativePath + "_thumb", false);
         if (out != null) {
             THUMBNAIL_CACHE.put(relativePath, out);

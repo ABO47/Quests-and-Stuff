@@ -130,6 +130,35 @@ final class AssetPathResolver {
         return isSupportedImage(fileName);
     }
 
+    static AssetLibrary.AssetKind assetKind(String relativePath, boolean directory) {
+        if (directory) {
+            return AssetLibrary.AssetKind.DIRECTORY;
+        }
+        String rel = normalizeRelative(relativePath);
+        if (rel.isBlank()) {
+            return AssetLibrary.AssetKind.UNKNOWN;
+        }
+        String parent = parentRelative(rel);
+        String ext = extension(rel);
+        if (parent.equals("sounds") || parent.startsWith("sounds/")) {
+            return isSupportedSoundExtension(ext) ? AssetLibrary.AssetKind.SOUND : AssetLibrary.AssetKind.UNKNOWN;
+        }
+        if (parent.equals("blueprints") || parent.startsWith("blueprints/")) {
+            return isSupportedBlueprintExtension(ext) ? AssetLibrary.AssetKind.BLUEPRINT : AssetLibrary.AssetKind.UNKNOWN;
+        }
+        if ("gif".equals(ext)) {
+            return AssetLibrary.AssetKind.GIF;
+        }
+        if (isSupportedStaticImageExtension(ext)) {
+            return AssetLibrary.AssetKind.IMAGE;
+        }
+        return AssetLibrary.AssetKind.UNKNOWN;
+    }
+
+    static boolean hasImageThumbnail(String relativePath) {
+        return assetKind(relativePath, false).hasImageThumbnail();
+    }
+
     static String extension(String fileName) {
         int dot = fileName.lastIndexOf('.');
         if (dot < 0 || dot + 1 >= fileName.length()) {
@@ -202,15 +231,26 @@ final class AssetPathResolver {
 
     private static boolean isSupportedImage(String fileName) {
         String ext = extension(fileName);
-        return "png".equals(ext) || "jpg".equals(ext) || "jpeg".equals(ext) || "webp".equals(ext) || "gif".equals(ext);
+        return isSupportedStaticImageExtension(ext) || "gif".equals(ext);
     }
 
     private static boolean isSupportedSound(String fileName) {
-        String ext = extension(fileName);
-        return "ogg".equals(ext) || "wav".equals(ext);
+        return isSupportedSoundExtension(extension(fileName));
     }
 
     private static boolean isSupportedBlueprint(String fileName) {
-        return "json".equals(extension(fileName));
+        return isSupportedBlueprintExtension(extension(fileName));
+    }
+
+    private static boolean isSupportedStaticImageExtension(String ext) {
+        return "png".equals(ext) || "jpg".equals(ext) || "jpeg".equals(ext) || "webp".equals(ext);
+    }
+
+    private static boolean isSupportedSoundExtension(String ext) {
+        return "ogg".equals(ext) || "wav".equals(ext);
+    }
+
+    private static boolean isSupportedBlueprintExtension(String ext) {
+        return "json".equals(ext);
     }
 }

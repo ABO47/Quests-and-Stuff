@@ -80,9 +80,10 @@ public final class TabletAssetPickerModal {
         preview.addWidget(label(8, 20, selected.isBlank()
                 ? TabletModalPanel.tr(blueprintPicker ? "ui.questsandstuff.blueprints.none_selected" : soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
                 : crop(selected, 22), ModColors.TEXT_SECONDARY));
-        AssetLibrary.AssetDimensions dims = soundPicker || blueprintPicker || selected.isBlank() ? null : assetDimensions(selected);
-        if (soundPicker) {
-            String previewSound = selected.startsWith("sounds/") ? selected : "";
+        AssetLibrary.AssetKind selectedKind = selected.isBlank() ? AssetLibrary.AssetKind.UNKNOWN : AssetLibrary.assetKind(selected);
+        AssetLibrary.AssetDimensions dims = selectedKind.hasImageThumbnail() ? assetDimensions(selected) : null;
+        if (soundPicker || selectedKind == AssetLibrary.AssetKind.SOUND) {
+            String previewSound = selectedKind == AssetLibrary.AssetKind.SOUND ? selected : "";
             if (!previewSound.isBlank()) {
                 int volumeY = Math.max(46, previewH - 24);
                 int playY = 34;
@@ -90,7 +91,7 @@ public final class TabletAssetPickerModal {
                 preview.addWidget(new SoundPreviewPlayerWidget(8, playY, leftW - 16, playH, previewSound, () -> state.soundVolumeDraft));
                 SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, leftW - 16, previewSound);
             }
-        } else if (blueprintPicker) {
+        } else if (blueprintPicker || selectedKind == AssetLibrary.AssetKind.BLUEPRINT) {
             CanvasBlueprint blueprint = CanvasBlueprintStore.read(selected);
             preview.addWidget(label(8, 32, blueprint.isEmpty()
                     ? TabletModalPanel.tr("ui.questsandstuff.common.none_short")
@@ -178,34 +179,39 @@ public final class TabletAssetPickerModal {
             int iconSize = Math.max(24, Math.min(96, Math.min(cellW - 24, iconAreaH - 12)));
             int iconX = Math.max(0, (cellW - iconSize) / 2);
             int iconY = Math.max(4, (iconAreaH - iconSize) / 2);
-            if (entry.directory()) {
+            if (entry.kind() == AssetLibrary.AssetKind.DIRECTORY) {
                 var folderIcon = UiIconAtlas.iconTexture("folder");
                 if (folderIcon != null) {
                     tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
                 } else {
                     tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", ModColors.TEXT_MUTED));
                 }
-            } else {
+            } else if (entry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
+                CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
+                if (!blueprint.isEmpty()) {
+                    tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget(4, 4, Math.max(12, cellW - 8), Math.max(16, iconAreaH - 4), blueprint));
+                } else {
+                    var blueprintIcon = UiIconAtlas.iconTexture("scroll");
+                    if (blueprintIcon != null) {
+                        tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
+                    }
+                }
+            } else if (entry.kind().hasImageThumbnail()) {
                 IGuiTexture thumb = assetThumbnailTexture(relative);
                 if (thumb != null) {
                     int thumbW = Math.max(12, cellW - 14);
                     int thumbH = Math.max(16, iconAreaH - 4);
                     tile.addWidget(new ImageWidget((cellW - thumbW) / 2, 4, thumbW, thumbH, thumb));
-                } else if (relative.startsWith("sounds/")) {
-                    var soundIcon = UiIconAtlas.iconTexture("audio-lines");
-                    if (soundIcon != null) {
-                        tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, soundIcon));
-                    }
-                } else if (relative.startsWith("blueprints/")) {
-                    CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
-                    if (!blueprint.isEmpty()) {
-                        tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget(4, 4, Math.max(12, cellW - 8), Math.max(16, iconAreaH - 4), blueprint));
-                    } else {
-                        var blueprintIcon = UiIconAtlas.iconTexture("scroll");
-                        if (blueprintIcon != null) {
-                            tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
-                        }
-                    }
+                }
+            } else if (entry.kind() == AssetLibrary.AssetKind.SOUND) {
+                var soundIcon = UiIconAtlas.iconTexture("audio-lines");
+                if (soundIcon != null) {
+                    tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, soundIcon));
+                }
+            } else {
+                var fileIcon = UiIconAtlas.iconTexture("file");
+                if (fileIcon != null) {
+                    tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, fileIcon));
                 }
             }
             if (renaming) {

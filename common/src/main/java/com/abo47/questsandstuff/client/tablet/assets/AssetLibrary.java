@@ -9,7 +9,23 @@ public final class AssetLibrary {
     private AssetLibrary() {
     }
 
-    public record AssetEntry(String name, String relativePath, boolean directory) {
+    public enum AssetKind {
+        DIRECTORY,
+        IMAGE,
+        GIF,
+        SOUND,
+        BLUEPRINT,
+        UNKNOWN;
+
+        public boolean hasImageThumbnail() {
+            return this == IMAGE || this == GIF;
+        }
+    }
+
+    public record AssetEntry(String name, String relativePath, boolean directory, AssetKind kind) {
+        public AssetEntry(String name, String relativePath, boolean directory) {
+            this(name, relativePath, directory, AssetPathResolver.assetKind(relativePath, directory));
+        }
     }
 
     public record AssetDimensions(int width, int height) {
@@ -29,6 +45,10 @@ public final class AssetLibrary {
 
     public static List<AssetEntry> searchAssetEntries(Path assetsRoot, String relativeDir, String query) {
         return AssetSearchIndex.searchAssetEntries(assetsRoot, relativeDir, query);
+    }
+
+    public static AssetKind assetKind(String relativePath) {
+        return AssetPathResolver.assetKind(relativePath, false);
     }
 
     public static AssetDimensions assetDimensions(Path assetsRoot, String relativePath) {
