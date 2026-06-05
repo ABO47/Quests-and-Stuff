@@ -103,6 +103,11 @@ final class QuestSyncPayloadBuilder {
         return questTag(definition, null, true);
     }
 
+    CompoundTag editorQuestPayload(QuestDefinition definition, PlayerQuestState playerState) {
+        QuestProgressState progress = playerState == null ? null : playerState.quest(definition.id());
+        return questTag(definition, progress, true);
+    }
+
     private static CompoundTag questTag(QuestDefinition definition, QuestProgressState progress, boolean includeDescription) {
         CompoundTag questTag = new CompoundTag();
         questTag.putString("title", definition.display().title());

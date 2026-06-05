@@ -1,0 +1,34 @@
+package com.abo47.questsandstuff.quest.editor.blueprint;
+
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CanvasBlueprintCodeTest {
+    @Test
+    void roundTripsBlueprintShareCode() {
+        CanvasBlueprint blueprint = new CanvasBlueprint(
+                "Test Blueprint",
+                12,
+                34,
+                List.of(),
+                List.of(new CanvasImageLayer("img_1", "pics/test.png", 40, 50, 80, 60, 0)),
+                List.of(),
+                List.of("image:img_1")
+        );
+
+        String code = CanvasBlueprintCode.encode(blueprint);
+        CanvasBlueprint decoded = CanvasBlueprintCode.decode(code);
+
+        assertTrue(code.startsWith(CanvasBlueprintCode.PREFIX));
+        assertFalse(decoded.isEmpty());
+        assertEquals("Test Blueprint", decoded.name());
+        assertEquals(1, decoded.images().size());
+        assertEquals("pics/test.png", decoded.images().get(0).asset());
+    }
+}

@@ -47,6 +47,12 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.searchAs
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class TabletAssetPickerModal {
+    private static final int HEADER_BUTTON_SIZE = 18;
+    private static final int HEADER_GAP = 3;
+    private static final int HEADER_BUTTON_Y = 1;
+    private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
+    private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
+
     private TabletAssetPickerModal() {
     }
 
@@ -61,6 +67,9 @@ public final class TabletAssetPickerModal {
                 ? "ui.questsandstuff.modal.blueprints"
                 : soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library";
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr(title), w, state, refresh);
+        if (blueprintPicker) {
+            addBlueprintHeaderActions(modal, state, refresh, w);
+        }
         String dir = state.assetBrowseDir == null ? "" : state.assetBrowseDir;
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.assetSearch));
         if (!blueprintPicker) {
@@ -120,11 +129,14 @@ public final class TabletAssetPickerModal {
 
         int controlsY = 2;
         int controlsH = 16;
-        int backY = 1;
-        int backSize = 18;
-        int backX = rightX + rightW - backSize - 22;
+        int backY = HEADER_BUTTON_Y;
+        int backSize = HEADER_BUTTON_SIZE;
+        int firstHeaderButtonX = blueprintPicker ? headerChainButtonX(w, 2) : headerCloseRenderX(w);
+        int backX = firstHeaderButtonX - HEADER_GAP - backSize;
         boolean canGoBack = !dir.isBlank();
-        int searchW = canGoBack ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
+        int searchW = canGoBack
+                ? Math.max(40, backX - rightX - HEADER_GAP)
+                : Math.max(40, firstHeaderButtonX - rightX - HEADER_GAP);
         TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.assetSearch, 80, value -> {
             state.assetSearch = SearchFilter.normalizeUserInput(value);
             state.assetGridScroll = 0;
@@ -257,6 +269,9 @@ public final class TabletAssetPickerModal {
             addAssetContextDismissLayer(modal, state, refresh, w, h);
             addContext(modal, state, player, refresh, w, h, rightW, assets);
         }
+        if (state.blueprintCodeOpen) {
+            TabletBlueprintCodeModal.add(modal, state, refresh, w, h);
+        }
         return search;
     }
 
@@ -317,6 +332,27 @@ public final class TabletAssetPickerModal {
     private static void anchorAssetContextAtPointer(TabletUiState state, int modalW, int modalH) {
         state.assetContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
         state.assetContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
+    }
+
+    private static void addBlueprintHeaderActions(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
+        int importX = headerChainButtonX(w, 1);
+        int exportX = headerChainButtonX(w, 2);
+        modal.addWidget(WindowChrome.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
+            TabletBlueprintCodeModal.openExport(state, state.assetSelected);
+            refresh.run();
+        }));
+        modal.addWidget(WindowChrome.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
+            TabletBlueprintCodeModal.openImport(state);
+            refresh.run();
+        }));
+    }
+
+    private static int headerChainButtonX(int modalW, int slotLeftOfClose) {
+        return headerCloseRenderX(modalW) - slotLeftOfClose * (HEADER_BUTTON_SIZE + HEADER_GAP);
+    }
+
+    private static int headerCloseRenderX(int modalW) {
+        return modalW - HEADER_CLOSE_ANCHOR_RIGHT_PAD + HEADER_CLOSE_RENDER_X_OFFSET;
     }
 
     private static void addQuestBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
@@ -396,8 +432,12 @@ public final class TabletAssetPickerModal {
     }
 
     private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH, int rightW, List<AssetLibrary.AssetEntry> assets) {
-        boolean isDir = assets.stream().anyMatch(asset -> asset.relativePath().equals(state.assetContextFile) && asset.directory());
-        List<ContextAction> actions = assetContextActions(state, player, isDir);
+        AssetLibrary.AssetEntry contextEntry = assets.stream()
+                .filter(asset -> asset.relativePath().equals(state.assetContextFile))
+                .findFirst()
+                .orElse(null);
+        boolean isDir = contextEntry != null && contextEntry.directory();
+        List<ContextAction> actions = assetContextActions(state, player, contextEntry, isDir);
         int ctxW = Math.min(150, Math.max(96, rightW - 8));
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
@@ -421,7 +461,7 @@ public final class TabletAssetPickerModal {
         }));
     }
 
-    private static List<ContextAction> assetContextActions(TabletUiState state, Player player, boolean isDir) {
+    private static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", ModColors.INTERACTIVE, () -> {
             if (isDir) {
@@ -433,6 +473,10 @@ public final class TabletAssetPickerModal {
                 closeAll(state);
             }
         }));
+        if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
+            actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", ModColors.INTERACTIVE, () ->
+                    TabletBlueprintCodeModal.openExport(state, state.assetContextFile)));
+        }
         if (!isDir) {
             String deleteKey = "asset:delete:" + state.assetContextFile;
             actions.add(ContextActions.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {

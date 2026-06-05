@@ -528,6 +528,11 @@ public final class ModalOpenActions {
     private static void resetAssetPicker(TabletUiState state) {
         state.assetContextOpen = false;
         state.assetRenameOpen = false;
+        state.blueprintCodeOpen = false;
+        state.blueprintCodeImportMode = false;
+        state.blueprintCodeTarget = "";
+        state.blueprintCodeDraft = "";
+        state.blueprintCodeMessage = "";
         state.assetBrowseDir = "";
         state.assetSearch = "";
         state.assetSearchFocused = false;

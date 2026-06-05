@@ -239,6 +239,12 @@ public class TabletUiState {
     public int assetContextMenuH;
     public boolean assetRenameOpen;
     public String assetRenameDraft = "";
+    public boolean blueprintCodeOpen;
+    public boolean blueprintCodeImportMode;
+    public long blueprintCodeAnimationStartMs;
+    public String blueprintCodeTarget = "";
+    public String blueprintCodeDraft = "";
+    public String blueprintCodeMessage = "";
     public String prerequisitesManagerQuestId = "";
     public String prerequisitesManagerSearch = "";
     public boolean prerequisitesManagerSearchFocused;

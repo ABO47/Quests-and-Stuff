@@ -282,14 +282,15 @@ public final class CanvasBlueprintMiniRenderer {
     private static void drawQuest(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint.QuestEntry quest, BlueprintRect rect, boolean highlighted, float partialTicks, int alpha) {
         QuestDefinition definition = quest.definition();
         QuestDisplay display = definition == null ? QuestDisplay.DEFAULT : definition.display();
-        drawQuestBackground(graphics, mouseX, mouseY, display, rect, alpha);
+        boolean gated = definition != null && !definition.prerequisites().isEmpty();
+        drawQuestBackground(graphics, mouseX, mouseY, display, rect, gated, alpha);
         int min = Math.min(rect.w(), rect.h());
         int pad = Math.max(1, Math.round(min * 0.16f));
         int iconSize = Math.max(1, min - pad * 2);
         int iconX = rect.x() + (rect.w() - iconSize) / 2;
         int iconY = rect.y() + (rect.h() - iconSize) / 2;
         DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize, display.icon(), partialTicks, alpha);
-        if (display.visualHidden()) {
+        if (display.visualHidden() || gated) {
             graphics.fill(rect.x(), rect.y(), rect.x() + rect.w(), rect.y() + rect.h(), withAlpha(ModColors.SURFACE_BASE, Math.min(130, alpha / 2)));
         }
         if (highlighted) {
@@ -305,11 +306,11 @@ public final class CanvasBlueprintMiniRenderer {
         graphics.fill(rect.x() + rect.w(), rect.y(), rect.x() + rect.w() + 2, rect.y() + rect.h(), color);
     }
 
-    private static void drawQuestBackground(GuiGraphics graphics, int mouseX, int mouseY, QuestDisplay display, BlueprintRect rect, int alpha) {
+    private static void drawQuestBackground(GuiGraphics graphics, int mouseX, int mouseY, QuestDisplay display, BlueprintRect rect, boolean gated, int alpha) {
         String background = display.questBackground();
         if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
             new ResourceTexture(DEFAULT_QUEST_BG)
-                    .setColor(withAlpha(display.visualHidden() ? ModColors.TEXT_SECONDARY : ModColors.INTERACTIVE, alpha))
+                    .setColor(withAlpha(display.visualHidden() || gated ? ModColors.TEXT_SECONDARY : ModColors.INTERACTIVE, alpha))
                     .draw(graphics, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h());
             return;
         }

@@ -168,6 +168,7 @@ public final class TabletModalState {
         state.questDetailsAssetPickTarget = "";
         state.assetContextOpen = false;
         state.assetRenameOpen = false;
+        clearBlueprintCodeState(state);
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
         clearPrerequisitesManagerState(state);
@@ -214,6 +215,7 @@ public final class TabletModalState {
     private static void clearModalInteractionState(TabletUiState state) {
         state.assetContextOpen = false;
         state.assetRenameOpen = false;
+        clearBlueprintCodeState(state);
         state.assetSearchFocused = false;
         state.assetGridScrollDragging = false;
         state.prerequisitesManagerScrollDragging = false;
@@ -273,6 +275,15 @@ public final class TabletModalState {
         state.prerequisitesManagerContextMenuY = 0;
         state.prerequisitesManagerContextMenuW = 0;
         state.prerequisitesManagerContextMenuH = 0;
+    }
+
+    private static void clearBlueprintCodeState(TabletUiState state) {
+        state.blueprintCodeOpen = false;
+        state.blueprintCodeImportMode = false;
+        state.blueprintCodeAnimationStartMs = 0L;
+        state.blueprintCodeTarget = "";
+        state.blueprintCodeDraft = "";
+        state.blueprintCodeMessage = "";
     }
 
     private static void clearAnimationState(TabletUiState state) {

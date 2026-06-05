@@ -184,18 +184,14 @@ public final class QuestSyncService {
         if (definition == null) {
             return;
         }
-        CompoundTag questTag = payloads.editorQuestPayload(definition);
-        if ("add".equals(action)) {
-            questTag.putBoolean("completed", false);
-            questTag.putBoolean("unlocked", true);
-            questTag.putBoolean("claimed", false);
-            questTag.putFloat("progress", 0.0f);
-        }
         long sequence = sequenceCounter.getAndIncrement();
         for (ServerPlayer player : players) {
             if (!canSeeEditorGraph(player)) {
                 continue;
             }
+            CompoundTag questTag = "add".equals(action)
+                    ? payloads.editorQuestPayload(definition, progressData.state(player.getUUID()))
+                    : payloads.editorQuestPayload(definition);
             QuestNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, definition.id(), questTag), player);
         }
     }
