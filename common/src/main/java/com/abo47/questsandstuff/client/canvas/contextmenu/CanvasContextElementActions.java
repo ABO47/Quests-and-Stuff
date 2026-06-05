@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -33,7 +34,7 @@ final class CanvasContextElementActions {
         }
         CanvasImageLayer contextImage = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
         if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";
                 state.contextMenuOpen = false;
@@ -41,7 +42,7 @@ final class CanvasContextElementActions {
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";
                 state.contextMenuOpen = false;
@@ -61,7 +62,7 @@ final class CanvasContextElementActions {
                     canvasViewport::refresh
             );
         } else if (contextImage != null && (CanvasModelPreviewRenderer.isItemAsset(contextImage.asset()) || CanvasModelPreviewRenderer.isItemTagAsset(contextImage.asset()))) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";
                 state.contextMenuOpen = false;
@@ -69,7 +70,7 @@ final class CanvasContextElementActions {
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && CanvasModelPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
                 state.contextDeleteConfirmKey = "";
                 state.contextMenuOpen = false;
@@ -109,7 +110,7 @@ final class CanvasContextElementActions {
         if (state.contextMenuTarget != ContextMenuTarget.TEXT || state.contextCanvasTextId.isBlank()) {
             return;
         }
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.edit_text"), "rename", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.edit_text"), "rename", ModColors.INTERACTIVE, () -> {
             CanvasTextLayer text = CanvasRenderer.findCanvasText(state, selectedGroup, state.contextCanvasTextId);
             state.canvasTextEditOpen = true;
             state.canvasTextEditTarget = state.contextCanvasTextId;

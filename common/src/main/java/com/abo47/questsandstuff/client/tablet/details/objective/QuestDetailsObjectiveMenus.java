@@ -153,7 +153,7 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     private static void addRequirementActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, String contextId) {
-        actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CHANGE_REQUIREMENT), () -> {
+        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CHANGE_REQUIREMENT), "rename", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             openTypePicker(state, "requirement_change", contextId);
         }));
@@ -214,7 +214,7 @@ public final class QuestDetailsObjectiveMenus {
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));
         }
-        actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CHANGE_REWARD), () -> {
+        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CHANGE_REWARD), "rename", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             openTypePicker(state, "reward_change", contextId);
         }));

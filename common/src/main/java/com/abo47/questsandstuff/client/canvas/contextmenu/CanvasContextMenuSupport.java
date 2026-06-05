@@ -35,7 +35,10 @@ public final class CanvasContextMenuSupport {
         for (ContextAction action : ContextMenuPanel.rowActions(actions)) {
             labels.add(action.label());
         }
-        return ContextMenuSystem.preferredMenuWidth(labels, 82, Math.max(82, Math.min(156, maxAvailableWidth - 8)));
+        int maxWidth = Math.max(82, Math.min(156, maxAvailableWidth - 8));
+        int rowWidth = ContextMenuSystem.preferredMenuWidth(labels, 82, maxWidth);
+        int promotedWidth = ContextMenuPanel.promotedActions(actions).size() * ContextMenuPanel.PROMOTED_BUTTON + 8;
+        return Math.min(maxWidth, Math.max(rowWidth, promotedWidth));
     }
 
     public static int contextMenuWidth(TabletUiState state) {
@@ -119,14 +122,15 @@ public final class CanvasContextMenuSupport {
         if (promoted.isEmpty() || relY < 4 || relY >= 4 + ContextMenuPanel.PROMOTED_BAR_H) {
             return false;
         }
-        int visible = ContextMenuPanel.visiblePromotedCount(promoted, menuW);
+        List<ContextAction> visiblePromoted = ContextMenuPanel.visiblePromotedActions(promoted, menuW);
+        int visible = visiblePromoted.size();
         int y = 4 + Math.max(0, (ContextMenuPanel.PROMOTED_BAR_H - ContextMenuPanel.PROMOTED_BUTTON) / 2);
         for (int i = 0; i < visible; i++) {
             int buttonX = ContextMenuPanel.promotedButtonX(menuW, visible, i);
             if (relX < buttonX || relX >= buttonX + ContextMenuPanel.PROMOTED_BUTTON || relY < y || relY >= y + ContextMenuPanel.PROMOTED_BUTTON) {
                 continue;
             }
-            ContextAction action = promoted.get(i);
+            ContextAction action = visiblePromoted.get(i);
             state.contextLastClickX = state.contextMenuX + relX;
             state.contextLastClickY = state.contextMenuY + relY;
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);

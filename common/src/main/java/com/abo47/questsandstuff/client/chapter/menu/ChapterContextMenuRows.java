@@ -62,7 +62,7 @@ public final class ChapterContextMenuRows {
                 false,
                 () -> ChapterContextMenuActions.removeIcon(player, state, target, refresh)
         ));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
+        actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
         actions.add(new ContextAction(
                 TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg")),
                 "delete",

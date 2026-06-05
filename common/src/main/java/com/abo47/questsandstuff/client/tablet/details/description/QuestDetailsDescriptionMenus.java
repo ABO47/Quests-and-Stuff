@@ -109,11 +109,11 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     private static void addDescriptionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_TEXT_BOX), "text", ModColors.SUCCESS, () -> {
+        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_TEXT_BOX), "text", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addTextAt(player, state, questId, model, x, y);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_IMAGE), "image", ModColors.SUCCESS, () -> {
+        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_IMAGE), "image", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
         }));
@@ -130,7 +130,7 @@ public final class QuestDetailsDescriptionMenus {
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
         if (RecipeViewerIntegrations.hasAvailableViewer()) {
-            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
+            actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
             }));
@@ -147,7 +147,7 @@ public final class QuestDetailsDescriptionMenus {
             }));
         }
         if (!state.canvasImageClipboard.isEmpty() || !state.canvasTextClipboard.isEmpty()) {
-            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_PASTE), "paste", ModColors.SUCCESS, () -> {
+            actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_PASTE), "paste", ModColors.SUCCESS, () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestDetailsDescriptionClipboard.pasteAtContext(player, state, questId, model, x, y);
             }));
@@ -155,7 +155,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     private static void addTextActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {
-        actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.CONTEXT_EDIT_TEXT), () -> {
+        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_EDIT_TEXT), "rename", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             CanvasTextLayer text = model.text(state.questDetailsContextId);
             state.questDetailsTextEditTarget = text == null ? "" : text.id();
@@ -170,7 +170,7 @@ public final class QuestDetailsDescriptionMenus {
             state.questDetailsTextStyleOpen = text != null;
             state.questDetailsTextStyleTarget = text == null ? "" : text.id();
         }));
-        actions.add(ContextActions.stayOpen(QuestVocabulary.text(QuestVocabulary.CONTEXT_TEXT_STYLE), "style", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(QuestVocabulary.text(QuestVocabulary.CONTEXT_TEXT_STYLE), "style", ModColors.INTERACTIVE, false, () -> {
             state.contextDeleteConfirmKey = "";
             state.questDetailsTextStyleOpen = true;
             state.questDetailsTextStyleTarget = state.questDetailsContextId;
@@ -206,7 +206,7 @@ public final class QuestDetailsDescriptionMenus {
         boolean itemImage = contextImage != null && (CanvasModelPreviewRenderer.isItemAsset(contextImage.asset()) || CanvasModelPreviewRenderer.isItemTagAsset(contextImage.asset()));
         boolean blockImage = contextImage != null && CanvasModelPreviewRenderer.isBlockModelAsset(contextImage.asset());
         boolean recipeImage = contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset());
-        actions.add(ContextActions.action(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.promoted(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, state.questDetailsContextId));

@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +53,7 @@ final class CanvasContextGlobalActions {
             }));
         }
         if (!selectedGroup.isBlank() && CanvasClipboardController.hasClipboardContent(state)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.paste"), "paste", ModColors.SUCCESS, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.paste"), "paste", ModColors.SUCCESS, () -> {
                 CanvasContextMenuSupport.pasteClipboard(player, state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=paste target={}", state.contextMenuTarget);
                 canvasViewport.refresh();

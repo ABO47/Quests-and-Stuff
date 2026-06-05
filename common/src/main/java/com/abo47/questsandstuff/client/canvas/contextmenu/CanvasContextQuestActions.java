@@ -44,7 +44,7 @@ final class CanvasContextQuestActions {
             return;
         }
         if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextQuestId)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
+            actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
                 state.connectSourceQuestId = state.contextQuestId;
                 state.connectSourceQuestIds.clear();
                 if (state.selectedQuestIds.contains(state.contextQuestId) && state.selectedQuestIds.size() > 1) {
@@ -207,7 +207,7 @@ final class CanvasContextQuestActions {
         if (connectionCount <= 0) {
             return;
         }
-        actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openPrerequisitesManager(state, state.contextQuestId);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextQuestId, connectionCount);
