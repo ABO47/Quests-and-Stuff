@@ -158,6 +158,11 @@ public final class ContextMenuPanel {
     }
 
     public static List<ContextAction> promotedActions(List<ContextAction> actions) {
+        List<ContextAction> promoted = orderedPromotedActions(actions);
+        return promoted.size() < 2 ? List.of() : promoted;
+    }
+
+    private static List<ContextAction> orderedPromotedActions(List<ContextAction> actions) {
         List<ContextAction> promoted = new ArrayList<>();
         List<ContextAction> deleteActions = new ArrayList<>();
         if (actions != null) {
@@ -177,9 +182,10 @@ public final class ContextMenuPanel {
 
     public static List<ContextAction> rowActions(List<ContextAction> actions) {
         List<ContextAction> rows = new ArrayList<>();
+        boolean showPromotedBar = orderedPromotedActions(actions).size() >= 2;
         if (actions != null) {
             for (ContextAction action : actions) {
-                if (action != null && !action.promoted()) {
+                if (action != null && (!showPromotedBar || !action.promoted())) {
                     rows.add(action);
                 }
             }
