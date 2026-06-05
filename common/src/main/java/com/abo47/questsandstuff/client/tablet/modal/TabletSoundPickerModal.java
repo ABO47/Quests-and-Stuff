@@ -74,11 +74,10 @@ public final class TabletSoundPickerModal {
         String selected = state.soundSelected == null ? "" : state.soundSelected.trim();
         SoundChoice choice = selected.isBlank() ? null : SoundChoice.of(selected);
         preview.addWidget(new DisplayIconWidget(8, 9, 14, 14, "audio-lines"));
-        preview.addWidget(label(28, 12, choice == null ? TabletModalPanel.tr("ui.questsandstuff.sound.none_selected") : SearchFilter.crop(choice.name(), 17), ModColors.TEXT_SECONDARY));
-        preview.addWidget(label(8, 30, choice == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : SearchFilter.crop(choice.id(), 24), ModColors.TEXT_MUTED));
+        preview.addWidget(label(28, 12, choice == null ? TabletModalPanel.tr("ui.questsandstuff.sound.none_selected") : SearchFilter.crop(choice.name(), 19), ModColors.TEXT_SECONDARY));
         if (!selected.isBlank()) {
             int volumeY = Math.max(56, previewH - 24);
-            int playY = 48;
+            int playY = 38;
             int playH = Math.max(34, volumeY - playY - 8);
             preview.addWidget(new SoundPreviewPlayerWidget(8, playY, previewW - 16, playH, selected, () -> state.soundVolumeDraft));
             SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, previewW - 16, selected);
@@ -94,8 +93,7 @@ public final class TabletSoundPickerModal {
             list.addWidget(selectedFill);
         }
         list.addWidget(new DisplayIconWidget(8, rowY + 1, 12, 12, "audio-lines"));
-        list.addWidget(label(24, rowY + 4, SearchFilter.crop(entry.name(), 42), ModColors.TEXT_PRIMARY));
-        list.addWidget(label(Math.max(150, rowW - 170), rowY + 4, SearchFilter.crop(entry.id(), 38), ModColors.TEXT_MUTED));
+        list.addWidget(label(24, rowY + 4, SearchFilter.crop(entry.name(), Math.max(10, (rowW - 38) / 6)), ModColors.TEXT_PRIMARY));
         ButtonWidget hit = flatHitButton(4, rowY, rowW - 8, ROW_H, click -> {
             boolean doubleClick = click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("sound", entry.id()));
             state.soundSelected = entry.id();
@@ -106,7 +104,7 @@ public final class TabletSoundPickerModal {
             refresh.run();
         });
         hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 54)));
-        hit.setHoverTooltips(PickerTooltips.nameAndId(entry.name(), entry.id()));
+        hit.setHoverTooltips(PickerTooltips.nameOnly(entry.name()));
         list.addWidget(hit);
     }
 
