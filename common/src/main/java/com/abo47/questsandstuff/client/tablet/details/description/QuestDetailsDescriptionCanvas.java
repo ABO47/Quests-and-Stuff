@@ -364,6 +364,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             return;
         }
         state.questDetailsTransformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
+        if (gizmoMode == CanvasTransformMode.MOVE) {
+            state.questDetailsTransformAxis = CanvasTransformGizmo.moveAxisOrFree(state.questDetailsTransformAxis);
+        }
         boolean resizeHit = gizmoMode == CanvasTransformMode.RESIZE
                 || (!gizmoSupported && gizmoMode == null && hitTest.inResizeHandle(rect, lx, visibleY));
         boolean rotateHit = gizmoMode == CanvasTransformMode.ROTATE

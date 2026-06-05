@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.details.description;
 
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.CanvasTransformAxisDelta;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
@@ -290,12 +291,12 @@ public final class QuestDetailsDescriptionTransform {
                 int x = state.questDetailsTransformStartX + delta.x;
                 int y = state.questDetailsTransformStartY + delta.y;
                 SnapMove snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-                if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.questDetailsTransformAxis)) {
-                    snapped = new SnapMove(snapped.x(), y);
-                    state.snapGuideYVisible = false;
-                } else if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.questDetailsTransformAxis)) {
-                    snapped = new SnapMove(x, snapped.y());
-                    state.snapGuideXVisible = false;
+                String axis = CanvasTransformGizmo.moveAxisOrFree(state.questDetailsTransformAxis);
+                if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
+                    CanvasPoint offset = CanvasTransformAxisDelta.project(snapped.x() - x, snapped.y() - y, state.questDetailsTransformStartRotation, axis, false, CanvasGeometry.gridSize(state));
+                    snapped = new SnapMove(x + offset.x, y + offset.y);
+                    state.snapGuideXVisible = state.snapGuideXVisible && offset.x != 0;
+                    state.snapGuideYVisible = state.snapGuideYVisible && offset.y != 0;
                 }
                 CanvasPoint clamped = clampImageAnchor(image.moveTo(snapped.x(), snapped.y()));
                 yield image.moveTo(clamped.x, clamped.y);
@@ -304,16 +305,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasPoint modelDragDelta(int dx, int dy) {
-        if (isShiftDown() || CanvasTransformGizmo.AXIS_MOVE_FREE.equals(state.questDetailsTransformAxis)) {
+        String axis = CanvasTransformGizmo.moveAxisOrFree(state.questDetailsTransformAxis);
+        if (isShiftDown() || CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
             return new CanvasPoint(gridDelta(dx), gridDelta(dy));
         }
-        if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.questDetailsTransformAxis)) {
-            return new CanvasPoint(snapDelta(dx), 0);
-        }
-        if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.questDetailsTransformAxis)) {
-            return new CanvasPoint(0, snapDelta(dy));
-        }
-        return new CanvasPoint(snapDelta(dx), snapDelta(dy));
+        return CanvasTransformAxisDelta.project(dx, dy, state.questDetailsTransformStartRotation, axis, state.questDetailsGridSnapLocked, CanvasGeometry.gridSize(state));
     }
 
     private int gridDelta(int delta) {

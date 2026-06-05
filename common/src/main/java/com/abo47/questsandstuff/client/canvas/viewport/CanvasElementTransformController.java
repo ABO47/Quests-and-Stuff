@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.canvas.CanvasTransformAxisDelta;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.render.CanvasElementGeometry;
@@ -53,6 +54,9 @@ public final class CanvasElementTransformController {
         state.canvasImageTransformAxis = gizmoSupported
                 ? CanvasTransformGizmo.axisAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), localX, localY)
                 : "";
+        if (gizmoMode == CanvasTransformMode.MOVE) {
+            state.canvasImageTransformAxis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+        }
         state.resizingCanvasImage = gizmoMode == CanvasTransformMode.RESIZE
                 || (!gizmoSupported && gizmoMode == null && CanvasRenderer.isCanvasImageResizeHandleHit(state, image, localX, localY));
         state.rotatingCanvasImage = gizmoMode == CanvasTransformMode.ROTATE
@@ -240,14 +244,12 @@ public final class CanvasElementTransformController {
         if (!snap.hasOffset()) {
             return image;
         }
-        int offsetX = snap.offsetX();
-        int offsetY = snap.offsetY();
-        if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.canvasImageTransformAxis)) {
-            offsetY = 0;
-            state.snapGuideYVisible = false;
-        } else if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.canvasImageTransformAxis)) {
-            offsetX = 0;
-            state.snapGuideXVisible = false;
+        CanvasPoint offset = constrainedSnapOffset(snap.offsetX(), snap.offsetY(), image.rotation());
+        int offsetX = offset.x;
+        int offsetY = offset.y;
+        if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis))) {
+            state.snapGuideXVisible = state.snapGuideXVisible && offsetX != 0;
+            state.snapGuideYVisible = state.snapGuideYVisible && offsetY != 0;
         }
         int requestedX = image.x() + offsetX;
         int requestedY = image.y() + offsetY;
@@ -291,16 +293,19 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasPoint modelDragDelta(int dx, int dy) {
-        if (isShiftDown() || CanvasTransformGizmo.AXIS_MOVE_FREE.equals(state.canvasImageTransformAxis)) {
+        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+        if (isShiftDown() || CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
             return freeDragDelta(dx, dy);
         }
-        if (CanvasTransformGizmo.AXIS_MOVE_X.equals(state.canvasImageTransformAxis)) {
-            return dragDelta(dx, 0);
+        return CanvasTransformAxisDelta.project(dx, dy, state.canvasImageStartRotation, axis, state.gridSnapLocked, CanvasGeometry.gridSize(state));
+    }
+
+    private CanvasPoint constrainedSnapOffset(int offsetX, int offsetY, int rotation) {
+        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+        if (CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
+            return new CanvasPoint(offsetX, offsetY);
         }
-        if (CanvasTransformGizmo.AXIS_MOVE_Y.equals(state.canvasImageTransformAxis)) {
-            return dragDelta(0, dy);
-        }
-        return dragDelta(dx, dy);
+        return CanvasTransformAxisDelta.project(offsetX, offsetY, rotation, axis, false, CanvasGeometry.gridSize(state));
     }
 
     private CanvasPoint freeDragDelta(int dx, int dy) {

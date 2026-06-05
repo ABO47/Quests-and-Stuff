@@ -47,8 +47,20 @@ public final class CanvasTransformGizmo {
 
     public static void setMode(TabletUiState state, CanvasTransformMode mode) {
         if (state != null && mode != null) {
+            boolean changed = !mode.id.equals(state.transformGizmoMode);
             state.transformGizmoMode = mode.id;
+            if (changed) {
+                state.canvasImageTransformAxis = "";
+                state.questDetailsTransformAxis = "";
+            }
         }
+    }
+
+    public static String moveAxisOrFree(String axis) {
+        if (AXIS_MOVE_X.equals(axis) || AXIS_MOVE_Y.equals(axis) || AXIS_MOVE_FREE.equals(axis)) {
+            return axis;
+        }
+        return AXIS_MOVE_FREE;
     }
 
     public static boolean controlHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
@@ -328,10 +340,10 @@ public final class CanvasTransformGizmo {
 
     private static String activeMoveAxis(TabletUiState state) {
         if (state.draggingCanvasImage) {
-            return state.canvasImageTransformAxis == null || state.canvasImageTransformAxis.isBlank() ? AXIS_MOVE_FREE : state.canvasImageTransformAxis;
+            return moveAxisOrFree(state.canvasImageTransformAxis);
         }
         if ("move".equals(state.questDetailsTransformMode)) {
-            return state.questDetailsTransformAxis == null || state.questDetailsTransformAxis.isBlank() ? AXIS_MOVE_FREE : state.questDetailsTransformAxis;
+            return moveAxisOrFree(state.questDetailsTransformAxis);
         }
         return AXIS_MOVE_FREE;
     }
