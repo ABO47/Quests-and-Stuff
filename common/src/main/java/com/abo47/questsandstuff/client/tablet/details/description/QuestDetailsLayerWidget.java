@@ -92,7 +92,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isInside(state, mouseX, mouseY)) {
             closeFloatingDetailsState();
             refresh.run();
-        } else if (button == 0 && detailsContextWasOpen && state.questDetailsContextOpen && !detailsContextHit) {
+        } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetailsContextOpen && !detailsContextHit) {
             QuestDetailsTransientState.closeContext(state);
             state.contextDeleteConfirmKey = "";
             refresh.run();

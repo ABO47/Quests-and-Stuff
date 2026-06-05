@@ -40,17 +40,13 @@ final class TabletRootPointerRouter {
             refresher.run();
             return true;
         }
-        if (button == 0 && state.chapterMenuOpen && selfClick.invoke(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
-            return true;
-        }
         TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY);
+        if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
+            return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
+        }
         if (button == 0 && dismissState.chapterMenuHit()) {
-            if (ChapterPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY))) {
-                return true;
-            }
+            boolean handled = ChapterPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY));
+            return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, handled);
         }
         boolean handled = selfClick.invoke(mouseX, mouseY, button);
         return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, handled);

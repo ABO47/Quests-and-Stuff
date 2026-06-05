@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class TabletRootHitTest {
     private TabletRootHitTest() {
@@ -55,6 +56,28 @@ public final class TabletRootHitTest {
         return CanvasRenderer.isContextMenuHit(state, localX, localY);
     }
 
+    public static boolean isCanvasTextMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
+        if (state.canvasTextFontSizeSliderDragging) {
+            return true;
+        }
+        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+            return false;
+        }
+        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextMenuTarget);
+        if (text == null) {
+            return false;
+        }
+        int viewportX = rootX + state.canvasPanelX + state.canvasViewportX;
+        int viewportY = rootY + state.canvasPanelY + state.canvasViewportY;
+        int localX = (int) Math.round(mouseX - viewportX);
+        int localY = (int) Math.round(mouseY - viewportY);
+        if (inside(localX, localY, CanvasRenderer.canvasTextMenuBounds(state, text, state.canvasViewportW, state.canvasViewportH, 8))) {
+            return true;
+        }
+        return text.id().equals(state.canvasTextFontSizeSliderTarget)
+                && inside(localX, localY, CanvasRenderer.canvasTextFontSizeSliderBounds(state, text, state.canvasViewportW, state.canvasViewportH, 8));
+    }
+
     public static boolean isToolsMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
         if ((!state.toolsMenuOpen && !state.toolsMenuClosing) || state.toolsMenuW <= 0 || state.toolsMenuH <= 0) {
             return false;
@@ -90,6 +113,12 @@ public final class TabletRootHitTest {
         int w = state.canvasViewportW;
         int h = state.canvasViewportH;
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
+    }
+
+    private static boolean inside(int x, int y, int[] bounds) {
+        return bounds != null && bounds.length >= 4
+                && x >= bounds[0] && x <= bounds[0] + bounds[2]
+                && y >= bounds[1] && y <= bounds[1] + bounds[3];
     }
 
     public static boolean isInsideChapterPanel(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
