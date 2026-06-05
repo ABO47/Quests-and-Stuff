@@ -261,12 +261,12 @@ public final class QuestHudLayoutEditScreen extends Screen {
         PinnedQuestHudOverlay.renderPreview(graphics, pinned.x(), pinned.y(), pinned.width(), pinned.height(), false);
         if (completionSelected) {
             QuestHudLayout.HudBox selection = selectionBox(completionSlot);
-            drawSelectionSlot(graphics, selection);
+            drawSelectionSlot(graphics, selection, QuestHudLayout.Element.COMPLETION);
             drawResizeHandle(graphics, selection);
         }
         if (pinnedSelected) {
             QuestHudLayout.HudBox selection = selectionBox(pinnedSlot);
-            drawSelectionSlot(graphics, selection);
+            drawSelectionSlot(graphics, selection, QuestHudLayout.Element.PINNED);
             drawResizeHandle(graphics, selection);
         }
     }
@@ -292,9 +292,16 @@ public final class QuestHudLayoutEditScreen extends Screen {
         graphics.renderOutline(handle.x(), handle.y(), handle.width(), handle.height(), ModColors.SUCCESS);
     }
 
-    private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayout.HudBox box) {
-        graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 18));
-        graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), TabletUiFactory.withAlpha(ModColors.SUCCESS, 185));
+    private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayout.HudBox box, QuestHudLayout.Element element) {
+        float opacity = QuestHudLayout.opacityPercent(element) / 100.0f;
+        int fillAlpha = Math.round(18.0f * opacity);
+        int outlineAlpha = Math.round(185.0f * opacity);
+        if (fillAlpha > 0) {
+            graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), TabletUiFactory.withAlpha(ModColors.INTERACTIVE, fillAlpha));
+        }
+        if (outlineAlpha > 0) {
+            graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), TabletUiFactory.withAlpha(ModColors.SUCCESS, outlineAlpha));
+        }
     }
 
     private boolean handleContextClick(double mouseX, double mouseY) {

@@ -20,8 +20,14 @@ final class QuestHudBackgroundRenderer {
 
     static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride, int alpha) {
         int opacity = QuestHudLayout.opacityPercent(element);
+        if (opacity <= 0 || alpha <= 0) {
+            return;
+        }
         float animationAlpha = Math.max(0, Math.min(255, alpha)) / 255.0f;
         float effectiveOpacity = opacity / 100.0f * animationAlpha;
+        if (effectiveOpacity <= 0.0f) {
+            return;
+        }
         String override = normalizeBackground(backgroundOverride);
         String background = override.isBlank() ? normalizeBackground(QuestHudLayout.background(element)) : override;
         if (!background.isBlank()) {
@@ -39,7 +45,7 @@ final class QuestHudBackgroundRenderer {
                 graphics.fill(x, y, x + width, y + height, TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL, panelAlpha));
             }
         }
-        int borderAlpha = Math.round((selected ? 240.0f : 150.0f * opacity / 100.0f) * animationAlpha);
+        int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
         if (borderAlpha > 0) {
             graphics.renderOutline(x, y, width, height, TabletUiFactory.withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
         }

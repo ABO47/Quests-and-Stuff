@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.QuestProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -11,7 +12,10 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.network.QuestNetwork;
 import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.runtime.C2SManualXpSubmitPacket;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -57,17 +61,19 @@ final class QuestObjectiveActionWidgets {
     static void renderProgress(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         int barW = w;
         float progressValue = Math.max(0.0f, Math.min(1.0f, quest.getFloat("progress")));
-        int progress = Math.max(0, Math.min(barW, Math.round(barW * progressValue)));
         boolean locallyClaimed = state != null && questId.equals(state.questDetailsClaimedOverrideQuestId);
         boolean claimed = quest.getBoolean("claimed") || locallyClaimed;
         boolean claimable = quest.getBoolean("completed") && !claimed;
         section.addWidget(TabletUiFactory.panel(x, y, barW, h, ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        if (progress > 0) {
-            WidgetGroup fill = new WidgetGroup(x + 1, y + 1, Math.max(1, progress - 2), Math.max(1, h - 2));
-            int fillColor = claimed ? ModColors.TEXT_MUTED : (claimable ? ModColors.WARNING : ModColors.SUCCESS);
-            fill.setBackground(Surfaces.fill(TabletUiFactory.withAlpha(fillColor, claimed ? 95 : 180)));
-            section.addWidget(fill);
-        }
+        int fillColor = claimed ? ModColors.TEXT_MUTED : (claimable ? ModColors.WARNING : ModColors.SUCCESS);
+        String progressKey = QuestProgressAnimations.key("details", questId);
+        ProgressTexture texture = new ProgressTexture(
+                IGuiTexture.EMPTY,
+                Surfaces.fill(TabletUiFactory.withAlpha(fillColor, claimed ? 95 : 180))
+        ).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT);
+        ProgressWidget progressFill = new ProgressWidget(() -> QuestProgressAnimations.value(progressKey, progressValue), x + 1, y + 1, Math.max(1, barW - 2), Math.max(1, h - 2), texture);
+        progressFill.setClientSideWidget();
+        section.addWidget(progressFill);
         String label = claimable
                 ? QuestVocabulary.text(QuestVocabulary.CLAIM)
                 : (claimed ? QuestVocabulary.text(QuestVocabulary.CLAIMED) : Math.round(progressValue * 100.0f) + "%");

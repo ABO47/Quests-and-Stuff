@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.hud;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.QuestProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveHudDisplay;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -127,7 +128,8 @@ public final class PinnedQuestHudOverlay {
             return;
         }
 
-        int progressPercent = Math.max(0, Math.min(100, Math.round(quest.getFloat("progress") * 100.0f)));
+        float progressValue = Math.max(0.0f, Math.min(1.0f, quest.getFloat("progress")));
+        int progressPercent = Math.max(0, Math.min(100, Math.round(progressValue * 100.0f)));
         String percent = progressPercent + "%";
         int percentW = font.width(percent);
         int contentW = safeW - PAD * 2;
@@ -142,7 +144,8 @@ public final class PinnedQuestHudOverlay {
         int barY = y + Math.min(HEADER_HEIGHT - 8, Math.max(10, safeH - 9));
         int barW = safeW - PAD * 2;
         if (safeH >= 22) {
-            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, progressPercent / 100.0f, ModColors.SUCCESS, 230);
+            String progressKey = QuestProgressAnimations.key("pinned_hud", quest.getString("_hud_id"));
+            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, QuestProgressAnimations.value(progressKey, progressValue), ModColors.SUCCESS, 230);
         }
 
         List<RequirementLine> lines = requirementLines(quest);
