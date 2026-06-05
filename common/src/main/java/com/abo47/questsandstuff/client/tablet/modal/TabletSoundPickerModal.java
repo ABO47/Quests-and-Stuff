@@ -28,6 +28,9 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 
 public final class TabletSoundPickerModal {
     private static final int ROW_H = 16;
+    private static final int HEADER_GAP = 3;
+    private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
+    private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
 
     private static List<SoundChoice> cachedChoices;
     private static String cachedQuery = null;
@@ -38,11 +41,12 @@ public final class TabletSoundPickerModal {
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, QuestVocabulary.text(QuestVocabulary.CHOOSE_SOUND), w, state, refresh);
-        int previewW = 150;
-        int rightX = 166;
-        int rightW = w - 174;
-        addPreviewPanel(modal, state, player, refresh, previewW, h);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 24, rightW, 16, state.soundSearch, 120, value -> {
+        ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
+        int rightX = libraryLayout.rightX();
+        int rightW = libraryLayout.rightW();
+        addPreviewPanel(modal, state, player, refresh, libraryLayout);
+        int searchW = Math.max(40, headerCloseRenderX(w) - rightX - HEADER_GAP);
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 2, searchW, 16, state.soundSearch, 120, value -> {
             String query = SearchFilter.normalizeUserInput(value);
             state.soundSearch = query;
             state.soundScroll = 0;
@@ -51,9 +55,9 @@ public final class TabletSoundPickerModal {
         }, focused -> state.soundSearchFocused = focused);
 
         int listX = rightX;
-        int listY = 46;
+        int listY = libraryLayout.bodyY();
         int listW = rightW;
-        int listH = h - listY - 8;
+        int listH = libraryLayout.bodyH();
         List<SoundChoice> entries = sounds(state.soundSearch);
         PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, QuestVocabulary.text(QuestVocabulary.NO_SOUNDS),
                 ScrollState.bind(
@@ -68,9 +72,10 @@ public final class TabletSoundPickerModal {
         return search;
     }
 
-    private static void addPreviewPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int previewW, int h) {
-        int previewH = h - 48;
-        WidgetGroup preview = panel(8, 22, previewW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
+    private static void addPreviewPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, ModalLibraryLayout.Metrics layout) {
+        int previewW = layout.leftW();
+        int previewH = layout.bodyH();
+        WidgetGroup preview = panel(ModalLibraryLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
         String selected = state.soundSelected == null ? "" : state.soundSelected.trim();
         SoundChoice choice = selected.isBlank() ? null : SoundChoice.of(selected);
         preview.addWidget(new DisplayIconWidget(8, 9, 14, 14, "audio-lines"));
@@ -83,6 +88,10 @@ public final class TabletSoundPickerModal {
             SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, previewW - 16, selected);
         }
         modal.addWidget(preview);
+    }
+
+    private static int headerCloseRenderX(int modalW) {
+        return modalW - HEADER_CLOSE_ANCHOR_RIGHT_PAD + HEADER_CLOSE_RENDER_X_OFFSET;
     }
 
     private static void renderRow(WidgetGroup list, TabletUiState state, Player player, Runnable refresh, SoundChoice entry, int rowY, int rowW) {
