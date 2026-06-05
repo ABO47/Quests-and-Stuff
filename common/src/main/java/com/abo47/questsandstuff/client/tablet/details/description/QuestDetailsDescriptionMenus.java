@@ -131,7 +131,7 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addItemAt(state, questId, x, y);
         }));
-        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "box", ModColors.SUCCESS, () -> {
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "add_block", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
