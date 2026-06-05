@@ -24,7 +24,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
-final class TabletHeaderControls {
+final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;
     private final TextFieldWidget searchField;
     private final WidgetGroup canvasHeaderSurface;
@@ -45,7 +45,7 @@ final class TabletHeaderControls {
     private final HeaderIconWidget editorIconWidget;
     private int toolsX;
 
-    private TabletHeaderControls(
+    private QuestAppHeaderControls(
             TextFieldWidget chapterSearchField,
             TextFieldWidget searchField,
             WidgetGroup canvasHeaderSurface,
@@ -85,7 +85,7 @@ final class TabletHeaderControls {
         this.editorIconWidget = editorIconWidget;
     }
 
-    static TabletHeaderControls create(Player player, TabletUiState state, Runnable refresh, int contentInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int topY, int headerH) {
+    static QuestAppHeaderControls create(Player player, TabletUiState state, Runnable refresh, int contentInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int topY, int headerH) {
         TextFieldWidget chapterSearchField = new TextFieldWidget(contentInset, chapterTopY, Math.max(24, initialChapterW - contentInset * 2), chapterHeaderH, () -> state.chapterSearch, value -> {
             state.chapterSearch = SearchFilter.normalizeUserInput(value);
             state.chapterScroll = 0;
@@ -176,7 +176,7 @@ final class TabletHeaderControls {
         editorHit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
         HeaderIconWidget editorIconWidget = new HeaderIconWidget(0, 0, headerIconSize, "editor.png");
 
-        return new TabletHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, blueprintBg, blueprintHit, blueprintIconWidget, claimAllBg, claimAllHit, claimAllIconWidget, editorBg, editorHit, editorIconWidget);
+        return new QuestAppHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsBg, toolsHit, toolsIconWidget, settingsBg, settingsHit, settingsIconWidget, blueprintBg, blueprintHit, blueprintIconWidget, claimAllBg, claimAllHit, claimAllIconWidget, editorBg, editorHit, editorIconWidget);
     }
 
     TextFieldWidget chapterSearchField() {

@@ -47,8 +47,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.rootWidt
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletRefresh;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletState;
 
-public final class TabletScreenComposer {
-    private TabletScreenComposer() {
+public final class QuestAppComposer {
+    private QuestAppComposer() {
     }
     public static WidgetGroup create(Player player) {
         return create(player, ROOT_W, ROOT_H, false);
@@ -111,7 +111,7 @@ public final class TabletScreenComposer {
         CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), Math.max(32, initialCanvasH - initialTop - contentInset * 2), state, player);
         canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
-        TabletHeaderControls headers = TabletHeaderControls.create(player, state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
+        QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
         WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
