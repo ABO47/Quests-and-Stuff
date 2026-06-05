@@ -92,11 +92,14 @@ public final class QuestVocabulary {
     public static final String CONTEXT_ADD_ENTITY = "ui.questsandstuff.context.add_entity";
     public static final String CONTEXT_ADD_ITEM = "ui.questsandstuff.context.add_item";
     public static final String CONTEXT_ADD_BLOCK = "ui.questsandstuff.context.add_block";
+    public static final String CONTEXT_ADD = "ui.questsandstuff.context.add";
     public static final String CONTEXT_ADD_IMAGE = "ui.questsandstuff.context.add_image";
     public static final String CONTEXT_ADD_RECIPE_CARD = "ui.questsandstuff.context.add_recipe_card";
     public static final String CONTEXT_ADD_TEXT_BOX = "ui.questsandstuff.context.add_text_box";
+    public static final String CONTEXT_ALIGN = "ui.questsandstuff.context.align";
     public static final String CONTEXT_ALIGN_HORIZONTAL_CENTER = "ui.questsandstuff.context.align_horizontal_center";
     public static final String CONTEXT_ALIGN_VERTICAL_CENTER = "ui.questsandstuff.context.align_vertical_center";
+    public static final String CONTEXT_BACKGROUND = "ui.questsandstuff.context.background";
     public static final String CONTEXT_BRING_TO_FRONT = "ui.questsandstuff.context.bring_to_front";
     public static final String CONTEXT_CENTER_PIVOT = "ui.questsandstuff.context.center_pivot";
     public static final String CONTEXT_CHANGE_BACKGROUND = "ui.questsandstuff.context.change_background";
@@ -111,6 +114,7 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
     public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
     public static final String CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.change_completion_hud_background";
+    public static final String CONTEXT_COMPLETION_SOUND = "ui.questsandstuff.context.completion_sound";
     public static final String CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.remove_completion_hud_background";
     public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
     public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
@@ -119,8 +123,10 @@ public final class QuestVocabulary {
     public static final String QUEST_BACKGROUND_GRAYSCALE_TOOLTIP = "ui.questsandstuff.quest_background.grayscale_tooltip";
     public static final String CONTEXT_CONNECTION_COLOR = "ui.questsandstuff.context.connection_color";
     public static final String CONTEXT_COPY = "ui.questsandstuff.context.copy";
+    public static final String CONTEXT_EDIT = "ui.questsandstuff.context.edit";
     public static final String CONTEXT_EDIT_MOTION = "ui.questsandstuff.context.edit_motion";
     public static final String CONTEXT_EDIT_TEXT = "ui.questsandstuff.context.edit_text";
+    public static final String CONTEXT_ENTITY_TYPES = "ui.questsandstuff.context.entity_types";
     public static final String CONTEXT_FIT_TO_GRID = "ui.questsandstuff.context.fit_to_grid";
     public static final String CONTEXT_GIZMO_MOVE = "ui.questsandstuff.context.gizmo_move";
     public static final String CONTEXT_GIZMO_RESIZE = "ui.questsandstuff.context.gizmo_resize";
@@ -128,12 +134,16 @@ public final class QuestVocabulary {
     public static final String CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED = "ui.questsandstuff.context.hide_chapter_until_unlocked";
     public static final String CONTEXT_HIDE_CONNECTION = "ui.questsandstuff.context.hide_connection";
     public static final String CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED = "ui.questsandstuff.context.hide_quest_until_unlocked";
+    public static final String CONTEXT_ITEM_TYPES = "ui.questsandstuff.context.item_types";
     public static final String CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED = "ui.questsandstuff.context.lock_chapter_until_unlocked";
     public static final String CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED = "ui.questsandstuff.context.lock_quest_until_unlocked";
+    public static final String CONTEXT_MOVE = "ui.questsandstuff.context.move";
     public static final String CONTEXT_MOVE_DOWN = "ui.questsandstuff.context.move_down";
     public static final String CONTEXT_MOVE_UP = "ui.questsandstuff.context.move_up";
+    public static final String CONTEXT_ORDER = "ui.questsandstuff.context.order";
     public static final String CONTEXT_PASTE = "ui.questsandstuff.context.paste";
     public static final String CONTEXT_PREREQUISITES_MANAGER = "ui.questsandstuff.context.prerequisites_manager";
+    public static final String CONTEXT_PROGRESS_TYPES = "ui.questsandstuff.context.progress_types";
     public static final String CONTEXT_REMOVE_BACKGROUND = "ui.questsandstuff.context.remove_background";
     public static final String CONTEXT_REMOVE_PREREQUISITE = "ui.questsandstuff.context.remove_prerequisite";
     public static final String CONTEXT_MAKE_QUEST_REPEATABLE = "ui.questsandstuff.context.make_quest_repeatable";
@@ -146,6 +156,10 @@ public final class QuestVocabulary {
     public static final String CONTEXT_SHOW_CONNECTION = "ui.questsandstuff.context.show_connection";
     public static final String CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED = "ui.questsandstuff.context.show_quest_before_unlocked";
     public static final String CONTEXT_TEXT_STYLE = "ui.questsandstuff.context.text_style";
+    public static final String CONTEXT_VIEW = "ui.questsandstuff.context.view";
+    public static final String CONTEXT_VISIBILITY = "ui.questsandstuff.context.visibility";
+    public static final String CONTEXT_VISUALS = "ui.questsandstuff.context.visuals";
+    public static final String CONTEXT_WORLD_TYPES = "ui.questsandstuff.context.world_types";
 
     public static final String TYPE_ACQUIRE_ITEM = "ui.questsandstuff.quest.type.acquire_item";
     public static final String TYPE_ADVANCEMENT = "ui.questsandstuff.quest.type.advancement";

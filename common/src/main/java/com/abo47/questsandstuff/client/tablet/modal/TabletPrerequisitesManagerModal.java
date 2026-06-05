@@ -298,7 +298,7 @@ public final class TabletPrerequisitesManagerModal {
                 state.contextDeleteConfirmKey = "";
             }
             refresh.run();
-        }, CONTEXT_ANIMATION_KEY));
+        }, CONTEXT_ANIMATION_KEY, w, h));
     }
 
     private static ConnectionRow selectedContextRow(TabletUiState state, String questId) {

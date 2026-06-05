@@ -37,7 +37,7 @@ final class QuestObjectiveXpEditor {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int x = Math.max(4, Math.min(state.questDetailsXpPickerX, modalW - menuW - 4));
         int y = Math.max(4, Math.min(state.questDetailsXpPickerY, modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run());
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 

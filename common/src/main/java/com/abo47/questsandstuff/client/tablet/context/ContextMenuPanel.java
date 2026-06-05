@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -54,6 +55,61 @@ public final class ContextMenuPanel {
             Consumer<ContextAction> afterAction,
             String animationKey
     ) {
+        int maxW = Math.max(x + w + 4, TabletUiFactory.rootWidth(state));
+        int maxH = Math.max(y + heightFor(actions, visibleRows) + 4, TabletUiFactory.rootHeight(state));
+        return build(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, maxW, maxH);
+    }
+
+    public static WidgetGroup build(
+            int x,
+            int y,
+            int w,
+            List<ContextAction> actions,
+            int start,
+            int visibleRows,
+            int borderColor,
+            TabletUiState state,
+            Consumer<ContextAction> afterAction,
+            int maxW,
+            int maxH
+    ) {
+        return build(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, ContextMenuAnimation.DEFAULT_KEY, maxW, maxH);
+    }
+
+    public static WidgetGroup build(
+            int x,
+            int y,
+            int w,
+            List<ContextAction> actions,
+            int start,
+            int visibleRows,
+            int borderColor,
+            TabletUiState state,
+            Consumer<ContextAction> afterAction,
+            String animationKey,
+            int maxW,
+            int maxH
+    ) {
+        return buildInternal(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, true, maxW, maxH, x, y);
+    }
+
+    private static WidgetGroup buildInternal(
+            int x,
+            int y,
+            int w,
+            List<ContextAction> actions,
+            int start,
+            int visibleRows,
+            int borderColor,
+            TabletUiState state,
+            Consumer<ContextAction> afterAction,
+            String animationKey,
+            boolean animate,
+            int maxW,
+            int maxH,
+            int absoluteX,
+            int absoluteY
+    ) {
         List<ContextAction> promoted = promotedActions(actions);
         List<ContextAction> rows = rowActions(actions);
         int safeVisibleRows = safeVisibleRows(rows.size(), visibleRows);
@@ -68,12 +124,18 @@ public final class ContextMenuPanel {
         for (int i = safeStart; i < end; i++) {
             ContextAction action = rows.get(i);
             int rowY = rowTop + (i - safeStart) * CONTEXT_ROW_H;
-            addWindowsContextRow(menu, rowY, rowWidth, action.label(), action.icon(), click -> runAction(state, afterAction, action, animationKey));
+            addWindowsContextRow(menu, rowY, rowWidth, action.label(), action.icon(), action.accentColor(), action.hasSubmenu(), action.hasSubmenu()
+                    ? click -> {
+                    }
+                    : click -> runAction(state, afterAction, action, animationKey));
+            if (action.hasSubmenu()) {
+                addSubmenu(menu, action, rowY, rowWidth, w, absoluteX, absoluteY, maxW, maxH, borderColor, state, afterAction, animationKey);
+            }
         }
         if (needsScroll) {
             addScrollbar(menu, rows.size(), safeVisibleRows, safeStart, w, rowTop);
         }
-        return ContextMenuAnimation.wrap(menu, state, animationKey);
+        return animate ? ContextMenuAnimation.wrap(menu, state, animationKey) : menu;
     }
 
     public static int heightForRows(int visibleRows) {
@@ -217,7 +279,10 @@ public final class ContextMenuPanel {
                 if (relX < buttonX || relX >= buttonX + PROMOTED_BUTTON || relY < y || relY >= y + PROMOTED_BUTTON) {
                     continue;
                 }
-                runAction(state, afterAction, visiblePromoted.get(i), animationKey);
+                ContextAction action = visiblePromoted.get(i);
+                if (!action.hasSubmenu()) {
+                    runAction(state, afterAction, action, animationKey);
+                }
                 return true;
             }
             return true;
@@ -229,7 +294,10 @@ public final class ContextMenuPanel {
         int row = (relY - rowTop) / CONTEXT_ROW_H;
         int actionIndex = safeStart + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
-            runAction(state, afterAction, rows.get(actionIndex), animationKey);
+            ContextAction action = rows.get(actionIndex);
+            if (!action.hasSubmenu()) {
+                runAction(state, afterAction, action, animationKey);
+            }
             return true;
         }
         return true;
@@ -254,11 +322,126 @@ public final class ContextMenuPanel {
     }
 
     private static void runAction(TabletUiState state, Consumer<ContextAction> afterAction, ContextAction action, String animationKey) {
+        if (action == null || action.hasSubmenu()) {
+            return;
+        }
         ContextMenuAnimation.finish(state, animationKey);
         action.action().run();
         if (afterAction != null) {
             afterAction.accept(action);
         }
+    }
+
+    private static void addSubmenu(
+            WidgetGroup menu,
+            ContextAction action,
+            int rowY,
+            int parentRowWidth,
+            int parentMenuW,
+            int parentAbsoluteX,
+            int parentAbsoluteY,
+            int maxW,
+            int maxH,
+            int borderColor,
+            TabletUiState state,
+            Consumer<ContextAction> afterAction,
+            String animationKey
+    ) {
+        List<ContextAction> children = action.children();
+        int childRows = rowActionCount(children);
+        if (childRows <= 0) {
+            return;
+        }
+        int childVisibleRows = safeVisibleRows(childRows, childRows);
+        int childW = Math.min(preferredWidth(children, Math.min(112, parentMenuW), 168), Math.max(48, maxW - 8));
+        int childH = heightFor(children, childVisibleRows);
+        int childX = submenuX(parentAbsoluteX, parentMenuW, childW, maxW);
+        int desiredY = rowY - OUTER_PAD;
+        int minChildY = 4 - parentAbsoluteY;
+        int maxChildY = maxH - parentAbsoluteY - childH - 4;
+        int childY = maxChildY < minChildY ? desiredY : Math.max(minChildY, Math.min(desiredY, maxChildY));
+        WidgetGroup childMenu = buildInternal(
+                childX,
+                childY,
+                childW,
+                children,
+                0,
+                childVisibleRows,
+                borderColor,
+                state,
+                afterAction,
+                animationKey,
+                false,
+                maxW,
+                maxH,
+                parentAbsoluteX + childX,
+                parentAbsoluteY + childY
+        );
+        childMenu.setVisible(false);
+        childMenu.setActive(false);
+        int rowLeft = 4;
+        int rowRight = rowLeft + Math.max(1, parentRowWidth);
+        int childLeft = childX;
+        int childRight = childX + childW;
+        int bridgeX = Math.min(rowLeft, childLeft);
+        int bridgeRight = Math.max(rowRight, childRight);
+        WidgetGroup hoverBridge = new WidgetGroup(bridgeX, rowY, Math.max(1, bridgeRight - bridgeX), CONTEXT_ROW_H);
+        WidgetGroup hoverController = new WidgetGroup(rowLeft, rowY, Math.max(1, parentRowWidth), CONTEXT_ROW_H) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                boolean parentHovered = isMouseOverElement(mouseX, mouseY);
+                boolean keepOpen = childMenu.isVisible()
+                        && (hoverBridge.isMouseOverElement(mouseX, mouseY)
+                        || childMenu.isMouseOverElement(mouseX, mouseY));
+                boolean open = parentHovered || keepOpen;
+                childMenu.setVisible(open);
+                childMenu.setActive(open);
+            }
+        };
+        menu.addWidget(hoverBridge);
+        menu.addWidget(hoverController);
+        menu.addWidget(childMenu);
+    }
+
+    private static int submenuX(int parentAbsoluteX, int parentMenuW, int childW, int maxW) {
+        int rightX = parentMenuW - 1;
+        int leftX = -childW + 1;
+        int rightOverflow = horizontalOverflow(parentAbsoluteX + rightX, childW, maxW);
+        int leftOverflow = horizontalOverflow(parentAbsoluteX + leftX, childW, maxW);
+        if (rightOverflow == 0) {
+            return rightX;
+        }
+        if (leftOverflow == 0) {
+            return leftX;
+        }
+        int preferredX = leftOverflow < rightOverflow ? leftX : rightX;
+        int minAbsX = 4;
+        int maxAbsX = Math.max(minAbsX, maxW - childW - 4);
+        int clampedAbsX = Math.max(minAbsX, Math.min(parentAbsoluteX + preferredX, maxAbsX));
+        return clampedAbsX - parentAbsoluteX;
+    }
+
+    private static int horizontalOverflow(int absoluteX, int width, int maxW) {
+        int overflow = 0;
+        if (absoluteX < 4) {
+            overflow += 4 - absoluteX;
+        }
+        int right = absoluteX + width;
+        int maxRight = maxW - 4;
+        if (right > maxRight) {
+            overflow += right - maxRight;
+        }
+        return overflow;
+    }
+
+    private static int preferredWidth(List<ContextAction> actions, int minWidth, int maxWidth) {
+        List<String> labels = new ArrayList<>();
+        for (ContextAction action : rowActions(actions)) {
+            labels.add(action.label());
+        }
+        int rowWidth = ContextMenuSystem.preferredMenuWidth(labels, minWidth, maxWidth);
+        int promotedWidth = promotedActions(actions).size() * PROMOTED_BUTTON + OUTER_PAD * 2;
+        return Math.max(rowWidth, Math.min(maxWidth, Math.max(minWidth, promotedWidth)));
     }
 
     private static void addScrollbar(WidgetGroup menu, int actionCount, int visibleRows, int start, int menuW, int rowTop) {

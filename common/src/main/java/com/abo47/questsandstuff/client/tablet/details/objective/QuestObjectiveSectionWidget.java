@@ -18,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 final class QuestObjectiveSectionWidget {
     private QuestObjectiveSectionWidget() {

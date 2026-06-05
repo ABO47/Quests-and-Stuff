@@ -15,13 +15,12 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
-
-import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final TabletUiState state;
@@ -134,7 +133,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             if (transformHandleHit) {
                 textEdit.finish("transform-start");
             } else if (editingText != null && textEdit.hitTextEditor(editingText, lx, visibleY)) {
-                textEdit.updateCursor(model, editingText.id(), lx, visibleY, !isShiftDown());
+                textEdit.updateCursor(model, editingText.id(), lx, visibleY, !Widget.isShiftDown());
                 state.selectingCanvasTextRange = true;
                 setFocus(true);
                 refresh.run();
@@ -175,7 +174,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             }
             textEdit.finish("canvas-click");
             state.questDetailsBoxSelecting = true;
-            state.questDetailsBoxAdditive = isShiftDown();
+            state.questDetailsBoxAdditive = Widget.isShiftDown();
             state.questDetailsBoxStartX = lx;
             state.questDetailsBoxStartY = visibleY;
             state.questDetailsBoxCurrentX = lx;
@@ -198,7 +197,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         boolean resizeHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.RESIZE || hitTest.inResizeHandle(hitRect, lx, visibleY));
         boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
         boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
-        if (isShiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
+        if (Widget.isShiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
             toggleSelection(hit);
             state.questDetailsTextStyleOpen = false;
             refresh.run();
@@ -376,7 +375,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     }
 
     private boolean shiftMoveHit(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
-        if (!isShiftDown() || !"desc_image".equals(hit.kind())) {
+        if (!Widget.isShiftDown() || !"desc_image".equals(hit.kind())) {
             return false;
         }
         CanvasImageLayer image = model.image(hit.id());

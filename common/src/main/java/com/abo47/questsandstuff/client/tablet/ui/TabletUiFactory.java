@@ -336,6 +336,14 @@ public final class TabletUiFactory {
         TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, callback);
     }
 
+    public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
+    }
+
+    public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
+    }
+
     public static String contextIconForLabel(String label) {
         return TabletWidgets.contextIconForLabel(label);
     }

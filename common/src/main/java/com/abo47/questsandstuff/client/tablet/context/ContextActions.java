@@ -4,6 +4,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 
+import java.util.List;
+
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.confirmDeleteClick;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.pendingDeleteLabel;
 
@@ -75,5 +77,10 @@ public final class ContextActions {
 
     public static ContextAction stayOpen(String label, String icon, int color, Runnable action) {
         return new ContextAction(label, icon, color, false, action);
+    }
+
+    public static ContextAction submenu(String label, String icon, int color, List<ContextAction> children) {
+        return new ContextAction(label, icon, color, false, false, () -> {
+        }, children);
     }
 }

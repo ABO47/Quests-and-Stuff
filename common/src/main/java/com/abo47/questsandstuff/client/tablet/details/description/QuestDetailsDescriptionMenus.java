@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrati
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
@@ -93,48 +94,54 @@ public final class QuestDetailsDescriptionMenus {
         }
         int menuW = 124;
         int menuH = ContextMenuPanel.heightFor(actions, ContextMenuPanel.rowActionCount(actions));
-        int mx = Math.max(4, Math.min(state.questDetailsContextX, state.questDetailsW - menuW - 4));
-        int my = Math.max(4, Math.min(state.questDetailsContextY, state.questDetailsH - menuH - 4));
-        state.questDetailsContextX = mx;
-        state.questDetailsContextY = my;
+        int localX = localContextCoordinate(state.questDetailsContextAnchorX, x, viewportW);
+        int localY = localContextCoordinate(state.questDetailsContextAnchorY, y, viewportH);
+        int mx = ContextMenuPlacement.fitRightOrLeft(localX, viewportW, menuW);
+        int my = ContextMenuPlacement.fitBelowOrAbove(localY, viewportH, menuH);
+        state.questDetailsContextX = x + mx;
+        state.questDetailsContextY = y + my;
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
+        WidgetGroup canvasMenuLayer = new WidgetGroup(x, y, viewportW, viewportH);
         WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, ContextMenuPanel.rowActionCount(actions), ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }
             refresh.run();
-        });
-        modal.addWidget(menu);
+        }, viewportW, viewportH);
+        canvasMenuLayer.addWidget(menu);
+        modal.addWidget(canvasMenuLayer);
     }
 
     private static void addDescriptionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
-        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_TEXT_BOX), "text", ModColors.SUCCESS, () -> {
+        List<ContextAction> addActions = new ArrayList<>();
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_TEXT_BOX), "text", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addTextAt(player, state, questId, model, x, y);
         }));
-        actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_IMAGE), "image", ModColors.SUCCESS, () -> {
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_IMAGE), "image", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ENTITY), "entity", ModColors.SUCCESS, () -> {
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ENTITY), "entity", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addEntityAt(state, questId, x, y);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ITEM), "icon", ModColors.SUCCESS, () -> {
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_ITEM), "icon", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addItemAt(state, questId, x, y);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "box", ModColors.SUCCESS, () -> {
+        addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "box", ModColors.SUCCESS, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
         if (RecipeViewerIntegrations.hasAvailableViewer()) {
-            actions.add(ContextActions.promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
+            addActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
             }));
         }
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_ADD), "add", ModColors.SUCCESS, addActions));
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
@@ -179,16 +186,15 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitTextToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_BRING_TO_FRONT), "up", ModColors.INTERACTIVE, () -> {
+        addOrderActions(actions, () -> {
             state.contextDeleteConfirmKey = "";
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_SEND_TO_BACK), "down", ModColors.TEXT_MUTED, () -> {
+        }, () -> {
             state.contextDeleteConfirmKey = "";
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
+        });
         actions.add(ContextActions.copy(() -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionClipboard.copyText(state, model, state.questDetailsContextId);
@@ -258,16 +264,15 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitImageToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_BRING_TO_FRONT), "up", ModColors.INTERACTIVE, () -> {
+        addOrderActions(actions, () -> {
             state.contextDeleteConfirmKey = "";
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_SEND_TO_BACK), "down", ModColors.TEXT_MUTED, () -> {
+        }, () -> {
             state.contextDeleteConfirmKey = "";
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
+        });
         actions.add(ContextActions.copy(() -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionClipboard.copyImage(state, model, state.questDetailsContextId);
@@ -315,28 +320,29 @@ public final class QuestDetailsDescriptionMenus {
         if (selectionSupportsGizmo(state, model)) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
         }
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
-            QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
-        }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_VERTICAL_CENTER), "align-center-vertical", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
-            QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, false);
-        }));
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN), "align-center-horizontal", ModColors.INTERACTIVE, List.of(
+                ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
+                    state.contextDeleteConfirmKey = "";
+                    QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
+                }),
+                ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_VERTICAL_CENTER), "align-center-vertical", ModColors.INTERACTIVE, () -> {
+                    state.contextDeleteConfirmKey = "";
+                    QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, false);
+                })
+        )));
         actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitSelectionToGrid(player, state, questId, model);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_BRING_TO_FRONT), "up", ModColors.INTERACTIVE, () -> {
+        addOrderActions(actions, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, true);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_SEND_TO_BACK), "down", ModColors.TEXT_MUTED, () -> {
+        }, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, false);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }));
+        });
         actions.add(ContextActions.copy(() -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.copyDescriptionSelection(state, model);
@@ -356,6 +362,11 @@ public final class QuestDetailsDescriptionMenus {
             }
         }
         return false;
+    }
+
+    private static void addOrderActions(List<ContextAction> actions, Runnable bringToFront, Runnable sendToBack) {
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_BRING_TO_FRONT), "up", ModColors.INTERACTIVE, bringToFront));
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_SEND_TO_BACK), "down", ModColors.TEXT_MUTED, sendToBack));
     }
 
     private static int descriptionSelectionCount(TabletUiState state) {
@@ -401,4 +412,16 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetailsTextStyleMenuW = 0;
         state.questDetailsTextStyleMenuH = 0;
     }
+
+    private static int localContextCoordinate(int stored, int origin, int available) {
+        int fromOwner = stored - origin;
+        if (fromOwner >= 0 && fromOwner <= available) {
+            return fromOwner;
+        }
+        if (stored >= 0 && stored <= available) {
+            return stored;
+        }
+        return fromOwner;
+    }
+
 }

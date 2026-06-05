@@ -19,7 +19,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
@@ -151,10 +150,6 @@ public final class QuestPerformanceGameTests {
                 helper.getLevel(),
                 new GameProfile(UUID.randomUUID(), name)
         );
-    }
-
-    private static ResourceLocation id(String path) {
-        return ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, path);
     }
 
     private record Bundle(

@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -45,10 +46,7 @@ final class CanvasContextSelectionActions {
             }));
         }
         if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
-            if (state.contextQuestCompletionSoundMenuOpen && state.selectedQuestIds.size() > 1) {
-                addBatchCompletionSoundSubmenu(actions, canvasViewport, state);
-                return;
-            }
+            state.contextQuestCompletionSoundMenuOpen = false;
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
@@ -92,14 +90,23 @@ final class CanvasContextSelectionActions {
         }
         List<String> targets = new ArrayList<>(questIds);
         CompoundTag first = firstQuest(targets);
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_sound"), "audio-lines", ModColors.INTERACTIVE, false, () -> {
-            state.contextQuestCompletionSoundMenuOpen = true;
-            state.contextMenuScroll = 0;
-            state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound quests={}", targets.size());
-            canvasViewport.refresh();
-        }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_quest_background"), "background", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, List.of(
+                ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openBatchQuestGameSoundPicker(state, targets, first.getString("completion_sound"));
+                    state.contextQuestCompletionSoundMenuOpen = false;
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_game quests={}", targets.size());
+                    canvasViewport.refresh();
+                }),
+                ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openBatchQuestCustomCompletionSoundPicker(state, targets, first.getString("completion_sound"));
+                    state.contextQuestCompletionSoundMenuOpen = false;
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_custom quests={}", targets.size());
+                    canvasViewport.refresh();
+                })
+        )));
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_quest_background"), "background", ModColors.INTERACTIVE, () -> {
             state.contextQuestCompletionSoundMenuOpen = false;
             ModalOpenActions.openBatchQuestBackgroundPicker(
                     state,
@@ -111,7 +118,7 @@ final class CanvasContextSelectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.batch_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> {
             state.contextQuestCompletionSoundMenuOpen = false;
             ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(
                     state,
@@ -123,32 +130,13 @@ final class CanvasContextSelectionActions {
             canvasViewport.refresh();
         }));
         if (selectionHasCompletionHudBackground(targets)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), "delete", ModColors.WARNING, () -> {
+            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), "delete", ModColors.WARNING, () -> {
                 EditorCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_completion_hud_background quests={}", targets.size());
                 canvasViewport.refresh();
             }));
         }
-    }
-
-    private static void addBatchCompletionSoundSubmenu(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
-        List<String> targets = new ArrayList<>(state.selectedQuestIds);
-        CompoundTag first = firstQuest(targets);
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
-            ModalOpenActions.openBatchQuestGameSoundPicker(state, targets, first.getString("completion_sound"));
-            state.contextQuestCompletionSoundMenuOpen = false;
-            state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_game quests={}", targets.size());
-            canvasViewport.refresh();
-        }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> {
-            ModalOpenActions.openBatchQuestCustomCompletionSoundPicker(state, targets, first.getString("completion_sound"));
-            state.contextQuestCompletionSoundMenuOpen = false;
-            state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_custom quests={}", targets.size());
-            canvasViewport.refresh();
-        }));
     }
 
     private static CompoundTag firstQuest(List<String> questIds) {
@@ -176,13 +164,13 @@ final class CanvasContextSelectionActions {
         if (selection.layerKeys().isEmpty()) {
             return;
         }
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
             CanvasRenderer.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), true);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=selection count={}", selection.size());
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
             CanvasRenderer.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), false);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=selection count={}", selection.size());
@@ -191,17 +179,19 @@ final class CanvasContextSelectionActions {
     }
 
     private static void addSelectionAlignmentActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
-            boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
-            state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
-            canvasViewport.refresh();
-        }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", ModColors.INTERACTIVE, () -> {
-            boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
-            state.contextDeleteConfirmKey = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
-            canvasViewport.refresh();
-        }));
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_ALIGN), "align-center-horizontal", ModColors.INTERACTIVE, List.of(
+                ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
+                    boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
+                    canvasViewport.refresh();
+                }),
+                ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", ModColors.INTERACTIVE, () -> {
+                    boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
+                    state.contextDeleteConfirmKey = "";
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
+                    canvasViewport.refresh();
+                })
+        )));
     }
 }

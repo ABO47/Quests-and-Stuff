@@ -474,8 +474,9 @@ public final class TabletRecipePickerModal {
 
     private static ItemStack[] tagPreviews(TagKey<Item> tag) {
         List<ItemStack> stacks = new ArrayList<>();
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item != Items.AIR && item.builtInRegistryHolder().is(tag)) {
+        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+            Item item = holder.value();
+            if (item != Items.AIR) {
                 stacks.add(new ItemStack(item));
             }
         }

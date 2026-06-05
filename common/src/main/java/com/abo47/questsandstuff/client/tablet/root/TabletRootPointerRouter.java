@@ -40,6 +40,9 @@ final class TabletRootPointerRouter {
             refresher.run();
             return true;
         }
+        if (button == 0 && state.chapterMenuOpen && selfClick.invoke(mouseX, mouseY, button)) {
+            return true;
+        }
         if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
             return true;
         }

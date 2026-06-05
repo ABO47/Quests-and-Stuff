@@ -103,7 +103,7 @@ public final class QuestInventoryTasks {
             return false;
         }
         Item item = BuiltInRegistries.ITEM.get(itemLocation);
-        return item.builtInRegistryHolder().is(target);
+        return item != Items.AIR && new ItemStack(item).is(target);
     }
 
     public static int consumeItems(ServerPlayer player, String itemId, int max) {

@@ -355,13 +355,6 @@ public final class CanvasHitTester {
         return distX * distX + distY * distY <= tolerance * tolerance;
     }
 
-    private static float clampZoom(float zoom) {
-        if (Float.isNaN(zoom) || Float.isInfinite(zoom)) {
-            return 1.0f;
-        }
-        return Math.max(0.5f, Math.min(3.0f, zoom));
-    }
-
     private static int toolX(int index, int columns, int buttonWidth) {
         return 2 + (index % Math.max(1, columns)) * buttonWidth;
     }

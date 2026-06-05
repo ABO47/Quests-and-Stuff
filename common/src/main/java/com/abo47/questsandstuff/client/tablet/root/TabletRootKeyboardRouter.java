@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -69,14 +70,14 @@ final class TabletRootKeyboardRouter {
         if (root.isFrontWindowOpen()) {
             return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
-        if (!root.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
+        if (!Widget.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
             state.quickConnectHeld = true;
         }
         if (handleRenameCommit(root, state, refresher, keyCode)) {
             return true;
         }
         if (!TabletRootWindowController.isTextInputActive(state, root)
-                && TabletShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, root.isCtrlDown(), root.isShiftDown())) {
+                && TabletShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, Widget.isCtrlDown(), Widget.isShiftDown())) {
             refresher.run();
             return true;
         }
@@ -86,7 +87,7 @@ final class TabletRootKeyboardRouter {
         if (selfKey.invoke(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_Z && !root.isCtrlDown()) {
+        if (keyCode == GLFW.GLFW_KEY_Z && !Widget.isCtrlDown()) {
             if (state.canvasZoom != 1.0f) {
                 CanvasCameraController.resetZoom(state, true);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas zoom reset key=Z");
@@ -94,7 +95,7 @@ final class TabletRootKeyboardRouter {
             }
             return true;
         }
-        if (state.editorAvailable && root.isCtrlDown() && keyCode == GLFW.GLFW_KEY_E) {
+        if (state.editorAvailable && Widget.isCtrlDown() && keyCode == GLFW.GLFW_KEY_E) {
             state.editMode = !state.editMode;
             state.canEdit = state.editorAvailable && state.editMode;
             TabletUiFactory.persistEditMode(state.editMode);
@@ -102,7 +103,7 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
-        if (!state.canEdit || !root.isCtrlDown()) {
+        if (!state.canEdit || !Widget.isCtrlDown()) {
             return false;
         }
         return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
@@ -124,7 +125,7 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (!TabletRootWindowController.isTextInputActive(state, root)
-                && TabletShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, root.isCtrlDown(), root.isShiftDown())) {
+                && TabletShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, Widget.isCtrlDown(), Widget.isShiftDown())) {
             refresher.run();
             return true;
         }
@@ -250,7 +251,7 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean handleCanvasClipboardShortcut(TabletRootWidget root, TabletUiState state, CanvasViewport canvasViewport, Runnable refresher, int keyCode) {
-        if (canvasViewport == null || !state.canEdit || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (canvasViewport == null || !state.canEdit || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_C) {
@@ -277,7 +278,7 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean handleQuestDetailsClipboardShortcut(TabletRootWidget root, TabletUiState state, Runnable refresher, int keyCode) {
-        if (!QuestDetailsEditState.canEdit(state) || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (!QuestDetailsEditState.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (QuestDetailsWindow.handleClipboardShortcut(root.resolvePlayer(), state, keyCode)) {
@@ -295,7 +296,7 @@ final class TabletRootKeyboardRouter {
             Runnable redoAction,
             int keyCode
     ) {
-        if (!QuestDetailsEditState.canEdit(state) || !root.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (!QuestDetailsEditState.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_Z) {

@@ -45,33 +45,13 @@ public final class QuestDetailsObjectiveMenus {
         boolean rewards = state.questDetailsTypePickerKind.startsWith("reward");
         boolean change = state.questDetailsTypePickerKind.endsWith("_change");
         List<QuestDetailsTypeChoice> choices = rewards ? QuestObjectiveTypeCatalog.rewardChoices() : QuestObjectiveTypeCatalog.taskChoices();
-        List<ContextAction> typeActions = new ArrayList<>();
-        for (QuestDetailsTypeChoice choice : choices) {
-            typeActions.add(ContextActions.action(choice.label(), choice.icon(), ModColors.INTERACTIVE, () -> {
-                String targetId = state.questDetailsTypePickerTargetId;
-                QuestDetailsTransientState.closeTypePicker(state);
-                QuestDetailsTransientState.closeContext(state);
-                if (rewards) {
-                    if (change && !targetId.isBlank()) {
-                        QuestObjectiveEditActions.beginRewardChange(player, state, questId, targetId, choice.type());
-                    } else {
-                        QuestObjectiveEditActions.beginRewardAdd(player, state, questId, quest, choice.type());
-                    }
-                } else {
-                    if (change && !targetId.isBlank()) {
-                        QuestObjectiveEditActions.beginTaskChange(player, state, questId, targetId, choice.type());
-                    } else {
-                        QuestObjectiveEditActions.beginTaskAdd(player, state, questId, quest, choice.type());
-                    }
-                }
-            }));
-        }
+        List<ContextAction> typeActions = typePickerActions(choices, rewards, change, player, state, questId, quest);
         int rowCount = typeActions.size();
         int menuW = 130;
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(state.questDetailsTypePickerX, modalW - menuW - 4));
         int my = Math.max(4, Math.min(state.questDetailsTypePickerY, modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run());
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -104,7 +84,7 @@ public final class QuestDetailsObjectiveMenus {
                 QuestDetailsTransientState.closeContext(state);
             }
             refresh.run();
-        });
+        }, state.questDetailsW, state.questDetailsH);
         modal.addWidget(menu);
     }
 
@@ -133,7 +113,7 @@ public final class QuestDetailsObjectiveMenus {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(state.questDetailsItemSourcePickerX, modalW - menuW - 4));
         int my = Math.max(4, Math.min(state.questDetailsItemSourcePickerY, modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run());
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -166,24 +146,19 @@ public final class QuestDetailsObjectiveMenus {
                 .getCompound(contextId);
         JsonObject requirementJson = parseObjectiveJson(requirementTag.getString("json"));
         if (QuestObjectiveXpEditor.isXp(requirementJson)) {
-            actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
+            actions.add(editSubmenu(List.of(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestDetailsTransientState.openXpPicker(state, questId, contextId, true);
-            }));
+            }))));
         }
-        actions.add(ContextActions.moveUp(() -> {
+        addMoveActions(actions, () -> {
             state.contextDeleteConfirmKey = "";
             EditorCommandClient.moveQuestTask(player, questId, contextId, -1);
-        }));
-        actions.add(ContextActions.moveDown(() -> {
+        }, () -> {
             state.contextDeleteConfirmKey = "";
             EditorCommandClient.moveQuestTask(player, questId, contextId, 1);
-        }));
-        actions.add(ContextActions.changeIcon(() -> {
-            state.contextDeleteConfirmKey = "";
-            QuestDetailsWindow.openIconPicker(state, ModalTargets.taskIcon(questId, contextId));
-        }));
-        addEntityIconActions(actions, state, questId, contextId, true);
+        });
+        actions.add(visualsSubmenu(state, questId, contextId, true));
         String deleteKey = "quest_details_requirement:" + questId + ":" + contextId;
         actions.add(ContextActions.delete(state, deleteKey, QuestVocabulary.text(QuestVocabulary.COMMON_DELETE), () -> {
             EditorCommandClient.removeQuestTask(player, questId, contextId);
@@ -196,20 +171,21 @@ public final class QuestDetailsObjectiveMenus {
                 .getCompound(contextId);
         JsonObject rewardJson = parseObjectiveJson(rewardTag.getString("json"));
         boolean selectable = QuestObjectiveSelectableRewards.isSelectable(rewardJson);
+        List<ContextAction> editActions = new ArrayList<>();
         if ("command".equals(QuestObjectiveJsons.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
-            actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
+            editActions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
         }
         if (QuestObjectiveXpEditor.isXp(rewardJson)) {
-            actions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
+            editActions.add(ContextActions.rename(QuestVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestDetailsTransientState.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
-            actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "selectable", ModColors.INTERACTIVE, () -> {
+            editActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "selectable", ModColors.INTERACTIVE, () -> {
                 state.contextDeleteConfirmKey = "";
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));
@@ -222,19 +198,17 @@ public final class QuestDetailsObjectiveMenus {
             state.contextDeleteConfirmKey = "";
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, false);
         }));
-        actions.add(ContextActions.moveUp(() -> {
+        if (!editActions.isEmpty()) {
+            actions.add(editSubmenu(editActions));
+        }
+        addMoveActions(actions, () -> {
             state.contextDeleteConfirmKey = "";
             EditorCommandClient.moveQuestReward(player, questId, contextId, -1);
-        }));
-        actions.add(ContextActions.moveDown(() -> {
+        }, () -> {
             state.contextDeleteConfirmKey = "";
             EditorCommandClient.moveQuestReward(player, questId, contextId, 1);
-        }));
-        actions.add(ContextActions.changeIcon(() -> {
-            state.contextDeleteConfirmKey = "";
-            QuestDetailsWindow.openIconPicker(state, ModalTargets.rewardIcon(questId, contextId));
-        }));
-        addEntityIconActions(actions, state, questId, contextId, false);
+        });
+        actions.add(visualsSubmenu(state, questId, contextId, false));
         String deleteKey = "quest_details_reward:" + questId + ":" + contextId;
         actions.add(ContextActions.delete(state, deleteKey, QuestVocabulary.text(QuestVocabulary.COMMON_DELETE), () -> {
             EditorCommandClient.removeQuestReward(player, questId, contextId);
@@ -253,6 +227,113 @@ public final class QuestDetailsObjectiveMenus {
                 () -> {
                 }
         );
+    }
+
+    private static List<ContextAction> typePickerActions(
+            List<QuestDetailsTypeChoice> choices,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest
+    ) {
+        if (rewards) {
+            List<ContextAction> actions = new ArrayList<>();
+            for (QuestDetailsTypeChoice choice : choices) {
+                actions.add(typeChoiceAction(choice, true, change, player, state, questId, quest));
+            }
+            return actions;
+        }
+
+        List<ContextAction> actions = new ArrayList<>();
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest);
+        return actions;
+    }
+
+    private static void addTypeGroup(
+            List<ContextAction> actions,
+            String labelKey,
+            String icon,
+            List<QuestDetailsTypeChoice> choices,
+            List<String> types,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest
+    ) {
+        List<ContextAction> children = new ArrayList<>();
+        for (String type : types) {
+            QuestDetailsTypeChoice choice = typeChoice(choices, type);
+            if (choice != null) {
+                children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest));
+            }
+        }
+        if (!children.isEmpty()) {
+            actions.add(ContextActions.submenu(QuestVocabulary.text(labelKey), icon, ModColors.INTERACTIVE, children));
+        }
+    }
+
+    private static QuestDetailsTypeChoice typeChoice(List<QuestDetailsTypeChoice> choices, String type) {
+        for (QuestDetailsTypeChoice choice : choices) {
+            if (choice.type().equals(type)) {
+                return choice;
+            }
+        }
+        return null;
+    }
+
+    private static ContextAction typeChoiceAction(
+            QuestDetailsTypeChoice choice,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest
+    ) {
+        return ContextActions.action(choice.label(), choice.icon(), ModColors.INTERACTIVE, () -> {
+            String targetId = state.questDetailsTypePickerTargetId;
+            QuestDetailsTransientState.closeTypePicker(state);
+            QuestDetailsTransientState.closeContext(state);
+            if (rewards) {
+                if (change && !targetId.isBlank()) {
+                    QuestObjectiveEditActions.beginRewardChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestObjectiveEditActions.beginRewardAdd(player, state, questId, quest, choice.type());
+                }
+            } else {
+                if (change && !targetId.isBlank()) {
+                    QuestObjectiveEditActions.beginTaskChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestObjectiveEditActions.beginTaskAdd(player, state, questId, quest, choice.type());
+                }
+            }
+        });
+    }
+
+    private static ContextAction editSubmenu(List<ContextAction> editActions) {
+        return ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_EDIT), "rename", ModColors.INTERACTIVE, editActions);
+    }
+
+    private static void addMoveActions(List<ContextAction> actions, Runnable moveUp, Runnable moveDown) {
+        actions.add(ContextActions.moveUp(moveUp));
+        actions.add(ContextActions.moveDown(moveDown));
+    }
+
+    private static ContextAction visualsSubmenu(TabletUiState state, String questId, String objectiveId, boolean task) {
+        List<ContextAction> visualActions = new ArrayList<>();
+        visualActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, () -> {
+            state.contextDeleteConfirmKey = "";
+            QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, objectiveId) : ModalTargets.rewardIcon(questId, objectiveId));
+        }));
+        addEntityIconActions(visualActions, state, questId, objectiveId, task);
+        return ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_VISUALS), "style", ModColors.INTERACTIVE, visualActions);
     }
 
     private static void renderCommandRewardEditor(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {

@@ -308,6 +308,8 @@ public class TabletUiState {
     public ContextMenuTarget contextMenuTarget = ContextMenuTarget.CANVAS;
     public int contextMenuX;
     public int contextMenuY;
+    public int contextMenuAnchorX;
+    public int contextMenuAnchorY;
     public int contextMenuRows;
     public int contextMenuScroll;
     public int contextMenuScrollMax;
@@ -397,6 +399,8 @@ public class TabletUiState {
     public String questDetailsContextId = "";
     public int questDetailsContextX;
     public int questDetailsContextY;
+    public int questDetailsContextAnchorX;
+    public int questDetailsContextAnchorY;
     public int questDetailsContextW;
     public int questDetailsContextH;
     public boolean questDetailsTypePickerOpen;

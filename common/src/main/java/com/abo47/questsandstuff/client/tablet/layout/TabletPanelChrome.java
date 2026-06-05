@@ -114,10 +114,6 @@ public final class TabletPanelChrome {
         graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
     }
 
-    private static int gridLineColor(TabletUiState state) {
-        return gridLineColor(state.gridOpacityPercent);
-    }
-
     private static int gridLineColor(int gridOpacityPercent) {
         int alphaPercent = Math.max(0, Math.min(100, gridOpacityPercent));
         int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));

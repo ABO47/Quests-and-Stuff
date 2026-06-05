@@ -25,9 +25,9 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -653,15 +653,11 @@ public final class QuestRewardAndTeamGameTests {
         return QuestGameTestDefinitions.reward(id, type, amount, payload, selectable, args);
     }
 
-    private static ResourceLocation id(String path) {
-        return ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, path);
-    }
-
     private static int countItems(ServerPlayer player, String itemId) {
         ResourceLocation target = ResourceLocation.tryParse(itemId);
         int count = 0;
         for (var stack : player.getInventory().items) {
-            if (target != null && target.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
+            if (target != null && target.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) {
                 count += stack.getCount();
             }
         }

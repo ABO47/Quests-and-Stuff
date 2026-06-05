@@ -15,6 +15,8 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextId = id == null ? "" : id;
         state.questDetailsContextX = x;
         state.questDetailsContextY = y;
+        state.questDetailsContextAnchorX = x;
+        state.questDetailsContextAnchorY = y;
         state.questDetailsContextW = 0;
         state.questDetailsContextH = 0;
         closeTypePicker(state);

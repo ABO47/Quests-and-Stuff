@@ -195,7 +195,7 @@ public final class CanvasRecipeCardAsset {
             return "";
         }
         TagKey<Item> key = TagKey.create(BuiltInRegistries.ITEM.key(), id);
-        for (var ignored : BuiltInRegistries.ITEM.getTagOrEmpty(key)) {
+        if (BuiltInRegistries.ITEM.getTagOrEmpty(key).iterator().hasNext()) {
             return "#" + id;
         }
         return "";

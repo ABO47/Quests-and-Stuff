@@ -34,43 +34,48 @@ public final class ChapterContextMenuRows {
         String deleteLabel = TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete"));
         actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, false, true, () -> ChapterContextMenuActions.delete(player, state, target, refresh)));
         boolean locked = ClientQuestCache.groupLockUntilUnlocked(target);
-        actions.add(ContextActions.action(
-                tr(locked ? QuestVocabulary.CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED : QuestVocabulary.CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED),
-                locked ? "unlock_chapter" : "lock_chapter",
-                locked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
-                () -> ChapterContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
-        ));
         boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
-        actions.add(ContextActions.action(
-                tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_CHAPTER : QuestVocabulary.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
-                hidden ? "eye" : "eye-off",
-                hidden ? ModColors.SUCCESS : ModColors.WARNING,
-                () -> ChapterContextMenuActions.setHideUntilUnlocked(player, state, target, !hidden, refresh)
-        ));
-        actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_VISIBILITY), "eye", ModColors.INTERACTIVE, List.of(
+                ContextActions.action(
+                        tr(locked ? QuestVocabulary.CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED : QuestVocabulary.CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED),
+                        locked ? "unlock_chapter" : "lock_chapter",
+                        locked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                        () -> ChapterContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
+                ),
+                ContextActions.action(
+                        tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_CHAPTER : QuestVocabulary.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
+                        hidden ? "eye" : "eye-off",
+                        hidden ? ModColors.SUCCESS : ModColors.WARNING,
+                        () -> ChapterContextMenuActions.setHideUntilUnlocked(player, state, target, !hidden, refresh)
+                )
+        )));
+
+        List<ContextAction> visualActions = new ArrayList<>();
+        visualActions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
         if (layout.entityVariants()) {
-            actions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
+            visualActions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
         }
         if (layout.entityIcon()) {
-            actions.add(ContextActions.editMotion(() -> ChapterContextMenuActions.editMotion(state, target, refresh)));
+            visualActions.add(ContextActions.editMotion(() -> ChapterContextMenuActions.editMotion(state, target, refresh)));
         }
 
-        actions.add(new ContextAction(
+        visualActions.add(new ContextAction(
                 EntityIconControls.pendingRemoveIconLabel(state, ChapterContextMenuLayout.removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon")),
                 "delete",
                 ModColors.WARNING,
                 false,
                 () -> ChapterContextMenuActions.removeIcon(player, state, target, refresh)
         ));
-        actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
-        actions.add(new ContextAction(
+        visualActions.add(ContextActions.action(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
+        visualActions.add(new ContextAction(
                 TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg")),
                 "delete",
                 ModColors.WARNING,
                 false,
                 () -> ChapterContextMenuActions.removeBackground(player, state, target, refresh)
         ));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
+        visualActions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
+        actions.add(ContextActions.submenu(QuestVocabulary.text(QuestVocabulary.CONTEXT_VISUALS), "style", ModColors.INTERACTIVE, visualActions));
         actions.add(ContextActions.moveUp(() -> ChapterContextMenuActions.move(player, state, target, -1, refresh)));
         actions.add(ContextActions.moveDown(() -> ChapterContextMenuActions.move(player, state, target, 1, refresh)));
         return actions;

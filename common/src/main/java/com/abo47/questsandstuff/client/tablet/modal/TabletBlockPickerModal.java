@@ -182,10 +182,8 @@ public final class TabletBlockPickerModal {
 
     private static ItemStack[] tagPreviews(TagKey<Block> tag) {
         List<ItemStack> stacks = new ArrayList<>();
-        for (Block block : BuiltInRegistries.BLOCK) {
-            if (!block.builtInRegistryHolder().is(tag)) {
-                continue;
-            }
+        for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
+            Block block = holder.value();
             Item item = block.asItem();
             if (item != Items.AIR) {
                 stacks.add(new ItemStack(item));

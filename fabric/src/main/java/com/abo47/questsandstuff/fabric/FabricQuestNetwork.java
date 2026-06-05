@@ -95,7 +95,7 @@ public final class FabricQuestNetwork {
         type.encoder().encode(packet, buffer);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     static Object decodeUnchecked(QuestPacketType type, FriendlyByteBuf buffer) {
         return type.decoder().decode(buffer);
     }

@@ -395,7 +395,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasTextLayer clampRotationPreviewText(CanvasTextLayer text) {
-        CanvasTextLayer preview = state.questDetailsGridSnapLocked && CanvasGeometry.isCardinalTurn(text.rotation())
+        CanvasTextLayer preview = shouldFitRotatedPreview(text.rotation())
                 ? fittedTextIfGridLocked(text)
                 : text;
         CanvasPoint clamped = clampTextAnchor(preview.x(), preview.y(), preview.w(), preview.h(), preview.rotation());
@@ -403,11 +403,15 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasImageLayer clampRotationPreviewImage(CanvasImageLayer image) {
-        CanvasImageLayer preview = state.questDetailsGridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation())
+        CanvasImageLayer preview = shouldFitRotatedPreview(image.rotation())
                 ? fittedImageIfGridLocked(image)
                 : image;
         CanvasPoint clamped = clampImageAnchor(preview);
         return preview.moveTo(clamped.x, clamped.y);
+    }
+
+    private boolean shouldFitRotatedPreview(int rotation) {
+        return state.questDetailsGridSnapLocked && isShiftDown() && CanvasGeometry.isCardinalTurn(rotation);
     }
 
     private int rotation(int mouseX, int mouseY) {

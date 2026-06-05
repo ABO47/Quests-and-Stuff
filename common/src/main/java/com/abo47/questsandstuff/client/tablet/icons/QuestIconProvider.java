@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public final class QuestIconProvider {
     private static final Map<String, ItemStackTexture> ICON_TEXTURE_CACHE = new HashMap<>();
@@ -55,9 +54,13 @@ public final class QuestIconProvider {
             ResourceLocation tagId = ResourceLocation.tryParse(keyValue.substring(1));
             if (tagId != null) {
                 TagKey<Item> key = TagKey.create(BuiltInRegistries.ITEM.key(), tagId);
-                List<Item> items = BuiltInRegistries.ITEM.stream()
-                        .filter(it -> it.builtInRegistryHolder().is(key))
-                        .collect(Collectors.toList());
+                List<Item> items = new ArrayList<>();
+                for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(key)) {
+                    Item item = holder.value();
+                    if (item != Items.AIR) {
+                        items.add(item);
+                    }
+                }
                 if (!items.isEmpty()) {
                     ItemStack[] stacks = items.stream().map(ItemStack::new).toArray(ItemStack[]::new);
                     ItemStackTexture texture = new ScopedItemStackTexture(stacks);
@@ -199,10 +202,13 @@ public final class QuestIconProvider {
 
     private static List<Item> blockTagItems(ResourceLocation tagId) {
         TagKey<Block> key = TagKey.create(BuiltInRegistries.BLOCK.key(), tagId);
-        return BuiltInRegistries.BLOCK.stream()
-                .filter(block -> block.builtInRegistryHolder().is(key))
-                .map(Block::asItem)
-                .filter(item -> item != Items.AIR)
-                .collect(Collectors.toList());
+        List<Item> items = new ArrayList<>();
+        for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(key)) {
+            Item item = holder.value().asItem();
+            if (item != Items.AIR) {
+                items.add(item);
+            }
+        }
+        return items;
     }
 }

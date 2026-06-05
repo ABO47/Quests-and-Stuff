@@ -7,8 +7,6 @@ import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
-import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;

@@ -282,7 +282,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
         for (int i = 0; i < actions.size(); i++) {
             ContextAction action = actions.get(i);
             boolean hovered = inside(mouseX, mouseY, x + ContextMenuSystem.outerPad(), rowY + i * ContextMenuSystem.rowHeight(), rowW, ContextMenuSystem.rowHeight());
-            ContextMenuSystem.drawVanillaContextRow(graphics, x, rowY + i * ContextMenuSystem.rowHeight(), rowW, action.label(), action.icon(), hovered);
+            ContextMenuSystem.drawVanillaContextRow(graphics, x, rowY + i * ContextMenuSystem.rowHeight(), rowW, action.label(), action.icon(), action.accentColor(), hovered);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
@@ -292,9 +291,10 @@ final class CanvasViewportInputController {
             refresher.run();
             return true;
         }
-        if (state.contextMenuOpen && TabletUiFactory.isContextMenuHit(state, localX, localY)) {
-            CanvasContextMenuController.scrollContextMenu(state, wheelDelta);
-            refresher.run();
+        if (state.contextMenuOpen) {
+            if (viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta)) {
+                refresher.run();
+            }
             return true;
         }
         if (CanvasMinimapController.isPanelHit(state, localX, localY)) {

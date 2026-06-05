@@ -42,6 +42,14 @@ final class TabletWidgets {
         ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, callback);
     }
 
+    static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
+    }
+
+    static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
+    }
+
     static String contextIconForLabel(String label) {
         return ContextMenuSystem.iconForLabel(label);
     }

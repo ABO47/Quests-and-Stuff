@@ -19,6 +19,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +76,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onPickup(EntityItemPickupEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getItem().getItem().getItem());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItem().getItem().getItem());
             send(player, QuestSignalType.ITEM_COLLECTED, id.toString(), event.getItem().getItem().getCount());
         }
     }
@@ -83,7 +84,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onItemUse(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getItem().getItem());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItem().getItem());
             send(player, QuestSignalType.ITEM_USED, id.toString(), 1);
         }
     }
@@ -91,7 +92,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onItemRightClick(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getItemStack().getItem());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
             send(player, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
         }
     }
@@ -99,7 +100,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(player.level().getBlockState(event.getPos()).getBlock());
+            ResourceLocation id = ForgeRegistries.BLOCKS.getKey(player.level().getBlockState(event.getPos()).getBlock());
             send(player, QuestSignalType.BLOCK_INTERACT, id.toString(), 1);
         }
     }
@@ -107,7 +108,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(event.getTarget().getType());
+            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(event.getTarget().getType());
             send(player, QuestSignalType.ENTITY_INTERACT, id.toString(), 1);
         }
     }
@@ -115,7 +116,7 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onKill(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType());
+            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType());
             send(player, QuestSignalType.ENTITY_KILLED, id.toString(), 1);
         }
     }
@@ -145,7 +146,7 @@ public final class ForgeQuestEventBridge {
     public void onCraft(PlayerEvent.ItemCraftedEvent event) {
         Player raw = event.getEntity();
         if (raw instanceof ServerPlayer player) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getCrafting().getItem());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getCrafting().getItem());
             send(player, QuestSignalType.ITEM_CRAFTED, id.toString(), event.getCrafting().getCount());
         }
     }
@@ -168,7 +169,7 @@ public final class ForgeQuestEventBridge {
             if (stack.isEmpty()) {
                 continue;
             }
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
             current.merge(id.toString(), stack.getCount(), Integer::sum);
         }
 

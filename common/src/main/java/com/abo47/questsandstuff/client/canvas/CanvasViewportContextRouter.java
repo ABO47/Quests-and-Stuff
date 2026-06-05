@@ -51,6 +51,8 @@ final class CanvasViewportContextRouter {
         EntityMotionEditor.close(state);
         state.contextMenuX = localX;
         state.contextMenuY = localY;
+        state.contextMenuAnchorX = localX;
+        state.contextMenuAnchorY = localY;
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
         state.contextQuestCompletionSoundMenuOpen = false;

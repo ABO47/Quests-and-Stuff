@@ -329,6 +329,7 @@ public final class EntityPreviewRenderer {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float pitchDegrees, float partialTicks) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);

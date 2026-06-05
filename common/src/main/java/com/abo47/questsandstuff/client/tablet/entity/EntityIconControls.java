@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.entity;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -49,14 +50,14 @@ public final class EntityIconControls {
         }
         String entityId = EntityPreviewRenderer.entityId(icon);
         if (EntityVariantCatalog.hasVariants(entityId)) {
-            actions.add(new ContextAction("Change variant", "variant", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.changeVariant(() -> {
                 openVariantPicker(state, variantTarget, icon);
                 closeOwner.run();
                 QuestsAndStuffMod.debugLog("[QnS:UI] entity icon variant picker open target={} entity={}", variantTarget, entityId);
                 refresh.run();
             }));
         }
-        actions.add(new ContextAction("Edit motion", "motion", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.editMotion(() -> {
             state.contextDeleteConfirmKey = "";
             openMotion.run();
             closeOwner.run();

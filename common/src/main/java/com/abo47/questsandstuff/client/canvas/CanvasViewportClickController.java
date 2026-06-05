@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.canvas.viewport.CanvasElementTransformController;
@@ -99,8 +98,8 @@ final class CanvasViewportClickController {
         }
 
         if (state.contextMenuOpen) {
-            if (button == 0 && TabletUiFactory.isContextMenuHit(state, localX, localY)) {
-                if (CanvasContextMenuController.clickContextMenu(canvasViewport, state, localX, localY)) {
+            if (button == 0) {
+                if (canvasViewport.callSuperMouseClicked(mouseX, mouseY, button)) {
                     refresher.run();
                     return true;
                 }

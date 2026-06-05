@@ -204,12 +204,5 @@ public final class QuestDetailsDescriptionSelection {
             return right >= left && bottom >= top;
         }
 
-        int width() {
-            return right - left;
-        }
-
-        int height() {
-            return bottom - top;
-        }
     }
 }

@@ -23,8 +23,8 @@ final class QuestDetailsDescriptionEditActions {
 
     static void addTextAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
         String id = nextDescriptionTextId(model);
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 48);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 16);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - 48);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - 16);
         CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", ModColors.TEXT_PRIMARY);
         text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
@@ -47,40 +47,40 @@ final class QuestDetailsDescriptionEditActions {
 
     static void addImageAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionImageId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 40);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - 40);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - 24);
         QuestDetailsWindow.openAssetPicker(state, ModalTargets.descImageNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add image pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void addEntityAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionEntityId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 32);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 32);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - 32);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - 32);
         QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntityNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add entity pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void addItemAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionItemId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 24);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - 24);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - 24);
         QuestDetailsWindow.openIconPicker(state, ModalTargets.descItemNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add item model pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void addBlockAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionBlockId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - 24);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - 24);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - 24);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - 24);
         QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlockNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add block model pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionRecipeId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX - RECIPE_CARD_W / 2);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll - RECIPE_CARD_H / 2);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX - RECIPE_CARD_W / 2);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll - RECIPE_CARD_H / 2);
         QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipeNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card pending quest={} image={} pos={},{}", questId, id, x, y);
     }

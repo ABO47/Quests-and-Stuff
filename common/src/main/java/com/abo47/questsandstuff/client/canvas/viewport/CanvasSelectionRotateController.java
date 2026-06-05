@@ -122,7 +122,6 @@ final class CanvasSelectionRotateController {
             );
             state.transientQuestPositions.put(questId, new CanvasPoint(clamped.x, clamped.y));
         }
-        String group = TabletUiFactory.selectedGroupName(state);
         CanvasLayerSelectionSnapshot layerSnapshot = new CanvasLayerSelectionSnapshot(
                 state.rotateStartBoundsLeft,
                 state.rotateStartBoundsTop,
@@ -155,7 +154,7 @@ final class CanvasSelectionRotateController {
     }
 
     private CanvasImageLayer clampRotationPreviewImage(CanvasImageLayer image) {
-        CanvasImageLayer preview = state.gridSnapLocked && CanvasGeometry.isCardinalTurn(image.rotation())
+        CanvasImageLayer preview = shouldFitRotatedPreview(image.rotation())
                 ? fittedImageIfGridLocked(image)
                 : image;
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), preview.pivotX(), preview.pivotY(), preview.rotation());
@@ -163,10 +162,14 @@ final class CanvasSelectionRotateController {
     }
 
     private CanvasTextLayer clampRotationPreviewText(CanvasTextLayer text) {
-        CanvasTextLayer preview = state.gridSnapLocked && CanvasGeometry.isCardinalTurn(text.rotation())
+        CanvasTextLayer preview = shouldFitRotatedPreview(text.rotation())
                 ? fittedTextIfGridLocked(text)
                 : text;
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), preview.w() / 2, preview.h() / 2, preview.rotation());
         return preview.moveTo(clamped.x, clamped.y);
+    }
+
+    private boolean shouldFitRotatedPreview(int rotation) {
+        return state.gridSnapLocked && isShiftDown() && CanvasGeometry.isCardinalTurn(rotation);
     }
 }

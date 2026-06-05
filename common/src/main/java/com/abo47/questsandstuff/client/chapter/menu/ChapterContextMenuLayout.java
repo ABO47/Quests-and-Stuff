@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.client.resources.language.I18n;
 
@@ -45,19 +46,10 @@ public record ChapterContextMenuLayout(
         List<String> labels = new ArrayList<>();
         labels.add(tr("ui.questsandstuff.menu.new_chapter"));
         if (hasTarget) {
-            boolean entityIcon = isEntityChapterIcon(target);
-            if (entityIcon && hasEntityVariants(target)) {
-                labels.add("Change variant");
-            }
-            if (entityIcon) {
-                labels.add("Edit motion");
-            }
-            labels.add(EntityIconControls.pendingRemoveIconLabel(state, removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon")));
-            labels.add(tr("ui.questsandstuff.menu.change_card_bg"));
-            labels.add(TabletUiFactory.pendingDeleteLabel(state, removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg")));
-            labels.add(tr("ui.questsandstuff.menu.text_style"));
-            labels.add(tr("ui.questsandstuff.menu.move_up"));
-            labels.add(tr("ui.questsandstuff.menu.move_down"));
+            labels.add(tr(QuestVocabulary.CONTEXT_VISIBILITY));
+            labels.add(tr(QuestVocabulary.CONTEXT_VISUALS));
+            labels.add(tr(QuestVocabulary.CONTEXT_MOVE_UP));
+            labels.add(tr(QuestVocabulary.CONTEXT_MOVE_DOWN));
         }
         return ContextMenuSystem.preferredMenuWidth(labels, 82, Math.max(82, Math.min(136, maxAvailableWidth - 8)));
     }
@@ -78,7 +70,7 @@ public record ChapterContextMenuLayout(
         if (!hasTarget) {
             return 1;
         }
-        return 10 + (entityVariants ? 1 : 0) + (entityIcon ? 1 : 0);
+        return 7;
     }
 
     public static String deleteKey(String target) {

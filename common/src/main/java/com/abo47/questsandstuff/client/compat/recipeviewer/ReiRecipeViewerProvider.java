@@ -207,7 +207,6 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private static DisplayMatch findDisplay(Object displayRegistry, ResourceLocation recipeId, ResourceLocation preferredCategoryId) throws ReflectiveOperationException {
         Object all = RecipeViewerReflection.firstMethod(displayRegistry.getClass(), "getAll", 0).invoke(displayRegistry);
         if (!(all instanceof Map<?, ?> map)) {

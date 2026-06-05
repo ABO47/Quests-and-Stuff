@@ -81,10 +81,8 @@ public final class QuestDetailsObjectivesPanel {
             return ItemStack.EMPTY;
         }
 
-        int leftW = QuestDetailsWindow.leftPanelWidth(state);
         int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + QuestDetailsWindow.CONTENT_INSET;
         int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + QuestDetailsWindow.CONTENT_INSET;
-        int w = Math.max(1, leftW - QuestDetailsWindow.CONTENT_INSET * 2);
         int h = Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2);
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);

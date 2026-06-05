@@ -325,8 +325,9 @@ public final class CanvasModelPreviewRenderer {
 
     private static List<Block> blocksForTag(TagKey<Block> key) {
         List<Block> blocks = new ArrayList<>();
-        for (Block block : BuiltInRegistries.BLOCK) {
-            if (isRenderableBlock(block) && block.builtInRegistryHolder().is(key)) {
+        for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(key)) {
+            Block block = holder.value();
+            if (isRenderableBlock(block)) {
                 blocks.add(block);
             }
         }
@@ -340,8 +341,9 @@ public final class CanvasModelPreviewRenderer {
         }
         TagKey<Item> key = TagKey.create(BuiltInRegistries.ITEM.key(), id);
         List<ItemStack> stacks = new ArrayList<>();
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item != Items.AIR && item.builtInRegistryHolder().is(key)) {
+        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(key)) {
+            Item item = holder.value();
+            if (item != Items.AIR) {
                 stacks.add(new ItemStack(item));
             }
         }
@@ -383,8 +385,8 @@ public final class CanvasModelPreviewRenderer {
     }
 
     private static boolean hasItemTagEntries(TagKey<Item> tag) {
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item != Items.AIR && item.builtInRegistryHolder().is(tag)) {
+        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+            if (holder.value() != Items.AIR) {
                 return true;
             }
         }
@@ -392,8 +394,8 @@ public final class CanvasModelPreviewRenderer {
     }
 
     private static boolean hasBlockTagEntries(TagKey<Block> tag) {
-        for (Block block : BuiltInRegistries.BLOCK) {
-            if (isRenderableBlock(block) && block.builtInRegistryHolder().is(tag)) {
+        for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
+            if (isRenderableBlock(holder.value())) {
                 return true;
             }
         }

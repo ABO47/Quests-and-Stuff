@@ -40,8 +40,8 @@ public final class QuestDetailsDescriptionClipboard {
     }
 
     public static void pasteAtContext(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
-        int anchorX = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextX - panelX);
-        int anchorY = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextY - panelY + state.questDetailsDescScroll);
+        int anchorX = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorX - panelX);
+        int anchorY = QuestDetailsDescriptionLayout.snap(state, state.questDetailsContextAnchorY - panelY + state.questDetailsDescScroll);
         pasteAt(player, state, questId, model, anchorX, anchorY, QuestDetailsWindow.descriptionContentWidth(state));
     }
 

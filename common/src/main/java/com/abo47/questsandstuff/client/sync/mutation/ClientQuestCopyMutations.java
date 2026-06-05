@@ -62,7 +62,6 @@ public final class ClientQuestCopyMutations {
     }
 
     public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        String sourceId = sourceQuestId == null ? "" : sourceQuestId.trim();
         String targetId = newQuestId == null ? "" : newQuestId.trim();
         String normalizedGroup = normalizeGroup(group);
         if (targetId.isBlank() || normalizedGroup.isBlank()) {

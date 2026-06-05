@@ -458,7 +458,7 @@ public final class TabletAssetPickerModal {
                 state.contextDeleteConfirmKey = "";
             }
             refresh.run();
-        }));
+        }, modalW, modalH));
     }
 
     private static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {

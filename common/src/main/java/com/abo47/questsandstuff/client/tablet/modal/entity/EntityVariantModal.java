@@ -11,8 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 
 public final class EntityVariantModal {
-    private static final int PAD = 8;
-
     private EntityVariantModal() {
     }
 
