@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.quest.sync;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
-import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
 import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -71,7 +71,7 @@ public final class QuestSyncService {
             payload.put("group_props", payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
             payload.put("quests", payloads.questPayload(playerState, chunks.get(i)));
             bytes += payload.toString().length();
-            QuestNetwork.sendToPlayer(new S2CFullSyncPacket(sequence, i, chunks.size(), payload), player);
+            ModNetwork.sendToPlayer(new S2CFullSyncPacket(sequence, i, chunks.size(), payload), player);
         }
 
         syncDescriptions(player, visibleQuestIds);
@@ -151,7 +151,7 @@ public final class QuestSyncService {
             payload.put("removed", removedTag);
 
             bytes += payload.toString().length();
-            QuestNetwork.sendToPlayer(new S2CDeltaSyncPacket(sequence, i, chunkCount, payload), player);
+            ModNetwork.sendToPlayer(new S2CDeltaSyncPacket(sequence, i, chunkCount, payload), player);
         }
 
         syncDescriptions(player, descriptionChanged);
@@ -162,7 +162,7 @@ public final class QuestSyncService {
         PlayerQuestState state = progressData.state(player.getUUID());
         List<String> pinned = new ArrayList<>(state.pinnedQuests());
         pinned.sort(String::compareTo);
-        QuestNetwork.sendToPlayer(new S2CPinnedSyncPacket(sequenceCounter.getAndIncrement(), pinned), player);
+        ModNetwork.sendToPlayer(new S2CPinnedSyncPacket(sequenceCounter.getAndIncrement(), pinned), player);
     }
 
     public void syncFull(List<ServerPlayer> players) {
@@ -172,7 +172,7 @@ public final class QuestSyncService {
     }
 
     public void sendQuestEvent(ServerPlayer player, String eventType, String questId, String rewardId) {
-        QuestNetwork.sendToPlayer(new S2CQuestEventPacket(
+        ModNetwork.sendToPlayer(new S2CQuestEventPacket(
                 sequenceCounter.getAndIncrement(),
                 eventType,
                 questId,
@@ -192,7 +192,7 @@ public final class QuestSyncService {
             CompoundTag questTag = "add".equals(action)
                     ? payloads.editorQuestPayload(definition, progressData.state(player.getUUID()))
                     : payloads.editorQuestPayload(definition);
-            QuestNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, definition.id(), questTag), player);
+            ModNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, definition.id(), questTag), player);
         }
     }
 
@@ -202,7 +202,7 @@ public final class QuestSyncService {
             if (!canSeeEditorGraph(player)) {
                 continue;
             }
-            QuestNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, questId, questTag == null ? new CompoundTag() : questTag), player);
+            ModNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, questId, questTag == null ? new CompoundTag() : questTag), player);
         }
     }
 
@@ -275,7 +275,7 @@ public final class QuestSyncService {
                 descriptions.put(questId, lines);
             }
             payload.put("descriptions", descriptions);
-            QuestNetwork.sendToPlayer(new S2CDescriptionSyncPacket(sequence, i, chunks.size(), payload), player);
+            ModNetwork.sendToPlayer(new S2CDescriptionSyncPacket(sequence, i, chunks.size(), payload), player);
         }
     }
 
@@ -306,7 +306,7 @@ public final class QuestSyncService {
         }
         payload.put("biomes", biomes);
 
-        QuestNetwork.sendToPlayer(new S2CDisplayCacheSyncPacket(sequenceCounter.getAndIncrement(), payload), player);
+        ModNetwork.sendToPlayer(new S2CDisplayCacheSyncPacket(sequenceCounter.getAndIncrement(), payload), player);
     }
 
     private static List<Set<String>> partition(Set<String> questIds) {

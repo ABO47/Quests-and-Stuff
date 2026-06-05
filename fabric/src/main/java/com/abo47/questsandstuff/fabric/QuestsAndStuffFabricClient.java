@@ -14,7 +14,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 public final class QuestsAndStuffFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        FabricQuestNetworkClient.register();
+        FabricModNetworkClient.register();
         TabletClientHooks.registerKeyMappings(KeyBindingHelper::registerKeyBinding);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> TabletClientHooks.onClientLogin());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> TabletClientHooks.onClientLogout());

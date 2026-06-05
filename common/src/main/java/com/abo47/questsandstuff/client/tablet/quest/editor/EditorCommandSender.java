@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +27,7 @@ final class EditorCommandSender {
     }
 
     static void send(String command, CompoundTag payload) {
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket(command, payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(command, payload));
     }
 
     static void run(Player player, String command, CompoundTag payload, Consumer<ServerPlayer> serverAction) {

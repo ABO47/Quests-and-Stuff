@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.runtime.C2SClaimSelectableRewardPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
@@ -160,7 +160,7 @@ final class QuestObjectiveSelectableRewards {
                 if (!isStandaloneSelected(state, rewardId)) {
                     continue;
                 }
-                QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of()));
+                ModNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of()));
                 QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward claimed quest={} reward={}", questId, rewardId);
                 claimedAny = true;
                 continue;
@@ -169,7 +169,7 @@ final class QuestObjectiveSelectableRewards {
             if (choiceId.isBlank() || !choiceExists(json, choiceId)) {
                 continue;
             }
-            QuestNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of(choiceId)));
+            ModNetwork.sendToServer(new C2SClaimSelectableRewardPacket(questId, rewardId, List.of(choiceId)));
             QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward choice claimed quest={} reward={} choice={}", questId, rewardId, choiceId);
             claimedAny = true;
         }

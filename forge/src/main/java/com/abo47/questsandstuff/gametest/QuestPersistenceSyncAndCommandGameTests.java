@@ -11,11 +11,11 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
-import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
 import com.abo47.questsandstuff.quest.QuestServices;
@@ -338,7 +338,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             sync.setEditorVisibilityPredicate(ignored -> true);
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -357,7 +357,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Quest details mutation test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }
@@ -387,7 +387,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -462,7 +462,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Sync test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }
@@ -489,7 +489,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -525,7 +525,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Prepared full sync test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }
@@ -553,7 +553,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -573,7 +573,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Editor sync test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }
@@ -600,7 +600,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             progressData.state(player.getUUID()).quest(questId).setCompleted(true, 1L);
 
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -653,7 +653,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Editor empty quest test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }

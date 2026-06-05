@@ -9,8 +9,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.runtime.C2STogglePinPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
@@ -55,7 +55,7 @@ final class QuestDetailsHeader {
         boolean pinned = ClientQuestCache.pinned().contains(questId);
         addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? ModColors.SUCCESS : ModColors.INTERACTIVE, pinned, click -> {
             ClientQuestCache.togglePinnedLocal(questId);
-            QuestNetwork.sendToServer(new C2STogglePinPacket(questId));
+            ModNetwork.sendToServer(new C2STogglePinPacket(questId));
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });

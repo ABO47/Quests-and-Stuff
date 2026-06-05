@@ -3,9 +3,9 @@ package com.abo47.questsandstuff.client.tablet.quest.editor;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.editor.C2SEditorGroupPacket;
-import com.abo47.questsandstuff.network.editor.C2SEditorOpenGroupPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorGroupPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenGroupPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.server.level.ServerPlayer;
@@ -165,11 +165,11 @@ final class EditorChapterCommandClient {
         };
         Runnable optimisticApply = () -> applyLocalGroupAction(state, op, from, to, offset);
         Runnable sendToServer = () -> {
-            QuestNetwork.sendToServer(new C2SEditorGroupPacket(op, packetGroup, packetValue, offset));
+            ModNetwork.sendToServer(new C2SEditorGroupPacket(op, packetGroup, packetValue, offset));
             if ("create".equals(op) || "rename".equals(op) || "move".equals(op)) {
                 String openTarget = "create".equals(op) || "rename".equals(op) ? to : from;
                 if (!openTarget.isBlank()) {
-                    QuestNetwork.sendToServer(new C2SEditorOpenGroupPacket(openTarget));
+                    ModNetwork.sendToServer(new C2SEditorOpenGroupPacket(openTarget));
                 }
             }
         };

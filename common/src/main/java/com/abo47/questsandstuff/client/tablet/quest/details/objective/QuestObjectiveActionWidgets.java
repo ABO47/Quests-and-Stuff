@@ -10,9 +10,9 @@ import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
-import com.abo47.questsandstuff.network.runtime.C2SManualXpSubmitPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -36,7 +36,7 @@ final class QuestObjectiveActionWidgets {
             return;
         }
         var hit = IconOnlyButton.create(iconX, iconY, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
-            QuestNetwork.sendToServer(new C2SManualTaskPacket(questId, entry.id()));
+            ModNetwork.sendToServer(new C2SManualTaskPacket(questId, entry.id()));
             refresh.run();
         });
         parent.addWidget(hit.tooltips(new Component[]{TabletVocabulary.component(QuestVocabulary.MARK_REQUIREMENT_DONE)}));
@@ -53,7 +53,7 @@ final class QuestObjectiveActionWidgets {
             return;
         }
         var hit = IconOnlyButton.create(iconX, iconY, iconSize, "send-horizontal", ModColors.SUCCESS, click -> {
-            QuestNetwork.sendToServer(new C2SManualXpSubmitPacket(questId, entry.id()));
+            ModNetwork.sendToServer(new C2SManualXpSubmitPacket(questId, entry.id()));
             refresh.run();
         });
         parent.addWidget(hit.tooltips(new Component[]{TabletVocabulary.component(QuestVocabulary.SUBMIT_XP_REQUIREMENT)}));

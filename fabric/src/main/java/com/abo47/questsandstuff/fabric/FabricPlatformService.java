@@ -35,17 +35,17 @@ public final class FabricPlatformService implements PlatformService {
 
     @Override
     public void registerNetwork() {
-        FabricQuestNetwork.register();
+        FabricModNetwork.register();
     }
 
     @Override
     public void sendToPlayer(Object packet, ServerPlayer player) {
-        FabricQuestNetwork.sendToPlayer(packet, player);
+        FabricModNetwork.sendToPlayer(packet, player);
     }
 
     @Override
     public void sendToServer(Object packet) {
-        FabricQuestNetwork.sendToServer(packet);
+        FabricModNetwork.sendToServer(packet);
     }
 
     @Override

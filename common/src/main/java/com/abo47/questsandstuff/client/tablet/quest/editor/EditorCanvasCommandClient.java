@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -55,7 +55,7 @@ final class EditorCanvasCommandClient {
             moveTags.add(move);
         }
         payload.put("moves", moveTags);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("move_many", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("move_many", payload));
     }
 
     static void runCanvasScaleAction(Player player, TabletUiState state, Map<String, Float> scales) {
@@ -96,7 +96,7 @@ final class EditorCanvasCommandClient {
             scaleTags.add(scaleTag);
         }
         payload.put("scales", scaleTags);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("scale_many", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("scale_many", payload));
     }
 
     static void runCanvasCopyAction(Player player, String groupName, Set<String> questIds) {
@@ -126,7 +126,7 @@ final class EditorCanvasCommandClient {
         CompoundTag payload = new CompoundTag();
         payload.putString("group", group);
         payload.put("quests", quests);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("copy_many", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("copy_many", payload));
     }
 
     static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
@@ -143,7 +143,7 @@ final class EditorCanvasCommandClient {
         payload.putString("group", group);
         payload.putInt("x", x);
         payload.putInt("y", y);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("paste_clipboard", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("paste_clipboard", payload));
     }
 
     static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
@@ -162,7 +162,7 @@ final class EditorCanvasCommandClient {
         payload.putInt("x", x);
         payload.putInt("y", y);
         payload.put("blueprint", blueprint.toPacketTag());
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.PASTE_BLUEPRINT.wireName(), payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.PASTE_BLUEPRINT.wireName(), payload));
     }
 
     static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
@@ -177,7 +177,7 @@ final class EditorCanvasCommandClient {
         CompoundTag payload = new CompoundTag();
         payload.putString("quest", questId);
         putPrerequisite(payload, prerequisiteId);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket(
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(
                 add ? EditorCommandType.PREREQUISITE_ADD.wireName() : EditorCommandType.PREREQUISITE_REMOVE.wireName(),
                 payload
         ));
@@ -196,7 +196,7 @@ final class EditorCanvasCommandClient {
         payload.putString("quest", questId);
         putPrerequisite(payload, prerequisiteId);
         payload.putInt("color", color);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("connection_color", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("connection_color", payload));
     }
 
     static void runConnectionModeAction(Player player, String questId, String prerequisiteId, boolean gridMode) {
@@ -212,7 +212,7 @@ final class EditorCanvasCommandClient {
         payload.putString("quest", questId);
         putPrerequisite(payload, prerequisiteId);
         payload.putBoolean("grid", gridMode);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("connection_mode", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("connection_mode", payload));
     }
 
     static void runConnectionHiddenAction(Player player, String questId, String prerequisiteId, boolean hidden) {
@@ -228,7 +228,7 @@ final class EditorCanvasCommandClient {
         payload.putString("quest", questId);
         putPrerequisite(payload, prerequisiteId);
         payload.putBoolean("hidden", hidden);
-        QuestNetwork.sendToServer(new C2SEditorCommandPacket("connection_hidden", payload));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket("connection_hidden", payload));
     }
 
     private static void putPrerequisite(CompoundTag payload, String prerequisiteId) {

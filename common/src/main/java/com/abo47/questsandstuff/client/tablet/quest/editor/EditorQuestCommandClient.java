@@ -5,11 +5,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.editor.C2SEditorAddQuestPacket;
-import com.abo47.questsandstuff.network.editor.C2SEditorRemoveQuestPacket;
-import com.abo47.questsandstuff.network.editor.C2SEditorUpdateQuestPacket;
-import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorRemoveQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorUpdateQuestPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.util.QuestNaming;
@@ -193,7 +193,7 @@ final class EditorQuestCommandClient {
             return;
         }
         ClientQuestCache.removeQuestLocal(questId);
-        QuestNetwork.sendToServer(new C2SEditorRemoveQuestPacket(questId));
+        ModNetwork.sendToServer(new C2SEditorRemoveQuestPacket(questId));
     }
 
     static String predictNextQuestId(TabletUiState state) {
@@ -215,7 +215,7 @@ final class EditorQuestCommandClient {
             QuestServices.editor(serverPlayer.server).addQuest(serverPlayer, group, predictedId, logicalX, logicalY, normalizedTitle);
         } else {
             ClientQuestCache.createEditorQuestLocal(predictedId, group, logicalX, logicalY, normalizedTitle);
-            QuestNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, logicalX, logicalY, normalizedTitle));
+            ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, logicalX, logicalY, normalizedTitle));
         }
 
         state.selectedQuestIds.clear();
@@ -301,7 +301,7 @@ final class EditorQuestCommandClient {
             QuestServices.engine(serverPlayer.server).resetQuest(serverPlayer, normalizedQuestId);
             return;
         }
-        QuestNetwork.sendToServer(new C2SResetQuestPacket(normalizedQuestId));
+        ModNetwork.sendToServer(new C2SResetQuestPacket(normalizedQuestId));
     }
 
     static void moveQuestTask(Player player, String questId, String taskId, int offset) {
@@ -482,6 +482,6 @@ final class EditorQuestCommandClient {
             return;
         }
         ClientQuestCache.setQuestDisplayLocal(questId, title, subtitle);
-        QuestNetwork.sendToServer(new C2SEditorUpdateQuestPacket(questId, title == null ? "" : title, subtitle == null ? "" : subtitle));
+        ModNetwork.sendToServer(new C2SEditorUpdateQuestPacket(questId, title == null ? "" : title, subtitle == null ? "" : subtitle));
     }
 }

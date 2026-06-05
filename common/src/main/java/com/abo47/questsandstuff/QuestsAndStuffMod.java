@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff;
 
-import com.abo47.questsandstuff.network.QuestNetwork;
+import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import com.mojang.logging.LogUtils;
@@ -40,7 +40,7 @@ public final class QuestsAndStuffMod {
         }
         bootstrapped = true;
         QuestsAndStuffConfig.load();
-        QuestNetwork.register();
+        ModNetwork.register();
         TeamProgressProviders.bootstrapDefaults();
     }
 

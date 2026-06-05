@@ -39,17 +39,17 @@ public final class ForgePlatformService implements PlatformService {
 
     @Override
     public void registerNetwork() {
-        ForgeQuestNetwork.register();
+        ForgeModNetwork.register();
     }
 
     @Override
     public void sendToPlayer(Object packet, ServerPlayer player) {
-        ForgeQuestNetwork.sendToPlayer(packet, player);
+        ForgeModNetwork.sendToPlayer(packet, player);
     }
 
     @Override
     public void sendToServer(Object packet) {
-        ForgeQuestNetwork.sendToServer(packet);
+        ForgeModNetwork.sendToServer(packet);
     }
 
     @Override

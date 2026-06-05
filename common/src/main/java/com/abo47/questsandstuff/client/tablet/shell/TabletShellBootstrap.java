@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.editor.C2SEditorControlPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -62,7 +62,7 @@ public final class TabletShellBootstrap {
             if (player instanceof ServerPlayer serverPlayer) {
                 QuestServices.editor(serverPlayer.server).undo(serverPlayer);
             } else {
-                QuestNetwork.sendToServer(new C2SEditorControlPacket("undo"));
+                ModNetwork.sendToServer(new C2SEditorControlPacket("undo"));
             }
         };
     }
@@ -75,7 +75,7 @@ public final class TabletShellBootstrap {
             if (player instanceof ServerPlayer serverPlayer) {
                 QuestServices.editor(serverPlayer.server).redo(serverPlayer);
             } else {
-                QuestNetwork.sendToServer(new C2SEditorControlPacket("redo"));
+                ModNetwork.sendToServer(new C2SEditorControlPacket("redo"));
             }
         };
     }
