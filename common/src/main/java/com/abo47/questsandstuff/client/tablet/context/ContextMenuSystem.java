@@ -93,6 +93,7 @@ public final class ContextMenuSystem {
         if (v.contains("rename")) return "rename";
         if (v.contains("new") || v.contains("add") || v.contains("create")) return "add";
         if (v.contains("icon")) return "icon";
+        if (v.contains("fit") && v.contains("grid")) return "fit_grid";
         if (v.contains("style") || v.contains("align") || v.contains("grid") || v.contains("snap")) return "style";
         if (v.contains("up")) return "up";
         if (v.contains("down")) return "down";

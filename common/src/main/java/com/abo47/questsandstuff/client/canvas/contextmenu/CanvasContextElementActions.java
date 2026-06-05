@@ -96,7 +96,7 @@ final class CanvasContextElementActions {
             }, canvasViewport::refresh);
         }
         if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextCanvasImageId)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "grid", ModColors.INTERACTIVE, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitImageToGrid(state, selectedGroup, state.contextCanvasImageId);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=image id={} changed={}", state.contextCanvasImageId, changed);
@@ -135,7 +135,7 @@ final class CanvasContextElementActions {
             canvasViewport.refresh();
         }));
         if (CanvasGridFitController.canFitTextToGrid(state, selectedGroup, state.contextCanvasTextId)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "grid", ModColors.INTERACTIVE, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitTextToGrid(state, selectedGroup, state.contextCanvasTextId);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=text id={} changed={}", state.contextCanvasTextId, changed);

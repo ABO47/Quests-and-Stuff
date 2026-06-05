@@ -73,7 +73,7 @@ final class CanvasContextQuestActions {
         }));
         QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextQuestId);
         if (CanvasGridFitController.canFitQuestToGrid(state, contextQuest)) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "grid", ModColors.INTERACTIVE, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitQuestToGrid(player, state, contextQuest);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextQuestId, changed);

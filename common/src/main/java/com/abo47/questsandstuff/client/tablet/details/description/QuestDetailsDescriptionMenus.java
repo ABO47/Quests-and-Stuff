@@ -175,7 +175,7 @@ public final class QuestDetailsDescriptionMenus {
             state.questDetailsTextStyleOpen = true;
             state.questDetailsTextStyleTarget = state.questDetailsContextId;
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "grid", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitTextToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
@@ -254,7 +254,7 @@ public final class QuestDetailsDescriptionMenus {
                 }
             }, refresh);
         }
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "grid", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitImageToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
@@ -323,7 +323,7 @@ public final class QuestDetailsDescriptionMenus {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, false);
         }));
-        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "grid", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(QuestVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             QuestDetailsDescriptionPanel.fitSelectionToGrid(player, state, questId, model);
         }));

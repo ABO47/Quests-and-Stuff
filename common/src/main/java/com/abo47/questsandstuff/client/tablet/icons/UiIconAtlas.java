@@ -108,6 +108,7 @@ public final class UiIconAtlas {
             case "context_style_color" -> add(names, "color");
             case "context_image" -> add(names, "image");
             case "context_grid" -> add(names, "grid");
+            case "context_fit_grid" -> add(names, "fit_grid");
             case "context_size" -> add(names, "size");
             case "context_reset_zoom" -> add(names, "reset_zoom");
             case "context_reset_quest" -> add(names, "reset_quest");

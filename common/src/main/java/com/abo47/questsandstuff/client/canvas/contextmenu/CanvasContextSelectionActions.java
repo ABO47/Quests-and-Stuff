@@ -56,7 +56,7 @@ final class CanvasContextSelectionActions {
             addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedGroup, canvasViewport.cardLookup())) {
-                actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "grid", ModColors.INTERACTIVE, () -> {
+                actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                     boolean changed = CanvasGridFitController.fitSelectionToGrid(player, state, selectedGroup, canvasViewport.cardLookup());
                     state.contextDeleteConfirmKey = "";
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
