@@ -73,7 +73,7 @@ final class PickerListPanel {
             modal.addWidget(new DragScrollBarWidget(
                     barX + 1,
                     barY,
-                    DragScrollBarWidget.WIDTH,
+                    DragScrollBarWidget.RESERVED_WIDTH,
                     barH,
                     scroll::value,
                     () -> maxStart,
@@ -84,7 +84,8 @@ final class PickerListPanel {
                     refresh,
                     ModColors.scrollTrack(scroll.dragging()),
                     ModColors.scrollThumb(false),
-                    ModColors.scrollThumb(true)
+                    ModColors.scrollThumb(true),
+                    DragScrollBarWidget.WIDTH
             ));
         }
         return list;

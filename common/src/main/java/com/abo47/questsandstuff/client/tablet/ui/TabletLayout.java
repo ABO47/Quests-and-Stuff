@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -53,7 +54,7 @@ final class TabletLayout {
     static final int[] CANVAS_LIMIT_WIDTH = {132, 164, 196, 228};
     static final int[] CANVAS_LIMIT_HEIGHT = {64, 78, 92, 104};
     static final String[] CANVAS_LIMIT_LABELS = {"S", "M", "L", "XL"};
-    static final int CHAPTER_SCROLL_W = 4;
+    static final int CHAPTER_SCROLL_W = DragScrollBarWidget.RESERVED_WIDTH;
     static final int SHARED_MENU_W = 168;
     static final int CHAPTER_TEXT_MENU_H = 38;
     static final int FONT_SIZE_SLIDER_POPOVER_H = 72;

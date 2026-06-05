@@ -71,7 +71,7 @@ public final class TiledPickerPanel {
             parent.addWidget(new DragScrollBarWidget(
                     x + layout.scrollBarX() + 1,
                     y + layout.scrollBarY(),
-                    DragScrollBarWidget.WIDTH,
+                    DragScrollBarWidget.RESERVED_WIDTH,
                     layout.scrollBarH(),
                     scroll::value,
                     layout::maxStart,
@@ -87,7 +87,8 @@ public final class TiledPickerPanel {
                     refresh,
                     ModColors.scrollTrack(scroll.dragging()),
                     ModColors.scrollThumb(false),
-                    ModColors.scrollThumb(true)
+                    ModColors.scrollThumb(true),
+                    DragScrollBarWidget.WIDTH
             ));
         }
         return layout;

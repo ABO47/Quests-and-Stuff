@@ -45,7 +45,7 @@ final class ChapterListMetrics {
         chapterList.addWidget(new DragScrollBarWidget(
                 trackX,
                 trackY,
-                TabletUiFactory.CHAPTER_SCROLL_W,
+                DragScrollBarWidget.RESERVED_WIDTH,
                 trackH,
                 () -> state.chapterScroll,
                 () -> state.chapterScrollMax,
@@ -56,7 +56,8 @@ final class ChapterListMetrics {
                 refresh,
                 ModColors.scrollTrack(state.chapterScrollDragging),
                 ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true)
+                ModColors.scrollThumb(true),
+                DragScrollBarWidget.WIDTH
         ));
     }
 
@@ -97,7 +98,7 @@ final class ChapterListMetrics {
             int cardX;
             int cardW;
             if (showScrollBar) {
-                trackX = listW - TabletUiFactory.CHAPTER_SCROLL_W - 2;
+                trackX = listW - DragScrollBarWidget.RESERVED_WIDTH - 2;
                 if (collapsed) {
                     cardW = Math.min(COLLAPSED_TILE_W, Math.max(16, trackX - 3));
                     cardX = Math.max(1, (trackX - cardW) / 2);

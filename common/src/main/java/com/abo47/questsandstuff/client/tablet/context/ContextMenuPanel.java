@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -264,17 +265,19 @@ public final class ContextMenuPanel {
         int trackX = menuW - DragScrollBarWidget.RESERVED_WIDTH;
         int trackY = rowTop;
         int trackH = visibleRows * CONTEXT_ROW_H;
-        int knobX = trackX + Math.max(0, (DragScrollBarWidget.RESERVED_WIDTH - DragScrollBarWidget.WIDTH) / 2);
-        WidgetGroup track = new WidgetGroup(knobX + 1, trackY, 2, trackH);
-        track.setBackground(Surfaces.fill(ModColors.scrollTrack(false)));
-        menu.addWidget(track);
-
-        int knobH = Math.max(8, (trackH * visibleRows) / Math.max(1, actionCount));
+        int knobH = Math.max(14, (trackH * visibleRows) / Math.max(1, actionCount));
         int scrollMax = Math.max(1, actionCount - visibleRows);
         int knobOffset = Math.round(((float) start / (float) scrollMax) * Math.max(0, trackH - knobH));
-        WidgetGroup knob = new WidgetGroup(knobX, trackY + knobOffset, DragScrollBarWidget.WIDTH, knobH);
-        knob.setBackground(Surfaces.fill(ModColors.scrollThumb(false)));
-        menu.addWidget(knob);
+        menu.addWidget(new WidgetGroup(trackX, trackY, DragScrollBarWidget.RESERVED_WIDTH, trackH) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int railW = 2;
+                int railX = getPositionX() + Math.max(0, (getSizeWidth() - railW) / 2);
+                int thumbX = getPositionX() + Math.max(0, (getSizeWidth() - DragScrollBarWidget.WIDTH) / 2);
+                DragScrollBarWidget.drawVerticalTrack(graphics, mouseX, mouseY, railX, getPositionY(), railW, getSizeHeight(), ModColors.scrollTrack(false));
+                DragScrollBarWidget.drawVerticalThumb(graphics, mouseX, mouseY, thumbX, getPositionY() + knobOffset, DragScrollBarWidget.WIDTH, knobH, ModColors.scrollThumb(false));
+            }
+        });
     }
 
     private static boolean isDeleteAction(ContextAction action) {
