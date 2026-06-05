@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.chapter.ChapterPanel;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveDragDispatcher;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterDragController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
@@ -79,7 +80,7 @@ final class TabletRootPointerRouter {
             selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
             return true;
         }
-        if (TabletChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
+        if (ChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
             return true;
         }
         return selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
@@ -113,7 +114,7 @@ final class TabletRootPointerRouter {
             selfRelease.invoke(mouseX, mouseY, button);
             return true;
         }
-        if (TabletChapterDragController.finish(state, root.resolvePlayer(), refresher)) {
+        if (ChapterDragController.finish(state, root.resolvePlayer(), refresher)) {
             return true;
         }
         return selfRelease.invoke(mouseX, mouseY, button);

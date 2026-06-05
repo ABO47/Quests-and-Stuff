@@ -3,9 +3,9 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasEntityPickerActions;
-import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasModelPickerActions;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerActions;
+import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -114,8 +114,8 @@ public final class TabletModalPanel {
         if (entry.startsWith("#")) {
             return PickerTooltips.item(entry);
         }
-        if (CanvasModelPreviewRenderer.isModelAsset(entry)) {
-            return CanvasModelPreviewRenderer.modelTooltip(entry);
+        if (ModelAssetPreviewRenderer.isModelAsset(entry)) {
+            return ModelAssetPreviewRenderer.modelTooltip(entry);
         }
         String entityId = EntityPreviewRenderer.entityId(entry);
         if (!entityId.isBlank()) {

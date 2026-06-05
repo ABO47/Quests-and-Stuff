@@ -2,13 +2,13 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.hud.QuestHudLayoutEditScreen;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -274,7 +274,7 @@ public final class TabletSettingsModal {
 
     private static void setFullScreenMode(TabletUiState state, boolean enabled) {
         QuestsAndStuffConfig.setFullScreenModeEnabled(enabled);
-        TabletClientHooks.applyQuestTabletLayoutMode(state);
+        TabletClientHooks.applyTabletLayoutMode(state);
     }
 
     private static List<SettingOption> animationOptions() {

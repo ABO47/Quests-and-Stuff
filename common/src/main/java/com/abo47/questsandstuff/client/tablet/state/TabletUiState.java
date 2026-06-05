@@ -2,10 +2,10 @@ package com.abo47.questsandstuff.client.tablet.state;
 
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
-import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint;
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.canvas.selection.SelectionModel;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.SelectionModel;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 

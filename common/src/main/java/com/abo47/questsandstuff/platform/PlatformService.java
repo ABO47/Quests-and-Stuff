@@ -20,5 +20,5 @@ public interface PlatformService {
 
     void sendToServer(Object packet);
 
-    void openQuestTabletUi(Player player);
+    void openTabletUi(Player player);
 }

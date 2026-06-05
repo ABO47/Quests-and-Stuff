@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,7 +30,7 @@ final class TabletActiveState {
     }
 
     static String activeSelectedGroup() {
-        return activeTabletState == null ? "" : TabletEditorActions.selectedGroupName(activeTabletState);
+        return activeTabletState == null ? "" : EditorCommandClient.selectedGroupName(activeTabletState);
     }
 
     static void syncCanvasStateFromCache(TabletUiState state) {
@@ -113,9 +114,9 @@ final class TabletActiveState {
         }
         activeTabletState.pendingPastedCanvasImageIds.clear();
         activeTabletState.pendingPastedCanvasTextIds.clear();
-        activeTabletState.recentlyCreatedGroups.remove(TabletEditorActions.selectedGroupName(activeTabletState));
+        activeTabletState.recentlyCreatedGroups.remove(EditorCommandClient.selectedGroupName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={}",
-                TabletEditorActions.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedCanvasImageIds.size(), activeTabletState.selectedCanvasTextIds.size());
+                EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedCanvasImageIds.size(), activeTabletState.selectedCanvasTextIds.size());
         refreshActiveTablet();
     }
 }

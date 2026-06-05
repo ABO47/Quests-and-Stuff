@@ -187,7 +187,7 @@ public final class TabletUiStatePersistence {
                 double centerY = camera.has("center_y") ? camera.get("center_y").getAsDouble() : 0.0D;
                 float zoom = camera.has("zoom") ? camera.get("zoom").getAsFloat() : state.canvasZoom;
                 if (Double.isFinite(centerX) && Double.isFinite(centerY) && Float.isFinite(zoom)) {
-                    state.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint(centerX, centerY));
+                    state.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint(centerX, centerY));
                     state.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
                 }
             } catch (Exception ignored) {
@@ -204,7 +204,7 @@ public final class TabletUiStatePersistence {
             if (group == null || group.isBlank()) {
                 continue;
             }
-            com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint center = state.canvasCameraCentersByGroup.get(group);
+            com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint center = state.canvasCameraCentersByGroup.get(group);
             if (center == null || !Double.isFinite(center.x()) || !Double.isFinite(center.y())) {
                 continue;
             }

@@ -2,9 +2,8 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.icons.QuestIconProvider;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -45,7 +44,7 @@ final class TabletAssets {
     }
 
     static ItemStackTexture iconTexture(String iconId) {
-        return QuestIconProvider.iconTexture(iconId);
+        return DisplayIconProvider.iconTexture(iconId);
     }
 
     static List<AssetLibrary.AssetEntry> listAssetEntries(String relativeDir) {

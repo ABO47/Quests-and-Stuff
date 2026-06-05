@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.sync.packet;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.hud.QuestCompletionNotificationOverlay;
+import com.abo47.questsandstuff.client.quest.hud.QuestCompletionNotificationOverlay;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.network.QuestNetwork;

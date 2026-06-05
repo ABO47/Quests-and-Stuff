@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintMiniRenderer;
-import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintStore;
-import com.abo47.questsandstuff.client.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;

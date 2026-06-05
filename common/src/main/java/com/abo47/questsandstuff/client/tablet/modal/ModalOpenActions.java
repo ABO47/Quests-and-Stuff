@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.sound.QuestCompletionSoundPlayer;
+import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;

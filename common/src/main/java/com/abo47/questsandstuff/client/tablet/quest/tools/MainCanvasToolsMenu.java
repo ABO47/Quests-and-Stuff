@@ -1,0 +1,216 @@
+package com.abo47.questsandstuff.client.tablet.quest.tools;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyCanvasBgOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyGridOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+
+final class MainCanvasToolsMenu {
+    private MainCanvasToolsMenu() {
+    }
+
+    static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {
+        toolsMenu.clearAllWidgets();
+        boolean visible = ToolMenuAnimation.mainVisible(state);
+        toolsMenu.setVisible(visible);
+        toolsMenu.setActive(ToolMenuAnimation.mainInteractive(state));
+        if (!visible) {
+            ToolMenuAnimation.finishMain(state);
+            return;
+        }
+
+        final int toolSlot = toolsW;
+        final int menuPad = 1;
+        final int toolGap = 2;
+        final boolean editTools = state.canEdit;
+        final int toolCount = editTools ? 10 : 2;
+        final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
+        int menuW = menuPad * 2 + toolSlot;
+        int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
+        int menuX = canvasX + toolsX - 1;
+        int menuY = CANVAS_Y + topY + headerH + 6;
+        WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
+        menu.setActive(ToolMenuAnimation.mainInteractive(state));
+
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
+
+        int slotX = menuPad;
+        int y = menuPad;
+        if (!editTools) {
+            ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            addReadOnlyRows(rows, state, refresh);
+            addRewardRows(rows, refresh);
+            addAnimatedMenu(toolsMenu, state, menu);
+            rememberBounds(state, menuX, menuY, menuW, menuH);
+            return;
+        }
+
+        ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
+        addEditRows(rows, state, player, refresh);
+        addRewardRows(rows, refresh);
+
+        state.toolsGridSizeMenuOpen = false;
+        state.toolsGridOpacityMenuOpen = false;
+        addAnimatedMenu(toolsMenu, state, menu);
+        rememberBounds(state, menuX, menuY, menuW, menuH);
+    }
+
+    private static void addEditRows(ToolMenuRows rows, TabletUiState state, Player player, Runnable refresh) {
+        CanvasToolRows.grid(rows, state.gridEnabled, () -> {
+                    state.gridEnabled = !state.gridEnabled;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid toggle enabled={}", state.gridEnabled);
+                    refresh.run();
+                });
+
+        CanvasToolRows.snap(rows, state.gridSnapLocked, () -> {
+                    state.gridSnapLocked = !state.gridSnapLocked;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool snap-to-grid enabled={}", state.gridSnapLocked);
+                    refresh.run();
+                });
+
+        CanvasToolRows.centerX(rows, state.centerSnapXEnabled, () -> {
+                    int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+                    if (selectionCount > 0) {
+                        CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-vertical-center count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+                        refresh.run();
+                        return;
+                    }
+                    state.centerSnapXEnabled = !state.centerSnapXEnabled;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-vertical-center-guide enabled={}", state.centerSnapXEnabled);
+                    refresh.run();
+                });
+
+        CanvasToolRows.centerY(rows, state.centerSnapYEnabled, () -> {
+                    int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+                    if (selectionCount > 0) {
+                        CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-horizontal-center count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+                        refresh.run();
+                        return;
+                    }
+                    state.centerSnapYEnabled = !state.centerSnapYEnabled;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-horizontal-center-guide enabled={}", state.centerSnapYEnabled);
+                    refresh.run();
+                });
+
+        CanvasToolRows.objectSnap(rows, state.objectSnapEnabled, () -> {
+                    state.objectSnapEnabled = !state.objectSnapEnabled;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool element-guides enabled={}", state.objectSnapEnabled);
+                    refresh.run();
+                });
+
+        CanvasToolRows.gridOpacity(rows, state.gridOpacityPercent, rightClick -> {
+                    int next = cyclePercent(state.gridOpacityPercent, toolPercentStep(), rightClick);
+                    applyGridOpacityPercent(state, next);
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid-opacity percent={}", state.gridOpacityPercent);
+                    refresh.run();
+                });
+
+        CanvasToolRows.backgroundOpacity(rows, state.canvasBgOpacityPercent, rightClick -> {
+                    int next = cyclePercent(state.canvasBgOpacityPercent, toolPercentStep(), rightClick);
+                    applyCanvasBgOpacityPercent(state, next);
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-bg-opacity percent={}", state.canvasBgOpacityPercent);
+                    refresh.run();
+                });
+
+        CanvasToolRows.canvasLock(rows, state.gridCanvasLocked, () -> {
+                    state.gridCanvasLocked = !state.gridCanvasLocked;
+                    if (state.gridCanvasLocked) {
+                        CanvasCameraController.setOffset(state, 0, 0, false);
+                    }
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-canvas enabled={}", state.gridCanvasLocked);
+                    refresh.run();
+                });
+
+        CanvasToolRows.splitterLock(rows, state.chapterSplitterLocked, () -> {
+                    state.chapterSplitterLocked = !state.chapterSplitterLocked;
+                    if (state.chapterSplitterLocked) {
+                        state.draggingChapterSplitter = false;
+                        TabletResizeCursor.update(false);
+                    }
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool splitter-lock enabled={} width={}", state.chapterSplitterLocked, chapterPanelWidth(state));
+                    refresh.run();
+                });
+    }
+
+    private static void addRewardRows(ToolMenuRows rows, Runnable refresh) {
+        boolean autoClaim = QuestsAndStuffConfig.autoClaimRewardsEnabled();
+        rows.toggle("auto_claim",
+                autoClaim ? ModColors.SUCCESS : ModColors.ERROR,
+                autoClaim,
+                new Component[]{
+                        TabletVocabulary.component(QuestVocabulary.AUTO_CLAIM_REWARDS),
+                        TabletVocabulary.component(autoClaim ? TabletVocabulary.COMMON_ENABLED : TabletVocabulary.COMMON_DISABLED)
+                },
+                () -> {
+                    boolean next = !QuestsAndStuffConfig.autoClaimRewardsEnabled();
+                    QuestsAndStuffConfig.setAutoClaimRewardsEnabled(next);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] global auto-claim rewards enabled={}", next);
+                    refresh.run();
+                });
+    }
+
+    private static void addReadOnlyRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
+        rows.toggle(state.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
+                state.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
+                !state.chapterSplitterLocked,
+                new Component[]{
+                        Component.translatable("ui.questsandstuff.tools.lock_separator"),
+                        Component.translatable(state.chapterSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
+                },
+                () -> {
+                    state.chapterSplitterLocked = !state.chapterSplitterLocked;
+                    if (state.chapterSplitterLocked) {
+                        state.draggingChapterSplitter = false;
+                        TabletResizeCursor.update(false);
+                    }
+                    persistUiState(state);
+                    refresh.run();
+                });
+    }
+
+    private static void rememberBounds(TabletUiState state, int menuX, int menuY, int menuW, int menuH) {
+        state.toolsMenuX = menuX;
+        state.toolsMenuY = menuY;
+        state.toolsMenuW = menuW;
+        state.toolsMenuH = menuH;
+    }
+
+    private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {
+        if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
+            toolsMenu.addWidget(menu);
+            return;
+        }
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
+    }
+}

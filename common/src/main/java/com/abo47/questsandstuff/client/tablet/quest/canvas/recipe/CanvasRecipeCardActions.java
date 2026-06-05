@@ -1,0 +1,108 @@
+package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.util.StableIdAllocator;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class CanvasRecipeCardActions {
+    private static final int CARD_W = 136;
+    private static final int CARD_H = 92;
+
+    private CanvasRecipeCardActions() {
+    }
+
+    public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
+        if (target.isBlank() || recipe == null || recipe.isBlank()) {
+            return false;
+        }
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        String asset = CanvasRecipeCardAsset.assetForPick(recipe);
+        if (asset.isBlank()) {
+            return false;
+        }
+        if (parsed.isCanvasRecipeChange()) {
+            boolean changed = changeRecipe(state, parsed, asset);
+            if (changed) {
+                state.questDetailsPickTarget = "";
+            }
+            return changed;
+        }
+        if (!parsed.isCanvasRecipeNew()) {
+            return false;
+        }
+        String group = parsed.part(1);
+        if (group.isBlank()) {
+            return false;
+        }
+        addRecipeCard(state, group, asset);
+        state.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked group={} recipe={}", group, recipe.trim());
+        return true;
+    }
+
+    private static boolean changeRecipe(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
+        String group = parsed.part(1);
+        String imageId = parsed.part(2);
+        CanvasImageLayer current = CanvasRenderer.findCanvasImage(state, group, imageId);
+        if (current == null) {
+            return false;
+        }
+        CanvasRenderer.putCanvasImage(state, group, current.withAsset(asset));
+        selectOnlyImage(state, imageId);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card changed group={} image={} asset={}", group, imageId, asset);
+        return true;
+    }
+
+    private static void addRecipeCard(TabletUiState state, String group, String asset) {
+        String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, group));
+        int x = state.canvasImageLogicalX - CARD_W / 2;
+        int y = state.canvasImageLogicalY - CARD_H / 2;
+        if (!state.gridSnapLocked) {
+            x = TabletUiFactory.snapToGrid(state, x);
+            y = TabletUiFactory.snapToGrid(state, y);
+        }
+        CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, CARD_W, CARD_H);
+        CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, CARD_W, CARD_H, 0);
+        if (state.gridSnapLocked) {
+            image = CanvasGridFitController.fittedImage(state, image);
+        }
+        CanvasRenderer.putCanvasImage(state, group, image);
+        selectOnlyImage(state, id);
+        state.draggingCanvasImage = false;
+        state.resizingCanvasImage = false;
+        state.rotatingCanvasImage = false;
+        state.mouseMode = CanvasMouseMode.SELECT_MOVE;
+    }
+
+    private static void selectOnlyImage(TabletUiState state, String id) {
+        state.selectedCanvasImageId = id;
+        state.selectedCanvasImageIds.clear();
+        state.selectedCanvasImageIds.add(id);
+        state.selectedCanvasTextId = "";
+        state.selectedCanvasTextIds.clear();
+        state.selectedQuestIds.clear();
+        state.contextMenuOpen = false;
+        state.contextDeleteConfirmKey = "";
+    }
+
+    private static List<String> canvasImageIds(TabletUiState state, String group) {
+        List<String> ids = new ArrayList<>();
+        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+            ids.add(image.id());
+        }
+        return ids;
+    }
+}

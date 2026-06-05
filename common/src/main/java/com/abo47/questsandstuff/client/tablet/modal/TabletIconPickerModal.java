@@ -2,15 +2,16 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.QuestIconProvider;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
+import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -138,7 +139,7 @@ public final class TabletIconPickerModal {
                     6,
                     6,
                     entries,
-                    QuestVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                    TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
                             () -> state.iconScroll,
                             value -> state.iconScroll = value,
@@ -155,7 +156,7 @@ public final class TabletIconPickerModal {
                     : pickingEntityIcons
                     ? EntityPreviewRenderer.searchableSpawnEggEntries(state.iconSearch)
                     : pickingFluidIcons
-                    ? QuestIconProvider.searchableFluidEntries(state.iconSearch)
+                    ? DisplayIconProvider.searchableFluidEntries(state.iconSearch)
                     : searchableIconEntries(state, useItemPicker);
             TiledPickerPanel.add(
                     modal,
@@ -225,17 +226,17 @@ public final class TabletIconPickerModal {
 
     private static List<String> searchableIconEntries(TabletUiState state, boolean useItemPicker) {
         if (state.iconFluidMode) {
-            return QuestIconProvider.searchableFluidEntries(state.iconSearch);
+            return DisplayIconProvider.searchableFluidEntries(state.iconSearch);
         }
         if (useItemPicker && !state.iconAllItemsMode && !state.iconTagMode && !state.iconInventoryMode) {
-            return QuestIconProvider.searchableUsableItemEntries(state.iconSearch);
+            return DisplayIconProvider.searchableUsableItemEntries(state.iconSearch);
         }
-        return QuestIconProvider.searchableEntries(state.iconSearch, state.iconTagMode);
+        return DisplayIconProvider.searchableEntries(state.iconSearch, state.iconTagMode);
     }
 
     private static List<String> searchableModelItemEntries(String search, boolean tagMode) {
-        return QuestIconProvider.searchableEntries(search, tagMode).stream()
-                .filter(entry -> !CanvasModelPreviewRenderer.itemAssetForPick(entry).isBlank())
+        return DisplayIconProvider.searchableEntries(search, tagMode).stream()
+                .filter(entry -> !ModelAssetPreviewRenderer.itemAssetForPick(entry).isBlank())
                 .toList();
     }
 

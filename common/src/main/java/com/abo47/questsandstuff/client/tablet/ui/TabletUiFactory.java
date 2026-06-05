@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
-import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.screen.QuestAppComposer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.shell.TabletShellComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -105,11 +107,11 @@ public final class TabletUiFactory {
     }
 
     public static WidgetGroup create(Player player) {
-        return QuestAppComposer.create(player);
+        return TabletShellComposer.create(player);
     }
 
     public static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
-        return QuestAppComposer.create(player, rootWidth, rootHeight, fullScreenMode);
+        return TabletShellComposer.create(player, rootWidth, rootHeight, fullScreenMode);
     }
 
     public static void applyRootSize(TabletUiState state, int width, int height, boolean fullScreenMode) {
@@ -133,7 +135,7 @@ public final class TabletUiFactory {
     }
 
     public static String selectedGroupName(TabletUiState state) {
-        return TabletEditorActions.selectedGroupName(state);
+        return EditorCommandClient.selectedGroupName(state);
     }
 
     public static int chapterPanelWidth(TabletUiState state) {
@@ -153,51 +155,51 @@ public final class TabletUiFactory {
     }
 
     public static String uniqueGroupName(String preferred, String excludeCurrent) {
-        return TabletEditorActions.uniqueGroupName(preferred, excludeCurrent);
+        return EditorCommandClient.uniqueGroupName(preferred, excludeCurrent);
     }
 
     public static String sanitizeGroupName(String value) {
-        return TabletEditorActions.sanitizeGroupName(value);
+        return EditorCommandClient.sanitizeGroupName(value);
     }
 
     public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
-        TabletEditorActions.runGroupAction(player, state, action, group, value, offset);
+        EditorCommandClient.runGroupAction(player, state, action, group, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
-        TabletEditorActions.runCanvasMoveAction(player, state, positions);
+        EditorCommandClient.runCanvasMoveAction(player, state, positions);
     }
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
-        TabletEditorActions.runPrerequisiteAction(player, questId, prerequisiteId, add);
+        EditorCommandClient.runPrerequisiteAction(player, questId, prerequisiteId, add);
     }
 
     public static void runQuestIconAction(Player player, String questId, String icon) {
-        TabletEditorActions.runQuestIconAction(player, questId, icon);
+        EditorCommandClient.runQuestIconAction(player, questId, icon);
     }
 
     public static void runRemoveQuestAction(Player player, String questId) {
-        TabletEditorActions.runRemoveQuestAction(player, questId);
+        EditorCommandClient.runRemoveQuestAction(player, questId);
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        TabletEditorActions.addQuestAt(player, state, logicalX, logicalY, title);
+        EditorCommandClient.addQuestAt(player, state, logicalX, logicalY, title);
     }
 
     public static int snapToGrid(TabletUiState state, int value) {
-        return TabletEditorActions.snapToGrid(state, value);
+        return CanvasRenderer.snapToGrid(state, value);
     }
 
     public static QuestCardLayout hitTestCard(List<QuestCardLayout> cards, int x, int y) {
-        return TabletEditorActions.hitTestCard(cards, x, y);
+        return CanvasRenderer.hitTestCard(cards, x, y);
     }
 
     public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        return TabletEditorActions.hitTestEdge(state, cards, byQuestId, x, y);
+        return CanvasRenderer.hitTestEdge(state, cards, byQuestId, x, y);
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
-        return TabletEditorActions.isContextMenuHit(state, x, y);
+        return CanvasRenderer.isContextMenuHit(state, x, y);
     }
 
     public static int withAlpha(int color, int alpha) {

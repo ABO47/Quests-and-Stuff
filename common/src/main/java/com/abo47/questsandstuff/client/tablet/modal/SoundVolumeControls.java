@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.sound.QuestSoundPreview;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -31,7 +32,7 @@ final class SoundVolumeControls {
                 },
                 () -> state.soundVolumeDragging,
                 dragging -> state.soundVolumeDragging = dragging,
-                new Component[]{QuestVocabulary.component(QuestVocabulary.SOUND_LEVEL)}
+                new Component[]{TabletVocabulary.component(QuestVocabulary.SOUND_LEVEL)}
         );
     }
 

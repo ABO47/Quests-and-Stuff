@@ -3,10 +3,11 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +24,8 @@ public final class TabletLootTablePickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
-                        QuestVocabulary.text(QuestVocabulary.CHOOSE_LOOT_TABLE),
-                        QuestVocabulary.text(QuestVocabulary.NO_LOOT_TABLES),
+                        TabletVocabulary.text(QuestVocabulary.CHOOSE_LOOT_TABLE),
+                        TabletVocabulary.text(QuestVocabulary.NO_LOOT_TABLES),
                         "loot table",
                         () -> state.lootTableSearch,
                         value -> state.lootTableSearch = value,

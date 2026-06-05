@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletEntityVariantModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletIconPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.TabletPrerequisitesManagerModal;
+import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesManagerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletRecipePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
@@ -112,7 +112,7 @@ public final class ModalPanelRouter {
         } else if (state.entityVariantPickerOpen) {
             entityVariantSearchField = TabletEntityVariantModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.prerequisitesManagerOpen) {
-            prerequisitesSearchField = TabletPrerequisitesManagerModal.rebuild(modal, state, player, refresh, w, h);
+            prerequisitesSearchField = QuestPrerequisitesManagerModal.rebuild(modal, state, player, refresh, w, h);
         } else if (state.settingsPanelOpen) {
             TabletSettingsModal.rebuild(modal, state, refresh, w, h);
         }

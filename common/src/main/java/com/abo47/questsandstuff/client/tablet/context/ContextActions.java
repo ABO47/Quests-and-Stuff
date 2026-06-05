@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.context;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 
 import java.util.List;
@@ -26,27 +27,27 @@ public final class ContextActions {
     }
 
     public static ContextAction changeIcon(Runnable action) {
-        return promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, action);
+        return promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction changeVariant(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_VARIANT), "variant", ModColors.INTERACTIVE, action);
+        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_VARIANT), "variant", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction editMotion(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_EDIT_MOTION), "motion", ModColors.INTERACTIVE, action);
+        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT_MOTION), "motion", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction moveUp(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_MOVE_UP), "up", ModColors.INTERACTIVE, action);
+        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_MOVE_UP), "up", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction moveDown(Runnable action) {
-        return action(QuestVocabulary.text(QuestVocabulary.CONTEXT_MOVE_DOWN), "down", ModColors.INTERACTIVE, action);
+        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_MOVE_DOWN), "down", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction copy(Runnable action) {
-        return promoted(QuestVocabulary.text(QuestVocabulary.CONTEXT_COPY), "copy", ModColors.INTERACTIVE, action);
+        return promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_COPY), "copy", ModColors.INTERACTIVE, action);
     }
 
     public static ContextAction delete(TabletUiState state, String key, String label, Runnable deleteAction) {

@@ -1,18 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.canvas.clipboard.CanvasClipboardController;
-import com.abo47.questsandstuff.client.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.canvas.render.CanvasTransformMode;
-import com.abo47.questsandstuff.client.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.details.objective.QuestDetailsObjectivesPanel;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
-import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -51,11 +51,11 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !textInputActive) {
-            TabletClientHooks.closeQuestTabletUi(state, true, "keybind");
+            TabletClientHooks.closeTabletUi(state, true, "keybind");
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            TabletClientHooks.closeQuestTabletUi(state, false, "escape");
+            TabletClientHooks.closeTabletUi(state, false, "escape");
             return true;
         }
         if (root.isAnyModalOpen()) {

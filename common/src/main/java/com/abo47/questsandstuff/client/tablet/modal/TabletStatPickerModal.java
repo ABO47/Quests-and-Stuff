@@ -2,9 +2,10 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.StatTargetFormatter;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -35,8 +36,8 @@ public final class TabletStatPickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
-                        QuestVocabulary.text(QuestVocabulary.CHOOSE_STAT),
-                        QuestVocabulary.text(QuestVocabulary.NO_STATS),
+                        TabletVocabulary.text(QuestVocabulary.CHOOSE_STAT),
+                        TabletVocabulary.text(QuestVocabulary.NO_STATS),
                         "stat",
                         () -> state.statSearch,
                         value -> state.statSearch = value,

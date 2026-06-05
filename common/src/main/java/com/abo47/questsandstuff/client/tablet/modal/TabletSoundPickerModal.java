@@ -3,11 +3,12 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -40,7 +41,7 @@ public final class TabletSoundPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, QuestVocabulary.text(QuestVocabulary.CHOOSE_SOUND), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_SOUND), w, state, refresh);
         ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
         int rightX = libraryLayout.rightX();
         int rightW = libraryLayout.rightW();
@@ -59,7 +60,7 @@ public final class TabletSoundPickerModal {
         int listW = rightW;
         int listH = libraryLayout.bodyH();
         List<SoundChoice> entries = sounds(state.soundSearch);
-        PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, QuestVocabulary.text(QuestVocabulary.NO_SOUNDS),
+        PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, TabletVocabulary.text(QuestVocabulary.NO_SOUNDS),
                 ScrollState.bind(
                         () -> state.soundScroll,
                         value -> state.soundScroll = value,

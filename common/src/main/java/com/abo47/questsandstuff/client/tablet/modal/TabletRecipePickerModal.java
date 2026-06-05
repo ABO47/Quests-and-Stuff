@@ -1,22 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.QuestIconProvider;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -60,7 +61,7 @@ public final class TabletRecipePickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, QuestVocabulary.text(QuestVocabulary.CHOOSE_RECIPE), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_RECIPE), w, state, refresh);
         int sidePad = 8;
         int headY = 24;
         int headH = 18;
@@ -102,7 +103,7 @@ public final class TabletRecipePickerModal {
                     6,
                     6,
                     entries,
-                    QuestVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                    TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
                             () -> state.recipeScroll,
                             value -> state.recipeScroll = value,
@@ -114,7 +115,7 @@ public final class TabletRecipePickerModal {
                     (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
             );
         } else if (state.recipeFluidMode) {
-            List<String> entries = QuestIconProvider.searchableFluidEntries(state.recipeSearch);
+            List<String> entries = DisplayIconProvider.searchableFluidEntries(state.recipeSearch);
             TiledPickerPanel.add(
                     modal,
                     gridX,
@@ -127,7 +128,7 @@ public final class TabletRecipePickerModal {
                     6,
                     6,
                     entries,
-                    QuestVocabulary.text(QuestVocabulary.NO_FLUIDS),
+                    TabletVocabulary.text(QuestVocabulary.NO_FLUIDS),
                     ScrollState.bind(
                             () -> state.recipeScroll,
                             value -> state.recipeScroll = value,
@@ -152,7 +153,7 @@ public final class TabletRecipePickerModal {
                     6,
                     6,
                     entries,
-                    QuestVocabulary.text(QuestVocabulary.NO_RECIPES),
+                    TabletVocabulary.text(QuestVocabulary.NO_RECIPES),
                     ScrollState.bind(
                             () -> state.recipeScroll,
                             value -> state.recipeScroll = value,

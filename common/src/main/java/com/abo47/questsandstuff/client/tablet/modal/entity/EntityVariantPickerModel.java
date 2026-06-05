@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
-import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ record EntityVariantPickerModel(
     }
 
     String emptyText() {
-        return QuestVocabulary.text(browsingFolder || !foldered ? QuestVocabulary.NO_VARIANTS : QuestVocabulary.NO_BIOME_FOLDERS);
+        return TabletVocabulary.text(browsingFolder || !foldered ? QuestVocabulary.NO_VARIANTS : QuestVocabulary.NO_BIOME_FOLDERS);
     }
 
     private static List<EntityVariantTile> tiles(boolean foldered, boolean browsingFolder, List<EntityVariantCatalog.VariantFolder> folders, List<EntityVariantCatalog.VariantEntry> variants) {
