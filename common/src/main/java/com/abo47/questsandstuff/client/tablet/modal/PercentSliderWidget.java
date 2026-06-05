@@ -1,21 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
-final class PercentSliderWidget extends WidgetGroup {
-    private static final int TRACK_PAD_X = 5;
-    private static final int KNOB_W = 5;
-
+final class PercentSliderWidget extends SliderWidget {
     private final IntConsumer onChange;
     private final Runnable onCommit;
     private final BooleanSupplier dragCapture;
@@ -43,60 +39,54 @@ final class PercentSliderWidget extends WidgetGroup {
         this.dragCapture = dragCapture == null ? () -> false : dragCapture;
         this.setDragCapture = setDragCapture == null ? value -> {
         } : setDragCapture;
+
+        setClientSideWidget();
+        initTemplate();
+        valueStep = 100;
+        handleSize = 6;
+        setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 130), withAlpha(ModColors.BORDER_BASE, 180)));
+        setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 42), withAlpha(ModColors.BORDER_ACCENT, 200)));
+        handleTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 180), withAlpha(ModColors.INTERACTIVE, 235));
+        handleHoverTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 230), ModColors.focusBorder());
+        setOverlay(null);
+        setValue(this.currentValue / 100.0f);
+        setSliderCallback(this::setValueFromSlider);
         updateTooltip();
     }
 
     @Override
-    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        int left = getPositionX();
-        int top = getPositionY();
-        int width = getSizeWidth();
-        int height = getSizeHeight();
-        int trackLeft = left + TRACK_PAD_X;
-        int trackRight = left + width - TRACK_PAD_X;
-        int trackY = top + height / 2 - 1;
-        int knobX = knobX(trackLeft, trackRight);
-        int trackColor = withAlpha(ModColors.BORDER_BASE, 170);
-        int activeColor = withAlpha(ModColors.INTERACTIVE, 220);
-        int mutedColor = withAlpha(ModColors.SURFACE_PANEL_ALT, 190);
-
-        graphics.fill(trackLeft, trackY, trackRight, trackY + 2, trackColor);
-        graphics.fill(trackLeft, trackY, knobX + KNOB_W / 2, trackY + 2, activeColor);
-        graphics.fill(knobX, top + 3, knobX + KNOB_W, top + height - 3, activeColor);
-        if (KNOB_W > 2) {
-            graphics.fill(knobX + 1, top + 4, knobX + KNOB_W - 1, top + height - 4, mutedColor);
-        }
-    }
-
-    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != 0 || !isMouseOverElement(mouseX, mouseY)) {
-            return super.mouseClicked(mouseX, mouseY, button);
+        if (button == 0 && isMouseOverElement(mouseX, mouseY)) {
+            startDragging();
+            super.mouseClicked(mouseX, mouseY, button);
+            setValueFromSlider(getSliderValue());
+            return true;
         }
-        startDragging();
-        updateFromMouse(mouseX);
-        return true;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button != 0 || (!isDragging() && !isMouseOverElement(mouseX, mouseY))) {
+        boolean activeDrag = button == 0 && (isDragging() || isMouseOverElement(mouseX, mouseY));
+        if (!activeDrag) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
         startDragging();
-        updateFromMouse(mouseX);
+        super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        setValueFromSlider(getSliderValue());
         return true;
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!isDragging()) {
-            return super.mouseReleased(mouseX, mouseY, button);
+        boolean wasDragging = isDragging();
+        boolean handled = super.mouseReleased(mouseX, mouseY, button);
+        if (button == 0 && wasDragging) {
+            stopDragging();
+            onCommit.run();
+            return true;
         }
-        dragging = false;
-        setDragCapture.accept(false);
-        onCommit.run();
-        return true;
+        return handled;
     }
 
     @Override
@@ -104,25 +94,38 @@ final class PercentSliderWidget extends WidgetGroup {
         if (!isMouseOverElement(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        setValue(currentValue + (wheelDelta > 0 ? 1 : -1));
+        setPercent(currentValue + (wheelDelta > 0 ? 1 : -1));
         onCommit.run();
         return true;
     }
 
-    private void updateFromMouse(double mouseX) {
-        int trackLeft = getPositionX() + TRACK_PAD_X;
-        int trackRight = getPositionX() + getSizeWidth() - TRACK_PAD_X;
-        double usable = Math.max(1.0, trackRight - trackLeft);
-        double t = (mouseX - trackLeft) / usable;
-        setValue((int) Math.round(Math.max(0.0, Math.min(1.0, t)) * 100.0));
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
+        if (handled && setValueFromSlider(getSliderValue())) {
+            onCommit.run();
+        }
+        return handled;
     }
 
-    private void setValue(int value) {
+    private boolean setValueFromSlider(float sliderValue) {
+        int next = clamp(Math.round(Math.max(0.0f, Math.min(1.0f, sliderValue)) * 100.0f));
+        if (next == currentValue) {
+            return false;
+        }
+        currentValue = next;
+        updateTooltip();
+        onChange.accept(next);
+        return true;
+    }
+
+    private void setPercent(int value) {
         int next = clamp(value);
         if (next == currentValue) {
             return;
         }
         currentValue = next;
+        setValue(next / 100.0f);
         updateTooltip();
         onChange.accept(next);
     }
@@ -136,8 +139,9 @@ final class PercentSliderWidget extends WidgetGroup {
         setDragCapture.accept(true);
     }
 
-    private int knobX(int trackLeft, int trackRight) {
-        return trackLeft - KNOB_W / 2 + (int) Math.round((currentValue / 100.0) * Math.max(1, trackRight - trackLeft));
+    private void stopDragging() {
+        dragging = false;
+        setDragCapture.accept(false);
     }
 
     private static int clamp(int value) {
