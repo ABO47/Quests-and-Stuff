@@ -35,7 +35,7 @@ final class TabletLayout {
 
     static final int CHAPTER_W = 168;
     static final int CHAPTER_W_MIN = 44;
-    static final int CHAPTER_W_ICON = 26;
+    static final int CHAPTER_W_ICON = 24;
     static final int CHAPTER_W_MAX = 248;
     static final int CHAPTER_W_ICON_SNAP = 56;
     static final int SPLITTER_W = GAP;
