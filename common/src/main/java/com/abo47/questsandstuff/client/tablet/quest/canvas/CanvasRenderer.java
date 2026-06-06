@@ -114,6 +114,10 @@ public final class CanvasRenderer {
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
         if (!state.canEdit) {
             state.contextMenuOpen = false;
+            state.contextMenuRows = 0;
+            state.contextMenuScroll = 0;
+            state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.createQuestModalOpen = false;
             state.boxSelecting = false;
         }

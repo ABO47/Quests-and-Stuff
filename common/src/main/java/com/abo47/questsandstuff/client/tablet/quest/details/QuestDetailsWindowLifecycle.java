@@ -169,6 +169,10 @@ final class QuestDetailsWindowLifecycle {
         state.resizingSelection = false;
         state.rotatingSelection = false;
         state.contextMenuOpen = false;
+        state.contextMenuRows = 0;
+        state.contextMenuScroll = 0;
+        state.contextMenuScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         state.canvasTextMenuOpen = false;
         state.canvasTextMenuTarget = "";
         state.canvasTextFontSizeFieldTarget = "";

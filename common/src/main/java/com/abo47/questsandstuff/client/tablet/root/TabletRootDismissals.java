@@ -60,6 +60,9 @@ final class TabletRootDismissals {
         if (clickState.contextMenuWasOpen() && state.contextMenuOpen && !clickState.contextMenuHit()) {
             state.contextMenuOpen = false;
             state.contextMenuRows = 0;
+            state.contextMenuScroll = 0;
+            state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.contextDeleteConfirmKey = "";
             state.contextQuestCompletionSoundMenuOpen = false;
             changed = true;

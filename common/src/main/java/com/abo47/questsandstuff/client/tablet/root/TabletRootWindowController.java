@@ -62,6 +62,9 @@ public final class TabletRootWindowController {
         if (state.contextMenuOpen) {
             state.contextMenuOpen = false;
             state.contextMenuRows = 0;
+            state.contextMenuScroll = 0;
+            state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.contextDeleteConfirmKey = "";
             state.contextQuestCompletionSoundMenuOpen = false;
             return true;

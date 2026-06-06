@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.context;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -16,7 +18,6 @@ import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTEXT_ROW_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindowsContextRow;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class ContextMenuPanel {
@@ -90,7 +91,25 @@ public final class ContextMenuPanel {
             int maxW,
             int maxH
     ) {
-        return buildInternal(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, true, maxW, maxH, x, y);
+        return buildInternal(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, true, maxW, maxH, x, y, null, null);
+    }
+
+    public static WidgetGroup build(
+            int x,
+            int y,
+            int w,
+            List<ContextAction> actions,
+            int start,
+            int visibleRows,
+            int borderColor,
+            TabletUiState state,
+            Consumer<ContextAction> afterAction,
+            int maxW,
+            int maxH,
+            ScrollState scrollState,
+            Runnable refresh
+    ) {
+        return buildInternal(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, ContextMenuAnimation.DEFAULT_KEY, true, maxW, maxH, x, y, scrollState, refresh);
     }
 
     private static WidgetGroup buildInternal(
@@ -108,18 +127,25 @@ public final class ContextMenuPanel {
             int maxW,
             int maxH,
             int absoluteX,
-            int absoluteY
+            int absoluteY,
+            ScrollState scrollState,
+            Runnable refresh
     ) {
         List<ContextAction> promoted = promotedActions(actions);
         List<ContextAction> rows = rowActions(actions);
         int safeVisibleRows = safeVisibleRows(rows.size(), visibleRows);
         int menuH = heightFor(actions, safeVisibleRows);
         int rowTop = rowTop(promoted);
-        int safeStart = Math.max(0, Math.min(start, Math.max(0, rows.size() - safeVisibleRows)));
+        int scrollMax = Math.max(0, rows.size() - safeVisibleRows);
+        int requestedStart = scrollState == null ? start : scrollState.value();
+        int safeStart = Math.max(0, Math.min(requestedStart, scrollMax));
+        if (scrollState != null && safeStart != requestedStart) {
+            scrollState.setValue(safeStart);
+        }
         int end = Math.min(rows.size(), safeStart + safeVisibleRows);
         boolean needsScroll = rows.size() > safeVisibleRows;
         int rowWidth = needsScroll ? w - SCROLLBAR_EXTRA_W : w - ROW_EXTRA_W;
-        WidgetGroup menu = panel(x, y, w, menuH, withAlpha(ModColors.SURFACE_BASE, 246), borderColor);
+        WidgetGroup menu = menuPanel(x, y, w, menuH, borderColor, needsScroll, scrollState, refresh, scrollMax);
         addPromotedBar(menu, promoted, w, state, afterAction, animationKey);
         for (int i = safeStart; i < end; i++) {
             ContextAction action = rows.get(i);
@@ -133,7 +159,7 @@ public final class ContextMenuPanel {
             }
         }
         if (needsScroll) {
-            addScrollbar(menu, rows.size(), safeVisibleRows, safeStart, w, rowTop);
+            addScrollbar(menu, rows.size(), safeVisibleRows, safeStart, w, rowTop, scrollState, refresh);
         }
         return animate ? ContextMenuAnimation.wrap(menu, state, animationKey) : menu;
     }
@@ -381,7 +407,9 @@ public final class ContextMenuPanel {
                 maxW,
                 maxH,
                 parentAbsoluteX + childX,
-                parentAbsoluteY + childY
+                parentAbsoluteY + childY,
+                null,
+                null
         );
         childMenu.setVisible(false);
         childMenu.setActive(false);
@@ -450,12 +478,56 @@ public final class ContextMenuPanel {
         return Math.max(rowWidth, Math.min(maxWidth, Math.max(minWidth, promotedWidth)));
     }
 
-    private static void addScrollbar(WidgetGroup menu, int actionCount, int visibleRows, int start, int menuW, int rowTop) {
+    private static WidgetGroup menuPanel(int x, int y, int w, int h, int borderColor, boolean needsScroll, ScrollState scrollState, Runnable refresh, int scrollMax) {
+        WidgetGroup menu = new WidgetGroup(x, y, w, h) {
+            @Override
+            public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+                if (!needsScroll || scrollState == null || !isMouseOverElement(mouseX, mouseY)) {
+                    return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+                }
+                int current = ScrollController.clamp(scrollState.value(), scrollMax);
+                int next = ScrollController.wheel(current, scrollMax, 1, wheelDelta);
+                if (next != current) {
+                    scrollState.setValue(next);
+                    if (refresh != null) {
+                        refresh.run();
+                    }
+                }
+                return true;
+            }
+        };
+        menu.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 246), borderColor));
+        return menu;
+    }
+
+    private static void addScrollbar(WidgetGroup menu, int actionCount, int visibleRows, int start, int menuW, int rowTop, ScrollState scrollState, Runnable refresh) {
         int trackX = menuW - DragScrollBarWidget.RESERVED_WIDTH;
         int trackY = rowTop;
         int trackH = visibleRows * CONTEXT_ROW_H;
         int knobH = Math.max(14, (trackH * visibleRows) / Math.max(1, actionCount));
         int scrollMax = Math.max(1, actionCount - visibleRows);
+        if (scrollState != null) {
+            Runnable safeRefresh = refresh == null ? () -> {
+            } : refresh;
+            menu.addWidget(new DragScrollBarWidget(
+                    trackX,
+                    trackY,
+                    DragScrollBarWidget.RESERVED_WIDTH,
+                    trackH,
+                    () -> ScrollController.clamp(scrollState.value(), scrollMax),
+                    () -> scrollMax,
+                    () -> knobH,
+                    value -> scrollState.setValue(ScrollController.clamp(value, scrollMax)),
+                    scrollState::dragging,
+                    scrollState::setDragging,
+                    safeRefresh,
+                    ModColors.scrollTrack(scrollState.dragging()),
+                    ModColors.scrollThumb(false),
+                    ModColors.scrollThumb(true),
+                    DragScrollBarWidget.WIDTH
+            ));
+            return;
+        }
         int knobOffset = Math.round(((float) start / (float) scrollMax) * Math.max(0, trackH - knobH));
         menu.addWidget(new WidgetGroup(trackX, trackY, DragScrollBarWidget.RESERVED_WIDTH, trackH) {
             @Override

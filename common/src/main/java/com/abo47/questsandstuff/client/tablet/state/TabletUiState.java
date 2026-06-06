@@ -314,6 +314,7 @@ public class TabletUiState {
     public int contextMenuRows;
     public int contextMenuScroll;
     public int contextMenuScrollMax;
+    public boolean contextMenuScrollDragging;
     public int contextMenuWidthPx;
     public int contextMenuHeightPx;
     public int contextLastClickX;
@@ -404,6 +405,8 @@ public class TabletUiState {
     public int questDetailsContextAnchorY;
     public int questDetailsContextW;
     public int questDetailsContextH;
+    public int questDetailsContextScroll;
+    public int questDetailsContextScrollMax;
     public boolean questDetailsTypePickerOpen;
     public String questDetailsTypePickerKind = "";
     public int questDetailsTypePickerX;

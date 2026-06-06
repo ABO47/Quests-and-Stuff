@@ -15,6 +15,8 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPlacement;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
@@ -96,7 +98,15 @@ public final class QuestDetailsDescriptionMenus {
             return;
         }
         int menuW = 124;
-        int menuH = ContextMenuPanel.heightFor(actions, ContextMenuPanel.rowActionCount(actions));
+        int rowCount = ContextMenuPanel.rowActionCount(actions);
+        int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
+        int maxMenuH = Math.max(ContextMenuPanel.heightForRows(1), viewportH - 8);
+        while (visibleRows > 1 && ContextMenuPanel.heightFor(actions, visibleRows) > maxMenuH) {
+            visibleRows--;
+        }
+        state.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
+        state.questDetailsContextScroll = ScrollController.clamp(state.questDetailsContextScroll, state.questDetailsContextScrollMax);
+        int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int localX = localContextCoordinate(state.questDetailsContextAnchorX, x, viewportW);
         int localY = localContextCoordinate(state.questDetailsContextAnchorY, y, viewportH);
         int mx = ContextMenuPlacement.fitRightOrLeft(localX, viewportW, menuW);
@@ -106,12 +116,17 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetailsContextW = menuW;
         state.questDetailsContextH = menuH;
         WidgetGroup canvasMenuLayer = new WidgetGroup(x, y, viewportW, viewportH);
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, ContextMenuPanel.rowActionCount(actions), ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, state.questDetailsContextScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }
             refresh.run();
-        }, viewportW, viewportH);
+        }, viewportW, viewportH, ScrollState.bind(
+                () -> state.questDetailsContextScroll,
+                value -> state.questDetailsContextScroll = ScrollController.clamp(value, state.questDetailsContextScrollMax),
+                () -> state.contextMenuScrollDragging,
+                dragging -> state.contextMenuScrollDragging = dragging
+        ), refresh);
         canvasMenuLayer.addWidget(menu);
         modal.addWidget(canvasMenuLayer);
     }

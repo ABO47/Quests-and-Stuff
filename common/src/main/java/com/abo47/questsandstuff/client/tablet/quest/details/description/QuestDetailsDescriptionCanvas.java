@@ -69,6 +69,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+        if (shouldYieldToContextMenu(mouseX, mouseY)) {
+            return false;
+        }
         if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
@@ -85,6 +88,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (shouldYieldToContextMenu(mouseX, mouseY)) {
+            return false;
+        }
         if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
@@ -224,6 +230,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (shouldYieldToContextMenu(mouseX, mouseY)) {
+            return false;
+        }
         if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
@@ -281,6 +290,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (shouldYieldToContextMenu(mouseX, mouseY)) {
+            return false;
+        }
         if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
@@ -502,6 +514,11 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH)
                 || inside(mouseX, mouseY, state.questDetailsScreenX + localMenuX, state.questDetailsScreenY + localMenuY,
                 state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH);
+    }
+
+    private boolean shouldYieldToContextMenu(double mouseX, double mouseY) {
+        return state.questDetailsContextOpen
+                && (state.contextMenuScrollDragging || QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY));
     }
 
     private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {

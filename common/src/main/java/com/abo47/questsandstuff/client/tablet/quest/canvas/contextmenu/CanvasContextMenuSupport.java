@@ -70,6 +70,9 @@ public final class CanvasContextMenuSupport {
         if (actions.isEmpty()) {
             state.contextMenuOpen = false;
             state.contextQuestCompletionSoundMenuOpen = false;
+            state.contextMenuScroll = 0;
+            state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             return true;
         }
 
@@ -113,6 +116,7 @@ public final class CanvasContextMenuSupport {
         state.contextMenuRows = 0;
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         state.contextDeleteConfirmKey = "";
         state.contextQuestCompletionSoundMenuOpen = false;
         return true;
@@ -142,6 +146,7 @@ public final class CanvasContextMenuSupport {
             state.contextMenuRows = 0;
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.contextDeleteConfirmKey = "";
             state.contextQuestCompletionSoundMenuOpen = false;
             return true;

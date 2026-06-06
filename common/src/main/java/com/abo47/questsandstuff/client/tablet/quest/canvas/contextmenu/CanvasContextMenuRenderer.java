@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -21,6 +22,7 @@ final class CanvasContextMenuRenderer {
             state.contextMenuRows = 0;
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.contextQuestCompletionSoundMenuOpen = false;
             return;
         }
@@ -30,6 +32,7 @@ final class CanvasContextMenuRenderer {
             state.contextMenuRows = 0;
             state.contextMenuScroll = 0;
             state.contextMenuScrollMax = 0;
+            state.contextMenuScrollDragging = false;
             state.contextDeleteConfirmKey = "";
             state.contextQuestCompletionSoundMenuOpen = false;
             return;
@@ -58,7 +61,12 @@ final class CanvasContextMenuRenderer {
             if (action.closeAfterClick()) {
                 close(state);
             }
-        }, canvasViewport.getSize().width, canvasViewport.getSize().height);
+        }, canvasViewport.getSize().width, canvasViewport.getSize().height, ScrollState.bind(
+                () -> state.contextMenuScroll,
+                value -> state.contextMenuScroll = ScrollController.clamp(value, state.contextMenuScrollMax),
+                () -> state.contextMenuScrollDragging,
+                dragging -> state.contextMenuScrollDragging = dragging
+        ), canvasViewport::refresh);
         canvasViewport.addWidget(menu);
     }
 
@@ -67,6 +75,7 @@ final class CanvasContextMenuRenderer {
         state.contextMenuRows = 0;
         state.contextMenuScroll = 0;
         state.contextMenuScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         state.contextDeleteConfirmKey = "";
         state.contextQuestCompletionSoundMenuOpen = false;
     }

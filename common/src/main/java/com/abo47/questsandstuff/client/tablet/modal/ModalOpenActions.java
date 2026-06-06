@@ -576,8 +576,16 @@ public final class ModalOpenActions {
     private static void closeBeforeOpen(TabletUiState state) {
         ModalCloseActions.closeAllImmediately(state);
         state.contextMenuOpen = false;
+        state.contextMenuRows = 0;
+        state.contextMenuScroll = 0;
+        state.contextMenuScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         state.contextQuestCompletionSoundMenuOpen = false;
         state.questDetailsContextOpen = false;
+        state.questDetailsContextKind = "";
+        state.questDetailsContextId = "";
+        state.questDetailsContextScroll = 0;
+        state.questDetailsContextScrollMax = 0;
         state.prerequisitesManagerContextOpen = false;
         state.assetContextOpen = false;
         state.colorPaletteContextOpen = false;

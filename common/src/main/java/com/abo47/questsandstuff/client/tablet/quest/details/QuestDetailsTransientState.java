@@ -19,6 +19,9 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextAnchorY = y;
         state.questDetailsContextW = 0;
         state.questDetailsContextH = 0;
+        state.questDetailsContextScroll = 0;
+        state.questDetailsContextScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         closeTypePicker(state);
         closeItemSourcePicker(state);
         closeXpPicker(state);
@@ -31,6 +34,9 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextOpen = false;
         state.questDetailsContextKind = "";
         state.questDetailsContextId = "";
+        state.questDetailsContextScroll = 0;
+        state.questDetailsContextScrollMax = 0;
+        state.contextMenuScrollDragging = false;
         state.contextDeleteConfirmKey = "";
     }
 

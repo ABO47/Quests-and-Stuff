@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
@@ -43,6 +44,11 @@ final class CanvasViewportInputController {
         }
         int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
         int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+
+        if (state.contextMenuOpen && state.contextMenuScrollDragging) {
+            viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return true;
+        }
 
         if (CanvasMinimapController.handleDrag(state, localX, localY)) {
             viewport.refreshCanvas();
@@ -145,6 +151,14 @@ final class CanvasViewportInputController {
         }
         int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
         int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+        if (state.contextMenuOpen && state.contextMenuScrollDragging) {
+            viewport.callSuperMouseReleased(mouseX, mouseY, button);
+            if (state.contextMenuScrollDragging) {
+                state.contextMenuScrollDragging = false;
+            }
+            refresher.run();
+            return true;
+        }
         if (CanvasMinimapController.finishDrag(state)) {
             viewport.refreshCanvas();
             return true;
@@ -295,7 +309,11 @@ final class CanvasViewportInputController {
             return true;
         }
         if (state.contextMenuOpen) {
-            if (viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta)) {
+            int previous = state.contextMenuScroll;
+            CanvasContextMenuController.scrollContextMenu(state, wheelDelta);
+            if (state.contextMenuScroll != previous) {
+                refresher.run();
+            } else if (viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta)) {
                 refresher.run();
             }
             return true;
