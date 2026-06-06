@@ -58,7 +58,7 @@ final class CanvasContextQuestActions {
                 canvasViewport.refresh();
             }));
         }
-        actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, () -> {
             openQuestDetails(canvasViewport, state);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextQuestId);
