@@ -8,7 +8,7 @@ public final class UiThemeTokens {
     public static final int GRID_8 = 8;
     public static final int GRID_12 = 12;
     public static final int GRID_16 = 16;
-    public static final int CONTEXT_ROW_H = 14;
+    public static final int CONTEXT_ROW_H = 12;
 
     private UiThemeTokens() {
     }

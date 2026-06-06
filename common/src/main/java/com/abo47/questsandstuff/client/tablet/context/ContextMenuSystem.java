@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.context;
 
 
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -8,11 +9,13 @@ import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiActionColors;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,10 +23,16 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
-
 public final class ContextMenuSystem {
     private static final int OUTER_PAD = 4;
+    private static final int ICON_X = 8;
+    private static final int TEXT_X = 22;
+    private static final int SUBMENU_PAD = 5;
+    private static final int CONTEXT_ICON_SIZE = 10;
+    private static final int FALLBACK_ICON_W = 10;
+    private static final int FALLBACK_ICON_H = 8;
+    private static final int TEXT_LINE_H = 9;
+    private static final float TEXT_SCALE = 0.82f;
 
     private ContextMenuSystem() {
     }
@@ -41,16 +50,16 @@ public final class ContextMenuSystem {
         rowBg.setBackground(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 84)));
         menu.addWidget(rowBg);
 
-        if (!addAtlasIcon(menu, 8, y, icon, iconColor)) {
-            menu.addWidget(drawContextIcon(8, y + 2, icon, iconColor));
+        int iconY = centeredY(y, UiThemeTokens.CONTEXT_ROW_H, CONTEXT_ICON_SIZE);
+        if (!addAtlasIcon(menu, ICON_X, iconY, icon, iconColor)) {
+            menu.addWidget(drawContextIcon(ICON_X, centeredY(y, UiThemeTokens.CONTEXT_ROW_H, FALLBACK_ICON_H), icon, iconColor));
         }
 
-        LabelWidget textWidget = new LabelWidget(24, y + 3, text);
-        textWidget.setColor(ModColors.TEXT_PRIMARY);
-        menu.addWidget(textWidget);
+        int rightReserve = submenu ? CONTEXT_ICON_SIZE + SUBMENU_PAD + 2 : 2;
+        addContextText(menu, y, width, text, rightReserve);
 
         if (submenu) {
-            addContextIcon(menu, 4 + width - ACTION_ICON_SIZE - 3, y, "chevron-right", iconColor);
+            addContextIcon(menu, 4 + width - CONTEXT_ICON_SIZE - SUBMENU_PAD, iconY, "chevron-right", iconColor);
         }
 
         ButtonWidget hit = flatHitButton(4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
@@ -88,8 +97,8 @@ public final class ContextMenuSystem {
             graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 64));
             graphics.renderOutline(rowX, rowY, rowWidth, rowH, UiThemeTokens.withAlpha(ModColors.BORDER_ACCENT, 220));
         }
-        drawVanillaIcon(graphics, menuX + 8, rowY, icon, iconColor);
-        graphics.drawString(Minecraft.getInstance().font, text == null ? "" : text, menuX + 24, rowY + 3, ModColors.TEXT_PRIMARY, false);
+        drawVanillaIcon(graphics, menuX + ICON_X, centeredY(rowY, rowH, CONTEXT_ICON_SIZE), icon, iconColor);
+        drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, ModColors.TEXT_PRIMARY);
     }
 
     public static void addContextIcon(WidgetGroup menu, int x, int y, String icon) {
@@ -98,7 +107,7 @@ public final class ContextMenuSystem {
 
     public static void addContextIcon(WidgetGroup menu, int x, int y, String icon, int iconColor) {
         if (!addAtlasIcon(menu, x, y, icon, iconColor)) {
-            menu.addWidget(drawContextIcon(x, y + 2, icon, iconColor));
+            menu.addWidget(drawContextIcon(x, y + Math.max(0, (CONTEXT_ICON_SIZE - FALLBACK_ICON_H) / 2), icon, iconColor));
         }
     }
 
@@ -132,7 +141,7 @@ public final class ContextMenuSystem {
                 widest = Math.max(widest, Minecraft.getInstance().font.width(label == null ? "" : label));
             }
         }
-        int content = widest + 34;
+        int content = Math.round(widest * TEXT_SCALE) + TEXT_X + 8;
         return Math.max(minWidth, Math.min(maxWidth, content));
     }
 
@@ -142,7 +151,7 @@ public final class ContextMenuSystem {
             return false;
         }
         var texture = new SmoothResourceTexture(id).setDynamicColor(() -> iconColor);
-        menu.addWidget(new ImageWidget(x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE, texture));
+        menu.addWidget(new ImageWidget(x, y, CONTEXT_ICON_SIZE, CONTEXT_ICON_SIZE, texture));
         return true;
     }
 
@@ -150,11 +159,36 @@ public final class ContextMenuSystem {
         ResourceLocation id = contextIconLocation(icon);
         if (id != null) {
             var texture = new SmoothResourceTexture(id).setDynamicColor(() -> iconColor);
-            texture.draw(graphics, 0, 0, x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE);
+            texture.draw(graphics, 0, 0, x, y, CONTEXT_ICON_SIZE, CONTEXT_ICON_SIZE);
             return;
         }
-        int centerY = y + ACTION_ICON_SIZE / 2;
-        graphics.fill(x + 2, centerY, x + ACTION_ICON_SIZE - 2, centerY + 1, iconColor);
+        int centerY = y + CONTEXT_ICON_SIZE / 2;
+        graphics.fill(x + 2, centerY, x + CONTEXT_ICON_SIZE - 2, centerY + 1, iconColor);
+    }
+
+    private static void addContextText(WidgetGroup menu, int rowY, int rowWidth, String text, int rightReserve) {
+        int availableVisualW = Math.max(1, rowWidth - TEXT_X - rightReserve);
+        int textureW = Math.max(1, Math.round(availableVisualW / TEXT_SCALE));
+        int textureY = rowY + Math.max(0, (UiThemeTokens.CONTEXT_ROW_H - TEXT_LINE_H) / 2);
+        TextTextureWidget textWidget = TabletTextTextures.literal(TEXT_X, textureY, textureW, TEXT_LINE_H, text, ModColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        float xCompensation = -((1.0f - TEXT_SCALE) * textureW) / 2.0f;
+        float yCompensation = (rowY + UiThemeTokens.CONTEXT_ROW_H / 2.0f) - (textureY + TEXT_LINE_H / 2.0f);
+        textWidget.textureStyle(texture -> texture.scale(TEXT_SCALE).transform(xCompensation, yCompensation));
+        menu.addWidget(textWidget);
+    }
+
+    private static void drawScaledText(GuiGraphics graphics, String text, int x, int rowY, int rowH, int color) {
+        Font font = Minecraft.getInstance().font;
+        float textY = rowY + (rowH - font.lineHeight * TEXT_SCALE) / 2.0f;
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, textY, 0.0f);
+        graphics.pose().scale(TEXT_SCALE, TEXT_SCALE, 1.0f);
+        graphics.drawString(font, text, 0, 0, color, false);
+        graphics.pose().popPose();
+    }
+
+    private static int centeredY(int y, int height, int contentHeight) {
+        return y + Math.max(0, (height - contentHeight) / 2);
     }
 
     private static WidgetGroup drawContextIcon(int x, int y, String icon, int color) {

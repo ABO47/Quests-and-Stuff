@@ -48,7 +48,7 @@ final class TabletLayout {
     static final int CANVAS_GRID_COLS = 18;
     static final int CARD_W = 15;
     static final int CARD_H = 15;
-    static final int CONTEXT_ROW_H = 14;
+    static final int CONTEXT_ROW_H = 12;
     static final int[] GRID_SIZES = {16};
     static final int[] GRID_OPACITY = {20, 35, 50, 65, 80};
     static final int[] CANVAS_BG_OPACITY = {0, 15, 30, 45, 60, 75, 90, 100};
