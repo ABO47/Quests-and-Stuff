@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
@@ -147,6 +148,12 @@ public final class QuestDetailsDescriptionMenus {
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             state.contextDeleteConfirmKey = "";
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
+        }));
+        actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_GRID_COLOR), "style_color", ModColors.INTERACTIVE, () -> {
+            state.contextDeleteConfirmKey = "";
+            int color = TabletGridControls.defaultGridColor(state);
+            ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_grid_color color={}", color);
         }));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
             String deleteKey = "quest_details_background:" + questId;

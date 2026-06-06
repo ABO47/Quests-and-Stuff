@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
@@ -37,6 +38,13 @@ public final class TabletGridControls {
         return Math.max(0, Math.min(100, GRID_OPACITY[index]));
     }
 
+    public static int defaultGridColor(TabletUiState state) {
+        if (state == null || state.gridColor == 0) {
+            return ModColors.TEXT_PRIMARY;
+        }
+        return state.gridColor;
+    }
+
     public static int defaultCanvasBgOpacityPercent(TabletUiState state) {
         if (CANVAS_BG_OPACITY.length == 0) {
             return Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
@@ -50,6 +58,12 @@ public final class TabletGridControls {
         state.gridOpacityPercent = clamped;
         state.gridOpacityIndex = nearestIndex(GRID_OPACITY, clamped);
         state.toolsGridOpacityDraft = Integer.toString(clamped);
+    }
+
+    public static void applyGridColor(TabletUiState state, int color) {
+        if (state != null) {
+            state.gridColor = color;
+        }
     }
 
     public static void applyCanvasBgOpacityPercent(TabletUiState state, int percent) {

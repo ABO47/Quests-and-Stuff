@@ -47,6 +47,7 @@ public final class ModalTargets {
     public static final String CANVAS_TEXT = "canvas_text";
     public static final String CONNECTION = "connection";
     public static final String CONNECTION_SELECTION = "connection_selection";
+    public static final String GRID_COLOR = "grid_color";
 
     private ModalTargets() {
     }
@@ -243,6 +244,10 @@ public final class ModalTargets {
 
     public static String connectionSelection(String group) {
         return of(CONNECTION_SELECTION, group);
+    }
+
+    public static String gridColor() {
+        return of(GRID_COLOR);
     }
 
     public static String doubleClickKey(String picker, Object... parts) {

@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -72,7 +73,7 @@ final class CanvasSceneRenderer {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int alphaPercent = Math.max(0, Math.min(100, state.gridOpacityPercent));
                 int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
-                int lineColor = (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
+                int lineColor = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
                 int cell = CanvasGeometry.gridSize(state);
                 int originX = getPositionX();
                 int originY = getPositionY();

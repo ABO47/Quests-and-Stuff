@@ -97,6 +97,7 @@ public final class QuestVocabulary {
     public static final String CONTEXT_CHANGE_ICON = "ui.questsandstuff.context.change_icon";
     public static final String CONTEXT_CHANGE_IMAGE = "ui.questsandstuff.context.change_image";
     public static final String CONTEXT_CHANGE_RECIPE_CARD = "ui.questsandstuff.context.change_recipe_card";
+    public static final String CONTEXT_CHANGE_GRID_COLOR = "ui.questsandstuff.context.change_grid_color";
     public static final String CONTEXT_CHANGE_QUEST_BACKGROUND = "ui.questsandstuff.context.change_quest_background";
     public static final String CONTEXT_CHANGE_TITLE = "ui.questsandstuff.context.change_title";
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";

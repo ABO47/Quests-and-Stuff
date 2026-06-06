@@ -75,10 +75,14 @@ public final class TabletPanelChrome {
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
-        drawCanvasPanelOutlines(graphics, panel, state.canvasViewportX, state.canvasViewportY, state.canvasViewportW, state.canvasViewportH, state.canEdit, state.gridEnabled, state.gridOpacityPercent);
+        drawCanvasPanelOutlines(graphics, panel, state.canvasViewportX, state.canvasViewportY, state.canvasViewportW, state.canvasViewportH, state.canEdit, state.gridEnabled, state.gridOpacityPercent, TabletGridControls.defaultGridColor(state));
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent) {
+        drawCanvasPanelOutlines(graphics, panel, viewportX, viewportY, viewportW, viewportH, canEdit, gridEnabled, gridOpacityPercent, ModColors.TEXT_PRIMARY);
+    }
+
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent, int gridColor) {
         int x = panel.getPositionX();
         int y = panel.getPositionY();
         int w = panel.getSize().width;
@@ -91,7 +95,7 @@ public final class TabletPanelChrome {
         if (holeRight > holeLeft && holeBottom > holeTop) {
             graphics.renderOutline(holeLeft - 1, holeTop - 1, holeRight - holeLeft + 2, holeBottom - holeTop + 2, ModColors.BORDER_BASE);
             if (canEdit && gridEnabled) {
-                graphics.renderOutline(holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, gridLineColor(gridOpacityPercent));
+                graphics.renderOutline(holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, gridLineColor(gridOpacityPercent, gridColor));
             }
         }
         drawPanelOutline(graphics, panel);
@@ -116,10 +120,10 @@ public final class TabletPanelChrome {
         graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
     }
 
-    private static int gridLineColor(int gridOpacityPercent) {
+    private static int gridLineColor(int gridOpacityPercent, int gridColor) {
         int alphaPercent = Math.max(0, Math.min(100, gridOpacityPercent));
         int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
-        return (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
+        return (alpha << 24) | (gridColor & 0x00FFFFFF);
     }
 
     private static void fillPanelRect(GuiGraphics graphics, int left, int top, int right, int bottom) {

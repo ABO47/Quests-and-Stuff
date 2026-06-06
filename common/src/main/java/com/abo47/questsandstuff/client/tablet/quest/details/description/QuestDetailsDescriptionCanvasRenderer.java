@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
@@ -40,7 +41,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
         int cell = CanvasGeometry.gridSize(state);
         int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, state.questDetailsGridOpacityPercent))) / 100));
-        int color = (alpha << 24) | (ModColors.TEXT_PRIMARY & 0x00FFFFFF);
+        int color = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
         int spanW = contentW;
         int spanH = contentH;
         int paintW = spanW + 1;

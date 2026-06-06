@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -40,6 +41,9 @@ public final class ColorPickerApplyActions {
             return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (parsed.isGridColor()) {
+            return TabletGridControls.defaultGridColor(state);
+        }
         if (parsed.isQuestDescText()) {
             if (parsed.hasAtLeast(3)) {
                 QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(parsed.questId()));
@@ -82,6 +86,13 @@ public final class ColorPickerApplyActions {
             return;
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (parsed.isGridColor()) {
+            TabletGridControls.applyGridColor(state, color);
+            TabletUiFactory.persistUiState(state);
+            state.colorPickerTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] grid color picked color={}", color);
+            return;
+        }
         if (parsed.isQuestDescText()) {
             QuestDetailsWindow.applyTextColor(player, state, target, color);
             state.colorPickerTarget = "";

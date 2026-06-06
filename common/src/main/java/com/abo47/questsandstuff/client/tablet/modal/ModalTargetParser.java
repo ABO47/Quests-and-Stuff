@@ -207,6 +207,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.CONNECTION_SELECTION);
         }
 
+        public boolean isGridColor() {
+            return is(ModalTargets.GRID_COLOR);
+        }
+
         public boolean isEntityIconPickerTarget() {
             return isDescEntityNew() || isDescEntity() || isTaskEntity();
         }

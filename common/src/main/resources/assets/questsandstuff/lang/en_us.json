@@ -284,6 +284,7 @@
   "ui.questsandstuff.context.change_canvas_bg": "Change Canvas BG",
   "ui.questsandstuff.context.change_block": "Change Block",
   "ui.questsandstuff.context.change_entity": "Change Entity",
+  "ui.questsandstuff.context.change_grid_color": "Change Grid Color",
   "ui.questsandstuff.context.change_icon": "Change Icon",
   "ui.questsandstuff.context.change_image": "Change Image",
   "ui.questsandstuff.context.change_item": "Change Item",

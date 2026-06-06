@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -117,6 +118,12 @@ final class CanvasContextCanvasActions {
         actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openCanvasBackgroundPicker(state, selectedGroup, ClientQuestCache.groupCanvasBackground(selectedGroup));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg group={}", selectedGroup);
+            canvasViewport.refresh();
+        }));
+        actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_GRID_COLOR), "style_color", ModColors.INTERACTIVE, () -> {
+            int color = TabletGridControls.defaultGridColor(state);
+            ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_grid_color color={}", color);
             canvasViewport.refresh();
         }));
         if (!ClientQuestCache.groupCanvasBackground(selectedGroup).isBlank()

@@ -43,6 +43,7 @@ public final class TabletUiStatePersistence {
             state.gridSizeIndex = readInt(root, "grid_size_index", state.gridSizeIndex);
             state.gridOpacityIndex = readInt(root, "grid_opacity_index", state.gridOpacityIndex);
             state.gridOpacityPercent = readInt(root, "grid_opacity_percent", state.gridOpacityPercent);
+            state.gridColor = readInt(root, "grid_color", state.gridColor);
             state.canvasBgOpacityIndex = readInt(root, "canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             state.canvasBgOpacityPercent = readInt(root, "canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             state.canvasZoom = readFloat(root, "canvas_zoom", state.canvasZoom);
@@ -91,6 +92,7 @@ public final class TabletUiStatePersistence {
             root.addProperty("grid_size_index", state.gridSizeIndex);
             root.addProperty("grid_opacity_index", state.gridOpacityIndex);
             root.addProperty("grid_opacity_percent", state.gridOpacityPercent);
+            root.addProperty("grid_color", state.gridColor);
             root.addProperty("canvas_bg_opacity_index", state.canvasBgOpacityIndex);
             root.addProperty("canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
             root.addProperty("canvas_zoom", state.canvasZoom);

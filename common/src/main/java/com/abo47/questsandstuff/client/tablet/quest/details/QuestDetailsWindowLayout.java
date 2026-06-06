@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -217,7 +218,7 @@ final class QuestDetailsWindowLayout {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3]);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetailsGridOpacityPercent);
+                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
             }
         };
     }

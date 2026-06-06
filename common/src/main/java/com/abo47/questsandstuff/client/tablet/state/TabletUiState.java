@@ -83,6 +83,7 @@ public class TabletUiState {
     public int gridSizeIndex = 2;
     public int gridOpacityIndex = 2;
     public int gridOpacityPercent = 50;
+    public int gridColor;
     public int canvasBgOpacityIndex = 4;
     public int canvasBgOpacityPercent = 60;
     public float canvasZoom = 1.0f;
