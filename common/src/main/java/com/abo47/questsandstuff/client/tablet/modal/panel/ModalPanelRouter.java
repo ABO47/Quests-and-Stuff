@@ -31,7 +31,6 @@ import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelLighting;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
 
 public final class ModalPanelRouter {
@@ -77,7 +76,6 @@ public final class ModalPanelRouter {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawWindowShadow(graphics, this);
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-                drawPanelLighting(graphics, this);
             }
         };
         modal.setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
