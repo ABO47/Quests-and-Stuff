@@ -25,6 +25,17 @@ import java.util.Map;
 public final class TabletUiFactory {
     public static final int ROOT_W = TabletLayout.ROOT_W;
     public static final int ROOT_H = TabletLayout.ROOT_H;
+    public static final int ROOT_PAD_X = TabletLayout.ROOT_PAD_X;
+    public static final int ROOT_PAD_Y = TabletLayout.ROOT_PAD_Y;
+    public static final int PANEL_GAP = TabletLayout.PANEL_GAP;
+    public static final int PANEL_INSET = TabletLayout.PANEL_INSET;
+    public static final int CANVAS_VIEWPORT_GUTTER_X = TabletLayout.CANVAS_VIEWPORT_GUTTER_X;
+    public static final int CANVAS_VIEWPORT_GUTTER_TOP = TabletLayout.CANVAS_VIEWPORT_GUTTER_TOP;
+    public static final int CANVAS_VIEWPORT_GUTTER_BOTTOM = TabletLayout.CANVAS_VIEWPORT_GUTTER_BOTTOM;
+    public static final int CHAPTER_PANEL_GUTTER_X = TabletLayout.CHAPTER_PANEL_GUTTER_X;
+    public static final int CHAPTER_PANEL_GUTTER_BOTTOM = TabletLayout.CHAPTER_PANEL_GUTTER_BOTTOM;
+    public static final int HEADER_H = TabletLayout.HEADER_H;
+    public static final int HEADER_GAP = TabletLayout.HEADER_GAP;
     public static final int PAD = TabletLayout.PAD;
     public static final int PAD_Y = TabletLayout.PAD_Y;
     public static final int GAP = TabletLayout.GAP;
@@ -149,6 +160,10 @@ public final class TabletUiFactory {
 
     public static int canvasPanelWidth(TabletUiState state) {
         return TabletLayout.canvasPanelWidth(state);
+    }
+
+    public static int[] canvasViewportBounds(int panelW, int panelH, int topH) {
+        return TabletLayout.canvasViewportBounds(panelW, panelH, topH);
     }
 
     public static String uniqueGroupName(String preferred, String excludeCurrent) {

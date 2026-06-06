@@ -17,13 +17,13 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public final class QuestDetailsObjectivesPanel {
-    static final int SECTION_GAP = 6;
+    static final int SECTION_GAP = TabletUiFactory.PANEL_INSET;
     static final int TITLE_H = 18;
     static final int CARD_H = TabletUiFactory.CHAPTER_CARD_H;
     static final int CARD_GAP = TabletUiFactory.CHAPTER_CARD_GAP;
-    static final int LIST_PAD = 6;
+    static final int LIST_PAD = TabletUiFactory.PANEL_INSET;
     static final int ICON = TabletUiFactory.CONTENT_ICON_SIZE;
-    static final int HEADER_H = 14;
+    static final int HEADER_H = TabletUiFactory.HEADER_H;
 
     private QuestDetailsObjectivesPanel() {
     }
@@ -51,10 +51,10 @@ public final class QuestDetailsObjectivesPanel {
         }
 
         int leftW = QuestDetailsWindow.leftPanelWidth(state);
-        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + QuestDetailsWindow.CONTENT_INSET;
-        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + QuestDetailsWindow.CONTENT_INSET;
-        int w = Math.max(1, leftW - QuestDetailsWindow.CONTENT_INSET * 2);
-        int h = Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2);
+        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int w = leftPanelContentW(leftW);
+        int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
@@ -81,9 +81,9 @@ public final class QuestDetailsObjectivesPanel {
             return ItemStack.EMPTY;
         }
 
-        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + QuestDetailsWindow.CONTENT_INSET;
-        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + QuestDetailsWindow.CONTENT_INSET;
-        int h = Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2);
+        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
@@ -207,6 +207,22 @@ public final class QuestDetailsObjectivesPanel {
         int slot = contentY / rowH;
         int inSlot = contentY % rowH;
         return slot >= 0 && slot < entries.size() && inSlot < CARD_H;
+    }
+
+    static int leftPanelContentX() {
+        return TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
+    }
+
+    static int leftPanelContentY() {
+        return QuestDetailsWindow.CONTENT_INSET;
+    }
+
+    static int leftPanelContentW(int leftW) {
+        return Math.max(1, leftW - TabletUiFactory.CHAPTER_PANEL_GUTTER_X * 2);
+    }
+
+    static int leftPanelContentH() {
+        return Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET - TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM);
     }
 
     private static ItemStack hoveredSectionViewerStack(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, boolean requirements, int x, int y, int h, double mouseX, double mouseY) {

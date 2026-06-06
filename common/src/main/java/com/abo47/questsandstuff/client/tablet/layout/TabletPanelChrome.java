@@ -49,7 +49,6 @@ public final class TabletPanelChrome {
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH) {
-        drawWindowShadow(graphics, panel);
         int x = panel.getPositionX();
         int y = panel.getPositionY();
         int w = panel.getSize().width;
@@ -99,7 +98,10 @@ public final class TabletPanelChrome {
     }
 
     public static void drawPanelChrome(GuiGraphics graphics, WidgetGroup panel) {
-        drawWindowShadow(graphics, panel);
+        drawPanelChromeNoShadow(graphics, panel);
+    }
+
+    public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
         int x = panel.getPositionX();
         int y = panel.getPositionY();
         int w = panel.getSize().width;

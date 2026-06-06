@@ -30,10 +30,15 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.dr
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_SIZES;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_INSET;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
@@ -41,6 +46,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.applyRoo
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasPanelX;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasViewportBounds;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
@@ -91,17 +97,19 @@ public final class QuestAppComposer {
             }
         };
 
-        final int contentInset = 6;
+        final int contentInset = PANEL_INSET;
         final int topY = contentInset;
-        final int headerH = 14;
+        final int headerH = HEADER_H;
         final int toolsW = headerH;
-        final int topGap = 4;
+        final int topGap = HEADER_GAP;
         final int chapterTopY = topY;
+        final int chapterSideInset = CHAPTER_PANEL_GUTTER_X;
+        final int chapterBottomInset = CHAPTER_PANEL_GUTTER_BOTTOM;
         final int chapterHeaderH = headerH;
         final int chapterListGap = contentInset;
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
-        WidgetGroup chapterList = new TabletScissoredWidgetGroup(contentInset, chapterListY, Math.max(24, initialChapterW - contentInset * 2), Math.max(1, initialChapterH - chapterListY - contentInset - 1));
+        WidgetGroup chapterList = new TabletScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));
         chapterList.setBackground(initialChapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, initialRootW, initialRootH);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
@@ -111,10 +119,11 @@ public final class QuestAppComposer {
         WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
-        CanvasViewport canvasViewport = new CanvasViewport(contentInset, initialTop + contentInset, Math.max(64, initialCanvasW - contentInset * 2), Math.max(32, initialCanvasH - initialTop - contentInset * 2), state, player);
+        int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);
+        CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
         canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
-        QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), contentInset, chapterTopY, chapterHeaderH, initialChapterW, topY, headerH);
+        QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), chapterSideInset, chapterTopY, chapterHeaderH, initialChapterW, initialViewport[0], topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
         WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
@@ -149,11 +158,10 @@ public final class QuestAppComposer {
             int canvasW = canvasPanelWidth(state);
             boolean chapterCollapsed = state.chapterPanelCollapsed;
             int dynamicListY = chapterCollapsed ? 0 : chapterListY;
-            int chapterSideInset = 7;
             int collapsedChapterInset = 0;
             int dynamicListX = chapterCollapsed ? collapsedChapterInset : chapterSideInset;
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
-            int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - contentInset - 1);
+            int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - chapterBottomInset);
 
             chapterPanelRef[0].setBackground(Surfaces.bordered(chapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
             chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
@@ -182,10 +190,13 @@ public final class QuestAppComposer {
             state.canvasPanelW = canvasW;
             state.canvasPanelH = canvasH;
 
-            int availableViewportW = canvasW - contentInset * 2;
-            int availableViewportH = canvasH - topH - contentInset * 2;
-            int innerAvailableW = Math.max(1, availableViewportW - 1);
-            int innerAvailableH = Math.max(1, availableViewportH - 1);
+            int[] viewport = canvasViewportBounds(canvasW, canvasH, topH);
+            int viewportX = viewport[0];
+            int viewportY = viewport[1];
+            int viewportW = viewport[2];
+            int viewportH = viewport[3];
+            int innerAvailableW = Math.max(1, viewportW - 1);
+            int innerAvailableH = Math.max(1, viewportH - 1);
             state.gridSizeIndex = clampGridSizeIndex(state.gridSizeIndex);
             int cell = Math.max(1, GRID_SIZES[state.gridSizeIndex]);
             int gridCols = Math.max(1, innerAvailableW / cell);
@@ -193,10 +204,6 @@ public final class QuestAppComposer {
             state.gridCellPx = cell;
             state.gridCols = gridCols;
             state.gridRows = gridRows;
-            int viewportW = Math.max(cell + 1, gridCols * cell + 1);
-            int viewportH = Math.max(cell + 1, gridRows * cell + 1);
-            int viewportX = contentInset + Math.max(0, (availableViewportW - viewportW) / 2);
-            int viewportY = topH + contentInset + Math.max(0, (availableViewportH - viewportH) / 2);
             canvasViewport.setSelfPosition(viewportX, viewportY);
             canvasViewport.setSize(viewportW, viewportH);
             state.canvasViewportX = viewportX;

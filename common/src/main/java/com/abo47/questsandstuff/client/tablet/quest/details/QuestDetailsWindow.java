@@ -8,10 +8,10 @@ import net.minecraft.world.entity.player.Player;
 public final class QuestDetailsWindow {
     static final int WINDOW_W = TabletUiFactory.ROOT_W;
     static final int WINDOW_H = TabletUiFactory.ROOT_H;
-    public static final int CONTENT_INSET = 6;
+    public static final int CONTENT_INSET = TabletUiFactory.PANEL_INSET;
     public static final int TOP_Y = CONTENT_INSET;
-    public static final int HEADER_H = 14;
-    static final int HEADER_GAP = 4;
+    public static final int HEADER_H = TabletUiFactory.HEADER_H;
+    static final int HEADER_GAP = TabletUiFactory.HEADER_GAP;
     static final int TOOL_SIZE = HEADER_H;
 
     private QuestDetailsWindow() {

@@ -50,7 +50,7 @@ final class TabletRootKeyboardRouter {
         if (!textInputActive && root.isAnyModalOpen() && modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (TabletClientHooks.openUiMatches(keyCode, scanCode) && !textInputActive) {
+        if ((TabletClientHooks.openUiMatches(keyCode, scanCode) || TabletClientHooks.openQuestsUiMatches(keyCode, scanCode)) && !textInputActive) {
             TabletClientHooks.closeTabletUi(state, true, "keybind");
             return true;
         }

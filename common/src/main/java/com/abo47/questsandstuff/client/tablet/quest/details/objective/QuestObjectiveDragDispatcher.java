@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.nbt.CompoundTag;
@@ -11,9 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 public final class QuestObjectiveDragDispatcher {
-    private static final int SECTION_GAP = 6;
+    private static final int SECTION_GAP = TabletUiFactory.PANEL_INSET;
     private static final int TITLE_H = 18;
-    private static final int HEADER_H = 14;
+    private static final int HEADER_H = TabletUiFactory.HEADER_H;
 
     private QuestObjectiveDragDispatcher() {
     }
@@ -64,8 +63,8 @@ public final class QuestObjectiveDragDispatcher {
         if (quest == null || quest.isEmpty()) {
             return ObjectiveDragScope.invalid();
         }
-        int panelY = TabletUiFactory.CHAPTER_Y + QuestDetailsWindow.CONTENT_INSET;
-        int panelH = TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2;
+        int panelY = TabletUiFactory.CHAPTER_Y + QuestDetailsObjectivesPanel.leftPanelContentY();
+        int panelH = QuestDetailsObjectivesPanel.leftPanelContentH();
         int sectionsY = HEADER_H + SECTION_GAP;
         int sectionsH = panelH - HEADER_H - SECTION_GAP;
         int sectionH = Math.max(20, (sectionsH - SECTION_GAP) / 2);

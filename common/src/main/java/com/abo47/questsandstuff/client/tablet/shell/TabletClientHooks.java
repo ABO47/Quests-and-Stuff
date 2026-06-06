@@ -27,6 +27,12 @@ public final class TabletClientHooks {
             GLFW.GLFW_KEY_R,
             CATEGORY
     );
+    private static final KeyMapping OPEN_QUESTS_UI = new KeyMapping(
+            "key.questsandstuff.open_quests_ui",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
     private static final KeyMapping QUICK_CONNECT = new KeyMapping(
             "key.questsandstuff.quick_connect",
             InputConstants.Type.KEYSYM,
@@ -74,6 +80,7 @@ public final class TabletClientHooks {
 
     public static void registerKeyMappings(Consumer<KeyMapping> registrar) {
         registrar.accept(OPEN_UI);
+        registrar.accept(OPEN_QUESTS_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
         registrar.accept(EDIT_HUD);
@@ -96,6 +103,10 @@ public final class TabletClientHooks {
 
     public static boolean openUiMatches(int keyCode, int scanCode) {
         return OPEN_UI.matches(keyCode, scanCode);
+    }
+
+    public static boolean openQuestsUiMatches(int keyCode, int scanCode) {
+        return OPEN_QUESTS_UI.matches(keyCode, scanCode);
     }
 
     public static boolean gizmoMoveMatches(int keyCode, int scanCode) {
@@ -167,7 +178,7 @@ public final class TabletClientHooks {
         if (minecraft.gameMode == null || minecraft.screen != null) {
             return;
         }
-        if (suppressNextOpenClick && !OPEN_UI.isDown()) {
+        if (suppressNextOpenClick && !OPEN_UI.isDown() && !OPEN_QUESTS_UI.isDown()) {
             suppressNextOpenClick = false;
         }
         while (OPEN_UI.consumeClick()) {
@@ -175,6 +186,13 @@ public final class TabletClientHooks {
                 continue;
             }
             openTabletUi(minecraft, minecraft.player);
+            break;
+        }
+        while (OPEN_QUESTS_UI.consumeClick()) {
+            if (suppressNextOpenClick) {
+                continue;
+            }
+            openQuestsUi(minecraft, minecraft.player);
             break;
         }
         while (EDIT_HUD.consumeClick()) {
@@ -187,6 +205,13 @@ public final class TabletClientHooks {
     public static void openTabletUiFromItem(Player player) {
         if (player instanceof LocalPlayer localPlayer) {
             openTabletUi(Minecraft.getInstance(), localPlayer);
+        }
+    }
+
+    static void openQuestsUiFromCurrentScreen() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            openQuestsUi(minecraft, minecraft.player);
         }
     }
 
@@ -218,15 +243,41 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
-        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
-        int rootW = targetRootWidth(minecraft, fullScreen);
-        int rootH = targetRootHeight(minecraft, fullScreen);
-        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
+        int rootW = targetHomeRootWidth(minecraft);
+        int rootH = targetHomeRootHeight(minecraft);
+        ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, false), IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
         TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
-        QuestsAndStuffMod.debugLog("[QnS:UI] keybind open ui direct");
+        QuestsAndStuffMod.debugLog("[QnS:UI] keybind open tablet home");
+    }
+
+    private static void openQuestsUi(Minecraft minecraft, LocalPlayer player) {
+        if (player == null) {
+            return;
+        }
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        ModularUI uiTemplate = new ModularUI(TabletShellComposer.createQuests(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
+        uiTemplate.initWidgets();
+        TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
+        minecraft.setScreen(modularUiGui);
+        player.containerMenu = modularUiGui.getMenu();
+        QuestsAndStuffMod.debugLog("[QnS:UI] keybind open quests ui direct");
+    }
+
+    private static int targetHomeRootWidth(Minecraft minecraft) {
+        int screenW = minecraft == null ? TabletUiFactory.ROOT_W : minecraft.getWindow().getGuiScaledWidth();
+        int screenH = minecraft == null ? TabletUiFactory.ROOT_H : minecraft.getWindow().getGuiScaledHeight();
+        return TabletHomeComposer.targetRootWidth(screenW, screenH);
+    }
+
+    private static int targetHomeRootHeight(Minecraft minecraft) {
+        int screenW = minecraft == null ? TabletUiFactory.ROOT_W : minecraft.getWindow().getGuiScaledWidth();
+        int screenH = minecraft == null ? TabletUiFactory.ROOT_H : minecraft.getWindow().getGuiScaledHeight();
+        return TabletHomeComposer.targetRootHeight(screenW, screenH);
     }
 
     private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {

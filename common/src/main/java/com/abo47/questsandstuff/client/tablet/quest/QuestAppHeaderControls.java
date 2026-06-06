@@ -54,8 +54,8 @@ final class QuestAppHeaderControls {
         this.editorButton = editorButton;
     }
 
-    static QuestAppHeaderControls create(Player player, TabletUiState state, Runnable refresh, int contentInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int topY, int headerH) {
-        TextFieldWidget chapterSearchField = new TextFieldWidget(contentInset, chapterTopY, Math.max(24, initialChapterW - contentInset * 2), chapterHeaderH, () -> state.chapterSearch, value -> {
+    static QuestAppHeaderControls create(Player player, TabletUiState state, Runnable refresh, int chapterInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int canvasHeaderX, int topY, int headerH) {
+        TextFieldWidget chapterSearchField = new TextFieldWidget(chapterInset, chapterTopY, Math.max(24, initialChapterW - chapterInset * 2), chapterHeaderH, () -> state.chapterSearch, value -> {
             state.chapterSearch = SearchFilter.normalizeUserInput(value);
             state.chapterScroll = 0;
             refresh.run();
@@ -68,7 +68,7 @@ final class QuestAppHeaderControls {
         };
         configureSearchField(chapterSearchField);
 
-        TextFieldWidget searchField = new TextFieldWidget(contentInset, topY, 60, headerH, () -> state.search, value -> {
+        TextFieldWidget searchField = new TextFieldWidget(canvasHeaderX, topY, 60, headerH, () -> state.search, value -> {
             state.search = SearchFilter.normalizeUserInput(value);
             if (!state.search.isBlank()) {
                 CanvasRenderer.jumpToBestMatch(state);
@@ -83,7 +83,7 @@ final class QuestAppHeaderControls {
         };
         configureSearchField(searchField);
 
-        WidgetGroup canvasHeaderSurface = new WidgetGroup(contentInset, topY, 60, headerH);
+        WidgetGroup canvasHeaderSurface = new WidgetGroup(canvasHeaderX, topY, 60, headerH);
         canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
 
         int toolsW = headerH;

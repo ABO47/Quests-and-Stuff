@@ -22,6 +22,8 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.dr
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
@@ -54,15 +56,18 @@ final class QuestDetailsWindowLayout {
         }
 
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
+        boolean fillsLayer = frame.fills(layer);
         rememberFrame(layer, state, frame);
-        addDimLayer(layer, state);
+        if (!fillsLayer) {
+            addDimLayer(layer, state);
+        }
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = CHAPTER_X + leftW + Math.max(0, (GAP - SPLITTER_W) / 2);
         int canvasX = CHAPTER_X + leftW + GAP;
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
-        WidgetGroup modal = addModal(layer, state, frame, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3]);
+        WidgetGroup modal = addModal(layer, state, frame, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3], fillsLayer);
         addObjectivePanel(modal, state, player, refresh, questId, quest, leftW);
         modal.addWidget(new QuestDetailsSplitterWidget(splitterX, state, refresh));
 
@@ -113,11 +118,11 @@ final class QuestDetailsWindowLayout {
         return Math.round(120 * amount);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int holeX, int holeY, int holeW, int holeH) {
+    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int holeX, int holeY, int holeW, int holeH, boolean fillsLayer) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawModalSurface(graphics, this, holeX, holeY, holeW, holeH);
+                drawModalSurface(graphics, this, holeX, holeY, holeW, holeH, fillsLayer);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
@@ -134,7 +139,7 @@ final class QuestDetailsWindowLayout {
         return modal;
     }
 
-    private static void drawModalSurface(GuiGraphics graphics, WidgetGroup modal, int holeX, int holeY, int holeW, int holeH) {
+    private static void drawModalSurface(GuiGraphics graphics, WidgetGroup modal, int holeX, int holeY, int holeW, int holeH, boolean fillsLayer) {
         int x = modal.getPositionX();
         int y = modal.getPositionY();
         int w = modal.getSizeWidth();
@@ -155,7 +160,9 @@ final class QuestDetailsWindowLayout {
             fillModalRect(graphics, left, holeTop, holeLeft, holeBottom);
             fillModalRect(graphics, holeRight, holeTop, right, holeBottom);
         }
-        graphics.renderOutline(x, y, w, h, ModColors.BORDER_BASE);
+        if (!fillsLayer) {
+            graphics.renderOutline(x, y, w, h, ModColors.BORDER_BASE);
+        }
     }
 
     private static void fillModalRect(GuiGraphics graphics, int left, int top, int right, int bottom) {
@@ -186,6 +193,10 @@ final class QuestDetailsWindowLayout {
             }
         };
         modal.addWidget(objectivePanel);
+        int contentX = CHAPTER_PANEL_GUTTER_X;
+        int contentY = QuestDetailsWindow.CONTENT_INSET;
+        int contentW = Math.max(1, leftW - contentX * 2);
+        int contentH = Math.max(1, CHAPTER_H - contentY - CHAPTER_PANEL_GUTTER_BOTTOM);
         QuestDetailsObjectivesPanel.rebuild(
                 objectivePanel,
                 state,
@@ -193,10 +204,10 @@ final class QuestDetailsWindowLayout {
                 refresh,
                 questId,
                 quest,
-                QuestDetailsWindow.CONTENT_INSET,
-                QuestDetailsWindow.CONTENT_INSET,
-                leftW - QuestDetailsWindow.CONTENT_INSET * 2,
-                CHAPTER_H - QuestDetailsWindow.CONTENT_INSET * 2
+                contentX,
+                contentY,
+                contentW,
+                contentH
         );
     }
 
@@ -218,6 +229,13 @@ final class QuestDetailsWindowLayout {
             int x = Math.max(0, (layer.getSizeWidth() - w) / 2);
             int y = Math.max(0, (layer.getSizeHeight() - h) / 2);
             return new QuestDetailsWindowFrame(x, y, w, h);
+        }
+
+        boolean fills(WidgetGroup layer) {
+            return x <= 0
+                    && y <= 0
+                    && w >= layer.getSizeWidth()
+                    && h >= layer.getSizeHeight();
         }
     }
 }

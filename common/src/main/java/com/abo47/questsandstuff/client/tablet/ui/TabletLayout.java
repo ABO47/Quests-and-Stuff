@@ -12,11 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class TabletLayout {
-    static final int ROOT_W = 544;
+    static final int ROOT_W = 563;
     static final int ROOT_H = 352;
-    static final int PAD = 16;
-    static final int PAD_Y = 7;
-    static final int GAP = 8;
+    static final int ROOT_PAD_X = 16;
+    static final int ROOT_PAD_Y = 8;
+    static final int PANEL_GAP = 8;
+    static final int PANEL_INSET = 6;
+    static final int CANVAS_VIEWPORT_GUTTER_X = 9;
+    static final int CANVAS_VIEWPORT_GUTTER_TOP = 6;
+    static final int CANVAS_VIEWPORT_GUTTER_BOTTOM = 5;
+    static final int CHAPTER_PANEL_GUTTER_X = CANVAS_VIEWPORT_GUTTER_X;
+    static final int CHAPTER_PANEL_GUTTER_BOTTOM = CANVAS_VIEWPORT_GUTTER_BOTTOM;
+    static final int HEADER_H = 14;
+    static final int HEADER_GAP = 4;
+    static final int PAD = ROOT_PAD_X;
+    static final int PAD_Y = ROOT_PAD_Y;
+    static final int GAP = PANEL_GAP;
     static final int BODY_X = PAD;
     static final int BODY_Y = PAD_Y;
     static final int BODY_W = ROOT_W - PAD * 2;
@@ -30,7 +41,7 @@ final class TabletLayout {
     static final int SPLITTER_W = GAP;
     static final int CANVAS_W = BODY_W - CHAPTER_W - GAP;
     static final int CHAPTER_CARD_H = 32;
-    static final int CHAPTER_CARD_GAP = 8;
+    static final int CHAPTER_CARD_GAP = PANEL_GAP;
     static final int CHAPTER_COLLAPSED_ROW_STEP = 30;
     static final String DRAFT_CHAPTER = "__draft_chapter__";
     static final Path ASSETS_ROOT_DIR = Path.of("config", "questsandstuff", "assets");
@@ -117,6 +128,18 @@ final class TabletLayout {
         return Math.max(120, bodyWidth(state) - chapterPanelWidth(state) - GAP);
     }
 
+    static int[] canvasViewportBounds(int panelW, int panelH, int topH) {
+        int safeGutterX = Math.max(0, CANVAS_VIEWPORT_GUTTER_X);
+        int safeTopGutter = Math.max(0, CANVAS_VIEWPORT_GUTTER_TOP);
+        int safeBottomGutter = Math.max(0, CANVAS_VIEWPORT_GUTTER_BOTTOM);
+        int safeTopH = Math.max(0, topH);
+        int x = safeGutterX;
+        int y = safeTopH + safeTopGutter;
+        int width = Math.max(1, panelW - safeGutterX * 2);
+        int height = Math.max(1, panelH - safeTopH - safeTopGutter - safeBottomGutter);
+        return new int[]{x, y, width, height};
+    }
+
     static int indexAtY(int localY, TabletUiState state) {
         int slot = (localY - state.chapterRowStartY + state.chapterScroll) / chapterRowStep(state);
         int size = Math.max(1, visibleChapterGroups(state).size());
@@ -201,7 +224,7 @@ final class TabletLayout {
         List<String> groups = visibleChapterGroups(state);
         int idx = Math.max(0, groups.indexOf(state.chapterTextMenuTarget));
         int menuHeight = chapterTextMenuHeight(state);
-        int rowTop = 8 + idx * chapterRowStep(state) - state.chapterScroll;
+        int rowTop = PANEL_GAP + idx * chapterRowStep(state) - state.chapterScroll;
         int rowBottom = rowTop + CHAPTER_CARD_H;
         int aboveY = rowTop - menuHeight - TextStyleButtons.CHAPTER_FRAME_GAP;
         int belowY = rowBottom + TextStyleButtons.CHAPTER_FRAME_GAP;
