@@ -243,8 +243,8 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
-        int rootW = targetHomeRootWidth(minecraft);
-        int rootH = targetHomeRootHeight(minecraft);
+        int rootW = TabletUiFactory.ROOT_W;
+        int rootH = TabletUiFactory.ROOT_H;
         ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, false), IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();
         TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
@@ -266,18 +266,6 @@ public final class TabletClientHooks {
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
         QuestsAndStuffMod.debugLog("[QnS:UI] keybind open quests ui direct");
-    }
-
-    private static int targetHomeRootWidth(Minecraft minecraft) {
-        int screenW = minecraft == null ? TabletUiFactory.ROOT_W : minecraft.getWindow().getGuiScaledWidth();
-        int screenH = minecraft == null ? TabletUiFactory.ROOT_H : minecraft.getWindow().getGuiScaledHeight();
-        return TabletHomeComposer.targetRootWidth(screenW, screenH);
-    }
-
-    private static int targetHomeRootHeight(Minecraft minecraft) {
-        int screenW = minecraft == null ? TabletUiFactory.ROOT_W : minecraft.getWindow().getGuiScaledWidth();
-        int screenH = minecraft == null ? TabletUiFactory.ROOT_H : minecraft.getWindow().getGuiScaledHeight();
-        return TabletHomeComposer.targetRootHeight(screenW, screenH);
     }
 
     private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {

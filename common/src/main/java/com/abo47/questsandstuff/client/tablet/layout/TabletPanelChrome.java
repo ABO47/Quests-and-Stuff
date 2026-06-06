@@ -105,6 +105,15 @@ public final class TabletPanelChrome {
         drawPanelChromeNoShadow(graphics, panel);
     }
 
+    public static void drawRootChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSize().width;
+        int h = panel.getSize().height;
+        fillRootRect(graphics, x, y, x + Math.max(1, w), y + Math.max(1, h));
+        drawRootLighting(graphics, x, y, w, h);
+    }
+
     public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
         int x = panel.getPositionX();
         int y = panel.getPositionY();
@@ -120,6 +129,18 @@ public final class TabletPanelChrome {
         graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
     }
 
+    private static void drawRootLighting(GuiGraphics graphics, int x, int y, int w, int h) {
+        if (w <= 1 || h <= 1) {
+            return;
+        }
+        int highlight = UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 18);
+        int shade = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 86);
+        graphics.fill(x, y, x + w, y + 1, highlight);
+        graphics.fill(x, y + 1, x + 1, y + h, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 8));
+        graphics.fill(x, y + h - 1, x + w, y + h, shade);
+        graphics.fill(x + w - 1, y + 1, x + w, y + h, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 62));
+    }
+
     private static int gridLineColor(int gridOpacityPercent, int gridColor) {
         int alphaPercent = Math.max(0, Math.min(100, gridOpacityPercent));
         int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
@@ -129,6 +150,12 @@ public final class TabletPanelChrome {
     private static void fillPanelRect(GuiGraphics graphics, int left, int top, int right, int bottom) {
         if (right > left && bottom > top) {
             graphics.fill(left, top, right, bottom, ModColors.SURFACE_PANEL);
+        }
+    }
+
+    private static void fillRootRect(GuiGraphics graphics, int left, int top, int right, int bottom) {
+        if (right > left && bottom > top) {
+            graphics.fill(left, top, right, bottom, ModColors.SURFACE_BASE);
         }
     }
 }

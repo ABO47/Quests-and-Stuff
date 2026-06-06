@@ -24,8 +24,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        TabletPanelChrome.drawPanelChromeNoShadow(graphics, this);
+        TabletPanelChrome.drawRootChromeNoShadow(graphics, this);
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-        TabletPanelChrome.drawPanelOutline(graphics, this);
     }
 }
