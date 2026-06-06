@@ -15,8 +15,8 @@ public final class ChapterPanel {
 
     public static void rebuildChapterMenu(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
         ChapterContextMenu.rebuild(overlay, state, player, refresh);
-        ChapterTextStyleMenu.renderFontSizePopover(overlay, state, player, refresh);
         EntityMotionEditor.renderChapterPanel(overlay, state, player, refresh);
+        ChapterTextStyleMenu.render(overlay, state, player, refresh);
     }
 
     public static int chapterMenuWidth(TabletUiState state, int maxAvailableWidth) {

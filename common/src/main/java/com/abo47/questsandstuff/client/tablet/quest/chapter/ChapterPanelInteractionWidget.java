@@ -298,7 +298,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.pendingChapterRename = "";
         state.chapterTextMenuOpen = false;
         state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeSliderTarget = "";
+        state.chapterTextFontSizeFieldTarget = "";
         state.chapterSelectionJustChanged = false;
         persistUiState(state);
     }
@@ -316,7 +316,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.pendingChapterRename = "";
         state.chapterTextMenuOpen = false;
         state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeSliderTarget = "";
+        state.chapterTextFontSizeFieldTarget = "";
         state.chapterSelectionJustChanged = true;
         ClientQuestCache.clearGroupCompletionNotice(group);
         persistUiState(state);

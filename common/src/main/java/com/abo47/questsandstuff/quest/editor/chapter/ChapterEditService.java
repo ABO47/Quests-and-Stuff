@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -215,7 +216,7 @@ public final class ChapterEditService {
 
     public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
         String group = validGroup(groupName);
-        int value = Math.max(6, Math.min(36, size));
+        int value = CanvasTextLayer.clampFontSize(size);
         if (group.isBlank() || owner.definitionStore().groupTextSize(group) == value) {
             return;
         }

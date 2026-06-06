@@ -291,16 +291,16 @@ public final class CanvasRenderer {
         return CanvasHitTester.canvasTextLocalScreenPoint(state, text, x, y);
     }
 
+    public static boolean isCanvasTextOwnerHit(TabletUiState state, CanvasTextLayer text, int x, int y) {
+        return CanvasHitTester.isCanvasTextOwnerHit(state, text, x, y);
+    }
+
     public static int canvasTextCursorAt(TabletUiState state, CanvasTextLayer text, int x, int y) {
         return CanvasTextRenderer.canvasTextCursorAt(state, text, x, y);
     }
 
     public static int[] canvasTextMenuBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
         return CanvasHitTester.canvasTextMenuBounds(state, text, viewportW, viewportH, toolCount);
-    }
-
-    public static int[] canvasTextFontSizeSliderBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
-        return CanvasHitTester.canvasTextFontSizeSliderBounds(state, text, viewportW, viewportH, toolCount);
     }
 
     public static boolean isCanvasImageResizeHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
@@ -495,6 +495,10 @@ public final class CanvasRenderer {
 
     public static boolean isTextStyleFlagActive(TabletUiState state, CanvasTextLayer text, String flag) {
         return CanvasTextRenderer.isTextStyleFlagActive(state, text, flag);
+    }
+
+    public static int activeTextColor(TabletUiState state, CanvasTextLayer text) {
+        return CanvasTextRenderer.activeTextColor(state, text);
     }
 
     public static CanvasTextLayer applyTextColorSelection(TabletUiState state, CanvasTextLayer text, int color) {

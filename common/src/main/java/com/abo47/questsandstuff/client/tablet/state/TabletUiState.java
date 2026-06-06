@@ -271,7 +271,7 @@ public class TabletUiState {
     public String chapterTextMenuTarget = "";
     public String chapterTextFontSizeDraftTarget = "";
     public String chapterTextFontSizeDraft = "";
-    public String chapterTextFontSizeSliderTarget = "";
+    public String chapterTextFontSizeFieldTarget = "";
     public boolean colorPickerOpen;
     public String colorPickerTarget = "";
     public int colorDraft;
@@ -457,9 +457,7 @@ public class TabletUiState {
     public long questDetailsTextStyleInteractionAtMs;
     public String questDetailsTextLastClickId = "";
     public long questDetailsTextLastClickAtMs;
-    public String questDetailsTextFontSizeSliderTarget = "";
-    public boolean questDetailsTextFontSizeSliderDragging;
-    public String questDetailsTextFontSizeSliderDragTarget = "";
+    public String questDetailsTextFontSizeFieldTarget = "";
     public String questDetailsTextColorQuestId = "";
     public String questDetailsTextColorTextId = "";
     public String questDetailsTransformKind = "";
@@ -530,9 +528,7 @@ public class TabletUiState {
     public String canvasTextMenuTarget = "";
     public String canvasTextFontSizeDraftTarget = "";
     public String canvasTextFontSizeDraft = "";
-    public String canvasTextFontSizeSliderTarget = "";
-    public boolean canvasTextFontSizeSliderDragging;
-    public String canvasTextFontSizeSliderDragTarget = "";
+    public String canvasTextFontSizeFieldTarget = "";
     public boolean canvasTextEditOpen;
     public String canvasTextEditTarget = "";
     public String canvasTextEditDraft = "";

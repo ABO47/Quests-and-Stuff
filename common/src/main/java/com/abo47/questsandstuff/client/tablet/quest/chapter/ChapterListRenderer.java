@@ -99,6 +99,5 @@ final class ChapterListRenderer {
             state.chapterScrollKnobH = 18;
         }
 
-        ChapterTextStyleMenu.render(chapterList, state, player, refresh);
     }
 }

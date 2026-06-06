@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.BooleanSupplier;
@@ -188,19 +187,17 @@ public final class DragScrollBarWidget extends WidgetGroup {
     }
 
     public static void drawVerticalTrack(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
-        drawRounded(graphics, mouseX, mouseY, x, y, width, height, color);
+        drawRect(graphics, x, y, width, height, color);
     }
 
     public static void drawVerticalThumb(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
-        drawRounded(graphics, mouseX, mouseY, x, y, width, height, color);
+        drawRect(graphics, x, y, width, height, color);
     }
 
-    private static void drawRounded(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
+    private static void drawRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
         if (width <= 0 || height <= 0) {
             return;
         }
-        new ColorRectTexture(color)
-                .setRadius(Math.min(width, height) / 2f)
-                .draw(graphics, mouseX, mouseY, x, y, width, height);
+        graphics.fill(x, y, x + width, y + height, color);
     }
 }

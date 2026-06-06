@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -248,11 +249,19 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
         previewTransform(model);
+        if ("desc_text".equals(state.questDetailsTransformKind)
+                && state.questDetailsTextStyleOpen
+                && state.questDetailsTransformId.equals(state.questDetailsTextStyleTarget)) {
+            refresh.run();
+        }
         return true;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
         if (QuestDetailsEditState.canEdit(state) && textEdit.handleKey(keyCode)) {
             return true;
         }
@@ -261,6 +270,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
+        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
+            return super.charTyped(codePoint, modifiers);
+        }
         if (QuestDetailsEditState.canEdit(state) && textEdit.handleChar(codePoint)) {
             return true;
         }

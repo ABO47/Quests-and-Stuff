@@ -114,12 +114,11 @@ final class CanvasViewportClickController {
 
         boolean textMenuHit = state.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY);
         boolean textEditorHit = state.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
-        if (state.canvasTextMenuOpen && !textMenuHit && !textEditorHit) {
+        boolean textOwnerHit = state.canvasTextMenuOpen && textEditor.isOwnerHit(localX, localY);
+        if (state.canvasTextMenuOpen && !textMenuHit && !textEditorHit && !textOwnerHit) {
             state.canvasTextMenuOpen = false;
             state.canvasTextMenuTarget = "";
-            state.canvasTextFontSizeSliderTarget = "";
-            state.canvasTextFontSizeSliderDragging = false;
-            state.canvasTextFontSizeSliderDragTarget = "";
+            state.canvasTextFontSizeFieldTarget = "";
             refresher.run();
         }
 

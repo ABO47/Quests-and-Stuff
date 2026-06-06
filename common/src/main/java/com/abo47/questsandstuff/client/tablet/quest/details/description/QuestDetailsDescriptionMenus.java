@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditStat
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasTextStyleMenu;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -48,7 +49,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void renderStyleMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int w, int h) {
-        if ((!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeSliderTarget.isBlank()) || !QuestDetailsEditState.canEdit(state)) {
+        if ((!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeFieldTarget.isBlank()) || !QuestDetailsEditState.canEdit(state)) {
             resetStyleMenuBounds(state);
             return;
         }
@@ -70,7 +71,7 @@ public final class QuestDetailsDescriptionMenus {
         }, () -> {
             state.questDetailsTextColorQuestId = questId;
             state.questDetailsTextColorTextId = text.id();
-            ModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, text.id()), text.color());
+            ModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, text.id()), CanvasRenderer.activeTextColor(state, text));
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color open picker quest={} text={}", questId, text.id());
             refresh.run();
         }, refresh);
@@ -390,7 +391,7 @@ public final class QuestDetailsDescriptionMenus {
                 : "";
         String[] candidates = {
                 state.questDetailsTextStyleTarget,
-                state.questDetailsTextFontSizeSliderTarget,
+                state.questDetailsTextFontSizeFieldTarget,
                 activeEdit,
                 state.questDetailsSelectedTextId
         };

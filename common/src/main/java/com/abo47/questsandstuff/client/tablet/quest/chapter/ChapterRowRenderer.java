@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.chapter;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -13,10 +13,11 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +26,7 @@ final class ChapterRowRenderer {
     private static final int COLLAPSED_TILE_SIZE = 28;
     private static final int COLLAPSED_ICON_SIZE = 16;
     private static final int NOTICE_ICON_SIZE = 9;
+    private static final int FONT_LINE_HEIGHT = 9;
 
     private ChapterRowRenderer() {
     }
@@ -118,14 +120,7 @@ final class ChapterRowRenderer {
         String align = ClientQuestCache.groupTextAlign(group);
         String textStyle = ClientQuestCache.groupTextStyle(group);
         int textSize = ClientQuestCache.groupTextSize(group);
-        String croppedLabel = SearchFilter.crop(rowLabel, 20);
-        int labelW = chapterLabelWidth(croppedLabel, textStyle, textSize);
-        int textX = switch (align) {
-            case "left" -> cardX + 24;
-            case "right" -> cardX + 24 + Math.max(0, textW - labelW);
-            default -> cardX + 24 + Math.max(0, (textW - labelW) / 2);
-        };
-        chapterList.addWidget(chapterStyledLabel(textX, chapterTextY(y, textSize), croppedLabel, textColor, textStyle, textSize));
+        chapterList.addWidget(chapterStyledLabel(cardX + 24, chapterTextY(y, textSize), textW, chapterLabelHeight(textSize), rowLabel, textColor, textStyle, textSize, chapterTextType(align)));
     }
 
     private static void addCollapsedChapterRow(WidgetGroup chapterList, String group, String rowLabel, int y, ChapterListMetrics.Layout layout, boolean selected) {
@@ -135,7 +130,10 @@ final class ChapterRowRenderer {
             initial = rowLabel == null || rowLabel.isBlank() ? "?" : rowLabel.substring(0, 1).toUpperCase();
         }
         int tileY = collapsedTileY(y);
-        chapterList.addWidget(new CollapsedChapterTileWidget(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, rowLabel, initial, selected));
+        chapterList.addWidget(new CollapsedChapterTileWidget(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, rowLabel, selected));
+        if (!initial.isBlank()) {
+            chapterList.addWidget(TabletTextTextures.literal(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, initial, selected ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED, TextTexture.TextType.HIDE));
+        }
         if (groupIcon != null && !groupIcon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(collapsedIconX(layout), collapsedIconY(y), COLLAPSED_ICON_SIZE, COLLAPSED_ICON_SIZE, groupIcon));
         }
@@ -179,25 +177,27 @@ final class ChapterRowRenderer {
         state.pendingChapterRename = "";
         state.chapterTextMenuOpen = false;
         state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeSliderTarget = "";
+        state.chapterTextFontSizeFieldTarget = "";
         ClientQuestCache.clearGroupCompletionNotice(group);
     }
 
-    private static WidgetGroup chapterStyledLabel(int x, int y, String text, int color, String style, int fontSize) {
-        Component component = styledChapterComponent(text, style);
+    private static WidgetGroup chapterStyledLabel(int x, int y, int width, int height, String text, int color, String style, int fontSize, TextTexture.TextType type) {
         float scale = chapterFontScale(fontSize);
-        int width = Math.max(1, Math.round(Minecraft.getInstance().font.width(component) * scale));
-        int height = Math.max(1, Math.round(Minecraft.getInstance().font.lineHeight * scale));
-        return new WidgetGroup(x, y, width, height) {
-            @Override
-            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                graphics.pose().pushPose();
-                graphics.pose().translate(getPositionX(), getPositionY(), 0.0f);
-                graphics.pose().scale(scale, scale, 1.0f);
-                graphics.drawString(Minecraft.getInstance().font, component, 0, 0, color, false);
-                graphics.pose().popPose();
-            }
-        };
+        int innerW = Math.max(1, Math.round(width / scale));
+        int innerH = Math.max(1, Math.round(height / scale));
+        WidgetGroup group = new WidgetGroup(x, y, width, height);
+        TextTextureWidget label = TabletTextTextures.literal(
+                Math.max(0, (width - innerW) / 2),
+                Math.max(0, (height - innerH) / 2),
+                innerW,
+                innerH,
+                styledChapterText(text, style),
+                color,
+                type
+        );
+        label.textureStyle(texture -> texture.scale(scale));
+        group.addWidget(label);
+        return group;
     }
 
     private static void renderChapterGhost(WidgetGroup chapterList, String group, int x, int y, int w) {
@@ -225,19 +225,18 @@ final class ChapterRowRenderer {
         chapterList.addWidget(new ChapterCompletionNoticeWidget(x, y, NOTICE_ICON_SIZE, NOTICE_ICON_SIZE));
     }
 
-    private static int chapterLabelWidth(String text, String style, int fontSize) {
-        Component component = styledChapterComponent(text, style);
-        return Math.max(1, Math.round(Minecraft.getInstance().font.width(component) * chapterFontScale(fontSize)));
-    }
-
     private static int chapterTextY(int rowY, int fontSize) {
-        int labelH = Math.max(1, Math.round(Minecraft.getInstance().font.lineHeight * chapterFontScale(fontSize)));
+        int labelH = chapterLabelHeight(fontSize);
         return rowY + Math.max(2, (TabletUiFactory.CHAPTER_CARD_H - labelH) / 2);
     }
 
+    private static int chapterLabelHeight(int fontSize) {
+        return Math.max(1, Math.round(FONT_LINE_HEIGHT * chapterFontScale(fontSize)));
+    }
+
     private static float chapterFontScale(int fontSize) {
-        int clamped = Math.max(CanvasTextLayer.MIN_FONT_SIZE, Math.min(18, fontSize));
-        return Math.max(0.5f, clamped / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
+        int clamped = CanvasTextLayer.clampFontSize(fontSize);
+        return Math.max(0.1f, clamped / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
     private static int collapsedTileY(int rowY) {
@@ -252,13 +251,21 @@ final class ChapterRowRenderer {
         return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_ICON_SIZE) / 2);
     }
 
-    private static Component styledChapterComponent(String text, String style) {
+    private static TextTexture.TextType chapterTextType(String align) {
+        return switch (align == null ? "" : align) {
+            case "left" -> TextTexture.TextType.LEFT_HIDE;
+            case "right" -> TextTexture.TextType.RIGHT_HIDE;
+            default -> TextTexture.TextType.HIDE;
+        };
+    }
+
+    private static String styledChapterText(String text, String style) {
         String safe = text == null ? "" : text;
         return switch (CanvasTextLayer.normalizeStyle(style)) {
-            case "bold" -> Component.literal(safe).withStyle(ChatFormatting.BOLD);
-            case "italic" -> Component.literal(safe).withStyle(ChatFormatting.ITALIC);
-            case "bold_italic" -> Component.literal(safe).withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC);
-            default -> Component.literal(safe);
+            case "bold" -> ChatFormatting.BOLD + safe;
+            case "italic" -> ChatFormatting.ITALIC + safe;
+            case "bold_italic" -> ChatFormatting.BOLD.toString() + ChatFormatting.ITALIC + safe;
+            default -> safe;
         };
     }
 
@@ -293,13 +300,11 @@ final class ChapterRowRenderer {
 
     private static final class CollapsedChapterTileWidget extends WidgetGroup {
         private final String label;
-        private final String initial;
         private final boolean selected;
 
-        private CollapsedChapterTileWidget(int x, int y, int width, int height, String label, String initial, boolean selected) {
+        private CollapsedChapterTileWidget(int x, int y, int width, int height, String label, boolean selected) {
             super(x, y, width, height);
             this.label = label == null ? "" : label;
-            this.initial = initial == null ? "" : initial;
             this.selected = selected;
             setHoverTooltips(new Component[]{Component.literal(this.label)});
         }
@@ -317,12 +322,6 @@ final class ChapterRowRenderer {
                 int fillX = x + Math.max(0, (w - fillSize) / 2);
                 int fillY = y + Math.max(0, (h - fillSize) / 2);
                 graphics.fill(fillX, fillY, fillX + fillSize, fillY + fillSize, fill);
-            }
-            if (!initial.isBlank()) {
-                var font = Minecraft.getInstance().font;
-                int textX = x + Math.max(0, (w - font.width(initial)) / 2);
-                int textY = y + Math.max(0, (h - font.lineHeight) / 2);
-                graphics.drawString(font, initial, textX, textY, selected ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED, false);
             }
         }
     }

@@ -2,18 +2,20 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public final class ToggleSwitchWidget extends WidgetGroup {
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+
+public final class ToggleSwitchWidget extends SwitchWidget {
     public static final int DEFAULT_WIDTH = 34;
     public static final int DEFAULT_HEIGHT = 16;
     private static final long ANIMATION_MS = 170L;
@@ -25,6 +27,7 @@ public final class ToggleSwitchWidget extends WidgetGroup {
     private final BooleanSupplier enabledSupplier;
     private final Runnable refresh;
     private Motion localMotion;
+    private boolean lastInteractive = true;
 
     public ToggleSwitchWidget(
             int x,
@@ -79,7 +82,7 @@ public final class ToggleSwitchWidget extends WidgetGroup {
             Runnable refresh,
             Component[] tooltips
     ) {
-        super(x, y, width, height);
+        super(x, y, width, height, null);
         this.animationKey = animationKey == null ? "" : animationKey;
         this.valueSupplier = valueSupplier == null ? () -> false : valueSupplier;
         this.valueConsumer = valueConsumer == null ? value -> {
@@ -87,6 +90,12 @@ public final class ToggleSwitchWidget extends WidgetGroup {
         this.enabledSupplier = enabledSupplier == null ? () -> true : enabledSupplier;
         this.refresh = refresh == null ? () -> {
         } : refresh;
+        setClientSideWidget();
+        setSupplier(this.valueSupplier::getAsBoolean);
+        setOnPressCallback(this::handleToggle);
+        setPressed(this.valueSupplier.getAsBoolean());
+        lastInteractive = this.enabledSupplier.getAsBoolean();
+        refreshTextures();
         if (tooltips != null) {
             setHoverTooltips(tooltips);
         }
@@ -100,47 +109,20 @@ public final class ToggleSwitchWidget extends WidgetGroup {
     }
 
     @Override
-    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        int x = getPositionX();
-        int y = getPositionY();
-        int width = getSizeWidth();
-        int height = getSizeHeight();
-        boolean enabled = valueSupplier.getAsBoolean();
+    protected void onSizeUpdate() {
+        super.onSizeUpdate();
+        refreshTextures();
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
         boolean interactive = enabledSupplier.getAsBoolean();
-        boolean hovered = interactive && isMouseOverElement(mouseX, mouseY);
-        VisualState visual = visualState(enabled);
-        float amount = visual.amount();
-        float pulse = visual.pulse();
-
-        int border = amount > 0.5f ? ModColors.SUCCESS : ModColors.BORDER_BASE;
-        int track = TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, hovered ? 230 : 190);
-        int activeTrack = TabletUiFactory.withAlpha(ModColors.SUCCESS, 54 + Math.round(amount * (hovered ? 104 : 84)));
-        int knob = amount > 0.5f ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
-        if (!interactive) {
-            border = TabletUiFactory.withAlpha(border, 120);
-            track = TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL_ALT, 130);
-            activeTrack = TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
-            knob = TabletUiFactory.withAlpha(knob, 165);
+        if (interactive != lastInteractive) {
+            lastInteractive = interactive;
+            refreshTextures();
         }
-
-        if (hovered || pulse > 0.0f) {
-            int halo = TabletUiFactory.withAlpha(amount > 0.5f ? ModColors.SUCCESS : ModColors.INTERACTIVE, hovered ? 30 + Math.round(pulse * 24) : Math.round(pulse * 34));
-            graphics.fill(x - 1, y - 1, x + width + 1, y + height + 1, halo);
-        }
-        graphics.fill(x, y, x + width, y + height, border);
-        graphics.fill(x + 1, y + 1, x + Math.max(2, width - 1), y + Math.max(2, height - 1), track);
-        int activeW = Math.round((width - 2) * amount);
-        if (activeW > 2) {
-            graphics.fill(x + 1, y + 1, x + 1 + activeW, y + Math.max(2, height - 1), activeTrack);
-        }
-
-        int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
-        int knobTravel = Math.max(0, width - knobSize - 4);
-        int knobX = x + 2 + Math.round(knobTravel * amount);
-        int knobY = y + Math.max(2, (height - knobSize) / 2);
-        graphics.fill(knobX + 1, knobY + 1, knobX + knobSize + 1, knobY + knobSize + 1, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 100));
-        graphics.fill(knobX, knobY, knobX + knobSize, knobY + knobSize, knob);
-        graphics.fill(knobX + 2, knobY + 2, knobX + knobSize - 2, knobY + 3, TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48));
+        setActive(interactive);
     }
 
     @Override
@@ -151,12 +133,19 @@ public final class ToggleSwitchWidget extends WidgetGroup {
         if (!enabledSupplier.getAsBoolean()) {
             return true;
         }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void handleToggle(ClickData clickData, Boolean pressed) {
+        if (!enabledSupplier.getAsBoolean()) {
+            setPressed(valueSupplier.getAsBoolean());
+            return;
+        }
         boolean from = valueSupplier.getAsBoolean();
-        boolean to = !from;
+        boolean to = Boolean.TRUE.equals(pressed);
         startMotion(from, to);
         valueConsumer.accept(to);
         refresh.run();
-        return true;
     }
 
     private void startMotion(boolean from, boolean to) {
@@ -196,6 +185,62 @@ public final class ToggleSwitchWidget extends WidgetGroup {
             return null;
         }
         return motion.to() == target ? motion : null;
+    }
+
+    private void refreshTextures() {
+        setBaseTexture(new SwitchVisualTexture(false));
+        setPressedTexture(new SwitchVisualTexture(true));
+        setHoverTexture(new SwitchHoverTexture());
+    }
+
+    private final class SwitchVisualTexture implements IGuiTexture {
+        private final boolean target;
+
+        private SwitchVisualTexture(boolean target) {
+            this.target = target;
+        }
+
+        @Override
+        public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
+            boolean interactive = enabledSupplier.getAsBoolean();
+            VisualState visual = visualState(target);
+            float amount = visual.amount();
+            float pulse = visual.pulse();
+            int ix = Math.round(x);
+            int iy = Math.round(y);
+            int border = amount > 0.5f ? ModColors.SUCCESS : ModColors.BORDER_BASE;
+            int track = withAlpha(ModColors.SURFACE_BASE, interactive ? 210 : 130);
+            int activeTrack = withAlpha(ModColors.SUCCESS, interactive ? 70 + Math.round(amount * 78) : 70);
+            int knob = amount > 0.5f ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
+            if (!interactive) {
+                border = withAlpha(border, 120);
+                knob = withAlpha(knob, 165);
+            }
+
+            graphics.fill(ix, iy, ix + width, iy + height, border);
+            graphics.fill(ix + 1, iy + 1, ix + Math.max(2, width - 1), iy + Math.max(2, height - 1), track);
+            int activeW = Math.round((width - 2) * amount);
+            if (activeW > 2) {
+                graphics.fill(ix + 1, iy + 1, ix + 1 + activeW, iy + Math.max(2, height - 1), activeTrack);
+            }
+
+            int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
+            int knobTravel = Math.max(0, width - knobSize - 4);
+            int knobX = ix + 2 + Math.round(knobTravel * amount);
+            int knobY = iy + Math.max(2, (height - knobSize) / 2);
+            graphics.fill(knobX + 1, knobY + 1, knobX + knobSize + 1, knobY + knobSize + 1, withAlpha(ModColors.SURFACE_BASE, 100));
+            graphics.fill(knobX, knobY, knobX + knobSize, knobY + knobSize, knob);
+            graphics.fill(knobX + 2, knobY + 2, knobX + knobSize - 2, knobY + 3, withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48));
+        }
+    }
+
+    private static final class SwitchHoverTexture implements IGuiTexture {
+        @Override
+        public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
+            int ix = Math.round(x);
+            int iy = Math.round(y);
+            graphics.fill(ix - 1, iy - 1, ix + width + 1, iy + height + 1, withAlpha(ModColors.INTERACTIVE, 30));
+        }
     }
 
     private record Motion(boolean from, boolean to, long startMs) {

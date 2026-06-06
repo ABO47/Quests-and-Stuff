@@ -7,10 +7,9 @@ import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.google.gson.JsonObject;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
-
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 
 final class QuestObjectiveLootTableRewardEditor {
     private QuestObjectiveLootTableRewardEditor() {
@@ -40,7 +39,7 @@ final class QuestObjectiveLootTableRewardEditor {
         if (title.isBlank()) {
             title = TabletVocabulary.text(QuestVocabulary.CHOOSE_LOOT_TABLE);
         }
-        parent.addWidget(label(x, y + 3, QuestObjectiveInlineFields.fitText(title, w), ModColors.TEXT_PRIMARY));
+        QuestObjectiveInlineFields.renderDisplayText(parent, x, y, w, title, ModColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
     }
 
     private static String lootTable(JsonObject json) {

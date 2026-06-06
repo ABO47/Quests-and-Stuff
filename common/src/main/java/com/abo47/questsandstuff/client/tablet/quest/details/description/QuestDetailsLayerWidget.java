@@ -42,7 +42,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         }
         boolean detailsContextWasOpen = state.questDetailsContextOpen;
         boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
-        boolean textStyleWasOpen = state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeSliderTarget.isBlank();
+        boolean textStyleWasOpen = state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeFieldTarget.isBlank();
         boolean textStyleHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
         boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
         boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
@@ -82,9 +82,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         }
         boolean textStyleStillHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
         boolean textOwnerStillHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
-        if (textStyleHit || textOwnerHit || textStyleStillHit || textOwnerStillHit
-                || state.questDetailsTextFontSizeSliderDragging
-                || recentlyHandledTextStyleClick()) {
+        if (textStyleHit || textOwnerHit || textStyleStillHit || textOwnerStillHit || recentlyHandledTextStyleClick()) {
             return true;
         }
         boolean selectionCleared = clearObjectiveSelection
@@ -196,13 +194,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
 
     private void closeTextStyle(String reason) {
         boolean wasOpen = state.questDetailsTextStyleOpen || !state.questDetailsTextStyleTarget.isBlank()
-                || !state.questDetailsTextFontSizeSliderTarget.isBlank();
+                || !state.questDetailsTextFontSizeFieldTarget.isBlank();
         String target = state.questDetailsTextStyleTarget == null ? "" : state.questDetailsTextStyleTarget;
         state.questDetailsTextStyleOpen = false;
         state.questDetailsTextStyleTarget = "";
-        state.questDetailsTextFontSizeSliderTarget = "";
-        state.questDetailsTextFontSizeSliderDragging = false;
-        state.questDetailsTextFontSizeSliderDragTarget = "";
+        state.questDetailsTextFontSizeFieldTarget = "";
         if (wasOpen) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason={}", target, reason);
         }

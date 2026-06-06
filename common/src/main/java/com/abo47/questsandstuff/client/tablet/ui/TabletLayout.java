@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import java.nio.file.Path;
@@ -56,9 +57,6 @@ final class TabletLayout {
     static final String[] CANVAS_LIMIT_LABELS = {"S", "M", "L", "XL"};
     static final int CHAPTER_SCROLL_W = DragScrollBarWidget.RESERVED_WIDTH;
     static final int SHARED_MENU_W = 168;
-    static final int CHAPTER_TEXT_MENU_H = 38;
-    static final int FONT_SIZE_SLIDER_POPOVER_H = 72;
-    static final int FONT_SIZE_SLIDER_POPOVER_GAP = 3;
 
     private TabletLayout() {
     }
@@ -205,8 +203,8 @@ final class TabletLayout {
         int menuHeight = chapterTextMenuHeight(state);
         int rowTop = 8 + idx * chapterRowStep(state) - state.chapterScroll;
         int rowBottom = rowTop + CHAPTER_CARD_H;
-        int aboveY = rowTop - menuHeight - 6;
-        int belowY = rowBottom + 3;
+        int aboveY = rowTop - menuHeight - TextStyleButtons.CHAPTER_FRAME_GAP;
+        int belowY = rowBottom + TextStyleButtons.CHAPTER_FRAME_GAP;
         if (aboveY >= 2) {
             return aboveY;
         }
@@ -217,15 +215,17 @@ final class TabletLayout {
     }
 
     static int chapterTextMenuX(TabletUiState state) {
-        return Math.max(1, state.chapterCardHitLeft - state.chapterListOriginX);
+        int menuW = chapterTextMenuWidth(state);
+        int cardCenter = ((state.chapterCardHitLeft + state.chapterCardHitRight) / 2) - state.chapterListOriginX;
+        return cardCenter - menuW / 2;
     }
 
     static int chapterTextMenuWidth(TabletUiState state) {
-        return Math.max(44, state.chapterCardHitRight - state.chapterCardHitLeft);
+        return TextStyleButtons.preferredSingleRowWidth();
     }
 
     static int chapterTextMenuHeight(TabletUiState state) {
-        return CHAPTER_TEXT_MENU_H;
+        return TextStyleButtons.menuHeightForWidth(chapterTextMenuWidth(state));
     }
 
     static int chapterRowStep(TabletUiState state) {
@@ -233,48 +233,6 @@ final class TabletLayout {
             return CHAPTER_COLLAPSED_ROW_STEP;
         }
         return CHAPTER_CARD_H + CHAPTER_CARD_GAP;
-    }
-
-    static boolean isChapterFontSizeSliderOpen(TabletUiState state) {
-        return state != null
-                && !state.chapterTextMenuTarget.isBlank()
-                && state.chapterTextMenuTarget.equals(state.chapterTextFontSizeSliderTarget);
-    }
-
-    static int[] chapterTextFontSizeSliderBounds(TabletUiState state) {
-        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : chapterHeight(state) - 12;
-        int fx = chapterTextMenuX(state);
-        int fy = chapterTextMenuY(state, listHeight);
-        int fw = Math.min(Math.max(1, state.chapterListWidth - fx - 1), chapterTextMenuWidth(state));
-        boolean wrap = fw < 132;
-        int toolCount = 8;
-        int firstRowCount = wrap ? 4 : toolCount;
-        int secondRowCount = wrap ? toolCount - firstRowCount : 0;
-        int btnW = wrap ? 16 : Math.min(16, Math.max(12, (fw - 4 - (toolCount - 1)) / toolCount));
-        int[] topXs = distributedChapterToolXs(fw, btnW, firstRowCount);
-        int[] bottomXs = distributedChapterToolXs(fw, btnW, Math.max(1, secondRowCount));
-        int styleY = wrap ? 20 : 2;
-        int sizeX = wrap ? bottomXs[3] : topXs[7];
-        return new int[]{
-                fx + sizeX,
-                fy + styleY + 16 + FONT_SIZE_SLIDER_POPOVER_GAP,
-                btnW,
-                FONT_SIZE_SLIDER_POPOVER_H
-        };
-    }
-
-    private static int[] distributedChapterToolXs(int width, int buttonWidth, int count) {
-        int safeCount = Math.max(1, count);
-        int[] xs = new int[safeCount];
-        if (safeCount == 1) {
-            xs[0] = Math.max(2, (width - buttonWidth) / 2);
-            return xs;
-        }
-        int usable = Math.max(0, width - 4 - buttonWidth);
-        for (int i = 0; i < safeCount; i++) {
-            xs[i] = 2 + Math.round((float) usable * ((float) i / (float) (safeCount - 1)));
-        }
-        return xs;
     }
 
     private static List<String> visibleChapterGroups(TabletUiState state) {

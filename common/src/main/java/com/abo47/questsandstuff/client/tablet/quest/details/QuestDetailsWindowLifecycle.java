@@ -122,9 +122,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextStyleMenuH = 0;
         state.questDetailsTextLastClickId = "";
         state.questDetailsTextLastClickAtMs = 0L;
-        state.questDetailsTextFontSizeSliderTarget = "";
-        state.questDetailsTextFontSizeSliderDragging = false;
-        state.questDetailsTextFontSizeSliderDragTarget = "";
+        state.questDetailsTextFontSizeFieldTarget = "";
         state.questDetailsTextColorQuestId = "";
         state.questDetailsTextColorTextId = "";
         CanvasRenderer.clearTransientQuestDetailsTransforms(state);
@@ -173,14 +171,10 @@ final class QuestDetailsWindowLifecycle {
         state.contextMenuOpen = false;
         state.canvasTextMenuOpen = false;
         state.canvasTextMenuTarget = "";
-        state.canvasTextFontSizeSliderTarget = "";
-        state.canvasTextFontSizeSliderDragging = false;
-        state.canvasTextFontSizeSliderDragTarget = "";
+        state.canvasTextFontSizeFieldTarget = "";
         state.selectionBoundsVisible = false;
         state.questDetailsBoxSelecting = false;
-        state.questDetailsTextFontSizeSliderTarget = "";
-        state.questDetailsTextFontSizeSliderDragging = false;
-        state.questDetailsTextFontSizeSliderDragTarget = "";
+        state.questDetailsTextFontSizeFieldTarget = "";
         state.questDetailsTextColorQuestId = "";
         state.questDetailsTextColorTextId = "";
         state.questDetailsPickTarget = "";

@@ -38,10 +38,15 @@ public final class CanvasInlineTextEditor {
         return local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height();
     }
 
-    public boolean isMenuHit(int localX, int localY) {
-        if (state.canvasTextFontSizeSliderDragging) {
-            return true;
+    public boolean isOwnerHit(int localX, int localY) {
+        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+            return false;
         }
+        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextMenuTarget);
+        return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
+    }
+
+    public boolean isMenuHit(int localX, int localY) {
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
@@ -51,13 +56,7 @@ public final class CanvasInlineTextEditor {
             return false;
         }
         int[] bounds = CanvasRenderer.canvasTextMenuBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), 8);
-        if (inside(localX, localY, bounds)) {
-            return true;
-        }
-        if (text.id().equals(state.canvasTextFontSizeSliderTarget)) {
-            return inside(localX, localY, CanvasRenderer.canvasTextFontSizeSliderBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), 8));
-        }
-        return false;
+        return inside(localX, localY, bounds);
     }
 
     private static boolean inside(int localX, int localY, int[] bounds) {

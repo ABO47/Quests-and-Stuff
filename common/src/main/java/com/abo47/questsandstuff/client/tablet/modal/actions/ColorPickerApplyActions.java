@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -36,10 +37,17 @@ public final class ColorPickerApplyActions {
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             var text = CanvasRenderer.findCanvasText(state, canvasText[0], canvasText[1]);
-            return text == null ? ModColors.TEXT_PRIMARY : text.color();
+            return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
         if (parsed.isQuestDescText()) {
+            if (parsed.hasAtLeast(3)) {
+                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(parsed.questId()));
+                var text = model.text(parsed.entryId());
+                if (text != null) {
+                    return CanvasRenderer.activeTextColor(state, text);
+                }
+            }
             return state.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.colorDraft;
         }
         return ClientQuestCache.groupTextColor(target);

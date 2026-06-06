@@ -36,9 +36,6 @@ final class QuestDetailsWindowHitTest {
     }
 
     static boolean isTextStyleMenuHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state != null && state.questDetailsTextFontSizeSliderDragging && !state.questDetailsTextFontSizeSliderDragTarget.isBlank()) {
-            return true;
-        }
         if (state == null || !state.questDetailsOpen || !state.questDetailsTextStyleOpen
                 || state.questDetailsTextStyleMenuW <= 0 || state.questDetailsTextStyleMenuH <= 0) {
             return false;
@@ -59,12 +56,12 @@ final class QuestDetailsWindowHitTest {
             return true;
         }
         if (state == null || !state.questDetailsOpen
-                || (!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeSliderTarget.isBlank())) {
+                || (!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeFieldTarget.isBlank())) {
             return false;
         }
         String target = state.questDetailsTextStyleTarget == null ? "" : state.questDetailsTextStyleTarget;
         if (target.isBlank()) {
-            target = state.questDetailsTextFontSizeSliderTarget == null ? "" : state.questDetailsTextFontSizeSliderTarget;
+            target = state.questDetailsTextFontSizeFieldTarget == null ? "" : state.questDetailsTextFontSizeFieldTarget;
         }
         if (target.isBlank()) {
             return false;

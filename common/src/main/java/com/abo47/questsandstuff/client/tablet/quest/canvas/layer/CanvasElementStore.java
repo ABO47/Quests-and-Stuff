@@ -122,7 +122,7 @@ public final class CanvasElementStore {
         if (textId.equals(state.canvasTextMenuTarget)) {
             state.canvasTextMenuTarget = "";
             state.canvasTextMenuOpen = false;
-            state.canvasTextFontSizeSliderTarget = "";
+            state.canvasTextFontSizeFieldTarget = "";
         }
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.textKey(textId));
         ClientQuestCache.removeCanvasTextLocal(group, textId);

@@ -281,7 +281,7 @@ public final class ClientChapterState {
     }
 
     public static int clampTextSize(int value) {
-        return Math.max(CanvasTextLayer.MIN_FONT_SIZE, Math.min(18, value));
+        return CanvasTextLayer.clampFontSize(value);
     }
 
     private static void moveGroupIndex(int index, int next, String group) {

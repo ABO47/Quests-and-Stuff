@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -330,6 +331,9 @@ public final class CanvasViewport extends WidgetGroup {
         if (EntityMotionEditor.isMainCanvasOpen(state) && super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
+        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
         if (textEditor.handleKeyPressed(keyCode)) {
             return true;
         }
@@ -352,6 +356,9 @@ public final class CanvasViewport extends WidgetGroup {
     public boolean charTyped(char codePoint, int modifiers) {
         if (EntityMotionEditor.isMainCanvasOpen(state) && super.charTyped(codePoint, modifiers)) {
             return true;
+        }
+        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
+            return super.charTyped(codePoint, modifiers);
         }
         if (textEditor.handleCharTyped(codePoint)) {
             return true;

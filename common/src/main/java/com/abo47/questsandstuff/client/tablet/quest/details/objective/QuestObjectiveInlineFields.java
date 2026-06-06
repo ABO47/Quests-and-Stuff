@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -11,19 +12,16 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.google.gson.JsonObject;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 
 final class QuestObjectiveInlineFields {
-    private static final String TITLE_ELLIPSIS = "..";
-
     private QuestObjectiveInlineFields() {
     }
 
@@ -36,7 +34,7 @@ final class QuestObjectiveInlineFields {
         int doneW = renaming ? 12 : 0;
         int fieldW = Math.max(18, rightX - x - doneW - (renaming ? 3 : 0));
         if (!renaming) {
-            parent.addWidget(label(x, y + 3, fitText(QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), fieldW), color));
+            renderDisplayText(parent, x, y, fieldW, QuestObjectiveDisplayText.displayName(entry.json(), entry.type()), color, TextTexture.TextType.LEFT_HIDE);
             return;
         }
         InlineRenameField field = new InlineRenameField(
@@ -103,8 +101,7 @@ final class QuestObjectiveInlineFields {
         }
         if (task) {
             String progress = count + " /";
-            int progressW = Minecraft.getInstance().font.width(progress);
-            parent.addWidget(label(x - progressW - 6, y + 3, progress, ModColors.TEXT_MUTED));
+            renderDisplayText(parent, x - 42, y, 36, progress, ModColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
         }
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
         TextFieldWidget field = StyledTextFields.numberField(
@@ -214,17 +211,10 @@ final class QuestObjectiveInlineFields {
     }
 
     private static void renderAmountText(WidgetGroup parent, int x, int y, int maxW, String text) {
-        String fitted = fitText(text, Math.max(12, maxW));
-        int textW = Minecraft.getInstance().font.width(fitted);
-        parent.addWidget(label(x + Math.max(0, maxW - textW), y + 3, fitted, ModColors.TEXT_SECONDARY));
+        renderDisplayText(parent, x, y, Math.max(12, maxW), text, ModColors.TEXT_SECONDARY, TextTexture.TextType.RIGHT_HIDE);
     }
 
-    static String fitText(String value, int width) {
-        String text = value == null ? "" : value;
-        int available = Math.max(12, width);
-        if (Minecraft.getInstance().font.width(text) <= available) {
-            return text;
-        }
-        return Minecraft.getInstance().font.plainSubstrByWidth(text, Math.max(1, available - Minecraft.getInstance().font.width(TITLE_ELLIPSIS))) + TITLE_ELLIPSIS;
+    static void renderDisplayText(WidgetGroup parent, int x, int y, int width, String text, int color, TextTexture.TextType type) {
+        parent.addWidget(TabletTextTextures.literal(x, y, Math.max(1, width), 16, text, color, type));
     }
 }

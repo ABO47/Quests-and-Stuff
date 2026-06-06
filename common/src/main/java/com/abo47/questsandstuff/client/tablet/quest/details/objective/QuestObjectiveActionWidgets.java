@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -15,10 +16,9 @@ import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +43,7 @@ final class QuestObjectiveActionWidgets {
     }
 
     static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, int x, int y, int w, int count, int amount) {
-        parent.addWidget(TabletUiFactory.label(x - 42, y + 3, count + " / " + amount, ModColors.TEXT_PRIMARY));
+        parent.addWidget(TabletTextTextures.literal(x - 46, y, 42, 16, count + " / " + amount, ModColors.TEXT_PRIMARY, TextTexture.TextType.RIGHT_HIDE));
         boolean done = count >= amount;
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
@@ -78,10 +78,7 @@ final class QuestObjectiveActionWidgets {
         String label = claimable
                 ? TabletVocabulary.text(QuestVocabulary.CLAIM)
                 : (claimed ? TabletVocabulary.text(QuestVocabulary.CLAIMED) : Math.round(progressValue * 100.0f) + "%");
-        int labelW = Minecraft.getInstance().font.width(label);
-        LabelWidget progressLabel = new LabelWidget(x + Math.max(2, (barW - labelW) / 2), y + 3, Component.literal(label));
-        progressLabel.setColor(claimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY);
-        section.addWidget(progressLabel);
+        section.addWidget(TabletTextTextures.literal(x, y, barW, h, label, claimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY, TextTexture.TextType.HIDE));
         if (claimable) {
             var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> {
                 boolean hasSelectableReward = QuestObjectiveSelectableRewards.hasSelectableReward(quest);

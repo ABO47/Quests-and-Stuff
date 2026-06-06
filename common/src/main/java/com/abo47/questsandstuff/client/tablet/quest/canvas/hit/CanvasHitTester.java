@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 
+import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -22,12 +23,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.FONT_SIZE_SLIDER_POPOVER_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.FONT_SIZE_SLIDER_POPOVER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
 
 public final class CanvasHitTester {
-    private static final int TEXT_MENU_GAP = 1;
     private static final int TEXT_MENU_MARGIN = 4;
 
     private CanvasHitTester() {
@@ -172,27 +170,26 @@ public final class CanvasHitTester {
     }
 
     public static int[] canvasTextMenuBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
-        int buttonW = 18;
-        int usableColumns = Math.max(1, (Math.max(1, viewportW) - 12) / buttonW);
-        int columns = Math.max(4, Math.min(toolCount, usableColumns));
-        int rows = Math.max(1, (toolCount + columns - 1) / columns);
-        int menuW = columns * buttonW + 4;
-        int menuH = rows * 16 + 4;
-        int occupiedH = menuH + activeFontSizeSliderHeight(state, text);
-        int[] textBounds = rotatedTextScreenBounds(state, text);
-        MenuCandidate best = bestMenuCandidate(textBounds, viewportW, viewportH, menuW, occupiedH);
+        int menuW = TextStyleButtons.menuWidthForAvailable(Math.max(1, viewportW) - TEXT_MENU_MARGIN * 2);
+        int columns = TextStyleButtons.columnsForWidth(menuW);
+        int menuH = TextStyleButtons.menuHeightForColumns(columns);
+        int buttonW = TextStyleButtons.buttonWidth(menuW, columns);
+        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        int[] textBounds = rotatedTextScreenBounds(state, drawText);
+        MenuCandidate best = bestMenuCandidate(textBounds, viewportW, viewportH, menuW, menuH);
         int x = best.x();
         int y = best.y();
         return new int[]{x, y, menuW, menuH, buttonW, columns};
     }
 
-    public static int[] canvasTextFontSizeSliderBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
-        int[] menu = canvasTextMenuBounds(state, text, viewportW, viewportH, toolCount);
-        int buttonW = menu[4];
-        int columns = menu[5];
-        int sliderX = menu[0] + toolX(7, columns, buttonW);
-        int sliderY = menu[1] + toolY(7, columns) + 16 + FONT_SIZE_SLIDER_POPOVER_GAP;
-        return new int[]{sliderX, sliderY, buttonW, FONT_SIZE_SLIDER_POPOVER_H};
+    public static boolean isCanvasTextOwnerHit(TabletUiState state, CanvasTextLayer text, int x, int y) {
+        if (state == null || text == null) {
+            return false;
+        }
+        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+        double[] local = canvasTextLocalScreenPoint(state, drawText, x, y);
+        return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3;
     }
 
     public static boolean isCanvasImageResizeHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
@@ -231,20 +228,6 @@ public final class CanvasHitTester {
         return texts;
     }
 
-    private static int activeFontSizeSliderHeight(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null) {
-            return 0;
-        }
-        String id = text.id();
-        boolean mainCanvasSliderOpen = state.canvasTextMenuOpen && id.equals(state.canvasTextFontSizeSliderTarget);
-        boolean questDetailsSliderOpen = (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeSliderTarget.isBlank())
-                && id.equals(state.questDetailsTextFontSizeSliderTarget);
-        if (mainCanvasSliderOpen || questDetailsSliderOpen) {
-            return FONT_SIZE_SLIDER_POPOVER_GAP + FONT_SIZE_SLIDER_POPOVER_H;
-        }
-        return 0;
-    }
-
     private static int[] rotatedTextScreenBounds(TabletUiState state, CanvasTextLayer text) {
         return CanvasElementGeometry.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
     }
@@ -255,14 +238,14 @@ public final class CanvasHitTester {
         int targetCenterX = (avoidBounds[0] + avoidBounds[2]) / 2;
         int targetCenterY = (avoidBounds[1] + avoidBounds[3]) / 2;
         int[][] rawCandidates = {
-                {targetCenterX - menuW / 2, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
-                {targetCenterX - menuW / 2, avoidBounds[3] + TEXT_MENU_GAP},
-                {avoidBounds[0] - menuW - TEXT_MENU_GAP, targetCenterY - occupiedH / 2},
-                {avoidBounds[2] + TEXT_MENU_GAP, targetCenterY - occupiedH / 2},
-                {avoidBounds[0] - menuW - TEXT_MENU_GAP, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
-                {avoidBounds[2] + TEXT_MENU_GAP, avoidBounds[1] - occupiedH - TEXT_MENU_GAP},
-                {avoidBounds[0] - menuW - TEXT_MENU_GAP, avoidBounds[3] + TEXT_MENU_GAP},
-                {avoidBounds[2] + TEXT_MENU_GAP, avoidBounds[3] + TEXT_MENU_GAP}
+                {targetCenterX - menuW / 2, avoidBounds[1] - occupiedH - TextStyleButtons.TEXTBOX_FRAME_GAP},
+                {targetCenterX - menuW / 2, avoidBounds[3] + TextStyleButtons.TEXTBOX_FRAME_GAP},
+                {avoidBounds[0] - menuW - TextStyleButtons.TEXTBOX_FRAME_GAP, targetCenterY - occupiedH / 2},
+                {avoidBounds[2] + TextStyleButtons.TEXTBOX_FRAME_GAP, targetCenterY - occupiedH / 2},
+                {avoidBounds[0] - menuW - TextStyleButtons.TEXTBOX_FRAME_GAP, avoidBounds[1] - occupiedH - TextStyleButtons.TEXTBOX_FRAME_GAP},
+                {avoidBounds[2] + TextStyleButtons.TEXTBOX_FRAME_GAP, avoidBounds[1] - occupiedH - TextStyleButtons.TEXTBOX_FRAME_GAP},
+                {avoidBounds[0] - menuW - TextStyleButtons.TEXTBOX_FRAME_GAP, avoidBounds[3] + TextStyleButtons.TEXTBOX_FRAME_GAP},
+                {avoidBounds[2] + TextStyleButtons.TEXTBOX_FRAME_GAP, avoidBounds[3] + TextStyleButtons.TEXTBOX_FRAME_GAP}
         };
 
         MenuCandidate best = null;
@@ -353,14 +336,6 @@ public final class CanvasHitTester {
         double distX = px - closestX;
         double distY = py - closestY;
         return distX * distX + distY * distY <= tolerance * tolerance;
-    }
-
-    private static int toolX(int index, int columns, int buttonWidth) {
-        return 2 + (index % Math.max(1, columns)) * buttonWidth;
-    }
-
-    private static int toolY(int index, int columns) {
-        return 2 + (index / Math.max(1, columns)) * 16;
     }
 
     private record MenuCandidate(int x, int y, long score) {

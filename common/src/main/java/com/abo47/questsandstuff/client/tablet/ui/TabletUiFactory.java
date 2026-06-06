@@ -65,9 +65,6 @@ public final class TabletUiFactory {
     public static final String[] CANVAS_LIMIT_LABELS = TabletLayout.CANVAS_LIMIT_LABELS;
     public static final int CHAPTER_SCROLL_W = TabletLayout.CHAPTER_SCROLL_W;
     public static final int SHARED_MENU_W = TabletLayout.SHARED_MENU_W;
-    public static final int CHAPTER_TEXT_MENU_H = TabletLayout.CHAPTER_TEXT_MENU_H;
-    public static final int FONT_SIZE_SLIDER_POPOVER_H = TabletLayout.FONT_SIZE_SLIDER_POPOVER_H;
-    public static final int FONT_SIZE_SLIDER_POPOVER_GAP = TabletLayout.FONT_SIZE_SLIDER_POPOVER_GAP;
     public static final int CONTENT_ICON_SIZE = 16;
     public static final int ACTION_ICON_SIZE = 12;
 
@@ -296,14 +293,6 @@ public final class TabletUiFactory {
 
     public static int chapterTextMenuHeight(TabletUiState state) {
         return TabletLayout.chapterTextMenuHeight(state);
-    }
-
-    public static boolean isChapterFontSizeSliderOpen(TabletUiState state) {
-        return TabletLayout.isChapterFontSizeSliderOpen(state);
-    }
-
-    public static int[] chapterTextFontSizeSliderBounds(TabletUiState state) {
-        return TabletLayout.chapterTextFontSizeSliderBounds(state);
     }
 
     public static void deleteAssetFile(String relativePath) {

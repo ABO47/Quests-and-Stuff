@@ -3,22 +3,18 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
+import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 final class QuestDetailsHeader {
@@ -179,13 +175,12 @@ final class QuestDetailsHeader {
 
     private static void addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         int fill = active ? withAlpha(color, 38) : ModColors.SURFACE_PANEL_ALT;
-        parent.addWidget(panel(x, y, w, h, fill, active ? color : ModColors.BORDER_BASE));
-        int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, Math.min(w, h) - 4));
-        parent.addWidget(new ImageWidget(x + (w - iconSize) / 2, y + (h - iconSize) / 2, iconSize, iconSize, () -> UiIconAtlas.iconTexture(icon)));
-        var hit = flatHitButton(x, y, w, h, callback);
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(color, 66), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(color, 90)));
-        parent.addWidget(hit);
+        TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
+                TabletIconTextButton.State.of(fill, active ? color : ModColors.BORDER_BASE, color),
+                TabletIconTextButton.State.of(withAlpha(color, 66), ModColors.BORDER_ACCENT, color),
+                TabletIconTextButton.State.of(withAlpha(color, 90), color, ModColors.TEXT_PRIMARY)
+        );
+        parent.addWidget(TabletIconTextButton.icon(x, y, w, h, icon, visuals, callback));
     }
 
 }

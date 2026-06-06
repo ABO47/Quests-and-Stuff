@@ -130,6 +130,14 @@ public final class CanvasTextRenderer {
         return CanvasTextLayer.hasStyleFlag(activeTextStyle(state, text), flag);
     }
 
+    public static int activeTextColor(TabletUiState state, CanvasTextLayer text) {
+        if (state == null || text == null || !state.canvasTextEditOpen || !text.id().equals(state.canvasTextEditTarget) || text.text().isEmpty()) {
+            return text == null ? ModColors.TEXT_PRIMARY : text.color();
+        }
+        int index = activeTextIndex(state, text);
+        return text.colorAt(index);
+    }
+
     public static CanvasTextLayer applyTextColorSelection(TabletUiState state, CanvasTextLayer text, int color) {
         if (state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget) && hasTextSelection(state)) {
             return text.withColorRange(textSelectionStart(state), textSelectionEnd(state), color);
@@ -221,7 +229,7 @@ public final class CanvasTextRenderer {
     }
 
     private static float fontScale(CanvasTextLayer text) {
-        return Math.max(0.5f, text.fontSize() / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
+        return Math.max(0.1f, text.fontSize() / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
     private static boolean isMainCanvasTextEditing(TabletUiState state, CanvasTextLayer text) {
@@ -238,9 +246,12 @@ public final class CanvasTextRenderer {
         if (!state.canvasTextEditOpen || !text.id().equals(state.canvasTextEditTarget) || text.text().isEmpty()) {
             return text.style();
         }
+        return text.styleAt(activeTextIndex(state, text));
+    }
+
+    private static int activeTextIndex(TabletUiState state, CanvasTextLayer text) {
         int cursor = Math.max(0, Math.min(state.canvasTextEditCursor, text.text().length()));
-        int index = Math.max(0, Math.min(text.text().length() - 1, cursor == 0 ? 0 : cursor - 1));
-        return text.styleAt(index);
+        return Math.max(0, Math.min(text.text().length() - 1, cursor == 0 ? 0 : cursor - 1));
     }
 
     private static TextLayout layoutCanvasText(CanvasTextLayer text, int w, int h, boolean editing) {

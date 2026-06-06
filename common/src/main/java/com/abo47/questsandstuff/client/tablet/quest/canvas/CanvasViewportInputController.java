@@ -87,6 +87,9 @@ final class CanvasViewportInputController {
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             elementTransforms.updateTextTransform(localX, localY, cards);
+            if (state.canvasTextMenuOpen) {
+                viewport.refreshCanvas();
+            }
             return true;
         }
 

@@ -56,7 +56,7 @@ public final class TabletRootWindowController {
             state.chapterTextMenuOpen = false;
             state.chapterTextMenuTarget = "";
             state.chapterTextFontSizeDraftTarget = "";
-            state.chapterTextFontSizeSliderTarget = "";
+            state.chapterTextFontSizeFieldTarget = "";
             return true;
         }
         if (state.contextMenuOpen) {
@@ -109,6 +109,7 @@ public final class TabletRootWindowController {
                 || state.assetRenameOpen
                 || state.questDetailsCommandRewardEditorOpen
                 || state.questDetailsObjectiveRenameOpen
+                || isFontSizeFieldOpen(state)
                 || state.canvasTextEditOpen
                 || !state.questDetailsTextEditTarget.isBlank()
                 || !state.pendingQuestTitleChangeId.isBlank()
@@ -117,22 +118,26 @@ public final class TabletRootWindowController {
                 || root != null && hasFocusedTextField(root);
     }
 
+    public static boolean isFontSizeFieldOpen(TabletUiState state) {
+        return !state.chapterTextFontSizeFieldTarget.isBlank()
+                || !state.canvasTextFontSizeFieldTarget.isBlank()
+                || !state.questDetailsTextFontSizeFieldTarget.isBlank();
+    }
+
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
         boolean changed = QuestDetailsTransientState.closeFloatingPopups(state);
         if (EntityMotionEditor.isQuestDetailsOpen(state)) {
             EntityMotionEditor.close(state);
             changed = true;
         }
-        if (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeSliderTarget.isBlank()) {
+        if (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeFieldTarget.isBlank()) {
             state.questDetailsTextStyleOpen = false;
             state.questDetailsTextStyleTarget = "";
             state.questDetailsTextStyleMenuX = 0;
             state.questDetailsTextStyleMenuY = 0;
             state.questDetailsTextStyleMenuW = 0;
             state.questDetailsTextStyleMenuH = 0;
-            state.questDetailsTextFontSizeSliderTarget = "";
-            state.questDetailsTextFontSizeSliderDragging = false;
-            state.questDetailsTextFontSizeSliderDragTarget = "";
+            state.questDetailsTextFontSizeFieldTarget = "";
             changed = true;
         }
         if (state.canvasTextEditOpen || !state.questDetailsTextEditTarget.isBlank()) {

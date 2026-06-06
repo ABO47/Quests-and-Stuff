@@ -48,7 +48,7 @@ public final class QuestDetailsDescriptionTextEdit {
         state.canvasTextMenuTarget = "";
         state.questDetailsTextStyleOpen = true;
         state.questDetailsTextStyleTarget = id;
-        state.questDetailsTextFontSizeSliderTarget = "";
+        state.questDetailsTextFontSizeFieldTarget = "";
         focus.run();
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details text inline edit start quest={} text={}", questId, id);
     }

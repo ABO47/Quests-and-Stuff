@@ -19,19 +19,9 @@ public final class TabletRootHitTest {
         int menuX = TabletUiFactory.chapterTextMenuX(state);
         int absX = rootX + TabletUiFactory.CHAPTER_X + state.chapterListOriginX + menuX;
         int absY = rootY + TabletUiFactory.CHAPTER_Y + state.chapterListOriginY + fy;
-        int w = Math.min(Math.max(1, state.chapterListWidth - menuX - 1), TabletUiFactory.chapterTextMenuWidth(state));
+        int w = TabletUiFactory.chapterTextMenuWidth(state);
         int h = TabletUiFactory.chapterTextMenuHeight(state);
-        if (mouseX >= absX && mouseX <= absX + w && mouseY >= absY && mouseY <= absY + h) {
-            return true;
-        }
-        if (!TabletUiFactory.isChapterFontSizeSliderOpen(state)) {
-            return false;
-        }
-        int[] slider = TabletUiFactory.chapterTextFontSizeSliderBounds(state);
-        int sliderX = rootX + TabletUiFactory.CHAPTER_X + state.chapterListOriginX + slider[0];
-        int sliderY = rootY + TabletUiFactory.CHAPTER_Y + state.chapterListOriginY + slider[1];
-        return mouseX >= sliderX && mouseX <= sliderX + slider[2]
-                && mouseY >= sliderY && mouseY <= sliderY + slider[3];
+        return mouseX >= absX && mouseX <= absX + w && mouseY >= absY && mouseY <= absY + h;
     }
 
     public static boolean isChapterMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
@@ -57,9 +47,6 @@ public final class TabletRootHitTest {
     }
 
     public static boolean isCanvasTextMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
-        if (state.canvasTextFontSizeSliderDragging) {
-            return true;
-        }
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
@@ -74,8 +61,7 @@ public final class TabletRootHitTest {
         if (inside(localX, localY, CanvasRenderer.canvasTextMenuBounds(state, text, state.canvasViewportW, state.canvasViewportH, 8))) {
             return true;
         }
-        return text.id().equals(state.canvasTextFontSizeSliderTarget)
-                && inside(localX, localY, CanvasRenderer.canvasTextFontSizeSliderBounds(state, text, state.canvasViewportW, state.canvasViewportH, 8));
+        return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
     public static boolean isToolsMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {

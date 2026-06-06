@@ -17,12 +17,14 @@ final class TabletRootDismissals {
         boolean chapterMenuWasOpen = state.chapterMenuOpen;
         boolean contextMenuWasOpen = state.contextMenuOpen;
         boolean questDetailsWasOpen = state.questDetailsOpen;
+        boolean chapterTextMenuWasOpen = state.chapterTextMenuOpen;
+        boolean canvasTextMenuWasOpen = state.canvasTextMenuOpen;
         boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, rootX, rootY, mouseX, mouseY);
-        boolean chapterTextMenuHit = state.chapterTextMenuOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
-        boolean canvasTextMenuHit = state.canvasTextMenuOpen && TabletRootHitTest.isCanvasTextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean chapterTextMenuHit = chapterTextMenuWasOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean canvasTextMenuHit = canvasTextMenuWasOpen && TabletRootHitTest.isCanvasTextMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean assetContextHit = state.assetContextOpen && TabletRootHitTest.isAssetContextHit(state, rootX, rootY, mouseX, mouseY);
-        return new ClickDismissState(chapterMenuWasOpen, contextMenuWasOpen, questDetailsWasOpen, chapterMenuHit, contextMenuHit, chapterTextMenuHit, canvasTextMenuHit, assetContextHit);
+        return new ClickDismissState(chapterMenuWasOpen, contextMenuWasOpen, questDetailsWasOpen, chapterTextMenuWasOpen, canvasTextMenuWasOpen, chapterMenuHit, contextMenuHit, chapterTextMenuHit, canvasTextMenuHit, assetContextHit);
     }
 
     static boolean handleAfterClick(TabletRootWidget root, TabletUiState state, Runnable refresher, ClickDismissState clickState, double mouseX, double mouseY, int button, boolean handled) {
@@ -62,18 +64,16 @@ final class TabletRootDismissals {
             state.contextQuestCompletionSoundMenuOpen = false;
             changed = true;
         }
-        if (state.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
+        if (clickState.chapterTextMenuWasOpen() && state.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
             state.chapterTextMenuOpen = false;
             state.chapterTextMenuTarget = "";
-            state.chapterTextFontSizeSliderTarget = "";
+            state.chapterTextFontSizeFieldTarget = "";
             changed = true;
         }
-        if (state.canvasTextMenuOpen && !clickState.canvasTextMenuHit()) {
+        if (clickState.canvasTextMenuWasOpen() && state.canvasTextMenuOpen && !clickState.canvasTextMenuHit()) {
             state.canvasTextMenuOpen = false;
             state.canvasTextMenuTarget = "";
-            state.canvasTextFontSizeSliderTarget = "";
-            state.canvasTextFontSizeSliderDragging = false;
-            state.canvasTextFontSizeSliderDragTarget = "";
+            state.canvasTextFontSizeFieldTarget = "";
             changed = true;
         }
         if (state.assetContextOpen && !clickState.assetContextHit()) {
@@ -107,6 +107,8 @@ final class TabletRootDismissals {
             boolean chapterMenuWasOpen,
             boolean contextMenuWasOpen,
             boolean questDetailsWasOpen,
+            boolean chapterTextMenuWasOpen,
+            boolean canvasTextMenuWasOpen,
             boolean chapterMenuHit,
             boolean contextMenuHit,
             boolean chapterTextMenuHit,
