@@ -21,6 +21,9 @@ import java.util.function.Consumer;
 
 public final class TabletClientHooks {
     private static final String CATEGORY = "key.categories.questsandstuff";
+    private static final int FULLSCREEN_GRID_CELL_SIZE = 16;
+    private static final int FULLSCREEN_ROOT_WIDTH_REMAINDER = Math.floorMod(TabletUiFactory.ROOT_W, FULLSCREEN_GRID_CELL_SIZE);
+    private static final int FULLSCREEN_ROOT_HEIGHT_REMAINDER = Math.floorMod(TabletUiFactory.ROOT_H, FULLSCREEN_GRID_CELL_SIZE);
     private static final KeyMapping OPEN_UI = new KeyMapping(
             "key.questsandstuff.open_ui",
             InputConstants.Type.KEYSYM,
@@ -272,13 +275,20 @@ public final class TabletClientHooks {
         if (!fullScreen || minecraft == null) {
             return TabletUiFactory.ROOT_W;
         }
-        return Math.max(1, minecraft.getWindow().getGuiScaledWidth());
+        return quantizeFullscreenRootSize(minecraft.getWindow().getGuiScaledWidth(), FULLSCREEN_ROOT_WIDTH_REMAINDER);
     }
 
     private static int targetRootHeight(Minecraft minecraft, boolean fullScreen) {
         if (!fullScreen || minecraft == null) {
             return TabletUiFactory.ROOT_H;
         }
-        return Math.max(1, minecraft.getWindow().getGuiScaledHeight());
+        return quantizeFullscreenRootSize(minecraft.getWindow().getGuiScaledHeight(), FULLSCREEN_ROOT_HEIGHT_REMAINDER);
+    }
+
+    private static int quantizeFullscreenRootSize(int screenSize, int remainder) {
+        int safeSize = Math.max(1, screenSize);
+        int delta = Math.floorMod(safeSize - remainder, FULLSCREEN_GRID_CELL_SIZE);
+        int quantizedSize = safeSize - delta;
+        return quantizedSize > 0 ? quantizedSize : safeSize;
     }
 }

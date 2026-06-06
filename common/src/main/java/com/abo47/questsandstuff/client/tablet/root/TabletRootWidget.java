@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,6 +53,7 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        drawFullscreenBackdrop(graphics);
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
     }
@@ -114,5 +116,17 @@ public final class TabletRootWidget extends WidgetGroup {
 
     boolean isFrontWindowOpen() {
         return QuestDetailsWindow.isVisible(state) && frontWindowLayer != null;
+    }
+
+    private void drawFullscreenBackdrop(GuiGraphics graphics) {
+        if (state == null || !state.fullScreenMode) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        int width = minecraft.getWindow().getGuiScaledWidth();
+        int height = minecraft.getWindow().getGuiScaledHeight();
+        if (width > 0 && height > 0) {
+            graphics.fill(0, 0, width, height, ModColors.SURFACE_BASE);
+        }
     }
 }

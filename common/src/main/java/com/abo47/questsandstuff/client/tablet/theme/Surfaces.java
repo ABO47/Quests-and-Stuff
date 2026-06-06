@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.theme;
 import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class Surfaces {
@@ -11,6 +12,10 @@ public final class Surfaces {
 
     public static ColorRectTexture fill(int color) {
         return new ColorRectTexture(color);
+    }
+
+    public static IGuiTexture transparent() {
+        return IGuiTexture.EMPTY;
     }
 
     public static GuiTextureGroup bordered(int fillColor, int borderColor) {

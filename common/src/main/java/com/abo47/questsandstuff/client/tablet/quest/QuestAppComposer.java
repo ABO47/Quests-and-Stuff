@@ -73,7 +73,7 @@ public final class QuestAppComposer {
         int initialCanvasH = canvasHeight(state);
 
         TabletRootWidget root = new TabletRootWidget(0, 0, initialRootW, initialRootH, state);
-        root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+        refreshRootBackground(root, state);
         WidgetGroup rootMaskTop = new WidgetGroup(0, 0, initialRootW, 0);
         rootMaskTop.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         WidgetGroup rootMaskLeft = new WidgetGroup(0, 0, 0, 0);
@@ -129,7 +129,7 @@ public final class QuestAppComposer {
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         refresh[0] = () -> {
-            root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+            refreshRootBackground(root, state);
             rootMaskTop.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             rootMaskLeft.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
@@ -276,4 +276,9 @@ public final class QuestAppComposer {
         return root;
     }
 
+    private static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
+        root.setBackground(state != null && state.fullScreenMode
+                ? Surfaces.transparent()
+                : Surfaces.transparentBorder(ModColors.BORDER_BASE));
+    }
 }
