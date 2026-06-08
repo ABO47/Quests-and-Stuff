@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -21,7 +21,7 @@ final class ClientQuestConnectionMutations {
         if (quest == null || !ClientQuestState.containsQuest(normalizedPrerequisite)) {
             return;
         }
-        ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+        ListTag prerequisites = quest.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
         ListTag next = new ListTag();
         boolean found = false;
         for (int i = 0; i < prerequisites.size(); i++) {
@@ -37,7 +37,7 @@ final class ClientQuestConnectionMutations {
         if (add && !found) {
             next.add(StringTag.valueOf(normalizedPrerequisite));
         }
-        quest.put(QuestDefinition.PREREQUISITES_FIELD, next);
+        quest.put(QuestSyncKeys.Quest.PREREQUISITES, next);
         if (!add) {
             removeConnectionMetadata(quest, normalizedPrerequisite);
         }
@@ -49,9 +49,9 @@ final class ClientQuestConnectionMutations {
         if (target == null) {
             return;
         }
-        CompoundTag colors = target.quest().getCompound("connection_colors").copy();
+        CompoundTag colors = target.quest().getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS).copy();
         colors.putInt(target.prerequisiteId(), color);
-        target.quest().put("connection_colors", colors);
+        target.quest().put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
     }
 
     static void setConnectionModeLocal(String questId, String prerequisiteId, boolean gridMode) {
@@ -59,13 +59,13 @@ final class ClientQuestConnectionMutations {
         if (target == null) {
             return;
         }
-        CompoundTag modes = target.quest().getCompound("connection_modes").copy();
+        CompoundTag modes = target.quest().getCompound(QuestSyncKeys.Quest.CONNECTION_MODES).copy();
         if (gridMode) {
             modes.putString(target.prerequisiteId(), "grid");
         } else {
             modes.remove(target.prerequisiteId());
         }
-        target.quest().put("connection_modes", modes);
+        target.quest().put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
     }
 
     static void setConnectionHiddenLocal(String questId, String prerequisiteId, boolean hidden) {
@@ -73,16 +73,16 @@ final class ClientQuestConnectionMutations {
         if (target == null) {
             return;
         }
-        ListTag next = removeString(target.quest().getList("hidden_connections", Tag.TAG_STRING), target.prerequisiteId());
+        ListTag next = removeString(target.quest().getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), target.prerequisiteId());
         if (hidden) {
             next.add(StringTag.valueOf(target.prerequisiteId()));
         }
-        target.quest().put("hidden_connections", next);
+        target.quest().put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, next);
     }
 
     static void removeQuestReferences(String questId) {
         ClientQuestState.forEachQuest(quest -> {
-            ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+            ListTag prerequisites = quest.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
             if (prerequisites.isEmpty()) {
                 return;
             }
@@ -97,32 +97,32 @@ final class ClientQuestConnectionMutations {
                 filtered.add(prerequisites.get(i).copy());
             }
             if (changed) {
-                quest.put(QuestDefinition.PREREQUISITES_FIELD, filtered);
+                quest.put(QuestSyncKeys.Quest.PREREQUISITES, filtered);
                 removeConnectionMetadata(quest, questId);
             }
         });
     }
 
     static void refreshLocalUnlockState(CompoundTag quest) {
-        if (quest.getBoolean("completed")) {
-            quest.putBoolean("unlocked", true);
+        if (quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
+            quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, true);
             return;
         }
 
-        ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+        ListTag prerequisites = quest.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
         if (prerequisites.isEmpty()) {
-            quest.putBoolean("unlocked", true);
+            quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, true);
             return;
         }
 
         for (int i = 0; i < prerequisites.size(); i++) {
             CompoundTag prerequisite = ClientQuestState.mutableQuest(prerequisites.getString(i));
-            if (prerequisite == null || !prerequisite.getBoolean("completed")) {
-                quest.putBoolean("unlocked", false);
+            if (prerequisite == null || !prerequisite.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
+                quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, false);
                 return;
             }
         }
-        quest.putBoolean("unlocked", true);
+        quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, true);
     }
 
     private static ConnectionTarget targetForConnection(String questId, String prerequisiteId) {
@@ -136,13 +136,13 @@ final class ClientQuestConnectionMutations {
     }
 
     private static void removeConnectionMetadata(CompoundTag quest, String prerequisiteId) {
-        CompoundTag colors = quest.getCompound("connection_colors").copy();
+        CompoundTag colors = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS).copy();
         colors.remove(prerequisiteId);
-        quest.put("connection_colors", colors);
-        CompoundTag modes = quest.getCompound("connection_modes").copy();
+        quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
+        CompoundTag modes = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES).copy();
         modes.remove(prerequisiteId);
-        quest.put("connection_modes", modes);
-        quest.put("hidden_connections", removeString(quest.getList("hidden_connections", Tag.TAG_STRING), prerequisiteId));
+        quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, removeString(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), prerequisiteId));
     }
 
     private static ListTag removeString(ListTag current, String value) {

@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
@@ -94,11 +95,11 @@ public final class ClientQuestCache {
     }
 
     public static CompoundTag questTasks(String questId) {
-        return ClientQuestState.questSectionCopy(questId, "tasks");
+        return ClientQuestState.questSectionCopy(questId, QuestSyncKeys.Quest.TASKS);
     }
 
     public static CompoundTag questRewards(String questId) {
-        return ClientQuestState.questSectionCopy(questId, "rewards");
+        return ClientQuestState.questSectionCopy(questId, QuestSyncKeys.Quest.REWARDS);
     }
 
     public static Set<String> pinned() {
@@ -183,10 +184,10 @@ public final class ClientQuestCache {
         }
         for (Map.Entry<String, CompoundTag> entry : questEntries()) {
             CompoundTag quest = entry.getValue();
-            if (!quest.getCompound("groups").contains(group)) {
+            if (!quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(group)) {
                 continue;
             }
-            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
+            if (quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED) || quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
                 return false;
             }
         }
@@ -199,10 +200,10 @@ public final class ClientQuestCache {
         }
         for (Map.Entry<String, CompoundTag> entry : questEntries()) {
             CompoundTag quest = entry.getValue();
-            if (!quest.getCompound("groups").contains(group)) {
+            if (!quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(group)) {
                 continue;
             }
-            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
+            if (quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED) || quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
                 return false;
             }
         }
@@ -241,16 +242,16 @@ public final class ClientQuestCache {
 
     public static boolean questLockedPreview(CompoundTag quest) {
         return quest != null
-                && "locked".equals(quest.getString("hidden_mode"))
-                && !quest.getBoolean("unlocked")
-                && !quest.getBoolean("completed");
+                && "locked".equals(quest.getString(QuestSyncKeys.Quest.HIDDEN_MODE))
+                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
+                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
     }
 
     public static boolean questHiddenPreview(CompoundTag quest) {
         return quest != null
-                && quest.getBoolean("visual_hidden")
-                && !quest.getBoolean("unlocked")
-                && !quest.getBoolean("completed");
+                && quest.getBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN)
+                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
+                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
     }
 
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {

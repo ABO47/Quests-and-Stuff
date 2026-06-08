@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.HashMap;
@@ -31,15 +32,15 @@ public final class ClientDisplayState {
         ADVANCEMENT_DISPLAYS.clear();
         LOOT_TABLE_DISPLAYS.clear();
 
-        CompoundTag advancements = payload.getCompound("advancements");
+        CompoundTag advancements = payload.getCompound(QuestSyncKeys.DisplayCache.ADVANCEMENTS);
         for (String key : advancements.getAllKeys()) {
             ADVANCEMENT_DISPLAYS.put(key, advancements.getString(key));
         }
-        CompoundTag lootTables = payload.getCompound("loot_tables");
+        CompoundTag lootTables = payload.getCompound(QuestSyncKeys.DisplayCache.LOOT_TABLES);
         for (String key : lootTables.getAllKeys()) {
             LOOT_TABLE_DISPLAYS.put(key, lootTables.getString(key));
         }
-        CompoundTag biomes = payload.getCompound("biomes");
+        CompoundTag biomes = payload.getCompound(QuestSyncKeys.DisplayCache.BIOMES);
         for (String key : biomes.getAllKeys()) {
             BIOME_DISPLAYS.put(key, biomes.getString(key));
         }
@@ -77,7 +78,7 @@ public final class ClientDisplayState {
             return;
         }
         String selected = currentGroup == null ? "" : currentGroup;
-        CompoundTag groups = quest.getCompound("groups");
+        CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
         for (String group : groups.getAllKeys()) {
             if (group == null || group.isBlank() || group.equals(selected)) {
                 continue;

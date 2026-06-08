@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
@@ -74,7 +75,7 @@ public final class ClientQuestLocalMutations {
         ClientChapterLocalMutations.setGroupLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
         String mode = (lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName();
         ClientQuestState.forEachQuestEntry((questId, quest) -> {
-            if (quest.getCompound("groups").contains(normalizedGroup)) {
+            if (quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(normalizedGroup)) {
                 setQuestHiddenModeLocal(questId, mode);
             }
         });
@@ -121,10 +122,10 @@ public final class ClientQuestLocalMutations {
             return;
         }
         if (title != null) {
-            quest.putString("title", title);
+            quest.putString(QuestSyncKeys.Quest.TITLE, title);
         }
         if (subtitle != null) {
-            quest.putString("subtitle", subtitle);
+            quest.putString(QuestSyncKeys.Quest.SUBTITLE, subtitle);
         }
     }
 
@@ -144,7 +145,7 @@ public final class ClientQuestLocalMutations {
                 }
             }
         }
-        quest.put("description", lines);
+        quest.put(QuestSyncKeys.Quest.DESCRIPTION, lines);
     }
 
     public static void setQuestIconLocal(String questId, String icon) {
@@ -155,7 +156,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putString("icon", QuestDisplay.normalizeIcon(icon));
+        quest.putString(QuestSyncKeys.Quest.ICON, QuestDisplay.normalizeIcon(icon));
     }
 
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
@@ -166,7 +167,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putBoolean("repeatable", enabled);
+        quest.putBoolean(QuestSyncKeys.Quest.REPEATABLE, enabled);
     }
 
     public static void setQuestHiddenModeLocal(String questId, String hiddenMode) {
@@ -177,7 +178,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putString("hidden_mode", hiddenMode.trim());
+        quest.putString(QuestSyncKeys.Quest.HIDDEN_MODE, hiddenMode.trim());
     }
 
     public static void setQuestVisualHiddenLocal(String questId, boolean hidden) {
@@ -188,7 +189,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putBoolean("visual_hidden", hidden);
+        quest.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, hidden);
     }
 
     public static void setQuestCompletionSoundLocal(String questId, String sound) {
@@ -200,7 +201,7 @@ public final class ClientQuestLocalMutations {
             return;
         }
         String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
-        quest.putString("completion_sound", normalizedSound);
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_SOUND, normalizedSound);
     }
 
     public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
@@ -211,7 +212,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(volume));
+        quest.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, QuestDisplay.normalizeCompletionSoundVolume(volume));
     }
 
     public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
@@ -222,7 +223,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putString("completion_hud_background", QuestDisplay.normalizeCompletionHudBackground(background));
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND, QuestDisplay.normalizeCompletionHudBackground(background));
     }
 
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
@@ -233,8 +234,8 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putString("quest_background", QuestDisplay.normalizeQuestBackground(background));
-        quest.putBoolean("quest_background_grayscale", grayscale);
+        quest.putString(QuestSyncKeys.Quest.QUEST_BACKGROUND, QuestDisplay.normalizeQuestBackground(background));
+        quest.putBoolean(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, grayscale);
     }
 
     public static void resetQuestProgressLocal(String questId) {
@@ -246,15 +247,15 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putBoolean("completed", false);
-        quest.putBoolean("claimed", false);
-        quest.putFloat("progress", 0.0f);
-        CompoundTag tasks = quest.getCompound("tasks");
+        quest.putBoolean(QuestSyncKeys.Quest.COMPLETED, false);
+        quest.putBoolean(QuestSyncKeys.Quest.CLAIMED, false);
+        quest.putFloat(QuestSyncKeys.Quest.PROGRESS, 0.0f);
+        CompoundTag tasks = quest.getCompound(QuestSyncKeys.Quest.TASKS);
         for (String taskId : tasks.getAllKeys()) {
             CompoundTag task = tasks.getCompound(taskId);
-            task.putFloat("progress", 0.0f);
-            task.putBoolean("complete", false);
-            task.putInt("count", 0);
+            task.putFloat(QuestSyncKeys.Objective.PROGRESS, 0.0f);
+            task.putBoolean(QuestSyncKeys.Objective.COMPLETE, false);
+            task.putInt(QuestSyncKeys.Objective.COUNT, 0);
             tasks.put(taskId, task);
         }
         ClientQuestState.forEachQuest(ClientQuestConnectionMutations::refreshLocalUnlockState);
@@ -269,15 +270,15 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        quest.putBoolean("claimed", claimed);
+        quest.putBoolean(QuestSyncKeys.Quest.CLAIMED, claimed);
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
-        putObjectiveJsonLocal(questId, taskJson, "tasks");
+        putObjectiveJsonLocal(questId, taskJson, QuestSyncKeys.Quest.TASKS);
     }
 
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
-        putObjectiveJsonLocal(questId, rewardJson, "rewards");
+        putObjectiveJsonLocal(questId, rewardJson, QuestSyncKeys.Quest.REWARDS);
     }
 
     public static void setQuestPrerequisiteLocal(String questId, String prerequisiteId, boolean add) {
@@ -301,8 +302,8 @@ public final class ClientQuestLocalMutations {
         if (groupTag == null) {
             return;
         }
-        groupTag.putInt("x", x);
-        groupTag.putInt("y", y);
+        groupTag.putInt(QuestSyncKeys.ChapterView.X, x);
+        groupTag.putInt(QuestSyncKeys.ChapterView.Y, y);
     }
 
     public static void setQuestScaleInGroupLocal(String questId, String group, float scale) {
@@ -311,7 +312,7 @@ public final class ClientQuestLocalMutations {
             return;
         }
         float normalized = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
-        groupTag.putFloat("scale", Math.max(0.5f, normalized));
+        groupTag.putFloat(QuestSyncKeys.ChapterView.SCALE, Math.max(0.5f, normalized));
     }
 
     public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {
@@ -367,8 +368,8 @@ public final class ClientQuestLocalMutations {
         }
         CompoundTag bucket = quest.getCompound(bucketName);
         CompoundTag entry = bucket.getCompound(id);
-        entry.putString("json", jsonValue);
-        entry.putString("type", objectiveType(jsonValue, entry.getString("type")));
+        entry.putString(QuestSyncKeys.Objective.JSON, jsonValue);
+        entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
         bucket.put(id, entry);
         quest.put(bucketName, bucket);
     }
@@ -399,7 +400,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return null;
         }
-        CompoundTag groups = quest.getCompound("groups");
+        CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
         CompoundTag groupTag = groups.getCompound(group).copy();
         groups.put(group, groupTag);
         return groupTag;

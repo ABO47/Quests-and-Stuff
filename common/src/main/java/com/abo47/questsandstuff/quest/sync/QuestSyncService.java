@@ -66,10 +66,10 @@ public final class QuestSyncService {
 
         for (int i = 0; i < chunks.size(); i++) {
             CompoundTag payload = new CompoundTag();
-            payload.putInt("schema", QuestDefinition.CURRENT_SCHEMA);
-            payload.put("groups", payloads.groupsTag(syncedQuestIds, editorGraphVisible));
-            payload.put("group_props", payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
-            payload.put("quests", payloads.questPayload(playerState, chunks.get(i)));
+            payload.putInt(QuestSyncKeys.SCHEMA, QuestDefinition.CURRENT_SCHEMA);
+            payload.put(QuestSyncKeys.GROUPS, payloads.groupsTag(syncedQuestIds, editorGraphVisible));
+            payload.put(QuestSyncKeys.GROUP_PROPS, payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
+            payload.put(QuestSyncKeys.QUESTS, payloads.questPayload(playerState, chunks.get(i)));
             bytes += payload.toString().length();
             ModNetwork.sendToPlayer(new S2CFullSyncPacket(sequence, i, chunks.size(), payload), player);
         }
@@ -137,10 +137,10 @@ public final class QuestSyncService {
 
             Set<String> changedIds = i < changedChunks.size() ? changedChunks.get(i) : Set.of();
             if (i == 0 && includeMetadata) {
-                payload.put("groups", payloads.groupsTag());
-                payload.put("group_props", payloads.groupPropsTagForGroups(safeChangedGroups));
+                payload.put(QuestSyncKeys.GROUPS, payloads.groupsTag());
+                payload.put(QuestSyncKeys.GROUP_PROPS, payloads.groupPropsTagForGroups(safeChangedGroups));
             }
-            payload.put("changed", payloads.questPayload(playerState, changedIds));
+            payload.put(QuestSyncKeys.CHANGED, payloads.questPayload(playerState, changedIds));
 
             CompoundTag removedTag = new CompoundTag();
             if (i == 0) {
@@ -148,7 +148,7 @@ public final class QuestSyncService {
                     removedTag.putBoolean(removedId, true);
                 }
             }
-            payload.put("removed", removedTag);
+            payload.put(QuestSyncKeys.REMOVED, removedTag);
 
             bytes += payload.toString().length();
             ModNetwork.sendToPlayer(new S2CDeltaSyncPacket(sequence, i, chunkCount, payload), player);
@@ -189,7 +189,7 @@ public final class QuestSyncService {
             if (!canSeeEditorGraph(player)) {
                 continue;
             }
-            CompoundTag questTag = "add".equals(action)
+            CompoundTag questTag = QuestSyncKeys.EditorAction.ADD.equals(action)
                     ? payloads.editorQuestPayload(definition, progressData.state(player.getUUID()))
                     : payloads.editorQuestPayload(definition);
             ModNetwork.sendToPlayer(new S2CEditorMutationPacket(sequence, action, definition.id(), questTag), player);
@@ -274,7 +274,7 @@ public final class QuestSyncService {
                 }
                 descriptions.put(questId, lines);
             }
-            payload.put("descriptions", descriptions);
+            payload.put(QuestSyncKeys.DESCRIPTIONS, descriptions);
             ModNetwork.sendToPlayer(new S2CDescriptionSyncPacket(sequence, i, chunks.size(), payload), player);
         }
     }
@@ -289,14 +289,14 @@ public final class QuestSyncService {
                     : advancement.getDisplay().getTitle().getString();
             advancements.putString(id, title);
         }
-        payload.put("advancements", advancements);
+        payload.put(QuestSyncKeys.DisplayCache.ADVANCEMENTS, advancements);
 
         CompoundTag lootTables = new CompoundTag();
         for (var key : player.server.getLootData().getKeys(LootDataType.TABLE)) {
             String id = key.toString();
             lootTables.putString(id, key.getPath());
         }
-        payload.put("loot_tables", lootTables);
+        payload.put(QuestSyncKeys.DisplayCache.LOOT_TABLES, lootTables);
 
         CompoundTag biomes = new CompoundTag();
         var biomeRegistry = player.server.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
@@ -304,7 +304,7 @@ public final class QuestSyncService {
             String id = biomeKey.location().toString();
             biomes.putString(id, biomeKey.location().getPath());
         }
-        payload.put("biomes", biomes);
+        payload.put(QuestSyncKeys.DisplayCache.BIOMES, biomes);
 
         ModNetwork.sendToPlayer(new S2CDisplayCacheSyncPacket(sequenceCounter.getAndIncrement(), payload), player);
     }

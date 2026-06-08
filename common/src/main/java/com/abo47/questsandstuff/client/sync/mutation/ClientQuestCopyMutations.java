@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -28,7 +28,7 @@ public final class ClientQuestCopyMutations {
 
         CompoundTag quest = source.copy();
 
-        ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+        ListTag prerequisites = quest.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
         ListTag remappedPrerequisites = new ListTag();
         if (copiedIds != null && !copiedIds.isEmpty()) {
             for (int i = 0; i < prerequisites.size(); i++) {
@@ -39,10 +39,10 @@ public final class ClientQuestCopyMutations {
                 }
             }
         }
-        quest.put(QuestDefinition.PREREQUISITES_FIELD, remappedPrerequisites);
-        quest.put("connection_colors", remappedConnectionColors(quest.getCompound("connection_colors"), copiedIds, remappedPrerequisites));
-        quest.put("connection_modes", remappedConnectionModes(quest.getCompound("connection_modes"), copiedIds, remappedPrerequisites));
-        quest.put("hidden_connections", remappedHiddenConnections(quest.getList("hidden_connections", Tag.TAG_STRING), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.PREREQUISITES, remappedPrerequisites);
+        quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, remappedConnectionColors(quest.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, remappedConnectionModes(quest.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, remappedHiddenConnections(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), copiedIds, remappedPrerequisites));
         ClientQuestSnapshotBuilder.prepareCopiedQuest(quest, normalizedGroup, x, y, scale);
 
         ClientQuestState.putQuest(targetId, quest);
@@ -56,7 +56,7 @@ public final class ClientQuestCopyMutations {
         }
         CompoundTag quest = sourceSnapshot == null ? new CompoundTag() : sourceSnapshot.copy();
 
-        ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+        ListTag prerequisites = quest.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
         ListTag remappedPrerequisites = new ListTag();
         if (copiedIds != null && !copiedIds.isEmpty()) {
             for (int i = 0; i < prerequisites.size(); i++) {
@@ -67,10 +67,10 @@ public final class ClientQuestCopyMutations {
                 }
             }
         }
-        quest.put(QuestDefinition.PREREQUISITES_FIELD, remappedPrerequisites);
-        quest.put("connection_colors", remappedConnectionColors(quest.getCompound("connection_colors"), copiedIds, remappedPrerequisites));
-        quest.put("connection_modes", remappedConnectionModes(quest.getCompound("connection_modes"), copiedIds, remappedPrerequisites));
-        quest.put("hidden_connections", remappedHiddenConnections(quest.getList("hidden_connections", Tag.TAG_STRING), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.PREREQUISITES, remappedPrerequisites);
+        quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, remappedConnectionColors(quest.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, remappedConnectionModes(quest.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES), copiedIds, remappedPrerequisites));
+        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, remappedHiddenConnections(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), copiedIds, remappedPrerequisites));
         ClientQuestSnapshotBuilder.prepareCopiedQuest(quest, normalizedGroup, x, y, scale);
 
         ClientQuestState.putQuest(targetId, quest);
@@ -97,11 +97,11 @@ public final class ClientQuestCopyMutations {
             if (source == null) {
                 continue;
             }
-            target.put(QuestDefinition.PREREQUISITES_FIELD, remappedPrerequisiteList(source.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING), copiedIds, targetId));
-            ListTag remappedPrerequisites = target.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
-            target.put("connection_colors", remappedConnectionColors(source.getCompound("connection_colors"), copiedIds, remappedPrerequisites));
-            target.put("connection_modes", remappedConnectionModes(source.getCompound("connection_modes"), copiedIds, remappedPrerequisites));
-            target.put("hidden_connections", remappedHiddenConnections(source.getList("hidden_connections", Tag.TAG_STRING), copiedIds, remappedPrerequisites));
+            target.put(QuestSyncKeys.Quest.PREREQUISITES, remappedPrerequisiteList(source.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING), copiedIds, targetId));
+            ListTag remappedPrerequisites = target.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING);
+            target.put(QuestSyncKeys.Quest.CONNECTION_COLORS, remappedConnectionColors(source.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS), copiedIds, remappedPrerequisites));
+            target.put(QuestSyncKeys.Quest.CONNECTION_MODES, remappedConnectionModes(source.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES), copiedIds, remappedPrerequisites));
+            target.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, remappedHiddenConnections(source.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), copiedIds, remappedPrerequisites));
         }
     }
 

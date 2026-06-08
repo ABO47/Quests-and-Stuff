@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -134,7 +135,7 @@ public final class ClientQuestState {
     public static int completedCount() {
         int count = 0;
         for (CompoundTag quest : QUESTS.values()) {
-            if (quest.getBoolean("completed")) {
+            if (quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
                 count++;
             }
         }

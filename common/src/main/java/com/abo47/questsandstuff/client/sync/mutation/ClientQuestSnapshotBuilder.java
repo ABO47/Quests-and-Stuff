@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -38,123 +38,123 @@ final class ClientQuestSnapshotBuilder {
         CompoundTag quest = new CompoundTag();
         putDisplay(quest, display);
         putSettingsDefaults(quest, hiddenMode);
-        quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());
-        quest.put("connection_colors", new CompoundTag());
-        quest.put("connection_modes", new CompoundTag());
-        quest.put("hidden_connections", new ListTag());
-        quest.put("tasks", new CompoundTag());
-        quest.put("tasks_order", new ListTag());
-        quest.put("rewards", new CompoundTag());
-        quest.put("rewards_order", new ListTag());
+        quest.put(QuestSyncKeys.Quest.PREREQUISITES, new ListTag());
+        quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, new CompoundTag());
+        quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, new CompoundTag());
+        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, new ListTag());
+        quest.put(QuestSyncKeys.Quest.TASKS, new CompoundTag());
+        quest.put(QuestSyncKeys.Quest.TASKS_ORDER, new ListTag());
+        quest.put(QuestSyncKeys.Quest.REWARDS, new CompoundTag());
+        quest.put(QuestSyncKeys.Quest.REWARDS_ORDER, new ListTag());
         return quest;
     }
 
     private static void putDisplay(CompoundTag quest, QuestDisplay display) {
         QuestDisplay safe = display == null ? QuestDisplay.DEFAULT : display;
-        quest.putString("title", safe.title());
-        quest.putString("subtitle", safe.subtitle());
-        quest.put("description", stringListTag(safe.description()));
-        quest.putString("icon", safe.icon());
-        quest.putString("icon_background", safe.iconBackground());
-        quest.putString("completion_sound", safe.completionSound());
-        quest.putInt("completion_sound_volume", safe.completionSoundVolume());
-        quest.putString("completion_hud_background", safe.completionHudBackground());
-        quest.putBoolean("visual_hidden", safe.visualHidden());
-        quest.putString("quest_background", safe.questBackground());
-        quest.putBoolean("quest_background_grayscale", safe.questBackgroundGrayscale());
-        quest.put("groups", groupsTag(safe.groups()));
+        quest.putString(QuestSyncKeys.Quest.TITLE, safe.title());
+        quest.putString(QuestSyncKeys.Quest.SUBTITLE, safe.subtitle());
+        quest.put(QuestSyncKeys.Quest.DESCRIPTION, stringListTag(safe.description()));
+        quest.putString(QuestSyncKeys.Quest.ICON, safe.icon());
+        quest.putString(QuestSyncKeys.Quest.ICON_BACKGROUND, safe.iconBackground());
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_SOUND, safe.completionSound());
+        quest.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, safe.completionSoundVolume());
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND, safe.completionHudBackground());
+        quest.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, safe.visualHidden());
+        quest.putString(QuestSyncKeys.Quest.QUEST_BACKGROUND, safe.questBackground());
+        quest.putBoolean(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, safe.questBackgroundGrayscale());
+        quest.put(QuestSyncKeys.Quest.GROUPS, groupsTag(safe.groups()));
     }
 
     private static void putSettingsDefaults(CompoundTag quest, QuestVisibilityMode hiddenMode) {
         QuestVisibilityMode mode = hiddenMode == null ? QuestSettings.DEFAULT.hiddenMode() : hiddenMode;
-        quest.putBoolean("repeatable", QuestSettings.DEFAULT.repeatable());
-        quest.putString("hidden_mode", mode.serializedName());
-        quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, QuestSettings.DEFAULT.showPrerequisiteArrow());
+        quest.putBoolean(QuestSyncKeys.Quest.REPEATABLE, QuestSettings.DEFAULT.repeatable());
+        quest.putString(QuestSyncKeys.Quest.HIDDEN_MODE, mode.serializedName());
+        quest.putBoolean(QuestSyncKeys.Quest.SHOW_PREREQUISITE_ARROW, QuestSettings.DEFAULT.showPrerequisiteArrow());
     }
 
     private static void setProgressDefaults(CompoundTag quest, boolean unlocked) {
-        quest.putBoolean("completed", false);
-        quest.putBoolean("unlocked", unlocked);
-        quest.putBoolean("claimed", false);
-        quest.putFloat("progress", 0.0f);
+        quest.putBoolean(QuestSyncKeys.Quest.COMPLETED, false);
+        quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, unlocked);
+        quest.putBoolean(QuestSyncKeys.Quest.CLAIMED, false);
+        quest.putFloat(QuestSyncKeys.Quest.PROGRESS, 0.0f);
 
-        CompoundTag tasks = quest.getCompound("tasks");
+        CompoundTag tasks = quest.getCompound(QuestSyncKeys.Quest.TASKS);
         for (String taskId : tasks.getAllKeys()) {
             CompoundTag task = tasks.getCompound(taskId);
-            task.putFloat("progress", 0.0f);
-            task.putBoolean("complete", false);
-            task.putInt("count", 0);
+            task.putFloat(QuestSyncKeys.Objective.PROGRESS, 0.0f);
+            task.putBoolean(QuestSyncKeys.Objective.COMPLETE, false);
+            task.putInt(QuestSyncKeys.Objective.COUNT, 0);
             tasks.put(taskId, task);
         }
-        quest.put("tasks", tasks);
+        quest.put(QuestSyncKeys.Quest.TASKS, tasks);
     }
 
     private static void ensureDisplayDefaults(CompoundTag quest) {
-        if (!quest.contains("title", Tag.TAG_STRING)) {
-            quest.putString("title", QuestDisplay.DEFAULT.title());
+        if (!quest.contains(QuestSyncKeys.Quest.TITLE, Tag.TAG_STRING)) {
+            quest.putString(QuestSyncKeys.Quest.TITLE, QuestDisplay.DEFAULT.title());
         }
-        if (!quest.contains("subtitle", Tag.TAG_STRING)) {
-            quest.putString("subtitle", QuestDisplay.DEFAULT_SUBTITLE);
+        if (!quest.contains(QuestSyncKeys.Quest.SUBTITLE, Tag.TAG_STRING)) {
+            quest.putString(QuestSyncKeys.Quest.SUBTITLE, QuestDisplay.DEFAULT_SUBTITLE);
         }
-        if (!quest.contains("description", Tag.TAG_LIST)) {
-            quest.put("description", new ListTag());
+        if (!quest.contains(QuestSyncKeys.Quest.DESCRIPTION, Tag.TAG_LIST)) {
+            quest.put(QuestSyncKeys.Quest.DESCRIPTION, new ListTag());
         }
-        quest.putString("icon", QuestDisplay.normalizeIcon(quest.getString("icon")));
-        quest.putString("icon_background", QuestDisplay.normalizeIconBackground(quest.getString("icon_background")));
-        String completionSound = quest.getString("completion_sound");
-        quest.putString("completion_sound", completionSound == null || completionSound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : completionSound.trim());
-        if (!quest.contains("completion_sound_volume", Tag.TAG_INT)) {
-            quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
+        quest.putString(QuestSyncKeys.Quest.ICON, QuestDisplay.normalizeIcon(quest.getString(QuestSyncKeys.Quest.ICON)));
+        quest.putString(QuestSyncKeys.Quest.ICON_BACKGROUND, QuestDisplay.normalizeIconBackground(quest.getString(QuestSyncKeys.Quest.ICON_BACKGROUND)));
+        String completionSound = quest.getString(QuestSyncKeys.Quest.COMPLETION_SOUND);
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_SOUND, completionSound == null || completionSound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : completionSound.trim());
+        if (!quest.contains(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, Tag.TAG_INT)) {
+            quest.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
         } else {
-            quest.putInt("completion_sound_volume", QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume")));
+            quest.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, QuestDisplay.normalizeCompletionSoundVolume(quest.getInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME)));
         }
-        quest.putString("completion_hud_background", QuestDisplay.normalizeCompletionHudBackground(quest.getString("completion_hud_background")));
-        if (!quest.contains("visual_hidden", Tag.TAG_BYTE)) {
-            quest.putBoolean("visual_hidden", QuestDisplay.DEFAULT_VISUAL_HIDDEN);
+        quest.putString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND, QuestDisplay.normalizeCompletionHudBackground(quest.getString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND)));
+        if (!quest.contains(QuestSyncKeys.Quest.VISUAL_HIDDEN, Tag.TAG_BYTE)) {
+            quest.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, QuestDisplay.DEFAULT_VISUAL_HIDDEN);
         }
-        quest.putString("quest_background", QuestDisplay.normalizeQuestBackground(quest.getString("quest_background")));
-        if (!quest.contains("quest_background_grayscale", Tag.TAG_BYTE)) {
-            quest.putBoolean("quest_background_grayscale", QuestDisplay.DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
+        quest.putString(QuestSyncKeys.Quest.QUEST_BACKGROUND, QuestDisplay.normalizeQuestBackground(quest.getString(QuestSyncKeys.Quest.QUEST_BACKGROUND)));
+        if (!quest.contains(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, Tag.TAG_BYTE)) {
+            quest.putBoolean(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, QuestDisplay.DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
         }
     }
 
     private static void ensureDefinitionBuckets(CompoundTag quest) {
-        if (!quest.contains(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_LIST)) {
-            quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());
+        if (!quest.contains(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_LIST)) {
+            quest.put(QuestSyncKeys.Quest.PREREQUISITES, new ListTag());
         }
-        if (!quest.contains("connection_colors", Tag.TAG_COMPOUND)) {
-            quest.put("connection_colors", new CompoundTag());
+        if (!quest.contains(QuestSyncKeys.Quest.CONNECTION_COLORS, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, new CompoundTag());
         }
-        if (!quest.contains("connection_modes", Tag.TAG_COMPOUND)) {
-            quest.put("connection_modes", new CompoundTag());
+        if (!quest.contains(QuestSyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, new CompoundTag());
         }
-        if (!quest.contains("hidden_connections", Tag.TAG_LIST)) {
-            quest.put("hidden_connections", new ListTag());
+        if (!quest.contains(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
+            quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, new ListTag());
         }
-        if (!quest.contains("tasks", Tag.TAG_COMPOUND)) {
-            quest.put("tasks", new CompoundTag());
+        if (!quest.contains(QuestSyncKeys.Quest.TASKS, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.TASKS, new CompoundTag());
         }
-        if (!quest.contains("tasks_order", Tag.TAG_LIST)) {
-            quest.put("tasks_order", new ListTag());
+        if (!quest.contains(QuestSyncKeys.Quest.TASKS_ORDER, Tag.TAG_LIST)) {
+            quest.put(QuestSyncKeys.Quest.TASKS_ORDER, new ListTag());
         }
-        if (!quest.contains("rewards", Tag.TAG_COMPOUND)) {
-            quest.put("rewards", new CompoundTag());
+        if (!quest.contains(QuestSyncKeys.Quest.REWARDS, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.REWARDS, new CompoundTag());
         }
-        if (!quest.contains("rewards_order", Tag.TAG_LIST)) {
-            quest.put("rewards_order", new ListTag());
+        if (!quest.contains(QuestSyncKeys.Quest.REWARDS_ORDER, Tag.TAG_LIST)) {
+            quest.put(QuestSyncKeys.Quest.REWARDS_ORDER, new ListTag());
         }
     }
 
     private static void replaceSingleGroup(CompoundTag quest, String group, int x, int y, float scale) {
         CompoundTag groups = new CompoundTag();
         CompoundTag groupTag = new CompoundTag();
-        groupTag.putBoolean("visible", true);
-        groupTag.putInt("x", x);
-        groupTag.putInt("y", y);
+        groupTag.putBoolean(QuestSyncKeys.ChapterView.VISIBLE, true);
+        groupTag.putInt(QuestSyncKeys.ChapterView.X, x);
+        groupTag.putInt(QuestSyncKeys.ChapterView.Y, y);
         float normalizedScale = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
-        groupTag.putFloat("scale", Math.max(0.5f, normalizedScale));
+        groupTag.putFloat(QuestSyncKeys.ChapterView.SCALE, Math.max(0.5f, normalizedScale));
         groups.put(group, groupTag);
-        quest.put("groups", groups);
+        quest.put(QuestSyncKeys.Quest.GROUPS, groups);
     }
 
     private static ListTag stringListTag(List<String> values) {
@@ -181,10 +181,10 @@ final class ClientQuestSnapshotBuilder {
             }
             ChapterDefinition view = entry.getValue();
             CompoundTag groupTag = new CompoundTag();
-            groupTag.putBoolean("visible", view.visible());
-            groupTag.putInt("x", view.x());
-            groupTag.putInt("y", view.y());
-            groupTag.putFloat("scale", view.scale());
+            groupTag.putBoolean(QuestSyncKeys.ChapterView.VISIBLE, view.visible());
+            groupTag.putInt(QuestSyncKeys.ChapterView.X, view.x());
+            groupTag.putInt(QuestSyncKeys.ChapterView.Y, view.y());
+            groupTag.putFloat(QuestSyncKeys.ChapterView.SCALE, view.scale());
             out.put(entry.getKey(), groupTag);
         }
         return out;

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public final class ClientChapterLocalMutations {
         }
         ClientCanvasLayerState.renameGroup(source, target);
         ClientQuestState.forEachQuest(quest -> {
-            CompoundTag groups = quest.getCompound("groups");
+            CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
             if (!groups.contains(source)) {
                 return;
             }
@@ -44,14 +45,14 @@ public final class ClientChapterLocalMutations {
         }
         ClientCanvasLayerState.removeGroup(normalized);
         ClientQuestState.forEachQuest(quest -> {
-            CompoundTag groups = quest.getCompound("groups");
+            CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
             if (groups.contains(normalized)) {
                 groups.remove(normalized);
             }
         });
         List<String> groupless = new ArrayList<>();
         ClientQuestState.forEachQuestEntry((questId, quest) -> {
-            if (quest.getCompound("groups").isEmpty()) {
+            if (quest.getCompound(QuestSyncKeys.Quest.GROUPS).isEmpty()) {
                 groupless.add(questId);
             }
         });

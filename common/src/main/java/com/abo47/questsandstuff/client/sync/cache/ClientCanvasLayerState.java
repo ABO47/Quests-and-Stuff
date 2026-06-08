@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.sync.cache;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -34,7 +35,7 @@ public final class ClientCanvasLayerState {
         if (payload == null) {
             return;
         }
-        if (payload.contains("groups", Tag.TAG_LIST)) {
+        if (payload.contains(QuestSyncKeys.GROUPS, Tag.TAG_LIST)) {
             List<String> groups = ClientChapterState.groupOrderSnapshot();
             GROUP_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
             GROUP_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
@@ -43,16 +44,16 @@ public final class ClientCanvasLayerState {
                 ensureGroup(group);
             }
         }
-        CompoundTag groupProps = payload.getCompound("group_props");
+        CompoundTag groupProps = payload.getCompound(QuestSyncKeys.GROUP_PROPS);
         for (String group : groupProps.getAllKeys()) {
             CompoundTag props = groupProps.getCompound(group);
             String normalized = ClientChapterState.normalizeGroup(group);
             if (normalized.isBlank()) {
                 continue;
             }
-            GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbt.imagesFromListTag(props.getList("canvas_images", Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbt.textsFromListTag(props.getList("canvas_texts", Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbt.stringsFromListTag(props.getList("canvas_layer_order", Tag.TAG_STRING))));
+            GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbt.imagesFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_IMAGES, Tag.TAG_COMPOUND))));
+            GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbt.textsFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_TEXTS, Tag.TAG_COMPOUND))));
+            GROUP_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbt.stringsFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_LAYER_ORDER, Tag.TAG_STRING))));
         }
     }
 

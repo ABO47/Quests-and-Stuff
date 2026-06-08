@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -48,7 +49,7 @@ public final class ClientChapterState {
         if (payload == null) {
             return;
         }
-        ListTag groupsTag = payload.getList("groups", Tag.TAG_STRING);
+        ListTag groupsTag = payload.getList(QuestSyncKeys.GROUPS, Tag.TAG_STRING);
         if (!groupsTag.isEmpty()) {
             GROUP_ORDER.clear();
             for (int i = 0; i < groupsTag.size(); i++) {
@@ -60,7 +61,7 @@ public final class ClientChapterState {
             removeGroupsOutsideOrder();
         }
 
-        CompoundTag groupProps = payload.getCompound("group_props");
+        CompoundTag groupProps = payload.getCompound(QuestSyncKeys.GROUP_PROPS);
         for (String group : groupProps.getAllKeys()) {
             mergeGroupProps(group, groupProps.getCompound(group));
         }
@@ -300,17 +301,17 @@ public final class ClientChapterState {
         if (!GROUP_ORDER.contains(group)) {
             GROUP_ORDER.add(group);
         }
-        GROUP_ICONS.put(group, props.getString("icon"));
-        GROUP_BACKGROUNDS.put(group, props.getString("background"));
-        GROUP_CANVAS_BACKGROUNDS.put(group, props.contains("canvas_background") ? props.getString("canvas_background") : "default");
-        GROUP_TEXT_ALIGN.put(group, normalizeTextAlign(props.getString("text_align")));
-        if (props.contains("text_color")) {
-            GROUP_TEXT_COLOR.put(group, props.getInt("text_color"));
+        GROUP_ICONS.put(group, props.getString(QuestSyncKeys.GroupProps.ICON));
+        GROUP_BACKGROUNDS.put(group, props.getString(QuestSyncKeys.GroupProps.BACKGROUND));
+        GROUP_CANVAS_BACKGROUNDS.put(group, props.contains(QuestSyncKeys.GroupProps.CANVAS_BACKGROUND) ? props.getString(QuestSyncKeys.GroupProps.CANVAS_BACKGROUND) : "default");
+        GROUP_TEXT_ALIGN.put(group, normalizeTextAlign(props.getString(QuestSyncKeys.GroupProps.TEXT_ALIGN)));
+        if (props.contains(QuestSyncKeys.GroupProps.TEXT_COLOR)) {
+            GROUP_TEXT_COLOR.put(group, props.getInt(QuestSyncKeys.GroupProps.TEXT_COLOR));
         }
-        GROUP_TEXT_STYLE.put(group, normalizeTextStyle(props.contains("text_style") ? props.getString("text_style") : "normal"));
-        GROUP_TEXT_SIZE.put(group, clampTextSize(props.contains("text_size") ? props.getInt("text_size") : CanvasTextLayer.DEFAULT_FONT_SIZE));
-        GROUP_LOCK_UNTIL_UNLOCKED.put(group, props.getBoolean("lock_until_unlocked"));
-        GROUP_HIDE_UNTIL_UNLOCKED.put(group, props.getBoolean("hide_until_unlocked"));
+        GROUP_TEXT_STYLE.put(group, normalizeTextStyle(props.contains(QuestSyncKeys.GroupProps.TEXT_STYLE) ? props.getString(QuestSyncKeys.GroupProps.TEXT_STYLE) : "normal"));
+        GROUP_TEXT_SIZE.put(group, clampTextSize(props.contains(QuestSyncKeys.GroupProps.TEXT_SIZE) ? props.getInt(QuestSyncKeys.GroupProps.TEXT_SIZE) : CanvasTextLayer.DEFAULT_FONT_SIZE));
+        GROUP_LOCK_UNTIL_UNLOCKED.put(group, props.getBoolean(QuestSyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED));
+        GROUP_HIDE_UNTIL_UNLOCKED.put(group, props.getBoolean(QuestSyncKeys.GroupProps.HIDE_UNTIL_UNLOCKED));
     }
 
     private static void ensureGroupDefaults(String group) {
