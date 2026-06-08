@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 
 import java.util.List;
 import java.util.Map;
@@ -274,11 +275,11 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
-        putObjectiveJsonLocal(questId, taskJson, QuestSyncKeys.Quest.TASKS);
+        putObjectiveJsonLocal(questId, taskJson, QuestSyncKeys.Quest.TASKS, QuestSyncKeys.Quest.TASKS_ORDER);
     }
 
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
-        putObjectiveJsonLocal(questId, rewardJson, QuestSyncKeys.Quest.REWARDS);
+        putObjectiveJsonLocal(questId, rewardJson, QuestSyncKeys.Quest.REWARDS, QuestSyncKeys.Quest.REWARDS_ORDER);
     }
 
     public static void setQuestPrerequisiteLocal(String questId, String prerequisiteId, boolean add) {
@@ -353,7 +354,7 @@ public final class ClientQuestLocalMutations {
         ClientQuestConnectionMutations.removeQuestReferences(normalized);
     }
 
-    private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName) {
+    private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
         String normalizedQuest = questId == null ? "" : questId.trim();
         if (normalizedQuest.isBlank() || jsonValue == null || jsonValue.isBlank()) {
             return;
@@ -372,6 +373,27 @@ public final class ClientQuestLocalMutations {
         entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
         bucket.put(id, entry);
         quest.put(bucketName, bucket);
+        appendObjectiveOrder(quest, orderName, id);
+    }
+
+    private static void appendObjectiveOrder(CompoundTag quest, String orderName, String id) {
+        if (quest == null || orderName == null || orderName.isBlank() || id == null || id.isBlank()) {
+            return;
+        }
+        ListTag current = quest.getList(orderName, Tag.TAG_STRING);
+        ListTag next = new ListTag();
+        boolean found = false;
+        for (int i = 0; i < current.size(); i++) {
+            String value = current.getString(i);
+            if (id.equals(value)) {
+                found = true;
+            }
+            next.add(current.get(i).copy());
+        }
+        if (!found) {
+            next.add(net.minecraft.nbt.StringTag.valueOf(id));
+        }
+        quest.put(orderName, next);
     }
 
     private static String objectiveId(String jsonValue) {
