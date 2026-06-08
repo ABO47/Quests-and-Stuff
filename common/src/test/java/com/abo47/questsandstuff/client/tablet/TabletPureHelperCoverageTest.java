@@ -23,6 +23,7 @@ class TabletPureHelperCoverageTest {
                 entry("quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest"),
                 entry("recipe viewer capabilities", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityMatrixTest"),
                 entry("recipe viewer selection rules", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionRulesTest"),
+                entry("prerequisite connection model", "com.abo47.questsandstuff.client.tablet.quest.prerequisite.PrerequisiteConnectionModelTest"),
                 entry("shared smart snap engine", "com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngineTest"),
                 entry("main canvas smart snap adapter", "com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSmartSnapperTest"),
                 entry("quest card background defaults", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRendererTest"),
