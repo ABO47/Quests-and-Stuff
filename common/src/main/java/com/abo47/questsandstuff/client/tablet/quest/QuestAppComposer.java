@@ -51,8 +51,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterH
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.rootHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.rootWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.rootHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.rootWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletRefresh;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletState;
 

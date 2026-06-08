@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 
 public final class CanvasTextStyleMenu {
     private CanvasTextStyleMenu() {

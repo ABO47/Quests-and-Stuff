@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorGroupPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenGroupPacket;
@@ -36,17 +37,7 @@ final class EditorChapterCommandClient {
     }
 
     static String selectedGroupName(TabletUiState state) {
-        String selected = sanitizeGroupName(state == null ? "" : state.selectedGroup);
-        if (state == null || state.canEdit || selected.isBlank() || ClientQuestCache.groupOpenablePreview(selected)) {
-            return selected;
-        }
-        for (String group : ClientQuestCache.selectableGroupOrder(false)) {
-            String sanitized = sanitizeGroupName(group);
-            if (!sanitized.isBlank()) {
-                return sanitized;
-            }
-        }
-        return "";
+        return TabletStateQueries.selectedGroupName(state);
     }
 
     static boolean canEditGroups(TabletUiState state) {
@@ -132,11 +123,7 @@ final class EditorChapterCommandClient {
     }
 
     static String sanitizeGroupName(String value) {
-        if (value == null) {
-            return "";
-        }
-        String result = value.trim().replace('\n', ' ').replace('\r', ' ');
-        return result.length() > 40 ? result.substring(0, 40) : result;
+        return TabletStateQueries.sanitizeGroupName(value);
     }
 
     static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {

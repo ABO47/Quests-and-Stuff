@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasMinimapOverlay {

@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -287,8 +288,8 @@ public final class TabletAssetPickerModal {
     }
 
     private static void addAssetContextDismissLayer(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
-        int rootW = TabletUiFactory.rootWidth(state);
-        int rootH = TabletUiFactory.rootHeight(state);
+        int rootW = TabletStateQueries.rootWidth(state);
+        int rootH = TabletStateQueries.rootHeight(state);
         int modalX = ModalContextMenuPlacement.modalX(state, w);
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {

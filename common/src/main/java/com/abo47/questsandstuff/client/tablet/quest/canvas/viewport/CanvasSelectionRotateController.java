@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -48,7 +49,7 @@ final class CanvasSelectionRotateController {
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletUiFactory.selectedGroupName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
         state.rotateStartImageLayers.putAll(snapshot.images());
         state.rotateStartTextLayers.putAll(snapshot.texts());
         if (snapshot.hasBounds()) {

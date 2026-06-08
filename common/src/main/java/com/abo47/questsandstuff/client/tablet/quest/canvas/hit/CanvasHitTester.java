@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 
 public final class CanvasHitTester {
     private static final int TEXT_MENU_MARGIN = 4;

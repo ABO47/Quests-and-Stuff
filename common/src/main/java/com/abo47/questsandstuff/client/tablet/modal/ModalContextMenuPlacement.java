@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 
 public final class ModalContextMenuPlacement {
     private static final int MARGIN = 4;
@@ -14,8 +14,8 @@ public final class ModalContextMenuPlacement {
         int modalY = modalY(state, modalH);
         int globalX = modalX + x;
         int globalY = modalY + y;
-        int rootW = TabletUiFactory.rootWidth(state);
-        int rootH = TabletUiFactory.rootHeight(state);
+        int rootW = TabletStateQueries.rootWidth(state);
+        int rootH = TabletStateQueries.rootHeight(state);
         return new Placement(
                 clamp(globalX, MARGIN, Math.max(MARGIN, rootW - w - MARGIN)) - modalX,
                 clamp(globalY, MARGIN, Math.max(MARGIN, rootH - h - MARGIN)) - modalY,
@@ -33,11 +33,11 @@ public final class ModalContextMenuPlacement {
     }
 
     public static int modalX(TabletUiState state, int modalW) {
-        return (TabletUiFactory.rootWidth(state) - modalW) / 2;
+        return (TabletStateQueries.rootWidth(state) - modalW) / 2;
     }
 
     public static int modalY(TabletUiState state, int modalH) {
-        return (TabletUiFactory.rootHeight(state) - modalH) / 2;
+        return (TabletStateQueries.rootHeight(state) - modalH) / 2;
     }
 
     private static int clamp(int value, int min, int max) {

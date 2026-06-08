@@ -20,7 +20,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.confirmD
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.pendingDeleteLabel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
 

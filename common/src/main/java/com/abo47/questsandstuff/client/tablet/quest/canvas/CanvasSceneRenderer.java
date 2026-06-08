@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasSceneRenderer {

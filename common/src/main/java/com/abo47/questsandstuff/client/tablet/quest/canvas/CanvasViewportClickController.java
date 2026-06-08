@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -171,13 +172,13 @@ final class CanvasViewportClickController {
         if (textHit == null && state.canEdit) {
             textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
         }
-        if (hit != null && imageHit != null && !CanvasRenderer.isImageAboveQuest(state, TabletUiFactory.selectedGroupName(state), imageHit.id(), hit.questId())) {
+        if (hit != null && imageHit != null && !CanvasRenderer.isImageAboveQuest(state, TabletStateQueries.selectedGroupName(state), imageHit.id(), hit.questId())) {
             imageHit = null;
         }
-        if (hit != null && textHit != null && !CanvasRenderer.isTextAboveQuest(state, TabletUiFactory.selectedGroupName(state), textHit.id(), hit.questId())) {
+        if (hit != null && textHit != null && !CanvasRenderer.isTextAboveQuest(state, TabletStateQueries.selectedGroupName(state), textHit.id(), hit.questId())) {
             textHit = null;
         }
-        if (imageHit != null && textHit != null && !CanvasRenderer.isTextAboveImage(state, TabletUiFactory.selectedGroupName(state), textHit.id(), imageHit.id())) {
+        if (imageHit != null && textHit != null && !CanvasRenderer.isTextAboveImage(state, TabletStateQueries.selectedGroupName(state), textHit.id(), imageHit.id())) {
             textHit = null;
         } else if (imageHit != null && textHit != null) {
             imageHit = null;

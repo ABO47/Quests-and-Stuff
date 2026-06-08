@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 
 public final class CanvasLayoutService {
     private static final int MIN_PAN_RENDER_OVERSCAN = 192;

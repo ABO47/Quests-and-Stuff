@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -55,8 +56,8 @@ public final class ContextMenuPanel {
             Consumer<ContextAction> afterAction,
             String animationKey
     ) {
-        int maxW = Math.max(x + w + 4, TabletUiFactory.rootWidth(state));
-        int maxH = Math.max(y + heightFor(actions, visibleRows) + 4, TabletUiFactory.rootHeight(state));
+        int maxW = Math.max(x + w + 4, TabletStateQueries.rootWidth(state));
+        int maxH = Math.max(y + heightFor(actions, visibleRows) + 4, TabletStateQueries.rootHeight(state));
         return build(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, maxW, maxH);
     }
 

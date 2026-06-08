@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -182,7 +183,7 @@ public final class CanvasCameraController {
     }
 
     public static boolean fitAll(TabletUiState state, List<QuestCardLayout> cards, boolean persist) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         LogicalBounds bounds = new LogicalBounds();
         addCards(bounds, cards);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
@@ -195,7 +196,7 @@ public final class CanvasCameraController {
     }
 
     public static boolean fitSelection(TabletUiState state, List<QuestCardLayout> cards, boolean persist) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         LogicalBounds bounds = new LogicalBounds();
         for (QuestCardLayout card : cards) {
             if (state.selectedQuestIds.contains(card.questId())) {

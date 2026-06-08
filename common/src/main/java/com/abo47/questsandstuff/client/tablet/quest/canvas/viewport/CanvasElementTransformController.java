@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
@@ -16,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 
 import java.util.List;
 import java.util.Set;
@@ -97,7 +97,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         CanvasImageLayer image = findImage(group, state.selectedCanvasImageId);
         if (image == null) {
             return;
@@ -203,7 +203,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.selectedCanvasTextId);
         if (text == null) {
             return;

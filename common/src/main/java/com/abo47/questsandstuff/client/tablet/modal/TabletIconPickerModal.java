@@ -31,7 +31,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runGroupAction;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runQuestIconAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletIconPickerModal {

@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNot
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -75,7 +76,7 @@ public final class CanvasClipboardController {
                 return true;
             }
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (selection.imageIds().contains(image.id())) {
                 return true;
@@ -127,7 +128,7 @@ public final class CanvasClipboardController {
         if (state == null || canvasViewport == null || selection.isEmpty()) {
             return false;
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, group, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, group, selection.textIds());
@@ -229,7 +230,7 @@ public final class CanvasClipboardController {
     }
 
     private static boolean pasteAt(Player player, TabletUiState state, int anchorX, int anchorY, String source) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         if (group.isBlank() || !hasClipboardContent(state)) {
             return false;
         }
@@ -343,7 +344,7 @@ public final class CanvasClipboardController {
             minX = Math.min(minX, card.logicalX());
             minY = Math.min(minY, card.logicalY());
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {

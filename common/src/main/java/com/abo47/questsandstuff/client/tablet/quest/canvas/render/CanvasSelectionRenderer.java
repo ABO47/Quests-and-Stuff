@@ -15,7 +15,7 @@ import org.joml.Quaternionf;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasSelectionRenderer {

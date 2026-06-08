@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -52,7 +53,7 @@ public final class QuestPrerequisitesManagerModal {
 
         String questId = safe(state.prerequisitesManagerQuestId);
         CompoundTag questTag = ClientQuestCache.quest(questId);
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         PrerequisiteConnectionModel model = PrerequisiteConnectionModel.build(questId, questTag, group, state.prerequisitesManagerSearch, state.prerequisitesManagerExternalMode);
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
 
@@ -127,8 +128,8 @@ public final class QuestPrerequisitesManagerModal {
     }
 
     private static void addContextDismissLayer(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
-        int rootW = TabletUiFactory.rootWidth(state);
-        int rootH = TabletUiFactory.rootHeight(state);
+        int rootW = TabletStateQueries.rootWidth(state);
+        int rootH = TabletStateQueries.rootHeight(state);
         int modalX = ModalContextMenuPlacement.modalX(state, w);
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {

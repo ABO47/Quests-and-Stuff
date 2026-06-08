@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -9,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementG
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +27,7 @@ public final class CanvasSelectionActions {
         if (state == null || CanvasRenderer.totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         if (group.isBlank()) {
             return false;
         }

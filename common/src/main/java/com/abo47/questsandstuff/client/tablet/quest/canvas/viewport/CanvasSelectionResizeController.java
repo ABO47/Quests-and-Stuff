@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroup
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -48,7 +49,7 @@ final class CanvasSelectionResizeController {
             state.resizeStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             state.resizeStartScales.put(questId, CanvasSelectionBounds.scaleForQuest(questId, byQuestId));
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletUiFactory.selectedGroupName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
         state.resizeStartImageLayers.putAll(snapshot.images());
         state.resizeStartTextLayers.putAll(snapshot.texts());
         if (snapshot.hasBounds()) {

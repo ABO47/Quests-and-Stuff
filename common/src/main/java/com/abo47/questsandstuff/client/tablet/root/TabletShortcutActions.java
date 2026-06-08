@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.world.entity.player.Player;
@@ -88,11 +88,12 @@ final class TabletShortcutActions {
         if (state.questDetailsOpen) {
             return QuestDetailsWindow.beginSelectedRename(state);
         }
-        if (state.selectedQuestIds.size() == 1) {
-            EditorCommandClient.beginQuestTitleChange(state, state.selectedQuestIds.iterator().next());
+        String selectedQuestId = TabletStateQueries.singleSelectedQuestId(state);
+        if (!selectedQuestId.isBlank()) {
+            EditorCommandClient.beginQuestTitleChange(state, selectedQuestId);
             return true;
         }
-        if (state.selectedQuestIds.isEmpty() && CanvasRenderer.selectedCanvasImageIds(state).isEmpty()
+        if (!TabletStateQueries.hasSelectedQuests(state) && CanvasRenderer.selectedCanvasImageIds(state).isEmpty()
                 && CanvasRenderer.selectedCanvasTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
             state.pendingChapterRename = state.selectedGroup;
             state.chapterDraftName = state.selectedGroup;
@@ -105,9 +106,9 @@ final class TabletShortcutActions {
         if (state.questDetailsOpen) {
             return QuestDetailsWindow.deleteSelected(player, state);
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
-        for (String questId : List.copyOf(state.selectedQuestIds)) {
+        for (String questId : TabletStateQueries.selectedQuestIdsSnapshot(state)) {
             EditorCommandClient.runRemoveQuestAction(player, questId);
             changed = true;
         }
@@ -131,7 +132,7 @@ final class TabletShortcutActions {
         if (canvasViewport == null) {
             return false;
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         state.selectedQuestIds.clear();
         state.selectedQuestIds.addAll(canvasViewport.cardLookup().keySet());
         state.selectedCanvasImageIds.clear();
@@ -170,7 +171,7 @@ final class TabletShortcutActions {
         int step = shift ? CanvasGeometry.gridSize(state) : 1;
         int dx = nudgeDx(keyCode, false, step);
         int dy = nudgeDy(keyCode, false, step);
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
         Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
         for (String questId : state.selectedQuestIds) {

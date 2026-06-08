@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runPrerequisiteAction;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runRemoveQuestAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 
 public final class CanvasContextDeleteController {
     private CanvasContextDeleteController() {

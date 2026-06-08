@@ -125,24 +125,12 @@ public final class TabletUiFactory {
         TabletLayout.applyRootSize(state, width, height, fullScreenMode);
     }
 
-    public static int rootWidth(TabletUiState state) {
-        return TabletLayout.rootWidth(state);
-    }
-
-    public static int rootHeight(TabletUiState state) {
-        return TabletLayout.rootHeight(state);
-    }
-
     public static int chapterHeight(TabletUiState state) {
         return TabletLayout.chapterHeight(state);
     }
 
     public static int canvasHeight(TabletUiState state) {
         return TabletLayout.canvasHeight(state);
-    }
-
-    public static String selectedGroupName(TabletUiState state) {
-        return EditorCommandClient.selectedGroupName(state);
     }
 
     public static int chapterPanelWidth(TabletUiState state) {

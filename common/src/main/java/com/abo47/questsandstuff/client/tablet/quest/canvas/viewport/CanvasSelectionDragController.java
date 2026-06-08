@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -42,7 +42,7 @@ final class CanvasSelectionDragController {
                 state.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             }
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (CanvasRenderer.isImageSelected(state, image.id())) {
                 state.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
@@ -105,7 +105,7 @@ final class CanvasSelectionDragController {
             populateTransientQuestPositions(dx, dy);
         }
         state.transientQuestScales.clear();
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
@@ -143,7 +143,7 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         return CanvasSmartSnapper.snap(
                 state,
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),

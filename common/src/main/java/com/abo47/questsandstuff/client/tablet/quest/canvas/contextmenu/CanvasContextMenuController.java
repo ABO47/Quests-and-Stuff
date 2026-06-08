@@ -8,7 +8,7 @@ import net.minecraft.client.resources.language.I18n;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 
 public final class CanvasContextMenuController {
     private CanvasContextMenuController() {

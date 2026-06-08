@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -121,7 +122,7 @@ final class CanvasViewportContextRouter {
         if (state == null || edgeHit == null) {
             return false;
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
         String edgeKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.edgeKey(edgeHit.sourceQuestId(), edgeHit.targetQuestId()));
         int edgeIndex = order.indexOf(edgeKey);

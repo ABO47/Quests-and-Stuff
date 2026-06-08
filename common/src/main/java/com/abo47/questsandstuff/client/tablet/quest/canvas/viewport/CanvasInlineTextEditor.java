@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.SharedConstants;
@@ -42,7 +42,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
@@ -50,7 +50,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.canvasTextMenuTarget);
         if (text == null) {
             return false;
@@ -101,7 +101,7 @@ public final class CanvasInlineTextEditor {
         if (!mainCanvasTextEditOpen()) {
             return null;
         }
-        return CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextEditTarget);
+        return CanvasRenderer.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -279,7 +279,7 @@ public final class CanvasInlineTextEditor {
         state.canvasTextEditDraft = state.canvasTextEditDraft.substring(0, safeStart) + value + state.canvasTextEditDraft.substring(safeEnd);
         state.canvasTextEditCursor = safeStart + value.length();
         state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
-        String group = TabletUiFactory.selectedGroupName(state);
+        String group = TabletStateQueries.selectedGroupName(state);
         String id = state.canvasTextEditTarget;
         CanvasRenderer.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);

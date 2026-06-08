@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextM
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -30,7 +31,7 @@ public final class TabletRootHitTest {
         if (!state.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletUiFactory.rootWidth(state), TabletUiFactory.rootHeight(state));
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
         int absMenuX = rootX + layout.menuX();
         int absMenuY = rootY + layout.menuY();
         return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()
@@ -52,7 +53,7 @@ public final class TabletRootHitTest {
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletUiFactory.selectedGroupName(state), state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }
@@ -83,8 +84,8 @@ public final class TabletRootHitTest {
         if (state.assetContextMenuW <= 0 || state.assetContextMenuH <= 0) {
             return false;
         }
-        int rootW = TabletUiFactory.rootWidth(state);
-        int rootH = TabletUiFactory.rootHeight(state);
+        int rootW = TabletStateQueries.rootWidth(state);
+        int rootH = TabletStateQueries.rootHeight(state);
         int w = Math.max(1, Math.min(432, rootW - 32));
         int h = Math.max(1, Math.min(260, rootH - 32));
         int mx = (rootW - w) / 2;

@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -35,7 +36,7 @@ final class ChapterRowRenderer {
 
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
         boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
-        boolean selected = group.equals(TabletUiFactory.selectedGroupName(state));
+        boolean selected = group.equals(TabletStateQueries.selectedGroupName(state));
         String rowLabel = group.equals(state.pendingChapterRename) ? state.chapterDraftName : group;
         if (collapsed) {
             addCollapsedChapterRow(chapterList, group, rowLabel, y, layout, selected);

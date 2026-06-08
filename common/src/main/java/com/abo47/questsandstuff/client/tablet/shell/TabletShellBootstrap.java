@@ -23,7 +23,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ensureAs
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.readPersistedUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.syncCanvasStateFromCache;
 
 public final class TabletShellBootstrap {
