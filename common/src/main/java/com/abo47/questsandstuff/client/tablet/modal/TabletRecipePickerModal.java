@@ -77,14 +77,13 @@ public final class TabletRecipePickerModal {
         TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.recipeSearch, 96, value -> {
             state.recipeSearch = SearchFilter.normalizeUserInput(value);
             state.recipeScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", recipeModeName(state), state.recipeSearch);
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", RecipePickerModes.name(state), state.recipeSearch);
             refresh.run();
         }, focused -> state.recipeSearchFocused = focused);
-        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, recipeModeIcon(state), recipeModeTooltip(state), click -> {
+        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, RecipePickerModes.icon(state), RecipePickerModes.tooltip(state), click -> {
             int direction = click.button == 1 ? -1 : 1;
-            cycleRecipeMode(state, direction);
-            state.recipeScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", recipeModeName(state), direction < 0 ? "backward" : "forward");
+            RecipePickerModes.cycle(state, direction);
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", RecipePickerModes.name(state), direction < 0 ? "backward" : "forward");
             refresh.run();
         });
         addRecipeViewerKeyHandler(modal, state, player, refresh);
@@ -482,38 +481,6 @@ public final class TabletRecipePickerModal {
             }
         }
         return stacks.toArray(ItemStack[]::new);
-    }
-
-    private static void cycleRecipeMode(TabletUiState state, int direction) {
-        int current = state.recipeInventoryMode ? 3 : state.recipeFluidMode ? 2 : state.recipeTagMode ? 1 : 0;
-        int next = Math.floorMod(current + direction, 4);
-        state.recipeTagMode = next == 1;
-        state.recipeFluidMode = next == 2;
-        state.recipeInventoryMode = next == 3;
-    }
-
-    private static String recipeModeIcon(TabletUiState state) {
-        if (state.recipeInventoryMode) {
-            return "mode_inventory";
-        }
-        if (state.recipeFluidMode) {
-            return "mode_fluids";
-        }
-        return state.recipeTagMode ? "mode_tags" : "mode_items";
-    }
-
-    private static String recipeModeName(TabletUiState state) {
-        if (state.recipeInventoryMode) {
-            return "inventory";
-        }
-        if (state.recipeFluidMode) {
-            return "fluids";
-        }
-        return state.recipeTagMode || (state.recipeSearch != null && state.recipeSearch.trim().startsWith("#")) ? "tags" : "items";
-    }
-
-    private static Component[] recipeModeTooltip(TabletUiState state) {
-        return new Component[]{Component.translatable("ui.questsandstuff.recipe_picker.mode." + recipeModeName(state))};
     }
 
     private record RecipeChoices(List<RecipeChoice> outputs, List<RecipeChoice> tags) {

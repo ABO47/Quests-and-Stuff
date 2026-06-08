@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModalPickerStatesTest {
     @Test
@@ -53,5 +54,50 @@ class ModalPickerStatesTest {
         assertEquals(" quest_a ", state.prerequisitesManagerSearch);
         assertEquals("quest_a", picker.normalizedSearch());
         assertEquals("questa", picker.normalizedKey());
+    }
+
+    @Test
+    void recipeModeCycleKeepsOneModeActiveAndResetsScroll() {
+        TabletUiState state = new TabletUiState();
+        state.recipeScroll = 24;
+
+        RecipePickerModes.cycle(state, 1);
+
+        assertTrue(state.recipeTagMode);
+        assertFalse(state.recipeFluidMode);
+        assertFalse(state.recipeInventoryMode);
+        assertEquals(0, state.recipeScroll);
+        assertEquals("mode_tags", RecipePickerModes.icon(state));
+        assertEquals("tags", RecipePickerModes.name(state));
+
+        state.recipeScroll = 18;
+        RecipePickerModes.cycle(state, 1);
+
+        assertFalse(state.recipeTagMode);
+        assertTrue(state.recipeFluidMode);
+        assertFalse(state.recipeInventoryMode);
+        assertEquals(0, state.recipeScroll);
+        assertEquals("mode_fluids", RecipePickerModes.icon(state));
+        assertEquals("fluids", RecipePickerModes.name(state));
+
+        state.recipeScroll = 9;
+        RecipePickerModes.cycle(state, -1);
+
+        assertTrue(state.recipeTagMode);
+        assertFalse(state.recipeFluidMode);
+        assertFalse(state.recipeInventoryMode);
+        assertEquals(0, state.recipeScroll);
+    }
+
+    @Test
+    void hashRecipeSearchUsesTagModeNameWithoutChangingModeFlags() {
+        TabletUiState state = new TabletUiState();
+        state.recipeSearch = " #forge:ingots ";
+
+        assertEquals("tags", RecipePickerModes.name(state));
+        assertEquals("mode_items", RecipePickerModes.icon(state));
+        assertFalse(state.recipeTagMode);
+        assertFalse(state.recipeFluidMode);
+        assertFalse(state.recipeInventoryMode);
     }
 }

@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TabletModalStateTest {
+    @BeforeEach
+    void enablePopupAnimations() {
+        QuestsAndStuffConfig.setUiAnimationsEnabled(true);
+        QuestsAndStuffConfig.setPopupWindowAnimationsEnabled(true);
+    }
+
     @Test
     void applyingModalTypeCreatesAndReplacesTheActiveSession() {
         TabletUiState state = new TabletUiState();
@@ -43,6 +51,65 @@ class TabletModalStateTest {
         assertTrue(state.lootTablePickerOpen);
         assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, ModalStateQueries.activeType(state));
+    }
+
+    @Test
+    void openModalCapturesRecentPointerSourceInsideRoot() {
+        TabletUiState state = new TabletUiState();
+        state.tabletRootWidth = 320;
+        state.tabletRootHeight = 240;
+
+        TabletModalState.rememberPointerSource(state, 20, 30);
+        TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+
+        assertTrue(state.modalWindowAnimationHasSource);
+        assertEquals(12, state.modalWindowAnimationSourceX);
+        assertEquals(22, state.modalWindowAnimationSourceY);
+        assertEquals(16, state.modalWindowAnimationSourceW);
+        assertEquals(16, state.modalWindowAnimationSourceH);
+        assertTrue(state.modalWindowAnimationStartMs > 0L);
+    }
+
+    @Test
+    void animatedCloseKeepsTheModalActiveUntilTheWindowDurationEnds() {
+        TabletUiState state = new TabletUiState();
+        TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        state.iconSearchFocused = true;
+
+        TabletModalState.closeAllModals(state);
+
+        assertTrue(state.modalWindowClosing);
+        assertTrue(state.iconPickerOpen);
+        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
+        assertFalse(state.iconSearchFocused);
+        assertFalse(TabletModalState.finishClosingIfDone(state));
+        assertTrue(state.iconPickerOpen);
+
+        state.modalWindowAnimationStartMs = System.currentTimeMillis() - 1_000L;
+
+        assertTrue(TabletModalState.finishClosingIfDone(state));
+        assertFalse(state.modalWindowClosing);
+        assertFalse(state.iconPickerOpen);
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
+    }
+
+    @Test
+    void reopeningDuringAnimatedCloseReplacesTheSessionAndCancelsClosing() {
+        TabletUiState state = new TabletUiState();
+        TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+
+        TabletModalState.closeAllModals(state);
+        assertTrue(state.modalWindowClosing);
+
+        TabletModalState.openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+
+        assertFalse(state.modalWindowClosing);
+        assertFalse(state.iconPickerOpen);
+        assertTrue(state.assetPickerOpen);
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, ModalStateQueries.activeType(state));
+        assertFalse(TabletModalState.finishClosingIfDone(state));
     }
 
     @Test
