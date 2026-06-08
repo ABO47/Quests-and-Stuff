@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -42,18 +43,19 @@ public final class QuestDetailsObjectiveMenus {
         renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
         renderItemSourcePicker(modal, state, refresh, modalW, modalH);
         QuestObjectiveXpEditor.render(modal, state, player, refresh, modalW, modalH);
-        if (!state.questDetailsTypePickerOpen || !QuestDetailsEditState.canEdit(state)) {
+        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        if (!picker.typePicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
-        boolean rewards = state.questDetailsTypePickerKind.startsWith("reward");
-        boolean change = state.questDetailsTypePickerKind.endsWith("_change");
+        boolean rewards = picker.kind().startsWith("reward");
+        boolean change = picker.kind().endsWith("_change");
         List<QuestDetailsTypeChoice> choices = rewards ? QuestObjectiveTypeCatalog.rewardChoices() : QuestObjectiveTypeCatalog.taskChoices();
-        List<ContextAction> typeActions = typePickerActions(choices, rewards, change, player, state, questId, quest);
+        List<ContextAction> typeActions = typePickerActions(choices, rewards, change, player, state, questId, quest, picker.targetId());
         int rowCount = typeActions.size();
         int menuW = 130;
         int menuH = ContextMenuPanel.heightForRows(rowCount);
-        int mx = Math.max(4, Math.min(state.questDetailsTypePickerX, modalW - menuW - 4));
-        int my = Math.max(4, Math.min(state.questDetailsTypePickerY, modalH - menuH - 4));
+        int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
         WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
@@ -105,10 +107,11 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     private static void renderItemSourcePicker(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsItemSourcePickerOpen || !QuestDetailsEditState.canEdit(state)) {
+        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        if (!picker.itemSourcePicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
-        String target = state.questDetailsItemSourcePickerTarget == null ? "" : state.questDetailsItemSourcePickerTarget;
+        String target = picker.itemSourceTarget() == null ? "" : picker.itemSourceTarget();
         if (target.isBlank()) {
             QuestDetailsTransientState.closeItemSourcePicker(state);
             return;
@@ -127,8 +130,8 @@ public final class QuestDetailsObjectiveMenus {
         int rowCount = actions.size();
         int menuW = 132;
         int menuH = ContextMenuPanel.heightForRows(rowCount);
-        int mx = Math.max(4, Math.min(state.questDetailsItemSourcePickerX, modalW - menuW - 4));
-        int my = Math.max(4, Math.min(state.questDetailsItemSourcePickerY, modalH - menuH - 4));
+        int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
         WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
@@ -252,21 +255,22 @@ public final class QuestDetailsObjectiveMenus {
             Player player,
             TabletUiState state,
             String questId,
-            CompoundTag quest
+            CompoundTag quest,
+            String targetId
     ) {
         if (rewards) {
             List<ContextAction> actions = new ArrayList<>();
             for (QuestDetailsTypeChoice choice : choices) {
-                actions.add(typeChoiceAction(choice, true, change, player, state, questId, quest));
+                actions.add(typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
             }
             return actions;
         }
 
         List<ContextAction> actions = new ArrayList<>();
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestVocabulary.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
         return actions;
     }
 
@@ -281,13 +285,14 @@ public final class QuestDetailsObjectiveMenus {
             Player player,
             TabletUiState state,
             String questId,
-            CompoundTag quest
+            CompoundTag quest,
+            String targetId
     ) {
         List<ContextAction> children = new ArrayList<>();
         for (String type : types) {
             QuestDetailsTypeChoice choice = typeChoice(choices, type);
             if (choice != null) {
-                children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest));
+                children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest, targetId));
             }
         }
         if (!children.isEmpty()) {
@@ -311,10 +316,10 @@ public final class QuestDetailsObjectiveMenus {
             Player player,
             TabletUiState state,
             String questId,
-            CompoundTag quest
+            CompoundTag quest,
+            String targetId
     ) {
         return ContextActions.action(choice.label(), choice.icon(), ModColors.INTERACTIVE, () -> {
-            String targetId = state.questDetailsTypePickerTargetId;
             QuestDetailsTransientState.closeTypePicker(state);
             QuestDetailsTransientState.closeContext(state);
             if (rewards) {

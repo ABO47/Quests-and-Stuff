@@ -18,6 +18,7 @@ class TabletPureHelperCoverageTest {
                 "optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest",
                 "text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest",
                 "selector builders", "com.abo47.questsandstuff.client.tablet.controls.TabletSelectorTest",
+                "quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest",
                 "objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest"
         );
 

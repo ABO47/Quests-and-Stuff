@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -27,17 +28,18 @@ final class QuestObjectiveXpEditor {
     }
 
     static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsXpPickerOpen || !QuestDetailsEditState.canEdit(state)) {
+        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        if (!picker.xpPicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
-        List<ContextAction> actions = state.questDetailsXpPickerTask
+        List<ContextAction> actions = picker.xpTask()
                 ? taskActions(player, state)
                 : rewardActions(player, state);
         int rowCount = actions.size();
-        int menuW = state.questDetailsXpPickerTask ? 156 : 132;
+        int menuW = picker.xpTask() ? 156 : 132;
         int menuH = ContextMenuPanel.heightForRows(rowCount);
-        int x = Math.max(4, Math.min(state.questDetailsXpPickerX, modalW - menuW - 4));
-        int y = Math.max(4, Math.min(state.questDetailsXpPickerY, modalH - menuH - 4));
+        int x = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int y = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
         WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
@@ -77,8 +79,9 @@ final class QuestObjectiveXpEditor {
     }
 
     private static void commitTask(Player player, TabletUiState state, String mode, String collection) {
-        String questId = state.questDetailsXpPickerQuestId;
-        String id = state.questDetailsXpPickerEntryId;
+        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        String questId = picker.xpQuestId();
+        String id = picker.xpEntryId();
         JsonObject existing = existingJson(questId, id, true);
         JsonObject json = xpBase(existing, id);
         json.addProperty("mode", mode);
@@ -89,8 +92,9 @@ final class QuestObjectiveXpEditor {
     }
 
     private static void commitReward(Player player, TabletUiState state, String mode) {
-        String questId = state.questDetailsXpPickerQuestId;
-        String id = state.questDetailsXpPickerEntryId;
+        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        String questId = picker.xpQuestId();
+        String id = picker.xpEntryId();
         JsonObject existing = existingJson(questId, id, false);
         JsonObject json = xpBase(existing, id);
         json.addProperty("mode", mode);
