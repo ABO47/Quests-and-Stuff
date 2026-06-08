@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Owns the process-global tablet theme. Existing render code reads `ModColors`
+ * statics directly, so all palette mutation is routed through this manager.
+ */
 public final class UiThemeManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Object LOCK = new Object();
@@ -98,8 +102,7 @@ public final class UiThemeManager {
                 JsonObject active = new JsonObject();
                 active.addProperty("theme", normalized);
                 UiThemeFiles.writeString(UiThemeFiles.ACTIVE_THEME_FILE, GSON.toJson(active));
-                state = UiThemeJsonCodec.loadUiThemeState(themePath);
-                applyUiPalette(state);
+                installLoadedState(UiThemeJsonCodec.loadUiThemeState(themePath));
                 initialized = true;
                 lastCheckMs = System.currentTimeMillis();
                 activeFileMtime = UiThemeFiles.safeMtime(UiThemeFiles.ACTIVE_THEME_FILE);
@@ -141,14 +144,35 @@ public final class UiThemeManager {
                 return;
             }
 
-            state = UiThemeJsonCodec.loadUiThemeState(themePath);
-            applyUiPalette(state);
+            installLoadedState(UiThemeJsonCodec.loadUiThemeState(themePath));
             initialized = true;
             activeFileMtime = currentActiveMtime;
             themeFileMtime = currentThemeMtime;
             loadedThemePath = themePath;
             QuestsAndStuffMod.debugLog("[QnS:UI] Loaded UI theme {}", themePath);
         }
+    }
+
+    static void applyLoadedState(UiThemeState nextState) {
+        synchronized (LOCK) {
+            installLoadedState(nextState);
+        }
+    }
+
+    static void resetGlobalPaletteToDefaults() {
+        synchronized (LOCK) {
+            installLoadedState(UiThemeState.defaults());
+            initialized = false;
+            lastCheckMs = 0L;
+            activeFileMtime = Long.MIN_VALUE;
+            themeFileMtime = Long.MIN_VALUE;
+            loadedThemePath = null;
+        }
+    }
+
+    private static void installLoadedState(UiThemeState nextState) {
+        state = nextState == null ? UiThemeState.defaults() : nextState;
+        applyUiPalette(state);
     }
 
     private static void applyUiPalette(UiThemeState state) {
