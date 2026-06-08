@@ -493,9 +493,7 @@ public final class ModalOpenActions {
 
     private static void resetRecipePicker(TabletUiState state) {
         ModalPickerStates.recipe(state).reset();
-        state.recipeTagMode = false;
-        state.recipeInventoryMode = false;
-        state.recipeFluidMode = false;
+        RecipePickerMode.reset(state);
     }
 
     private static void resetBlockPicker(TabletUiState state) {

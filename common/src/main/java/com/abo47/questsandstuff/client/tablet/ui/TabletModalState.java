@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class TabletModalState {
@@ -173,9 +174,7 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
-        state.recipeTagMode = false;
-        state.recipeInventoryMode = false;
-        state.recipeFluidMode = false;
+        RecipePickerMode.reset(state);
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
@@ -222,9 +221,7 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
-        state.recipeTagMode = false;
-        state.recipeInventoryMode = false;
-        state.recipeFluidMode = false;
+        RecipePickerMode.reset(state);
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;

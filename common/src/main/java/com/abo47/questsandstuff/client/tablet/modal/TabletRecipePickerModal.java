@@ -77,18 +77,22 @@ public final class TabletRecipePickerModal {
         TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.recipeSearch, 96, value -> {
             state.recipeSearch = SearchFilter.normalizeUserInput(value);
             state.recipeScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", RecipePickerModes.name(state), state.recipeSearch);
+            RecipePickerMode mode = RecipePickerMode.safe(state.recipeMode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", mode.logName(state.recipeSearch), state.recipeSearch);
             refresh.run();
         }, focused -> state.recipeSearchFocused = focused);
-        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, RecipePickerModes.icon(state), RecipePickerModes.tooltip(state), click -> {
+        RecipePickerMode mode = RecipePickerMode.safe(state.recipeMode);
+        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, mode.icon(), mode.tooltip(state.recipeSearch), click -> {
             int direction = click.button == 1 ? -1 : 1;
-            RecipePickerModes.cycle(state, direction);
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", RecipePickerModes.name(state), direction < 0 ? "backward" : "forward");
+            RecipePickerMode.cycle(state, direction);
+            RecipePickerMode nextMode = RecipePickerMode.safe(state.recipeMode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", nextMode.logName(state.recipeSearch), direction < 0 ? "backward" : "forward");
             refresh.run();
         });
         addRecipeViewerKeyHandler(modal, state, player, refresh);
 
-        if (state.recipeInventoryMode) {
+        mode = RecipePickerMode.safe(state.recipeMode);
+        if (mode == RecipePickerMode.INVENTORY) {
             List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.recipeSearch);
             TiledPickerPanel.add(
                     modal,
@@ -113,7 +117,7 @@ public final class TabletRecipePickerModal {
                     refresh,
                     (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
             );
-        } else if (state.recipeFluidMode) {
+        } else if (mode == RecipePickerMode.FLUIDS) {
             List<String> entries = DisplayIconProvider.searchableFluidEntries(state.recipeSearch);
             TiledPickerPanel.add(
                     modal,
@@ -139,7 +143,7 @@ public final class TabletRecipePickerModal {
                     (surface, entry, index, x, y, tileW, tileH, layout) -> renderFluidTile(surface, player, state, refresh, entry, x, y)
             );
         } else {
-            List<RecipeChoice> entries = recipes(state.recipeSearch, state.recipeTagMode);
+            List<RecipeChoice> entries = recipes(state.recipeSearch, mode.showingTags(state.recipeSearch));
             TiledPickerPanel.add(
                     modal,
                     gridX,

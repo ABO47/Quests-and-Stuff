@@ -40,9 +40,7 @@ class ModalOpenActionsTest {
         state.recipeSearchFocused = true;
         state.recipeScroll = 44;
         state.recipeScrollDragging = true;
-        state.recipeTagMode = true;
-        state.recipeFluidMode = true;
-        state.recipeInventoryMode = true;
+        state.recipeMode = RecipePickerMode.INVENTORY;
 
         ModalOpenActions.openCanvasRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe", 12, 34);
 
@@ -55,8 +53,6 @@ class ModalOpenActionsTest {
         assertFalse(state.recipeSearchFocused);
         assertEquals(0, state.recipeScroll);
         assertFalse(state.recipeScrollDragging);
-        assertFalse(state.recipeTagMode);
-        assertFalse(state.recipeFluidMode);
-        assertFalse(state.recipeInventoryMode);
+        assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
     }
 }

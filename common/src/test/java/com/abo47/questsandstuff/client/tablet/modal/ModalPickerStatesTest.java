@@ -6,17 +6,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModalPickerStatesTest {
     @Test
-    void recipeBindingResetsSearchFocusScrollDraggingAndKeepsModeFlagsSeparate() {
+    void recipeBindingResetsSearchFocusScrollDraggingAndKeepsModeSeparate() {
         TabletUiState state = new TabletUiState();
         state.recipeSearch = "minecraft:stone";
         state.recipeSearchFocused = true;
         state.recipeScroll = 42;
         state.recipeScrollDragging = true;
-        state.recipeTagMode = true;
+        state.recipeMode = RecipePickerMode.TAGS;
 
         ModalPickerStates.recipe(state).reset();
 
@@ -24,7 +23,7 @@ class ModalPickerStatesTest {
         assertFalse(state.recipeSearchFocused);
         assertEquals(0, state.recipeScroll);
         assertFalse(state.recipeScrollDragging);
-        assertEquals(true, state.recipeTagMode);
+        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
     }
 
     @Test
@@ -61,31 +60,25 @@ class ModalPickerStatesTest {
         TabletUiState state = new TabletUiState();
         state.recipeScroll = 24;
 
-        RecipePickerModes.cycle(state, 1);
+        RecipePickerMode.cycle(state, 1);
 
-        assertTrue(state.recipeTagMode);
-        assertFalse(state.recipeFluidMode);
-        assertFalse(state.recipeInventoryMode);
+        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
         assertEquals(0, state.recipeScroll);
-        assertEquals("mode_tags", RecipePickerModes.icon(state));
-        assertEquals("tags", RecipePickerModes.name(state));
+        assertEquals("mode_tags", state.recipeMode.icon());
+        assertEquals("tags", state.recipeMode.logName(state.recipeSearch));
 
         state.recipeScroll = 18;
-        RecipePickerModes.cycle(state, 1);
+        RecipePickerMode.cycle(state, 1);
 
-        assertFalse(state.recipeTagMode);
-        assertTrue(state.recipeFluidMode);
-        assertFalse(state.recipeInventoryMode);
+        assertEquals(RecipePickerMode.FLUIDS, state.recipeMode);
         assertEquals(0, state.recipeScroll);
-        assertEquals("mode_fluids", RecipePickerModes.icon(state));
-        assertEquals("fluids", RecipePickerModes.name(state));
+        assertEquals("mode_fluids", state.recipeMode.icon());
+        assertEquals("fluids", state.recipeMode.logName(state.recipeSearch));
 
         state.recipeScroll = 9;
-        RecipePickerModes.cycle(state, -1);
+        RecipePickerMode.cycle(state, -1);
 
-        assertTrue(state.recipeTagMode);
-        assertFalse(state.recipeFluidMode);
-        assertFalse(state.recipeInventoryMode);
+        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
         assertEquals(0, state.recipeScroll);
     }
 
@@ -94,10 +87,8 @@ class ModalPickerStatesTest {
         TabletUiState state = new TabletUiState();
         state.recipeSearch = " #forge:ingots ";
 
-        assertEquals("tags", RecipePickerModes.name(state));
-        assertEquals("mode_items", RecipePickerModes.icon(state));
-        assertFalse(state.recipeTagMode);
-        assertFalse(state.recipeFluidMode);
-        assertFalse(state.recipeInventoryMode);
+        assertEquals("tags", state.recipeMode.logName(state.recipeSearch));
+        assertEquals("mode_items", state.recipeMode.icon());
+        assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
     }
 }

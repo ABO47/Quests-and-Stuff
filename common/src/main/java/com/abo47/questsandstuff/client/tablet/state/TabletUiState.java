@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -188,9 +189,7 @@ public class TabletUiState {
     public boolean advancementScrollDragging;
     public String recipeSearch = "";
     public boolean recipeSearchFocused;
-    public boolean recipeTagMode;
-    public boolean recipeInventoryMode;
-    public boolean recipeFluidMode;
+    public RecipePickerMode recipeMode = RecipePickerMode.ITEMS;
     public int recipeScroll;
     public boolean recipeScrollDragging;
     public String recipeHoveredPick = "";
