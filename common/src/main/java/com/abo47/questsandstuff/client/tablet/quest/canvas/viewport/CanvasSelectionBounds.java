@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -15,7 +16,7 @@ final class CanvasSelectionBounds {
     private CanvasSelectionBounds() {
     }
 
-    static CanvasSmartSnapper.Bounds currentSelectionBounds(
+    static CanvasSnapEngine.Bounds currentSelectionBounds(
             TabletUiState state,
             CanvasElementTransformController elementTransforms,
             Map<String, QuestCardLayout> byQuestId,
@@ -40,7 +41,7 @@ final class CanvasSelectionBounds {
             if (image == null) {
                 continue;
             }
-            CanvasSmartSnapper.Bounds bounds = CanvasSmartSnapper.boundsForImage(state, image);
+            CanvasSnapEngine.Bounds bounds = CanvasSmartSnapper.boundsForImage(state, image);
             minX = Math.min(minX, bounds.left());
             minY = Math.min(minY, bounds.top());
             maxX = Math.max(maxX, bounds.right());
@@ -51,16 +52,16 @@ final class CanvasSelectionBounds {
             if (text == null) {
                 continue;
             }
-            CanvasSmartSnapper.Bounds bounds = CanvasSmartSnapper.boundsForText(state, text);
+            CanvasSnapEngine.Bounds bounds = CanvasSmartSnapper.boundsForText(state, text);
             minX = Math.min(minX, bounds.left());
             minY = Math.min(minY, bounds.top());
             maxX = Math.max(maxX, bounds.right());
             maxY = Math.max(maxY, bounds.bottom());
         }
         if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE || maxY == Integer.MIN_VALUE) {
-            return new CanvasSmartSnapper.Bounds(0, 0, 0, 0);
+            return new CanvasSnapEngine.Bounds(0, 0, 0, 0);
         }
-        return new CanvasSmartSnapper.Bounds(minX, minY, maxX, maxY);
+        return new CanvasSnapEngine.Bounds(minX, minY, maxX, maxY);
     }
 
     static CanvasPoint clampSelectionDelta(TabletUiState state, int dx, int dy) {
@@ -86,11 +87,11 @@ final class CanvasSelectionBounds {
         return new CanvasPoint(dx, dy);
     }
 
-    static CanvasSmartSnapper.Bounds translatedDragStartBounds(TabletUiState state, int dx, int dy) {
+    static CanvasSnapEngine.Bounds translatedDragStartBounds(TabletUiState state, int dx, int dy) {
         if (!hasDragStartBounds(state)) {
-            return new CanvasSmartSnapper.Bounds(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+            return CanvasSnapEngine.Bounds.invalid();
         }
-        return new CanvasSmartSnapper.Bounds(
+        return new CanvasSnapEngine.Bounds(
                 state.dragStartBoundsLeft + dx,
                 state.dragStartBoundsTop + dy,
                 state.dragStartBoundsRight + dx,

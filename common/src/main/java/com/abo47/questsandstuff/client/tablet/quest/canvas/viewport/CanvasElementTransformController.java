@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -233,7 +234,7 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasImageLayer applySmartSnapToImage(CanvasImageLayer image, List<QuestCardLayout> cards, String group) {
-        CanvasSmartSnapper.SnapResult snap = CanvasSmartSnapper.snap(
+        CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForImage(state, image),
                 cards,
@@ -262,7 +263,7 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasTextLayer applySmartSnapToText(CanvasTextLayer text, List<QuestCardLayout> cards, String group) {
-        CanvasSmartSnapper.SnapResult snap = CanvasSmartSnapper.snap(
+        CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForText(state, text),
                 cards,

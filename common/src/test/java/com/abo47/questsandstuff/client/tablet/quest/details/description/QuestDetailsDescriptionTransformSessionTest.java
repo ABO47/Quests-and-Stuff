@@ -53,6 +53,39 @@ class QuestDetailsDescriptionTransformSessionTest {
         assertFalse(state.snapGuideYVisible);
     }
 
+    @Test
+    void descriptionTransformUsesSharedObjectSnapGuides() {
+        TabletUiState state = new TabletUiState();
+        state.questDetailsObjectSnapEnabled = true;
+        state.questDetailsGridSnapLocked = true;
+
+        QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
+        model.putText(text("moving", 45, 45));
+        model.putText(text("target", 129, 45));
+        QuestDetailsDescriptionTransform transform = new QuestDetailsDescriptionTransform(state, () -> 0, () -> 0, () -> 200, () -> 200);
+
+        transform.beginTransform(
+                model,
+                "desc_text",
+                "moving",
+                new QuestDetailsDescriptionTransform.ElementRect(45, 45, 80, 30, 0),
+                false,
+                false,
+                false,
+                45,
+                45,
+                45
+        );
+        transform.applyTransform(model, 45, 45);
+
+        assertEquals(49, model.text("moving").x());
+        assertEquals(45, model.text("moving").y());
+        assertTrue(state.snapGuideXVisible);
+        assertTrue(state.snapGuideYVisible);
+        assertEquals(129, state.snapGuideX);
+        assertEquals(45, state.snapGuideY);
+    }
+
     private static CanvasTextLayer text(String id, int x, int y) {
         return new CanvasTextLayer(id, "Label", x, y, 80, 30, 0, "left", "normal", 0xFFFFFFFF);
     }

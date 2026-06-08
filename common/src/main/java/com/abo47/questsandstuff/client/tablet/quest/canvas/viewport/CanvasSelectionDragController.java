@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -53,7 +54,7 @@ final class CanvasSelectionDragController {
             }
         }
         CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
-        CanvasSmartSnapper.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
+        CanvasSnapEngine.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
         state.dragStartBoundsLeft = bounds.left();
         state.dragStartBoundsTop = bounds.top();
         state.dragStartBoundsRight = bounds.right();
@@ -78,7 +79,7 @@ final class CanvasSelectionDragController {
         state.dragCurrentX = localX;
         state.dragCurrentY = localY;
         CanvasPoint delta = snappedSelectionDelta(dx, dy);
-        CanvasSmartSnapper.SnapResult snap = smartSnapSelectionDelta(delta.x, delta.y, cards);
+        CanvasSnapEngine.SnapResult snap = smartSnapSelectionDelta(delta.x, delta.y, cards);
         if (snap.hasOffset()) {
             int requestedDx = delta.x + snap.offsetX();
             int requestedDy = delta.y + snap.offsetY();
@@ -141,7 +142,7 @@ final class CanvasSelectionDragController {
         return Math.round((float) delta / (float) grid) * grid;
     }
 
-    private CanvasSmartSnapper.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
+    private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
         String group = TabletUiFactory.selectedGroupName(state);
         return CanvasSmartSnapper.snap(
                 state,

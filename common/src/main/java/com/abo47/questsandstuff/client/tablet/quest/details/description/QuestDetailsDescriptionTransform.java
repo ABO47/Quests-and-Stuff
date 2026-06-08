@@ -9,11 +9,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroupResizeTransform;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
 
@@ -269,8 +273,8 @@ public final class QuestDetailsDescriptionTransform {
                 CanvasPoint delta = new CanvasPoint(snapDelta(dx), snapDelta(dy));
                 int x = state.questDetailsTransformStartX + delta.x;
                 int y = state.questDetailsTransformStartY + delta.y;
-                SnapMove snapped = snapMove(model, text.id(), x, y, text.w(), text.h(), CanvasElementGeometry.defaultPivot(text.w()), CanvasElementGeometry.defaultPivot(text.h()), text.rotation());
-                CanvasPoint clamped = clampTextAnchor(snapped.x(), snapped.y(), text.w(), text.h(), text.rotation());
+                CanvasPoint snapped = snapMove(model, text.id(), x, y, text.w(), text.h(), CanvasElementGeometry.defaultPivot(text.w()), CanvasElementGeometry.defaultPivot(text.h()), text.rotation());
+                CanvasPoint clamped = clampTextAnchor(snapped.x, snapped.y, text.w(), text.h(), text.rotation());
                 yield text.moveTo(clamped.x, clamped.y);
             }
         };
@@ -284,15 +288,15 @@ public final class QuestDetailsDescriptionTransform {
                 CanvasPoint delta = CanvasTransformGizmo.supports(image.asset()) ? modelDragDelta(dx, dy) : new CanvasPoint(snapDelta(dx), snapDelta(dy));
                 int x = state.questDetailsTransformStartX + delta.x;
                 int y = state.questDetailsTransformStartY + delta.y;
-                SnapMove snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+                CanvasPoint snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 String axis = CanvasTransformGizmo.moveAxisOrFree(state.questDetailsTransformAxis);
                 if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
-                    CanvasPoint offset = CanvasTransformAxisDelta.project(snapped.x() - x, snapped.y() - y, state.questDetailsTransformStartRotation, axis, false, CanvasGeometry.gridSize(state));
-                    snapped = new SnapMove(x + offset.x, y + offset.y);
+                    CanvasPoint offset = CanvasTransformAxisDelta.project(snapped.x - x, snapped.y - y, state.questDetailsTransformStartRotation, axis, false, CanvasGeometry.gridSize(state));
+                    snapped = new CanvasPoint(x + offset.x, y + offset.y);
                     state.snapGuideXVisible = state.snapGuideXVisible && offset.x != 0;
                     state.snapGuideYVisible = state.snapGuideYVisible && offset.y != 0;
                 }
-                CanvasPoint clamped = clampImageAnchor(image.moveTo(snapped.x(), snapped.y()));
+                CanvasPoint clamped = clampImageAnchor(image.moveTo(snapped.x, snapped.y));
                 yield image.moveTo(clamped.x, clamped.y);
             }
         };
@@ -449,54 +453,57 @@ public final class QuestDetailsDescriptionTransform {
         return QuestDetailsDescriptionLayout.clampAnchorToColumn(state, x, y, width, height, pivotX, pivotY, rotationDegrees, contentW.getAsInt());
     }
 
-    private SnapMove snapMove(QuestDetailsDescriptionModel model, String movingId, int x, int y, int w, int h, int pivotX, int pivotY, int rotation) {
+    private CanvasPoint snapMove(QuestDetailsDescriptionModel model, String movingId, int x, int y, int w, int h, int pivotX, int pivotY, int rotation) {
         state.snapGuideXVisible = false;
         state.snapGuideYVisible = false;
-        if (!state.questDetailsCenterSnapXEnabled && !state.questDetailsCenterSnapYEnabled && !state.questDetailsObjectSnapEnabled) {
-            return new SnapMove(x, y);
-        }
-        int threshold = Math.max(5, (CanvasGeometry.gridSize(state) + 1) / 2);
-        SnapChoice xChoice = SnapChoice.empty(threshold);
-        SnapChoice yChoice = SnapChoice.empty(threshold);
-        Bounds moving = bounds(x, y, w, h, pivotX, pivotY, rotation);
-        if (state.questDetailsObjectSnapEnabled) {
-            for (CanvasTextLayer text : model.texts.values()) {
-                if (!text.id().equals(movingId)) {
-                    Bounds target = bounds(text.x(), text.y(), text.w(), text.h(), CanvasElementGeometry.defaultPivot(text.w()), CanvasElementGeometry.defaultPivot(text.h()), text.rotation());
-                    xChoice = bestX(xChoice, moving, target);
-                    yChoice = bestY(yChoice, moving, target);
-                }
-            }
-            for (CanvasImageLayer image : model.images.values()) {
-                if (!image.id().equals(movingId)) {
-                    Bounds target = bounds(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-                    xChoice = bestX(xChoice, moving, target);
-                    yChoice = bestY(yChoice, moving, target);
-                }
-            }
-        }
-        if (state.questDetailsCenterSnapXEnabled) {
-            int centerX = contentW.getAsInt() / 2;
-            xChoice = bestX(xChoice, moving, new Bounds(centerX, state.questDetailsDescScroll, centerX, state.questDetailsDescScroll + contentH.getAsInt()));
-        }
-        if (state.questDetailsCenterSnapYEnabled) {
-            int centerY = state.questDetailsDescScroll + contentH.getAsInt() / 2;
-            yChoice = bestY(yChoice, moving, new Bounds(0, centerY, contentW.getAsInt(), centerY));
-        }
-        if (xChoice.valid()) {
+        CanvasSnapEngine.SnapResult result = CanvasSnapEngine.snap(new CanvasSnapEngine.SnapContext(
+                CanvasSnapBounds.atPivot(x, y, w, h, pivotX, pivotY, rotation),
+                snapTargets(model, movingId),
+                new CanvasSnapEngine.SnapSettings(
+                        state.questDetailsCenterSnapXEnabled,
+                        state.questDetailsCenterSnapYEnabled,
+                        state.questDetailsObjectSnapEnabled,
+                        contentW.getAsInt() / 2.0D,
+                        state.questDetailsDescScroll + contentH.getAsInt() / 2.0D,
+                        snapThresholdLogical()
+                )
+        ));
+        if (result.guideXVisible()) {
             state.snapGuideXVisible = true;
-            state.snapGuideX = xChoice.target();
+            state.snapGuideX = (int) Math.round(result.guideX());
         }
-        if (yChoice.valid()) {
+        if (result.guideYVisible()) {
             state.snapGuideYVisible = true;
-            state.snapGuideY = yChoice.target() - state.questDetailsDescScroll;
+            state.snapGuideY = (int) Math.round(result.guideY()) - state.questDetailsDescScroll;
         }
-        return new SnapMove(x + (xChoice.valid() ? xChoice.offset() : 0), y + (yChoice.valid() ? yChoice.offset() : 0));
+        return new CanvasPoint(x + result.offsetX(), y + result.offsetY());
     }
 
-    private static Bounds bounds(int x, int y, int w, int h, int pivotX, int pivotY, int rotation) {
-        int[] box = CanvasElementGeometry.logicalBoundsAtPivot(x, y, w, h, pivotX, pivotY, rotation);
-        return new Bounds(box[0], box[1], box[2], box[3]);
+    private List<CanvasSnapEngine.Bounds> snapTargets(QuestDetailsDescriptionModel model, String movingId) {
+        if (!state.questDetailsObjectSnapEnabled) {
+            return List.of();
+        }
+        List<CanvasSnapEngine.Bounds> targets = new ArrayList<>();
+        for (CanvasTextLayer text : model.texts.values()) {
+            if (!text.id().equals(movingId)) {
+                targets.add(CanvasSnapBounds.forText(text));
+            }
+        }
+        for (CanvasImageLayer image : model.images.values()) {
+            if (!image.id().equals(movingId)) {
+                targets.add(CanvasSnapBounds.forImage(image));
+            }
+        }
+        return targets;
+    }
+
+    private int snapThresholdLogical() {
+        int screenThreshold = 5;
+        if (!state.questDetailsGridSnapLocked) {
+            return screenThreshold;
+        }
+        int gridReach = Math.max(1, (CanvasGeometry.gridSize(state) + 1) / 2);
+        return Math.max(screenThreshold, gridReach);
     }
 
     private boolean isSelectedText(String id) {
@@ -507,64 +514,6 @@ public final class QuestDetailsDescriptionTransform {
         return id.equals(state.questDetailsSelectedImageId) || state.questDetailsSelectedImageIds.contains(id);
     }
 
-    private static SnapChoice bestX(SnapChoice current, Bounds moving, Bounds target) {
-        SnapChoice best = current;
-        best = bestOffset(best, moving.left(), target.left());
-        best = bestOffset(best, moving.left(), target.centerX());
-        best = bestOffset(best, moving.left(), target.right());
-        best = bestOffset(best, moving.centerX(), target.left());
-        best = bestOffset(best, moving.centerX(), target.centerX());
-        best = bestOffset(best, moving.centerX(), target.right());
-        best = bestOffset(best, moving.right(), target.left());
-        best = bestOffset(best, moving.right(), target.centerX());
-        return bestOffset(best, moving.right(), target.right());
-    }
-
-    private static SnapChoice bestY(SnapChoice current, Bounds moving, Bounds target) {
-        SnapChoice best = current;
-        best = bestOffset(best, moving.top(), target.top());
-        best = bestOffset(best, moving.top(), target.centerY());
-        best = bestOffset(best, moving.top(), target.bottom());
-        best = bestOffset(best, moving.centerY(), target.top());
-        best = bestOffset(best, moving.centerY(), target.centerY());
-        best = bestOffset(best, moving.centerY(), target.bottom());
-        best = bestOffset(best, moving.bottom(), target.top());
-        best = bestOffset(best, moving.bottom(), target.centerY());
-        return bestOffset(best, moving.bottom(), target.bottom());
-    }
-
-    private static SnapChoice bestOffset(SnapChoice current, int moving, int target) {
-        int offset = target - moving;
-        int distance = Math.abs(offset);
-        if (distance > current.threshold() || distance >= current.distance()) {
-            return current;
-        }
-        return new SnapChoice(offset, distance, target, current.threshold());
-    }
-
     record ElementRect(int x, int y, int w, int h, int rotation) {
-    }
-
-    private record Bounds(int left, int top, int right, int bottom) {
-        int centerX() {
-            return (left + right) / 2;
-        }
-
-        int centerY() {
-            return (top + bottom) / 2;
-        }
-    }
-
-    private record SnapChoice(int offset, int distance, int target, int threshold) {
-        static SnapChoice empty(int threshold) {
-            return new SnapChoice(0, threshold + 1, 0, threshold);
-        }
-
-        boolean valid() {
-            return distance <= threshold;
-        }
-    }
-
-    private record SnapMove(int x, int y) {
     }
 }
