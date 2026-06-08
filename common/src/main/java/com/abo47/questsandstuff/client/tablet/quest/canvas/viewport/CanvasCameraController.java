@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.List;
 import java.util.Set;
@@ -219,7 +220,7 @@ public final class CanvasCameraController {
     }
 
     public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String group) {
-        String questId = state.pendingCameraQuestId == null ? "" : state.pendingCameraQuestId.trim();
+        String questId = QuestIdentity.questId(state.pendingCameraQuestId);
         String pendingGroup = normalizeGroup(state.pendingCameraGroup);
         String selectedGroup = normalizeGroup(group);
         if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedGroup))) {
@@ -340,7 +341,7 @@ public final class CanvasCameraController {
     }
 
     private static String normalizeGroup(String group) {
-        return group == null ? "" : group.trim();
+        return QuestIdentity.groupName(group);
     }
 
     private static final class LogicalBounds {

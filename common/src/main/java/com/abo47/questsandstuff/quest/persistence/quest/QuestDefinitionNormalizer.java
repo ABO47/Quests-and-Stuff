@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.util.SafeNames;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,17 +68,7 @@ final class QuestDefinitionNormalizer {
     }
 
     static String normalizeQuestId(String questId) {
-        String normalized = questId == null ? "" : questId.trim().replace('\\', '/');
-        while (normalized.startsWith("/")) {
-            normalized = normalized.substring(1);
-        }
-        while (normalized.contains("//")) {
-            normalized = normalized.replace("//", "/");
-        }
-        if (normalized.isBlank()) {
-            return "main/untitled";
-        }
-        return normalized;
+        return QuestIdentity.questIdOrDefault(questId);
     }
 
     private static <T> Map<String, T> orderedCopy(Map<String, T> source) {
@@ -137,7 +127,7 @@ final class QuestDefinitionNormalizer {
     }
 
     static String groupFolderName(String group) {
-        return SafeNames.identifier(normalizeGroupName(group), "ungrouped");
+        return QuestIdentity.groupFolderName(group);
     }
 
     static String primaryGroup(QuestDefinition definition) {
@@ -189,7 +179,4 @@ final class QuestDefinitionNormalizer {
         return Map.copyOf(filtered);
     }
 
-    private static String normalizeGroupName(String name) {
-        return name == null ? "" : name.trim();
-    }
 }

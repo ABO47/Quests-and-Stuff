@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.util.QuestIdentity;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,6 +31,7 @@ class TabletStateQueriesTest {
         state.canEdit = true;
         state.selectedGroup = "  main\nchapter with a very very very very very very long suffix  ";
 
+        assertEquals(QuestIdentity.uiGroupName(state.selectedGroup), TabletStateQueries.sanitizeGroupName(state.selectedGroup));
         assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedGroupName(state));
     }
 

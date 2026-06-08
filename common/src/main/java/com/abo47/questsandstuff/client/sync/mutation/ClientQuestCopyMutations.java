@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.util.QuestIdentity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -17,8 +18,8 @@ public final class ClientQuestCopyMutations {
     }
 
     public static void copyQuestLocal(String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        String sourceId = sourceQuestId == null ? "" : sourceQuestId.trim();
-        String targetId = newQuestId == null ? "" : newQuestId.trim();
+        String sourceId = QuestIdentity.questId(sourceQuestId);
+        String targetId = QuestIdentity.questId(newQuestId);
         String normalizedGroup = normalizeGroup(group);
         if (sourceId.isBlank() || targetId.isBlank() || normalizedGroup.isBlank()) {
             return;
@@ -51,7 +52,7 @@ public final class ClientQuestCopyMutations {
     }
 
     public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        String targetId = newQuestId == null ? "" : newQuestId.trim();
+        String targetId = QuestIdentity.questId(newQuestId);
         String normalizedGroup = normalizeGroup(group);
         if (targetId.isBlank() || normalizedGroup.isBlank()) {
             return;
@@ -83,8 +84,8 @@ public final class ClientQuestCopyMutations {
             return;
         }
         for (Map.Entry<String, String> entry : copiedIds.entrySet()) {
-            String sourceId = entry.getKey() == null ? "" : entry.getKey().trim();
-            String targetId = entry.getValue() == null ? "" : entry.getValue().trim();
+            String sourceId = QuestIdentity.questId(entry.getKey());
+            String targetId = QuestIdentity.questId(entry.getValue());
             if (sourceId.isBlank() || targetId.isBlank()) {
                 continue;
             }
@@ -197,6 +198,6 @@ public final class ClientQuestCopyMutations {
     }
 
     private static String normalizeGroup(String value) {
-        return value == null ? "" : value.trim();
+        return QuestIdentity.groupName(value);
     }
 }

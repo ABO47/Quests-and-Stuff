@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
+import com.abo47.questsandstuff.util.QuestIdentity;
+
 final class EditorSessionNames {
     private EditorSessionNames() {
     }
 
     static String normalizeGroup(String groupName) {
-        return groupName == null ? "" : groupName.trim();
+        return QuestIdentity.groupName(groupName);
     }
 
     static String normalizeQuestId(String questId) {
-        return questId == null ? "" : questId.trim();
+        return QuestIdentity.questId(questId);
     }
 }

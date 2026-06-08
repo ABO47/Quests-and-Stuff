@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.quest.persistence.chapter;
 
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +45,12 @@ final class ChapterMetadataState {
         groupOrder.clear();
         if (groups != null) {
             for (String group : groups) {
-                if (group == null || group.isBlank()) {
+                String normalized = normalizeGroupName(group);
+                if (normalized.isBlank()) {
                     continue;
                 }
-                if (!groupOrder.contains(group)) {
-                    groupOrder.add(group);
+                if (!groupOrder.contains(normalized)) {
+                    groupOrder.add(normalized);
                 }
             }
         }
@@ -189,6 +191,6 @@ final class ChapterMetadataState {
     }
 
     static String normalizeGroupName(String name) {
-        return name == null ? "" : name.trim();
+        return QuestIdentity.groupName(name);
     }
 }

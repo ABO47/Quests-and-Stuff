@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.List;
 
@@ -48,10 +49,6 @@ public final class TabletStateQueries {
     }
 
     public static String sanitizeGroupName(String value) {
-        if (value == null) {
-            return "";
-        }
-        String result = value.trim().replace('\n', ' ').replace('\r', ' ');
-        return result.length() > 40 ? result.substring(0, 40) : result;
+        return QuestIdentity.uiGroupName(value);
     }
 }

@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.util.QuestIdentity;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
@@ -115,10 +116,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestDisplayLocal(String questId, String title, String subtitle) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -131,10 +129,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestDescriptionLocal(String questId, List<String> description) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -150,10 +145,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestIconLocal(String questId, String icon) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -161,10 +153,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -172,10 +161,10 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestHiddenModeLocal(String questId, String hiddenMode) {
-        if (questId == null || questId.isBlank() || hiddenMode == null || hiddenMode.isBlank()) {
+        if (hiddenMode == null || hiddenMode.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -183,10 +172,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestVisualHiddenLocal(String questId, boolean hidden) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -194,10 +180,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestCompletionSoundLocal(String questId, String sound) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -206,10 +189,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -217,10 +197,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -228,10 +205,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
-        if (questId == null || questId.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = mutableQuest(questId);
         if (quest == null) {
             return;
         }
@@ -240,7 +214,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void resetQuestProgressLocal(String questId) {
-        String normalized = questId == null ? "" : questId.trim();
+        String normalized = normalizeQuestId(questId);
         if (normalized.isBlank()) {
             return;
         }
@@ -263,7 +237,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void setQuestClaimedLocal(String questId, boolean claimed) {
-        String normalized = questId == null ? "" : questId.trim();
+        String normalized = normalizeQuestId(questId);
         if (normalized.isBlank()) {
             return;
         }
@@ -317,7 +291,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {
-        String normalizedQuest = questId == null ? "" : questId.trim();
+        String normalizedQuest = normalizeQuestId(questId);
         String normalizedGroup = normalizeGroup(group);
         if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
             return;
@@ -346,7 +320,7 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void removeQuestLocal(String questId) {
-        String normalized = questId == null ? "" : questId.trim();
+        String normalized = normalizeQuestId(questId);
         if (normalized.isBlank() || !ClientQuestState.removeQuest(normalized)) {
             return;
         }
@@ -355,7 +329,7 @@ public final class ClientQuestLocalMutations {
     }
 
     private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
-        String normalizedQuest = questId == null ? "" : questId.trim();
+        String normalizedQuest = normalizeQuestId(questId);
         if (normalizedQuest.isBlank() || jsonValue == null || jsonValue.isBlank()) {
             return;
         }
@@ -415,21 +389,32 @@ public final class ClientQuestLocalMutations {
     }
 
     private static CompoundTag mutableGroupView(String questId, String group) {
-        if (questId == null || questId.isBlank() || group == null || group.isBlank()) {
+        String normalizedQuest = normalizeQuestId(questId);
+        String normalizedGroup = normalizeGroup(group);
+        if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
             return null;
         }
-        CompoundTag quest = ClientQuestState.mutableQuest(questId);
+        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
         if (quest == null) {
             return null;
         }
         CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
-        CompoundTag groupTag = groups.getCompound(group).copy();
-        groups.put(group, groupTag);
+        CompoundTag groupTag = groups.getCompound(normalizedGroup).copy();
+        groups.put(normalizedGroup, groupTag);
         return groupTag;
     }
 
+    private static CompoundTag mutableQuest(String questId) {
+        String normalized = normalizeQuestId(questId);
+        return normalized.isBlank() ? null : ClientQuestState.mutableQuest(normalized);
+    }
+
+    private static String normalizeQuestId(String value) {
+        return QuestIdentity.questId(value);
+    }
+
     private static String normalizeGroup(String value) {
-        return value == null ? "" : value.trim();
+        return QuestIdentity.groupName(value);
     }
 
 }

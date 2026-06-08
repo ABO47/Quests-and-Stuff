@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.model.connection;
 
+import com.abo47.questsandstuff.util.QuestIdentity;
+
 public record QuestConnectionMetadata(
         String sourceQuestId,
         String targetQuestId,
@@ -58,7 +60,7 @@ public record QuestConnectionMetadata(
     }
 
     public static String normalizeQuestId(String questId) {
-        return questId == null ? "" : questId.trim();
+        return QuestIdentity.questId(questId);
     }
 
     public String edgeKey() {

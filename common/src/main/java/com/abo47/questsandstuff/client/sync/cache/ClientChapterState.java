@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.util.QuestIdentity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -266,7 +267,7 @@ public final class ClientChapterState {
     }
 
     public static String normalizeGroup(String value) {
-        return value == null ? "" : value.trim();
+        return QuestIdentity.groupName(value);
     }
 
     public static String normalizeTextStyle(String value) {

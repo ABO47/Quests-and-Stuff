@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestConnectionMetadataTest {
     @Test
     void edgeKeysAndMetadataKeysUseTheSameNormalization() {
-        String edgeKey = QuestConnectionMetadata.edgeKey(" quest/source ", " quest/target ");
+        String edgeKey = QuestConnectionMetadata.edgeKey(" \\quest//source ", " /quest/target ");
 
         assertEquals("quest/source->quest/target", edgeKey);
         assertEquals("quest/source", QuestConnectionMetadata.sourceQuestId(edgeKey));
         assertEquals("quest/target", QuestConnectionMetadata.targetQuestId(edgeKey));
-        assertEquals("quest/source", QuestConnectionMetadata.metadataKey(" quest/source "));
+        assertEquals("quest/source", QuestConnectionMetadata.metadataKey(" \\quest//source "));
         assertTrue(QuestConnectionMetadata.isValidEdgeKey(edgeKey));
         assertFalse(QuestConnectionMetadata.isValidEdgeKey("quest/source-> "));
     }
