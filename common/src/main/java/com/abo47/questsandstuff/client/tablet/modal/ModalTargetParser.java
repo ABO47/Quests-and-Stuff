@@ -239,6 +239,10 @@ public final class ModalTargetParser {
             return part(0);
         }
 
+        public String raw() {
+            return String.join("|", parts());
+        }
+
         public String questId() {
             return part(1);
         }

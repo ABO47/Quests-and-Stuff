@@ -6,7 +6,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -22,12 +24,14 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static void applyAssetPick(Player player, TabletUiState state, String asset) {
-        String target = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget;
-        if (target.isBlank() || asset == null || asset.isBlank()) {
+        applyAssetPick(player, state, ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetailsAssetPickTarget), asset);
+    }
+
+    static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target parsed, String asset) {
+        if (parsed.kind().isBlank() || asset == null || asset.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(2)) {
+        if (!ModalTargetState.requireParts("description_asset", parsed, 2)) {
             return;
         }
         String questId = parsed.questId();
@@ -35,7 +39,10 @@ final class QuestDetailsDescriptionPickActions {
         if (parsed.isDescBackground()) {
             model.canvasBackground = asset;
             QuestDetailsDescriptionModel.save(player, questId, model);
-        } else if (parsed.isDescImageNew() && parsed.hasAtLeast(5)) {
+        } else if (parsed.isDescImageNew()) {
+            if (!ModalTargetState.requireParts("description_asset_new", parsed, 5)) {
+                return;
+            }
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
@@ -58,13 +65,12 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static boolean applyIconPick(Player player, TabletUiState state, String entry) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (target.isBlank() || entry == null || entry.isBlank()
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        if (parsed.kind().isBlank() || entry == null || entry.isBlank()
                 || (!parsed.isDescEntity() && !parsed.isDescEntityNew() && !parsed.isDescItem() && !parsed.isDescItemNew())) {
             return false;
         }
-        if (!parsed.hasAtLeast(3)) {
+        if (!ModalTargetState.requireParts("description_icon", parsed, 3)) {
             return false;
         }
         if (parsed.isDescItem() || parsed.isDescItemNew()) {
@@ -72,12 +78,15 @@ final class QuestDetailsDescriptionPickActions {
         }
         String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(entry);
         if (entityId.isBlank()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details entity pick ignored target={} item={}", target, entry);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details entity pick ignored target={} item={}", parsed.raw(), entry);
             return true;
         }
         String questId = parsed.questId();
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        if (parsed.isDescEntityNew() && parsed.hasAtLeast(5)) {
+        if (parsed.isDescEntityNew()) {
+            if (!ModalTargetState.requireParts("description_entity_new", parsed, 5)) {
+                return true;
+            }
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
@@ -102,22 +111,24 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static boolean applyBlockPick(Player player, TabletUiState state, String block) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (target.isBlank() || block == null || block.isBlank() || (!parsed.isDescBlock() && !parsed.isDescBlockNew())) {
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        if (parsed.kind().isBlank() || block == null || block.isBlank() || (!parsed.isDescBlock() && !parsed.isDescBlockNew())) {
             return false;
         }
-        if (!parsed.hasAtLeast(3)) {
+        if (!ModalTargetState.requireParts("description_block", parsed, 3)) {
             return false;
         }
         String asset = ModelAssetPreviewRenderer.blockAssetForPick(block);
         if (asset.isBlank()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details block model pick ignored target={} block={}", target, block);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details block model pick ignored target={} block={}", parsed.raw(), block);
             return true;
         }
         String questId = parsed.questId();
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        if (parsed.isDescBlockNew() && parsed.hasAtLeast(5)) {
+        if (parsed.isDescBlockNew()) {
+            if (!ModalTargetState.requireParts("description_block_new", parsed, 5)) {
+                return true;
+            }
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
@@ -142,22 +153,24 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (target.isBlank() || recipe == null || recipe.isBlank() || (!parsed.isDescRecipe() && !parsed.isDescRecipeNew())) {
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        if (parsed.kind().isBlank() || recipe == null || recipe.isBlank() || (!parsed.isDescRecipe() && !parsed.isDescRecipeNew())) {
             return false;
         }
-        if (!parsed.hasAtLeast(3)) {
+        if (!ModalTargetState.requireParts("description_recipe", parsed, 3)) {
             return false;
         }
         String asset = CanvasRecipeCardAsset.assetForPick(recipe);
         if (asset.isBlank()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe card pick ignored target={} recipe={}", target, recipe);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe card pick ignored target={} recipe={}", parsed.raw(), recipe);
             return true;
         }
         String questId = parsed.questId();
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        if (parsed.isDescRecipeNew() && parsed.hasAtLeast(5)) {
+        if (parsed.isDescRecipeNew()) {
+            if (!ModalTargetState.requireParts("description_recipe_new", parsed, 5)) {
+                return true;
+            }
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
@@ -206,7 +219,10 @@ final class QuestDetailsDescriptionPickActions {
         }
         String questId = parsed.questId();
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        if (parsed.isDescItemNew() && parsed.hasAtLeast(5)) {
+        if (parsed.isDescItemNew()) {
+            if (!ModalTargetState.requireParts("description_item_new", parsed, 5)) {
+                return true;
+            }
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
@@ -230,9 +246,12 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+        applyTextColor(player, state, ModalTargetParser.parse(target), color);
+    }
+
+    static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target parsed, int color) {
         String questId = state.questDetailsTextColorQuestId;
         String textId = state.questDetailsTextColorTextId;
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
         if ((questId == null || questId.isBlank() || textId == null || textId.isBlank()) && parsed.isQuestDescText()) {
             if (parsed.hasAtLeast(3)) {
                 questId = parsed.questId();

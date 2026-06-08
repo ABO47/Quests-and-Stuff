@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
@@ -109,6 +110,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyAssetPick(player, state, asset);
     }
 
+    public static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target target, String asset) {
+        QuestDetailsWindowActions.applyAssetPick(player, state, target, asset);
+    }
+
     public static String descriptionImageAsset(String questId, String imageId) {
         return QuestDetailsWindowActions.descriptionImageAsset(questId, imageId);
     }
@@ -118,6 +123,10 @@ public final class QuestDetailsWindow {
     }
 
     public static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+        QuestDetailsWindowActions.applyTextColor(player, state, target, color);
+    }
+
+    public static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         QuestDetailsWindowActions.applyTextColor(player, state, target, color);
     }
 

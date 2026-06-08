@@ -18,7 +18,10 @@ final class EntityVariantApplyActions {
     }
 
     static void apply(Player player, TabletUiState state, String target, String variantKey) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        apply(player, state, ModalTargetParser.parse(target), variantKey);
+    }
+
+    static void apply(Player player, TabletUiState state, ModalTargetParser.Target parsed, String variantKey) {
         if (applyQuestIcon(player, parsed, variantKey)) {
             return;
         }

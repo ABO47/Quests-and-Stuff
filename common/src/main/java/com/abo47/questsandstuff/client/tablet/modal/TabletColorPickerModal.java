@@ -14,6 +14,8 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.COLOR_PICKER;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindowsContextRow;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.confirmDeleteClick;
@@ -22,7 +24,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.pendingDeleteLabel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
 
 public final class TabletColorPickerModal {
     private TabletColorPickerModal() {
@@ -30,7 +31,8 @@ public final class TabletColorPickerModal {
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr("ui.questsandstuff.modal.color_picker"), w, state, refresh);
-        String target = state.colorPickerTarget == null || state.colorPickerTarget.isBlank() ? selectedGroupName(state) : state.colorPickerTarget;
+        String resolvedTarget = ModalTargetState.target(state, COLOR_PICKER, state.colorPickerTarget);
+        final String target = resolvedTarget.isBlank() ? selectedGroupName(state) : resolvedTarget;
         int leftW = 232;
         int rightW = w - leftW - 20;
         int panelH = h - 30;

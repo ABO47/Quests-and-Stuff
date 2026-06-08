@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -11,6 +13,8 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.Set;
 
 final class SoundVolumeControls {
     private SoundVolumeControls() {
@@ -38,11 +42,12 @@ final class SoundVolumeControls {
     }
 
     private static void commit(Player player, TabletUiState state, String soundId) {
-        String target = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
+        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
+        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
         int volume = QuestDisplay.normalizeCompletionSoundVolume(state.soundVolumeDraft);
         state.soundVolumeDraft = volume;
-        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionSoundVolume(player, state.modalQuestCompletionSoundTargets, volume);
+        if (!targets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionSoundVolume(player, targets, volume);
             QuestSoundPreview.restartIfPlaying(soundId, volume);
             return;
         }

@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -120,12 +122,13 @@ public final class TabletSoundPickerModal {
     }
 
     private static void applySound(TabletUiState state, Player player, String soundId) {
-        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionSound(player, state.modalQuestCompletionSoundTargets, soundId);
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} sound={}", state.modalQuestCompletionSoundTargets.size(), soundId);
+        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
+        if (!targets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionSound(player, targets, soundId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} sound={}", targets.size(), soundId);
             return;
         }
-        String target = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
+        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
         if (!target.isBlank()) {
             EditorCommandClient.setQuestCompletionSound(player, target, soundId);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion sound picked quest={} sound={}", target, soundId);

@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 
 final class RecipePickerApplyActions {
     private RecipePickerApplyActions() {
@@ -160,7 +161,7 @@ final class RecipePickerApplyActions {
     }
 
     private static boolean isRecipeCardTarget(TabletUiState state) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
         return parsed.isCanvasRecipeNew() || parsed.isCanvasRecipeChange() || parsed.isDescRecipe() || parsed.isDescRecipeNew();
     }
 }

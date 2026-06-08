@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitControll
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -26,11 +27,18 @@ public final class CanvasModelPickerActions {
     }
 
     public static boolean run(TabletUiState state, String target, String pickedValue) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        return run(state, ModalTargetParser.parse(target), pickedValue);
+    }
+
+    public static boolean run(TabletUiState state, ModalTargetParser.Target parsed, String pickedValue) {
+        int requiredParts = parsed.isCanvasItemChange() || parsed.isCanvasBlockChange() ? 3 : 2;
+        if (!ModalTargetState.requireParts("canvas_model", parsed, requiredParts)) {
+            return false;
+        }
         String asset = assetForPick(parsed, pickedValue);
         String group = parsed.part(1);
         if (group.isBlank() || asset.isBlank()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas model pick ignored target={} value={} asset={}", target, pickedValue, asset);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas model pick ignored target={} value={} asset={}", parsed.raw(), pickedValue, asset);
             return false;
         }
         if (parsed.isCanvasItemChange() || parsed.isCanvasBlockChange()) {

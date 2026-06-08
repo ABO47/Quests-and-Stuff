@@ -1,18 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -23,6 +22,10 @@ public final class ColorPickerApplyActions {
     }
 
     public static int currentValue(TabletUiState state, String target) {
+        return currentValue(state, ModalTargetParser.parse(target));
+    }
+
+    public static int currentValue(TabletUiState state, ModalTargetParser.Target target) {
         if (state.colorDraft != 0) {
             return state.colorDraft;
         }
@@ -44,24 +47,27 @@ public final class ColorPickerApplyActions {
             var text = CanvasLayerMutations.findCanvasText(state, canvasText[0], canvasText[1]);
             return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (parsed.isGridColor()) {
+        if (target.isGridColor()) {
             return TabletGridControls.defaultGridColor(state);
         }
-        if (parsed.isQuestDescText()) {
-            if (parsed.hasAtLeast(3)) {
-                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(parsed.questId()));
-                var text = model.text(parsed.entryId());
+        if (target.isQuestDescText()) {
+            if (target.hasAtLeast(3)) {
+                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(target.questId()));
+                var text = model.text(target.entryId());
                 if (text != null) {
                     return CanvasRenderer.activeTextColor(state, text);
                 }
             }
             return state.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.colorDraft;
         }
-        return ClientQuestCache.groupTextColor(target);
+        return ClientQuestCache.groupTextColor(target.raw());
     }
 
     public static void apply(Player player, TabletUiState state, String target, int color) {
+        apply(player, state, ModalTargetParser.parse(target), color);
+    }
+
+    public static void apply(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
             ConnectionRenderer.setConnectionColor(state, connection[0], connection[1], connection[2], color);
@@ -89,52 +95,51 @@ public final class ColorPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color picked group={} id={} color={}", canvasText[0], canvasText[1], color);
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (parsed.isGridColor()) {
+        if (target.isGridColor()) {
             TabletGridControls.applyGridColor(state, color);
             TabletUiFactory.persistUiState(state);
             state.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] grid color picked color={}", color);
             return;
         }
-        if (parsed.isQuestDescText()) {
+        if (target.isQuestDescText()) {
             QuestDetailsWindow.applyTextColor(player, state, target, color);
             state.colorPickerTarget = "";
             return;
         }
-        TabletUiFactory.runGroupAction(player, state, "set_text_color", target, String.valueOf(color), 0);
+        TabletUiFactory.runGroupAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
     }
 
-    private static String[] connectionColorTarget(String target) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.isConnection()) {
+    private static String[] connectionColorTarget(ModalTargetParser.Target target) {
+        if (!target.isConnection()) {
             return null;
         }
-        if (!parsed.hasAtLeast(4) || parsed.part(1).isBlank() || parsed.part(2).isBlank() || parsed.part(3).isBlank()) {
+        if (!ModalTargetState.requireParts("color_connection", target, 4)
+                || !ModalTargetState.requireNonBlankParts("color_connection", target, 1, 2, 3)) {
             return null;
         }
-        return new String[]{parsed.part(1), parsed.part(2), parsed.part(3)};
+        return new String[]{target.part(1), target.part(2), target.part(3)};
     }
 
-    private static String connectionSelectionColorTarget(String target) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.isConnectionSelection()) {
+    private static String connectionSelectionColorTarget(ModalTargetParser.Target target) {
+        if (!target.isConnectionSelection()) {
             return null;
         }
-        if (!parsed.hasAtLeast(2) || parsed.part(1).isBlank()) {
+        if (!ModalTargetState.requireParts("color_connection_selection", target, 2)
+                || !ModalTargetState.requireNonBlankParts("color_connection_selection", target, 1)) {
             return null;
         }
-        return parsed.part(1);
+        return target.part(1);
     }
 
-    private static String[] canvasTextColorTarget(String target) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.isCanvasText()) {
+    private static String[] canvasTextColorTarget(ModalTargetParser.Target target) {
+        if (!target.isCanvasText()) {
             return null;
         }
-        if (!parsed.hasAtLeast(3) || parsed.part(1).isBlank() || parsed.part(2).isBlank()) {
+        if (!ModalTargetState.requireParts("color_canvas_text", target, 3)
+                || !ModalTargetState.requireNonBlankParts("color_canvas_text", target, 1, 2)) {
             return null;
         }
-        return new String[]{parsed.part(1), parsed.part(2)};
+        return new String[]{target.part(1), target.part(2)};
     }
 }

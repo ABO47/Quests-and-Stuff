@@ -27,6 +27,11 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_ENTITY;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_MODEL;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CHAPTER;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runGroupAction;
@@ -40,16 +45,17 @@ public final class TabletIconPickerModal {
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         int sidePad = 8;
-        String detailsTarget = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget.trim();
-        String canvasEntityTarget = state.modalCanvasEntityTarget == null ? "" : state.modalCanvasEntityTarget.trim();
-        String canvasModelTarget = state.modalCanvasModelTarget == null ? "" : state.modalCanvasModelTarget.trim();
-        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
-        ModalTargetParser.Target canvasModel = ModalTargetParser.parse(canvasModelTarget);
+        String detailsTarget = ModalTargetState.target(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        String canvasEntityTarget = ModalTargetState.target(state, CANVAS_ENTITY, state.modalCanvasEntityTarget);
+        String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modalCanvasModelTarget);
+        ModalTargetParser.Target details = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target canvasModel = ModalTargetState.parsedTarget(state, CANVAS_MODEL, state.modalCanvasModelTarget);
         boolean entityPicker = !canvasEntityTarget.isBlank() || details.isEntityIconPickerTarget();
         boolean itemModelPicker = canvasModel.isItemModelPickerTarget() || details.isItemModelPickerTarget();
         boolean useItemPicker = IconPickerMode.isUseItemPickerTarget(details);
-        String chapterTarget = state.modalChapterTarget == null || state.modalChapterTarget.isBlank() ? selectedGroupName(state) : state.modalChapterTarget;
-        String questTarget = state.modalQuestTarget == null ? "" : state.modalQuestTarget.trim();
+        String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modalChapterTarget);
+        final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedGroupName(state) : resolvedChapterTarget;
+        String questTarget = ModalTargetState.target(state, QUEST, state.modalQuestTarget);
         boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, questTarget, chapterTarget);
         boolean supportsInventoryIcons = supportsInventoryIconSelection(detailsTarget, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
         IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);

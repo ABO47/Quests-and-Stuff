@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_MODEL;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
@@ -117,7 +118,7 @@ public final class TabletBlockPickerModal {
         }
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             if (!entry.value().isBlank()) {
-                String canvasModelTarget = state.modalCanvasModelTarget == null ? "" : state.modalCanvasModelTarget.trim();
+                String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modalCanvasModelTarget);
                 if (!canvasModelTarget.isBlank()) {
                     if (!TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry.value())) {
                         return;

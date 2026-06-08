@@ -5,7 +5,9 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
@@ -19,12 +21,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyIconPick(Player player, TabletUiState state, String entry) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || entry == null || entry.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || entry == null || entry.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4)) {
+        if (!ModalTargetState.requireParts("objective_icon", parsed, 4)) {
             return;
         }
         String questId = parsed.questId();
@@ -98,47 +99,46 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || stack == null || stack.isEmpty()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || stack == null || stack.isEmpty()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         String icon = ItemStackIconCodec.iconFromStack(stack);
         if (icon.isBlank()) {
             return;
         }
-        if (parsed.isQuestIcon() && parsed.hasAtLeast(2)) {
+        if (parsed.isQuestIcon() && ModalTargetState.requireParts("inventory_quest_icon", parsed, 2)) {
             EditorCommandClient.runQuestIconAction(player, parsed.questId(), icon);
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest inventory icon picked quest={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;
         }
-        if (parsed.isChapterIcon() && parsed.hasAtLeast(2)) {
+        if (parsed.isChapterIcon() && ModalTargetState.requireParts("inventory_chapter_icon", parsed, 2)) {
             EditorCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter inventory icon picked chapter={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;
         }
-        if (parsed.isTaskIcon() && parsed.hasAtLeast(3)) {
+        if (parsed.isTaskIcon() && ModalTargetState.requireParts("inventory_task_icon", parsed, 3)) {
             QuestObjectiveIconActions.putObjectiveIcon(player, parsed.questId(), parsed.entryId(), icon, true);
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task inventory icon picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
             return;
         }
-        if (parsed.isRewardIcon() && parsed.hasAtLeast(3)) {
+        if (parsed.isRewardIcon() && ModalTargetState.requireParts("inventory_reward_icon", parsed, 3)) {
             QuestObjectiveIconActions.putObjectiveIcon(player, parsed.questId(), parsed.entryId(), icon, false);
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward inventory icon picked quest={} reward={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
             return;
         }
-        if (parsed.isRewardCommandEditorIcon() && parsed.hasAtLeast(3)) {
+        if (parsed.isRewardCommandEditorIcon() && ModalTargetState.requireParts("inventory_command_reward_icon", parsed, 3)) {
             state.questDetailsCommandRewardIcon = icon;
             state.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details command reward inventory icon picked quest={} reward={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
             return;
         }
-        if (!parsed.hasAtLeast(4)) {
+        if (!ModalTargetState.requireParts("inventory_objective_item", parsed, 4)) {
             return;
         }
         if (parsed.isTaskInventoryItem()) {
@@ -169,12 +169,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || biome == null || biome.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || biome == null || biome.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskBiome()) {
+        if (!ModalTargetState.requireParts("objective_biome", parsed, 4) || !parsed.isTaskBiome()) {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), biome, "biome");
@@ -184,12 +183,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || advancement == null || advancement.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || advancement == null || advancement.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskAdvancement()) {
+        if (!ModalTargetState.requireParts("objective_advancement", parsed, 4) || !parsed.isTaskAdvancement()) {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
@@ -199,12 +197,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyRecipePick(Player player, TabletUiState state, String recipe) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || recipe == null || recipe.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || recipe == null || recipe.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskRecipe()) {
+        if (!ModalTargetState.requireParts("objective_recipe", parsed, 4) || !parsed.isTaskRecipe()) {
             return;
         }
         String recipeTarget = recipe.trim();
@@ -215,12 +212,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyStructurePick(Player player, TabletUiState state, String structure) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || structure == null || structure.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || structure == null || structure.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskStructure()) {
+        if (!ModalTargetState.requireParts("objective_structure", parsed, 4) || !parsed.isTaskStructure()) {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
@@ -230,12 +226,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyBlockPick(Player player, TabletUiState state, String block) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || block == null || block.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || block == null || block.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskBlock()) {
+        if (!ModalTargetState.requireParts("objective_block", parsed, 4) || !parsed.isTaskBlock()) {
             return;
         }
         String blockId = block.trim();
@@ -246,12 +241,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyStatPick(Player player, TabletUiState state, String stat) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || stat == null || stat.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || stat == null || stat.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskStat()) {
+        if (!ModalTargetState.requireParts("objective_stat", parsed, 4) || !parsed.isTaskStat()) {
             return;
         }
         String statTarget = stat.trim();
@@ -262,12 +256,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || dimension == null || dimension.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || dimension == null || dimension.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(4) || !parsed.isTaskDimension()) {
+        if (!ModalTargetState.requireParts("objective_dimension", parsed, 4) || !parsed.isTaskDimension()) {
             return;
         }
         JsonObject json = QuestObjectiveJsons.defaultTask(parsed.entryId(), "location");
@@ -280,12 +273,11 @@ final class QuestObjectivePickerApplyActions {
     }
 
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || lootTable == null || lootTable.isBlank()) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || lootTable == null || lootTable.isBlank()) {
             return;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
-        if (!parsed.hasAtLeast(3) || !parsed.isRewardLootTable()) {
+        if (!ModalTargetState.requireParts("objective_loot_table", parsed, 3) || !parsed.isRewardLootTable()) {
             return;
         }
         CompoundTag quest = ClientQuestCache.quest(parsed.questId());
@@ -320,5 +312,9 @@ final class QuestObjectivePickerApplyActions {
         json.addProperty("icon", fluidIcon);
         json.addProperty("title", FluidIconCodec.displayName(fluidIcon));
         return json;
+    }
+
+    private static ModalTargetParser.Target pickTarget(TabletUiState state) {
+        return ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
     }
 }

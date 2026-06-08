@@ -7,7 +7,9 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -31,7 +33,7 @@ record EntityVariantPickerModel(
         List<EntityVariantTile> tiles
 ) {
     static EntityVariantPickerModel create(TabletUiState state) {
-        String target = state.entityVariantTarget == null ? "" : state.entityVariantTarget.trim();
+        String target = ModalTargetState.target(state, ModalSession.TargetSlot.ENTITY_VARIANT, state.entityVariantTarget);
         String asset = currentAsset(state, target);
         String entityId = EntityPreviewRenderer.entityId(asset);
         List<EntityVariantCatalog.VariantEntry> allVariants = EntityVariantCatalog.variantsFor(entityId);

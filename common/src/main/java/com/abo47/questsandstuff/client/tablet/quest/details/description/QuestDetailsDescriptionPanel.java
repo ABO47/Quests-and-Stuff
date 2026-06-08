@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -31,6 +32,10 @@ public final class QuestDetailsDescriptionPanel {
 
     public static void applyAssetPick(Player player, TabletUiState state, String asset) {
         QuestDetailsDescriptionPickActions.applyAssetPick(player, state, asset);
+    }
+
+    public static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target target, String asset) {
+        QuestDetailsDescriptionPickActions.applyAssetPick(player, state, target, asset);
     }
 
     public static boolean applyIconPick(Player player, TabletUiState state, String entry) {
@@ -85,6 +90,10 @@ public final class QuestDetailsDescriptionPanel {
     }
 
     public static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+        QuestDetailsDescriptionPickActions.applyTextColor(player, state, target, color);
+    }
+
+    public static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         QuestDetailsDescriptionPickActions.applyTextColor(player, state, target, color);
     }
 

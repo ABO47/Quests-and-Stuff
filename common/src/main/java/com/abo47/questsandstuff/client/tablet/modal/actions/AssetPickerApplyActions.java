@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -21,13 +22,14 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class AssetPickerApplyActions {
     private AssetPickerApplyActions() {
     }
 
     public static void run(Player player, TabletUiState state, String background) {
-        String blueprintTarget = state.modalBlueprintTarget == null ? "" : state.modalBlueprintTarget.trim();
+        String blueprintTarget = ModalTargetState.target(state, ModalSession.TargetSlot.BLUEPRINT, state.modalBlueprintTarget);
         if (!blueprintTarget.isBlank()) {
             CanvasBlueprintController.beginPlacement(state, background);
             state.modalBlueprintTarget = "";
@@ -35,10 +37,11 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] picked blueprint target={} asset={}", blueprintTarget, background);
             return;
         }
-        String soundTarget = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
-        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
-            int count = state.modalQuestCompletionSoundTargets.size();
-            EditorCommandClient.setQuestCompletionSound(player, state.modalQuestCompletionSoundTargets, background);
+        String soundTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
+        Set<String> soundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
+        if (!soundTargets.isEmpty()) {
+            int count = soundTargets.size();
+            EditorCommandClient.setQuestCompletionSound(player, soundTargets, background);
             state.modalQuestCompletionSoundTargets.clear();
             state.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} asset={}", count, background);
@@ -51,10 +54,11 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest change completion sound picked quest={} asset={}", soundTarget, background);
             return;
         }
-        String questBackgroundTarget = state.modalQuestBackgroundTarget == null ? "" : state.modalQuestBackgroundTarget.trim();
-        if (!state.modalQuestBackgroundTargets.isEmpty()) {
-            EditorCommandClient.setQuestBackground(player, state.modalQuestBackgroundTargets, background, state.modalQuestBackgroundGrayscale);
-            int count = state.modalQuestBackgroundTargets.size();
+        String questBackgroundTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget);
+        Set<String> questBackgroundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTargets);
+        if (!questBackgroundTargets.isEmpty()) {
+            EditorCommandClient.setQuestBackground(player, questBackgroundTargets, background, state.modalQuestBackgroundGrayscale);
+            int count = questBackgroundTargets.size();
             state.modalQuestBackgroundTargets.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch background picked quests={} asset={} grayscale={}", count, background, state.modalQuestBackgroundGrayscale);
             return;
@@ -65,10 +69,11 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
             return;
         }
-        String completionHudTarget = state.modalQuestCompletionHudBackgroundTarget == null ? "" : state.modalQuestCompletionHudBackgroundTarget.trim();
-        if (!state.modalQuestCompletionHudBackgroundTargets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionHudBackground(player, state.modalQuestCompletionHudBackgroundTargets, background);
-            int count = state.modalQuestCompletionHudBackgroundTargets.size();
+        String completionHudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modalQuestCompletionHudBackgroundTarget);
+        Set<String> completionHudTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modalQuestCompletionHudBackgroundTargets);
+        if (!completionHudTargets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTargets, background);
+            int count = completionHudTargets.size();
             state.modalQuestCompletionHudBackgroundTargets.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion hud background picked quests={} asset={}", count, background);
             return;
@@ -79,7 +84,7 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion hud background picked quest={} asset={}", completionHudTarget, background);
             return;
         }
-        String hudTarget = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
+        String hudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.HUD_BACKGROUND, state.modalHudBackgroundTarget);
         QuestHudLayout.Element hudElement = hudElement(hudTarget);
         if (hudElement != null) {
             QuestHudLayout.setBackground(hudElement, background);
@@ -87,23 +92,23 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] hud background picked target={} asset={}", hudTarget, background);
             return;
         }
-        String detailsTarget = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget.trim();
-        if (!detailsTarget.isBlank()) {
-            QuestDetailsWindow.applyAssetPick(player, state, background);
+        ModalTargetParser.Target detailsTarget = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetailsAssetPickTarget);
+        if (!detailsTarget.kind().isBlank()) {
+            QuestDetailsWindow.applyAssetPick(player, state, detailsTarget, background);
             return;
         }
-        String imageTarget = state.modalCanvasImageTarget == null ? "" : state.modalCanvasImageTarget.trim();
+        String imageTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_IMAGE, state.modalCanvasImageTarget);
         if (!imageTarget.isBlank()) {
             addCanvasImage(state, imageTarget, background);
             return;
         }
-        String canvasTarget = state.modalCanvasBackgroundTarget == null ? "" : state.modalCanvasBackgroundTarget.trim();
+        String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modalCanvasBackgroundTarget);
         if (!canvasTarget.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas background picked group={} background={}", canvasTarget, background);
             TabletUiFactory.runGroupAction(player, state, "set_canvas_background", canvasTarget, background, 0);
             return;
         }
-        TabletUiFactory.runGroupAction(player, state, "set_background", state.modalChapterTarget, background, 0);
+        TabletUiFactory.runGroupAction(player, state, "set_background", ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modalChapterTarget), background, 0);
     }
 
     private static void addCanvasImage(TabletUiState state, String group, String asset) {

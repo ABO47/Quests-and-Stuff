@@ -51,6 +51,10 @@ public final class ModalSession {
         return slot == null ? "" : targets.getOrDefault(slot, "");
     }
 
+    public ModalTargetParser.Target parsedTarget(TargetSlot slot) {
+        return ModalTargetParser.parse(target(slot));
+    }
+
     public Set<String> targetSet(TargetSetSlot slot) {
         if (slot == null) {
             return Set.of();

@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.actions;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -24,10 +24,14 @@ public final class CanvasEntityPickerActions {
     }
 
     public static boolean run(Player player, TabletUiState state, String target, String pickedItem) {
+        return run(player, state, ModalTargetParser.parse(target), pickedItem);
+    }
+
+    public static boolean run(Player player, TabletUiState state, ModalTargetParser.Target target, String pickedItem) {
         String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(pickedItem);
-        EntityTarget parsed = parseEntityTarget(target);
+        EntityTarget parsed = entityTarget(target);
         if (parsed.group().isBlank() || entityId.isBlank()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity pick ignored target={} item={} entity={}", target, pickedItem, entityId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity pick ignored target={} item={} entity={}", target.raw(), pickedItem, entityId);
             return false;
         }
         if ("change".equals(parsed.action())) {
@@ -93,19 +97,23 @@ public final class CanvasEntityPickerActions {
         return ids;
     }
 
-    private static EntityTarget parseEntityTarget(String target) {
-        String clean = target == null ? "" : target.trim();
-        if (clean.isBlank()) {
+    private static EntityTarget entityTarget(ModalTargetParser.Target target) {
+        if (target.kind().isBlank()) {
             return new EntityTarget("", "", "");
         }
-        String[] parts = clean.split("\\|", 3);
-        if (parts.length >= 3 && "change".equals(parts[0])) {
-            return new EntityTarget("change", parts[1], parts[2]);
+        if (target.isCanvasEntityChange()) {
+            if (!ModalTargetState.requireParts("canvas_entity_change", target, 3)) {
+                return new EntityTarget("", "", "");
+            }
+            return new EntityTarget("change", target.questId(), target.entryId());
         }
-        if (parts.length >= 2 && "new".equals(parts[0])) {
-            return new EntityTarget("new", parts[1], "");
+        if (target.isCanvasEntityNew()) {
+            if (!ModalTargetState.requireParts("canvas_entity_new", target, 2)) {
+                return new EntityTarget("", "", "");
+            }
+            return new EntityTarget("new", target.questId(), "");
         }
-        return new EntityTarget("new", clean, "");
+        return new EntityTarget("new", target.raw(), "");
     }
 
     private record EntityTarget(String action, String group, String imageId) {

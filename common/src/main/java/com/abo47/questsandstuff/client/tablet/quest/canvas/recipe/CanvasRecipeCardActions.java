@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -27,11 +27,14 @@ public final class CanvasRecipeCardActions {
     }
 
     public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
-        String target = state.questDetailsPickTarget == null ? "" : state.questDetailsPickTarget;
-        if (target.isBlank() || recipe == null || recipe.isBlank()) {
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        if (parsed.kind().isBlank() || recipe == null || recipe.isBlank()) {
             return false;
         }
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        int requiredParts = parsed.isCanvasRecipeChange() ? 3 : 2;
+        if (!ModalTargetState.requireParts("canvas_recipe_card", parsed, requiredParts)) {
+            return false;
+        }
         String asset = CanvasRecipeCardAsset.assetForPick(recipe);
         if (asset.isBlank()) {
             return false;

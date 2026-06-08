@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -74,6 +75,10 @@ final class QuestDetailsWindowActions {
         QuestDetailsDescriptionPanel.applyAssetPick(player, state, asset);
     }
 
+    static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target target, String asset) {
+        QuestDetailsDescriptionPanel.applyAssetPick(player, state, target, asset);
+    }
+
     static String descriptionImageAsset(String questId, String imageId) {
         return QuestDetailsDescriptionPanel.imageAsset(questId, imageId);
     }
@@ -83,6 +88,10 @@ final class QuestDetailsWindowActions {
     }
 
     static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+        QuestDetailsDescriptionPanel.applyTextColor(player, state, target, color);
+    }
+
+    static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         QuestDetailsDescriptionPanel.applyTextColor(player, state, target, color);
     }
 

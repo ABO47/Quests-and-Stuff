@@ -38,6 +38,10 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_BACKGROUND;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.BLUEPRINT;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.HUD_BACKGROUND;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.assetDimensions;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.assetThumbnailTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
@@ -62,8 +66,8 @@ public final class TabletAssetPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        boolean soundPicker = (state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
-                || !state.modalQuestCompletionSoundTargets.isEmpty())
+        boolean soundPicker = (!ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget).isBlank()
+                || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets).isEmpty())
                 && state.assetBrowseDir != null && state.assetBrowseDir.startsWith("sounds");
         boolean blueprintPicker = isBlueprintPicker(state);
         boolean hudPicker = isHudBackgroundPicker(state);
@@ -364,7 +368,9 @@ public final class TabletAssetPickerModal {
         if (!isQuestBackgroundPicker(state)) {
             return;
         }
-        String target = state.modalQuestBackgroundTargets.isEmpty() ? state.modalQuestBackgroundTarget.trim() : "batch";
+        String target = ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modalQuestBackgroundTargets).isEmpty()
+                ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget)
+                : "batch";
         int rowY = Math.max(48, previewH - 24);
         preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE), ModColors.TEXT_SECONDARY));
         preview.addWidget(new ToggleSwitchWidget(
@@ -383,12 +389,12 @@ public final class TabletAssetPickerModal {
     }
 
     private static boolean isQuestBackgroundPicker(TabletUiState state) {
-        return state.modalQuestBackgroundTarget != null && !state.modalQuestBackgroundTarget.trim().isBlank()
-                || !state.modalQuestBackgroundTargets.isEmpty();
+        return !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget).isBlank()
+                || !ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modalQuestBackgroundTargets).isEmpty();
     }
 
     private static boolean isBlueprintPicker(TabletUiState state) {
-        return state.modalBlueprintTarget != null && !state.modalBlueprintTarget.trim().isBlank();
+        return !ModalTargetState.target(state, BLUEPRINT, state.modalBlueprintTarget).isBlank();
     }
 
     private static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
@@ -426,7 +432,7 @@ public final class TabletAssetPickerModal {
     }
 
     private static QuestHudLayout.Element hudElement(TabletUiState state) {
-        String target = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
+        String target = ModalTargetState.target(state, HUD_BACKGROUND, state.modalHudBackgroundTarget);
         if ("completion".equalsIgnoreCase(target)) {
             return QuestHudLayout.Element.COMPLETION;
         }
