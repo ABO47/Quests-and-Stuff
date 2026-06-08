@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.quest.sync;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -262,8 +264,9 @@ final class QuestSyncPayloadBuilder {
     private static CompoundTag connectionColorsTag(QuestDefinition definition) {
         CompoundTag colors = new CompoundTag();
         for (Map.Entry<String, Integer> entry : definition.connectionColors().entrySet()) {
-            if (entry.getKey() != null && entry.getValue() != null) {
-                colors.putInt(entry.getKey(), entry.getValue());
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null) {
+                colors.putInt(key, entry.getValue());
             }
         }
         return colors;
@@ -272,8 +275,10 @@ final class QuestSyncPayloadBuilder {
     private static CompoundTag connectionModesTag(QuestDefinition definition) {
         CompoundTag modes = new CompoundTag();
         for (Map.Entry<String, String> entry : definition.connectionModes().entrySet()) {
-            if (entry.getKey() != null && "grid".equals(entry.getValue())) {
-                modes.putString(entry.getKey(), entry.getValue());
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            QuestConnectionMode mode = QuestConnectionMode.fromSerializedName(entry.getValue());
+            if (!key.isBlank() && mode.storedInQuestMetadata()) {
+                modes.putString(key, mode.serializedName());
             }
         }
         return modes;
@@ -284,7 +289,10 @@ final class QuestSyncPayloadBuilder {
         List<String> hiddenConnectionIds = new ArrayList<>(definition.hiddenConnections());
         hiddenConnectionIds.sort(String::compareTo);
         for (String hiddenConnectionId : hiddenConnectionIds) {
-            hidden.add(StringTag.valueOf(hiddenConnectionId));
+            String key = QuestConnectionMetadata.metadataKey(hiddenConnectionId);
+            if (!key.isBlank()) {
+                hidden.add(StringTag.valueOf(key));
+            }
         }
         return hidden;
     }

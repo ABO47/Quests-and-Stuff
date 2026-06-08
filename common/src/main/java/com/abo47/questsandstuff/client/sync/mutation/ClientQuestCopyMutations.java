@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -60,11 +62,11 @@ public final class ClientQuestCopyMutations {
         ListTag remappedPrerequisites = new ListTag();
         if (copiedIds != null && !copiedIds.isEmpty()) {
             for (int i = 0; i < prerequisites.size(); i++) {
-                String prerequisite = prerequisites.getString(i);
-                String mapped = copiedIds.get(prerequisite);
-                if (mapped != null && !mapped.isBlank() && !mapped.equals(targetId)) {
-                    remappedPrerequisites.add(net.minecraft.nbt.StringTag.valueOf(mapped));
-                }
+            String prerequisite = prerequisites.getString(i);
+                String mapped = mappedCopiedId(copiedIds, prerequisite);
+            if (!mapped.isBlank() && !mapped.equals(targetId)) {
+                remappedPrerequisites.add(net.minecraft.nbt.StringTag.valueOf(mapped));
+            }
             }
         }
         quest.put(QuestSyncKeys.Quest.PREREQUISITES, remappedPrerequisites);
@@ -113,8 +115,8 @@ public final class ClientQuestCopyMutations {
         Set<String> seen = new LinkedHashSet<>();
         for (int i = 0; i < prerequisites.size(); i++) {
             String prerequisite = prerequisites.getString(i);
-            String mapped = copiedIds.get(prerequisite);
-            if (mapped != null && !mapped.isBlank() && !mapped.equals(targetId) && seen.add(mapped)) {
+            String mapped = mappedCopiedId(copiedIds, prerequisite);
+            if (!mapped.isBlank() && !mapped.equals(targetId) && seen.add(mapped)) {
                 remapped.add(net.minecraft.nbt.StringTag.valueOf(mapped));
             }
         }
@@ -128,8 +130,8 @@ public final class ClientQuestCopyMutations {
         }
         Set<String> prerequisites = stringSet(remappedPrerequisites);
         for (String key : colors.getAllKeys()) {
-            String mapped = copiedIds.get(key);
-            if (mapped != null && prerequisites.contains(mapped) && colors.contains(key, Tag.TAG_INT)) {
+            String mapped = mappedCopiedId(copiedIds, key);
+            if (!mapped.isBlank() && prerequisites.contains(mapped) && colors.contains(key, Tag.TAG_INT)) {
                 remapped.putInt(mapped, colors.getInt(key));
             }
         }
@@ -143,9 +145,10 @@ public final class ClientQuestCopyMutations {
         }
         Set<String> prerequisites = stringSet(remappedPrerequisites);
         for (String key : modes.getAllKeys()) {
-            String mapped = copiedIds.get(key);
-            if (mapped != null && prerequisites.contains(mapped) && "grid".equals(modes.getString(key))) {
-                remapped.putString(mapped, "grid");
+            String mapped = mappedCopiedId(copiedIds, key);
+            QuestConnectionMode mode = QuestConnectionMode.fromSerializedName(modes.getString(key));
+            if (!mapped.isBlank() && prerequisites.contains(mapped) && mode.storedInQuestMetadata()) {
+                remapped.putString(mapped, mode.serializedName());
             }
         }
         return remapped;
@@ -159,8 +162,8 @@ public final class ClientQuestCopyMutations {
         Set<String> prerequisites = stringSet(remappedPrerequisites);
         Set<String> seen = new LinkedHashSet<>();
         for (int i = 0; i < hiddenConnections.size(); i++) {
-            String mapped = copiedIds.get(hiddenConnections.getString(i));
-            if (mapped != null && prerequisites.contains(mapped) && seen.add(mapped)) {
+            String mapped = mappedCopiedId(copiedIds, hiddenConnections.getString(i));
+            if (!mapped.isBlank() && prerequisites.contains(mapped) && seen.add(mapped)) {
                 remapped.add(net.minecraft.nbt.StringTag.valueOf(mapped));
             }
         }
@@ -175,10 +178,22 @@ public final class ClientQuestCopyMutations {
         for (int i = 0; i < list.size(); i++) {
             String value = list.getString(i);
             if (value != null && !value.isBlank()) {
-                out.add(value);
+                out.add(QuestConnectionMetadata.metadataKey(value));
             }
         }
         return out;
+    }
+
+    private static String mappedCopiedId(Map<String, String> copiedIds, String key) {
+        if (copiedIds == null || copiedIds.isEmpty()) {
+            return "";
+        }
+        String normalizedKey = QuestConnectionMetadata.metadataKey(key);
+        String mapped = copiedIds.get(normalizedKey);
+        if (mapped == null) {
+            mapped = copiedIds.get(key);
+        }
+        return QuestConnectionMetadata.metadataKey(mapped);
     }
 
     private static String normalizeGroup(String value) {

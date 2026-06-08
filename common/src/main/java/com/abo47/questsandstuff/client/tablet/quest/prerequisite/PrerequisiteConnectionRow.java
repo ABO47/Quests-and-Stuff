@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+
 record PrerequisiteConnectionRow(
         String sourceId,
         String targetId,
@@ -10,6 +12,6 @@ record PrerequisiteConnectionRow(
         PrerequisiteConnectionKind kind
 ) {
     String key() {
-        return sourceId + "->" + targetId;
+        return QuestConnectionMetadata.edgeKey(sourceId, targetId);
     }
 }

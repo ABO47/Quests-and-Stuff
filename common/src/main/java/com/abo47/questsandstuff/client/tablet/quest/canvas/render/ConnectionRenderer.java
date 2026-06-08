@@ -9,6 +9,9 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -44,7 +47,7 @@ public final class ConnectionRenderer {
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return CanvasConnectionAnimation.edgeKey(sourceQuestId, targetQuestId);
+        return QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
@@ -52,10 +55,11 @@ public final class ConnectionRenderer {
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        if (target != null && target.contains("connection_colors", Tag.TAG_COMPOUND)) {
-            CompoundTag colorsTag = target.getCompound("connection_colors");
-            if (colorsTag.contains(sourceQuestId, Tag.TAG_INT)) {
-                return colorsTag.getInt(sourceQuestId);
+        String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
+        if (target != null && target.contains(QuestSyncKeys.Quest.CONNECTION_COLORS, Tag.TAG_COMPOUND)) {
+            CompoundTag colorsTag = target.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS);
+            if (colorsTag.contains(metadataKey, Tag.TAG_INT)) {
+                return colorsTag.getInt(metadataKey);
             }
         }
         Map<String, Integer> colors = state.connectionColorsByGroup.get(group);
@@ -76,10 +80,11 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        if (target != null && target.contains("hidden_connections", Tag.TAG_LIST)) {
-            ListTag hiddenTag = target.getList("hidden_connections", Tag.TAG_STRING);
+        String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
+        if (target != null && target.contains(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
+            ListTag hiddenTag = target.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING);
             for (int i = 0; i < hiddenTag.size(); i++) {
-                if (sourceQuestId.equals(hiddenTag.getString(i))) {
+                if (metadataKey.equals(hiddenTag.getString(i))) {
                     return true;
                 }
             }
@@ -114,13 +119,11 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        if (target != null && target.contains("connection_modes", Tag.TAG_COMPOUND)) {
-            String mode = target.getCompound("connection_modes").getString(sourceQuestId);
-            if ("grid".equals(mode)) {
-                return false;
-            }
-            if (!mode.isBlank()) {
-                return true;
+        String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
+        if (target != null && target.contains(QuestSyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND)) {
+            CompoundTag modes = target.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES);
+            if (modes.contains(metadataKey, Tag.TAG_STRING)) {
+                return QuestConnectionMode.fromSerializedName(modes.getString(metadataKey)) != QuestConnectionMode.GRID;
             }
         }
         Set<String> grid = state.gridConnectionsByGroup.get(group);
@@ -138,6 +141,21 @@ public final class ConnectionRenderer {
         if (groupGrid.isEmpty()) {
             state.gridConnectionsByGroup.remove(group);
         }
+    }
+
+    public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return connectionMetadata(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
+        boolean direct = isConnectionDirect(state, group, sourceQuestId, targetQuestId, target);
+        return new QuestConnectionMetadata(
+                sourceQuestId,
+                targetQuestId,
+                connectionColor(state, group, sourceQuestId, targetQuestId, target),
+                direct ? QuestConnectionMode.DIRECT : QuestConnectionMode.GRID,
+                isConnectionHidden(state, group, sourceQuestId, targetQuestId, target)
+        );
     }
 
     public static void renderPrerequisiteConnections(
@@ -177,7 +195,8 @@ public final class ConnectionRenderer {
                     continue;
                 }
 
-                String edgeId = edgeKey(prerequisiteId, quest.questId());
+                QuestConnectionMetadata metadata = connectionMetadata(state, group, prerequisiteId, quest.questId(), questTag);
+                String edgeId = metadata.edgeKey();
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
@@ -185,12 +204,12 @@ public final class ConnectionRenderer {
                         && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean hidden = isConnectionHidden(state, group, prerequisiteId, quest.questId(), questTag);
+                boolean hidden = metadata.hidden();
 
                 lines.add(new ConnectionLine(
                         edgeId,
-                        prerequisiteId,
-                        quest.questId(),
+                        metadata.sourceQuestId(),
+                        metadata.targetQuestId(),
                         prerequisite.x(),
                         prerequisite.y(),
                         prerequisite.width(),
@@ -203,9 +222,9 @@ public final class ConnectionRenderer {
                         prerequisite.centerY(),
                         quest.centerX(),
                         quest.centerY(),
-                        isConnectionDirect(state, group, prerequisiteId, quest.questId(), questTag),
+                        metadata.direct(),
                         false,
-                        connectionColor(state, group, prerequisiteId, quest.questId(), questTag),
+                        metadata.color(),
                         hidden,
                         hidden ? 64 : 245
                 ));

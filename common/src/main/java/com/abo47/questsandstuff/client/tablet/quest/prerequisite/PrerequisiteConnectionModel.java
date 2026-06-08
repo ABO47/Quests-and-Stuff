@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -131,7 +132,7 @@ record PrerequisiteConnectionModel(
         }
         ListTag prerequisites = questTag.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
         for (int i = 0; i < prerequisites.size(); i++) {
-            if (prerequisiteId.equals(prerequisites.getString(i))) {
+            if (QuestConnectionMetadata.metadataKey(prerequisiteId).equals(QuestConnectionMetadata.metadataKey(prerequisites.getString(i)))) {
                 return true;
             }
         }
@@ -187,6 +188,6 @@ record PrerequisiteConnectionModel(
     }
 
     private static String safe(String value) {
-        return value == null ? "" : value.trim();
+        return QuestConnectionMetadata.normalizeQuestId(value);
     }
 }

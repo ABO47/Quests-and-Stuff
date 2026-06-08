@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.quest.editor.canvas;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
@@ -60,11 +61,11 @@ public final class PrerequisiteEditService {
         Map<String, String> modes = new HashMap<>(source.connectionModes());
         String previous = modes.get(prerequisite);
         if (gridMode) {
-            modes.put(prerequisite, "grid");
+            modes.put(prerequisite, QuestConnectionMode.GRID.serializedName());
         } else {
             modes.remove(prerequisite);
         }
-        if ((gridMode && "grid".equals(previous)) || (!gridMode && previous == null)) {
+        if ((gridMode && QuestConnectionMode.fromSerializedName(previous) == QuestConnectionMode.GRID) || (!gridMode && previous == null)) {
             return;
         }
         owner.captureUndo(owner.session(player));

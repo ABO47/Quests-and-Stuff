@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.google.gson.JsonElement;
@@ -232,7 +234,7 @@ public final class QuestDefinitionEdits {
         }
         Map<String, Integer> out = new HashMap<>();
         for (Map.Entry<String, Integer> entry : colors.entrySet()) {
-            String key = normalizeQuestId(entry.getKey());
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
             if (!key.isBlank() && prerequisites.contains(key) && entry.getValue() != null) {
                 out.put(key, entry.getValue());
             }
@@ -246,10 +248,10 @@ public final class QuestDefinitionEdits {
         }
         Map<String, String> out = new HashMap<>();
         for (Map.Entry<String, String> entry : modes.entrySet()) {
-            String key = normalizeQuestId(entry.getKey());
-            String mode = entry.getValue() == null ? "" : entry.getValue().trim();
-            if (!key.isBlank() && prerequisites.contains(key) && "grid".equals(mode)) {
-                out.put(key, mode);
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            QuestConnectionMode mode = QuestConnectionMode.fromSerializedName(entry.getValue());
+            if (!key.isBlank() && prerequisites.contains(key) && mode.storedInQuestMetadata()) {
+                out.put(key, mode.serializedName());
             }
         }
         return Map.copyOf(out);
@@ -261,7 +263,7 @@ public final class QuestDefinitionEdits {
         }
         Set<String> out = new HashSet<>();
         for (String hidden : hiddenConnections) {
-            String key = normalizeQuestId(hidden);
+            String key = QuestConnectionMetadata.metadataKey(hidden);
             if (!key.isBlank() && prerequisites.contains(key)) {
                 out.add(key);
             }
@@ -270,6 +272,6 @@ public final class QuestDefinitionEdits {
     }
 
     private static String normalizeQuestId(String questId) {
-        return questId == null ? "" : questId.trim();
+        return QuestConnectionMetadata.normalizeQuestId(questId);
     }
 }

@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,8 +14,8 @@ final class ClientQuestConnectionMutations {
     }
 
     static void setQuestPrerequisiteLocal(String questId, String prerequisiteId, boolean add) {
-        String normalizedQuest = questId == null ? "" : questId.trim();
-        String normalizedPrerequisite = prerequisiteId == null ? "" : prerequisiteId.trim();
+        String normalizedQuest = QuestConnectionMetadata.normalizeQuestId(questId);
+        String normalizedPrerequisite = QuestConnectionMetadata.metadataKey(prerequisiteId);
         if (normalizedQuest.isBlank() || normalizedPrerequisite.isBlank() || normalizedQuest.equals(normalizedPrerequisite)) {
             return;
         }
@@ -26,7 +28,7 @@ final class ClientQuestConnectionMutations {
         boolean found = false;
         for (int i = 0; i < prerequisites.size(); i++) {
             String prerequisite = prerequisites.getString(i);
-            if (normalizedPrerequisite.equals(prerequisite)) {
+            if (normalizedPrerequisite.equals(QuestConnectionMetadata.metadataKey(prerequisite))) {
                 found = true;
                 if (!add) {
                     continue;
@@ -50,7 +52,7 @@ final class ClientQuestConnectionMutations {
             return;
         }
         CompoundTag colors = target.quest().getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS).copy();
-        colors.putInt(target.prerequisiteId(), color);
+        colors.putInt(target.metadataKey(), color);
         target.quest().put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
     }
 
@@ -61,9 +63,9 @@ final class ClientQuestConnectionMutations {
         }
         CompoundTag modes = target.quest().getCompound(QuestSyncKeys.Quest.CONNECTION_MODES).copy();
         if (gridMode) {
-            modes.putString(target.prerequisiteId(), "grid");
+            modes.putString(target.metadataKey(), QuestConnectionMode.GRID.serializedName());
         } else {
-            modes.remove(target.prerequisiteId());
+            modes.remove(target.metadataKey());
         }
         target.quest().put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
     }
@@ -73,9 +75,9 @@ final class ClientQuestConnectionMutations {
         if (target == null) {
             return;
         }
-        ListTag next = removeString(target.quest().getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), target.prerequisiteId());
+        ListTag next = removeString(target.quest().getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), target.metadataKey());
         if (hidden) {
-            next.add(StringTag.valueOf(target.prerequisiteId()));
+            next.add(StringTag.valueOf(target.metadataKey()));
         }
         target.quest().put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, next);
     }
@@ -90,7 +92,7 @@ final class ClientQuestConnectionMutations {
             boolean changed = false;
             for (int i = 0; i < prerequisites.size(); i++) {
                 String prerequisite = prerequisites.getString(i);
-                if (questId.equals(prerequisite)) {
+                if (QuestConnectionMetadata.metadataKey(questId).equals(QuestConnectionMetadata.metadataKey(prerequisite))) {
                     changed = true;
                     continue;
                 }
@@ -126,30 +128,31 @@ final class ClientQuestConnectionMutations {
     }
 
     private static ConnectionTarget targetForConnection(String questId, String prerequisiteId) {
-        String normalizedQuest = questId == null ? "" : questId.trim();
-        String normalizedPrerequisite = prerequisiteId == null ? "" : prerequisiteId.trim();
+        String normalizedQuest = QuestConnectionMetadata.normalizeQuestId(questId);
+        String normalizedPrerequisite = QuestConnectionMetadata.metadataKey(prerequisiteId);
         if (normalizedQuest.isBlank() || normalizedPrerequisite.isBlank()) {
             return null;
         }
         CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
-        return quest == null ? null : new ConnectionTarget(quest, normalizedPrerequisite);
+        return quest == null ? null : new ConnectionTarget(quest, QuestConnectionMetadata.metadataKey(normalizedPrerequisite));
     }
 
     private static void removeConnectionMetadata(CompoundTag quest, String prerequisiteId) {
+        String key = QuestConnectionMetadata.metadataKey(prerequisiteId);
         CompoundTag colors = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS).copy();
-        colors.remove(prerequisiteId);
+        colors.remove(key);
         quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
         CompoundTag modes = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES).copy();
-        modes.remove(prerequisiteId);
+        modes.remove(key);
         quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
-        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, removeString(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), prerequisiteId));
+        quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, removeString(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), key));
     }
 
     private static ListTag removeString(ListTag current, String value) {
         ListTag next = new ListTag();
         for (int i = 0; i < current.size(); i++) {
             String entry = current.getString(i);
-            if (!value.equals(entry)) {
+            if (!QuestConnectionMetadata.metadataKey(value).equals(QuestConnectionMetadata.metadataKey(entry))) {
                 next.add(current.get(i).copy());
             }
         }
@@ -157,5 +160,8 @@ final class ClientQuestConnectionMutations {
     }
 
     private record ConnectionTarget(CompoundTag quest, String prerequisiteId) {
+        String metadataKey() {
+            return QuestConnectionMetadata.metadataKey(prerequisiteId);
+        }
     }
 }

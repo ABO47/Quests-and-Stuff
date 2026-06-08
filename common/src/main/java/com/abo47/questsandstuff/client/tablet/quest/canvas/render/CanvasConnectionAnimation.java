@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -14,25 +15,17 @@ import java.util.Map;
 
 public final class CanvasConnectionAnimation {
     private static final long DURATION_MS = 160L;
-    private static final String EDGE_SEPARATOR = "->";
     private static final AnimationState STOPPED = new AnimationState(false, 1.0f);
 
     private CanvasConnectionAnimation() {
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return normalize(sourceQuestId) + EDGE_SEPARATOR + normalize(targetQuestId);
+        return QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
     }
 
     public static String targetQuestId(String edgeKey) {
-        if (edgeKey == null) {
-            return "";
-        }
-        int separator = edgeKey.indexOf(EDGE_SEPARATOR);
-        if (separator < 0 || separator + EDGE_SEPARATOR.length() >= edgeKey.length()) {
-            return "";
-        }
-        return edgeKey.substring(separator + EDGE_SEPARATOR.length()).trim();
+        return QuestConnectionMetadata.targetQuestId(edgeKey);
     }
 
     public static void startIfNew(TabletUiState state, String targetQuestId, String sourceQuestId) {
@@ -89,8 +82,9 @@ public final class CanvasConnectionAnimation {
             return false;
         }
         ListTag prerequisites = target.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
+        String source = QuestConnectionMetadata.metadataKey(sourceQuestId);
         for (int i = 0; i < prerequisites.size(); i++) {
-            if (sourceQuestId.equals(prerequisites.getString(i))) {
+            if (source.equals(QuestConnectionMetadata.metadataKey(prerequisites.getString(i)))) {
                 return true;
             }
         }
@@ -98,7 +92,7 @@ public final class CanvasConnectionAnimation {
     }
 
     private static String normalize(String value) {
-        return value == null ? "" : value.trim();
+        return QuestConnectionMetadata.normalizeQuestId(value);
     }
 
     public record AnimationState(boolean running, float progress) {
