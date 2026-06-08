@@ -13,36 +13,36 @@ class ModalPickerStatesTest {
     @Test
     void recipeBindingResetsSearchFocusScrollDraggingAndKeepsModeSeparate() {
         TabletUiState state = new TabletUiState();
-        state.recipeSearch = "minecraft:stone";
-        state.recipeSearchFocused = true;
-        state.recipeScroll = 42;
-        state.recipeScrollDragging = true;
-        state.recipeMode = RecipePickerMode.TAGS;
+        state.pickers.recipeSearch = "minecraft:stone";
+        state.pickers.recipeSearchFocused = true;
+        state.pickers.recipeScroll = 42;
+        state.pickers.recipeScrollDragging = true;
+        state.pickers.recipeMode = RecipePickerMode.TAGS;
 
         ModalPickerStates.recipe(state).reset();
 
-        assertEquals("", state.recipeSearch);
-        assertFalse(state.recipeSearchFocused);
-        assertEquals(0, state.recipeScroll);
-        assertFalse(state.recipeScrollDragging);
-        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
+        assertEquals("", state.pickers.recipeSearch);
+        assertFalse(state.pickers.recipeSearchFocused);
+        assertEquals(0, state.pickers.recipeScroll);
+        assertFalse(state.pickers.recipeScrollDragging);
+        assertEquals(RecipePickerMode.TAGS, state.pickers.recipeMode);
     }
 
     @Test
     void assetBindingTargetsGridScrollFields() {
         TabletUiState state = new TabletUiState();
-        state.assetSearch = "blueprints";
-        state.assetSearchFocused = true;
-        state.assetGridScroll = 16;
-        state.assetGridScrollDragging = true;
+        state.pickers.assetSearch = "blueprints";
+        state.pickers.assetSearchFocused = true;
+        state.pickers.assetGridScroll = 16;
+        state.pickers.assetGridScrollDragging = true;
 
         SearchScrollState picker = ModalPickerStates.asset(state);
         picker.clearInteraction();
 
-        assertEquals("blueprints", state.assetSearch);
-        assertEquals(16, state.assetGridScroll);
-        assertFalse(state.assetSearchFocused);
-        assertFalse(state.assetGridScrollDragging);
+        assertEquals("blueprints", state.pickers.assetSearch);
+        assertEquals(16, state.pickers.assetGridScroll);
+        assertFalse(state.pickers.assetSearchFocused);
+        assertFalse(state.pickers.assetGridScrollDragging);
     }
 
     @Test
@@ -56,12 +56,12 @@ class ModalPickerStatesTest {
         ModalPickerStates.forType(state, ModalWindowManager.ModalType.DIMENSION_PICKER).setSearch("nether");
         ModalPickerStates.forType(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER).setSearch("chests");
 
-        assertEquals("plains", state.biomeSearch);
-        assertEquals("story", state.advancementSearch);
-        assertEquals("village", state.structureSearch);
-        assertEquals("jump", state.statSearch);
-        assertEquals("nether", state.dimensionSearch);
-        assertEquals("chests", state.lootTableSearch);
+        assertEquals("plains", state.pickers.biomeSearch);
+        assertEquals("story", state.pickers.advancementSearch);
+        assertEquals("village", state.pickers.structureSearch);
+        assertEquals("jump", state.pickers.statSearch);
+        assertEquals("nether", state.pickers.dimensionSearch);
+        assertEquals("chests", state.pickers.lootTableSearch);
     }
 
     @Test
@@ -83,12 +83,12 @@ class ModalPickerStatesTest {
         picker.setScrollValue(18);
         picker.setDragging(true);
 
-        assertEquals(" stone ", state.recipeSearch);
-        assertEquals(" stone ", state.modalSession.picker().search());
-        assertTrue(state.modalSession.picker().focused());
-        assertEquals(18, state.recipeScroll);
-        assertEquals(18, state.modalSession.picker().scroll());
-        assertTrue(state.modalSession.picker().dragging());
+        assertEquals(" stone ", state.pickers.recipeSearch);
+        assertEquals(" stone ", state.modal.modalSession.picker().search());
+        assertTrue(state.modal.modalSession.picker().focused());
+        assertEquals(18, state.pickers.recipeScroll);
+        assertEquals(18, state.modal.modalSession.picker().scroll());
+        assertTrue(state.modal.modalSession.picker().dragging());
     }
 
     @Test
@@ -100,12 +100,12 @@ class ModalPickerStatesTest {
 
         ModalOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
 
-        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
-        assertEquals("", state.modalSession.picker().search());
-        assertEquals(0, state.modalSession.picker().scroll());
-        assertEquals("icons/new.png", state.modalSession.selectedValue());
-        assertEquals("", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
-        assertEquals("reward_icon|quest|reward|icon", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK));
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
+        assertEquals("", state.modal.modalSession.picker().search());
+        assertEquals(0, state.modal.modalSession.picker().scroll());
+        assertEquals("icons/new.png", state.modal.modalSession.selectedValue());
+        assertEquals("", state.modal.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
+        assertEquals("reward_icon|quest|reward|icon", state.modal.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK));
     }
 
     @Test
@@ -115,7 +115,7 @@ class ModalPickerStatesTest {
         SearchScrollState picker = ModalPickerStates.prerequisitesManager(state);
         picker.setSearch(" Quest_A\n");
 
-        assertEquals(" quest_a ", state.prerequisitesManagerSearch);
+        assertEquals(" quest_a ", state.modal.prerequisitesManagerSearch);
         assertEquals("quest_a", picker.normalizedSearch());
         assertEquals("questa", picker.normalizedKey());
     }
@@ -123,111 +123,111 @@ class ModalPickerStatesTest {
     @Test
     void recipeModeCycleKeepsOneModeActiveAndResetsScroll() {
         TabletUiState state = new TabletUiState();
-        state.recipeScroll = 24;
+        state.pickers.recipeScroll = 24;
 
         RecipePickerMode.cycle(state, 1);
 
-        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
-        assertEquals(0, state.recipeScroll);
-        assertEquals("mode_tags", state.recipeMode.icon());
-        assertEquals("tags", state.recipeMode.logName(state.recipeSearch));
-        assertEquals(1, RecipePickerMode.cycleIndex(state.recipeMode));
+        assertEquals(RecipePickerMode.TAGS, state.pickers.recipeMode);
+        assertEquals(0, state.pickers.recipeScroll);
+        assertEquals("mode_tags", state.pickers.recipeMode.icon());
+        assertEquals("tags", state.pickers.recipeMode.logName(state.pickers.recipeSearch));
+        assertEquals(1, RecipePickerMode.cycleIndex(state.pickers.recipeMode));
         assertEquals("mode_tags", RecipePickerMode.iconAt(1));
 
-        state.recipeScroll = 18;
+        state.pickers.recipeScroll = 18;
         RecipePickerMode.cycle(state, 1);
 
-        assertEquals(RecipePickerMode.FLUIDS, state.recipeMode);
-        assertEquals(0, state.recipeScroll);
-        assertEquals("mode_fluids", state.recipeMode.icon());
-        assertEquals("fluids", state.recipeMode.logName(state.recipeSearch));
+        assertEquals(RecipePickerMode.FLUIDS, state.pickers.recipeMode);
+        assertEquals(0, state.pickers.recipeScroll);
+        assertEquals("mode_fluids", state.pickers.recipeMode.icon());
+        assertEquals("fluids", state.pickers.recipeMode.logName(state.pickers.recipeSearch));
         assertEquals(4, RecipePickerMode.cycleSize());
 
-        state.recipeScroll = 9;
+        state.pickers.recipeScroll = 9;
         RecipePickerMode.cycle(state, -1);
 
-        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
-        assertEquals(0, state.recipeScroll);
+        assertEquals(RecipePickerMode.TAGS, state.pickers.recipeMode);
+        assertEquals(0, state.pickers.recipeScroll);
     }
 
     @Test
     void hashRecipeSearchUsesTagModeNameWithoutChangingModeFlags() {
         TabletUiState state = new TabletUiState();
-        state.recipeSearch = " #forge:ingots ";
+        state.pickers.recipeSearch = " #forge:ingots ";
 
-        assertEquals("tags", state.recipeMode.logName(state.recipeSearch));
-        assertEquals("mode_items", state.recipeMode.icon());
-        assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
+        assertEquals("tags", state.pickers.recipeMode.logName(state.pickers.recipeSearch));
+        assertEquals("mode_items", state.pickers.recipeMode.icon());
+        assertEquals(RecipePickerMode.ITEMS, state.pickers.recipeMode);
     }
 
     @Test
     void iconModeCycleKeepsOneModeActiveAndResetsScroll() {
         TabletUiState state = new TabletUiState();
-        state.iconMode = IconPickerMode.ITEMS;
-        state.iconScroll = 24;
+        state.pickers.iconMode = IconPickerMode.ITEMS;
+        state.pickers.iconScroll = 24;
 
         IconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.TAGS, state.iconMode);
-        assertEquals(0, state.iconScroll);
-        assertEquals("mode_tags", state.iconMode.icon());
-        assertEquals("tags", state.iconMode.logName());
+        assertEquals(IconPickerMode.TAGS, state.pickers.iconMode);
+        assertEquals(0, state.pickers.iconScroll);
+        assertEquals("mode_tags", state.pickers.iconMode.icon());
+        assertEquals("tags", state.pickers.iconMode.logName());
 
-        state.iconScroll = 18;
+        state.pickers.iconScroll = 18;
         IconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.FLUIDS, state.iconMode);
-        assertEquals(0, state.iconScroll);
-        assertEquals("mode_fluids", state.iconMode.icon());
-
-        IconPickerMode.cycle(state, true, true, false, 1);
-
-        assertEquals(IconPickerMode.ENTITIES, state.iconMode);
-        assertEquals("entity", state.iconMode.icon());
+        assertEquals(IconPickerMode.FLUIDS, state.pickers.iconMode);
+        assertEquals(0, state.pickers.iconScroll);
+        assertEquals("mode_fluids", state.pickers.iconMode.icon());
 
         IconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.INVENTORY, state.iconMode);
-        assertEquals("mode_inventory", state.iconMode.icon());
+        assertEquals(IconPickerMode.ENTITIES, state.pickers.iconMode);
+        assertEquals("entity", state.pickers.iconMode.icon());
+
+        IconPickerMode.cycle(state, true, true, false, 1);
+
+        assertEquals(IconPickerMode.INVENTORY, state.pickers.iconMode);
+        assertEquals("mode_inventory", state.pickers.iconMode.icon());
         IconPickerMode[] cycle = IconPickerMode.cycleForContext(true, true, false);
-        assertEquals(4, IconPickerMode.cycleIndex(state.iconMode, cycle));
+        assertEquals(4, IconPickerMode.cycleIndex(state.pickers.iconMode, cycle));
         assertEquals("mode_inventory", IconPickerMode.iconAt(cycle, 4));
 
         IconPickerMode.cycle(state, true, true, false, -1);
 
-        assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+        assertEquals(IconPickerMode.ENTITIES, state.pickers.iconMode);
     }
 
     @Test
     void useItemIconModeCyclesUsableItemsBeforeAllItems() {
         TabletUiState state = new TabletUiState();
-        state.iconMode = IconPickerMode.USABLE_ITEMS;
+        state.pickers.iconMode = IconPickerMode.USABLE_ITEMS;
 
         IconPickerMode.cycle(state, false, true, true, 1);
 
-        assertEquals(IconPickerMode.ITEMS, state.iconMode);
-        assertEquals("items", state.iconMode.logName());
+        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
+        assertEquals("items", state.pickers.iconMode.logName());
 
         IconPickerMode.cycle(state, false, true, true, -1);
 
-        assertEquals(IconPickerMode.USABLE_ITEMS, state.iconMode);
-        assertEquals("usable_items", state.iconMode.logName());
-        assertEquals("send-horizontal", state.iconMode.icon());
+        assertEquals(IconPickerMode.USABLE_ITEMS, state.pickers.iconMode);
+        assertEquals("usable_items", state.pickers.iconMode.logName());
+        assertEquals("send-horizontal", state.pickers.iconMode.icon());
     }
 
     @Test
     void modelItemIconModeOnlyCyclesItemsAndTags() {
         TabletUiState state = new TabletUiState();
-        state.iconMode = IconPickerMode.ENTITIES;
+        state.pickers.iconMode = IconPickerMode.ENTITIES;
 
         IconPickerMode.cycleModelItems(state, 1);
 
-        assertEquals(IconPickerMode.TAGS, state.iconMode);
-        assertEquals(1, IconPickerMode.cycleIndex(state.iconMode, IconPickerMode.modelItemCycle()));
+        assertEquals(IconPickerMode.TAGS, state.pickers.iconMode);
+        assertEquals(1, IconPickerMode.cycleIndex(state.pickers.iconMode, IconPickerMode.modelItemCycle()));
         assertEquals("mode_tags", IconPickerMode.iconAt(IconPickerMode.modelItemCycle(), 1));
 
         IconPickerMode.cycleModelItems(state, 1);
 
-        assertEquals(IconPickerMode.ITEMS, state.iconMode);
+        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
     }
 }

@@ -26,26 +26,26 @@ final class SoundVolumeControls {
                 x,
                 y,
                 width,
-                state.soundVolumeDraft,
+                state.pickers.soundVolumeDraft,
                 next -> {
-                    state.soundVolumeDraft = QuestDisplay.normalizeCompletionSoundVolume(next);
+                    state.pickers.soundVolumeDraft = QuestDisplay.normalizeCompletionSoundVolume(next);
                     refresh.run();
                 },
                 () -> {
                     commit(player, state, soundId);
                     refresh.run();
                 },
-                () -> state.soundVolumeDragging,
-                dragging -> state.soundVolumeDragging = dragging,
+                () -> state.pickers.soundVolumeDragging,
+                dragging -> state.pickers.soundVolumeDragging = dragging,
                 new Component[]{TabletVocabulary.component(QuestVocabulary.SOUND_LEVEL)}
         );
     }
 
     private static void commit(Player player, TabletUiState state, String soundId) {
-        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
-        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
-        int volume = QuestDisplay.normalizeCompletionSoundVolume(state.soundVolumeDraft);
-        state.soundVolumeDraft = volume;
+        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
+        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
+        int volume = QuestDisplay.normalizeCompletionSoundVolume(state.pickers.soundVolumeDraft);
+        state.pickers.soundVolumeDraft = volume;
         if (!targets.isEmpty()) {
             EditorCommandClient.setQuestCompletionSoundVolume(player, targets, volume);
             QuestSoundPreview.restartIfPlaying(soundId, volume);

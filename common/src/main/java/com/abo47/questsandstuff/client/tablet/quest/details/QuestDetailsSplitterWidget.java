@@ -35,8 +35,8 @@ final class QuestDetailsSplitterWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        boolean hovered = state.questDetailsDraggingSplitter || isMouseOverElement(mouseX, mouseY);
-        boolean resizeHovered = hovered && !state.questDetailsSplitterLocked;
+        boolean hovered = state.questDetails.questDetailsDraggingSplitter || isMouseOverElement(mouseX, mouseY);
+        boolean resizeHovered = hovered && !state.questDetails.questDetailsSplitterLocked;
         TabletResizeCursor.update(resizeHovered);
         updateHoverPulse(hovered);
 
@@ -57,41 +57,41 @@ final class QuestDetailsSplitterWidget extends WidgetGroup {
         if (button != 0 || !isMouseOverElement(mouseX, mouseY)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        if (state.questDetailsSplitterLocked) {
-            state.questDetailsDraggingSplitter = false;
+        if (state.questDetails.questDetailsSplitterLocked) {
+            state.questDetails.questDetailsDraggingSplitter = false;
             TabletResizeCursor.update(false);
             return true;
         }
-        state.questDetailsDraggingSplitter = true;
-        state.questDetailsSplitterDragStartX = (int) Math.round(mouseX);
-        state.questDetailsSplitterStartWidth = QuestDetailsWindow.leftPanelWidth(state);
+        state.questDetails.questDetailsDraggingSplitter = true;
+        state.questDetails.questDetailsSplitterDragStartX = (int) Math.round(mouseX);
+        state.questDetails.questDetailsSplitterStartWidth = QuestDetailsWindow.leftPanelWidth(state);
         return true;
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state.questDetailsSplitterLocked) {
-            state.questDetailsDraggingSplitter = false;
+        if (state.questDetails.questDetailsSplitterLocked) {
+            state.questDetails.questDetailsDraggingSplitter = false;
             TabletResizeCursor.update(false);
             return true;
         }
-        if (!state.questDetailsDraggingSplitter) {
+        if (!state.questDetails.questDetailsDraggingSplitter) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
-        int dx = (int) Math.round(mouseX) - state.questDetailsSplitterDragStartX;
-        int nextWidth = snapExpandedChapterWidth(state.questDetailsSplitterStartWidth + dx);
-        state.questDetailsLeftPanelWidth = clampDetailsLeftWidth(nextWidth);
+        int dx = (int) Math.round(mouseX) - state.questDetails.questDetailsSplitterDragStartX;
+        int nextWidth = snapExpandedChapterWidth(state.questDetails.questDetailsSplitterStartWidth + dx);
+        state.questDetails.questDetailsLeftPanelWidth = clampDetailsLeftWidth(nextWidth);
         refresh.run();
         return true;
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!state.questDetailsDraggingSplitter) {
+        if (!state.questDetails.questDetailsDraggingSplitter) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
-        state.questDetailsDraggingSplitter = false;
-        state.questDetailsLeftPanelWidth = QuestDetailsWindow.leftPanelWidth(state);
+        state.questDetails.questDetailsDraggingSplitter = false;
+        state.questDetails.questDetailsLeftPanelWidth = QuestDetailsWindow.leftPanelWidth(state);
         TabletResizeCursor.update(false);
         persistUiState(state);
         refresh.run();

@@ -35,8 +35,8 @@ public record ChapterContextMenuLayout(
         int rowCount = rowCount(hasTarget, entityIcon, entityVariants);
         int menuW = width(state, availableW);
         int menuH = height(hasTarget, rowCount);
-        int menuX = Math.max(4, Math.min(state.chapterMenuX, availableW - menuW - 4));
-        int menuY = Math.max(4, Math.min(state.chapterMenuY, availableH - menuH - 4));
+        int menuX = Math.max(4, Math.min(state.chapterPanel.chapterMenuX, availableW - menuW - 4));
+        int menuY = Math.max(4, Math.min(state.chapterPanel.chapterMenuY, availableH - menuH - 4));
         return new ChapterContextMenuLayout(target, hasTarget, entityIcon, entityVariants, menuW, menuH, menuX, menuY, rowCount);
     }
 
@@ -99,7 +99,7 @@ public record ChapterContextMenuLayout(
     }
 
     private static String resolveTarget(TabletUiState state) {
-        return state.chapterMenuTarget.isBlank() ? EditorCommandClient.selectedGroupName(state) : state.chapterMenuTarget;
+        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
     }
 
     private static int height(boolean hasTarget, int rowCount) {

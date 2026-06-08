@@ -18,8 +18,8 @@ class TabletStateQueriesTest {
         assertEquals(TabletLayout.ROOT_W, TabletStateQueries.rootWidth(state));
         assertEquals(TabletLayout.ROOT_H, TabletStateQueries.rootHeight(state));
 
-        state.tabletRootWidth = 640;
-        state.tabletRootHeight = 360;
+        state.root.tabletRootWidth = 640;
+        state.root.tabletRootHeight = 360;
 
         assertEquals(640, TabletStateQueries.rootWidth(state));
         assertEquals(360, TabletStateQueries.rootHeight(state));
@@ -28,10 +28,10 @@ class TabletStateQueriesTest {
     @Test
     void selectedGroupNameUsesSanitizedEditableSelection() {
         TabletUiState state = new TabletUiState();
-        state.canEdit = true;
-        state.selectedGroup = "  main\nchapter with a very very very very very very long suffix  ";
+        state.root.canEdit = true;
+        state.root.selectedGroup = "  main\nchapter with a very very very very very very long suffix  ";
 
-        assertEquals(QuestIdentity.uiGroupName(state.selectedGroup), TabletStateQueries.sanitizeGroupName(state.selectedGroup));
+        assertEquals(QuestIdentity.uiGroupName(state.root.selectedGroup), TabletStateQueries.sanitizeGroupName(state.root.selectedGroup));
         assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedGroupName(state));
     }
 
@@ -42,12 +42,12 @@ class TabletStateQueriesTest {
         assertEquals("", TabletStateQueries.singleSelectedQuestId(state));
         assertFalse(TabletStateQueries.hasSelectedQuests(state));
 
-        state.canvasSelection.questIds().add("quest_a");
+        state.canvas.canvasSelection.questIds().add("quest_a");
         assertEquals("quest_a", TabletStateQueries.singleSelectedQuestId(state));
         assertTrue(TabletStateQueries.hasSelectedQuests(state));
 
         List<String> snapshot = TabletStateQueries.selectedQuestIdSnapshot(state);
-        state.canvasSelection.questIds().add("quest_b");
+        state.canvas.canvasSelection.questIds().add("quest_b");
 
         assertEquals(List.of("quest_a"), snapshot);
         assertEquals("", TabletStateQueries.singleSelectedQuestId(state));

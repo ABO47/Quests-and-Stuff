@@ -48,30 +48,30 @@ public final class CanvasSelectionRenderer {
     }
 
     public static boolean isSelectionBoundsHit(TabletUiState state, int x, int y) {
-        if (!state.selectionBoundsVisible) {
+        if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
-        return x >= state.selectionBoundsLeft && x <= state.selectionBoundsRight
-                && y >= state.selectionBoundsTop && y <= state.selectionBoundsBottom;
+        return x >= state.canvas.selectionBoundsLeft && x <= state.canvas.selectionBoundsRight
+                && y >= state.canvas.selectionBoundsTop && y <= state.canvas.selectionBoundsBottom;
     }
 
     public static boolean isSelectionResizeHandleHit(TabletUiState state, int x, int y) {
-        if (!state.selectionBoundsVisible) {
+        if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
-        int left = state.selectionBoundsRight - HANDLE_SIZE;
-        int top = state.selectionBoundsBottom - HANDLE_SIZE;
-        return x >= left && x <= state.selectionBoundsRight
-                && y >= top && y <= state.selectionBoundsBottom;
+        int left = state.canvas.selectionBoundsRight - HANDLE_SIZE;
+        int top = state.canvas.selectionBoundsBottom - HANDLE_SIZE;
+        return x >= left && x <= state.canvas.selectionBoundsRight
+                && y >= top && y <= state.canvas.selectionBoundsBottom;
     }
 
     public static boolean isSelectionRotateHandleHit(TabletUiState state, int x, int y) {
-        if (!state.selectionBoundsVisible) {
+        if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
-        int left = state.selectionBoundsRight - HANDLE_SIZE;
-        int top = state.selectionBoundsTop;
-        return x >= left && x <= state.selectionBoundsRight
+        int left = state.canvas.selectionBoundsRight - HANDLE_SIZE;
+        int top = state.canvas.selectionBoundsTop;
+        return x >= left && x <= state.canvas.selectionBoundsRight
                 && y >= top && y <= top + HANDLE_SIZE;
     }
 
@@ -83,7 +83,7 @@ public final class CanvasSelectionRenderer {
         int count = 0;
         String group = selectedGroupName(state);
         for (QuestCardLayout card : cards) {
-            if (!state.canvasSelection.questIds().contains(card.questId())) {
+            if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
                 continue;
             }
             count++;
@@ -92,7 +92,7 @@ public final class CanvasSelectionRenderer {
             maxX = Math.max(maxX, card.x() + card.width());
             maxY = Math.max(maxY, card.y() + card.height());
         }
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
@@ -104,7 +104,7 @@ public final class CanvasSelectionRenderer {
             maxX = Math.max(maxX, bounds[2]);
             maxY = Math.max(maxY, bounds[3]);
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
             if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
@@ -117,48 +117,48 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, bounds[3]);
         }
         if (count <= 0) {
-            state.selectionBoundsVisible = false;
-            state.selectionBoundsLeft = 0;
-            state.selectionBoundsTop = 0;
-            state.selectionBoundsRight = 0;
-            state.selectionBoundsBottom = 0;
+            state.canvas.selectionBoundsVisible = false;
+            state.canvas.selectionBoundsLeft = 0;
+            state.canvas.selectionBoundsTop = 0;
+            state.canvas.selectionBoundsRight = 0;
+            state.canvas.selectionBoundsBottom = 0;
             return;
         }
-        state.selectionBoundsVisible = true;
-        if (state.draggingSelection
+        state.canvas.selectionBoundsVisible = true;
+        if (state.canvas.draggingSelection
                 && count > 1
-                && state.dragStartBoundsRight > state.dragStartBoundsLeft
-                && state.dragStartBoundsBottom > state.dragStartBoundsTop
-                && state.dragStartSelectionRight > state.dragStartSelectionLeft
-                && state.dragStartSelectionBottom > state.dragStartSelectionTop) {
-            int screenDx = CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
-                    - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
-            int screenDy = CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
-                    - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
-            state.selectionBoundsLeft = state.dragStartSelectionLeft + screenDx;
-            state.selectionBoundsTop = state.dragStartSelectionTop + screenDy;
-            state.selectionBoundsRight = state.dragStartSelectionRight + screenDx;
-            state.selectionBoundsBottom = state.dragStartSelectionBottom + screenDy;
+                && state.canvas.dragStartBoundsRight > state.canvas.dragStartBoundsLeft
+                && state.canvas.dragStartBoundsBottom > state.canvas.dragStartBoundsTop
+                && state.canvas.dragStartSelectionRight > state.canvas.dragStartSelectionLeft
+                && state.canvas.dragStartSelectionBottom > state.canvas.dragStartSelectionTop) {
+            int screenDx = CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                    - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+            int screenDy = CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                    - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+            state.canvas.selectionBoundsLeft = state.canvas.dragStartSelectionLeft + screenDx;
+            state.canvas.selectionBoundsTop = state.canvas.dragStartSelectionTop + screenDy;
+            state.canvas.selectionBoundsRight = state.canvas.dragStartSelectionRight + screenDx;
+            state.canvas.selectionBoundsBottom = state.canvas.dragStartSelectionBottom + screenDy;
             return;
         }
-        if (state.rotatingSelection
-                && state.rotateStartBoundsRight > state.rotateStartBoundsLeft
-                && state.rotateStartBoundsBottom > state.rotateStartBoundsTop) {
-            int startW = CanvasGeometry.screenWidth(state, state.rotateStartBoundsLeft, state.rotateStartBoundsRight);
-            int startH = CanvasGeometry.screenHeight(state, state.rotateStartBoundsTop, state.rotateStartBoundsBottom);
-            int centerX = CanvasGeometry.screenX(state, state.rotatePivotX);
-            int centerY = CanvasGeometry.screenY(state, state.rotatePivotY);
-            state.selectionBoundsLeft = centerX - startW / 2 - SELECTION_PAD;
-            state.selectionBoundsTop = centerY - startH / 2 - SELECTION_PAD;
-            state.selectionBoundsRight = state.selectionBoundsLeft + startW + SELECTION_PAD * 2;
-            state.selectionBoundsBottom = state.selectionBoundsTop + startH + SELECTION_PAD * 2;
+        if (state.canvas.rotatingSelection
+                && state.canvas.rotateStartBoundsRight > state.canvas.rotateStartBoundsLeft
+                && state.canvas.rotateStartBoundsBottom > state.canvas.rotateStartBoundsTop) {
+            int startW = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight);
+            int startH = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom);
+            int centerX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
+            int centerY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
+            state.canvas.selectionBoundsLeft = centerX - startW / 2 - SELECTION_PAD;
+            state.canvas.selectionBoundsTop = centerY - startH / 2 - SELECTION_PAD;
+            state.canvas.selectionBoundsRight = state.canvas.selectionBoundsLeft + startW + SELECTION_PAD * 2;
+            state.canvas.selectionBoundsBottom = state.canvas.selectionBoundsTop + startH + SELECTION_PAD * 2;
             return;
         }
         int pad = count == 1 ? SINGLE_SELECTION_PAD : SELECTION_PAD;
-        state.selectionBoundsLeft = minX - pad;
-        state.selectionBoundsTop = minY - pad;
-        state.selectionBoundsRight = maxX + pad;
-        state.selectionBoundsBottom = maxY + pad;
+        state.canvas.selectionBoundsLeft = minX - pad;
+        state.canvas.selectionBoundsTop = minY - pad;
+        state.canvas.selectionBoundsRight = maxX + pad;
+        state.canvas.selectionBoundsBottom = maxY + pad;
     }
 
     public static void drawSelectionForeground(
@@ -170,7 +170,7 @@ public final class CanvasSelectionRenderer {
             int maxW,
             int maxH
     ) {
-        if (!state.canEdit || state.questDetailsOpen) {
+        if (!state.root.canEdit || state.questDetails.questDetailsOpen) {
             return;
         }
         drawBoxSelectionRect(graphics, originX, originY, maxW, maxH, state);
@@ -179,24 +179,24 @@ public final class CanvasSelectionRenderer {
     }
 
     public static void renderAlignmentGuides(WidgetGroup canvasViewport, TabletUiState state) {
-        if (!state.canEdit) {
+        if (!state.root.canEdit) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                if (!state.snapGuideXVisible && !state.snapGuideYVisible) {
+                if (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible) {
                     return;
                 }
                 int originX = getPositionX();
                 int originY = getPositionY();
-                if (state.snapGuideXVisible && state.snapGuideX >= 0 && state.snapGuideX < getSizeWidth()) {
-                    int x = originX + state.snapGuideX;
+                if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX < getSizeWidth()) {
+                    int x = originX + state.canvas.snapGuideX;
                     graphics.fill(x, originY, x + 1, originY + getSizeHeight(), color);
                 }
-                if (state.snapGuideYVisible && state.snapGuideY >= 0 && state.snapGuideY < getSizeHeight()) {
-                    int y = originY + state.snapGuideY;
+                if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY < getSizeHeight()) {
+                    int y = originY + state.canvas.snapGuideY;
                     graphics.fill(originX, y, originX + getSizeWidth(), y + 1, color);
                 }
             }
@@ -212,18 +212,18 @@ public final class CanvasSelectionRenderer {
             TabletUiState state,
             List<QuestCardLayout> cards
     ) {
-        if (!state.canEdit || (!state.boxSelecting && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) || !state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.root.canEdit || (!state.canvas.boxSelecting && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) || !state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
         int border = withAlpha(ModColors.INTERACTIVE, 180);
         for (QuestCardLayout card : cards) {
-            if (!state.canvasSelection.questIds().contains(card.questId())) {
+            if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
                 continue;
             }
             int x = card.x();
             int y = card.y();
-            if (state.draggingSelection && state.dragStartPositions.containsKey(card.questId())) {
+            if (state.canvas.draggingSelection && state.canvas.dragStartPositions.containsKey(card.questId())) {
                 x += selectionDragScreenX(state);
                 y += selectionDragScreenY(state);
             }
@@ -242,7 +242,7 @@ public final class CanvasSelectionRenderer {
             );
         }
         String group = selectedGroupName(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
@@ -262,7 +262,7 @@ public final class CanvasSelectionRenderer {
                     border
             );
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
             if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
@@ -292,13 +292,13 @@ public final class CanvasSelectionRenderer {
             int maxH,
             TabletUiState state
     ) {
-        if (!state.boxSelecting) {
+        if (!state.canvas.boxSelecting) {
             return;
         }
-        int minX = Math.min(state.boxStartX, state.boxCurrentX);
-        int minY = Math.min(state.boxStartY, state.boxCurrentY);
-        int boxW = Math.max(1, Math.abs(state.boxCurrentX - state.boxStartX));
-        int boxH = Math.max(1, Math.abs(state.boxCurrentY - state.boxStartY));
+        int minX = Math.min(state.canvas.boxStartX, state.canvas.boxCurrentX);
+        int minY = Math.min(state.canvas.boxStartY, state.canvas.boxCurrentY);
+        int boxW = Math.max(1, Math.abs(state.canvas.boxCurrentX - state.canvas.boxStartX));
+        int boxH = Math.max(1, Math.abs(state.canvas.boxCurrentY - state.canvas.boxStartY));
         drawClippedRect(
                 graphics,
                 originX,
@@ -315,13 +315,13 @@ public final class CanvasSelectionRenderer {
     }
 
     private static int selectionDragScreenX(TabletUiState state) {
-        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
     }
 
     private static int selectionDragScreenY(TabletUiState state) {
-        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
+        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
     }
 
     private static void drawSelectionBounds(
@@ -332,31 +332,31 @@ public final class CanvasSelectionRenderer {
             int maxH,
             TabletUiState state
     ) {
-        if (!state.canEdit || !state.selectionBoundsVisible || state.pendingQuestTitleChangeId != null && !state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.root.canEdit || !state.canvas.selectionBoundsVisible || state.questDetails.pendingQuestTitleChangeId != null && !state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
-        if (state.boxSelecting) {
+        if (state.canvas.boxSelecting) {
             return;
         }
-        if (state.canvasSelection.questIds().isEmpty() && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
+        if (state.canvas.canvasSelection.questIds().isEmpty() && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
             return;
         }
-        if (state.rotatingSelection && CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
+        if (state.canvas.rotatingSelection && CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             drawRotatedSelectionBounds(graphics, originX, originY, state);
             return;
         }
-        int left = state.selectionBoundsLeft;
-        int top = state.selectionBoundsTop;
-        int width = Math.max(1, state.selectionBoundsRight - state.selectionBoundsLeft);
-        int height = Math.max(1, state.selectionBoundsBottom - state.selectionBoundsTop);
+        int left = state.canvas.selectionBoundsLeft;
+        int top = state.canvas.selectionBoundsTop;
+        int width = Math.max(1, state.canvas.selectionBoundsRight - state.canvas.selectionBoundsLeft);
+        int height = Math.max(1, state.canvas.selectionBoundsBottom - state.canvas.selectionBoundsTop);
         drawClippedRect(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(ModColors.INTERACTIVE, 26), withAlpha(ModColors.INTERACTIVE, 214));
 
-        int resizeX = state.selectionBoundsRight - HANDLE_SIZE;
-        int resizeY = state.selectionBoundsBottom - HANDLE_SIZE;
+        int resizeX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
+        int resizeY = state.canvas.selectionBoundsBottom - HANDLE_SIZE;
         drawClippedRect(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
 
-        int rotateX = state.selectionBoundsRight - HANDLE_SIZE;
-        int rotateY = state.selectionBoundsTop;
+        int rotateX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
+        int rotateY = state.canvas.selectionBoundsTop;
         drawClippedRect(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
     }
 
@@ -389,10 +389,10 @@ public final class CanvasSelectionRenderer {
     }
 
     private static void drawRotatedSelectionBounds(GuiGraphics graphics, int originX, int originY, TabletUiState state) {
-        int width = CanvasGeometry.screenWidth(state, state.rotateStartBoundsLeft, state.rotateStartBoundsRight) + SELECTION_PAD * 2;
-        int height = CanvasGeometry.screenHeight(state, state.rotateStartBoundsTop, state.rotateStartBoundsBottom) + SELECTION_PAD * 2;
-        int pivotX = CanvasGeometry.screenX(state, state.rotatePivotX);
-        int pivotY = CanvasGeometry.screenY(state, state.rotatePivotY);
+        int width = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight) + SELECTION_PAD * 2;
+        int height = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom) + SELECTION_PAD * 2;
+        int pivotX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
+        int pivotY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
         int color = withAlpha(ModColors.INTERACTIVE, 225);
 
         int halfW = width / 2;
@@ -400,7 +400,7 @@ public final class CanvasSelectionRenderer {
 
         graphics.pose().pushPose();
         graphics.pose().translate(originX + pivotX, originY + pivotY, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) state.rotatePreviewAngle));
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) state.canvas.rotatePreviewAngle));
         drawRotatedOutline(graphics, -halfW, -halfH, width - halfW, height - halfH, ROTATED_SELECTION_THICKNESS, color);
         graphics.pose().popPose();
     }

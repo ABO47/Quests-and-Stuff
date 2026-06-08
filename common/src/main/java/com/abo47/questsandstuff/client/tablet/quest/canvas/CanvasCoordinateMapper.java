@@ -7,11 +7,11 @@ final class CanvasCoordinateMapper {
     }
 
     static int screenX(TabletUiState state, double logicalX) {
-        return state.canvasContentX + state.canvasOffsetX + Math.round((float) (logicalX * zoom(state)));
+        return state.canvas.canvasContentX + state.canvas.canvasOffsetX + Math.round((float) (logicalX * zoom(state)));
     }
 
     static int screenY(TabletUiState state, double logicalY) {
-        return state.canvasContentY + state.canvasOffsetY + Math.round((float) (logicalY * zoom(state)));
+        return state.canvas.canvasContentY + state.canvas.canvasOffsetY + Math.round((float) (logicalY * zoom(state)));
     }
 
     static int screenWidth(TabletUiState state, int logicalLeft, int logicalRight) {
@@ -27,11 +27,11 @@ final class CanvasCoordinateMapper {
     }
 
     static double screenToLogicalX(TabletUiState state, int screenX) {
-        return (screenX - state.canvasContentX - state.canvasOffsetX) / zoom(state);
+        return (screenX - state.canvas.canvasContentX - state.canvas.canvasOffsetX) / zoom(state);
     }
 
     static double screenToLogicalY(TabletUiState state, int screenY) {
-        return (screenY - state.canvasContentY - state.canvasOffsetY) / zoom(state);
+        return (screenY - state.canvas.canvasContentY - state.canvas.canvasOffsetY) / zoom(state);
     }
 
     static int screenToNearestLogicalX(TabletUiState state, int screenX) {
@@ -43,6 +43,6 @@ final class CanvasCoordinateMapper {
     }
 
     static float zoom(TabletUiState state) {
-        return CanvasRenderer.clampZoom(state.canvasZoom);
+        return CanvasRenderer.clampZoom(state.canvas.canvasZoom);
     }
 }

@@ -76,17 +76,17 @@ final class TabletLayout {
         if (state == null) {
             return;
         }
-        state.fullScreenMode = fullScreenMode;
-        state.tabletRootWidth = Math.max(1, width);
-        state.tabletRootHeight = Math.max(1, height);
+        state.root.fullScreenMode = fullScreenMode;
+        state.root.tabletRootWidth = Math.max(1, width);
+        state.root.tabletRootHeight = Math.max(1, height);
     }
 
     static int rootWidth(TabletUiState state) {
-        return state == null || state.tabletRootWidth <= 0 ? ROOT_W : state.tabletRootWidth;
+        return state == null || state.root.tabletRootWidth <= 0 ? ROOT_W : state.root.tabletRootWidth;
     }
 
     static int rootHeight(TabletUiState state) {
-        return state == null || state.tabletRootHeight <= 0 ? ROOT_H : state.tabletRootHeight;
+        return state == null || state.root.tabletRootHeight <= 0 ? ROOT_H : state.root.tabletRootHeight;
     }
 
     static int bodyWidth(TabletUiState state) {
@@ -109,8 +109,8 @@ final class TabletLayout {
         if (state == null) {
             return CHAPTER_W;
         }
-        int width = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelWidth));
-        if (width <= CHAPTER_W_ICON_SNAP || state.chapterPanelCollapsed) {
+        int width = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelWidth));
+        if (width <= CHAPTER_W_ICON_SNAP || state.chapterPanel.chapterPanelCollapsed) {
             return CHAPTER_W_ICON;
         }
         return width;
@@ -141,7 +141,7 @@ final class TabletLayout {
     }
 
     static int indexAtY(int localY, TabletUiState state) {
-        int slot = (localY - state.chapterRowStartY + state.chapterScroll) / chapterRowStep(state);
+        int slot = (localY - state.chapterPanel.chapterRowStartY + state.chapterPanel.chapterScroll) / chapterRowStep(state);
         int size = Math.max(1, visibleChapterGroups(state).size());
         return Math.max(0, Math.min(size - 1, slot));
     }
@@ -151,7 +151,7 @@ final class TabletLayout {
         if (size <= 0) {
             return 0;
         }
-        int scrolledY = localY - state.chapterRowStartY + state.chapterScroll;
+        int scrolledY = localY - state.chapterPanel.chapterRowStartY + state.chapterPanel.chapterScroll;
         if (scrolledY <= 0) {
             return 0;
         }
@@ -159,8 +159,8 @@ final class TabletLayout {
         int idx = scrolledY / slotH;
         int inSlotY = scrolledY % slotH;
         int insert = inSlotY < (slotH / 2) ? idx : idx + 1;
-        if (state.chapterDragActive && !state.chapterDragName.isBlank()) {
-            int ghostIdx = Math.max(0, Math.min(size, state.chapterDragTargetIndex));
+        if (state.chapterPanel.chapterDragActive && !state.chapterPanel.chapterDragName.isBlank()) {
+            int ghostIdx = Math.max(0, Math.min(size, state.chapterPanel.chapterDragTargetIndex));
             if (insert > ghostIdx) {
                 insert--;
             }
@@ -169,7 +169,7 @@ final class TabletLayout {
     }
 
     static int chapterIndexAtY(int localY, TabletUiState state) {
-        int scrolledY = localY - state.chapterRowStartY + state.chapterScroll;
+        int scrolledY = localY - state.chapterPanel.chapterRowStartY + state.chapterPanel.chapterScroll;
         if (scrolledY < 0) {
             return -1;
         }
@@ -184,31 +184,31 @@ final class TabletLayout {
     }
 
     static boolean isChapterScrollBarHit(int localX, int localY, TabletUiState state) {
-        if (state.chapterScrollMax <= 0) {
+        if (state.chapterPanel.chapterScrollMax <= 0) {
             return false;
         }
-        if (isChapterPanelCollapsed(state) || state.chapterListWidth <= 54) {
+        if (isChapterPanelCollapsed(state) || state.chapterPanel.chapterListWidth <= 54) {
             return false;
         }
-        int listLeft = state.chapterListOriginX;
-        int listRight = listLeft + Math.max(0, state.chapterListWidth);
-        int x = Math.max(listLeft, state.chapterScrollTrackX - 3);
-        int y = state.chapterListOriginY;
+        int listLeft = state.chapterPanel.chapterListOriginX;
+        int listRight = listLeft + Math.max(0, state.chapterPanel.chapterListWidth);
+        int x = Math.max(listLeft, state.chapterPanel.chapterScrollTrackX - 3);
+        int y = state.chapterPanel.chapterListOriginY;
         int w = Math.max(CHAPTER_SCROLL_W, listRight - x);
-        int h = Math.max(state.chapterScrollTrackH, state.chapterListHeight);
+        int h = Math.max(state.chapterPanel.chapterScrollTrackH, state.chapterPanel.chapterListHeight);
         return ScrollController.hit(localX, localY, x, y, w, h);
     }
 
     static boolean isChapterCardAreaHit(int localX, int localY, TabletUiState state) {
-        int left = Math.max(0, state.chapterCardHitLeft);
-        int right = Math.max(left, state.chapterCardHitRight);
-        int top = Math.max(0, state.chapterCardHitTop);
-        int bottom = Math.max(top, state.chapterCardHitBottom);
+        int left = Math.max(0, state.chapterPanel.chapterCardHitLeft);
+        int right = Math.max(left, state.chapterPanel.chapterCardHitRight);
+        int top = Math.max(0, state.chapterPanel.chapterCardHitTop);
+        int bottom = Math.max(top, state.chapterPanel.chapterCardHitBottom);
         return localX >= left && localX <= right && localY >= top && localY <= bottom;
     }
 
     static void updateChapterScrollByMouse(double mouseY, TabletUiState state) {
-        state.chapterScroll = ScrollController.byMouse((int) Math.round(mouseY), state.chapterScrollTrackY, state.chapterScrollTrackH, state.chapterScrollKnobH, state.chapterScrollMax);
+        state.chapterPanel.chapterScroll = ScrollController.byMouse((int) Math.round(mouseY), state.chapterPanel.chapterScrollTrackY, state.chapterPanel.chapterScrollTrackH, state.chapterPanel.chapterScrollKnobH, state.chapterPanel.chapterScrollMax);
     }
 
     static String chapterAtY(int localY, TabletUiState state) {
@@ -222,9 +222,9 @@ final class TabletLayout {
 
     static int chapterTextMenuY(TabletUiState state, int listHeight) {
         List<String> groups = visibleChapterGroups(state);
-        int idx = Math.max(0, groups.indexOf(state.chapterTextMenuTarget));
+        int idx = Math.max(0, groups.indexOf(state.chapterPanel.chapterTextMenuTarget));
         int menuHeight = chapterTextMenuHeight(state);
-        int rowTop = PANEL_GAP + idx * chapterRowStep(state) - state.chapterScroll;
+        int rowTop = PANEL_GAP + idx * chapterRowStep(state) - state.chapterPanel.chapterScroll;
         int rowBottom = rowTop + CHAPTER_CARD_H;
         int aboveY = rowTop - menuHeight - TextStyleButtons.CHAPTER_FRAME_GAP;
         int belowY = rowBottom + TextStyleButtons.CHAPTER_FRAME_GAP;
@@ -239,7 +239,7 @@ final class TabletLayout {
 
     static int chapterTextMenuX(TabletUiState state) {
         int menuW = chapterTextMenuWidth(state);
-        int cardCenter = ((state.chapterCardHitLeft + state.chapterCardHitRight) / 2) - state.chapterListOriginX;
+        int cardCenter = ((state.chapterPanel.chapterCardHitLeft + state.chapterPanel.chapterCardHitRight) / 2) - state.chapterPanel.chapterListOriginX;
         return cardCenter - menuW / 2;
     }
 
@@ -252,20 +252,20 @@ final class TabletLayout {
     }
 
     static int chapterRowStep(TabletUiState state) {
-        if (state != null && (state.chapterPanelCollapsed || state.chapterListWidth <= 54)) {
+        if (state != null && (state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= 54)) {
             return CHAPTER_COLLAPSED_ROW_STEP;
         }
         return CHAPTER_CARD_H + CHAPTER_CARD_GAP;
     }
 
     private static List<String> visibleChapterGroups(TabletUiState state) {
-        String query = SearchFilter.normalize(state.chapterSearch);
+        String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         List<String> groups = new ArrayList<>();
         for (String group : ClientQuestCache.groupOrder()) {
             if (DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
-            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {

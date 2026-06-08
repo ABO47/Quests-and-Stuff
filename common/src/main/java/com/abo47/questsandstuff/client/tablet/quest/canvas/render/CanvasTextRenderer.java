@@ -46,7 +46,7 @@ public final class CanvasTextRenderer {
                     drawCanvasTextCaret(graphics, state, drawText, w, h);
                 }
                 graphics.pose().popPose();
-                if (state.canEdit && CanvasSelectionActions.isTextSelected(state, drawText.id())) {
+                if (state.root.canEdit && CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
@@ -238,7 +238,7 @@ public final class CanvasTextRenderer {
     }
 
     private static boolean isMainCanvasTextEditing(TabletUiState state, CanvasTextLayer text) {
-        return TextEditSession.isMainCanvasEditing(state) && text.id().equals(state.canvasTextEditTarget);
+        return TextEditSession.isMainCanvasEditing(state) && text.id().equals(state.canvas.canvasTextEditTarget);
     }
 
     private static int layoutSize(int screenSize, float scale) {

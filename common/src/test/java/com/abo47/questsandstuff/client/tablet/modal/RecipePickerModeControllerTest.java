@@ -10,27 +10,27 @@ class RecipePickerModeControllerTest {
     @Test
     void searchChangesNormalizeInputAndResetScroll() {
         TabletUiState state = new TabletUiState();
-        state.recipeScroll = 42;
+        state.pickers.recipeScroll = 42;
 
         String rawQuery = "  Stone  Brick  ";
         String query = RecipePickerModeController.setSearch(state, rawQuery);
 
         assertEquals(SearchFilter.normalizeUserInput(rawQuery), query);
-        assertEquals(SearchFilter.normalizeUserInput(rawQuery), state.recipeSearch);
-        assertEquals(0, state.recipeScroll);
+        assertEquals(SearchFilter.normalizeUserInput(rawQuery), state.pickers.recipeSearch);
+        assertEquals(0, state.pickers.recipeScroll);
     }
 
     @Test
     void cycleRoutesThroughControllerAndResetsScroll() {
         TabletUiState state = new TabletUiState();
-        state.recipeMode = RecipePickerMode.ITEMS;
-        state.recipeScroll = 17;
+        state.pickers.recipeMode = RecipePickerMode.ITEMS;
+        state.pickers.recipeScroll = 17;
 
         RecipePickerMode mode = RecipePickerModeController.cycle(state, 1);
 
         assertEquals(RecipePickerMode.TAGS, mode);
-        assertEquals(RecipePickerMode.TAGS, state.recipeMode);
-        assertEquals(0, state.recipeScroll);
+        assertEquals(RecipePickerMode.TAGS, state.pickers.recipeMode);
+        assertEquals(0, state.pickers.recipeScroll);
         assertEquals(1, RecipePickerModeController.cycleIndex(state));
     }
 

@@ -31,7 +31,7 @@ public final class TabletColorPickerModal {
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr("ui.questsandstuff.modal.color_picker"), w, state, refresh);
-        String resolvedTarget = ModalTargetState.target(state, COLOR_PICKER, state.colorPickerTarget);
+        String resolvedTarget = ModalTargetState.target(state, COLOR_PICKER, state.pickers.colorPickerTarget);
         final String target = resolvedTarget.isBlank() ? selectedGroupName(state) : resolvedTarget;
         int leftW = 232;
         int rightW = w - leftW - 20;
@@ -43,8 +43,8 @@ public final class TabletColorPickerModal {
                 .setShowAlpha(false)
                 .setColor(TabletModalPanel.currentColorPickerValue(state, target))
                 .setOnChanged(color -> {
-                    state.colorDraft = color;
-                    state.colorHexDraft = SearchFieldController.toHexColor(color);
+                    state.pickers.colorDraft = color;
+                    state.pickers.colorHexDraft = SearchFieldController.toHexColor(color);
                 });
         left.addWidget(picker);
         TextFieldWidget hexField = StyledTextFields.hexField(
@@ -52,12 +52,12 @@ public final class TabletColorPickerModal {
                 wheelSize + 18,
                 leftW - 20,
                 12,
-                () -> state.colorHexDraft,
-                value -> state.colorHexDraft = value == null ? "" : value,
+                () -> state.pickers.colorHexDraft,
+                value -> state.pickers.colorHexDraft = value == null ? "" : value,
                 () -> {
-                    int parsed = SearchFieldController.parseHexColor(state.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
-                    state.colorDraft = parsed;
-                    state.colorHexDraft = SearchFieldController.toHexColor(parsed);
+                    int parsed = SearchFieldController.parseHexColor(state.pickers.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
+                    state.pickers.colorDraft = parsed;
+                    state.pickers.colorHexDraft = SearchFieldController.toHexColor(parsed);
                     refresh.run();
                 },
                 () -> {
@@ -65,13 +65,13 @@ public final class TabletColorPickerModal {
                 () -> {
                 }
         );
-        state.colorHexDraft = state.colorHexDraft.isBlank() ? SearchFieldController.toHexColor(TabletModalPanel.currentColorPickerValue(state, target)) : state.colorHexDraft;
-        hexField.setCurrentString(state.colorHexDraft);
+        state.pickers.colorHexDraft = state.pickers.colorHexDraft.isBlank() ? SearchFieldController.toHexColor(TabletModalPanel.currentColorPickerValue(state, target)) : state.pickers.colorHexDraft;
+        hexField.setCurrentString(state.pickers.colorHexDraft);
         left.addWidget(hexField);
         left.addWidget(button(10, panelH - 34, leftW - 20, 12, TabletModalPanel.tr("ui.questsandstuff.color.apply_hex"), ModColors.SURFACE_PANEL, ModColors.INTERACTIVE, click -> {
-            int parsed = SearchFieldController.parseHexColor(state.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
-            state.colorDraft = parsed;
-            state.colorHexDraft = SearchFieldController.toHexColor(parsed);
+            int parsed = SearchFieldController.parseHexColor(state.pickers.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
+            state.pickers.colorDraft = parsed;
+            state.pickers.colorHexDraft = SearchFieldController.toHexColor(parsed);
             refresh.run();
         }));
         left.addWidget(button(10, panelH - 18, leftW - 20, 12, TabletModalPanel.tr("ui.questsandstuff.common.use"), ModColors.SURFACE_PANEL, ModColors.SUCCESS, click -> {
@@ -94,15 +94,15 @@ public final class TabletColorPickerModal {
                 2,
                 4,
                 4,
-                state.textColorPalette,
+                state.pickers.textColorPalette,
                 TabletModalPanel.tr("ui.questsandstuff.common.none_short"),
                 ScrollState.bind(
-                        () -> state.colorPaletteScroll,
-                        value -> state.colorPaletteScroll = value,
-                        () -> state.colorPaletteScrollDragging,
-                        dragging -> state.colorPaletteScrollDragging = dragging
+                        () -> state.pickers.colorPaletteScroll,
+                        value -> state.pickers.colorPaletteScroll = value,
+                        () -> state.pickers.colorPaletteScrollDragging,
+                        dragging -> state.pickers.colorPaletteScrollDragging = dragging
                 ),
-                () -> state.colorPaletteContextOpen = false,
+                () -> state.pickers.colorPaletteContextOpen = false,
                 refresh,
                 (surface, color, index, px, py, tileW, tileH, layout) -> {
             WidgetGroup chip = new WidgetGroup(px, py, 16, 16);
@@ -110,16 +110,16 @@ public final class TabletColorPickerModal {
             surface.addWidget(chip);
             ButtonWidget hit = flatHitButton(px, py, 16, 16, click -> {
                 if (click.button == 1) {
-                    state.colorPaletteContextOpen = true;
-                    state.colorPaletteContextX = 4 + px + 8;
-                    state.colorPaletteContextY = paletteTop + py + 8;
-                    state.colorPaletteContextValue = color;
+                    state.pickers.colorPaletteContextOpen = true;
+                    state.pickers.colorPaletteContextX = 4 + px + 8;
+                    state.pickers.colorPaletteContextY = paletteTop + py + 8;
+                    state.pickers.colorPaletteContextValue = color;
                     refresh.run();
                     return;
                 }
                 boolean doubleClick = TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("color", target, color));
-                state.colorDraft = color;
-                state.colorHexDraft = SearchFieldController.toHexColor(color);
+                state.pickers.colorDraft = color;
+                state.pickers.colorHexDraft = SearchFieldController.toHexColor(color);
                 if (doubleClick) {
                     TabletModalPanel.applyColorPickerValue(player, state, target, color);
                     closeColorPicker(state);
@@ -132,8 +132,8 @@ public final class TabletColorPickerModal {
         addPaletteContext(right, state, player, refresh, target, rightW, panelH);
         right.addWidget(button(8, panelH - 34, rightW - 16, 12, TabletModalPanel.tr("ui.questsandstuff.color.save_to_palette"), ModColors.SURFACE_PANEL, ModColors.INTERACTIVE, click -> {
             int chosen = TabletModalPanel.currentColorPickerValue(state, target);
-            if (!state.textColorPalette.contains(chosen)) {
-                state.textColorPalette.add(chosen);
+            if (!state.pickers.textColorPalette.contains(chosen)) {
+                state.pickers.textColorPalette.add(chosen);
             }
             refresh.run();
         }));
@@ -143,8 +143,8 @@ public final class TabletColorPickerModal {
                 refresh.run();
                 return;
             }
-            if (!state.textColorPalette.isEmpty()) {
-                state.textColorPalette.remove(state.textColorPalette.size() - 1);
+            if (!state.pickers.textColorPalette.isEmpty()) {
+                state.pickers.textColorPalette.remove(state.pickers.textColorPalette.size() - 1);
             }
             refresh.run();
         }));
@@ -153,29 +153,29 @@ public final class TabletColorPickerModal {
     }
 
     private static void addPaletteContext(WidgetGroup right, TabletUiState state, Player player, Runnable refresh, String target, int rightW, int panelH) {
-        if (!state.colorPaletteContextOpen || state.colorPaletteContextValue == Integer.MIN_VALUE) {
+        if (!state.pickers.colorPaletteContextOpen || state.pickers.colorPaletteContextValue == Integer.MIN_VALUE) {
             return;
         }
         int ctxW = 96;
         int ctxH = 36;
-        int ctxX = Math.max(4, Math.min(state.colorPaletteContextX, rightW - ctxW - 4));
-        int ctxY = Math.max(4, Math.min(state.colorPaletteContextY, panelH - ctxH - 4));
+        int ctxX = Math.max(4, Math.min(state.pickers.colorPaletteContextX, rightW - ctxW - 4));
+        int ctxY = Math.max(4, Math.min(state.pickers.colorPaletteContextY, panelH - ctxH - 4));
         WidgetGroup ctx = panel(ctxX, ctxY, ctxW, ctxH, withAlpha(ModColors.SURFACE_BASE, 236), ModColors.BORDER_ACCENT);
         addWindowsContextRow(ctx, 4, ctxW - 8, TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", click -> {
-            TabletModalPanel.applyColorPickerValue(player, state, target, state.colorPaletteContextValue);
+            TabletModalPanel.applyColorPickerValue(player, state, target, state.pickers.colorPaletteContextValue);
             closeColorPicker(state);
             refresh.run();
         });
-        String key = "palette:delete:" + state.colorPaletteContextValue;
+        String key = "palette:delete:" + state.pickers.colorPaletteContextValue;
         addWindowsContextRow(ctx, 18, ctxW - 8, pendingDeleteLabel(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete")), "delete", click -> {
-            int chosen = state.colorPaletteContextValue;
+            int chosen = state.pickers.colorPaletteContextValue;
             if (!confirmDeleteClick(state, key)) {
                 refresh.run();
                 return;
             }
-            state.textColorPalette.removeIf(value -> value == chosen);
-            state.colorPaletteContextOpen = false;
-            state.colorPaletteContextValue = Integer.MIN_VALUE;
+            state.pickers.textColorPalette.removeIf(value -> value == chosen);
+            state.pickers.colorPaletteContextOpen = false;
+            state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             refresh.run();
         });
         right.addWidget(ctx);

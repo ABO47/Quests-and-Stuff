@@ -41,20 +41,20 @@ final class ChapterListMetrics {
 
     static void addScrollBar(WidgetGroup chapterList, TabletUiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
         int knobH = Math.max(18, (int) ((float) trackH * ((float) trackH / (float) Math.max(trackH, totalHeight))));
-        state.chapterScrollKnobH = knobH;
+        state.chapterPanel.chapterScrollKnobH = knobH;
         chapterList.addWidget(new DragScrollBarWidget(
                 trackX,
                 trackY,
                 DragScrollBarWidget.RESERVED_WIDTH,
                 trackH,
-                () -> state.chapterScroll,
-                () -> state.chapterScrollMax,
+                () -> state.chapterPanel.chapterScroll,
+                () -> state.chapterPanel.chapterScrollMax,
                 () -> knobH,
-                value -> state.chapterScroll = value,
-                () -> state.chapterScrollDragging,
-                dragging -> state.chapterScrollDragging = dragging,
+                value -> state.chapterPanel.chapterScroll = value,
+                () -> state.chapterPanel.chapterScrollDragging,
+                dragging -> state.chapterPanel.chapterScrollDragging = dragging,
                 refresh,
-                ModColors.scrollTrack(state.chapterScrollDragging),
+                ModColors.scrollTrack(state.chapterPanel.chapterScrollDragging),
                 ModColors.scrollThumb(false),
                 ModColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
@@ -62,34 +62,34 @@ final class ChapterListMetrics {
     }
 
     static void rememberEmpty(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, int baseCardX, int rowStartY) {
-        state.chapterScroll = 0;
-        state.chapterScrollMax = 0;
-        state.chapterScrollKnobH = 18;
-        state.chapterListOriginX = listOriginX;
-        state.chapterListOriginY = listOriginY;
-        state.chapterListWidth = listW;
-        state.chapterListHeight = listH;
-        state.chapterRowStartY = listOriginY + rowStartY;
-        state.chapterCardHitLeft = listOriginX + baseCardX;
-        state.chapterCardHitRight = listOriginX + Math.max(16, listW - 8) - 3;
-        state.chapterCardHitTop = listOriginY + 6;
-        state.chapterCardHitBottom = listOriginY + listH - 6;
+        state.chapterPanel.chapterScroll = 0;
+        state.chapterPanel.chapterScrollMax = 0;
+        state.chapterPanel.chapterScrollKnobH = 18;
+        state.chapterPanel.chapterListOriginX = listOriginX;
+        state.chapterPanel.chapterListOriginY = listOriginY;
+        state.chapterPanel.chapterListWidth = listW;
+        state.chapterPanel.chapterListHeight = listH;
+        state.chapterPanel.chapterRowStartY = listOriginY + rowStartY;
+        state.chapterPanel.chapterCardHitLeft = listOriginX + baseCardX;
+        state.chapterPanel.chapterCardHitRight = listOriginX + Math.max(16, listW - 8) - 3;
+        state.chapterPanel.chapterCardHitTop = listOriginY + 6;
+        state.chapterPanel.chapterCardHitBottom = listOriginY + listH - 6;
     }
 
     static void remember(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, Layout layout, int trackY, int trackH, int rowStartY) {
-        state.chapterListOriginX = listOriginX;
-        state.chapterListOriginY = listOriginY;
-        state.chapterListWidth = listW;
-        state.chapterListHeight = listH;
-        state.chapterScrollTrackX = listOriginX + layout.trackX();
-        state.chapterScrollTrackY = listOriginY + trackY;
-        state.chapterScrollTrackH = trackH;
-        state.chapterScrollKnobH = 18;
-        state.chapterRowStartY = listOriginY + rowStartY;
-        state.chapterCardHitLeft = listOriginX + layout.cardX();
-        state.chapterCardHitRight = listOriginX + layout.cardX() + layout.cardW();
-        state.chapterCardHitTop = listOriginY + 6;
-        state.chapterCardHitBottom = listOriginY + listH - 6;
+        state.chapterPanel.chapterListOriginX = listOriginX;
+        state.chapterPanel.chapterListOriginY = listOriginY;
+        state.chapterPanel.chapterListWidth = listW;
+        state.chapterPanel.chapterListHeight = listH;
+        state.chapterPanel.chapterScrollTrackX = listOriginX + layout.trackX();
+        state.chapterPanel.chapterScrollTrackY = listOriginY + trackY;
+        state.chapterPanel.chapterScrollTrackH = trackH;
+        state.chapterPanel.chapterScrollKnobH = 18;
+        state.chapterPanel.chapterRowStartY = listOriginY + rowStartY;
+        state.chapterPanel.chapterCardHitLeft = listOriginX + layout.cardX();
+        state.chapterPanel.chapterCardHitRight = listOriginX + layout.cardX() + layout.cardW();
+        state.chapterPanel.chapterCardHitTop = listOriginY + 6;
+        state.chapterPanel.chapterCardHitBottom = listOriginY + listH - 6;
     }
 
     record Layout(int trackX, int cardX, int cardW, int iconX) {

@@ -62,11 +62,11 @@ final class RecipePickerApplyActions {
     }
 
     static void addRecipeViewerKeyHandler(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh) {
-        state.recipeHoveredPick = "";
+        state.pickers.recipeHoveredPick = "";
         modal.addWidget(new WidgetGroup(0, 0, 0, 0) {
             @Override
             public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                state.recipeHoveredPick = "";
+                state.pickers.recipeHoveredPick = "";
             }
 
             @Override
@@ -79,7 +79,7 @@ final class RecipePickerApplyActions {
     static void trackRecipeHover(TabletUiState state, String pick) {
         String value = pick == null ? "" : pick.trim();
         if (!value.isBlank()) {
-            state.recipeHoveredPick = value;
+            state.pickers.recipeHoveredPick = value;
         }
     }
 
@@ -95,14 +95,14 @@ final class RecipePickerApplyActions {
     }
 
     private static boolean handleRecipeViewerSelectionShortcut(Player player, TabletUiState state, Runnable refresh, int keyCode, int scanCode) {
-        if (state.recipeSearchFocused || !isRecipeCardTarget(state)) {
+        if (state.pickers.recipeSearchFocused || !isRecipeCardTarget(state)) {
             return false;
         }
         RecipeViewerIntegrations.SelectionKeybind keybind = RecipeViewerIntegrations.selectionKeybind(keyCode, scanCode);
         if (keybind == null) {
             return false;
         }
-        String pick = state.recipeHoveredPick == null ? "" : state.recipeHoveredPick.trim();
+        String pick = state.pickers.recipeHoveredPick == null ? "" : state.pickers.recipeHoveredPick.trim();
         if (pick.isBlank()) {
             return false;
         }
@@ -161,7 +161,7 @@ final class RecipePickerApplyActions {
     }
 
     private static boolean isRecipeCardTarget(TabletUiState state) {
-        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         return parsed.isCanvasRecipeNew() || parsed.isCanvasRecipeChange() || parsed.isDescRecipe() || parsed.isDescRecipeNew();
     }
 }

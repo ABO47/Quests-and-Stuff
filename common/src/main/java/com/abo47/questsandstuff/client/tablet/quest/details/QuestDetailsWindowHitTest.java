@@ -17,52 +17,52 @@ final class QuestDetailsWindowHitTest {
     }
 
     static boolean isInside(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen) {
+        if (state == null || !state.questDetails.questDetailsOpen) {
             return false;
         }
-        return mouseX >= state.questDetailsScreenX
-                && mouseX <= state.questDetailsScreenX + state.questDetailsW
-                && mouseY >= state.questDetailsScreenY
-                && mouseY <= state.questDetailsScreenY + state.questDetailsH;
+        return mouseX >= state.questDetails.questDetailsScreenX
+                && mouseX <= state.questDetails.questDetailsScreenX + state.questDetails.questDetailsW
+                && mouseY >= state.questDetails.questDetailsScreenY
+                && mouseY <= state.questDetails.questDetailsScreenY + state.questDetails.questDetailsH;
     }
 
     static boolean isContextMenuHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen || !state.questDetailsContextOpen || state.questDetailsContextW <= 0 || state.questDetailsContextH <= 0) {
+        if (state == null || !state.questDetails.questDetailsOpen || !state.questDetails.questDetailsContextOpen || state.questDetails.questDetailsContextW <= 0 || state.questDetails.questDetailsContextH <= 0) {
             return false;
         }
-        int x = state.questDetailsScreenX + state.questDetailsContextX;
-        int y = state.questDetailsScreenY + state.questDetailsContextY;
-        return mouseX >= x && mouseX <= x + state.questDetailsContextW
-                && mouseY >= y && mouseY <= y + state.questDetailsContextH;
+        int x = state.questDetails.questDetailsScreenX + state.questDetails.questDetailsContextX;
+        int y = state.questDetails.questDetailsScreenY + state.questDetails.questDetailsContextY;
+        return mouseX >= x && mouseX <= x + state.questDetails.questDetailsContextW
+                && mouseY >= y && mouseY <= y + state.questDetails.questDetailsContextH;
     }
 
     static boolean isTextStyleMenuHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen || !state.questDetailsTextStyleOpen
-                || state.questDetailsTextStyleMenuW <= 0 || state.questDetailsTextStyleMenuH <= 0) {
+        if (state == null || !state.questDetails.questDetailsOpen || !state.questDetails.questDetailsTextStyleOpen
+                || state.questDetails.questDetailsTextStyleMenuW <= 0 || state.questDetails.questDetailsTextStyleMenuH <= 0) {
             return false;
         }
-        int menuX = state.questDetailsTextStyleMenuX;
-        int menuY = state.questDetailsTextStyleMenuY;
-        int menuW = state.questDetailsTextStyleMenuW;
-        int menuH = state.questDetailsTextStyleMenuH;
-        int absX = state.questDetailsScreenX + menuX;
-        int absY = state.questDetailsScreenY + menuY;
+        int menuX = state.questDetails.questDetailsTextStyleMenuX;
+        int menuY = state.questDetails.questDetailsTextStyleMenuY;
+        int menuW = state.questDetails.questDetailsTextStyleMenuW;
+        int menuH = state.questDetails.questDetailsTextStyleMenuH;
+        int absX = state.questDetails.questDetailsScreenX + menuX;
+        int absY = state.questDetails.questDetailsScreenY + menuY;
         return insideLoose(mouseX, mouseY, absX, absY, menuW, menuH)
                 || insideLoose(mouseX, mouseY, menuX, menuY, menuW, menuH)
-                || insideLoose(mouseX, mouseY, state.questDetailsX + menuX, state.questDetailsY + menuY, menuW, menuH);
+                || insideLoose(mouseX, mouseY, state.questDetails.questDetailsX + menuX, state.questDetails.questDetailsY + menuY, menuW, menuH);
     }
 
     static boolean isTextStyleOwnerHit(TabletUiState state, double mouseX, double mouseY) {
         if (isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
-        if (state == null || !state.questDetailsOpen
-                || (!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeFieldTarget.isBlank())) {
+        if (state == null || !state.questDetails.questDetailsOpen
+                || (!state.questDetails.questDetailsTextStyleOpen && state.questDetails.questDetailsTextFontSizeFieldTarget.isBlank())) {
             return false;
         }
-        String target = state.questDetailsTextStyleTarget == null ? "" : state.questDetailsTextStyleTarget;
+        String target = state.questDetails.questDetailsTextStyleTarget == null ? "" : state.questDetails.questDetailsTextStyleTarget;
         if (target.isBlank()) {
-            target = state.questDetailsTextFontSizeFieldTarget == null ? "" : state.questDetailsTextFontSizeFieldTarget;
+            target = state.questDetails.questDetailsTextFontSizeFieldTarget == null ? "" : state.questDetails.questDetailsTextFontSizeFieldTarget;
         }
         if (target.isBlank()) {
             return false;
@@ -71,14 +71,14 @@ final class QuestDetailsWindowHitTest {
     }
 
     static boolean isTextEditorHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen || !TextEditSession.isQuestDetailsEditing(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !TextEditSession.isQuestDetailsEditing(state)) {
             return false;
         }
-        return isQuestDetailsTextHit(state, state.questDetailsTextEditTarget, mouseX, mouseY, true);
+        return isQuestDetailsTextHit(state, state.questDetails.questDetailsTextEditTarget, mouseX, mouseY, true);
     }
 
     private static boolean isQuestDetailsTextHit(TabletUiState state, String textId, double mouseX, double mouseY, boolean useDraftWhenEditing) {
-        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         String normalizedTextId = textId == null ? "" : textId.trim();
         if (questId.isBlank() || normalizedTextId.isBlank()) {
             return false;
@@ -92,8 +92,8 @@ final class QuestDetailsWindowHitTest {
         int canvasX = CHAPTER_X + leftW + GAP;
         int canvasW = QuestDetailsWindow.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindow.mainCanvasViewport(state, canvasW);
-        int vx = state.questDetailsScreenX + canvasX + viewport[0];
-        int vy = state.questDetailsScreenY + CANVAS_Y + viewport[1];
+        int vx = state.questDetails.questDetailsScreenX + canvasX + viewport[0];
+        int vy = state.questDetails.questDetailsScreenY + CANVAS_Y + viewport[1];
         int lx = (int) Math.round(mouseX - vx);
         int ly = (int) Math.round(mouseY - vy);
         if (lx < 0 || ly < 0 || lx > viewport[2] || ly > viewport[3]) {
@@ -101,7 +101,7 @@ final class QuestDetailsWindowHitTest {
         }
         CanvasTextLayer hitText = useDraftWhenEditing
                 && TextEditSession.isEditingTarget(state, normalizedTextId)
-                ? text.withText(state.canvasTextEditDraft)
+                ? text.withText(state.canvas.canvasTextEditDraft)
                 : text;
         return isTextLayerLocalHit(state, hitText, lx, ly, viewport[2], viewport[3]);
     }
@@ -111,36 +111,36 @@ final class QuestDetailsWindowHitTest {
     }
 
     private static boolean isTextLayerLocalHit(TabletUiState state, CanvasTextLayer text, int localX, int localY, int viewportW, int viewportH) {
-        int oldContentX = state.canvasContentX;
-        int oldContentY = state.canvasContentY;
-        int oldContentW = state.canvasContentW;
-        int oldContentH = state.canvasContentH;
-        int oldOffsetX = state.canvasOffsetX;
-        int oldOffsetY = state.canvasOffsetY;
-        float oldZoom = state.canvasZoom;
-        boolean oldGridSnap = state.gridSnapLocked;
-        state.canvasContentX = 0;
-        state.canvasContentY = -state.questDetailsDescScroll;
-        state.canvasContentW = viewportW;
-        state.canvasContentH = viewportH;
-        state.canvasOffsetX = 0;
-        state.canvasOffsetY = 0;
-        state.canvasZoom = 1.0f;
-        state.gridSnapLocked = state.questDetailsGridSnapLocked;
+        int oldContentX = state.canvas.canvasContentX;
+        int oldContentY = state.canvas.canvasContentY;
+        int oldContentW = state.canvas.canvasContentW;
+        int oldContentH = state.canvas.canvasContentH;
+        int oldOffsetX = state.canvas.canvasOffsetX;
+        int oldOffsetY = state.canvas.canvasOffsetY;
+        float oldZoom = state.canvas.canvasZoom;
+        boolean oldGridSnap = state.canvas.gridSnapLocked;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = -state.questDetails.questDetailsDescScroll;
+        state.canvas.canvasContentW = viewportW;
+        state.canvas.canvasContentH = viewportH;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.gridSnapLocked = state.questDetails.questDetailsGridSnapLocked;
         try {
             double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, localX, localY);
             int sw = CanvasGeometry.screenSpan(state, text.w());
             int sh = CanvasGeometry.screenSpan(state, text.h());
             return local[0] >= 0 && local[0] <= sw && local[1] >= 0 && local[1] <= sh;
         } finally {
-            state.canvasContentX = oldContentX;
-            state.canvasContentY = oldContentY;
-            state.canvasContentW = oldContentW;
-            state.canvasContentH = oldContentH;
-            state.canvasOffsetX = oldOffsetX;
-            state.canvasOffsetY = oldOffsetY;
-            state.canvasZoom = oldZoom;
-            state.gridSnapLocked = oldGridSnap;
+            state.canvas.canvasContentX = oldContentX;
+            state.canvas.canvasContentY = oldContentY;
+            state.canvas.canvasContentW = oldContentW;
+            state.canvas.canvasContentH = oldContentH;
+            state.canvas.canvasOffsetX = oldOffsetX;
+            state.canvas.canvasOffsetY = oldOffsetY;
+            state.canvas.canvasZoom = oldZoom;
+            state.canvas.gridSnapLocked = oldGridSnap;
         }
     }
 }

@@ -33,47 +33,47 @@ public final class CanvasElementTransformController {
     public void beginImageTransform(CanvasImageLayer image, int localX, int localY) {
         CanvasTransformSessions.clearMainCanvasSession(state);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
-        boolean selectedBeforeClick = image.id().equals(state.canvasSelection.primaryImageId()) || state.canvasSelection.imageIds().contains(image.id());
+        boolean selectedBeforeClick = image.id().equals(state.canvas.canvasSelection.primaryImageId()) || state.canvas.canvasSelection.imageIds().contains(image.id());
         if (gizmoSupported && !selectedBeforeClick) {
             CanvasTransformGizmo.setMode(state, CanvasTransformMode.MOVE);
         }
         CanvasTransformMode gizmoMode = imageTransformMode(image, localX, localY);
-        state.canvasSelection.setPrimaryImageId(image.id());
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.imageIds().add(image.id());
-        state.canvasSelection.textIds().clear();
-        state.canvasImageDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
-        state.canvasImageDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        state.canvasImageStartX = image.x();
-        state.canvasImageStartY = image.y();
-        state.canvasImageStartW = image.w();
-        state.canvasImageStartH = image.h();
-        state.canvasImageStartPivotX = image.pivotX();
-        state.canvasImageStartPivotY = image.pivotY();
-        state.canvasImageStartRotation = image.rotation();
-        state.canvasImageStartYaw = image.entityYaw();
-        state.canvasImageStartPitch = image.modelPitch();
-        state.canvasImageTransformAxis = gizmoSupported
+        state.canvas.canvasSelection.setPrimaryImageId(image.id());
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.imageIds().add(image.id());
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasImageDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        state.canvas.canvasImageDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        state.canvas.canvasImageStartX = image.x();
+        state.canvas.canvasImageStartY = image.y();
+        state.canvas.canvasImageStartW = image.w();
+        state.canvas.canvasImageStartH = image.h();
+        state.canvas.canvasImageStartPivotX = image.pivotX();
+        state.canvas.canvasImageStartPivotY = image.pivotY();
+        state.canvas.canvasImageStartRotation = image.rotation();
+        state.canvas.canvasImageStartYaw = image.entityYaw();
+        state.canvas.canvasImageStartPitch = image.modelPitch();
+        state.canvas.canvasImageTransformAxis = gizmoSupported
                 ? CanvasTransformGizmo.axisAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), localX, localY)
                 : "";
         if (gizmoMode == CanvasTransformMode.MOVE) {
-            state.canvasImageTransformAxis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+            state.canvas.canvasImageTransformAxis = CanvasTransformGizmo.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         }
-        state.resizingCanvasImage = gizmoMode == CanvasTransformMode.RESIZE
+        state.canvas.resizingCanvasImage = gizmoMode == CanvasTransformMode.RESIZE
                 || (!gizmoSupported && gizmoMode == null && CanvasRenderer.isCanvasImageResizeHandleHit(state, image, localX, localY));
-        state.rotatingCanvasImage = gizmoMode == CanvasTransformMode.ROTATE
+        state.canvas.rotatingCanvasImage = gizmoMode == CanvasTransformMode.ROTATE
                 || (!gizmoSupported && gizmoMode == null && CanvasRenderer.isCanvasImageRotateHandleHit(state, image, localX, localY));
-        if (state.rotatingCanvasImage) {
-            state.canvasImageRotatePivotX = CanvasElementGeometry.logicalPivotX(image.x(), image.w(), image.pivotX());
-            state.canvasImageRotatePivotY = CanvasElementGeometry.logicalPivotY(image.y(), image.h(), image.pivotY());
+        if (state.canvas.rotatingCanvasImage) {
+            state.canvas.canvasImageRotatePivotX = CanvasElementGeometry.logicalPivotX(image.x(), image.w(), image.pivotX());
+            state.canvas.canvasImageRotatePivotY = CanvasElementGeometry.logicalPivotY(image.y(), image.h(), image.pivotY());
             double logicalMouseX = CanvasGeometry.screenToLogicalX(state, localX);
             double logicalMouseY = CanvasGeometry.screenToLogicalY(state, localY);
-            state.canvasImageRotateStartAngle = Math.atan2(logicalMouseY - state.canvasImageRotatePivotY, logicalMouseX - state.canvasImageRotatePivotX);
+            state.canvas.canvasImageRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasImageRotatePivotY, logicalMouseX - state.canvas.canvasImageRotatePivotX);
         }
-        state.draggingCanvasImage = !(gizmoSupported && gizmoMode == null) && !state.resizingCanvasImage && !state.rotatingCanvasImage;
-        state.canvasSelection.questIds().clear();
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas image transform start id={} drag={} resize={} rotate={}", image.id(), state.draggingCanvasImage, state.resizingCanvasImage, state.rotatingCanvasImage);
+        state.canvas.draggingCanvasImage = !(gizmoSupported && gizmoMode == null) && !state.canvas.resizingCanvasImage && !state.canvas.rotatingCanvasImage;
+        state.canvas.canvasSelection.questIds().clear();
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas image transform start id={} drag={} resize={} rotate={}", image.id(), state.canvas.draggingCanvasImage, state.canvas.resizingCanvasImage, state.canvas.rotatingCanvasImage);
     }
 
     private CanvasTransformMode imageTransformMode(CanvasImageLayer image, int localX, int localY) {
@@ -99,27 +99,27 @@ public final class CanvasElementTransformController {
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasImageLayer image = findImage(group, state.canvasSelection.primaryImageId());
+        CanvasImageLayer image = findImage(group, state.canvas.canvasSelection.primaryImageId());
         if (image == null) {
             return;
         }
         int logicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         int logicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        int dx = logicalX - state.canvasImageDragStartX;
-        int dy = logicalY - state.canvasImageDragStartY;
+        int dx = logicalX - state.canvas.canvasImageDragStartX;
+        int dy = logicalY - state.canvas.canvasImageDragStartY;
         CanvasImageLayer next = image;
-        if (state.draggingCanvasImage) {
+        if (state.canvas.draggingCanvasImage) {
             CanvasPoint anchor = CanvasTransformGizmo.supports(image.asset())
-                    ? modelDragAnchor(state.canvasImageStartX, state.canvasImageStartY, state.canvasImageStartW, state.canvasImageStartH, dx, dy)
-                    : dragAnchor(state.canvasImageStartX, state.canvasImageStartY, state.canvasImageStartW, state.canvasImageStartH, state.canvasImageStartPivotX, state.canvasImageStartPivotY, state.canvasImageStartRotation, dx, dy);
-            next = new CanvasImageLayer(image.id(), image.asset(), anchor.x, anchor.y, state.canvasImageStartW, state.canvasImageStartH, state.canvasImageStartRotation, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
+                    ? modelDragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, dx, dy)
+                    : dragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartPivotX, state.canvas.canvasImageStartPivotY, state.canvas.canvasImageStartRotation, dx, dy);
+            next = new CanvasImageLayer(image.id(), image.asset(), anchor.x, anchor.y, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartRotation, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             next = applySmartSnapToImage(next, cards, group);
-        } else if (state.resizingCanvasImage) {
+        } else if (state.canvas.resizingCanvasImage) {
             clearSnapGuides();
             next = resizeImageFromHandle(image, localX, localY);
-        } else if (state.rotatingCanvasImage) {
+        } else if (state.canvas.rotatingCanvasImage) {
             clearSnapGuides();
-            boolean modelAxisRotation = CanvasTransformGizmo.supports(image.asset()) && !CanvasTransformGizmo.AXIS_ROLL.equals(state.canvasImageTransformAxis);
+            boolean modelAxisRotation = CanvasTransformGizmo.supports(image.asset()) && !CanvasTransformGizmo.AXIS_ROLL.equals(state.canvas.canvasImageTransformAxis);
             next = modelAxisRotation
                     ? rotateModelFromDrag(image, logicalX, logicalY)
                     : clampRotationPreviewImage(image.rotateTo(layerRotation(logicalX, logicalY)));
@@ -129,11 +129,11 @@ public final class CanvasElementTransformController {
 
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int logicalX, int logicalY) {
         LayerTransformEngine.ModelRotation rotation = LayerTransformEngine.modelRotation(new LayerTransformEngine.ModelRotationRequest(
-                new LayerTransformEngine.ModelRotation(state.canvasImageStartYaw, state.canvasImageStartPitch),
-                CanvasTransformGizmo.AXIS_PITCH.equals(state.canvasImageTransformAxis),
-                state.canvasImageRotatePivotX,
-                state.canvasImageRotatePivotY,
-                state.canvasImageRotateStartAngle,
+                new LayerTransformEngine.ModelRotation(state.canvas.canvasImageStartYaw, state.canvas.canvasImageStartPitch),
+                CanvasTransformGizmo.AXIS_PITCH.equals(state.canvas.canvasImageTransformAxis),
+                state.canvas.canvasImageRotatePivotX,
+                state.canvas.canvasImageRotatePivotY,
+                state.canvas.canvasImageRotateStartAngle,
                 logicalX,
                 logicalY,
                 TabletModifierKeys.shiftDown()
@@ -143,10 +143,10 @@ public final class CanvasElementTransformController {
 
     private int layerRotation(int logicalX, int logicalY) {
         return LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
-                state.canvasImageStartRotation,
-                state.canvasImageRotatePivotX,
-                state.canvasImageRotatePivotY,
-                state.canvasImageRotateStartAngle,
+                state.canvas.canvasImageStartRotation,
+                state.canvas.canvasImageRotatePivotX,
+                state.canvas.canvasImageRotatePivotY,
+                state.canvas.canvasImageRotateStartAngle,
                 logicalX,
                 logicalY,
                 TabletModifierKeys.shiftDown()
@@ -157,7 +157,7 @@ public final class CanvasElementTransformController {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
                 .filter(entry -> entry.id().equals(imageId))
                 .findFirst()
                 .orElse(null);
@@ -165,58 +165,58 @@ public final class CanvasElementTransformController {
 
     public void beginTextTransform(CanvasTextLayer text, int localX, int localY) {
         CanvasTransformSessions.clearMainCanvasSession(state);
-        state.canvasSelection.setPrimaryTextId(text.id());
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.textIds().add(text.id());
-        state.canvasSelection.imageIds().clear();
-        state.canvasTextMenuTarget = text.id();
-        state.canvasTextDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
-        state.canvasTextDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        state.canvasTextStartX = text.x();
-        state.canvasTextStartY = text.y();
-        state.canvasTextStartW = text.w();
-        state.canvasTextStartH = text.h();
-        state.canvasTextStartRotation = text.rotation();
-        state.resizingCanvasText = CanvasRenderer.isCanvasTextResizeHandleHit(state, text, localX, localY);
-        state.rotatingCanvasText = CanvasRenderer.isCanvasTextRotateHandleHit(state, text, localX, localY);
-        if (state.rotatingCanvasText) {
-            state.canvasTextRotatePivotX = CanvasElementGeometry.logicalPivotX(text.x(), text.w(), CanvasElementGeometry.defaultPivot(text.w()));
-            state.canvasTextRotatePivotY = CanvasElementGeometry.logicalPivotY(text.y(), text.h(), CanvasElementGeometry.defaultPivot(text.h()));
+        state.canvas.canvasSelection.setPrimaryTextId(text.id());
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.textIds().add(text.id());
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasTextMenuTarget = text.id();
+        state.canvas.canvasTextDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        state.canvas.canvasTextDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        state.canvas.canvasTextStartX = text.x();
+        state.canvas.canvasTextStartY = text.y();
+        state.canvas.canvasTextStartW = text.w();
+        state.canvas.canvasTextStartH = text.h();
+        state.canvas.canvasTextStartRotation = text.rotation();
+        state.canvas.resizingCanvasText = CanvasRenderer.isCanvasTextResizeHandleHit(state, text, localX, localY);
+        state.canvas.rotatingCanvasText = CanvasRenderer.isCanvasTextRotateHandleHit(state, text, localX, localY);
+        if (state.canvas.rotatingCanvasText) {
+            state.canvas.canvasTextRotatePivotX = CanvasElementGeometry.logicalPivotX(text.x(), text.w(), CanvasElementGeometry.defaultPivot(text.w()));
+            state.canvas.canvasTextRotatePivotY = CanvasElementGeometry.logicalPivotY(text.y(), text.h(), CanvasElementGeometry.defaultPivot(text.h()));
             double logicalMouseX = CanvasGeometry.screenToLogicalX(state, localX);
             double logicalMouseY = CanvasGeometry.screenToLogicalY(state, localY);
-            state.canvasTextRotateStartAngle = Math.atan2(logicalMouseY - state.canvasTextRotatePivotY, logicalMouseX - state.canvasTextRotatePivotX);
+            state.canvas.canvasTextRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasTextRotatePivotY, logicalMouseX - state.canvas.canvasTextRotatePivotX);
         }
-        state.draggingCanvasText = !state.resizingCanvasText && !state.rotatingCanvasText;
-        state.canvasSelection.questIds().clear();
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text transform start id={} drag={} resize={} rotate={}", text.id(), state.draggingCanvasText, state.resizingCanvasText, state.rotatingCanvasText);
+        state.canvas.draggingCanvasText = !state.canvas.resizingCanvasText && !state.canvas.rotatingCanvasText;
+        state.canvas.canvasSelection.questIds().clear();
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text transform start id={} drag={} resize={} rotate={}", text.id(), state.canvas.draggingCanvasText, state.canvas.resizingCanvasText, state.canvas.rotatingCanvasText);
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasSelection.primaryTextId());
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
         if (text == null) {
             return;
         }
         int logicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         int logicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        int dx = logicalX - state.canvasTextDragStartX;
-        int dy = logicalY - state.canvasTextDragStartY;
+        int dx = logicalX - state.canvas.canvasTextDragStartX;
+        int dy = logicalY - state.canvas.canvasTextDragStartY;
         CanvasTextLayer next = text;
-        if (state.draggingCanvasText) {
-            CanvasPoint anchor = dragAnchor(state.canvasTextStartX, state.canvasTextStartY, state.canvasTextStartW, state.canvasTextStartH, CanvasElementGeometry.defaultPivot(state.canvasTextStartW), CanvasElementGeometry.defaultPivot(state.canvasTextStartH), state.canvasTextStartRotation, dx, dy);
-            next = new CanvasTextLayer(text.id(), text.text(), anchor.x, anchor.y, state.canvasTextStartW, state.canvasTextStartH, state.canvasTextStartRotation, text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+        if (state.canvas.draggingCanvasText) {
+            CanvasPoint anchor = dragAnchor(state.canvas.canvasTextStartX, state.canvas.canvasTextStartY, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartH), state.canvas.canvasTextStartRotation, dx, dy);
+            next = new CanvasTextLayer(text.id(), text.text(), anchor.x, anchor.y, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, state.canvas.canvasTextStartRotation, text.align(), text.style(), text.color(), text.fontSize(), text.spans());
             next = applySmartSnapToText(next, cards, group);
-        } else if (state.resizingCanvasText) {
+        } else if (state.canvas.resizingCanvasText) {
             clearSnapGuides();
             next = resizeTextFromHandle(text, localX, localY);
-        } else if (state.rotatingCanvasText) {
+        } else if (state.canvas.rotatingCanvasText) {
             clearSnapGuides();
             int angle = LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
-                    state.canvasTextStartRotation,
-                    state.canvasTextRotatePivotX,
-                    state.canvasTextRotatePivotY,
-                    state.canvasTextRotateStartAngle,
+                    state.canvas.canvasTextStartRotation,
+                    state.canvas.canvasTextRotatePivotX,
+                    state.canvas.canvasTextRotatePivotY,
+                    state.canvas.canvasTextRotateStartAngle,
                     logicalX,
                     logicalY,
                     TabletModifierKeys.shiftDown()
@@ -242,9 +242,9 @@ public final class CanvasElementTransformController {
         CanvasPoint offset = constrainedSnapOffset(snap.offsetX(), snap.offsetY(), image.rotation());
         int offsetX = offset.x;
         int offsetY = offset.y;
-        if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis))) {
-            state.snapGuideXVisible = state.snapGuideXVisible && offsetX != 0;
-            state.snapGuideYVisible = state.snapGuideYVisible && offsetY != 0;
+        if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(CanvasTransformGizmo.moveAxisOrFree(state.canvas.canvasImageTransformAxis))) {
+            state.canvas.snapGuideXVisible = state.canvas.snapGuideXVisible && offsetX != 0;
+            state.canvas.snapGuideYVisible = state.canvas.snapGuideYVisible && offsetY != 0;
         }
         int requestedX = image.x() + offsetX;
         int requestedY = image.y() + offsetY;
@@ -285,20 +285,20 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasPoint modelDragAnchor(int startX, int startY, int width, int height, int dx, int dy) {
-        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         CanvasPoint delta = LayerTransformEngine.modelMoveDelta(new LayerTransformEngine.ModelMoveRequest(
                 dx,
                 dy,
-                state.canvasImageStartRotation,
+                state.canvas.canvasImageStartRotation,
                 axis,
                 CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis),
                 snapSettings()
         ));
-        return CanvasGeometry.clampRotatedAnchorToCanvas(state, startX + delta.x, startY + delta.y, width, height, state.canvasImageStartPivotX, state.canvasImageStartPivotY, state.canvasImageStartRotation);
+        return CanvasGeometry.clampRotatedAnchorToCanvas(state, startX + delta.x, startY + delta.y, width, height, state.canvas.canvasImageStartPivotX, state.canvas.canvasImageStartPivotY, state.canvas.canvasImageStartRotation);
     }
 
     private CanvasPoint constrainedSnapOffset(int offsetX, int offsetY, int rotation) {
-        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvasImageTransformAxis);
+        String axis = CanvasTransformGizmo.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         if (CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
             return new CanvasPoint(offsetX, offsetY);
         }
@@ -306,25 +306,25 @@ public final class CanvasElementTransformController {
     }
 
     private void clearSnapGuides() {
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
+        state.canvas.snapGuideXVisible = false;
+        state.canvas.snapGuideYVisible = false;
     }
 
     private CanvasImageLayer resizeImageFromHandle(CanvasImageLayer image, int localX, int localY) {
         ResizedBox box = resizeFromSelectionBox(
                 localX,
                 localY,
-                state.canvasImageStartX,
-                state.canvasImageStartY,
-                state.canvasImageStartW,
-                state.canvasImageStartH,
-                state.canvasImageStartRotation,
+                state.canvas.canvasImageStartX,
+                state.canvas.canvasImageStartY,
+                state.canvas.canvasImageStartW,
+                state.canvas.canvasImageStartH,
+                state.canvas.canvasImageStartRotation,
                 8,
                 8,
-                state.canvasImageStartPivotX,
-                state.canvasImageStartPivotY,
-                CanvasTransformGizmo.resizeCornerX(state.canvasImageTransformAxis),
-                CanvasTransformGizmo.resizeCornerY(state.canvasImageTransformAxis),
+                state.canvas.canvasImageStartPivotX,
+                state.canvas.canvasImageStartPivotY,
+                CanvasTransformGizmo.resizeCornerX(state.canvas.canvasImageTransformAxis),
+                CanvasTransformGizmo.resizeCornerY(state.canvas.canvasImageTransformAxis),
                 CanvasTransformGizmo.supports(image.asset()) || TabletModifierKeys.shiftDown()
         );
         return fitAndClampImage(image.withBounds(box.x(), box.y(), box.width(), box.height()));
@@ -334,15 +334,15 @@ public final class CanvasElementTransformController {
         ResizedBox box = resizeFromSelectionBox(
                 localX,
                 localY,
-                state.canvasTextStartX,
-                state.canvasTextStartY,
-                state.canvasTextStartW,
-                state.canvasTextStartH,
-                state.canvasTextStartRotation,
+                state.canvas.canvasTextStartX,
+                state.canvas.canvasTextStartY,
+                state.canvas.canvasTextStartW,
+                state.canvas.canvasTextStartH,
+                state.canvas.canvasTextStartRotation,
                 24,
                 14,
-                CanvasElementGeometry.defaultPivot(state.canvasTextStartW),
-                CanvasElementGeometry.defaultPivot(state.canvasTextStartH),
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartW),
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartH),
                 1,
                 1,
                 TabletModifierKeys.shiftDown()
@@ -370,15 +370,15 @@ public final class CanvasElementTransformController {
     }
 
     private LayerTransformEngine.SnapSettings snapSettings() {
-        return new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.gridSnapLocked, TabletModifierKeys.shiftDown());
+        return new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, TabletModifierKeys.shiftDown());
     }
 
     private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {
@@ -410,7 +410,7 @@ public final class CanvasElementTransformController {
     }
 
     private boolean shouldFitRotatedPreview(int rotation) {
-        return state.gridSnapLocked && TabletModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
+        return state.canvas.gridSnapLocked && TabletModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
     }
 
     private record ResizedBox(int x, int y, int width, int height) {

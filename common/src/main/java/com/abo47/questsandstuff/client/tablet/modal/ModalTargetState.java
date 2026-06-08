@@ -15,7 +15,7 @@ public final class ModalTargetState {
     }
 
     public static String target(TabletUiState state, ModalSession.TargetSlot slot, String fallback) {
-        String sessionTarget = state == null || state.modalSession == null ? "" : state.modalSession.target(slot);
+        String sessionTarget = state == null || state.modal.modalSession == null ? "" : state.modal.modalSession.target(slot);
         return clean(sessionTarget.isBlank() ? fallback : sessionTarget);
     }
 
@@ -24,7 +24,7 @@ public final class ModalTargetState {
     }
 
     public static Set<String> targetSet(TabletUiState state, ModalSession.TargetSetSlot slot, Set<String> fallback) {
-        Set<String> sessionTargets = state == null || state.modalSession == null ? Set.of() : state.modalSession.targetSet(slot);
+        Set<String> sessionTargets = state == null || state.modal.modalSession == null ? Set.of() : state.modal.modalSession.targetSet(slot);
         if (!sessionTargets.isEmpty()) {
             return sessionTargets;
         }

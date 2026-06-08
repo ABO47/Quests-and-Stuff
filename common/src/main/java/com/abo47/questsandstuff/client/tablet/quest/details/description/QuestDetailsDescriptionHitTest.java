@@ -181,33 +181,33 @@ final class QuestDetailsDescriptionHitTest {
     }
 
     private void withSelectionGeometry(Runnable draw) {
-        int oldContentX = state.canvasContentX;
-        int oldContentY = state.canvasContentY;
-        int oldContentW = state.canvasContentW;
-        int oldContentH = state.canvasContentH;
-        int oldOffsetX = state.canvasOffsetX;
-        int oldOffsetY = state.canvasOffsetY;
-        float oldZoom = state.canvasZoom;
-        boolean oldGridSnap = state.gridSnapLocked;
-        state.canvasContentX = 0;
-        state.canvasContentY = -state.questDetailsDescScroll;
-        state.canvasContentW = contentW.getAsInt();
-        state.canvasContentH = contentH.getAsInt();
-        state.canvasOffsetX = 0;
-        state.canvasOffsetY = 0;
-        state.canvasZoom = 1.0f;
-        state.gridSnapLocked = state.questDetailsGridSnapLocked;
+        int oldContentX = state.canvas.canvasContentX;
+        int oldContentY = state.canvas.canvasContentY;
+        int oldContentW = state.canvas.canvasContentW;
+        int oldContentH = state.canvas.canvasContentH;
+        int oldOffsetX = state.canvas.canvasOffsetX;
+        int oldOffsetY = state.canvas.canvasOffsetY;
+        float oldZoom = state.canvas.canvasZoom;
+        boolean oldGridSnap = state.canvas.gridSnapLocked;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = -state.questDetails.questDetailsDescScroll;
+        state.canvas.canvasContentW = contentW.getAsInt();
+        state.canvas.canvasContentH = contentH.getAsInt();
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.gridSnapLocked = state.questDetails.questDetailsGridSnapLocked;
         try {
             draw.run();
         } finally {
-            state.canvasContentX = oldContentX;
-            state.canvasContentY = oldContentY;
-            state.canvasContentW = oldContentW;
-            state.canvasContentH = oldContentH;
-            state.canvasOffsetX = oldOffsetX;
-            state.canvasOffsetY = oldOffsetY;
-            state.canvasZoom = oldZoom;
-            state.gridSnapLocked = oldGridSnap;
+            state.canvas.canvasContentX = oldContentX;
+            state.canvas.canvasContentY = oldContentY;
+            state.canvas.canvasContentW = oldContentW;
+            state.canvas.canvasContentH = oldContentH;
+            state.canvas.canvasOffsetX = oldOffsetX;
+            state.canvas.canvasOffsetY = oldOffsetY;
+            state.canvas.canvasZoom = oldZoom;
+            state.canvas.gridSnapLocked = oldGridSnap;
         }
     }
 

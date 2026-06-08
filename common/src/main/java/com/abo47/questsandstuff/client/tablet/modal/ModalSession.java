@@ -97,25 +97,25 @@ public final class ModalSession {
         }
         targets.clear();
         targetSets.clear();
-        setTarget(TargetSlot.QUEST, state.modalQuestTarget);
-        setTarget(TargetSlot.CHAPTER, state.modalChapterTarget);
-        setTarget(TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
-        setTarget(TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetailsAssetPickTarget);
-        setTarget(TargetSlot.CANVAS_BACKGROUND, state.modalCanvasBackgroundTarget);
-        setTarget(TargetSlot.CANVAS_IMAGE, state.modalCanvasImageTarget);
-        setTarget(TargetSlot.CANVAS_ENTITY, state.modalCanvasEntityTarget);
-        setTarget(TargetSlot.CANVAS_MODEL, state.modalCanvasModelTarget);
-        setTarget(TargetSlot.BLUEPRINT, state.modalBlueprintTarget);
-        setTarget(TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget);
-        setTarget(TargetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modalQuestCompletionHudBackgroundTarget);
-        setTarget(TargetSlot.HUD_BACKGROUND, state.modalHudBackgroundTarget);
-        setTarget(TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
-        setTarget(TargetSlot.ENTITY_VARIANT, state.entityVariantTarget);
-        setTarget(TargetSlot.COLOR_PICKER, state.colorPickerTarget);
-        setTarget(TargetSlot.PREREQUISITES_MANAGER, state.prerequisitesManagerQuestId);
-        setTargetSet(TargetSetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTargets);
-        setTargetSet(TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modalQuestCompletionHudBackgroundTargets);
-        setTargetSet(TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
+        setTarget(TargetSlot.QUEST, state.modal.modalQuestTarget);
+        setTarget(TargetSlot.CHAPTER, state.modal.modalChapterTarget);
+        setTarget(TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
+        setTarget(TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget);
+        setTarget(TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
+        setTarget(TargetSlot.CANVAS_IMAGE, state.modal.modalCanvasImageTarget);
+        setTarget(TargetSlot.CANVAS_ENTITY, state.modal.modalCanvasEntityTarget);
+        setTarget(TargetSlot.CANVAS_MODEL, state.modal.modalCanvasModelTarget);
+        setTarget(TargetSlot.BLUEPRINT, state.modal.modalBlueprintTarget);
+        setTarget(TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget);
+        setTarget(TargetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTarget);
+        setTarget(TargetSlot.HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
+        setTarget(TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
+        setTarget(TargetSlot.ENTITY_VARIANT, state.pickers.entityVariantTarget);
+        setTarget(TargetSlot.COLOR_PICKER, state.pickers.colorPickerTarget);
+        setTarget(TargetSlot.PREREQUISITES_MANAGER, state.modal.prerequisitesManagerQuestId);
+        setTargetSet(TargetSetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets);
+        setTargetSet(TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTargets);
+        setTargetSet(TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
     }
 
     public void capturePickerState(TabletUiState state) {
@@ -123,23 +123,23 @@ public final class ModalSession {
             return;
         }
         switch (type) {
-            case ICON_PICKER -> capturePicker(state.iconSearch, state.iconSearchFocused, state.iconScroll, state.iconScrollDragging, "", state.iconMode.name());
-            case ASSET_PICKER -> capturePicker(state.assetSearch, state.assetSearchFocused, state.assetGridScroll, state.assetGridScrollDragging, state.assetSelected, state.assetBrowseDir);
-            case BIOME_PICKER -> capturePicker(state.biomeSearch, state.biomeSearchFocused, state.biomeScroll, state.biomeScrollDragging, "", "");
-            case ADVANCEMENT_PICKER -> capturePicker(state.advancementSearch, state.advancementSearchFocused, state.advancementScroll, state.advancementScrollDragging, "", "");
-            case RECIPE_PICKER -> capturePicker(state.recipeSearch, state.recipeSearchFocused, state.recipeScroll, state.recipeScrollDragging, "", state.recipeMode.name());
-            case STRUCTURE_PICKER -> capturePicker(state.structureSearch, state.structureSearchFocused, state.structureScroll, state.structureScrollDragging, "", "");
-            case BLOCK_PICKER -> capturePicker(state.blockSearch, state.blockSearchFocused, state.blockScroll, state.blockScrollDragging, "", state.blockTagMode ? "TAGS" : "BLOCKS");
-            case STAT_PICKER -> capturePicker(state.statSearch, state.statSearchFocused, state.statScroll, state.statScrollDragging, "", "");
-            case DIMENSION_PICKER -> capturePicker(state.dimensionSearch, state.dimensionSearchFocused, state.dimensionScroll, state.dimensionScrollDragging, "", "");
-            case LOOT_TABLE_PICKER -> capturePicker(state.lootTableSearch, state.lootTableSearchFocused, state.lootTableScroll, state.lootTableScrollDragging, "", "");
-            case ITEM_INVENTORY_PICKER -> capturePicker(state.itemInventorySearch, state.itemInventorySearchFocused, state.itemInventoryScroll, state.itemInventoryScrollDragging, "", "");
-            case SOUND_PICKER -> capturePicker(state.soundSearch, state.soundSearchFocused, state.soundScroll, state.soundScrollDragging, state.soundSelected, "");
-            case ENTITY_VARIANT_PICKER -> capturePicker(state.entityVariantSearch, state.entityVariantSearchFocused, state.entityVariantScroll, state.entityVariantScrollDragging, state.entityVariantSelected, state.entityVariantFolder);
-            case PREREQUISITES_MANAGER -> capturePicker(state.prerequisitesManagerSearch, state.prerequisitesManagerSearchFocused, state.prerequisitesManagerScroll, state.prerequisitesManagerScrollDragging, "", state.prerequisitesManagerExternalMode ? "EXTERNAL" : "LOCAL");
-            case COLOR_PICKER -> capturePicker("", false, state.colorPaletteScroll, state.colorPaletteScrollDragging, Integer.toString(state.colorDraft), "");
-            case THEME_PICKER -> capturePicker("", false, state.themeScroll, state.themeScrollDragging, "", "");
-            case SETTINGS_PANEL -> capturePicker("", false, state.settingsScroll, state.settingsScrollDragging, "", Integer.toString(state.settingsTab));
+            case ICON_PICKER -> capturePicker(state.pickers.iconSearch, state.pickers.iconSearchFocused, state.pickers.iconScroll, state.pickers.iconScrollDragging, "", state.pickers.iconMode.name());
+            case ASSET_PICKER -> capturePicker(state.pickers.assetSearch, state.pickers.assetSearchFocused, state.pickers.assetGridScroll, state.pickers.assetGridScrollDragging, state.pickers.assetSelected, state.pickers.assetBrowseDir);
+            case BIOME_PICKER -> capturePicker(state.pickers.biomeSearch, state.pickers.biomeSearchFocused, state.pickers.biomeScroll, state.pickers.biomeScrollDragging, "", "");
+            case ADVANCEMENT_PICKER -> capturePicker(state.pickers.advancementSearch, state.pickers.advancementSearchFocused, state.pickers.advancementScroll, state.pickers.advancementScrollDragging, "", "");
+            case RECIPE_PICKER -> capturePicker(state.pickers.recipeSearch, state.pickers.recipeSearchFocused, state.pickers.recipeScroll, state.pickers.recipeScrollDragging, "", state.pickers.recipeMode.name());
+            case STRUCTURE_PICKER -> capturePicker(state.pickers.structureSearch, state.pickers.structureSearchFocused, state.pickers.structureScroll, state.pickers.structureScrollDragging, "", "");
+            case BLOCK_PICKER -> capturePicker(state.pickers.blockSearch, state.pickers.blockSearchFocused, state.pickers.blockScroll, state.pickers.blockScrollDragging, "", state.pickers.blockTagMode ? "TAGS" : "BLOCKS");
+            case STAT_PICKER -> capturePicker(state.pickers.statSearch, state.pickers.statSearchFocused, state.pickers.statScroll, state.pickers.statScrollDragging, "", "");
+            case DIMENSION_PICKER -> capturePicker(state.pickers.dimensionSearch, state.pickers.dimensionSearchFocused, state.pickers.dimensionScroll, state.pickers.dimensionScrollDragging, "", "");
+            case LOOT_TABLE_PICKER -> capturePicker(state.pickers.lootTableSearch, state.pickers.lootTableSearchFocused, state.pickers.lootTableScroll, state.pickers.lootTableScrollDragging, "", "");
+            case ITEM_INVENTORY_PICKER -> capturePicker(state.pickers.itemInventorySearch, state.pickers.itemInventorySearchFocused, state.pickers.itemInventoryScroll, state.pickers.itemInventoryScrollDragging, "", "");
+            case SOUND_PICKER -> capturePicker(state.pickers.soundSearch, state.pickers.soundSearchFocused, state.pickers.soundScroll, state.pickers.soundScrollDragging, state.pickers.soundSelected, "");
+            case ENTITY_VARIANT_PICKER -> capturePicker(state.pickers.entityVariantSearch, state.pickers.entityVariantSearchFocused, state.pickers.entityVariantScroll, state.pickers.entityVariantScrollDragging, state.pickers.entityVariantSelected, state.pickers.entityVariantFolder);
+            case PREREQUISITES_MANAGER -> capturePicker(state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerSearchFocused, state.modal.prerequisitesManagerScroll, state.modal.prerequisitesManagerScrollDragging, "", state.modal.prerequisitesManagerExternalMode ? "EXTERNAL" : "LOCAL");
+            case COLOR_PICKER -> capturePicker("", false, state.pickers.colorPaletteScroll, state.pickers.colorPaletteScrollDragging, Integer.toString(state.pickers.colorDraft), "");
+            case THEME_PICKER -> capturePicker("", false, state.modal.themeScroll, state.modal.themeScrollDragging, "", "");
+            case SETTINGS_PANEL -> capturePicker("", false, state.modal.settingsScroll, state.modal.settingsScrollDragging, "", Integer.toString(state.modal.settingsTab));
             case NONE -> capturePicker("", false, 0, false, "", "");
         }
     }

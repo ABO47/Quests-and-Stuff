@@ -27,7 +27,7 @@ public final class CanvasRecipeCardActions {
     }
 
     public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
-        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || recipe == null || recipe.isBlank()) {
             return false;
         }
@@ -42,7 +42,7 @@ public final class CanvasRecipeCardActions {
         if (parsed.isCanvasRecipeChange()) {
             boolean changed = changeRecipe(state, parsed, asset);
             if (changed) {
-                state.questDetailsPickTarget = "";
+                state.questDetails.questDetailsPickTarget = "";
             }
             return changed;
         }
@@ -54,7 +54,7 @@ public final class CanvasRecipeCardActions {
             return false;
         }
         addRecipeCard(state, group, asset);
-        state.questDetailsPickTarget = "";
+        state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked group={} recipe={}", group, recipe.trim());
         return true;
     }
@@ -74,39 +74,39 @@ public final class CanvasRecipeCardActions {
 
     private static void addRecipeCard(TabletUiState state, String group, String asset) {
         String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, group));
-        int x = state.canvasImageLogicalX - CARD_W / 2;
-        int y = state.canvasImageLogicalY - CARD_H / 2;
-        if (!state.gridSnapLocked) {
+        int x = state.canvas.canvasImageLogicalX - CARD_W / 2;
+        int y = state.canvas.canvasImageLogicalY - CARD_H / 2;
+        if (!state.canvas.gridSnapLocked) {
             x = TabletUiFactory.snapToGrid(state, x);
             y = TabletUiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, CARD_W, CARD_H);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, CARD_W, CARD_H, 0);
-        if (state.gridSnapLocked) {
+        if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
         CanvasLayerMutations.putCanvasImage(state, group, image);
         selectOnlyImage(state, id);
-        state.draggingCanvasImage = false;
-        state.resizingCanvasImage = false;
-        state.rotatingCanvasImage = false;
-        state.mouseMode = CanvasMouseMode.SELECT_MOVE;
+        state.canvas.draggingCanvasImage = false;
+        state.canvas.resizingCanvasImage = false;
+        state.canvas.rotatingCanvasImage = false;
+        state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
     }
 
     private static void selectOnlyImage(TabletUiState state, String id) {
-        state.canvasSelection.setPrimaryImageId(id);
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.imageIds().add(id);
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryImageId(id);
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.imageIds().add(id);
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
         ContextMenuState.close(state);
         ContextMenuState.clearDeleteConfirm(state);
     }
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;

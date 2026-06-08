@@ -40,7 +40,7 @@ final class QuestObjectiveTransientMenus {
     }
 
     private static void renderItemSourcePicker(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
-        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.itemSourcePicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
@@ -70,7 +70,7 @@ final class QuestObjectiveTransientMenus {
     }
 
     private static void renderCommandRewardEditor(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
-        if (!state.questDetailsCommandRewardEditorOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsCommandRewardEditorOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         int w = 232;
@@ -79,8 +79,8 @@ final class QuestObjectiveTransientMenus {
         int buttonW = 82;
         int buttonH = 16;
         int buttonY = 48;
-        int x = Math.max(4, Math.min(state.questDetailsContextX, modalW - w - 4));
-        int y = Math.max(4, Math.min(state.questDetailsContextY, modalH - h - 4));
+        int x = Math.max(4, Math.min(state.questDetails.questDetailsContextX, modalW - w - 4));
+        int y = Math.max(4, Math.min(state.questDetails.questDetailsContextY, modalH - h - 4));
         WidgetGroup popup = panel(x, y, w, h, withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT);
         popup.addWidget(label(pad, 6, TabletVocabulary.text(QuestVocabulary.ENTER_COMMAND), ModColors.TEXT_PRIMARY));
         TextFieldWidget commandField = StyledTextFields.commitField(
@@ -88,8 +88,8 @@ final class QuestObjectiveTransientMenus {
                 24,
                 w - pad * 2,
                 16,
-                () -> state.questDetailsCommandRewardCommand,
-                value -> state.questDetailsCommandRewardCommand = value == null ? "" : value,
+                () -> state.questDetails.questDetailsCommandRewardCommand,
+                value -> state.questDetails.questDetailsCommandRewardCommand = value == null ? "" : value,
                 () -> {
                     commitCommandReward(player, state);
                     refresh.run();
@@ -99,7 +99,7 @@ final class QuestObjectiveTransientMenus {
                     refresh.run();
                 },
                 () -> {
-                    if (state.questDetailsCommandRewardEditorOpen) {
+                    if (state.questDetails.questDetailsCommandRewardEditorOpen) {
                         commitCommandReward(player, state);
                         refresh.run();
                     }
@@ -123,10 +123,10 @@ final class QuestObjectiveTransientMenus {
 
     private static void commitCommandReward(Player player, TabletUiState state) {
         JsonObject json = new JsonObject();
-        json.addProperty("id", state.questDetailsCommandRewardId);
+        json.addProperty("id", state.questDetails.questDetailsCommandRewardId);
         json.addProperty("type", "questsandstuff:command");
-        json.addProperty("command", state.questDetailsCommandRewardCommand == null ? "" : state.questDetailsCommandRewardCommand.trim());
-        EditorCommandClient.putQuestRewardJson(player, state.questDetailsCommandRewardQuestId, json.toString());
+        json.addProperty("command", state.questDetails.questDetailsCommandRewardCommand == null ? "" : state.questDetails.questDetailsCommandRewardCommand.trim());
+        EditorCommandClient.putQuestRewardJson(player, state.questDetails.questDetailsCommandRewardQuestId, json.toString());
         closeCommandRewardEditor(state);
     }
 

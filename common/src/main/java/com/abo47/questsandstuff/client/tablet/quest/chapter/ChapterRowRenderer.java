@@ -37,7 +37,7 @@ final class ChapterRowRenderer {
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
         boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
         boolean selected = group.equals(TabletStateQueries.selectedGroupName(state));
-        String rowLabel = group.equals(state.pendingChapterRename) ? state.chapterDraftName : group;
+        String rowLabel = group.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : group;
         if (collapsed) {
             addCollapsedChapterRow(chapterList, group, rowLabel, y, layout, selected);
             if (lockedPreview) {
@@ -81,12 +81,12 @@ final class ChapterRowRenderer {
                 layout.cardW(),
                 layout.iconX(),
                 ClientQuestCache.groupIcon(group),
-                () -> state.chapterDraftName,
-                value -> state.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
+                () -> state.chapterPanel.chapterDraftName,
+                value -> state.chapterPanel.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
                 value -> ChapterRenameActions.commitRename(player, state, refresh, group, value),
                 () -> {
-                    state.pendingChapterRename = "";
-                    state.chapterDraftName = group;
+                    state.canvas.pendingChapterRename = "";
+                    state.chapterPanel.chapterDraftName = group;
                     refresh.run();
                 }
         );
@@ -100,12 +100,12 @@ final class ChapterRowRenderer {
                 layout.cardW(),
                 layout.iconX(),
                 "",
-                () -> state.chapterDraftName,
-                value -> state.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
+                () -> state.chapterPanel.chapterDraftName,
+                value -> state.chapterPanel.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
                 value -> ChapterRenameActions.commitDraft(player, state, refresh, value),
                 () -> {
-                    state.pendingChapterRename = "";
-                    state.chapterDraftName = state.selectedGroup;
+                    state.canvas.pendingChapterRename = "";
+                    state.chapterPanel.chapterDraftName = state.root.selectedGroup;
                     refresh.run();
                 }
         );
@@ -149,9 +149,9 @@ final class ChapterRowRenderer {
                 return;
             }
             selectChapter(state, group);
-            state.chapterMenuTarget = group;
-            state.chapterMenuX = 8;
-            state.chapterMenuY = Math.max(4, Math.min(rowY, chapterList.getSize().height - 72));
+            state.chapterPanel.chapterMenuTarget = group;
+            state.chapterPanel.chapterMenuX = 8;
+            state.chapterPanel.chapterMenuY = Math.max(4, Math.min(rowY, chapterList.getSize().height - 72));
             TabletUiFactory.persistUiState(state);
             refresh.run();
         });
@@ -170,17 +170,17 @@ final class ChapterRowRenderer {
     }
 
     private static boolean canOpenChapter(TabletUiState state, String group) {
-        return state != null && (state.canEdit || ClientQuestCache.groupOpenablePreview(group));
+        return state != null && (state.root.canEdit || ClientQuestCache.groupOpenablePreview(group));
     }
 
     private static void selectChapter(TabletUiState state, String group) {
-        state.selectedGroup = group;
-        state.groupDraft = group;
-        state.chapterDraftName = group;
-        state.pendingChapterRename = "";
-        state.chapterTextMenuOpen = false;
-        state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeFieldTarget = "";
+        state.root.selectedGroup = group;
+        state.chapterPanel.groupDraft = group;
+        state.chapterPanel.chapterDraftName = group;
+        state.canvas.pendingChapterRename = "";
+        state.chapterPanel.chapterTextMenuOpen = false;
+        state.chapterPanel.chapterTextMenuTarget = "";
+        state.chapterPanel.chapterTextFontSizeFieldTarget = "";
         ClientQuestCache.clearGroupCompletionNotice(group);
     }
 
@@ -278,11 +278,11 @@ final class ChapterRowRenderer {
         }
         EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {
             selectChapter(state, group);
-            state.chapterMenuOpen = false;
-            state.chapterDragPending = false;
-            state.chapterDragActive = false;
-            state.chapterDragName = "";
-            state.chapterDragTargetIndex = -1;
+            state.chapterPanel.chapterMenuOpen = false;
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragActive = false;
+            state.chapterPanel.chapterDragName = "";
+            state.chapterPanel.chapterDragTargetIndex = -1;
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(group));
             TabletUiFactory.persistUiState(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", group);

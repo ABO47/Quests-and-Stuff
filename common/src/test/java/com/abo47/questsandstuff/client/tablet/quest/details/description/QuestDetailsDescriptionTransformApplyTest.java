@@ -13,24 +13,24 @@ class QuestDetailsDescriptionTransformApplyTest {
     @Test
     void previewTextTransformWritesTransientTextOnly() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsTransformKind = "desc_text";
-        state.questDetailsTransformId = "text";
+        state.questDetails.questDetailsTransformKind = "desc_text";
+        state.questDetails.questDetailsTransformId = "text";
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(text("text", 10, 20));
         model.putImage(image("image", 30, 40));
 
         QuestDetailsDescriptionTransformApply.preview(state, model);
 
-        assertEquals(text("text", 10, 20), state.questDetailsTransientTexts.get("text"));
-        assertTrue(state.questDetailsTransientImages.isEmpty());
+        assertEquals(text("text", 10, 20), state.questDetails.questDetailsTransientTexts.get("text"));
+        assertTrue(state.questDetails.questDetailsTransientImages.isEmpty());
     }
 
     @Test
     void previewSelectionTransformWritesSelectedTransientLayers() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsTransformKind = "selection";
-        state.questDetailsDescriptionSelection.textIds().add("text");
-        state.questDetailsDescriptionSelection.imageIds().add("image");
+        state.questDetails.questDetailsTransformKind = "selection";
+        state.questDetails.questDetailsDescriptionSelection.textIds().add("text");
+        state.questDetails.questDetailsDescriptionSelection.imageIds().add("image");
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(text("text", 10, 20));
         model.putText(text("other", 40, 50));
@@ -38,27 +38,27 @@ class QuestDetailsDescriptionTransformApplyTest {
 
         QuestDetailsDescriptionTransformApply.preview(state, model);
 
-        assertEquals(text("text", 10, 20), state.questDetailsTransientTexts.get("text"));
-        assertEquals(image("image", 30, 40), state.questDetailsTransientImages.get("image"));
-        assertFalse(state.questDetailsTransientTexts.containsKey("other"));
+        assertEquals(text("text", 10, 20), state.questDetails.questDetailsTransientTexts.get("text"));
+        assertEquals(image("image", 30, 40), state.questDetails.questDetailsTransientImages.get("image"));
+        assertFalse(state.questDetails.questDetailsTransientTexts.containsKey("other"));
     }
 
     @Test
     void clearEditDragStateCancelsSelectionAndTransformSession() {
         TabletUiState state = new TabletUiState();
-        state.selectingCanvasTextRange = true;
-        state.questDetailsBoxSelecting = true;
-        state.questDetailsTransformKind = "desc_text";
-        state.questDetailsTransformId = "text";
-        state.questDetailsTransientTexts.put("text", text("text", 10, 20));
+        state.canvas.selectingCanvasTextRange = true;
+        state.questDetails.questDetailsBoxSelecting = true;
+        state.questDetails.questDetailsTransformKind = "desc_text";
+        state.questDetails.questDetailsTransformId = "text";
+        state.questDetails.questDetailsTransientTexts.put("text", text("text", 10, 20));
 
         QuestDetailsDescriptionTransformApply.clearEditDragState(state);
 
-        assertFalse(state.selectingCanvasTextRange);
-        assertFalse(state.questDetailsBoxSelecting);
-        assertTrue(state.questDetailsTransformKind.isBlank());
-        assertTrue(state.questDetailsTransformId.isBlank());
-        assertTrue(state.questDetailsTransientTexts.isEmpty());
+        assertFalse(state.canvas.selectingCanvasTextRange);
+        assertFalse(state.questDetails.questDetailsBoxSelecting);
+        assertTrue(state.questDetails.questDetailsTransformKind.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformId.isBlank());
+        assertTrue(state.questDetails.questDetailsTransientTexts.isEmpty());
     }
 
     private static CanvasTextLayer text(String id, int x, int y) {

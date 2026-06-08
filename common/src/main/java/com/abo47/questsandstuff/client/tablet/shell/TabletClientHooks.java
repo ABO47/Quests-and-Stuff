@@ -125,8 +125,8 @@ public final class TabletClientHooks {
     }
 
     public static void rememberActiveWindow(TabletUiState state) {
-        rememberedQuestDetailsOpen = state != null && state.questDetailsOpen && state.questDetailsQuestId != null && !state.questDetailsQuestId.isBlank();
-        rememberedQuestDetailsQuestId = rememberedQuestDetailsOpen ? state.questDetailsQuestId.trim() : "";
+        rememberedQuestDetailsOpen = state != null && state.questDetails.questDetailsOpen && state.questDetails.questDetailsQuestId != null && !state.questDetails.questDetailsQuestId.isBlank();
+        rememberedQuestDetailsQuestId = rememberedQuestDetailsOpen ? state.questDetails.questDetailsQuestId.trim() : "";
     }
 
     public static void rememberMainWindow() {

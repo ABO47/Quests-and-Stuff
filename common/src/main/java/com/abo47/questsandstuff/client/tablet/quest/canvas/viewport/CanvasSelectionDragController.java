@@ -31,57 +31,57 @@ final class CanvasSelectionDragController {
 
     void beginDrag(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {
         CanvasTransformSessions.clearMainCanvasSession(state);
-        state.draggingSelection = true;
-        state.resizingSelection = false;
-        state.rotatingSelection = false;
-        state.dragStartX = localX;
-        state.dragStartY = localY;
-        state.dragCurrentX = localX;
-        state.dragCurrentY = localY;
-        state.dragSelectionDeltaX = 0;
-        state.dragSelectionDeltaY = 0;
-        for (String questId : state.canvasSelection.questIds()) {
+        state.canvas.draggingSelection = true;
+        state.canvas.resizingSelection = false;
+        state.canvas.rotatingSelection = false;
+        state.canvas.dragStartX = localX;
+        state.canvas.dragStartY = localY;
+        state.canvas.dragCurrentX = localX;
+        state.canvas.dragCurrentY = localY;
+        state.canvas.dragSelectionDeltaX = 0;
+        state.canvas.dragSelectionDeltaY = 0;
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card != null) {
-                state.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
+                state.canvas.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             }
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
-                state.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
+                state.canvas.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
             }
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isTextSelected(state, text.id())) {
-                state.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
+                state.canvas.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
         CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
         CanvasSnapEngine.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
-        state.dragStartBoundsLeft = bounds.left();
-        state.dragStartBoundsTop = bounds.top();
-        state.dragStartBoundsRight = bounds.right();
-        state.dragStartBoundsBottom = bounds.bottom();
-        state.dragStartSelectionLeft = state.selectionBoundsLeft;
-        state.dragStartSelectionTop = state.selectionBoundsTop;
-        state.dragStartSelectionRight = state.selectionBoundsRight;
-        state.dragStartSelectionBottom = state.selectionBoundsBottom;
+        state.canvas.dragStartBoundsLeft = bounds.left();
+        state.canvas.dragStartBoundsTop = bounds.top();
+        state.canvas.dragStartBoundsRight = bounds.right();
+        state.canvas.dragStartBoundsBottom = bounds.bottom();
+        state.canvas.dragStartSelectionLeft = state.canvas.selectionBoundsLeft;
+        state.canvas.dragStartSelectionTop = state.canvas.selectionBoundsTop;
+        state.canvas.dragStartSelectionRight = state.canvas.selectionBoundsRight;
+        state.canvas.dragStartSelectionBottom = state.canvas.selectionBoundsBottom;
         QuestsAndStuffMod.debugLog(
                 "[QnS:UI] canvas selection drag start quests={} images={} texts={} bounds={}x{}",
-                state.dragStartPositions.size(),
-                state.dragStartImagePositions.size(),
-                state.dragStartTextPositions.size(),
-                Math.max(0, state.dragStartBoundsRight - state.dragStartBoundsLeft),
-                Math.max(0, state.dragStartBoundsBottom - state.dragStartBoundsTop)
+                state.canvas.dragStartPositions.size(),
+                state.canvas.dragStartImagePositions.size(),
+                state.canvas.dragStartTextPositions.size(),
+                Math.max(0, state.canvas.dragStartBoundsRight - state.canvas.dragStartBoundsLeft),
+                Math.max(0, state.canvas.dragStartBoundsBottom - state.canvas.dragStartBoundsTop)
         );
     }
 
     void updateDrag(int localX, int localY, List<QuestCardLayout> cards, boolean deferQuestPositions) {
-        int dx = (int) Math.round(CanvasGeometry.screenToLogicalX(state, localX) - CanvasGeometry.screenToLogicalX(state, state.dragStartX));
-        int dy = (int) Math.round(CanvasGeometry.screenToLogicalY(state, localY) - CanvasGeometry.screenToLogicalY(state, state.dragStartY));
-        state.dragCurrentX = localX;
-        state.dragCurrentY = localY;
+        int dx = (int) Math.round(CanvasGeometry.screenToLogicalX(state, localX) - CanvasGeometry.screenToLogicalX(state, state.canvas.dragStartX));
+        int dy = (int) Math.round(CanvasGeometry.screenToLogicalY(state, localY) - CanvasGeometry.screenToLogicalY(state, state.canvas.dragStartY));
+        state.canvas.dragCurrentX = localX;
+        state.canvas.dragCurrentY = localY;
         CanvasPoint delta = snappedSelectionDelta(dx, dy);
         CanvasSnapEngine.SnapResult snap = smartSnapSelectionDelta(delta.x, delta.y, cards);
         if (snap.hasOffset()) {
@@ -97,26 +97,26 @@ final class CanvasSelectionDragController {
     }
 
     void populateTransientQuestPositions() {
-        populateTransientQuestPositions(state.dragSelectionDeltaX, state.dragSelectionDeltaY);
+        populateTransientQuestPositions(state.canvas.dragSelectionDeltaX, state.canvas.dragSelectionDeltaY);
     }
 
     private void applySelectionDragDelta(int dx, int dy, boolean deferQuestPositions) {
-        state.dragSelectionDeltaX = dx;
-        state.dragSelectionDeltaY = dy;
+        state.canvas.dragSelectionDeltaX = dx;
+        state.canvas.dragSelectionDeltaY = dy;
         if (deferQuestPositions) {
-            state.transientQuestPositions.clear();
+            state.canvas.transientQuestPositions.clear();
         } else {
             populateTransientQuestPositions(dx, dy);
         }
-        state.transientQuestScales.clear();
+        state.canvas.transientQuestScales.clear();
         String group = TabletStateQueries.selectedGroupName(state);
-        for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
+        for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
                 CanvasLayerMutations.putTransientCanvasImage(state, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
-        for (Map.Entry<String, CanvasPoint> entry : state.dragStartTextPositions.entrySet()) {
+        for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartTextPositions.entrySet()) {
             CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, entry.getKey());
             if (text != null) {
                 CanvasLayerMutations.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
@@ -125,9 +125,9 @@ final class CanvasSelectionDragController {
     }
 
     private void populateTransientQuestPositions(int dx, int dy) {
-        state.transientQuestPositions.clear();
-        for (Map.Entry<String, CanvasPoint> entry : state.dragStartPositions.entrySet()) {
-            state.transientQuestPositions.put(entry.getKey(), new CanvasPoint(entry.getValue().x + dx, entry.getValue().y + dy));
+        state.canvas.transientQuestPositions.clear();
+        for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartPositions.entrySet()) {
+            state.canvas.transientQuestPositions.put(entry.getKey(), new CanvasPoint(entry.getValue().x + dx, entry.getValue().y + dy));
         }
     }
 
@@ -135,7 +135,7 @@ final class CanvasSelectionDragController {
         CanvasPoint delta = LayerTransformEngine.freeDelta(
                 dx,
                 dy,
-                new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.gridSnapLocked, false)
+                new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, false)
         );
         return CanvasSelectionBounds.clampSelectionDelta(state, delta.x, delta.y);
     }
@@ -147,14 +147,14 @@ final class CanvasSelectionDragController {
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),
                 cards,
                 group,
-                state.canvasSelection.questIds(),
-                state.dragStartImagePositions.keySet(),
-                state.dragStartTextPositions.keySet()
+                state.canvas.canvasSelection.questIds(),
+                state.canvas.dragStartImagePositions.keySet(),
+                state.canvas.dragStartTextPositions.keySet()
         );
     }
 
     private void clearSnapGuides() {
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
+        state.canvas.snapGuideXVisible = false;
+        state.canvas.snapGuideYVisible = false;
     }
 }

@@ -45,13 +45,13 @@ final class QuestDetailsWindowLayout {
             return;
         }
 
-        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         if (questId.isBlank() || !ClientQuestCache.containsQuest(questId)) {
             QuestDetailsWindowLifecycle.finishClose(state);
             return;
         }
         CompoundTag quest = ClientQuestCache.quest(questId);
-        if (!state.canEdit && (ClientQuestCache.questLockedPreview(quest) || ClientQuestCache.questHiddenPreview(quest))) {
+        if (!state.root.canEdit && (ClientQuestCache.questLockedPreview(quest) || ClientQuestCache.questHiddenPreview(quest))) {
             QuestDetailsWindowLifecycle.finishClose(state);
             return;
         }
@@ -85,15 +85,15 @@ final class QuestDetailsWindowLayout {
         if (layer == null || state == null || !QuestDetailsWindow.isVisible(state)) {
             return;
         }
-        state.questDetailsScreenX = TabletWidgetCoordinates.screenX(layer, state.questDetailsX);
-        state.questDetailsScreenY = TabletWidgetCoordinates.screenY(layer, state.questDetailsY);
+        state.questDetails.questDetailsScreenX = TabletWidgetCoordinates.screenX(layer, state.questDetails.questDetailsX);
+        state.questDetails.questDetailsScreenY = TabletWidgetCoordinates.screenY(layer, state.questDetails.questDetailsY);
     }
 
     private static void rememberFrame(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
-        state.questDetailsX = frame.x();
-        state.questDetailsY = frame.y();
-        state.questDetailsW = frame.w();
-        state.questDetailsH = frame.h();
+        state.questDetails.questDetailsX = frame.x();
+        state.questDetails.questDetailsY = frame.y();
+        state.questDetails.questDetailsW = frame.w();
+        state.questDetails.questDetailsH = frame.h();
         syncScreenOrigin(layer, state);
     }
 
@@ -115,7 +115,7 @@ final class QuestDetailsWindowLayout {
         if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             return 120;
         }
-        float amount = SourceOriginRevealWidget.windowOpenAmount(state.questDetailsAnimationStartMs, !state.questDetailsClosing);
+        float amount = SourceOriginRevealWidget.windowOpenAmount(state.questDetails.questDetailsAnimationStartMs, !state.questDetails.questDetailsClosing);
         return Math.round(120 * amount);
     }
 
@@ -130,8 +130,8 @@ final class QuestDetailsWindowLayout {
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,
-                    () -> state.questDetailsAnimationStartMs,
-                    () -> !state.questDetailsClosing,
+                    () -> state.questDetails.questDetailsAnimationStartMs,
+                    () -> !state.questDetails.questDetailsClosing,
                     () -> sourceRect(state)
             ));
         } else {
@@ -173,14 +173,14 @@ final class QuestDetailsWindowLayout {
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
-        if (!state.questDetailsAnimationHasSource) {
+        if (!state.questDetails.questDetailsAnimationHasSource) {
             return null;
         }
         return new SourceOriginRevealWidget.SourceRect(
-                state.questDetailsAnimationSourceX,
-                state.questDetailsAnimationSourceY,
-                state.questDetailsAnimationSourceW,
-                state.questDetailsAnimationSourceH
+                state.questDetails.questDetailsAnimationSourceX,
+                state.questDetails.questDetailsAnimationSourceY,
+                state.questDetails.questDetailsAnimationSourceW,
+                state.questDetails.questDetailsAnimationSourceH
         );
     }
 
@@ -218,7 +218,7 @@ final class QuestDetailsWindowLayout {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3]);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
+                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetails.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
             }
         };
     }

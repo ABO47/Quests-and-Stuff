@@ -39,8 +39,8 @@ public final class ChapterSplitterWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        boolean hovered = state.draggingChapterSplitter || isMouseOverElement(mouseX, mouseY);
-        boolean resizeHovered = hovered && !state.chapterSplitterLocked;
+        boolean hovered = state.canvas.draggingChapterSplitter || isMouseOverElement(mouseX, mouseY);
+        boolean resizeHovered = hovered && !state.chapterPanel.chapterSplitterLocked;
         TabletResizeCursor.update(resizeHovered);
         updateHoverPulse(hovered);
 
@@ -61,55 +61,55 @@ public final class ChapterSplitterWidget extends WidgetGroup {
         if (button != 0 || !isMouseOverElement(mouseX, mouseY)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        state.draggingChapterSplitter = true;
-        state.chapterSplitterDragMoved = false;
-        state.chapterSplitterDragStartX = (int) Math.round(mouseX);
-        state.chapterSplitterStartWidth = chapterPanelWidth(state);
+        state.canvas.draggingChapterSplitter = true;
+        state.chapterPanel.chapterSplitterDragMoved = false;
+        state.chapterPanel.chapterSplitterDragStartX = (int) Math.round(mouseX);
+        state.chapterPanel.chapterSplitterStartWidth = chapterPanelWidth(state);
         return true;
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state.chapterSplitterLocked) {
+        if (state.chapterPanel.chapterSplitterLocked) {
             TabletResizeCursor.update(false);
             return true;
         }
-        if (!state.draggingChapterSplitter) {
+        if (!state.canvas.draggingChapterSplitter) {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
-        int dx = (int) Math.round(mouseX) - state.chapterSplitterDragStartX;
-        if (!state.chapterSplitterDragMoved && Math.abs(dx) <= DRAG_THRESHOLD_PX) {
+        int dx = (int) Math.round(mouseX) - state.chapterPanel.chapterSplitterDragStartX;
+        if (!state.chapterPanel.chapterSplitterDragMoved && Math.abs(dx) <= DRAG_THRESHOLD_PX) {
             return true;
         }
-        state.chapterSplitterDragMoved = true;
-        int nextWidth = state.chapterSplitterStartWidth + dx;
+        state.chapterPanel.chapterSplitterDragMoved = true;
+        int nextWidth = state.chapterPanel.chapterSplitterStartWidth + dx;
         if (nextWidth <= CHAPTER_W_ICON_SNAP) {
             nextWidth = CHAPTER_W_ICON;
-            state.chapterPanelCollapsed = true;
+            state.chapterPanel.chapterPanelCollapsed = true;
         } else {
             nextWidth = snapExpandedChapterWidth(nextWidth);
-            state.chapterPanelCollapsed = false;
-            state.chapterPanelLastExpandedWidth = nextWidth;
+            state.chapterPanel.chapterPanelCollapsed = false;
+            state.chapterPanel.chapterPanelLastExpandedWidth = nextWidth;
         }
-        state.chapterPanelWidth = nextWidth;
+        state.chapterPanel.chapterPanelWidth = nextWidth;
         refresh.run();
         return true;
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!state.draggingChapterSplitter) {
+        if (!state.canvas.draggingChapterSplitter) {
             return super.mouseReleased(mouseX, mouseY, button);
         }
-        boolean dragged = state.chapterSplitterDragMoved;
-        state.draggingChapterSplitter = false;
-        state.chapterSplitterDragMoved = false;
+        boolean dragged = state.chapterPanel.chapterSplitterDragMoved;
+        state.canvas.draggingChapterSplitter = false;
+        state.chapterPanel.chapterSplitterDragMoved = false;
         if (!dragged) {
             toggleCollapsed();
             return true;
         }
-        state.chapterPanelWidth = chapterPanelWidth(state);
-        state.chapterPanelCollapsed = isChapterPanelCollapsed(state);
+        state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
+        state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
         persistUiState(state);
         TabletResizeCursor.update(false);
         refresh.run();
@@ -117,16 +117,16 @@ public final class ChapterSplitterWidget extends WidgetGroup {
     }
 
     private void toggleCollapsed() {
-        state.draggingChapterSplitter = false;
-        state.chapterSplitterDragMoved = false;
+        state.canvas.draggingChapterSplitter = false;
+        state.chapterPanel.chapterSplitterDragMoved = false;
         if (isChapterPanelCollapsed(state)) {
-            int expandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelLastExpandedWidth));
-            state.chapterPanelWidth = expandedWidth;
-            state.chapterPanelCollapsed = false;
+            int expandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelLastExpandedWidth));
+            state.chapterPanel.chapterPanelWidth = expandedWidth;
+            state.chapterPanel.chapterPanelCollapsed = false;
         } else {
-            state.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, chapterPanelWidth(state)));
-            state.chapterPanelWidth = CHAPTER_W_ICON;
-            state.chapterPanelCollapsed = true;
+            state.chapterPanel.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, chapterPanelWidth(state)));
+            state.chapterPanel.chapterPanelWidth = CHAPTER_W_ICON;
+            state.chapterPanel.chapterPanelCollapsed = true;
         }
         persistUiState(state);
         TabletResizeCursor.update(false);

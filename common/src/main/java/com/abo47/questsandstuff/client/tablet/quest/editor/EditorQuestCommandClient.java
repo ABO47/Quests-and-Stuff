@@ -209,9 +209,9 @@ final class EditorQuestCommandClient {
                     ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, targetX, targetY, normalizedTitle));
                 });
 
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.questIds().add(predictedId);
-        state.lastJumpQuest = predictedId;
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.questIds().add(predictedId);
+        state.chapterPanel.lastJumpQuest = predictedId;
     }
 
     static void beginQuestTitleChange(TabletUiState state, String questId) {
@@ -222,22 +222,22 @@ final class EditorQuestCommandClient {
             return;
         }
         CompoundTag quest = ClientQuestCache.quest(questId);
-        state.pendingQuestTitleChangeId = questId;
-        state.questTitleDraft = quest.getString("title");
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questTitleDraft);
+        state.questDetails.pendingQuestTitleChangeId = questId;
+        state.questDetails.questTitleDraft = quest.getString("title");
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questDetails.questTitleDraft);
     }
 
     static void cancelQuestTitleChange(TabletUiState state) {
-        if (state.pendingQuestTitleChangeId.isBlank()) {
+        if (state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change cancel id={}", state.pendingQuestTitleChangeId);
-        state.pendingQuestTitleChangeId = "";
-        state.questTitleDraft = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest title change cancel id={}", state.questDetails.pendingQuestTitleChangeId);
+        state.questDetails.pendingQuestTitleChangeId = "";
+        state.questDetails.questTitleDraft = "";
     }
 
     static boolean commitQuestTitleChange(Player player, TabletUiState state) {
-        String questId = state.pendingQuestTitleChangeId;
+        String questId = state.questDetails.pendingQuestTitleChangeId;
         if (questId.isBlank()) {
             return false;
         }
@@ -248,13 +248,13 @@ final class EditorQuestCommandClient {
         CompoundTag quest = ClientQuestCache.quest(questId);
         String oldTitle = quest.getString("title");
         String subtitle = quest.getString("subtitle");
-        String title = sanitizeQuestTitle(state.questTitleDraft, oldTitle);
+        String title = sanitizeQuestTitle(state.questDetails.questTitleDraft, oldTitle);
         if (!title.equals(oldTitle)) {
             runQuestDisplayAction(player, questId, title, subtitle);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest title change commit id={} from={} to={}", questId, oldTitle, title);
         }
-        state.pendingQuestTitleChangeId = "";
-        state.questTitleDraft = "";
+        state.questDetails.pendingQuestTitleChangeId = "";
+        state.questDetails.questTitleDraft = "";
         return true;
     }
 

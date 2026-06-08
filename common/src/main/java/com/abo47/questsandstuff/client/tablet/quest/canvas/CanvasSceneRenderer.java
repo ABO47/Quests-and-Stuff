@@ -70,16 +70,16 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int alphaPercent = Math.max(0, Math.min(100, state.gridOpacityPercent));
+                int alphaPercent = Math.max(0, Math.min(100, state.canvas.gridOpacityPercent));
                 int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
                 int lineColor = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
                 int cell = CanvasGeometry.gridSize(state);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int visibleLeft = contentX - state.canvasLivePanX;
-                int visibleTop = contentY - state.canvasLivePanY;
-                int visibleRight = contentX + contentW - state.canvasLivePanX;
-                int visibleBottom = contentY + contentH - state.canvasLivePanY;
+                int visibleLeft = contentX - state.canvas.canvasLivePanX;
+                int visibleTop = contentY - state.canvas.canvasLivePanY;
+                int visibleRight = contentX + contentW - state.canvas.canvasLivePanX;
+                int visibleBottom = contentY + contentH - state.canvas.canvasLivePanY;
 
                 int firstCol = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, contentX, true) / cell) - 1;
                 int lastCol = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, contentX + contentW, true) / cell) + 1;
@@ -105,7 +105,7 @@ final class CanvasSceneRenderer {
     }
 
     static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
-        int opacityPercent = Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
+        int opacityPercent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
         int canvasFill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, opacityPercent);
         int paintW = contentW + 1;
         int paintH = contentH + 1;
@@ -133,8 +133,8 @@ final class CanvasSceneRenderer {
             BiConsumer<String, WidgetGroup> questCardLayerSink
     ) {
         String group = selectedGroupName(state);
-        List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
         if (images.isEmpty() && texts.isEmpty() && visibleCards.isEmpty()) {
             return;
         }
@@ -220,7 +220,7 @@ final class CanvasSceneRenderer {
         if (questCardLayerSink != null) {
             questCardLayerSink.accept(card.questId(), cardLayer);
         }
-        if (state.canEdit && card.questId().equals(state.pendingQuestTitleChangeId)) {
+        if (state.root.canEdit && card.questId().equals(state.questDetails.pendingQuestTitleChangeId)) {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
@@ -255,8 +255,8 @@ final class CanvasSceneRenderer {
         int aboveY = card.y() - fieldH - 4;
         int y = belowY + fieldH <= viewportH - 4 ? belowY : Math.max(4, Math.min(aboveY, viewportH - fieldH - 4));
 
-        InlineRenameField field = new InlineRenameField(x, y, fieldW, fieldH, () -> state.questTitleDraft, value -> {
-            state.questTitleDraft = value == null ? "" : value;
+        InlineRenameField field = new InlineRenameField(x, y, fieldW, fieldH, () -> state.questDetails.questTitleDraft, value -> {
+            state.questDetails.questTitleDraft = value == null ? "" : value;
         }, () -> {
             EditorCommandClient.commitQuestTitleChange(player, state);
             refresh.run();
@@ -265,7 +265,7 @@ final class CanvasSceneRenderer {
             refresh.run();
         }, null, null);
         field.setClientSideWidget();
-        field.setCurrentString(state.questTitleDraft == null ? "" : state.questTitleDraft);
+        field.setCurrentString(state.questDetails.questTitleDraft == null ? "" : state.questDetails.questTitleDraft);
         field.setMaxStringLength(80);
         field.setBordered(false);
         field.setTextColor(ModColors.TEXT_PRIMARY);
@@ -275,7 +275,7 @@ final class CanvasSceneRenderer {
     }
 
     private static void renderHiddenEditState(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
-        if (!state.canEdit || card.tag().getBoolean("completed")) {
+        if (!state.root.canEdit || card.tag().getBoolean("completed")) {
             return;
         }
         boolean hidden = card.tag().getBoolean("visual_hidden") && !card.tag().getBoolean("unlocked");
@@ -291,7 +291,7 @@ final class CanvasSceneRenderer {
     }
 
     private static void renderSearchState(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
-        String query = state.search == null ? "" : state.search.trim();
+        String query = state.root.search == null ? "" : state.root.search.trim();
         if (query.isBlank()) {
             return;
         }
@@ -318,7 +318,7 @@ final class CanvasSceneRenderer {
                 int pivotX = -box.left();
                 int pivotY = -box.top();
                 CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
-                if (state.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
+                if (state.root.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }

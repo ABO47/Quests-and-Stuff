@@ -40,7 +40,7 @@ final class CanvasContextGlobalActions {
                 }
             }));
         }
-        if (state.canvasZoom != 1.0f) {
+        if (state.canvas.canvasZoom != 1.0f) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_zoom"), "reset_zoom", ModColors.INTERACTIVE, () -> {
                 CanvasCameraController.resetZoom(state, true);
                 ContextMenuState.clearDeleteConfirm(state);
@@ -51,29 +51,29 @@ final class CanvasContextGlobalActions {
         if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.copy"), "copy", ModColors.INTERACTIVE, true, true, () -> {
                 CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=copy target={} selected={}", state.contextMenuTarget, state.canvasSelection.questIds().size());
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=copy target={} selected={}", state.contextMenu.contextMenuTarget, state.canvas.canvasSelection.questIds().size());
                 canvasViewport.refresh();
             }));
         }
         if (!selectedGroup.isBlank() && CanvasClipboardController.hasClipboardContent(state)) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.paste"), "paste", ModColors.SUCCESS, () -> {
                 CanvasContextMenuSupport.pasteClipboard(player, state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=paste target={}", state.contextMenuTarget);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=paste target={}", state.contextMenu.contextMenuTarget);
                 canvasViewport.refresh();
             }));
         }
         if (CanvasContextDeleteController.canDeleteContext(state)) {
             String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
-            boolean confirmingDelete = deleteKey.equals(state.contextDeleteConfirmKey);
+            boolean confirmingDelete = deleteKey.equals(state.contextMenu.contextDeleteConfirmKey);
             String deleteFallback = CanvasContextMenuController.tr("ui.questsandstuff.context.delete");
             String deleteLabel = pendingDeleteLabel(state, deleteKey, deleteFallback);
             actions.add(new ContextAction(deleteLabel, "delete", ModColors.ERROR, confirmingDelete, true, () -> {
                 if (!confirmDeleteClick(state, deleteKey)) {
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=delete_arm target={}", state.contextMenuTarget);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=delete_arm target={}", state.contextMenu.contextMenuTarget);
                     canvasViewport.refresh();
                     return;
                 }
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=delete_confirm target={}", state.contextMenuTarget);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=delete_confirm target={}", state.contextMenu.contextMenuTarget);
                 CanvasContextDeleteController.runDeleteAction(player, state);
                 canvasViewport.refresh();
             }));

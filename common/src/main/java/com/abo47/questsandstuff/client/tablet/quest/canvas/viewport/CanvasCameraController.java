@@ -32,16 +32,16 @@ public final class CanvasCameraController {
 
     public static void afterCanvasLayout(TabletUiState state, String group) {
         String normalizedGroup = normalizeGroup(group);
-        state.canvasZoom = CanvasRenderer.clampZoom(state.canvasZoom);
-        state.canvasLivePanX = 0;
-        state.canvasLivePanY = 0;
-        boolean groupChanged = !normalizedGroup.equals(state.canvasCameraGroup);
-        state.canvasCameraGroup = normalizedGroup;
-        CanvasDoublePoint center = state.canvasCameraCentersByGroup.get(normalizedGroup);
-        Float zoom = state.canvasCameraZoomsByGroup.get(normalizedGroup);
+        state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        state.canvas.canvasLivePanX = 0;
+        state.canvas.canvasLivePanY = 0;
+        boolean groupChanged = !normalizedGroup.equals(state.canvas.canvasCameraGroup);
+        state.canvas.canvasCameraGroup = normalizedGroup;
+        CanvasDoublePoint center = state.canvas.canvasCameraCentersByGroup.get(normalizedGroup);
+        Float zoom = state.canvas.canvasCameraZoomsByGroup.get(normalizedGroup);
         if (center != null) {
             if (zoom != null) {
-                state.canvasZoom = CanvasRenderer.clampZoom(zoom);
+                state.canvas.canvasZoom = CanvasRenderer.clampZoom(zoom);
             }
             centerOnInternal(state, center.x(), center.y());
             return;
@@ -54,30 +54,30 @@ public final class CanvasCameraController {
     }
 
     public static void rememberCurrentGroup(TabletUiState state) {
-        if (state == null || state.canvasContentW <= 0 || state.canvasContentH <= 0) {
+        if (state == null || state.canvas.canvasContentW <= 0 || state.canvas.canvasContentH <= 0) {
             return;
         }
-        String group = normalizeGroup(state.canvasCameraGroup);
+        String group = normalizeGroup(state.canvas.canvasCameraGroup);
         if (group.isBlank()) {
             return;
         }
-        state.canvasCameraCentersByGroup.put(group, currentCenter(state));
-        state.canvasCameraZoomsByGroup.put(group, CanvasRenderer.clampZoom(state.canvasZoom));
+        state.canvas.canvasCameraCentersByGroup.put(group, currentCenter(state));
+        state.canvas.canvasCameraZoomsByGroup.put(group, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
     }
 
     public static CanvasPoint previewPanDelta(TabletUiState state, int requestedLivePanX, int requestedLivePanY) {
-        CanvasPoint clamped = clampedOffset(state, state.canvasOffsetX + requestedLivePanX, state.canvasOffsetY + requestedLivePanY);
-        return new CanvasPoint(clamped.x - state.canvasOffsetX, clamped.y - state.canvasOffsetY);
+        CanvasPoint clamped = clampedOffset(state, state.canvas.canvasOffsetX + requestedLivePanX, state.canvas.canvasOffsetY + requestedLivePanY);
+        return new CanvasPoint(clamped.x - state.canvas.canvasOffsetX, clamped.y - state.canvas.canvasOffsetY);
     }
 
     public static void panByScreen(TabletUiState state, int dx, int dy, boolean persist) {
-        setOffset(state, state.canvasOffsetX + dx, state.canvasOffsetY + dy, persist);
+        setOffset(state, state.canvas.canvasOffsetX + dx, state.canvas.canvasOffsetY + dy, persist);
     }
 
     public static void setOffset(TabletUiState state, int offsetX, int offsetY, boolean persist) {
         CanvasPoint clamped = clampedOffset(state, offsetX, offsetY);
-        state.canvasOffsetX = clamped.x;
-        state.canvasOffsetY = clamped.y;
+        state.canvas.canvasOffsetX = clamped.x;
+        state.canvas.canvasOffsetY = clamped.y;
         finishCameraChange(state, persist);
     }
 
@@ -85,19 +85,19 @@ public final class CanvasCameraController {
         if (state == null) {
             return new CanvasPoint(offsetX, offsetY);
         }
-        if (!state.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
-            int minLogicalX = state.canvasNavigationMinX;
-            int minLogicalY = state.canvasNavigationMinY;
-            int maxLogicalX = minLogicalX + Math.max(1, state.canvasNavigationWidth);
-            int maxLogicalY = minLogicalY + Math.max(1, state.canvasNavigationHeight);
+        if (!state.root.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
+            int minLogicalX = state.canvas.canvasNavigationMinX;
+            int minLogicalY = state.canvas.canvasNavigationMinY;
+            int maxLogicalX = minLogicalX + Math.max(1, state.canvas.canvasNavigationWidth);
+            int maxLogicalY = minLogicalY + Math.max(1, state.canvas.canvasNavigationHeight);
             return clampedOffsetToWorldBounds(state, offsetX, offsetY, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY);
         }
-        if (!state.gridCanvasLocked) {
+        if (!state.canvas.gridCanvasLocked) {
             return new CanvasPoint(offsetX, offsetY);
         }
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
-        int contentW = Math.max(1, state.canvasContentW);
-        int contentH = Math.max(1, state.canvasContentH);
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        int contentW = Math.max(1, state.canvas.canvasContentW);
+        int contentH = Math.max(1, state.canvas.canvasContentH);
         int scaledW = Math.max(contentW, Math.round(contentW * zoom));
         int scaledH = Math.max(contentH, Math.round(contentH * zoom));
         int minX = Math.min(0, contentW - scaledW);
@@ -120,10 +120,10 @@ public final class CanvasCameraController {
         if (state == null) {
             return new CanvasPoint(offsetX, offsetY);
         }
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int pad = 24;
-        int contentW = Math.max(1, state.canvasContentW);
-        int contentH = Math.max(1, state.canvasContentH);
+        int contentW = Math.max(1, state.canvas.canvasContentW);
+        int contentH = Math.max(1, state.canvas.canvasContentH);
         int boundsW = Math.max(1, maxLogicalX - minLogicalX);
         int boundsH = Math.max(1, maxLogicalY - minLogicalY);
         int scaledBoundsW = Math.round(boundsW * zoom);
@@ -151,25 +151,25 @@ public final class CanvasCameraController {
     }
 
     public static void clampCameraOffset(TabletUiState state) {
-        CanvasPoint clamped = clampedOffset(state, state.canvasOffsetX, state.canvasOffsetY);
-        state.canvasOffsetX = clamped.x;
-        state.canvasOffsetY = clamped.y;
+        CanvasPoint clamped = clampedOffset(state, state.canvas.canvasOffsetX, state.canvas.canvasOffsetY);
+        state.canvas.canvasOffsetX = clamped.x;
+        state.canvas.canvasOffsetY = clamped.y;
     }
 
     public static void zoomAt(TabletUiState state, Runnable refresh, int localX, int localY, double wheelDelta) {
         if (state == null || wheelDelta == 0.0D) {
             return;
         }
-        float oldZoom = CanvasRenderer.clampZoom(state.canvasZoom);
+        float oldZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         double focusX = screenToLogicalX(state, localX, false);
         double focusY = screenToLogicalY(state, localY, false);
         float nextZoom = nextZoomStop(oldZoom, wheelDelta > 0.0D);
         if (Math.abs(nextZoom - oldZoom) < 0.0001f) {
             return;
         }
-        state.canvasZoom = nextZoom;
-        state.canvasOffsetX = localX - state.canvasContentX - Math.round((float) (focusX * nextZoom));
-        state.canvasOffsetY = localY - state.canvasContentY - Math.round((float) (focusY * nextZoom));
+        state.canvas.canvasZoom = nextZoom;
+        state.canvas.canvasOffsetX = localX - state.canvas.canvasContentX - Math.round((float) (focusX * nextZoom));
+        state.canvas.canvasOffsetY = localY - state.canvas.canvasContentY - Math.round((float) (focusY * nextZoom));
         clampCameraOffset(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera zoom value={} focus={},{}", nextZoom, focusX, focusY);
         finishCameraChange(state, true);
@@ -180,7 +180,7 @@ public final class CanvasCameraController {
 
     public static void resetZoom(TabletUiState state, boolean persist) {
         CanvasDoublePoint center = currentCenter(state);
-        state.canvasZoom = 1.0f;
+        state.canvas.canvasZoom = 1.0f;
         centerOnInternal(state, center.x(), center.y());
         finishCameraChange(state, persist);
     }
@@ -189,10 +189,10 @@ public final class CanvasCameraController {
         String group = TabletStateQueries.selectedGroupName(state);
         LogicalBounds bounds = new LogicalBounds();
         addCards(bounds, cards);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             addImage(bounds, image);
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             addText(bounds, text);
         }
         return fitBounds(state, bounds, persist, "fit_all");
@@ -202,18 +202,18 @@ public final class CanvasCameraController {
         String group = TabletStateQueries.selectedGroupName(state);
         LogicalBounds bounds = new LogicalBounds();
         for (QuestCardLayout card : cards) {
-            if (state.canvasSelection.questIds().contains(card.questId())) {
+            if (state.canvas.canvasSelection.questIds().contains(card.questId())) {
                 addCard(bounds, card);
             }
         }
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
         Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 addImage(bounds, image);
             }
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 addText(bounds, text);
             }
@@ -222,8 +222,8 @@ public final class CanvasCameraController {
     }
 
     public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String group) {
-        String questId = QuestIdentity.questId(state.pendingCameraQuestId);
-        String pendingGroup = normalizeGroup(state.pendingCameraGroup);
+        String questId = QuestIdentity.questId(state.canvas.pendingCameraQuestId);
+        String pendingGroup = normalizeGroup(state.canvas.pendingCameraGroup);
         String selectedGroup = normalizeGroup(group);
         if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedGroup))) {
             return false;
@@ -233,8 +233,8 @@ public final class CanvasCameraController {
                 continue;
             }
             centerOn(state, card.logicalCenterX(), card.logicalCenterY(), true);
-            state.pendingCameraQuestId = "";
-            state.pendingCameraGroup = "";
+            state.canvas.pendingCameraQuestId = "";
+            state.canvas.pendingCameraGroup = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera center quest={} group={}", questId, selectedGroup);
             return true;
         }
@@ -247,25 +247,25 @@ public final class CanvasCameraController {
     }
 
     public static double screenToLogicalX(TabletUiState state, int screenX, boolean includeLivePan) {
-        int livePan = includeLivePan ? state.canvasLivePanX : 0;
-        return (screenX - state.canvasContentX - state.canvasOffsetX - livePan) / CanvasRenderer.clampZoom(state.canvasZoom);
+        int livePan = includeLivePan ? state.canvas.canvasLivePanX : 0;
+        return (screenX - state.canvas.canvasContentX - state.canvas.canvasOffsetX - livePan) / CanvasRenderer.clampZoom(state.canvas.canvasZoom);
     }
 
     public static double screenToLogicalY(TabletUiState state, int screenY, boolean includeLivePan) {
-        int livePan = includeLivePan ? state.canvasLivePanY : 0;
-        return (screenY - state.canvasContentY - state.canvasOffsetY - livePan) / CanvasRenderer.clampZoom(state.canvasZoom);
+        int livePan = includeLivePan ? state.canvas.canvasLivePanY : 0;
+        return (screenY - state.canvas.canvasContentY - state.canvas.canvasOffsetY - livePan) / CanvasRenderer.clampZoom(state.canvas.canvasZoom);
     }
 
     private static void centerOnInternal(TabletUiState state, double logicalX, double logicalY) {
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
-        state.canvasOffsetX = (state.canvasContentW / 2) - Math.round((float) (logicalX * zoom));
-        state.canvasOffsetY = (state.canvasContentH / 2) - Math.round((float) (logicalY * zoom));
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        state.canvas.canvasOffsetX = (state.canvas.canvasContentW / 2) - Math.round((float) (logicalX * zoom));
+        state.canvas.canvasOffsetY = (state.canvas.canvasContentH / 2) - Math.round((float) (logicalY * zoom));
         clampCameraOffset(state);
     }
 
     private static CanvasDoublePoint currentCenter(TabletUiState state) {
-        int screenX = state.canvasContentX + state.canvasContentW / 2;
-        int screenY = state.canvasContentY + state.canvasContentH / 2;
+        int screenX = state.canvas.canvasContentX + state.canvas.canvasContentW / 2;
+        int screenY = state.canvas.canvasContentY + state.canvas.canvasContentH / 2;
         return new CanvasDoublePoint(screenToLogicalX(state, screenX, false), screenToLogicalY(state, screenY, false));
     }
 
@@ -277,17 +277,17 @@ public final class CanvasCameraController {
     }
 
     private static boolean fitBounds(TabletUiState state, LogicalBounds bounds, boolean persist, String source) {
-        if (bounds.empty() || state.canvasContentW <= 0 || state.canvasContentH <= 0) {
+        if (bounds.empty() || state.canvas.canvasContentW <= 0 || state.canvas.canvasContentH <= 0) {
             return false;
         }
         double width = Math.max(1.0D, bounds.right - bounds.left);
         double height = Math.max(1.0D, bounds.bottom - bounds.top);
-        int pad = Math.max(8, Math.min(FIT_PADDING, Math.min(state.canvasContentW, state.canvasContentH) / 6));
-        float zoomX = (float) ((Math.max(1, state.canvasContentW - pad * 2)) / width);
-        float zoomY = (float) ((Math.max(1, state.canvasContentH - pad * 2)) / height);
-        state.canvasZoom = CanvasRenderer.clampZoom(Math.min(zoomX, zoomY));
+        int pad = Math.max(8, Math.min(FIT_PADDING, Math.min(state.canvas.canvasContentW, state.canvas.canvasContentH) / 6));
+        float zoomX = (float) ((Math.max(1, state.canvas.canvasContentW - pad * 2)) / width);
+        float zoomY = (float) ((Math.max(1, state.canvas.canvasContentH - pad * 2)) / height);
+        state.canvas.canvasZoom = CanvasRenderer.clampZoom(Math.min(zoomX, zoomY));
         centerOnInternal(state, bounds.centerX(), bounds.centerY());
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera {} zoom={} bounds={}x{}", source, state.canvasZoom, width, height);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera {} zoom={} bounds={}x{}", source, state.canvas.canvasZoom, width, height);
         finishCameraChange(state, persist);
         return true;
     }

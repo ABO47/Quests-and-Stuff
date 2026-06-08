@@ -38,12 +38,12 @@ final class CanvasContextSelectionActions {
     }
 
     static void addSelectionActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
-        if (state.contextMenuTarget != ContextMenuTarget.SELECTION || selectedGroup.isBlank()) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.SELECTION || selectedGroup.isBlank()) {
             return;
         }
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 0) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ModColors.INTERACTIVE, () -> {
-                boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextLastClickX, state.contextLastClickY);
+                boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextMenu.contextLastClickX, state.contextMenu.contextLastClickY);
                 ContextMenuState.close(state);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", CanvasSelectionActions.totalCanvasSelectionCount(state), saved);
@@ -80,7 +80,7 @@ final class CanvasContextSelectionActions {
     }
 
     private static boolean selectionSupportsGizmo(TabletUiState state, String selectedGroup) {
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id()) && CanvasTransformGizmo.supports(image.asset())) {
                 return true;
             }
@@ -89,7 +89,7 @@ final class CanvasContextSelectionActions {
     }
 
     private static void addBatchQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
-        Set<String> questIds = state.canvasSelection.questIds();
+        Set<String> questIds = state.canvas.canvasSelection.questIds();
         if (questIds.size() <= 1) {
             return;
         }

@@ -14,19 +14,19 @@ final class ConnectionStateMutations {
 
     static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Map<String, Integer> colors = state.connectionColorsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
         colors.put(key, color);
     }
 
     static void setConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean hidden) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Set<String> groupHidden = state.hiddenConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
+        Set<String> groupHidden = state.canvas.hiddenConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (hidden) {
             groupHidden.add(key);
         } else {
             groupHidden.remove(key);
             if (groupHidden.isEmpty()) {
-                state.hiddenConnectionsByGroup.remove(group);
+                state.canvas.hiddenConnectionsByGroup.remove(group);
             }
         }
     }
@@ -38,14 +38,14 @@ final class ConnectionStateMutations {
 
     static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Set<String> groupGrid = state.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
+        Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId)) {
             groupGrid.add(key);
         } else {
             groupGrid.remove(key);
         }
         if (groupGrid.isEmpty()) {
-            state.gridConnectionsByGroup.remove(group);
+            state.canvas.gridConnectionsByGroup.remove(group);
         }
     }
 }

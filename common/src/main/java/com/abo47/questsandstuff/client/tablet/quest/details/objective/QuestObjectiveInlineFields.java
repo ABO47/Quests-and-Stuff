@@ -42,8 +42,8 @@ final class QuestObjectiveInlineFields {
                 y,
                 fieldW,
                 16,
-                () -> state.questDetailsObjectiveRenameDraft,
-                value -> state.questDetailsObjectiveRenameDraft = sanitizeObjectiveTitle(value),
+                () -> state.questDetails.questDetailsObjectiveRenameDraft,
+                value -> state.questDetails.questDetailsObjectiveRenameDraft = sanitizeObjectiveTitle(value),
                 () -> {
                     commitObjectiveRename(player, state);
                     refresh.run();
@@ -53,7 +53,7 @@ final class QuestObjectiveInlineFields {
                     refresh.run();
                 },
                 () -> {
-                    if (state.questDetailsObjectiveRenameOpen) {
+                    if (state.questDetails.questDetailsObjectiveRenameOpen) {
                         commitObjectiveRename(player, state);
                         refresh.run();
                     }
@@ -61,7 +61,7 @@ final class QuestObjectiveInlineFields {
                 null
         );
         field.setClientSideWidget();
-        field.setCurrentString(state.questDetailsObjectiveRenameDraft);
+        field.setCurrentString(state.questDetails.questDetailsObjectiveRenameDraft);
         field.setMaxStringLength(80);
         field.setBordered(false);
         field.setTextColor(ModColors.TEXT_PRIMARY);
@@ -73,8 +73,8 @@ final class QuestObjectiveInlineFields {
             commitObjectiveRename(player, state);
             refresh.run();
         }));
-        if (state.questDetailsObjectiveRenameFocusPending) {
-            state.questDetailsObjectiveRenameFocusPending = false;
+        if (state.questDetails.questDetailsObjectiveRenameFocusPending) {
+            state.questDetails.questDetailsObjectiveRenameFocusPending = false;
             field.requestFocusWhenReady();
         }
     }
@@ -131,15 +131,15 @@ final class QuestObjectiveInlineFields {
     }
 
     static boolean isRenamingObjective(TabletUiState state, String questId, String entryId, boolean task) {
-        return state.questDetailsObjectiveRenameOpen
-                && state.questDetailsObjectiveRenameTask == task
-                && questId.equals(state.questDetailsObjectiveRenameQuestId)
-                && entryId.equals(state.questDetailsObjectiveRenameId)
+        return state.questDetails.questDetailsObjectiveRenameOpen
+                && state.questDetails.questDetailsObjectiveRenameTask == task
+                && questId.equals(state.questDetails.questDetailsObjectiveRenameQuestId)
+                && entryId.equals(state.questDetails.questDetailsObjectiveRenameId)
                 && QuestDetailsEditState.canEdit(state);
     }
 
     static boolean handleRenameKey(Player player, TabletUiState state, int keyCode, boolean draftUnchanged) {
-        if (!state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
@@ -150,23 +150,23 @@ final class QuestObjectiveInlineFields {
             closeObjectiveRenameEditor(state);
             return true;
         }
-        if (draftUnchanged && keyCode == GLFW.GLFW_KEY_BACKSPACE && !state.questDetailsObjectiveRenameDraft.isEmpty()) {
-            state.questDetailsObjectiveRenameDraft = state.questDetailsObjectiveRenameDraft.substring(0, state.questDetailsObjectiveRenameDraft.length() - 1);
+        if (draftUnchanged && keyCode == GLFW.GLFW_KEY_BACKSPACE && !state.questDetails.questDetailsObjectiveRenameDraft.isEmpty()) {
+            state.questDetails.questDetailsObjectiveRenameDraft = state.questDetails.questDetailsObjectiveRenameDraft.substring(0, state.questDetails.questDetailsObjectiveRenameDraft.length() - 1);
             return true;
         }
         return false;
     }
 
     static boolean handleRenameChar(TabletUiState state, char c, boolean draftUnchanged) {
-        if (!draftUnchanged || !state.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (!draftUnchanged || !state.questDetails.questDetailsObjectiveRenameOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         if (Character.isISOControl(c)) {
             return false;
         }
-        state.questDetailsObjectiveRenameDraft = sanitizeObjectiveTitle(state.questDetailsObjectiveRenameDraft + c);
-        if (state.questDetailsObjectiveRenameDraft.length() > 80) {
-            state.questDetailsObjectiveRenameDraft = state.questDetailsObjectiveRenameDraft.substring(0, 80);
+        state.questDetails.questDetailsObjectiveRenameDraft = sanitizeObjectiveTitle(state.questDetails.questDetailsObjectiveRenameDraft + c);
+        if (state.questDetails.questDetailsObjectiveRenameDraft.length() > 80) {
+            state.questDetails.questDetailsObjectiveRenameDraft = state.questDetails.questDetailsObjectiveRenameDraft.substring(0, 80);
         }
         return true;
     }
@@ -198,10 +198,10 @@ final class QuestObjectiveInlineFields {
     private static void commitObjectiveRename(Player player, TabletUiState state) {
         QuestObjectiveEditActions.putObjectiveTitle(
                 player,
-                state.questDetailsObjectiveRenameQuestId,
-                state.questDetailsObjectiveRenameId,
-                state.questDetailsObjectiveRenameDraft,
-                state.questDetailsObjectiveRenameTask
+                state.questDetails.questDetailsObjectiveRenameQuestId,
+                state.questDetails.questDetailsObjectiveRenameId,
+                state.questDetails.questDetailsObjectiveRenameDraft,
+                state.questDetails.questDetailsObjectiveRenameTask
         );
         closeObjectiveRenameEditor(state);
     }

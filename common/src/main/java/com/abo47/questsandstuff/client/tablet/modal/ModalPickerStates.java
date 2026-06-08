@@ -40,14 +40,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ICON_PICKER,
-                () -> state.iconSearch,
-                value -> state.iconSearch = value,
-                () -> state.iconSearchFocused,
-                value -> state.iconSearchFocused = value,
-                () -> state.iconScroll,
-                value -> state.iconScroll = value,
-                () -> state.iconScrollDragging,
-                value -> state.iconScrollDragging = value
+                () -> state.pickers.iconSearch,
+                value -> state.pickers.iconSearch = value,
+                () -> state.pickers.iconSearchFocused,
+                value -> state.pickers.iconSearchFocused = value,
+                () -> state.pickers.iconScroll,
+                value -> state.pickers.iconScroll = value,
+                () -> state.pickers.iconScrollDragging,
+                value -> state.pickers.iconScrollDragging = value
         );
     }
 
@@ -55,14 +55,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ASSET_PICKER,
-                () -> state.assetSearch,
-                value -> state.assetSearch = value,
-                () -> state.assetSearchFocused,
-                value -> state.assetSearchFocused = value,
-                () -> state.assetGridScroll,
-                value -> state.assetGridScroll = value,
-                () -> state.assetGridScrollDragging,
-                value -> state.assetGridScrollDragging = value
+                () -> state.pickers.assetSearch,
+                value -> state.pickers.assetSearch = value,
+                () -> state.pickers.assetSearchFocused,
+                value -> state.pickers.assetSearchFocused = value,
+                () -> state.pickers.assetGridScroll,
+                value -> state.pickers.assetGridScroll = value,
+                () -> state.pickers.assetGridScrollDragging,
+                value -> state.pickers.assetGridScrollDragging = value
         );
     }
 
@@ -70,14 +70,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.BIOME_PICKER,
-                () -> state.biomeSearch,
-                value -> state.biomeSearch = value,
-                () -> state.biomeSearchFocused,
-                value -> state.biomeSearchFocused = value,
-                () -> state.biomeScroll,
-                value -> state.biomeScroll = value,
-                () -> state.biomeScrollDragging,
-                value -> state.biomeScrollDragging = value
+                () -> state.pickers.biomeSearch,
+                value -> state.pickers.biomeSearch = value,
+                () -> state.pickers.biomeSearchFocused,
+                value -> state.pickers.biomeSearchFocused = value,
+                () -> state.pickers.biomeScroll,
+                value -> state.pickers.biomeScroll = value,
+                () -> state.pickers.biomeScrollDragging,
+                value -> state.pickers.biomeScrollDragging = value
         );
     }
 
@@ -85,14 +85,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ADVANCEMENT_PICKER,
-                () -> state.advancementSearch,
-                value -> state.advancementSearch = value,
-                () -> state.advancementSearchFocused,
-                value -> state.advancementSearchFocused = value,
-                () -> state.advancementScroll,
-                value -> state.advancementScroll = value,
-                () -> state.advancementScrollDragging,
-                value -> state.advancementScrollDragging = value
+                () -> state.pickers.advancementSearch,
+                value -> state.pickers.advancementSearch = value,
+                () -> state.pickers.advancementSearchFocused,
+                value -> state.pickers.advancementSearchFocused = value,
+                () -> state.pickers.advancementScroll,
+                value -> state.pickers.advancementScroll = value,
+                () -> state.pickers.advancementScrollDragging,
+                value -> state.pickers.advancementScrollDragging = value
         );
     }
 
@@ -100,14 +100,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.RECIPE_PICKER,
-                () -> state.recipeSearch,
-                value -> state.recipeSearch = value,
-                () -> state.recipeSearchFocused,
-                value -> state.recipeSearchFocused = value,
-                () -> state.recipeScroll,
-                value -> state.recipeScroll = value,
-                () -> state.recipeScrollDragging,
-                value -> state.recipeScrollDragging = value
+                () -> state.pickers.recipeSearch,
+                value -> state.pickers.recipeSearch = value,
+                () -> state.pickers.recipeSearchFocused,
+                value -> state.pickers.recipeSearchFocused = value,
+                () -> state.pickers.recipeScroll,
+                value -> state.pickers.recipeScroll = value,
+                () -> state.pickers.recipeScrollDragging,
+                value -> state.pickers.recipeScrollDragging = value
         );
     }
 
@@ -115,14 +115,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.STRUCTURE_PICKER,
-                () -> state.structureSearch,
-                value -> state.structureSearch = value,
-                () -> state.structureSearchFocused,
-                value -> state.structureSearchFocused = value,
-                () -> state.structureScroll,
-                value -> state.structureScroll = value,
-                () -> state.structureScrollDragging,
-                value -> state.structureScrollDragging = value
+                () -> state.pickers.structureSearch,
+                value -> state.pickers.structureSearch = value,
+                () -> state.pickers.structureSearchFocused,
+                value -> state.pickers.structureSearchFocused = value,
+                () -> state.pickers.structureScroll,
+                value -> state.pickers.structureScroll = value,
+                () -> state.pickers.structureScrollDragging,
+                value -> state.pickers.structureScrollDragging = value
         );
     }
 
@@ -130,14 +130,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.BLOCK_PICKER,
-                () -> state.blockSearch,
-                value -> state.blockSearch = value,
-                () -> state.blockSearchFocused,
-                value -> state.blockSearchFocused = value,
-                () -> state.blockScroll,
-                value -> state.blockScroll = value,
-                () -> state.blockScrollDragging,
-                value -> state.blockScrollDragging = value
+                () -> state.pickers.blockSearch,
+                value -> state.pickers.blockSearch = value,
+                () -> state.pickers.blockSearchFocused,
+                value -> state.pickers.blockSearchFocused = value,
+                () -> state.pickers.blockScroll,
+                value -> state.pickers.blockScroll = value,
+                () -> state.pickers.blockScrollDragging,
+                value -> state.pickers.blockScrollDragging = value
         );
     }
 
@@ -145,14 +145,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.STAT_PICKER,
-                () -> state.statSearch,
-                value -> state.statSearch = value,
-                () -> state.statSearchFocused,
-                value -> state.statSearchFocused = value,
-                () -> state.statScroll,
-                value -> state.statScroll = value,
-                () -> state.statScrollDragging,
-                value -> state.statScrollDragging = value
+                () -> state.pickers.statSearch,
+                value -> state.pickers.statSearch = value,
+                () -> state.pickers.statSearchFocused,
+                value -> state.pickers.statSearchFocused = value,
+                () -> state.pickers.statScroll,
+                value -> state.pickers.statScroll = value,
+                () -> state.pickers.statScrollDragging,
+                value -> state.pickers.statScrollDragging = value
         );
     }
 
@@ -160,14 +160,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.DIMENSION_PICKER,
-                () -> state.dimensionSearch,
-                value -> state.dimensionSearch = value,
-                () -> state.dimensionSearchFocused,
-                value -> state.dimensionSearchFocused = value,
-                () -> state.dimensionScroll,
-                value -> state.dimensionScroll = value,
-                () -> state.dimensionScrollDragging,
-                value -> state.dimensionScrollDragging = value
+                () -> state.pickers.dimensionSearch,
+                value -> state.pickers.dimensionSearch = value,
+                () -> state.pickers.dimensionSearchFocused,
+                value -> state.pickers.dimensionSearchFocused = value,
+                () -> state.pickers.dimensionScroll,
+                value -> state.pickers.dimensionScroll = value,
+                () -> state.pickers.dimensionScrollDragging,
+                value -> state.pickers.dimensionScrollDragging = value
         );
     }
 
@@ -175,14 +175,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
-                () -> state.lootTableSearch,
-                value -> state.lootTableSearch = value,
-                () -> state.lootTableSearchFocused,
-                value -> state.lootTableSearchFocused = value,
-                () -> state.lootTableScroll,
-                value -> state.lootTableScroll = value,
-                () -> state.lootTableScrollDragging,
-                value -> state.lootTableScrollDragging = value
+                () -> state.pickers.lootTableSearch,
+                value -> state.pickers.lootTableSearch = value,
+                () -> state.pickers.lootTableSearchFocused,
+                value -> state.pickers.lootTableSearchFocused = value,
+                () -> state.pickers.lootTableScroll,
+                value -> state.pickers.lootTableScroll = value,
+                () -> state.pickers.lootTableScrollDragging,
+                value -> state.pickers.lootTableScrollDragging = value
         );
     }
 
@@ -190,14 +190,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER,
-                () -> state.itemInventorySearch,
-                value -> state.itemInventorySearch = value,
-                () -> state.itemInventorySearchFocused,
-                value -> state.itemInventorySearchFocused = value,
-                () -> state.itemInventoryScroll,
-                value -> state.itemInventoryScroll = value,
-                () -> state.itemInventoryScrollDragging,
-                value -> state.itemInventoryScrollDragging = value
+                () -> state.pickers.itemInventorySearch,
+                value -> state.pickers.itemInventorySearch = value,
+                () -> state.pickers.itemInventorySearchFocused,
+                value -> state.pickers.itemInventorySearchFocused = value,
+                () -> state.pickers.itemInventoryScroll,
+                value -> state.pickers.itemInventoryScroll = value,
+                () -> state.pickers.itemInventoryScrollDragging,
+                value -> state.pickers.itemInventoryScrollDragging = value
         );
     }
 
@@ -205,14 +205,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.SOUND_PICKER,
-                () -> state.soundSearch,
-                value -> state.soundSearch = value,
-                () -> state.soundSearchFocused,
-                value -> state.soundSearchFocused = value,
-                () -> state.soundScroll,
-                value -> state.soundScroll = value,
-                () -> state.soundScrollDragging,
-                value -> state.soundScrollDragging = value
+                () -> state.pickers.soundSearch,
+                value -> state.pickers.soundSearch = value,
+                () -> state.pickers.soundSearchFocused,
+                value -> state.pickers.soundSearchFocused = value,
+                () -> state.pickers.soundScroll,
+                value -> state.pickers.soundScroll = value,
+                () -> state.pickers.soundScrollDragging,
+                value -> state.pickers.soundScrollDragging = value
         );
     }
 
@@ -220,14 +220,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER,
-                () -> state.entityVariantSearch,
-                value -> state.entityVariantSearch = value,
-                () -> state.entityVariantSearchFocused,
-                value -> state.entityVariantSearchFocused = value,
-                () -> state.entityVariantScroll,
-                value -> state.entityVariantScroll = value,
-                () -> state.entityVariantScrollDragging,
-                value -> state.entityVariantScrollDragging = value
+                () -> state.pickers.entityVariantSearch,
+                value -> state.pickers.entityVariantSearch = value,
+                () -> state.pickers.entityVariantSearchFocused,
+                value -> state.pickers.entityVariantSearchFocused = value,
+                () -> state.pickers.entityVariantScroll,
+                value -> state.pickers.entityVariantScroll = value,
+                () -> state.pickers.entityVariantScrollDragging,
+                value -> state.pickers.entityVariantScrollDragging = value
         );
     }
 
@@ -235,14 +235,14 @@ public final class ModalPickerStates {
         return bind(
                 state,
                 ModalWindowManager.ModalType.PREREQUISITES_MANAGER,
-                () -> state.prerequisitesManagerSearch,
-                value -> state.prerequisitesManagerSearch = value,
-                () -> state.prerequisitesManagerSearchFocused,
-                value -> state.prerequisitesManagerSearchFocused = value,
-                () -> state.prerequisitesManagerScroll,
-                value -> state.prerequisitesManagerScroll = value,
-                () -> state.prerequisitesManagerScrollDragging,
-                value -> state.prerequisitesManagerScrollDragging = value
+                () -> state.modal.prerequisitesManagerSearch,
+                value -> state.modal.prerequisitesManagerSearch = value,
+                () -> state.modal.prerequisitesManagerSearchFocused,
+                value -> state.modal.prerequisitesManagerSearchFocused = value,
+                () -> state.modal.prerequisitesManagerScroll,
+                value -> state.modal.prerequisitesManagerScroll = value,
+                () -> state.modal.prerequisitesManagerScrollDragging,
+                value -> state.modal.prerequisitesManagerScrollDragging = value
         );
     }
 
@@ -295,9 +295,9 @@ public final class ModalPickerStates {
     }
 
     private static ModalSession activeSession(TabletUiState state, ModalWindowManager.ModalType type) {
-        if (state == null || state.modalSession == null || !state.modalSession.active() || state.modalSession.type() != type) {
+        if (state == null || state.modal.modalSession == null || !state.modal.modalSession.active() || state.modal.modalSession.type() != type) {
             return null;
         }
-        return state.modalSession;
+        return state.modal.modalSession;
     }
 }

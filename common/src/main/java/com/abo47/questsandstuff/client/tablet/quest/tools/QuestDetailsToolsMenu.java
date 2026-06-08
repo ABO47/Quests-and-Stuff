@@ -55,86 +55,86 @@ final class QuestDetailsToolsMenu {
     }
 
     private static void addEditRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
-        CanvasToolRows.grid(rows, state.questDetailsGridEnabled, () -> {
-                    state.questDetailsGridEnabled = !state.questDetailsGridEnabled;
+        CanvasToolRows.grid(rows, state.questDetails.questDetailsGridEnabled, () -> {
+                    state.questDetails.questDetailsGridEnabled = !state.questDetails.questDetailsGridEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid enabled={}", state.questDetailsGridEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid enabled={}", state.questDetails.questDetailsGridEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.snap(rows, state.questDetailsGridSnapLocked, () -> {
-                    state.questDetailsGridSnapLocked = !state.questDetailsGridSnapLocked;
+        CanvasToolRows.snap(rows, state.questDetails.questDetailsGridSnapLocked, () -> {
+                    state.questDetails.questDetailsGridSnapLocked = !state.questDetails.questDetailsGridSnapLocked;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool snap-to-grid enabled={}", state.questDetailsGridSnapLocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool snap-to-grid enabled={}", state.questDetails.questDetailsGridSnapLocked);
                     refresh.run();
                 });
 
-        CanvasToolRows.centerX(rows, state.questDetailsCenterSnapXEnabled, () -> {
-                    state.questDetailsCenterSnapXEnabled = !state.questDetailsCenterSnapXEnabled;
+        CanvasToolRows.centerX(rows, state.questDetails.questDetailsCenterSnapXEnabled, () -> {
+                    state.questDetails.questDetailsCenterSnapXEnabled = !state.questDetails.questDetailsCenterSnapXEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool vertical-guide enabled={}", state.questDetailsCenterSnapXEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool vertical-guide enabled={}", state.questDetails.questDetailsCenterSnapXEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.centerY(rows, state.questDetailsCenterSnapYEnabled, () -> {
-                    state.questDetailsCenterSnapYEnabled = !state.questDetailsCenterSnapYEnabled;
+        CanvasToolRows.centerY(rows, state.questDetails.questDetailsCenterSnapYEnabled, () -> {
+                    state.questDetails.questDetailsCenterSnapYEnabled = !state.questDetails.questDetailsCenterSnapYEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool horizontal-guide enabled={}", state.questDetailsCenterSnapYEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool horizontal-guide enabled={}", state.questDetails.questDetailsCenterSnapYEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.objectSnap(rows, state.questDetailsObjectSnapEnabled, () -> {
-                    state.questDetailsObjectSnapEnabled = !state.questDetailsObjectSnapEnabled;
+        CanvasToolRows.objectSnap(rows, state.questDetails.questDetailsObjectSnapEnabled, () -> {
+                    state.questDetails.questDetailsObjectSnapEnabled = !state.questDetails.questDetailsObjectSnapEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool object-guide enabled={}", state.questDetailsObjectSnapEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool object-guide enabled={}", state.questDetails.questDetailsObjectSnapEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.gridOpacity(rows, state.questDetailsGridOpacityPercent, rightClick -> {
-                    state.questDetailsGridOpacityPercent = cyclePercent(state.questDetailsGridOpacityPercent, toolPercentStep(), rightClick);
+        CanvasToolRows.gridOpacity(rows, state.questDetails.questDetailsGridOpacityPercent, rightClick -> {
+                    state.questDetails.questDetailsGridOpacityPercent = cyclePercent(state.questDetails.questDetailsGridOpacityPercent, toolPercentStep(), rightClick);
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid-opacity percent={}", state.questDetailsGridOpacityPercent);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool grid-opacity percent={}", state.questDetails.questDetailsGridOpacityPercent);
                     refresh.run();
                 });
 
-        CanvasToolRows.backgroundOpacity(rows, state.questDetailsCanvasBgOpacityPercent, rightClick -> {
-                    state.questDetailsCanvasBgOpacityPercent = cyclePercent(state.questDetailsCanvasBgOpacityPercent, toolPercentStep(), rightClick);
+        CanvasToolRows.backgroundOpacity(rows, state.questDetails.questDetailsCanvasBgOpacityPercent, rightClick -> {
+                    state.questDetails.questDetailsCanvasBgOpacityPercent = cyclePercent(state.questDetails.questDetailsCanvasBgOpacityPercent, toolPercentStep(), rightClick);
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool bg-opacity percent={}", state.questDetailsCanvasBgOpacityPercent);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool bg-opacity percent={}", state.questDetails.questDetailsCanvasBgOpacityPercent);
                     refresh.run();
                 });
 
-        CanvasToolRows.canvasLock(rows, state.questDetailsCanvasLocked, () -> {
-                    state.questDetailsCanvasLocked = !state.questDetailsCanvasLocked;
+        CanvasToolRows.canvasLock(rows, state.questDetails.questDetailsCanvasLocked, () -> {
+                    state.questDetails.questDetailsCanvasLocked = !state.questDetails.questDetailsCanvasLocked;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool lock-canvas enabled={}", state.questDetailsCanvasLocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool lock-canvas enabled={}", state.questDetails.questDetailsCanvasLocked);
                     refresh.run();
                 });
 
-        CanvasToolRows.splitterLock(rows, state.questDetailsSplitterLocked, () -> {
-                    state.questDetailsSplitterLocked = !state.questDetailsSplitterLocked;
-                    if (state.questDetailsSplitterLocked) {
-                        state.questDetailsDraggingSplitter = false;
+        CanvasToolRows.splitterLock(rows, state.questDetails.questDetailsSplitterLocked, () -> {
+                    state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
+                    if (state.questDetails.questDetailsSplitterLocked) {
+                        state.questDetails.questDetailsDraggingSplitter = false;
                         TabletResizeCursor.update(false);
                     }
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool splitter-lock enabled={} width={}", state.questDetailsSplitterLocked, state.questDetailsLeftPanelWidth);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool splitter-lock enabled={} width={}", state.questDetails.questDetailsSplitterLocked, state.questDetails.questDetailsLeftPanelWidth);
                     refresh.run();
                 });
     }
 
     private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int border) {
-        addToggle(menu, x, y, toolSlot, border, state.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.questDetailsSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
-                !state.questDetailsSplitterLocked,
+        addToggle(menu, x, y, toolSlot, border, state.questDetails.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
+                state.questDetails.questDetailsSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
+                !state.questDetails.questDetailsSplitterLocked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),
-                        Component.translatable(state.questDetailsSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
+                        Component.translatable(state.questDetails.questDetailsSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
                 },
                 () -> {
-                    state.questDetailsSplitterLocked = !state.questDetailsSplitterLocked;
-                    if (state.questDetailsSplitterLocked) {
-                        state.questDetailsDraggingSplitter = false;
+                    state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
+                    if (state.questDetails.questDetailsSplitterLocked) {
+                        state.questDetails.questDetailsDraggingSplitter = false;
                         TabletResizeCursor.update(false);
                     }
                     persistUiState(state);
@@ -147,6 +147,6 @@ final class QuestDetailsToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.canvas.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.questDetailsOpening(state)));
     }
 }

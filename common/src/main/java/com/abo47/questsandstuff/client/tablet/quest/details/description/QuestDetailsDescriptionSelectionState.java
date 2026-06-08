@@ -12,17 +12,17 @@ final class QuestDetailsDescriptionSelectionState {
     }
 
     static Set<String> selectedTextIds(TabletUiState state) {
-        Set<String> ids = new LinkedHashSet<>(state.questDetailsDescriptionSelection.textIds());
-        if (!state.questDetailsDescriptionSelection.primaryTextId().isBlank()) {
-            ids.add(state.questDetailsDescriptionSelection.primaryTextId());
+        Set<String> ids = new LinkedHashSet<>(state.questDetails.questDetailsDescriptionSelection.textIds());
+        if (!state.questDetails.questDetailsDescriptionSelection.primaryTextId().isBlank()) {
+            ids.add(state.questDetails.questDetailsDescriptionSelection.primaryTextId());
         }
         return ids;
     }
 
     static Set<String> selectedImageIds(TabletUiState state) {
-        Set<String> ids = new LinkedHashSet<>(state.questDetailsDescriptionSelection.imageIds());
-        if (!state.questDetailsDescriptionSelection.primaryImageId().isBlank()) {
-            ids.add(state.questDetailsDescriptionSelection.primaryImageId());
+        Set<String> ids = new LinkedHashSet<>(state.questDetails.questDetailsDescriptionSelection.imageIds());
+        if (!state.questDetails.questDetailsDescriptionSelection.primaryImageId().isBlank()) {
+            ids.add(state.questDetails.questDetailsDescriptionSelection.primaryImageId());
         }
         return ids;
     }
@@ -38,30 +38,30 @@ final class QuestDetailsDescriptionSelectionState {
     static void selectOnlyText(TabletUiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
-            state.questDetailsDescriptionSelection.setPrimaryTextId(id);
-            state.questDetailsDescriptionSelection.textIds().add(id);
+            state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(id);
+            state.questDetails.questDetailsDescriptionSelection.textIds().add(id);
         }
     }
 
     static void selectOnlyImage(TabletUiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
-            state.questDetailsDescriptionSelection.setPrimaryImageId(id);
-            state.questDetailsDescriptionSelection.imageIds().add(id);
+            state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(id);
+            state.questDetails.questDetailsDescriptionSelection.imageIds().add(id);
         }
     }
 
     static void clear(TabletUiState state) {
-        state.questDetailsDescriptionSelection.setPrimaryTextId("");
-        state.questDetailsDescriptionSelection.setPrimaryImageId("");
-        state.questDetailsDescriptionSelection.textIds().clear();
-        state.questDetailsDescriptionSelection.imageIds().clear();
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.imageIds().clear();
-        state.selectionBoundsVisible = false;
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.selectionBoundsVisible = false;
     }
 
     static List<String> selectedLayerKeys(TabletUiState state, QuestDetailsDescriptionModel model) {

@@ -57,11 +57,11 @@ public final class CanvasHitTester {
     }
 
     public static CanvasImageLayer hitTestSelectedCanvasImageControls(TabletUiState state, int x, int y) {
-        if (state.canvasSelection.primaryImageId().isBlank()) {
+        if (state.canvas.canvasSelection.primaryImageId().isBlank()) {
             return null;
         }
-        CanvasImageLayer image = state.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
-                .filter(entry -> entry.id().equals(state.canvasSelection.primaryImageId()))
+        CanvasImageLayer image = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+                .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryImageId()))
                 .findFirst()
                 .orElse(null);
         if (image == null) {
@@ -94,7 +94,7 @@ public final class CanvasHitTester {
                 if (prerequisite == null) {
                     continue;
                 }
-                if (ConnectionRenderer.isConnectionHidden(state, group, prerequisiteId, quest.questId(), quest.tag()) && !state.canEdit) {
+                if (ConnectionRenderer.isConnectionHidden(state, group, prerequisiteId, quest.questId(), quest.tag()) && !state.root.canEdit) {
                     continue;
                 }
 
@@ -131,11 +131,11 @@ public final class CanvasHitTester {
     }
 
     public static CanvasTextLayer hitTestSelectedCanvasTextControls(TabletUiState state, int x, int y) {
-        if (state.canvasSelection.primaryTextId().isBlank()) {
+        if (state.canvas.canvasSelection.primaryTextId().isBlank()) {
             return null;
         }
-        CanvasTextLayer text = state.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
-                .filter(entry -> entry.id().equals(state.canvasSelection.primaryTextId()))
+        CanvasTextLayer text = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+                .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryTextId()))
                 .findFirst()
                 .orElse(null);
         if (text == null) {
@@ -214,16 +214,16 @@ public final class CanvasHitTester {
     }
 
     private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String group) {
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvasImagesByGroup.getOrDefault(group, List.of()));
-        List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
         return images;
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String group) {
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvasTextsByGroup.getOrDefault(group, List.of()));
-        List<String> order = state.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByGroup.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.textKey(text.id()))));
         return texts;

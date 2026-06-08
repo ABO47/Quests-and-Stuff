@@ -20,12 +20,12 @@ public final class ChapterContextMenuActions {
         if (!EditorCommandClient.canManageGroups(state)) {
             return;
         }
-        state.chapterMenuOpen = false;
-        state.chapterMenuTarget = target;
-        state.pendingChapterRename = target;
-        state.chapterDraftName = target;
-        state.selectedGroup = target;
-        state.groupDraft = target;
+        state.chapterPanel.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuTarget = target;
+        state.canvas.pendingChapterRename = target;
+        state.chapterPanel.chapterDraftName = target;
+        state.root.selectedGroup = target;
+        state.chapterPanel.groupDraft = target;
         TabletUiFactory.persistUiState(state);
         refresh.run();
     }
@@ -35,10 +35,10 @@ public final class ChapterContextMenuActions {
             return;
         }
         String drafted = EditorCommandClient.uniqueGroupName(tr("ui.questsandstuff.chapter.default_name"), "");
-        state.pendingChapterRename = TabletUiFactory.DRAFT_CHAPTER;
-        state.chapterDraftName = drafted;
-        state.groupDraft = drafted;
-        state.chapterMenuOpen = false;
+        state.canvas.pendingChapterRename = TabletUiFactory.DRAFT_CHAPTER;
+        state.chapterPanel.chapterDraftName = drafted;
+        state.chapterPanel.groupDraft = drafted;
+        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter add draft opened name={}", drafted);
         refresh.run();
     }
@@ -54,12 +54,12 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "delete", target, "", 0);
-        if (target.equals(state.selectedGroup)) {
-            state.selectedGroup = ClientQuestCache.groupOrder().isEmpty() ? "" : ClientQuestCache.groupOrder().get(0);
-            state.groupDraft = state.selectedGroup;
+        if (target.equals(state.root.selectedGroup)) {
+            state.root.selectedGroup = ClientQuestCache.groupOrder().isEmpty() ? "" : ClientQuestCache.groupOrder().get(0);
+            state.chapterPanel.groupDraft = state.root.selectedGroup;
         }
         TabletUiFactory.persistUiState(state);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -68,7 +68,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(target));
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -77,7 +77,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EntityIconControls.openVariantPicker(state, ModalTargets.chapterIcon(target), ChapterContextMenuLayout.chapterIcon(target));
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon entity variant picker open chapter={}", target);
         refresh.run();
     }
@@ -86,8 +86,8 @@ public final class ChapterContextMenuActions {
         if (!EditorCommandClient.canManageGroups(state)) {
             return;
         }
-        EntityMotionEditor.openChapterIcon(state, target, state.chapterMenuX, state.chapterMenuY);
-        state.chapterMenuOpen = false;
+        EntityMotionEditor.openChapterIcon(state, target, state.chapterPanel.chapterMenuX, state.chapterPanel.chapterMenuY);
+        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon motion editor requested chapter={}", target);
         refresh.run();
     }
@@ -101,7 +101,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_icon", target, "", 0);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -110,7 +110,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestCache.groupBackground(target));
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -123,7 +123,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -132,7 +132,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=lock_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
     }
@@ -142,15 +142,15 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=hide_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
     }
 
     public static void textStyle(TabletUiState state, String target, Runnable refresh) {
-        state.chapterTextMenuOpen = true;
-        state.chapterTextMenuTarget = target;
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterTextMenuOpen = true;
+        state.chapterPanel.chapterTextMenuTarget = target;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
@@ -159,7 +159,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "move", target, "", offset);
-        state.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 

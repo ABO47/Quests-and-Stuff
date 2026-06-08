@@ -26,11 +26,11 @@ public final class CanvasTextStyleMenu {
     }
 
     static void render(CanvasViewport canvasViewport, TabletUiState state, Runnable refresh) {
-        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+        if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return;
         }
         String group = selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             TextStyleSession.closeMainCanvas(state);
             return;
@@ -65,7 +65,7 @@ public final class CanvasTextStyleMenu {
     ) {
         int toolCount = 8;
         CanvasTextLayer menuText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
-        int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetailsGridSnapLocked, toolCount);
+        int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetails.questDetailsGridSnapLocked, toolCount);
         int x = viewportX + bounds[0];
         int y = viewportY + bounds[1];
         TextStyleSession.setQuestDetailsBounds(state, x, y, bounds[2], bounds[3]);
@@ -126,7 +126,7 @@ public final class CanvasTextStyleMenu {
     }
 
     private static CanvasTextLayer fitCanvasText(TabletUiState state, CanvasTextLayer text) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private static void addTextStyleButton(WidgetGroup parent, int index, int menuWidth, int columns, String iconName, int baseColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
@@ -198,33 +198,33 @@ public final class CanvasTextStyleMenu {
     }
 
     private static int[] menuBoundsForGeometry(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {
-        int oldContentX = state.canvasContentX;
-        int oldContentY = state.canvasContentY;
-        int oldContentW = state.canvasContentW;
-        int oldContentH = state.canvasContentH;
-        int oldOffsetX = state.canvasOffsetX;
-        int oldOffsetY = state.canvasOffsetY;
-        float oldZoom = state.canvasZoom;
-        boolean oldGridSnap = state.gridSnapLocked;
-        state.canvasContentX = 0;
-        state.canvasContentY = -scroll;
-        state.canvasContentW = viewportW;
-        state.canvasContentH = viewportH;
-        state.canvasOffsetX = 0;
-        state.canvasOffsetY = 0;
-        state.canvasZoom = 1.0f;
-        state.gridSnapLocked = gridSnapLocked;
+        int oldContentX = state.canvas.canvasContentX;
+        int oldContentY = state.canvas.canvasContentY;
+        int oldContentW = state.canvas.canvasContentW;
+        int oldContentH = state.canvas.canvasContentH;
+        int oldOffsetX = state.canvas.canvasOffsetX;
+        int oldOffsetY = state.canvas.canvasOffsetY;
+        float oldZoom = state.canvas.canvasZoom;
+        boolean oldGridSnap = state.canvas.gridSnapLocked;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = -scroll;
+        state.canvas.canvasContentW = viewportW;
+        state.canvas.canvasContentH = viewportH;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.gridSnapLocked = gridSnapLocked;
         try {
             return CanvasRenderer.canvasTextMenuBounds(state, text, viewportW, viewportH, toolCount);
         } finally {
-            state.canvasContentX = oldContentX;
-            state.canvasContentY = oldContentY;
-            state.canvasContentW = oldContentW;
-            state.canvasContentH = oldContentH;
-            state.canvasOffsetX = oldOffsetX;
-            state.canvasOffsetY = oldOffsetY;
-            state.canvasZoom = oldZoom;
-            state.gridSnapLocked = oldGridSnap;
+            state.canvas.canvasContentX = oldContentX;
+            state.canvas.canvasContentY = oldContentY;
+            state.canvas.canvasContentW = oldContentW;
+            state.canvas.canvasContentH = oldContentH;
+            state.canvas.canvasOffsetX = oldOffsetX;
+            state.canvas.canvasOffsetY = oldOffsetY;
+            state.canvas.canvasZoom = oldZoom;
+            state.canvas.gridSnapLocked = oldGridSnap;
         }
     }
 }

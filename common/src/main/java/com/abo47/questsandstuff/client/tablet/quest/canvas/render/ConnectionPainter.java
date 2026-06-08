@@ -39,8 +39,8 @@ final class ConnectionPainter {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
                 int originY = getPositionY();
-                int clipMinX = originX - state.canvasLivePanX;
-                int clipMinY = originY - state.canvasLivePanY;
+                int clipMinX = originX - state.canvas.canvasLivePanX;
+                int clipMinY = originY - state.canvas.canvasLivePanY;
                 int clipMaxX = clipMinX + getSizeWidth();
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
@@ -55,7 +55,7 @@ final class ConnectionPainter {
         if (direct) {
             return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
         }
-        int cell = Math.max(1, state.gridCellPx);
+        int cell = Math.max(1, state.canvas.gridCellPx);
         int localSourceX = sourceX - originX;
         int localTargetX = targetX - originX;
         int midLocalX = snapScreenLocalToGrid(state, (localSourceX + localTargetX) / 2, cell);
@@ -119,7 +119,7 @@ final class ConnectionPainter {
                 targetOffsetX,
                 targetOffsetY
         );
-        if (line.hidden() && !state.canEdit && !hoveringEndpoint) {
+        if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
             return;
         }
         int alpha = line.hidden() && hoveringEndpoint ? 245 : line.alpha();
@@ -149,19 +149,19 @@ final class ConnectionPainter {
     }
 
     private static int selectionDragOffsetX(TabletUiState state, String questId) {
-        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.canvasSelection.questIds().contains(questId)) {
+        if (!state.canvas.draggingSelection || questId == null || questId.isBlank() || !state.canvas.canvasSelection.questIds().contains(questId)) {
             return 0;
         }
-        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
     }
 
     private static int selectionDragOffsetY(TabletUiState state, String questId) {
-        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.canvasSelection.questIds().contains(questId)) {
+        if (!state.canvas.draggingSelection || questId == null || questId.isBlank() || !state.canvas.canvasSelection.questIds().contains(questId)) {
             return 0;
         }
-        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
+        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
     }
 
     private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -169,9 +169,9 @@ final class ConnectionPainter {
     }
 
     private static int snapScreenLocalToGrid(TabletUiState state, int localX, int cell) {
-        int relative = localX - state.canvasContentX - state.canvasOffsetX;
+        int relative = localX - state.canvas.canvasContentX - state.canvas.canvasOffsetX;
         int snapped = Math.round((float) relative / (float) cell) * cell;
-        return state.canvasContentX + state.canvasOffsetX + snapped;
+        return state.canvas.canvasContentX + state.canvas.canvasOffsetX + snapped;
     }
 
     private static void drawTexturedChevrons(

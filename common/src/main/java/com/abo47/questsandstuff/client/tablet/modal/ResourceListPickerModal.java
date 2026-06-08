@@ -57,7 +57,7 @@ final class ResourceListPickerModal {
         list.addWidget(label(options.displayX(), rowY + 4, SearchFilter.crop(options.displayName().value(entry), options.displayCrop()), ModColors.TEXT_PRIMARY));
         list.addWidget(label(Math.max(120, rowW - options.idRightOffset()), rowY + 4, SearchFilter.crop(entry, options.idCrop()), ModColors.TEXT_MUTED));
         ButtonWidget hit = flatHitButton(4, rowY, rowW - 8, ROW_H, click -> {
-            if (!ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget).kind().isBlank()) {
+            if (!ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget).kind().isBlank()) {
                 options.pickAction().pick(player, state, entry);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] {} picked value={}", options.logName(), entry);

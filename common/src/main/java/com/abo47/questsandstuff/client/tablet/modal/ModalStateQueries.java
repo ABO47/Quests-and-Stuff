@@ -7,15 +7,15 @@ public final class ModalStateQueries {
     }
 
     public static boolean anyOpen(TabletUiState state) {
-        return state != null && (state.modalWindowClosing || activeType(state) != ModalWindowManager.ModalType.NONE);
+        return state != null && (state.modal.modalWindowClosing || activeType(state) != ModalWindowManager.ModalType.NONE);
     }
 
     public static ModalWindowManager.ModalType activeType(TabletUiState state) {
         if (state == null) {
             return ModalWindowManager.ModalType.NONE;
         }
-        if (state.modalSession != null && state.modalSession.active()) {
-            return state.modalSession.type();
+        if (state.modal.modalSession != null && state.modal.modalSession.active()) {
+            return state.modal.modalSession.type();
         }
         return ModalWindowManager.ModalType.NONE;
     }

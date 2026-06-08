@@ -14,28 +14,28 @@ class QuestDetailsDescriptionSelectionStateTest {
     @Test
     void selectingDescriptionImageClearsMainCanvasSelection() {
         TabletUiState state = new TabletUiState();
-        state.canvasSelection.questIds().add("main_quest");
-        state.canvasSelection.setPrimaryImageId("main_image");
-        state.canvasSelection.imageIds().add("main_image");
-        state.canvasSelection.setPrimaryTextId("main_text");
-        state.canvasSelection.textIds().add("main_text");
+        state.canvas.canvasSelection.questIds().add("main_quest");
+        state.canvas.canvasSelection.setPrimaryImageId("main_image");
+        state.canvas.canvasSelection.imageIds().add("main_image");
+        state.canvas.canvasSelection.setPrimaryTextId("main_text");
+        state.canvas.canvasSelection.textIds().add("main_text");
 
         QuestDetailsDescriptionSelectionState.selectOnlyImage(state, "desc_image");
 
-        assertTrue(state.canvasSelection.questIds().isEmpty());
-        assertEquals("", state.canvasSelection.primaryImageId());
-        assertTrue(state.canvasSelection.imageIds().isEmpty());
-        assertEquals("", state.canvasSelection.primaryTextId());
-        assertTrue(state.canvasSelection.textIds().isEmpty());
-        assertEquals("desc_image", state.questDetailsDescriptionSelection.primaryImageId());
+        assertTrue(state.canvas.canvasSelection.questIds().isEmpty());
+        assertEquals("", state.canvas.canvasSelection.primaryImageId());
+        assertTrue(state.canvas.canvasSelection.imageIds().isEmpty());
+        assertEquals("", state.canvas.canvasSelection.primaryTextId());
+        assertTrue(state.canvas.canvasSelection.textIds().isEmpty());
+        assertEquals("desc_image", state.questDetails.questDetailsDescriptionSelection.primaryImageId());
         assertEquals(List.of("image:desc_image"), QuestDetailsDescriptionSelectionState.selectionSet(state).layerKeys());
     }
 
     @Test
     void descriptionSelectedLayerKeysUseSharedSelectionOrdering() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsDescriptionSelection.imageIds().add("desc_image");
-        state.questDetailsDescriptionSelection.textIds().add("desc_text");
+        state.questDetails.questDetailsDescriptionSelection.imageIds().add("desc_image");
+        state.questDetails.questDetailsDescriptionSelection.textIds().add("desc_text");
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putImage(new CanvasImageLayer("desc_image", "textures/example.png", 0, 0, 32, 32, 0));
         model.putText(new CanvasTextLayer("desc_text", "Text", 0, 0, 64, 24, 0, "left", "normal", 0xFFFFFF));

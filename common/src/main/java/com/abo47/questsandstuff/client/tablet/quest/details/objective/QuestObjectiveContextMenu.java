@@ -19,17 +19,17 @@ final class QuestObjectiveContextMenu {
     }
 
     static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {
-        if (!state.questDetailsContextOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsContextOpen || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();
-        String kind = state.questDetailsContextKind == null ? "" : state.questDetailsContextKind;
+        String kind = state.questDetails.questDetailsContextKind == null ? "" : state.questDetails.questDetailsContextKind;
         actions.addAll(QuestObjectiveCreateMenuActions.actions(state, kind));
-        if ("requirement".equals(kind) && !state.questDetailsContextId.isBlank()) {
-            actions.addAll(QuestObjectiveRequirementMenuActions.actions(state, player, questId, state.questDetailsContextId));
+        if ("requirement".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+            actions.addAll(QuestObjectiveRequirementMenuActions.actions(state, player, questId, state.questDetails.questDetailsContextId));
         }
-        if ("reward".equals(kind) && !state.questDetailsContextId.isBlank()) {
-            actions.addAll(QuestObjectiveRewardMenuActions.actions(state, player, questId, state.questDetailsContextId));
+        if ("reward".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+            actions.addAll(QuestObjectiveRewardMenuActions.actions(state, player, questId, state.questDetails.questDetailsContextId));
         }
         if (actions.isEmpty()) {
             return;
@@ -37,29 +37,29 @@ final class QuestObjectiveContextMenu {
         int menuW = 140;
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
-        int maxMenuH = Math.max(ContextMenuPanel.heightForRows(1), state.questDetailsH - 8);
+        int maxMenuH = Math.max(ContextMenuPanel.heightForRows(1), state.questDetails.questDetailsH - 8);
         while (visibleRows > 1 && ContextMenuPanel.heightFor(actions, visibleRows) > maxMenuH) {
             visibleRows--;
         }
-        state.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
-        state.questDetailsContextScroll = ScrollController.clamp(state.questDetailsContextScroll, state.questDetailsContextScrollMax);
+        state.questDetails.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
+        state.questDetails.questDetailsContextScroll = ScrollController.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        int x = Math.max(4, Math.min(state.questDetailsContextX, state.questDetailsW - menuW - 4));
-        int y = Math.max(4, Math.min(state.questDetailsContextY, state.questDetailsH - menuH - 4));
-        state.questDetailsContextX = x;
-        state.questDetailsContextY = y;
-        state.questDetailsContextW = menuW;
-        state.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetailsContextScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
+        int x = Math.max(4, Math.min(state.questDetails.questDetailsContextX, state.questDetails.questDetailsW - menuW - 4));
+        int y = Math.max(4, Math.min(state.questDetails.questDetailsContextY, state.questDetails.questDetailsH - menuH - 4));
+        state.questDetails.questDetailsContextX = x;
+        state.questDetails.questDetailsContextY = y;
+        state.questDetails.questDetailsContextW = menuW;
+        state.questDetails.questDetailsContextH = menuH;
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientState.closeContext(state);
             }
             refresh.run();
-        }, state.questDetailsW, state.questDetailsH, ScrollState.bind(
-                () -> state.questDetailsContextScroll,
-                value -> state.questDetailsContextScroll = ScrollController.clamp(value, state.questDetailsContextScrollMax),
-                () -> state.contextMenuScrollDragging,
-                dragging -> state.contextMenuScrollDragging = dragging
+        }, state.questDetails.questDetailsW, state.questDetails.questDetailsH, ScrollState.bind(
+                () -> state.questDetails.questDetailsContextScroll,
+                value -> state.questDetails.questDetailsContextScroll = ScrollController.clamp(value, state.questDetails.questDetailsContextScrollMax),
+                () -> state.contextMenu.contextMenuScrollDragging,
+                dragging -> state.contextMenu.contextMenuScrollDragging = dragging
         ), refresh);
         modal.addWidget(menu);
     }

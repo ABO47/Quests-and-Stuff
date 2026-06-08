@@ -26,8 +26,8 @@ public final class ColorPickerApplyActions {
     }
 
     public static int currentValue(TabletUiState state, ModalTargetParser.Target target) {
-        if (state.colorDraft != 0) {
-            return state.colorDraft;
+        if (state.pickers.colorDraft != 0) {
+            return state.pickers.colorDraft;
         }
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
@@ -58,7 +58,7 @@ public final class ColorPickerApplyActions {
                     return CanvasRenderer.activeTextColor(state, text);
                 }
             }
-            return state.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.colorDraft;
+            return state.pickers.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
         return ClientQuestCache.groupTextColor(target.raw());
     }
@@ -72,7 +72,7 @@ public final class ColorPickerApplyActions {
         if (connection != null) {
             ConnectionRenderer.setConnectionColor(state, connection[0], connection[1], connection[2], color);
             EditorCommandClient.runConnectionColorAction(player, connection[2], connection[1], color);
-            state.colorPickerTarget = "";
+            state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", connection[0], connection[1], connection[2], color);
             return;
         }
@@ -84,27 +84,27 @@ public final class ColorPickerApplyActions {
                 EditorCommandClient.runConnectionColorAction(player, edge.questId(), edge.prerequisiteId(), color);
                 applied++;
             }
-            state.colorPickerTarget = "";
+            state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked group={} edges={} color={}", connectionSelection, applied, color);
             return;
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             CanvasLayerMutations.updateCanvasText(state, canvasText[0], canvasText[1], text -> CanvasRenderer.applyTextColorSelection(state, text, color));
-            state.colorPickerTarget = "";
+            state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color picked group={} id={} color={}", canvasText[0], canvasText[1], color);
             return;
         }
         if (target.isGridColor()) {
             TabletGridControls.applyGridColor(state, color);
             TabletUiFactory.persistUiState(state);
-            state.colorPickerTarget = "";
+            state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] grid color picked color={}", color);
             return;
         }
         if (target.isQuestDescText()) {
             QuestDetailsWindow.applyTextColor(player, state, target, color);
-            state.colorPickerTarget = "";
+            state.pickers.colorPickerTarget = "";
             return;
         }
         TabletUiFactory.runGroupAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);

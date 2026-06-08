@@ -57,29 +57,29 @@ final class QuestDetailsHeader {
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });
-        addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetailsToolsOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.questDetailsToolsOpen, click -> {
+        addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, click -> {
             ToolMenuAnimation.toggleQuestDetails(state);
             QuestDetailsTransientState.closeContext(state);
             refresh.run();
         });
         if (showEditor) {
-            addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetailsEditMode ? ModColors.SUCCESS : ModColors.ERROR, state.questDetailsEditMode, click -> {
+            addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? ModColors.SUCCESS : ModColors.ERROR, state.questDetails.questDetailsEditMode, click -> {
                 if (!QuestDetailsEditState.toggle(state)) {
                     return;
                 }
                 ToolMenuAnimation.finishQuestDetails(state);
-                if (!state.questDetailsEditMode) {
+                if (!state.questDetails.questDetailsEditMode) {
                     QuestDetailsTransientState.closeFloatingPopups(state);
                     TextStyleSession.closeQuestDetails(state);
-                    state.questDetailsTitleFocused = false;
+                    state.questDetails.questDetailsTitleFocused = false;
                     TextEditSession.closeQuestDetails(state, true);
-                    if (questId.equals(state.pendingQuestTitleChangeId)) {
-                        state.pendingQuestTitleChangeId = "";
+                    if (questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
+                        state.questDetails.pendingQuestTitleChangeId = "";
                     }
                 } else {
                     QuestDetailsTransientState.closeContext(state);
                 }
-                QuestsAndStuffMod.debugLog("[QnS:UI] quest details editor mode toggle enabled={}", state.questDetailsEditMode);
+                QuestsAndStuffMod.debugLog("[QnS:UI] quest details editor mode toggle enabled={}", state.questDetails.questDetailsEditMode);
                 refresh.run();
             });
         }
@@ -94,8 +94,8 @@ final class QuestDetailsHeader {
     private static void addQuestTitleField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h) {
         CompoundTag quest = ClientQuestCache.quest(questId);
         String title = quest == null ? "" : quest.getString("title");
-        if (!state.questDetailsTitleFocused || !questId.equals(state.pendingQuestTitleChangeId)) {
-            state.questTitleDraft = title;
+        if (!state.questDetails.questDetailsTitleFocused || !questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
+            state.questDetails.questTitleDraft = title;
         }
         InlineRenameField titleField = new InlineRenameField(
                 x,
@@ -103,37 +103,37 @@ final class QuestDetailsHeader {
                 w,
                 h,
                 () -> titleDraft(state),
-                value -> state.questTitleDraft = sanitizeTitleDraft(value),
+                value -> state.questDetails.questTitleDraft = sanitizeTitleDraft(value),
                 () -> {
                     commitQuestTitle(player, state, questId);
-                    state.questDetailsTitleFocused = false;
+                    state.questDetails.questDetailsTitleFocused = false;
                     refresh.run();
                 },
                 () -> {
-                    state.pendingQuestTitleChangeId = "";
-                    state.questTitleDraft = title;
-                    state.questDetailsTitleFocused = false;
+                    state.questDetails.pendingQuestTitleChangeId = "";
+                    state.questDetails.questTitleDraft = title;
+                    state.questDetails.questDetailsTitleFocused = false;
                     refresh.run();
                 },
                 () -> {
-                    if (questId.equals(state.pendingQuestTitleChangeId)) {
+                    if (questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
                         commitQuestTitle(player, state, questId);
                         refresh.run();
                     }
                 },
                 focused -> {
-                    if (focused && !questId.equals(state.pendingQuestTitleChangeId)) {
-                        state.pendingQuestTitleChangeId = questId;
-                        state.questTitleDraft = title;
+                    if (focused && !questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
+                        state.questDetails.pendingQuestTitleChangeId = questId;
+                        state.questDetails.questTitleDraft = title;
                     }
-                    state.questDetailsTitleFocused = focused;
+                    state.questDetails.questDetailsTitleFocused = focused;
                 }
         );
         titleField.setClientSideWidget();
         titleField.setCurrentString(titleDraft(state));
         titleField.setMaxStringLength(80);
         titleField.setBordered(false);
-        boolean editing = state.questDetailsTitleFocused && questId.equals(state.pendingQuestTitleChangeId);
+        boolean editing = state.questDetails.questDetailsTitleFocused && questId.equals(state.questDetails.pendingQuestTitleChangeId);
         boolean framed = QuestDetailsEditState.canEdit(state);
         titleField.setBackground(framed
                 ? Surfaces.bordered(ModColors.SURFACE_BASE, editing ? ModColors.INTERACTIVE : ModColors.BORDER_BASE)
@@ -147,7 +147,7 @@ final class QuestDetailsHeader {
     }
 
     private static String titleDraft(TabletUiState state) {
-        return state.questTitleDraft == null ? "" : state.questTitleDraft;
+        return state.questDetails.questTitleDraft == null ? "" : state.questDetails.questTitleDraft;
     }
 
     private static String sanitizeTitleDraft(String value) {
@@ -163,12 +163,12 @@ final class QuestDetailsHeader {
             return;
         }
         String oldTitle = quest.getString("title");
-        String title = sanitizeTitleDraft(state.questTitleDraft).trim();
+        String title = sanitizeTitleDraft(state.questDetails.questTitleDraft).trim();
         if (player != null && !title.equals(oldTitle)) {
             EditorCommandClient.updateQuestDisplay(player, questId, title, quest.getString("subtitle"));
         }
-        state.pendingQuestTitleChangeId = "";
-        state.questTitleDraft = title;
+        state.questDetails.pendingQuestTitleChangeId = "";
+        state.questDetails.questTitleDraft = title;
     }
 
     private static void addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {

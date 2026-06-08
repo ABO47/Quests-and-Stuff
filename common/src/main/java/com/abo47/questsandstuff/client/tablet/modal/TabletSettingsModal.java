@@ -20,7 +20,7 @@ public final class TabletSettingsModal {
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr("ui.questsandstuff.settings.title"), w, state, refresh);
-        state.settingsTab = SettingsTabDescriptors.activeTab(state.settingsTab);
+        state.modal.settingsTab = SettingsTabDescriptors.activeTab(state.modal.settingsTab);
         SettingsTabDescriptor activeTab = SettingsTabDescriptors.active(state);
         addTabs(modal, state, refresh, w);
 
@@ -50,10 +50,10 @@ public final class TabletSettingsModal {
                 activeTab.options(state),
                 TabletModalPanel.tr("ui.questsandstuff.settings.empty"),
                 ScrollState.bind(
-                        () -> state.settingsScroll,
-                        value -> state.settingsScroll = value,
-                        () -> state.settingsScrollDragging,
-                        dragging -> state.settingsScrollDragging = dragging
+                        () -> state.modal.settingsScroll,
+                        value -> state.modal.settingsScroll = value,
+                        () -> state.modal.settingsScrollDragging,
+                        dragging -> state.modal.settingsScrollDragging = dragging
                 ),
                 2,
                 refresh,
@@ -82,14 +82,14 @@ public final class TabletSettingsModal {
     }
 
     private static void selectTab(TabletUiState state, SettingsTabDescriptor tab, Runnable refresh) {
-        if (tab == null || state.settingsTab == tab.id()) {
+        if (tab == null || state.modal.settingsTab == tab.id()) {
             return;
         }
-        state.settingsTab = tab.id();
-        state.settingsScroll = 0;
-        state.settingsScrollDragging = false;
-        state.themeScroll = 0;
-        state.themeScrollDragging = false;
+        state.modal.settingsTab = tab.id();
+        state.modal.settingsScroll = 0;
+        state.modal.settingsScrollDragging = false;
+        state.modal.themeScroll = 0;
+        state.modal.themeScrollDragging = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
         refresh.run();
     }

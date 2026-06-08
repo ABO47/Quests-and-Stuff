@@ -13,7 +13,7 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        if (state.toolsMenuOpen && !state.toolsMenuClosing) {
+        if (state.canvas.toolsMenuOpen && !state.canvas.toolsMenuClosing) {
             closeMain(state);
             return;
         }
@@ -24,8 +24,8 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        state.toolsMenuOpen = true;
-        state.toolsMenuClosing = false;
+        state.canvas.toolsMenuOpen = true;
+        state.canvas.toolsMenuClosing = false;
         finishQuestDetails(state);
         start(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] tools menu toggle open=true");
@@ -35,13 +35,13 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        state.toolsGridSizeMenuOpen = false;
-        state.toolsGridOpacityMenuOpen = false;
-        if (!state.toolsMenuOpen && !state.toolsMenuClosing) {
+        state.canvas.toolsGridSizeMenuOpen = false;
+        state.canvas.toolsGridOpacityMenuOpen = false;
+        if (!state.canvas.toolsMenuOpen && !state.canvas.toolsMenuClosing) {
             finishMain(state);
             return;
         }
-        if (state.toolsMenuClosing && !state.toolsMenuOpen) {
+        if (state.canvas.toolsMenuClosing && !state.canvas.toolsMenuOpen) {
             return;
         }
         if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
@@ -49,8 +49,8 @@ public final class ToolMenuAnimation {
             QuestsAndStuffMod.debugLog("[QnS:UI] tools menu toggle open=false");
             return;
         }
-        state.toolsMenuOpen = false;
-        state.toolsMenuClosing = true;
+        state.canvas.toolsMenuOpen = false;
+        state.canvas.toolsMenuClosing = true;
         start(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] tools menu toggle open=false");
     }
@@ -59,33 +59,33 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        state.toolsMenuOpen = false;
-        state.toolsMenuClosing = false;
-        state.toolsGridSizeMenuOpen = false;
-        state.toolsGridOpacityMenuOpen = false;
-        state.toolsMenuX = 0;
-        state.toolsMenuY = 0;
-        state.toolsMenuW = 0;
-        state.toolsMenuH = 0;
+        state.canvas.toolsMenuOpen = false;
+        state.canvas.toolsMenuClosing = false;
+        state.canvas.toolsGridSizeMenuOpen = false;
+        state.canvas.toolsGridOpacityMenuOpen = false;
+        state.canvas.toolsMenuX = 0;
+        state.canvas.toolsMenuY = 0;
+        state.canvas.toolsMenuW = 0;
+        state.canvas.toolsMenuH = 0;
     }
 
     public static boolean mainVisible(TabletUiState state) {
-        return state != null && (state.toolsMenuOpen || state.toolsMenuClosing);
+        return state != null && (state.canvas.toolsMenuOpen || state.canvas.toolsMenuClosing);
     }
 
     public static boolean mainInteractive(TabletUiState state) {
-        return state != null && state.toolsMenuOpen && !state.toolsMenuClosing;
+        return state != null && state.canvas.toolsMenuOpen && !state.canvas.toolsMenuClosing;
     }
 
     public static boolean mainOpening(TabletUiState state) {
-        return state != null && !state.toolsMenuClosing;
+        return state != null && !state.canvas.toolsMenuClosing;
     }
 
     public static void toggleQuestDetails(TabletUiState state) {
         if (state == null) {
             return;
         }
-        if (state.questDetailsToolsOpen && !state.questDetailsToolsClosing) {
+        if (state.questDetails.questDetailsToolsOpen && !state.questDetails.questDetailsToolsClosing) {
             closeQuestDetails(state);
             return;
         }
@@ -96,8 +96,8 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        state.questDetailsToolsOpen = true;
-        state.questDetailsToolsClosing = false;
+        state.questDetails.questDetailsToolsOpen = true;
+        state.questDetails.questDetailsToolsClosing = false;
         finishMain(state);
         start(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details tools toggle open=true");
@@ -107,11 +107,11 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        if (!state.questDetailsToolsOpen && !state.questDetailsToolsClosing) {
+        if (!state.questDetails.questDetailsToolsOpen && !state.questDetails.questDetailsToolsClosing) {
             finishQuestDetails(state);
             return;
         }
-        if (state.questDetailsToolsClosing && !state.questDetailsToolsOpen) {
+        if (state.questDetails.questDetailsToolsClosing && !state.questDetails.questDetailsToolsOpen) {
             return;
         }
         if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
@@ -119,8 +119,8 @@ public final class ToolMenuAnimation {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details tools toggle open=false");
             return;
         }
-        state.questDetailsToolsOpen = false;
-        state.questDetailsToolsClosing = true;
+        state.questDetails.questDetailsToolsOpen = false;
+        state.questDetails.questDetailsToolsClosing = true;
         start(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details tools toggle open=false");
     }
@@ -129,20 +129,20 @@ public final class ToolMenuAnimation {
         if (state == null) {
             return;
         }
-        state.questDetailsToolsOpen = false;
-        state.questDetailsToolsClosing = false;
+        state.questDetails.questDetailsToolsOpen = false;
+        state.questDetails.questDetailsToolsClosing = false;
     }
 
     public static boolean questDetailsVisible(TabletUiState state) {
-        return state != null && (state.questDetailsToolsOpen || state.questDetailsToolsClosing);
+        return state != null && (state.questDetails.questDetailsToolsOpen || state.questDetails.questDetailsToolsClosing);
     }
 
     public static boolean questDetailsInteractive(TabletUiState state) {
-        return state != null && state.questDetailsToolsOpen && !state.questDetailsToolsClosing;
+        return state != null && state.questDetails.questDetailsToolsOpen && !state.questDetails.questDetailsToolsClosing;
     }
 
     public static boolean questDetailsOpening(TabletUiState state) {
-        return state != null && !state.questDetailsToolsClosing;
+        return state != null && !state.questDetails.questDetailsToolsClosing;
     }
 
     public static boolean finishClosingIfDone(TabletUiState state) {
@@ -150,11 +150,11 @@ public final class ToolMenuAnimation {
             return false;
         }
         boolean changed = false;
-        if (state.toolsMenuClosing && closingFinished(state)) {
+        if (state.canvas.toolsMenuClosing && closingFinished(state)) {
             finishMain(state);
             changed = true;
         }
-        if (state.questDetailsToolsClosing && closingFinished(state)) {
+        if (state.questDetails.questDetailsToolsClosing && closingFinished(state)) {
             finishQuestDetails(state);
             changed = true;
         }
@@ -163,10 +163,10 @@ public final class ToolMenuAnimation {
 
     private static boolean closingFinished(TabletUiState state) {
         return !QuestsAndStuffConfig.toolsMenuAnimationsEnabled()
-                || !AnchoredMenuRevealWidget.running(state.toolsMenuAnimationStartMs);
+                || !AnchoredMenuRevealWidget.running(state.canvas.toolsMenuAnimationStartMs);
     }
 
     private static void start(TabletUiState state) {
-        state.toolsMenuAnimationStartMs = System.currentTimeMillis();
+        state.canvas.toolsMenuAnimationStartMs = System.currentTimeMillis();
     }
 }

@@ -34,21 +34,21 @@ public final class TabletShellBootstrap {
         UiThemeManager.activeThemeName();
         ensureAssetsDirs();
         TabletUiState state = new TabletUiState();
-        state.editorAvailable = player.hasPermissions(2);
+        state.root.editorAvailable = player.hasPermissions(2);
         readPersistedUiState(state);
-        state.canEdit = state.editorAvailable && state.editMode;
-        state.chapterPanelWidth = chapterPanelWidth(state);
-        state.chapterPanelCollapsed = isChapterPanelCollapsed(state);
-        if (!state.chapterPanelCollapsed) {
-            state.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelWidth));
+        state.root.canEdit = state.root.editorAvailable && state.root.editMode;
+        state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
+        state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
+        if (!state.chapterPanel.chapterPanelCollapsed) {
+            state.chapterPanel.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelWidth));
         }
         keepSelectedGroupValid(state, false);
-        state.groupDraft = selectedGroupName(state);
-        state.chapterDraftName = state.groupDraft;
-        state.gridSizeIndex = clampGridSizeIndex(state.gridSizeIndex);
-        state.gridOpacityPercent = defaultGridOpacityPercent(state);
-        state.toolsGridOpacityDraft = Integer.toString(state.gridOpacityPercent);
-        applyCanvasBgOpacityPercent(state, state.canvasBgOpacityPercent);
+        state.chapterPanel.groupDraft = selectedGroupName(state);
+        state.chapterPanel.chapterDraftName = state.chapterPanel.groupDraft;
+        state.canvas.gridSizeIndex = clampGridSizeIndex(state.canvas.gridSizeIndex);
+        state.canvas.gridOpacityPercent = defaultGridOpacityPercent(state);
+        state.canvas.toolsGridOpacityDraft = Integer.toString(state.canvas.gridOpacityPercent);
+        applyCanvasBgOpacityPercent(state, state.canvas.canvasBgOpacityPercent);
         syncCanvasStateFromCache(state);
         TabletClientHooks.restoreRememberedWindow(state);
         return state;
@@ -79,46 +79,46 @@ public final class TabletShellBootstrap {
     }
 
     private static boolean canUseEditorHistory(TabletUiState state) {
-        return state != null && state.editorAvailable && (state.canEdit || QuestDetailsEditState.canEdit(state));
+        return state != null && state.root.editorAvailable && (state.root.canEdit || QuestDetailsEditState.canEdit(state));
     }
 
     public static void keepSelectedGroupValid(TabletUiState state, boolean persist) {
-        List<String> groups = ClientQuestCache.selectableGroupOrder(state.canEdit);
+        List<String> groups = ClientQuestCache.selectableGroupOrder(state.root.canEdit);
         if (groups.isEmpty()) {
-            state.selectedGroup = "";
+            state.root.selectedGroup = "";
             return;
         }
-        if (state.selectedGroup == null) {
-            state.selectedGroup = groups.get(0);
-            state.groupDraft = state.selectedGroup;
-            state.chapterDraftName = state.selectedGroup;
+        if (state.root.selectedGroup == null) {
+            state.root.selectedGroup = groups.get(0);
+            state.chapterPanel.groupDraft = state.root.selectedGroup;
+            state.chapterPanel.chapterDraftName = state.root.selectedGroup;
             if (persist) {
                 persistUiState(state);
             }
             return;
         }
-        String selected = state.selectedGroup.trim();
+        String selected = state.root.selectedGroup.trim();
         if (selected.isBlank() || groups.contains(selected)) {
-            state.selectedGroup = selected;
+            state.root.selectedGroup = selected;
             return;
         }
-        if (state.recentlyCreatedGroups.contains(selected)) {
+        if (state.chapterPanel.recentlyCreatedGroups.contains(selected)) {
             ClientQuestCache.createGroupLocal(selected);
-            state.selectedGroup = selected;
-            state.groupDraft = selected;
-            state.chapterDraftName = selected;
+            state.root.selectedGroup = selected;
+            state.chapterPanel.groupDraft = selected;
+            state.chapterPanel.chapterDraftName = selected;
             if (persist) {
                 persistUiState(state);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} groups={}", selected, ClientQuestCache.groupOrder());
             return;
         }
-        state.selectedGroup = groups.get(0);
-        state.groupDraft = state.selectedGroup;
-        state.chapterDraftName = state.selectedGroup;
+        state.root.selectedGroup = groups.get(0);
+        state.chapterPanel.groupDraft = state.root.selectedGroup;
+        state.chapterPanel.chapterDraftName = state.root.selectedGroup;
         if (persist) {
             persistUiState(state);
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] selected chapter missing, reset to={} available={}", state.selectedGroup, groups);
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] selected chapter missing, reset to={} available={}", state.root.selectedGroup, groups);
     }
 }

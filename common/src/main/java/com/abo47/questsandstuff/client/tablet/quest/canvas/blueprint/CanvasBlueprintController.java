@@ -33,7 +33,7 @@ public final class CanvasBlueprintController {
     }
 
     public static void openBlueprintLibrary(TabletUiState state) {
-        ModalOpenActions.openBlueprintPicker(state, state.blueprintPlacement.asset());
+        ModalOpenActions.openBlueprintPicker(state, state.canvas.blueprintPlacement.asset());
     }
 
     public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, TabletUiState state, int noticeX, int noticeY) {
@@ -52,7 +52,7 @@ public final class CanvasBlueprintController {
         }
         String saved = CanvasBlueprintStore.save(blueprint, blueprint.name());
         if (!saved.isBlank()) {
-            state.blueprintPlacement.rememberAsset(saved);
+            state.canvas.blueprintPlacement.rememberAsset(saved);
         }
         return saved;
     }
@@ -66,47 +66,47 @@ public final class CanvasBlueprintController {
         if (blueprint.isEmpty()) {
             return;
         }
-        state.blueprintPlacement.begin(path);
+        state.canvas.blueprintPlacement.begin(path);
         ContextMenuState.close(state);
-        state.assetContextOpen = false;
+        state.pickers.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
     }
 
     public static boolean cancelPlacement(TabletUiState state) {
-        if (state == null || !state.blueprintPlacement.active()) {
+        if (state == null || !state.canvas.blueprintPlacement.active()) {
             return false;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement cancel path={}", state.blueprintPlacement.asset());
-        state.blueprintPlacement.cancel();
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement cancel path={}", state.canvas.blueprintPlacement.asset());
+        state.canvas.blueprintPlacement.cancel();
         return true;
     }
 
     public static boolean placeAt(Player player, TabletUiState state, int localX, int localY) {
-        if (state == null || !state.blueprintPlacement.active()) {
+        if (state == null || !state.canvas.blueprintPlacement.active()) {
             return false;
         }
-        String asset = state.blueprintPlacement.asset();
+        String asset = state.canvas.blueprintPlacement.asset();
         CanvasBlueprint blueprint = CanvasBlueprintStore.read(asset);
         if (blueprint.isEmpty()) {
-            state.blueprintPlacement.cancel();
+            state.canvas.blueprintPlacement.cancel();
             return false;
         }
         PlacementAnchor anchor = placementAnchor(state, blueprint, localX, localY);
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.textIds().clear();
-        state.canvasClipboard.clearPendingPastedLayers();
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
+        state.clipboard.canvasClipboard.clearPendingPastedLayers();
         EditorCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
-        state.blueprintPlacement.finish();
+        state.canvas.blueprintPlacement.finish();
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement commit path={} anchor={},{} entries={}",
                 asset, anchor.x(), anchor.y(), blueprint.contentCount());
         return true;
     }
 
     public static WidgetGroup placementGhost(CanvasViewport canvasViewport, TabletUiState state) {
-        if (state == null || !state.blueprintPlacement.active() || !state.blueprintPlacement.hasAsset()) {
+        if (state == null || !state.canvas.blueprintPlacement.active() || !state.canvas.blueprintPlacement.hasAsset()) {
             return null;
         }
         return CanvasBlueprintMiniRenderer.placementGhost(canvasViewport, state);
@@ -170,7 +170,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasImageLayer> images = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 images.add(image);
             }
@@ -183,7 +183,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasTextLayer> texts = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 texts.add(text);
             }
@@ -207,7 +207,7 @@ public final class CanvasBlueprintController {
             minY = Math.min(minY, text.y());
         }
         if (minX == Integer.MAX_VALUE) {
-            return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextLogicalY));
+            return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
         }
         return new CanvasPoint(minX, minY);
     }
@@ -215,7 +215,7 @@ public final class CanvasBlueprintController {
     private static List<String> selectedLayerOrder(TabletUiState state, String group, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
-        for (String key : state.canvasLayerOrderByGroup.getOrDefault(group, List.of())) {
+        for (String key : state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of())) {
             if (selected.remove(key)) {
                 order.add(key);
             }

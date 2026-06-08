@@ -105,10 +105,10 @@ final class CanvasMinimapPainter {
     }
 
     private static CanvasMinimapRect projectViewport(TabletUiState state, CanvasMinimapGeometry.Projection projection) {
-        double left = CanvasCameraController.screenToLogicalX(state, state.canvasContentX, true);
-        double top = CanvasCameraController.screenToLogicalY(state, state.canvasContentY, true);
-        double right = CanvasCameraController.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW), true);
-        double bottom = CanvasCameraController.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH), true);
+        double left = CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX, true);
+        double top = CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY, true);
+        double right = CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX + Math.max(1, state.canvas.canvasContentW), true);
+        double bottom = CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY + Math.max(1, state.canvas.canvasContentH), true);
         int x1 = clamp(CanvasMinimapGeometry.mapX(projection, left), projection.drawX(), projection.drawX() + projection.drawW());
         int y1 = clamp(CanvasMinimapGeometry.mapY(projection, top), projection.drawY(), projection.drawY() + projection.drawH());
         int x2 = clamp(CanvasMinimapGeometry.mapX(projection, right), projection.drawX(), projection.drawX() + projection.drawW());
@@ -126,8 +126,8 @@ final class CanvasMinimapPainter {
             return;
         }
 
-        boolean hiddenOverlay = state.canEdit && quest.tag().getBoolean("visual_hidden") && !quest.tag().getBoolean("completed");
-        boolean highlighted = quest.questId() != null && state.canvasSelection.questIds().contains(quest.questId());
+        boolean hiddenOverlay = state.root.canEdit && quest.tag().getBoolean("visual_hidden") && !quest.tag().getBoolean("completed");
+        boolean highlighted = quest.questId() != null && state.canvas.canvasSelection.questIds().contains(quest.questId());
         QuestMiniCardRenderer.drawTagCard(graphics, quest.tag(), x, y, quest.w(), quest.h(), mouseX, mouseY, partialTicks, quest.alpha(), hiddenOverlay, highlighted);
     }
 

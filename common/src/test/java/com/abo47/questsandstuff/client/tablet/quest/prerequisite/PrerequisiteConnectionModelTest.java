@@ -136,10 +136,10 @@ class PrerequisiteConnectionModelTest {
                 "",
                 PrerequisiteConnectionKind.INCOMING
         );
-        state.prerequisitesManagerSelectedConnectionKey = row.key();
-        state.prerequisitesManagerHoveredConnectionKey = row.key();
-        state.prerequisitesManagerContextOpen = true;
-        state.prerequisitesManagerContextPrerequisiteId = row.sourceId();
+        state.modal.prerequisitesManagerSelectedConnectionKey = row.key();
+        state.modal.prerequisitesManagerHoveredConnectionKey = row.key();
+        state.modal.prerequisitesManagerContextOpen = true;
+        state.modal.prerequisitesManagerContextPrerequisiteId = row.sourceId();
         ContextMenuState.confirmDeleteClick(state, "connection:remove:" + row.key());
 
         assertTrue(PrerequisiteConnectionActions.canRemove(row));
@@ -147,11 +147,11 @@ class PrerequisiteConnectionModelTest {
 
         PrerequisiteConnectionActions.clearAfterRemove(state, row);
 
-        assertEquals("", state.prerequisitesManagerSelectedConnectionKey);
-        assertEquals("", state.prerequisitesManagerHoveredConnectionKey);
-        assertFalse(state.prerequisitesManagerContextOpen);
-        assertEquals("", state.prerequisitesManagerContextPrerequisiteId);
-        assertEquals("", state.contextDeleteConfirmKey);
+        assertEquals("", state.modal.prerequisitesManagerSelectedConnectionKey);
+        assertEquals("", state.modal.prerequisitesManagerHoveredConnectionKey);
+        assertFalse(state.modal.prerequisitesManagerContextOpen);
+        assertEquals("", state.modal.prerequisitesManagerContextPrerequisiteId);
+        assertEquals("", state.contextMenu.contextDeleteConfirmKey);
     }
 
     private static PrerequisiteConnectionModel model(boolean externalMode, String query) {

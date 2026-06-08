@@ -18,7 +18,7 @@ public final class QuestObjectiveDragDispatcher {
     }
 
     public static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, double mouseX, double mouseY, int button) {
-        if (state == null || (!state.questDetailsObjectiveDragPending && !state.questDetailsObjectiveDragActive)) {
+        if (state == null || (!state.questDetails.questDetailsObjectiveDragPending && !state.questDetails.questDetailsObjectiveDragActive)) {
             return false;
         }
         ObjectiveDragScope scope = dragScope(state);
@@ -27,12 +27,12 @@ public final class QuestObjectiveDragDispatcher {
             refresh.run();
             return true;
         }
-        int localY = (int) Math.round(mouseY - state.questDetailsScreenY - scope.sectionY());
+        int localY = (int) Math.round(mouseY - state.questDetails.questDetailsScreenY - scope.sectionY());
         return QuestObjectiveListInteractions.handleDrag(
                 player,
                 state,
                 refresh,
-                state.questDetailsQuestId,
+                state.questDetails.questDetailsQuestId,
                 scope.entries(),
                 scope.kind(),
                 TITLE_H,
@@ -45,12 +45,12 @@ public final class QuestObjectiveDragDispatcher {
     }
 
     public static boolean handleRelease(Player player, TabletUiState state, Runnable refresh) {
-        if (state == null || (!state.questDetailsObjectiveDragPending && !state.questDetailsObjectiveDragActive)) {
+        if (state == null || (!state.questDetails.questDetailsObjectiveDragPending && !state.questDetails.questDetailsObjectiveDragActive)) {
             return false;
         }
         ObjectiveDragScope scope = dragScope(state);
         if (scope.valid()) {
-            return QuestObjectiveListInteractions.handleRelease(player, state, refresh, state.questDetailsQuestId, scope.entries(), scope.kind());
+            return QuestObjectiveListInteractions.handleRelease(player, state, refresh, state.questDetails.questDetailsQuestId, scope.entries(), scope.kind());
         }
         QuestObjectiveListInteractions.clearDrag(state);
         refresh.run();
@@ -58,7 +58,7 @@ public final class QuestObjectiveDragDispatcher {
     }
 
     private static ObjectiveDragScope dragScope(TabletUiState state) {
-        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         CompoundTag quest = questId.isBlank() ? null : ClientQuestCache.quest(questId);
         if (quest == null || quest.isEmpty()) {
             return ObjectiveDragScope.invalid();
@@ -68,10 +68,10 @@ public final class QuestObjectiveDragDispatcher {
         int sectionsY = HEADER_H + SECTION_GAP;
         int sectionsH = panelH - HEADER_H - SECTION_GAP;
         int sectionH = Math.max(20, (sectionsH - SECTION_GAP) / 2);
-        if ("requirements".equals(state.questDetailsObjectiveDragKind)) {
+        if ("requirements".equals(state.questDetails.questDetailsObjectiveDragKind)) {
             return new ObjectiveDragScope("requirements", QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING)), panelY + sectionsY, sectionH);
         }
-        if ("rewards".equals(state.questDetailsObjectiveDragKind)) {
+        if ("rewards".equals(state.questDetails.questDetailsObjectiveDragKind)) {
             return new ObjectiveDragScope("rewards", QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING)), panelY + sectionsY + sectionH + SECTION_GAP, sectionH);
         }
         return ObjectiveDragScope.invalid();

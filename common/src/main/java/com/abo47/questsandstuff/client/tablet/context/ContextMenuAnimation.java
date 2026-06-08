@@ -32,23 +32,23 @@ public final class ContextMenuAnimation {
         if (state == null) {
             return;
         }
-        state.contextMenuAnimationStartMs = System.currentTimeMillis();
-        state.contextMenuAnimationKey = key == null ? "" : key;
+        state.contextMenu.contextMenuAnimationStartMs = System.currentTimeMillis();
+        state.contextMenu.contextMenuAnimationKey = key == null ? "" : key;
     }
 
     public static void finish(TabletUiState state, String key) {
         if (state == null) {
             return;
         }
-        state.contextMenuAnimationStartMs = System.currentTimeMillis() - ContextMenuPopWidget.durationMs();
-        state.contextMenuAnimationKey = key == null ? "" : key;
+        state.contextMenu.contextMenuAnimationStartMs = System.currentTimeMillis() - ContextMenuPopWidget.durationMs();
+        state.contextMenu.contextMenuAnimationKey = key == null ? "" : key;
     }
 
     private static long effectiveStartMs(TabletUiState state, String key, long fallbackStartMs) {
-        if (state == null || state.contextMenuAnimationStartMs <= 0L) {
+        if (state == null || state.contextMenu.contextMenuAnimationStartMs <= 0L) {
             return fallbackStartMs;
         }
-        String stateKey = state.contextMenuAnimationKey == null ? "" : state.contextMenuAnimationKey;
-        return key.equals(stateKey) ? state.contextMenuAnimationStartMs : fallbackStartMs;
+        String stateKey = state.contextMenu.contextMenuAnimationKey == null ? "" : state.contextMenu.contextMenuAnimationKey;
+        return key.equals(stateKey) ? state.contextMenu.contextMenuAnimationStartMs : fallbackStartMs;
     }
 }

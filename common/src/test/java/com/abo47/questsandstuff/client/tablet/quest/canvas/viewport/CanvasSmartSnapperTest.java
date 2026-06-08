@@ -16,14 +16,14 @@ class CanvasSmartSnapperTest {
     @Test
     void mainCanvasAdapterUsesSharedObjectSnapGuides() {
         TabletUiState state = new TabletUiState();
-        state.objectSnapEnabled = true;
-        state.canvasContentX = 10;
-        state.canvasContentY = 20;
-        state.canvasOffsetX = 3;
-        state.canvasOffsetY = 5;
-        state.canvasZoom = 1.0f;
-        state.canvasContentW = 200;
-        state.canvasContentH = 200;
+        state.canvas.objectSnapEnabled = true;
+        state.canvas.canvasContentX = 10;
+        state.canvas.canvasContentY = 20;
+        state.canvas.canvasOffsetX = 3;
+        state.canvas.canvasOffsetY = 5;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.canvasContentW = 200;
+        state.canvas.canvasContentH = 200;
 
         CanvasSnapEngine.SnapResult result = CanvasSmartSnapper.snap(
                 state,
@@ -39,10 +39,10 @@ class CanvasSmartSnapperTest {
         assertEquals(0, result.offsetY());
         assertTrue(result.guideXVisible());
         assertTrue(result.guideYVisible());
-        assertTrue(state.snapGuideXVisible);
-        assertTrue(state.snapGuideYVisible);
-        assertEquals(142, state.snapGuideX);
-        assertEquals(70, state.snapGuideY);
+        assertTrue(state.canvas.snapGuideXVisible);
+        assertTrue(state.canvas.snapGuideYVisible);
+        assertEquals(142, state.canvas.snapGuideX);
+        assertEquals(70, state.canvas.snapGuideY);
     }
 
     private static QuestCardLayout card(String id, int x, int y, int width, int height) {

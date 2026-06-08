@@ -19,20 +19,20 @@ public final class TabletModalState {
 
     static void applyModalType(TabletUiState state, ModalWindowManager.ModalType type) {
         ModalWindowManager.ModalType safeType = type == null ? ModalWindowManager.ModalType.NONE : type;
-        state.modalSession = ModalSession.capture(safeType, state);
+        state.modal.modalSession = ModalSession.capture(safeType, state);
     }
 
     public static void openModal(TabletUiState state, ModalWindowManager.ModalType type) {
         if (state == null) {
             return;
         }
-        state.modalWindowClosing = false;
+        state.modal.modalWindowClosing = false;
         applyModalType(state, type);
         startOpenAnimation(state, type);
     }
 
     public static void closeAllModals(TabletUiState state) {
-        if (state == null || state.modalWindowClosing) {
+        if (state == null || state.modal.modalWindowClosing) {
             return;
         }
         ModalWindowManager.ModalType type = ModalStateQueries.activeType(state);
@@ -45,8 +45,8 @@ public final class TabletModalState {
             finishCloseAllModals(state);
             return;
         }
-        state.modalWindowClosing = true;
-        state.modalWindowAnimationStartMs = System.currentTimeMillis();
+        state.modal.modalWindowClosing = true;
+        state.modal.modalWindowAnimationStartMs = System.currentTimeMillis();
         QuestsAndStuffMod.debugLog("[QnS:UI] modal close start type={}", type);
     }
 
@@ -58,11 +58,11 @@ public final class TabletModalState {
     }
 
     public static boolean finishClosingIfDone(TabletUiState state) {
-        if (state == null || !state.modalWindowClosing) {
+        if (state == null || !state.modal.modalWindowClosing) {
             return false;
         }
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()
-                && SourceOriginRevealWidget.windowRunning(state.modalWindowAnimationStartMs)) {
+                && SourceOriginRevealWidget.windowRunning(state.modal.modalWindowAnimationStartMs)) {
             return false;
         }
         ModalWindowManager.ModalType type = ModalStateQueries.activeType(state);
@@ -75,9 +75,9 @@ public final class TabletModalState {
         if (state == null) {
             return;
         }
-        state.modalWindowLastPointerX = x;
-        state.modalWindowLastPointerY = y;
-        state.modalWindowLastPointerAtMs = System.currentTimeMillis();
+        state.modal.modalWindowLastPointerX = x;
+        state.modal.modalWindowLastPointerY = y;
+        state.modal.modalWindowLastPointerAtMs = System.currentTimeMillis();
     }
 
     private static void startOpenAnimation(TabletUiState state, ModalWindowManager.ModalType type) {
@@ -86,200 +86,200 @@ public final class TabletModalState {
             return;
         }
         long now = System.currentTimeMillis();
-        state.modalWindowAnimationStartMs = now;
+        state.modal.modalWindowAnimationStartMs = now;
         capturePointerSource(state, now);
         QuestsAndStuffMod.debugLog("[QnS:UI] modal open type={} source={} x={} y={} w={} h={}",
                 type,
-                state.modalWindowAnimationHasSource,
-                state.modalWindowAnimationSourceX,
-                state.modalWindowAnimationSourceY,
-                state.modalWindowAnimationSourceW,
-                state.modalWindowAnimationSourceH);
+                state.modal.modalWindowAnimationHasSource,
+                state.modal.modalWindowAnimationSourceX,
+                state.modal.modalWindowAnimationSourceY,
+                state.modal.modalWindowAnimationSourceW,
+                state.modal.modalWindowAnimationSourceH);
     }
 
     private static void capturePointerSource(TabletUiState state, long now) {
-        boolean recentPointer = state.modalWindowLastPointerAtMs > 0L
-                && now - state.modalWindowLastPointerAtMs <= POINTER_SOURCE_MAX_AGE_MS;
-        boolean insideRoot = state.modalWindowLastPointerX >= 0
-                && state.modalWindowLastPointerY >= 0
-                && state.modalWindowLastPointerX <= TabletStateQueries.rootWidth(state)
-                && state.modalWindowLastPointerY <= TabletStateQueries.rootHeight(state);
+        boolean recentPointer = state.modal.modalWindowLastPointerAtMs > 0L
+                && now - state.modal.modalWindowLastPointerAtMs <= POINTER_SOURCE_MAX_AGE_MS;
+        boolean insideRoot = state.modal.modalWindowLastPointerX >= 0
+                && state.modal.modalWindowLastPointerY >= 0
+                && state.modal.modalWindowLastPointerX <= TabletStateQueries.rootWidth(state)
+                && state.modal.modalWindowLastPointerY <= TabletStateQueries.rootHeight(state);
         if (!recentPointer || !insideRoot) {
-            state.modalWindowAnimationHasSource = false;
-            state.modalWindowAnimationSourceX = 0;
-            state.modalWindowAnimationSourceY = 0;
-            state.modalWindowAnimationSourceW = 0;
-            state.modalWindowAnimationSourceH = 0;
+            state.modal.modalWindowAnimationHasSource = false;
+            state.modal.modalWindowAnimationSourceX = 0;
+            state.modal.modalWindowAnimationSourceY = 0;
+            state.modal.modalWindowAnimationSourceW = 0;
+            state.modal.modalWindowAnimationSourceH = 0;
             return;
         }
         int half = POINTER_SOURCE_SIZE / 2;
         int rootW = TabletStateQueries.rootWidth(state);
         int rootH = TabletStateQueries.rootHeight(state);
-        state.modalWindowAnimationHasSource = true;
-        state.modalWindowAnimationSourceX = Math.max(0, Math.min(rootW - POINTER_SOURCE_SIZE, state.modalWindowLastPointerX - half));
-        state.modalWindowAnimationSourceY = Math.max(0, Math.min(rootH - POINTER_SOURCE_SIZE, state.modalWindowLastPointerY - half));
-        state.modalWindowAnimationSourceW = POINTER_SOURCE_SIZE;
-        state.modalWindowAnimationSourceH = POINTER_SOURCE_SIZE;
+        state.modal.modalWindowAnimationHasSource = true;
+        state.modal.modalWindowAnimationSourceX = Math.max(0, Math.min(rootW - POINTER_SOURCE_SIZE, state.modal.modalWindowLastPointerX - half));
+        state.modal.modalWindowAnimationSourceY = Math.max(0, Math.min(rootH - POINTER_SOURCE_SIZE, state.modal.modalWindowLastPointerY - half));
+        state.modal.modalWindowAnimationSourceW = POINTER_SOURCE_SIZE;
+        state.modal.modalWindowAnimationSourceH = POINTER_SOURCE_SIZE;
     }
 
     private static void finishCloseAllModals(TabletUiState state) {
-        boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
-                || !state.modalQuestCompletionSoundTargets.isEmpty();
+        boolean closingSoundPicker = state.modal.modalQuestCompletionSoundTarget != null && !state.modal.modalQuestCompletionSoundTarget.isBlank()
+                || !state.modal.modalQuestCompletionSoundTargets.isEmpty();
         applyModalType(state, ModalWindowManager.ModalType.NONE);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalBlueprintTarget = "";
-        state.modalQuestBackgroundTarget = "";
-        state.modalQuestBackgroundTargets.clear();
-        state.modalQuestBackgroundGrayscale = false;
-        state.modalQuestCompletionHudBackgroundTarget = "";
-        state.modalQuestCompletionHudBackgroundTargets.clear();
-        state.modalHudBackgroundTarget = "";
-        state.modalHudBackgroundOpacityDragging = false;
-        state.entityVariantTarget = "";
-        state.entityVariantSelected = "";
-        state.entityVariantFolder = "";
-        state.entityVariantSearch = "";
-        state.entityVariantSearchFocused = false;
-        state.entityVariantScroll = 0;
-        state.entityVariantScrollDragging = false;
-        state.modalQuestCompletionSoundTarget = "";
-        state.modalQuestCompletionSoundTargets.clear();
+        state.modal.modalQuestTarget = "";
+        state.modal.modalChapterTarget = "";
+        state.modal.modalCanvasBackgroundTarget = "";
+        state.modal.modalCanvasImageTarget = "";
+        state.modal.modalCanvasEntityTarget = "";
+        state.modal.modalCanvasModelTarget = "";
+        state.modal.modalBlueprintTarget = "";
+        state.modal.modalQuestBackgroundTarget = "";
+        state.modal.modalQuestBackgroundTargets.clear();
+        state.modal.modalQuestBackgroundGrayscale = false;
+        state.modal.modalQuestCompletionHudBackgroundTarget = "";
+        state.modal.modalQuestCompletionHudBackgroundTargets.clear();
+        state.modal.modalHudBackgroundTarget = "";
+        state.modal.modalHudBackgroundOpacityDragging = false;
+        state.pickers.entityVariantTarget = "";
+        state.pickers.entityVariantSelected = "";
+        state.pickers.entityVariantFolder = "";
+        state.pickers.entityVariantSearch = "";
+        state.pickers.entityVariantSearchFocused = false;
+        state.pickers.entityVariantScroll = 0;
+        state.pickers.entityVariantScrollDragging = false;
+        state.modal.modalQuestCompletionSoundTarget = "";
+        state.modal.modalQuestCompletionSoundTargets.clear();
         if (closingSoundPicker) {
-            state.assetBrowseDir = "";
-            state.assetSelected = "";
+            state.pickers.assetBrowseDir = "";
+            state.pickers.assetSelected = "";
         }
-        state.questDetailsPickTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        state.assetContextOpen = false;
-        state.assetRenameOpen = false;
+        state.questDetails.questDetailsPickTarget = "";
+        state.questDetails.questDetailsAssetPickTarget = "";
+        state.pickers.assetContextOpen = false;
+        state.pickers.assetRenameOpen = false;
         clearBlueprintCodeState(state);
-        state.assetSearchFocused = false;
-        state.assetGridScrollDragging = false;
+        state.pickers.assetSearchFocused = false;
+        state.pickers.assetGridScrollDragging = false;
         clearPrerequisitesManagerState(state);
-        state.modalHudBackgroundOpacityDragging = false;
-        state.iconScrollDragging = false;
-        state.iconSearchFocused = false;
+        state.modal.modalHudBackgroundOpacityDragging = false;
+        state.pickers.iconScrollDragging = false;
+        state.pickers.iconSearchFocused = false;
         IconPickerMode.reset(state);
-        state.biomeSearchFocused = false;
-        state.biomeScrollDragging = false;
-        state.advancementSearchFocused = false;
-        state.advancementScrollDragging = false;
-        state.recipeSearchFocused = false;
+        state.pickers.biomeSearchFocused = false;
+        state.pickers.biomeScrollDragging = false;
+        state.pickers.advancementSearchFocused = false;
+        state.pickers.advancementScrollDragging = false;
+        state.pickers.recipeSearchFocused = false;
         RecipePickerMode.reset(state);
-        state.recipeScrollDragging = false;
-        state.structureSearchFocused = false;
-        state.structureScrollDragging = false;
-        state.blockSearchFocused = false;
-        state.blockTagMode = false;
-        state.blockScrollDragging = false;
-        state.statSearchFocused = false;
-        state.statScrollDragging = false;
-        state.dimensionSearchFocused = false;
-        state.dimensionScrollDragging = false;
-        state.lootTableSearchFocused = false;
-        state.lootTableScrollDragging = false;
-        state.itemInventorySearchFocused = false;
-        state.itemInventoryScrollDragging = false;
-        state.soundSearchFocused = false;
-        state.soundScrollDragging = false;
-        state.soundSelected = "";
-        state.pickerLastClickKey = "";
-        state.pickerLastClickAtMs = 0L;
-        state.colorPaletteContextOpen = false;
-        state.colorPaletteContextValue = Integer.MIN_VALUE;
-        state.colorPaletteScrollDragging = false;
-        state.themeScrollDragging = false;
-        state.settingsScrollDragging = false;
+        state.pickers.recipeScrollDragging = false;
+        state.pickers.structureSearchFocused = false;
+        state.pickers.structureScrollDragging = false;
+        state.pickers.blockSearchFocused = false;
+        state.pickers.blockTagMode = false;
+        state.pickers.blockScrollDragging = false;
+        state.pickers.statSearchFocused = false;
+        state.pickers.statScrollDragging = false;
+        state.pickers.dimensionSearchFocused = false;
+        state.pickers.dimensionScrollDragging = false;
+        state.pickers.lootTableSearchFocused = false;
+        state.pickers.lootTableScrollDragging = false;
+        state.pickers.itemInventorySearchFocused = false;
+        state.pickers.itemInventoryScrollDragging = false;
+        state.pickers.soundSearchFocused = false;
+        state.pickers.soundScrollDragging = false;
+        state.pickers.soundSelected = "";
+        state.pickers.pickerLastClickKey = "";
+        state.pickers.pickerLastClickAtMs = 0L;
+        state.pickers.colorPaletteContextOpen = false;
+        state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
+        state.pickers.colorPaletteScrollDragging = false;
+        state.modal.themeScrollDragging = false;
+        state.modal.settingsScrollDragging = false;
         clearAnimationState(state);
     }
 
     private static void clearModalInteractionState(TabletUiState state) {
-        state.assetContextOpen = false;
-        state.assetRenameOpen = false;
+        state.pickers.assetContextOpen = false;
+        state.pickers.assetRenameOpen = false;
         clearBlueprintCodeState(state);
-        state.assetSearchFocused = false;
-        state.assetGridScrollDragging = false;
-        state.prerequisitesManagerScrollDragging = false;
-        state.prerequisitesManagerContextOpen = false;
-        state.prerequisitesManagerSearchFocused = false;
-        state.prerequisitesManagerHoveredConnectionKey = "";
-        state.modalHudBackgroundOpacityDragging = false;
-        state.iconScrollDragging = false;
-        state.iconSearchFocused = false;
+        state.pickers.assetSearchFocused = false;
+        state.pickers.assetGridScrollDragging = false;
+        state.modal.prerequisitesManagerScrollDragging = false;
+        state.modal.prerequisitesManagerContextOpen = false;
+        state.modal.prerequisitesManagerSearchFocused = false;
+        state.modal.prerequisitesManagerHoveredConnectionKey = "";
+        state.modal.modalHudBackgroundOpacityDragging = false;
+        state.pickers.iconScrollDragging = false;
+        state.pickers.iconSearchFocused = false;
         IconPickerMode.reset(state);
-        state.biomeSearchFocused = false;
-        state.biomeScrollDragging = false;
-        state.advancementSearchFocused = false;
-        state.advancementScrollDragging = false;
-        state.recipeSearchFocused = false;
+        state.pickers.biomeSearchFocused = false;
+        state.pickers.biomeScrollDragging = false;
+        state.pickers.advancementSearchFocused = false;
+        state.pickers.advancementScrollDragging = false;
+        state.pickers.recipeSearchFocused = false;
         RecipePickerMode.reset(state);
-        state.recipeScrollDragging = false;
-        state.structureSearchFocused = false;
-        state.structureScrollDragging = false;
-        state.blockSearchFocused = false;
-        state.blockTagMode = false;
-        state.blockScrollDragging = false;
-        state.statSearchFocused = false;
-        state.statScrollDragging = false;
-        state.dimensionSearchFocused = false;
-        state.dimensionScrollDragging = false;
-        state.lootTableSearchFocused = false;
-        state.lootTableScrollDragging = false;
-        state.itemInventorySearchFocused = false;
-        state.itemInventoryScrollDragging = false;
-        state.soundSearchFocused = false;
-        state.soundScrollDragging = false;
-        state.entityVariantSearchFocused = false;
-        state.entityVariantScrollDragging = false;
-        state.pickerLastClickKey = "";
-        state.pickerLastClickAtMs = 0L;
-        state.colorPaletteContextOpen = false;
-        state.colorPaletteContextValue = Integer.MIN_VALUE;
-        state.colorPaletteScrollDragging = false;
-        state.themeScrollDragging = false;
-        state.settingsScrollDragging = false;
+        state.pickers.recipeScrollDragging = false;
+        state.pickers.structureSearchFocused = false;
+        state.pickers.structureScrollDragging = false;
+        state.pickers.blockSearchFocused = false;
+        state.pickers.blockTagMode = false;
+        state.pickers.blockScrollDragging = false;
+        state.pickers.statSearchFocused = false;
+        state.pickers.statScrollDragging = false;
+        state.pickers.dimensionSearchFocused = false;
+        state.pickers.dimensionScrollDragging = false;
+        state.pickers.lootTableSearchFocused = false;
+        state.pickers.lootTableScrollDragging = false;
+        state.pickers.itemInventorySearchFocused = false;
+        state.pickers.itemInventoryScrollDragging = false;
+        state.pickers.soundSearchFocused = false;
+        state.pickers.soundScrollDragging = false;
+        state.pickers.entityVariantSearchFocused = false;
+        state.pickers.entityVariantScrollDragging = false;
+        state.pickers.pickerLastClickKey = "";
+        state.pickers.pickerLastClickAtMs = 0L;
+        state.pickers.colorPaletteContextOpen = false;
+        state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
+        state.pickers.colorPaletteScrollDragging = false;
+        state.modal.themeScrollDragging = false;
+        state.modal.settingsScrollDragging = false;
     }
 
     private static void clearPrerequisitesManagerState(TabletUiState state) {
-        state.prerequisitesManagerQuestId = "";
-        state.prerequisitesManagerSearch = "";
-        state.prerequisitesManagerSearchFocused = false;
-        state.prerequisitesManagerExternalMode = false;
-        state.prerequisitesManagerScroll = 0;
-        state.prerequisitesManagerScrollDragging = false;
-        state.prerequisitesManagerContextOpen = false;
-        state.prerequisitesManagerContextPrerequisiteId = "";
-        state.prerequisitesManagerSelectedConnectionKey = "";
-        state.prerequisitesManagerHoveredConnectionKey = "";
-        state.prerequisitesManagerContextX = 0;
-        state.prerequisitesManagerContextY = 0;
-        state.prerequisitesManagerContextMenuX = 0;
-        state.prerequisitesManagerContextMenuY = 0;
-        state.prerequisitesManagerContextMenuW = 0;
-        state.prerequisitesManagerContextMenuH = 0;
+        state.modal.prerequisitesManagerQuestId = "";
+        state.modal.prerequisitesManagerSearch = "";
+        state.modal.prerequisitesManagerSearchFocused = false;
+        state.modal.prerequisitesManagerExternalMode = false;
+        state.modal.prerequisitesManagerScroll = 0;
+        state.modal.prerequisitesManagerScrollDragging = false;
+        state.modal.prerequisitesManagerContextOpen = false;
+        state.modal.prerequisitesManagerContextPrerequisiteId = "";
+        state.modal.prerequisitesManagerSelectedConnectionKey = "";
+        state.modal.prerequisitesManagerHoveredConnectionKey = "";
+        state.modal.prerequisitesManagerContextX = 0;
+        state.modal.prerequisitesManagerContextY = 0;
+        state.modal.prerequisitesManagerContextMenuX = 0;
+        state.modal.prerequisitesManagerContextMenuY = 0;
+        state.modal.prerequisitesManagerContextMenuW = 0;
+        state.modal.prerequisitesManagerContextMenuH = 0;
     }
 
     private static void clearBlueprintCodeState(TabletUiState state) {
-        state.blueprintCodeOpen = false;
-        state.blueprintCodeImportMode = false;
-        state.blueprintCodeAnimationStartMs = 0L;
-        state.blueprintCodeTarget = "";
-        state.blueprintCodeDraft = "";
-        state.blueprintCodeMessage = "";
+        state.modal.blueprintCodeOpen = false;
+        state.modal.blueprintCodeImportMode = false;
+        state.modal.blueprintCodeAnimationStartMs = 0L;
+        state.modal.blueprintCodeTarget = "";
+        state.modal.blueprintCodeDraft = "";
+        state.modal.blueprintCodeMessage = "";
     }
 
     private static void clearAnimationState(TabletUiState state) {
-        state.modalWindowClosing = false;
-        state.modalWindowAnimationStartMs = 0L;
-        state.modalWindowAnimationHasSource = false;
-        state.modalWindowAnimationSourceX = 0;
-        state.modalWindowAnimationSourceY = 0;
-        state.modalWindowAnimationSourceW = 0;
-        state.modalWindowAnimationSourceH = 0;
+        state.modal.modalWindowClosing = false;
+        state.modal.modalWindowAnimationStartMs = 0L;
+        state.modal.modalWindowAnimationHasSource = false;
+        state.modal.modalWindowAnimationSourceX = 0;
+        state.modal.modalWindowAnimationSourceY = 0;
+        state.modal.modalWindowAnimationSourceW = 0;
+        state.modal.modalWindowAnimationSourceH = 0;
     }
 }

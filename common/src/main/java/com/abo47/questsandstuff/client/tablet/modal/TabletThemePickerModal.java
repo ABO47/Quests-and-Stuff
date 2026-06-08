@@ -60,10 +60,10 @@ public final class TabletThemePickerModal {
                 themes,
                 emptyText,
                 ScrollState.bind(
-                        () -> state.themeScroll,
-                        value -> state.themeScroll = value,
-                        () -> state.themeScrollDragging,
-                        dragging -> state.themeScrollDragging = dragging
+                        () -> state.modal.themeScroll,
+                        value -> state.modal.themeScroll = value,
+                        () -> state.modal.themeScrollDragging,
+                        dragging -> state.modal.themeScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -84,10 +84,10 @@ public final class TabletThemePickerModal {
                 themes,
                 emptyText,
                 ScrollState.bind(
-                        () -> state.themeScroll,
-                        value -> state.themeScroll = value,
-                        () -> state.themeScrollDragging,
-                        dragging -> state.themeScrollDragging = dragging
+                        () -> state.modal.themeScroll,
+                        value -> state.modal.themeScroll = value,
+                        () -> state.modal.themeScrollDragging,
+                        dragging -> state.modal.themeScrollDragging = dragging
                 ),
                 2,
                 refresh,

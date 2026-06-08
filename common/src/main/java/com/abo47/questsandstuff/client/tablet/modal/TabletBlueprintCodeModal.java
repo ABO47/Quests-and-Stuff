@@ -36,36 +36,36 @@ final class TabletBlueprintCodeModal {
     static void openExport(TabletUiState state, String relativePath) {
         CanvasBlueprint blueprint = CanvasBlueprintStore.read(relativePath);
         String code = CanvasBlueprintCode.encode(blueprint);
-        state.blueprintCodeOpen = true;
-        state.blueprintCodeImportMode = false;
-        state.blueprintCodeTarget = relativePath == null ? "" : relativePath;
-        state.blueprintCodeDraft = code;
-        state.blueprintCodeMessage = code.isBlank()
+        state.modal.blueprintCodeOpen = true;
+        state.modal.blueprintCodeImportMode = false;
+        state.modal.blueprintCodeTarget = relativePath == null ? "" : relativePath;
+        state.modal.blueprintCodeDraft = code;
+        state.modal.blueprintCodeMessage = code.isBlank()
                 ? TabletModalPanel.tr("ui.questsandstuff.blueprints.code_select_export")
                 : "";
-        state.blueprintCodeAnimationStartMs = System.currentTimeMillis();
-        state.assetContextOpen = false;
-        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] export code open path={} empty={}", state.blueprintCodeTarget, code.isBlank());
+        state.modal.blueprintCodeAnimationStartMs = System.currentTimeMillis();
+        state.pickers.assetContextOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] export code open path={} empty={}", state.modal.blueprintCodeTarget, code.isBlank());
     }
 
     static void openImport(TabletUiState state) {
-        state.blueprintCodeOpen = true;
-        state.blueprintCodeImportMode = true;
-        state.blueprintCodeTarget = "";
-        state.blueprintCodeDraft = "";
-        state.blueprintCodeMessage = "";
-        state.blueprintCodeAnimationStartMs = System.currentTimeMillis();
-        state.assetContextOpen = false;
+        state.modal.blueprintCodeOpen = true;
+        state.modal.blueprintCodeImportMode = true;
+        state.modal.blueprintCodeTarget = "";
+        state.modal.blueprintCodeDraft = "";
+        state.modal.blueprintCodeMessage = "";
+        state.modal.blueprintCodeAnimationStartMs = System.currentTimeMillis();
+        state.pickers.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] import code open");
     }
 
     static void close(TabletUiState state) {
-        state.blueprintCodeOpen = false;
-        state.blueprintCodeImportMode = false;
-        state.blueprintCodeAnimationStartMs = 0L;
-        state.blueprintCodeTarget = "";
-        state.blueprintCodeDraft = "";
-        state.blueprintCodeMessage = "";
+        state.modal.blueprintCodeOpen = false;
+        state.modal.blueprintCodeImportMode = false;
+        state.modal.blueprintCodeAnimationStartMs = 0L;
+        state.modal.blueprintCodeTarget = "";
+        state.modal.blueprintCodeDraft = "";
+        state.modal.blueprintCodeMessage = "";
     }
 
     static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
@@ -79,17 +79,17 @@ final class TabletBlueprintCodeModal {
         int x = Math.max(PAD, (modalW - panelW) / 2);
         int y = Math.max(24, (modalH - panelH) / 2);
         WidgetGroup panel = Surfaces.panel(x, y, panelW, panelH, withAlpha(ModColors.elevatedSurface(), 245), ModColors.BORDER_ACCENT);
-        panel.addWidget(label(PAD, 6, TabletModalPanel.tr(state.blueprintCodeImportMode
+        panel.addWidget(label(PAD, 6, TabletModalPanel.tr(state.modal.blueprintCodeImportMode
                 ? "ui.questsandstuff.blueprints.import_code"
                 : "ui.questsandstuff.blueprints.export_code"), ModColors.TEXT_PRIMARY));
 
         addHeaderButtons(panel, state, refresh, panelW);
         addCodeField(panel, state, panelW);
-        if (!state.blueprintCodeMessage.isBlank()) {
-            panel.addWidget(label(PAD, CODE_Y + CODE_H + 8, state.blueprintCodeMessage, ModColors.WARNING));
+        if (!state.modal.blueprintCodeMessage.isBlank()) {
+            panel.addWidget(label(PAD, CODE_Y + CODE_H + 8, state.modal.blueprintCodeMessage, ModColors.WARNING));
         }
         modal.addWidget(QuestsAndStuffConfig.popupWindowAnimationsEnabled()
-                ? SourceOriginRevealWidget.windowNoShadow(panel, () -> state.blueprintCodeAnimationStartMs, () -> true, () -> null)
+                ? SourceOriginRevealWidget.windowNoShadow(panel, () -> state.modal.blueprintCodeAnimationStartMs, () -> true, () -> null)
                 : panel);
     }
 
@@ -101,22 +101,22 @@ final class TabletBlueprintCodeModal {
         }));
 
         int x = closeX - GAP - BTN;
-        if (state.blueprintCodeImportMode) {
+        if (state.modal.blueprintCodeImportMode) {
             panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "manual_check", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
                 applyImport(state);
                 refresh.run();
             }));
             x -= GAP + BTN;
             panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "paste", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
-                state.blueprintCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
-                state.blueprintCodeMessage = "";
+                state.modal.blueprintCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
+                state.modal.blueprintCodeMessage = "";
                 refresh.run();
             }));
             return;
         }
         panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "copy", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
-            Minecraft.getInstance().keyboardHandler.setClipboard(state.blueprintCodeDraft == null ? "" : state.blueprintCodeDraft);
-            state.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_copied");
+            Minecraft.getInstance().keyboardHandler.setClipboard(state.modal.blueprintCodeDraft == null ? "" : state.modal.blueprintCodeDraft);
+            state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_copied");
             refresh.run();
         }));
     }
@@ -125,27 +125,27 @@ final class TabletBlueprintCodeModal {
         CodeEditorWidget editor = new CodeEditorWidget(PAD, CODE_Y, panelW - PAD * 2, CODE_H);
         editor.codeEditor.setLanguageDefinitionUnformatted();
         editor.setBackground(Surfaces.bordered(ModColors.recessedSurface(), ModColors.BORDER_BASE));
-        editor.setLines(editorLines(state.blueprintCodeDraft));
-        editor.setOnTextChanged(lines -> state.blueprintCodeDraft = rawCode(lines));
+        editor.setLines(editorLines(state.modal.blueprintCodeDraft));
+        editor.setOnTextChanged(lines -> state.modal.blueprintCodeDraft = rawCode(lines));
         editor.setFocus(true);
         panel.addWidget(editor);
     }
 
     private static void applyImport(TabletUiState state) {
-        CanvasBlueprint blueprint = CanvasBlueprintCode.decode(state.blueprintCodeDraft);
+        CanvasBlueprint blueprint = CanvasBlueprintCode.decode(state.modal.blueprintCodeDraft);
         if (blueprint.isEmpty()) {
-            state.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_invalid");
+            state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_invalid");
             return;
         }
         String saved = CanvasBlueprintStore.save(blueprint, blueprint.name());
         if (saved.isBlank()) {
-            state.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_save_failed");
+            state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_save_failed");
             return;
         }
-        state.assetBrowseDir = CanvasBlueprintStore.BLUEPRINTS_DIR;
-        state.assetSelected = saved;
-        state.assetContextFile = saved;
-        state.assetGridScroll = 0;
+        state.pickers.assetBrowseDir = CanvasBlueprintStore.BLUEPRINTS_DIR;
+        state.pickers.assetSelected = saved;
+        state.pickers.assetContextFile = saved;
+        state.pickers.assetGridScroll = 0;
         close(state);
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] imported code saved path={} entries={}", saved, blueprint.contentCount());
     }

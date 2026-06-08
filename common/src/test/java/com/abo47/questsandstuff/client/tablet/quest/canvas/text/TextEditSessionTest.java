@@ -17,14 +17,14 @@ class TextEditSessionTest {
 
         assertTrue(TextEditSession.isMainCanvasEditing(state));
         assertFalse(TextEditSession.isQuestDetailsEditing(state));
-        assertEquals("", state.questDetailsTextEditTarget);
-        assertEquals("", state.questDetailsTextEditDraft);
-        assertEquals("canvas:text", state.canvasTextEditTarget);
-        assertEquals("Canvas", state.canvasTextEditDraft);
-        assertEquals(6, state.canvasTextEditCursor);
-        assertEquals(6, state.canvasTextSelectionAnchor);
-        assertTrue(state.canvasTextMenuOpen);
-        assertEquals("canvas:text", state.canvasTextMenuTarget);
+        assertEquals("", state.questDetails.questDetailsTextEditTarget);
+        assertEquals("", state.questDetails.questDetailsTextEditDraft);
+        assertEquals("canvas:text", state.canvas.canvasTextEditTarget);
+        assertEquals("Canvas", state.canvas.canvasTextEditDraft);
+        assertEquals(6, state.canvas.canvasTextEditCursor);
+        assertEquals(6, state.canvas.canvasTextSelectionAnchor);
+        assertTrue(state.canvas.canvasTextMenuOpen);
+        assertEquals("canvas:text", state.canvas.canvasTextMenuTarget);
     }
 
     @Test
@@ -36,14 +36,14 @@ class TextEditSessionTest {
 
         assertTrue(TextEditSession.isQuestDetailsEditing(state));
         assertFalse(TextEditSession.isMainCanvasEditing(state));
-        assertEquals("desc:text", state.questDetailsTextEditTarget);
-        assertEquals("desc:text", state.canvasTextEditTarget);
-        assertEquals("Description", state.questDetailsTextEditDraft);
-        assertEquals("Description", state.canvasTextEditDraft);
-        assertEquals(11, state.canvasTextEditCursor);
-        assertEquals(11, state.canvasTextSelectionAnchor);
-        assertFalse(state.canvasTextMenuOpen);
-        assertEquals("", state.canvasTextMenuTarget);
+        assertEquals("desc:text", state.questDetails.questDetailsTextEditTarget);
+        assertEquals("desc:text", state.canvas.canvasTextEditTarget);
+        assertEquals("Description", state.questDetails.questDetailsTextEditDraft);
+        assertEquals("Description", state.canvas.canvasTextEditDraft);
+        assertEquals(11, state.canvas.canvasTextEditCursor);
+        assertEquals(11, state.canvas.canvasTextSelectionAnchor);
+        assertFalse(state.canvas.canvasTextMenuOpen);
+        assertEquals("", state.canvas.canvasTextMenuTarget);
     }
 
     @Test
@@ -58,10 +58,10 @@ class TextEditSessionTest {
         assertEquals(2, replacement.start());
         assertEquals(5, replacement.end());
         assertEquals("XY", replacement.value());
-        assertEquals("abXYf", state.canvasTextEditDraft);
-        assertEquals("abXYf", state.questDetailsTextEditDraft);
-        assertEquals(4, state.canvasTextEditCursor);
-        assertEquals(4, state.canvasTextSelectionAnchor);
+        assertEquals("abXYf", state.canvas.canvasTextEditDraft);
+        assertEquals("abXYf", state.questDetails.questDetailsTextEditDraft);
+        assertEquals(4, state.canvas.canvasTextEditCursor);
+        assertEquals(4, state.canvas.canvasTextSelectionAnchor);
         assertFalse(TextEditSession.hasSelection(state));
     }
 
@@ -73,19 +73,19 @@ class TextEditSessionTest {
         TextEditSession.Replacement replacement = TextEditSession.insert(state, "bcdef");
 
         assertEquals("b", replacement.value());
-        assertEquals(TextEditSession.MAX_DRAFT_LENGTH, state.canvasTextEditDraft.length());
+        assertEquals(TextEditSession.MAX_DRAFT_LENGTH, state.canvas.canvasTextEditDraft.length());
     }
 
     @Test
     void closeQuestDetailsClearsStaleQuestFieldsEvenWhenCommonOpenFlagIsOff() {
         TabletUiState state = new TabletUiState();
-        state.canvasTextEditOpen = false;
-        state.questDetailsTextEditTarget = "stale";
-        state.questDetailsTextEditDraft = "draft";
+        state.canvas.canvasTextEditOpen = false;
+        state.questDetails.questDetailsTextEditTarget = "stale";
+        state.questDetails.questDetailsTextEditDraft = "draft";
 
         TextEditSession.closeQuestDetails(state, true);
 
-        assertEquals("", state.questDetailsTextEditTarget);
-        assertEquals("", state.questDetailsTextEditDraft);
+        assertEquals("", state.questDetails.questDetailsTextEditTarget);
+        assertEquals("", state.questDetails.questDetailsTextEditDraft);
     }
 }

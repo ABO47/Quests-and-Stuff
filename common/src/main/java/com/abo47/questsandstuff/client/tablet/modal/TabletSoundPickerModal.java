@@ -50,25 +50,25 @@ public final class TabletSoundPickerModal {
         int rightW = libraryLayout.rightW();
         addPreviewPanel(modal, state, player, refresh, libraryLayout);
         int searchW = Math.max(40, headerCloseRenderX(w) - rightX - HEADER_GAP);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 2, searchW, 16, state.soundSearch, 120, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 2, searchW, 16, state.pickers.soundSearch, 120, value -> {
             String query = SearchFilter.normalizeUserInput(value);
-            state.soundSearch = query;
-            state.soundScroll = 0;
+            state.pickers.soundSearch = query;
+            state.pickers.soundScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] sound search query='{}'", query);
             refresh.run();
-        }, focused -> state.soundSearchFocused = focused);
+        }, focused -> state.pickers.soundSearchFocused = focused);
 
         int listX = rightX;
         int listY = libraryLayout.bodyY();
         int listW = rightW;
         int listH = libraryLayout.bodyH();
-        List<SoundChoice> entries = sounds(state.soundSearch);
+        List<SoundChoice> entries = sounds(state.pickers.soundSearch);
         PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, TabletVocabulary.text(QuestVocabulary.NO_SOUNDS),
                 ScrollState.bind(
-                        () -> state.soundScroll,
-                        value -> state.soundScroll = value,
-                        () -> state.soundScrollDragging,
-                        dragging -> state.soundScrollDragging = dragging
+                        () -> state.pickers.soundScroll,
+                        value -> state.pickers.soundScroll = value,
+                        () -> state.pickers.soundScrollDragging,
+                        dragging -> state.pickers.soundScrollDragging = dragging
                 ),
                 3,
                 refresh,
@@ -80,7 +80,7 @@ public final class TabletSoundPickerModal {
         int previewW = layout.leftW();
         int previewH = layout.bodyH();
         WidgetGroup preview = panel(ModalLibraryLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
-        String selected = state.soundSelected == null ? "" : state.soundSelected.trim();
+        String selected = state.pickers.soundSelected == null ? "" : state.pickers.soundSelected.trim();
         SoundChoice choice = selected.isBlank() ? null : SoundChoice.of(selected);
         preview.addWidget(new DisplayIconWidget(8, 9, 14, 14, "audio-lines"));
         preview.addWidget(label(28, 12, choice == null ? TabletModalPanel.tr("ui.questsandstuff.sound.none_selected") : SearchFilter.crop(choice.name(), 19), ModColors.TEXT_SECONDARY));
@@ -88,7 +88,7 @@ public final class TabletSoundPickerModal {
             int volumeY = Math.max(56, previewH - 24);
             int playY = 38;
             int playH = Math.max(34, volumeY - playY - 8);
-            preview.addWidget(new SoundPreviewPlayerWidget(8, playY, previewW - 16, playH, selected, () -> state.soundVolumeDraft));
+            preview.addWidget(new SoundPreviewPlayerWidget(8, playY, previewW - 16, playH, selected, () -> state.pickers.soundVolumeDraft));
             SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, previewW - 16, selected);
         }
         modal.addWidget(preview);
@@ -99,7 +99,7 @@ public final class TabletSoundPickerModal {
     }
 
     private static void renderRow(WidgetGroup list, TabletUiState state, Player player, Runnable refresh, SoundChoice entry, int rowY, int rowW) {
-        boolean selected = entry.id().equals(state.soundSelected);
+        boolean selected = entry.id().equals(state.pickers.soundSelected);
         if (selected) {
             WidgetGroup selectedFill = new WidgetGroup(4, rowY, rowW - 8, ROW_H);
             selectedFill.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)));
@@ -109,7 +109,7 @@ public final class TabletSoundPickerModal {
         list.addWidget(label(24, rowY + 4, SearchFilter.crop(entry.name(), Math.max(10, (rowW - 38) / 6)), ModColors.TEXT_PRIMARY));
         ButtonWidget hit = flatHitButton(4, rowY, rowW - 8, ROW_H, click -> {
             boolean doubleClick = click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("sound", entry.id()));
-            state.soundSelected = entry.id();
+            state.pickers.soundSelected = entry.id();
             if (doubleClick) {
                 applySound(state, player, entry.id());
                 closeAll(state);
@@ -122,13 +122,13 @@ public final class TabletSoundPickerModal {
     }
 
     private static void applySound(TabletUiState state, Player player, String soundId) {
-        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets);
+        Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
         if (!targets.isEmpty()) {
             EditorCommandClient.setQuestCompletionSound(player, targets, soundId);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} sound={}", targets.size(), soundId);
             return;
         }
-        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget);
+        String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
         if (!target.isBlank()) {
             EditorCommandClient.setQuestCompletionSound(player, target, soundId);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion sound picked quest={} sound={}", target, soundId);

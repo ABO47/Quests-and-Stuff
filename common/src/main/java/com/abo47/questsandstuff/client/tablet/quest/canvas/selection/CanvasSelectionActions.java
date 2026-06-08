@@ -28,25 +28,25 @@ public final class CanvasSelectionActions {
     }
 
     public static boolean isImageSelected(TabletUiState state, String imageId) {
-        return imageId != null && (imageId.equals(state.canvasSelection.primaryImageId()) || state.canvasSelection.imageIds().contains(imageId));
+        return imageId != null && (imageId.equals(state.canvas.canvasSelection.primaryImageId()) || state.canvas.canvasSelection.imageIds().contains(imageId));
     }
 
     public static boolean isTextSelected(TabletUiState state, String textId) {
-        return textId != null && (textId.equals(state.canvasSelection.primaryTextId()) || state.canvasSelection.textIds().contains(textId));
+        return textId != null && (textId.equals(state.canvas.canvasSelection.primaryTextId()) || state.canvas.canvasSelection.textIds().contains(textId));
     }
 
     public static Set<String> selectedImageIds(TabletUiState state) {
-        Set<String> images = new LinkedHashSet<>(state.canvasSelection.imageIds());
-        if (!state.canvasSelection.primaryImageId().isBlank()) {
-            images.add(state.canvasSelection.primaryImageId());
+        Set<String> images = new LinkedHashSet<>(state.canvas.canvasSelection.imageIds());
+        if (!state.canvas.canvasSelection.primaryImageId().isBlank()) {
+            images.add(state.canvas.canvasSelection.primaryImageId());
         }
         return images;
     }
 
     public static Set<String> selectedTextIds(TabletUiState state) {
-        Set<String> texts = new LinkedHashSet<>(state.canvasSelection.textIds());
-        if (!state.canvasSelection.primaryTextId().isBlank()) {
-            texts.add(state.canvasSelection.primaryTextId());
+        Set<String> texts = new LinkedHashSet<>(state.canvas.canvasSelection.textIds());
+        if (!state.canvas.canvasSelection.primaryTextId().isBlank()) {
+            texts.add(state.canvas.canvasSelection.primaryTextId());
         }
         return texts;
     }
@@ -56,11 +56,11 @@ public final class CanvasSelectionActions {
     }
 
     public static void clearCanvasSelection(TabletUiState state) {
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
         CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
@@ -84,7 +84,7 @@ public final class CanvasSelectionActions {
 
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new LinkedHashMap<>();
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
@@ -98,7 +98,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -110,7 +110,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -132,7 +132,7 @@ public final class CanvasSelectionActions {
 
     private static SelectionBounds selectedBounds(TabletUiState state, String group) {
         SelectionBounds bounds = new SelectionBounds();
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
@@ -142,7 +142,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -151,7 +151,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -162,17 +162,17 @@ public final class CanvasSelectionActions {
     }
 
     private static int centeredOffset(TabletUiState state, SelectionBounds bounds, boolean verticalCenterLine) {
-        double target = verticalCenterLine ? state.canvasContentW / 2.0 : state.canvasContentH / 2.0;
+        double target = verticalCenterLine ? state.canvas.canvasContentW / 2.0 : state.canvas.canvasContentH / 2.0;
         double center = verticalCenterLine ? bounds.centerX() : bounds.centerY();
         int offset = (int) Math.round(target - center);
-        if (state.gridSnapLocked) {
+        if (state.canvas.gridSnapLocked) {
             int grid = Math.max(1, CanvasGeometry.gridSize(state));
             offset = Math.round((float) offset / (float) grid) * grid;
         }
-        if (state.gridCanvasLocked) {
+        if (state.canvas.gridCanvasLocked) {
             int min = verticalCenterLine ? bounds.minX : bounds.minY;
             int max = verticalCenterLine ? bounds.maxX : bounds.maxY;
-            int canvas = verticalCenterLine ? state.canvasContentW : state.canvasContentH;
+            int canvas = verticalCenterLine ? state.canvas.canvasContentW : state.canvas.canvasContentH;
             if (min + offset < 0) {
                 offset = -min;
             }

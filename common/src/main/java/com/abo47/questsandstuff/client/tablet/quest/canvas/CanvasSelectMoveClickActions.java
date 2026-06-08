@@ -36,19 +36,19 @@ final class CanvasSelectMoveClickActions {
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit
     ) {
-        if (button == 0 && state.canEdit) {
+        if (button == 0 && state.root.canEdit) {
             if (handleElementTransformStart(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, imageHit, textHit)) {
                 return;
             }
         }
         if (hit != null) {
             long now = System.currentTimeMillis();
-            boolean doubleClick = hit.questId().equals(state.canvasLastClickedQuestId) && now - state.canvasLastQuestClickAtMs <= 350L;
-            state.canvasLastClickedQuestId = hit.questId();
-            state.canvasLastQuestClickAtMs = now;
+            boolean doubleClick = hit.questId().equals(state.canvas.canvasLastClickedQuestId) && now - state.canvas.canvasLastQuestClickAtMs <= 350L;
+            state.canvas.canvasLastClickedQuestId = hit.questId();
+            state.canvas.canvasLastQuestClickAtMs = now;
             if (doubleClick && button == 0) {
-                int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
-                int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
+                int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+                int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
                 QuestDetailsWindow.openAtSource(
                         state,
                         hit.questId(),
@@ -61,21 +61,21 @@ final class CanvasSelectMoveClickActions {
                 return;
             }
             if (canvasViewport.shiftDown()) {
-                if (!state.canvasSelection.questIds().add(hit.questId())) {
-                    state.canvasSelection.questIds().remove(hit.questId());
+                if (!state.canvas.canvasSelection.questIds().add(hit.questId())) {
+                    state.canvas.canvasSelection.questIds().remove(hit.questId());
                 }
-            } else if (!state.canvasSelection.questIds().contains(hit.questId())) {
+            } else if (!state.canvas.canvasSelection.questIds().contains(hit.questId())) {
                 CanvasSelectionActions.clearCanvasSelection(state);
-                state.canvasSelection.questIds().add(hit.questId());
+                state.canvas.canvasSelection.questIds().add(hit.questId());
             }
             selectionTransforms.beginDrag(localX, localY, byQuestId);
             canvasViewport.beginSelectionDragPreview();
         } else {
-            state.draggingSelection = false;
-            state.resizingSelection = false;
-            state.rotatingSelection = false;
-            state.transientQuestPositions.clear();
-            state.transientQuestScales.clear();
+            state.canvas.draggingSelection = false;
+            state.canvas.resizingSelection = false;
+            state.canvas.rotatingSelection = false;
+            state.canvas.transientQuestPositions.clear();
+            state.canvas.transientQuestScales.clear();
             CanvasBoxSelectionController.beginBoxSelection(state, canvasViewport.shiftDown(), localX, localY);
         }
         refresher.run();
@@ -118,7 +118,7 @@ final class CanvasSelectMoveClickActions {
                 || CanvasRenderer.isCanvasTextRotateHandleHit(state, textHit, localX, localY));
         boolean imageTransformHandleHit = imageHit != null && imageTransformHit(canvasViewport, state, imageHit, localX, localY);
         if (textTransformHandleHit) {
-            state.canvasTextLastClickId = "";
+            state.canvas.canvasTextLastClickId = "";
             elementTransforms.beginTextTransform(textHit, localX, localY);
             refresher.run();
             return true;
@@ -128,7 +128,7 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        boolean questResizeTransform = !state.canvasSelection.questIds().isEmpty();
+        boolean questResizeTransform = !state.canvas.canvasSelection.questIds().isEmpty();
         boolean questRotateTransform = selectionCount > 1;
         if (questRotateTransform && CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
             selectionTransforms.beginRotate(localX, localY, byQuestId);
@@ -153,9 +153,9 @@ final class CanvasSelectMoveClickActions {
                 return true;
             }
             long now = System.currentTimeMillis();
-            boolean doubleClick = textHit.id().equals(state.canvasTextLastClickId) && now - state.canvasTextLastClickAtMs <= 350L;
-            state.canvasTextLastClickId = textHit.id();
-            state.canvasTextLastClickAtMs = now;
+            boolean doubleClick = textHit.id().equals(state.canvas.canvasTextLastClickId) && now - state.canvas.canvasTextLastClickAtMs <= 350L;
+            state.canvas.canvasTextLastClickId = textHit.id();
+            state.canvas.canvasTextLastClickAtMs = now;
             if (doubleClick) {
                 textEditor.begin(textHit);
                 refresher.run();

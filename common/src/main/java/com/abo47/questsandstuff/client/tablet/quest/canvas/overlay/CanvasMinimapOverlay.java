@@ -44,7 +44,7 @@ final class CanvasMinimapOverlay {
         if (!QuestsAndStuffConfig.minimapEnabled()) {
             return;
         }
-        CanvasMinimapGeometry.Layout hitLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), state.minimapCollapsed);
+        CanvasMinimapGeometry.Layout hitLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), state.canvas.minimapCollapsed);
         applyLayout(state, hitLayout);
         if (hitLayout.panelW() <= 0 || hitLayout.panelH() <= 0) {
             return;
@@ -63,7 +63,7 @@ final class CanvasMinimapOverlay {
         String group = selectedGroupName(state);
         CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, visibleCards);
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
-        if (!state.minimapCollapsed) {
+        if (!state.canvas.minimapCollapsed) {
             applyProjection(state, projection);
         }
 
@@ -107,12 +107,12 @@ final class CanvasMinimapOverlay {
 
     private static float minimapOpenProgress(TabletUiState state, boolean animationsEnabled) {
         if (!animationsEnabled) {
-            return state.minimapCollapsed ? 0.0f : 1.0f;
+            return state.canvas.minimapCollapsed ? 0.0f : 1.0f;
         }
         return UiAnimationProgress.openProgress(
-                !state.minimapCollapsed,
-                state.minimapAnimationFromCollapsed,
-                state.minimapAnimationStartMs,
+                !state.canvas.minimapCollapsed,
+                state.canvas.minimapAnimationFromCollapsed,
+                state.canvas.minimapAnimationStartMs,
                 CanvasMinimapController.ANIMATION_MS
         );
     }
@@ -163,7 +163,7 @@ final class CanvasMinimapOverlay {
                     continue;
                 }
                 boolean hidden = ConnectionRenderer.isConnectionHidden(state, group, sourceId, target.questId());
-                if (hidden && !state.canEdit) {
+                if (hidden && !state.root.canEdit) {
                     continue;
                 }
                 CanvasMinimapRect sourceBox = questBoxes.get(sourceId);
@@ -191,7 +191,7 @@ final class CanvasMinimapOverlay {
     }
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
-        if (state.canvasSelection.questIds().contains(card.questId())) {
+        if (state.canvas.canvasSelection.questIds().contains(card.questId())) {
             return ModColors.WARNING;
         }
         CompoundTag tag = card.tag();
@@ -206,7 +206,7 @@ final class CanvasMinimapOverlay {
 
     private static int cardAlpha(TabletUiState state, QuestCardLayout card) {
         CompoundTag tag = card.tag();
-        if (state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
+        if (state.root.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
             return 115;
         }
         return 220;
@@ -214,7 +214,7 @@ final class CanvasMinimapOverlay {
 
     private static int visualCardAlpha(TabletUiState state, QuestCardLayout card) {
         CompoundTag tag = card.tag();
-        if (state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
+        if (state.root.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
             return 130;
         }
         return 255;
@@ -242,40 +242,40 @@ final class CanvasMinimapOverlay {
     }
 
     private static void clearState(TabletUiState state) {
-        state.minimapPanelX = 0;
-        state.minimapPanelY = 0;
-        state.minimapPanelW = 0;
-        state.minimapPanelH = 0;
-        state.minimapToggleX = 0;
-        state.minimapToggleY = 0;
-        state.minimapToggleW = 0;
-        state.minimapToggleH = 0;
-        state.minimapX = 0;
-        state.minimapY = 0;
-        state.minimapW = 0;
-        state.minimapH = 0;
+        state.canvas.minimapPanelX = 0;
+        state.canvas.minimapPanelY = 0;
+        state.canvas.minimapPanelW = 0;
+        state.canvas.minimapPanelH = 0;
+        state.canvas.minimapToggleX = 0;
+        state.canvas.minimapToggleY = 0;
+        state.canvas.minimapToggleW = 0;
+        state.canvas.minimapToggleH = 0;
+        state.canvas.minimapX = 0;
+        state.canvas.minimapY = 0;
+        state.canvas.minimapW = 0;
+        state.canvas.minimapH = 0;
     }
 
     private static void applyLayout(TabletUiState state, CanvasMinimapGeometry.Layout layout) {
-        state.minimapPanelX = layout.panelX();
-        state.minimapPanelY = layout.panelY();
-        state.minimapPanelW = layout.panelW();
-        state.minimapPanelH = layout.panelH();
-        state.minimapToggleX = layout.toggleX();
-        state.minimapToggleY = layout.toggleY();
-        state.minimapToggleW = layout.toggleW();
-        state.minimapToggleH = layout.toggleH();
+        state.canvas.minimapPanelX = layout.panelX();
+        state.canvas.minimapPanelY = layout.panelY();
+        state.canvas.minimapPanelW = layout.panelW();
+        state.canvas.minimapPanelH = layout.panelH();
+        state.canvas.minimapToggleX = layout.toggleX();
+        state.canvas.minimapToggleY = layout.toggleY();
+        state.canvas.minimapToggleW = layout.toggleW();
+        state.canvas.minimapToggleH = layout.toggleH();
     }
 
     private static void applyProjection(TabletUiState state, CanvasMinimapGeometry.Projection projection) {
-        state.minimapX = projection.drawX();
-        state.minimapY = projection.drawY();
-        state.minimapW = projection.drawW();
-        state.minimapH = projection.drawH();
-        state.minimapWorldMinX = projection.world().minX();
-        state.minimapWorldMinY = projection.world().minY();
-        state.minimapWorldWidth = projection.world().width();
-        state.minimapWorldHeight = projection.world().height();
+        state.canvas.minimapX = projection.drawX();
+        state.canvas.minimapY = projection.drawY();
+        state.canvas.minimapW = projection.drawW();
+        state.canvas.minimapH = projection.drawH();
+        state.canvas.minimapWorldMinX = projection.world().minX();
+        state.canvas.minimapWorldMinY = projection.world().minY();
+        state.canvas.minimapWorldWidth = projection.world().width();
+        state.canvas.minimapWorldHeight = projection.world().height();
     }
 
     private static int clamp(int value, int min, int max) {

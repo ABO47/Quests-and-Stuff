@@ -27,8 +27,8 @@ final class QuestHudAssetLibraryBridge {
         int screenW = minecraft.getWindow().getGuiScaledWidth();
         int screenH = minecraft.getWindow().getGuiScaledHeight();
         TabletUiState state = new TabletUiState();
-        state.tabletRootWidth = screenW;
-        state.tabletRootHeight = screenH;
+        state.root.tabletRootWidth = screenW;
+        state.root.tabletRootHeight = screenH;
         ModalOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayout.background(element), QuestHudLayout.opacityPercent(element));
 
         boolean[] returning = new boolean[]{false};

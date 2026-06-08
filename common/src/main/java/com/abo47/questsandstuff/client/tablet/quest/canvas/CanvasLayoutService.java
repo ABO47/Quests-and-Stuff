@@ -32,7 +32,7 @@ public final class CanvasLayoutService {
     }
 
     public static boolean jumpToBestMatch(TabletUiState state) {
-        if (state.search.isBlank()) {
+        if (state.root.search.isBlank()) {
             return false;
         }
 
@@ -41,12 +41,12 @@ public final class CanvasLayoutService {
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
         for (Map.Entry<String, CompoundTag> quest : quests) {
-            if (!matchesSearchOnly(quest.getValue(), state.search)) {
+            if (!matchesSearchOnly(quest.getValue(), state.root.search)) {
                 continue;
             }
             Set<String> groups = quest.getValue().getCompound("groups").getAllKeys();
-            if (groups.contains(state.selectedGroup)) {
-                inGroup = new QuestMatch(quest.getKey(), state.selectedGroup);
+            if (groups.contains(state.root.selectedGroup)) {
+                inGroup = new QuestMatch(quest.getKey(), state.root.selectedGroup);
                 break;
             }
             String firstGroup = groups.stream().sorted().findFirst().orElse("");
@@ -59,10 +59,10 @@ public final class CanvasLayoutService {
         if (selected == null) {
             return false;
         }
-        state.selectedGroup = selected.group();
-        state.lastJumpQuest = selected.questId();
-        state.pendingCameraGroup = selected.group();
-        state.pendingCameraQuestId = selected.questId();
+        state.root.selectedGroup = selected.group();
+        state.chapterPanel.lastJumpQuest = selected.questId();
+        state.canvas.pendingCameraGroup = selected.group();
+        state.canvas.pendingCameraQuestId = selected.questId();
         persistUiState(state);
         return true;
     }
@@ -87,8 +87,8 @@ public final class CanvasLayoutService {
             }
             visibleCards.add(CanvasGeometry.layoutQuest(entry.getKey(), entry.getValue(), state, selectedGroup));
         }
-        List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : visibleCards) {
             byQuestId.put(card.questId(), card);
@@ -118,13 +118,13 @@ public final class CanvasLayoutService {
     }
 
     public static void clampCanvasOffset(TabletUiState state, List<QuestCardLayout> cards, int contentW, int contentH) {
-        List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of());
-        List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of());
         if (cards.isEmpty() && images.isEmpty() && texts.isEmpty()) {
-            int worldW = Math.max(1, Math.round(contentW / CanvasRenderer.clampZoom(state.canvasZoom)));
-            int worldH = Math.max(1, Math.round(contentH / CanvasRenderer.clampZoom(state.canvasZoom)));
+            int worldW = Math.max(1, Math.round(contentW / CanvasRenderer.clampZoom(state.canvas.canvasZoom)));
+            int worldH = Math.max(1, Math.round(contentH / CanvasRenderer.clampZoom(state.canvas.canvasZoom)));
             setCanvasWorldBounds(state, 0, 0, worldW, worldH);
-            if (state.gridCanvasLocked) {
+            if (state.canvas.gridCanvasLocked) {
                 clampLockedCanvasOffset(state, contentW, contentH);
             }
             CanvasCameraController.rememberCurrentGroup(state);
@@ -157,22 +157,22 @@ public final class CanvasLayoutService {
 
         setCanvasWorldBounds(state, minLogicalX, minLogicalY, maxLogicalX, maxLogicalY);
 
-        if (!state.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
+        if (!state.root.canEdit && QuestsAndStuffConfig.readOnlyCanvasFocusEnabled()) {
             CanvasPoint clamped = CanvasCameraController.clampedOffsetToWorldBounds(
                     state,
-                    state.canvasOffsetX,
-                    state.canvasOffsetY,
+                    state.canvas.canvasOffsetX,
+                    state.canvas.canvasOffsetY,
                     minLogicalX,
                     minLogicalY,
                     maxLogicalX,
                     maxLogicalY
             );
-            state.canvasOffsetX = clamped.x;
-            state.canvasOffsetY = clamped.y;
+            state.canvas.canvasOffsetX = clamped.x;
+            state.canvas.canvasOffsetY = clamped.y;
             CanvasCameraController.rememberCurrentGroup(state);
             return;
         }
-        if (state.gridCanvasLocked) {
+        if (state.canvas.gridCanvasLocked) {
             clampLockedCanvasOffset(state, contentW, contentH);
         }
         CanvasCameraController.rememberCurrentGroup(state);
@@ -181,23 +181,23 @@ public final class CanvasLayoutService {
     private static void setCanvasWorldBounds(TabletUiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY) {
         int width = Math.max(1, maxLogicalX - minLogicalX);
         int height = Math.max(1, maxLogicalY - minLogicalY);
-        state.minimapWorldMinX = minLogicalX;
-        state.minimapWorldMinY = minLogicalY;
-        state.minimapWorldWidth = width;
-        state.minimapWorldHeight = height;
-        state.canvasNavigationMinX = minLogicalX;
-        state.canvasNavigationMinY = minLogicalY;
-        state.canvasNavigationWidth = width;
-        state.canvasNavigationHeight = height;
+        state.canvas.minimapWorldMinX = minLogicalX;
+        state.canvas.minimapWorldMinY = minLogicalY;
+        state.canvas.minimapWorldWidth = width;
+        state.canvas.minimapWorldHeight = height;
+        state.canvas.canvasNavigationMinX = minLogicalX;
+        state.canvas.canvasNavigationMinY = minLogicalY;
+        state.canvas.canvasNavigationWidth = width;
+        state.canvas.canvasNavigationHeight = height;
     }
 
     private static void clampLockedCanvasOffset(TabletUiState state, int contentW, int contentH) {
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int scaledW = Math.max(contentW, Math.round(contentW * zoom));
         int scaledH = Math.max(contentH, Math.round(contentH * zoom));
         int minX = Math.min(0, contentW - scaledW);
         int minY = Math.min(0, contentH - scaledH);
-        state.canvasOffsetX = Math.max(minX, Math.min(0, state.canvasOffsetX));
-        state.canvasOffsetY = Math.max(minY, Math.min(0, state.canvasOffsetY));
+        state.canvas.canvasOffsetX = Math.max(minX, Math.min(0, state.canvas.canvasOffsetX));
+        state.canvas.canvasOffsetY = Math.max(minY, Math.min(0, state.canvas.canvasOffsetY));
     }
 }

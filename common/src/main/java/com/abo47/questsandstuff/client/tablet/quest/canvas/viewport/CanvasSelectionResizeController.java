@@ -29,16 +29,16 @@ final class CanvasSelectionResizeController {
 
     void beginResize(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {
         CanvasTransformSessions.clearMainCanvasSession(state);
-        state.draggingSelection = false;
-        state.resizingSelection = true;
-        state.rotatingSelection = false;
-        state.resizeStartMouseX = CanvasSelectionBounds.toLogicalX(state, localX);
-        state.resizeStartMouseY = CanvasSelectionBounds.toLogicalY(state, localY);
+        state.canvas.draggingSelection = false;
+        state.canvas.resizingSelection = true;
+        state.canvas.rotatingSelection = false;
+        state.canvas.resizeStartMouseX = CanvasSelectionBounds.toLogicalX(state, localX);
+        state.canvas.resizeStartMouseY = CanvasSelectionBounds.toLogicalY(state, localY);
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card == null) {
                 continue;
@@ -47,12 +47,12 @@ final class CanvasSelectionResizeController {
             minY = Math.min(minY, card.visualLogicalY());
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
-            state.resizeStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
-            state.resizeStartScales.put(questId, CanvasSelectionBounds.scaleForQuest(questId, byQuestId));
+            state.canvas.resizeStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
+            state.canvas.resizeStartScales.put(questId, CanvasSelectionBounds.scaleForQuest(questId, byQuestId));
         }
         CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
-        state.resizeStartImageLayers.putAll(snapshot.images());
-        state.resizeStartTextLayers.putAll(snapshot.texts());
+        state.canvas.resizeStartImageLayers.putAll(snapshot.images());
+        state.canvas.resizeStartTextLayers.putAll(snapshot.texts());
         if (snapshot.hasBounds()) {
             minX = Math.min(minX, snapshot.left());
             minY = Math.min(minY, snapshot.top());
@@ -60,28 +60,28 @@ final class CanvasSelectionResizeController {
             maxY = Math.max(maxY, snapshot.bottom());
         }
         if (minX == Integer.MAX_VALUE) {
-            state.resizeStartLeft = 0;
-            state.resizeStartTop = 0;
-            state.resizeStartRight = TabletUiFactory.CARD_W;
-            state.resizeStartBottom = TabletUiFactory.CARD_H;
+            state.canvas.resizeStartLeft = 0;
+            state.canvas.resizeStartTop = 0;
+            state.canvas.resizeStartRight = TabletUiFactory.CARD_W;
+            state.canvas.resizeStartBottom = TabletUiFactory.CARD_H;
             return;
         }
-        state.resizeStartLeft = minX;
-        state.resizeStartTop = minY;
-        state.resizeStartRight = maxX;
-        state.resizeStartBottom = maxY;
+        state.canvas.resizeStartLeft = minX;
+        state.canvas.resizeStartTop = minY;
+        state.canvas.resizeStartRight = maxX;
+        state.canvas.resizeStartBottom = maxY;
     }
 
     void updateResize(int localX, int localY) {
         int logicalMouseX = CanvasSelectionBounds.toLogicalX(state, localX);
         int logicalMouseY = CanvasSelectionBounds.toLogicalY(state, localY);
         CanvasLayerSelectionSnapshot layerSnapshot = new CanvasLayerSelectionSnapshot(
-                state.resizeStartLeft,
-                state.resizeStartTop,
-                state.resizeStartRight,
-                state.resizeStartBottom,
-                state.resizeStartImageLayers,
-                state.resizeStartTextLayers
+                state.canvas.resizeStartLeft,
+                state.canvas.resizeStartTop,
+                state.canvas.resizeStartRight,
+                state.canvas.resizeStartBottom,
+                state.canvas.resizeStartImageLayers,
+                state.canvas.resizeStartTextLayers
         );
         CanvasGroupResizeTransform.Result resize = CanvasGroupResizeTransform.resizeBottomRight(
                 layerSnapshot,
@@ -90,12 +90,12 @@ final class CanvasSelectionResizeController {
                 resizeConstraints()
         );
 
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
-        for (Map.Entry<String, Float> entry : state.resizeStartScales.entrySet()) {
+        state.canvas.transientQuestPositions.clear();
+        state.canvas.transientQuestScales.clear();
+        for (Map.Entry<String, Float> entry : state.canvas.resizeStartScales.entrySet()) {
             String questId = entry.getKey();
             Float baseScale = entry.getValue();
-            CanvasPoint basePos = state.resizeStartPositions.get(questId);
+            CanvasPoint basePos = state.canvas.resizeStartPositions.get(questId);
             if (baseScale == null || basePos == null) {
                 continue;
             }
@@ -104,11 +104,11 @@ final class CanvasSelectionResizeController {
             int baseVisualY = basePos.y + CanvasGeometry.visualInsetY(state, baseScale);
             double baseCenterX = baseVisualX + CanvasGeometry.visualLogicalWidth(baseScale) / 2.0;
             double baseCenterY = baseVisualY + CanvasGeometry.visualLogicalHeight(baseScale) / 2.0;
-            double targetCenterX = resize.bounds().left() + (baseCenterX - state.resizeStartLeft) * resize.scaleX();
-            double targetCenterY = resize.bounds().top() + (baseCenterY - state.resizeStartTop) * resize.scaleY();
+            double targetCenterX = resize.bounds().left() + (baseCenterX - state.canvas.resizeStartLeft) * resize.scaleX();
+            double targetCenterY = resize.bounds().top() + (baseCenterY - state.canvas.resizeStartTop) * resize.scaleY();
             CanvasPoint anchor = CanvasGeometry.anchorForVisualCenter(state, targetCenterX, targetCenterY, targetScale);
-            state.transientQuestPositions.put(questId, new CanvasPoint(anchor.x, anchor.y));
-            state.transientQuestScales.put(questId, targetScale);
+            state.canvas.transientQuestPositions.put(questId, new CanvasPoint(anchor.x, anchor.y));
+            state.canvas.transientQuestScales.put(questId, targetScale);
         }
         for (CanvasImageLayer image : resize.images().values()) {
             CanvasLayerMutations.putTransientCanvasImage(state, fitAndClampImage(image));
@@ -120,15 +120,15 @@ final class CanvasSelectionResizeController {
 
     private CanvasGroupResizeTransform.Constraints resizeConstraints() {
         int minimum = Math.max(4, CanvasGeometry.gridSize(state) / 2);
-        int minLeft = state.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
-        int minTop = state.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
-        int maxRight = state.gridCanvasLocked ? state.canvasContentW : CanvasGroupResizeTransform.UNBOUNDED;
-        int maxBottom = state.gridCanvasLocked ? state.canvasContentH : CanvasGroupResizeTransform.UNBOUNDED;
+        int minLeft = state.canvas.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
+        int minTop = state.canvas.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
+        int maxRight = state.canvas.gridCanvasLocked ? state.canvas.canvasContentW : CanvasGroupResizeTransform.UNBOUNDED;
+        int maxBottom = state.canvas.gridCanvasLocked ? state.canvas.canvasContentH : CanvasGroupResizeTransform.UNBOUNDED;
         return new CanvasGroupResizeTransform.Constraints(
                 minimum,
                 minimum,
                 CanvasGeometry.gridSize(state),
-                state.gridSnapLocked || isShiftDown(),
+                state.canvas.gridSnapLocked || isShiftDown(),
                 isShiftDown() || isSingleQuestOnlyResize(),
                 minLeft,
                 minTop,
@@ -138,17 +138,17 @@ final class CanvasSelectionResizeController {
     }
 
     private boolean isSingleQuestOnlyResize() {
-        return state.resizeStartScales.size() == 1
-                && state.resizeStartImageLayers.isEmpty()
-                && state.resizeStartTextLayers.isEmpty();
+        return state.canvas.resizeStartScales.size() == 1
+                && state.canvas.resizeStartImageLayers.isEmpty()
+                && state.canvas.resizeStartTextLayers.isEmpty();
     }
 
     private CanvasImageLayer fittedImageIfGridLocked(CanvasImageLayer image) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
     private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {

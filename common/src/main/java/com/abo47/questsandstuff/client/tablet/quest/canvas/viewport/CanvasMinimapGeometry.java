@@ -46,10 +46,10 @@ public final class CanvasMinimapGeometry {
     }
 
     public static WorldBounds worldBounds(TabletUiState state, List<QuestCardLayout> cards) {
-        int minX = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, state.canvasContentX, true));
-        int minY = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, state.canvasContentY, true));
-        int maxX = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, state.canvasContentX + Math.max(1, state.canvasContentW), true));
-        int maxY = (int) Math.ceil(CanvasCameraController.screenToLogicalY(state, state.canvasContentY + Math.max(1, state.canvasContentH), true));
+        int minX = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX, true));
+        int minY = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY, true));
+        int maxX = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX + Math.max(1, state.canvas.canvasContentW), true));
+        int maxY = (int) Math.ceil(CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY + Math.max(1, state.canvas.canvasContentH), true));
 
         for (QuestCardLayout card : cards) {
             minX = Math.min(minX, card.visualLogicalX());
@@ -87,15 +87,15 @@ public final class CanvasMinimapGeometry {
     }
 
     public static int mapWorldX(TabletUiState state, int localX) {
-        float xNorm = (float) (localX - state.minimapX) / (float) Math.max(1, state.minimapW);
+        float xNorm = (float) (localX - state.canvas.minimapX) / (float) Math.max(1, state.canvas.minimapW);
         xNorm = Math.max(0.0f, Math.min(1.0f, xNorm));
-        return state.minimapWorldMinX + Math.round(xNorm * Math.max(1, state.minimapWorldWidth));
+        return state.canvas.minimapWorldMinX + Math.round(xNorm * Math.max(1, state.canvas.minimapWorldWidth));
     }
 
     public static int mapWorldY(TabletUiState state, int localY) {
-        float yNorm = (float) (localY - state.minimapY) / (float) Math.max(1, state.minimapH);
+        float yNorm = (float) (localY - state.canvas.minimapY) / (float) Math.max(1, state.canvas.minimapH);
         yNorm = Math.max(0.0f, Math.min(1.0f, yNorm));
-        return state.minimapWorldMinY + Math.round(yNorm * Math.max(1, state.minimapWorldHeight));
+        return state.canvas.minimapWorldMinY + Math.round(yNorm * Math.max(1, state.canvas.minimapWorldHeight));
     }
 
     public static boolean hit(int localX, int localY, int x, int y, int w, int h) {

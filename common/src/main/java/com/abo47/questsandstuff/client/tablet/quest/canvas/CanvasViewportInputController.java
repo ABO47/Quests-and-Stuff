@@ -43,13 +43,13 @@ final class CanvasViewportInputController {
             double dragX,
             double dragY
     ) {
-        if (!state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
 
-        if (state.contextMenuOpen && state.contextMenuScrollDragging) {
+        if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
             return true;
         }
@@ -66,7 +66,7 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.canvasTextMenuOpen && viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+        if (state.canvas.canvasTextMenuOpen && viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY)) {
             return true;
         }
 
@@ -74,11 +74,11 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.draggingCanvas) {
-            int dx = localX - state.dragCurrentX;
-            int dy = localY - state.dragCurrentY;
-            state.dragCurrentX = localX;
-            state.dragCurrentY = localY;
+        if (state.canvas.draggingCanvas) {
+            int dx = localX - state.canvas.dragCurrentX;
+            int dy = localY - state.canvas.dragCurrentY;
+            state.canvas.dragCurrentX = localX;
+            state.canvas.dragCurrentY = localY;
             if (viewport.previewCanvasPan(dx, dy)) {
                 if (viewport.panPreviewNeedsRefresh()) {
                     viewport.commitCanvasPan();
@@ -91,19 +91,19 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
+        if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
             elementTransforms.updateImageTransform(localX, localY, cards);
             return true;
         }
-        if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
+        if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
             elementTransforms.updateTextTransform(localX, localY, cards);
-            if (state.canvasTextMenuOpen) {
+            if (state.canvas.canvasTextMenuOpen) {
                 viewport.refreshCanvas();
             }
             return true;
         }
 
-        if (state.draggingSelection) {
+        if (state.canvas.draggingSelection) {
             boolean liveQuestPreview = viewport.selectionDragPreviewSupported();
             selectionTransforms.updateDrag(localX, localY, cards, byQuestId, liveQuestPreview);
             if (liveQuestPreview && viewport.previewSelectionDrag()) {
@@ -116,21 +116,21 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.resizingSelection) {
+        if (state.canvas.resizingSelection) {
             selectionTransforms.updateResize(localX, localY);
             viewport.refreshCanvas();
             return true;
         }
 
-        if (state.rotatingSelection) {
+        if (state.canvas.rotatingSelection) {
             selectionTransforms.updateRotate(localX, localY, byQuestId);
             viewport.refreshCanvas();
             return true;
         }
 
-        if (state.boxSelecting) {
-            state.boxCurrentX = localX;
-            state.boxCurrentY = localY;
+        if (state.canvas.boxSelecting) {
+            state.canvas.boxCurrentX = localX;
+            state.canvas.boxCurrentY = localY;
             CanvasBoxSelectionController.updateBoxSelection(state, cards);
             return true;
         }
@@ -150,14 +150,14 @@ final class CanvasViewportInputController {
             double mouseY,
             int button
     ) {
-        if (!state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseReleased(mouseX, mouseY, button);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
-        if (state.contextMenuOpen && state.contextMenuScrollDragging) {
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
+        if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseReleased(mouseX, mouseY, button);
-            if (state.contextMenuScrollDragging) {
+            if (state.contextMenu.contextMenuScrollDragging) {
                 ContextMenuState.setScrollDragging(state, false);
             }
             refresher.run();
@@ -173,8 +173,8 @@ final class CanvasViewportInputController {
             }
             return true;
         }
-        if (state.draggingCanvas) {
-            state.draggingCanvas = false;
+        if (state.canvas.draggingCanvas) {
+            state.canvas.draggingCanvas = false;
             viewport.commitCanvasPan();
             viewport.refreshCanvas();
             return true;
@@ -184,37 +184,37 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.canvasTextMenuOpen && viewport.callSuperMouseReleased(mouseX, mouseY, button)) {
+        if (state.canvas.canvasTextMenuOpen && viewport.callSuperMouseReleased(mouseX, mouseY, button)) {
             return true;
         }
 
-        if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
+        if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvasSelection.primaryImageId());
-            CanvasLayerMutations.persistCanvasImage(state, group, state.canvasSelection.primaryImageId());
+            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
+            CanvasLayerMutations.persistCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
-        if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
+        if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvasSelection.primaryTextId());
-            CanvasLayerMutations.persistCanvasText(state, group, state.canvasSelection.primaryTextId());
+            CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
+            CanvasLayerMutations.persistCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
 
-        if (state.draggingSelection) {
-            state.draggingSelection = false;
+        if (state.canvas.draggingSelection) {
+            state.canvas.draggingSelection = false;
             viewport.endSelectionDragPreview();
-            int movedImages = state.transientCanvasImages.size();
-            int movedTexts = state.transientCanvasTexts.size();
-            if (state.transientQuestPositions.isEmpty() && (state.dragSelectionDeltaX != 0 || state.dragSelectionDeltaY != 0)) {
+            int movedImages = state.canvas.transientCanvasImages.size();
+            int movedTexts = state.canvas.transientCanvasTexts.size();
+            if (state.canvas.transientQuestPositions.isEmpty() && (state.canvas.dragSelectionDeltaX != 0 || state.canvas.dragSelectionDeltaY != 0)) {
                 selectionTransforms.populateDragPositions();
             }
-            if (!state.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
+            if (!state.canvas.transientQuestPositions.isEmpty()) {
+                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
             String group = TabletStateQueries.selectedGroupName(state);
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
@@ -226,36 +226,24 @@ final class CanvasViewportInputController {
             }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} delta={},{}",
-                    state.transientQuestPositions.size(),
+                    state.canvas.transientQuestPositions.size(),
                     movedImages,
                     movedTexts,
-                    state.dragSelectionDeltaX,
-                    state.dragSelectionDeltaY
+                    state.canvas.dragSelectionDeltaX,
+                    state.canvas.dragSelectionDeltaY
             );
             selectionTransforms.clear();
             refresher.run();
             return true;
         }
 
-        if (state.resizingSelection) {
-            state.resizingSelection = false;
-            if (!state.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
+        if (state.canvas.resizingSelection) {
+            state.canvas.resizingSelection = false;
+            if (!state.canvas.transientQuestPositions.isEmpty()) {
+                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            if (!state.transientQuestScales.isEmpty()) {
-                EditorCommandClient.runCanvasScaleAction(player, state, state.transientQuestScales);
-            }
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
-            persistSelectedCanvasLayers(state);
-            selectionTransforms.clear();
-            refresher.run();
-            return true;
-        }
-
-        if (state.rotatingSelection) {
-            state.rotatingSelection = false;
-            if (!state.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
+            if (!state.canvas.transientQuestScales.isEmpty()) {
+                EditorCommandClient.runCanvasScaleAction(player, state, state.canvas.transientQuestScales);
             }
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
             persistSelectedCanvasLayers(state);
@@ -264,8 +252,20 @@ final class CanvasViewportInputController {
             return true;
         }
 
-        if (state.boxSelecting) {
-            state.boxSelecting = false;
+        if (state.canvas.rotatingSelection) {
+            state.canvas.rotatingSelection = false;
+            if (!state.canvas.transientQuestPositions.isEmpty()) {
+                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
+            }
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
+            persistSelectedCanvasLayers(state);
+            selectionTransforms.clear();
+            refresher.run();
+            return true;
+        }
+
+        if (state.canvas.boxSelecting) {
+            state.canvas.boxSelecting = false;
             CanvasBoxSelectionController.finishBoxSelection(state, cards);
             refresher.run();
             return true;
@@ -296,17 +296,17 @@ final class CanvasViewportInputController {
         if (!viewport.isMouseOverElement(mouseX, mouseY)) {
             return viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvasPanelX + state.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
         if (EntityMotionEditor.isMainCanvasOpen(state) && EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             refresher.run();
             return true;
         }
-        if (state.contextMenuOpen) {
-            int previous = state.contextMenuScroll;
+        if (state.contextMenu.contextMenuOpen) {
+            int previous = state.contextMenu.contextMenuScroll;
             CanvasContextMenuController.scrollContextMenu(state, wheelDelta);
-            if (state.contextMenuScroll != previous) {
+            if (state.contextMenu.contextMenuScroll != previous) {
                 refresher.run();
             } else if (viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta)) {
                 refresher.run();
@@ -316,7 +316,7 @@ final class CanvasViewportInputController {
         if (CanvasMinimapController.isPanelHit(state, localX, localY)) {
             return true;
         }
-        if (state.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY)) {
+        if (state.canvas.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY)) {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             return true;
         }

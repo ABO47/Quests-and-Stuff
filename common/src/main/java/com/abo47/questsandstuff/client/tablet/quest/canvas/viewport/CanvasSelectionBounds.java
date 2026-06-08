@@ -27,7 +27,7 @@ final class CanvasSelectionBounds {
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
-        for (String questId : state.dragStartPositions.keySet()) {
+        for (String questId : state.canvas.dragStartPositions.keySet()) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card == null) {
                 continue;
@@ -37,7 +37,7 @@ final class CanvasSelectionBounds {
             maxX = Math.max(maxX, card.logicalX() + card.slotLogicalWidth());
             maxY = Math.max(maxY, card.logicalY() + card.slotLogicalHeight());
         }
-        for (String imageId : state.dragStartImagePositions.keySet()) {
+        for (String imageId : state.canvas.dragStartImagePositions.keySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, imageId);
             if (image == null) {
                 continue;
@@ -48,7 +48,7 @@ final class CanvasSelectionBounds {
             maxX = Math.max(maxX, bounds.right());
             maxY = Math.max(maxY, bounds.bottom());
         }
-        for (String textId : state.dragStartTextPositions.keySet()) {
+        for (String textId : state.canvas.dragStartTextPositions.keySet()) {
             CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
             if (text == null) {
                 continue;
@@ -66,24 +66,24 @@ final class CanvasSelectionBounds {
     }
 
     static CanvasPoint clampSelectionDelta(TabletUiState state, int dx, int dy) {
-        if (!state.gridCanvasLocked || !hasDragStartBounds(state)) {
+        if (!state.canvas.gridCanvasLocked || !hasDragStartBounds(state)) {
             return new CanvasPoint(dx, dy);
         }
-        int left = state.dragStartBoundsLeft + dx;
-        int top = state.dragStartBoundsTop + dy;
-        int right = state.dragStartBoundsRight + dx;
-        int bottom = state.dragStartBoundsBottom + dy;
+        int left = state.canvas.dragStartBoundsLeft + dx;
+        int top = state.canvas.dragStartBoundsTop + dy;
+        int right = state.canvas.dragStartBoundsRight + dx;
+        int bottom = state.canvas.dragStartBoundsBottom + dy;
         if (left < 0) {
             dx -= left;
         }
         if (top < 0) {
             dy -= top;
         }
-        if (right > state.canvasContentW) {
-            dx -= right - state.canvasContentW;
+        if (right > state.canvas.canvasContentW) {
+            dx -= right - state.canvas.canvasContentW;
         }
-        if (bottom > state.canvasContentH) {
-            dy -= bottom - state.canvasContentH;
+        if (bottom > state.canvas.canvasContentH) {
+            dy -= bottom - state.canvas.canvasContentH;
         }
         return new CanvasPoint(dx, dy);
     }
@@ -93,15 +93,15 @@ final class CanvasSelectionBounds {
             return CanvasSnapEngine.Bounds.invalid();
         }
         return new CanvasSnapEngine.Bounds(
-                state.dragStartBoundsLeft + dx,
-                state.dragStartBoundsTop + dy,
-                state.dragStartBoundsRight + dx,
-                state.dragStartBoundsBottom + dy
+                state.canvas.dragStartBoundsLeft + dx,
+                state.canvas.dragStartBoundsTop + dy,
+                state.canvas.dragStartBoundsRight + dx,
+                state.canvas.dragStartBoundsBottom + dy
         );
     }
 
     static boolean hasDragStartBounds(TabletUiState state) {
-        return state.dragStartBoundsRight > state.dragStartBoundsLeft && state.dragStartBoundsBottom > state.dragStartBoundsTop;
+        return state.canvas.dragStartBoundsRight > state.canvas.dragStartBoundsLeft && state.canvas.dragStartBoundsBottom > state.canvas.dragStartBoundsTop;
     }
 
     static int toLogicalX(TabletUiState state, int localX) {

@@ -10,48 +10,48 @@ public final class CanvasTransformSessions {
         if (state == null) {
             return;
         }
-        state.draggingSelection = false;
-        state.resizingSelection = false;
-        state.rotatingSelection = false;
-        state.draggingCanvasImage = false;
-        state.resizingCanvasImage = false;
-        state.rotatingCanvasImage = false;
-        state.canvasImageTransformAxis = "";
-        state.draggingCanvasText = false;
-        state.resizingCanvasText = false;
-        state.rotatingCanvasText = false;
+        state.canvas.draggingSelection = false;
+        state.canvas.resizingSelection = false;
+        state.canvas.rotatingSelection = false;
+        state.canvas.draggingCanvasImage = false;
+        state.canvas.resizingCanvasImage = false;
+        state.canvas.rotatingCanvasImage = false;
+        state.canvas.canvasImageTransformAxis = "";
+        state.canvas.draggingCanvasText = false;
+        state.canvas.resizingCanvasText = false;
+        state.canvas.rotatingCanvasText = false;
 
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
-        state.transientCanvasImages.clear();
-        state.transientCanvasTexts.clear();
+        state.canvas.transientQuestPositions.clear();
+        state.canvas.transientQuestScales.clear();
+        state.canvas.transientCanvasImages.clear();
+        state.canvas.transientCanvasTexts.clear();
         clearSharedLayerTransformSnapshots(state);
 
-        state.canvasImageDragStartX = 0;
-        state.canvasImageDragStartY = 0;
-        state.canvasImageStartX = 0;
-        state.canvasImageStartY = 0;
-        state.canvasImageStartW = 0;
-        state.canvasImageStartH = 0;
-        state.canvasImageStartPivotX = 0;
-        state.canvasImageStartPivotY = 0;
-        state.canvasImageStartRotation = 0;
-        state.canvasImageStartYaw = 0;
-        state.canvasImageStartPitch = 0;
-        state.canvasImageRotatePivotX = 0.0;
-        state.canvasImageRotatePivotY = 0.0;
-        state.canvasImageRotateStartAngle = 0.0;
+        state.canvas.canvasImageDragStartX = 0;
+        state.canvas.canvasImageDragStartY = 0;
+        state.canvas.canvasImageStartX = 0;
+        state.canvas.canvasImageStartY = 0;
+        state.canvas.canvasImageStartW = 0;
+        state.canvas.canvasImageStartH = 0;
+        state.canvas.canvasImageStartPivotX = 0;
+        state.canvas.canvasImageStartPivotY = 0;
+        state.canvas.canvasImageStartRotation = 0;
+        state.canvas.canvasImageStartYaw = 0;
+        state.canvas.canvasImageStartPitch = 0;
+        state.canvas.canvasImageRotatePivotX = 0.0;
+        state.canvas.canvasImageRotatePivotY = 0.0;
+        state.canvas.canvasImageRotateStartAngle = 0.0;
 
-        state.canvasTextDragStartX = 0;
-        state.canvasTextDragStartY = 0;
-        state.canvasTextStartX = 0;
-        state.canvasTextStartY = 0;
-        state.canvasTextStartW = 0;
-        state.canvasTextStartH = 0;
-        state.canvasTextStartRotation = 0;
-        state.canvasTextRotatePivotX = 0.0;
-        state.canvasTextRotatePivotY = 0.0;
-        state.canvasTextRotateStartAngle = 0.0;
+        state.canvas.canvasTextDragStartX = 0;
+        state.canvas.canvasTextDragStartY = 0;
+        state.canvas.canvasTextStartX = 0;
+        state.canvas.canvasTextStartY = 0;
+        state.canvas.canvasTextStartW = 0;
+        state.canvas.canvasTextStartH = 0;
+        state.canvas.canvasTextStartRotation = 0;
+        state.canvas.canvasTextRotatePivotX = 0.0;
+        state.canvas.canvasTextRotatePivotY = 0.0;
+        state.canvas.canvasTextRotateStartAngle = 0.0;
         clearSnapGuides(state);
     }
 
@@ -59,26 +59,26 @@ public final class CanvasTransformSessions {
         if (state == null) {
             return;
         }
-        state.questDetailsTransformKind = "";
-        state.questDetailsTransformId = "";
-        state.questDetailsTransformMode = "";
-        state.questDetailsTransformAxis = "";
-        state.questDetailsTransformStartMouseX = 0;
-        state.questDetailsTransformStartMouseY = 0;
-        state.questDetailsTransformStartX = 0;
-        state.questDetailsTransformStartY = 0;
-        state.questDetailsTransformStartW = 0;
-        state.questDetailsTransformStartH = 0;
-        state.questDetailsTransformStartPivotX = 0;
-        state.questDetailsTransformStartPivotY = 0;
-        state.questDetailsTransformStartRotation = 0;
-        state.questDetailsTransformStartYaw = 0;
-        state.questDetailsTransformStartPitch = 0;
-        state.questDetailsTransformPivotX = 0.0;
-        state.questDetailsTransformPivotY = 0.0;
-        state.questDetailsTransformStartAngle = 0.0;
-        state.questDetailsTransientImages.clear();
-        state.questDetailsTransientTexts.clear();
+        state.questDetails.questDetailsTransformKind = "";
+        state.questDetails.questDetailsTransformId = "";
+        state.questDetails.questDetailsTransformMode = "";
+        state.questDetails.questDetailsTransformAxis = "";
+        state.questDetails.questDetailsTransformStartMouseX = 0;
+        state.questDetails.questDetailsTransformStartMouseY = 0;
+        state.questDetails.questDetailsTransformStartX = 0;
+        state.questDetails.questDetailsTransformStartY = 0;
+        state.questDetails.questDetailsTransformStartW = 0;
+        state.questDetails.questDetailsTransformStartH = 0;
+        state.questDetails.questDetailsTransformStartPivotX = 0;
+        state.questDetails.questDetailsTransformStartPivotY = 0;
+        state.questDetails.questDetailsTransformStartRotation = 0;
+        state.questDetails.questDetailsTransformStartYaw = 0;
+        state.questDetails.questDetailsTransformStartPitch = 0;
+        state.questDetails.questDetailsTransformPivotX = 0.0;
+        state.questDetails.questDetailsTransformPivotY = 0.0;
+        state.questDetails.questDetailsTransformStartAngle = 0.0;
+        state.questDetails.questDetailsTransientImages.clear();
+        state.questDetails.questDetailsTransientTexts.clear();
         clearSharedLayerTransformSnapshots(state);
         clearSnapGuides(state);
     }
@@ -87,63 +87,63 @@ public final class CanvasTransformSessions {
         if (state == null) {
             return;
         }
-        state.transientCanvasImages.clear();
-        state.transientCanvasTexts.clear();
+        state.canvas.transientCanvasImages.clear();
+        state.canvas.transientCanvasTexts.clear();
     }
 
     public static void clearQuestDetailsPreviews(TabletUiState state) {
         if (state == null) {
             return;
         }
-        state.questDetailsTransientImages.clear();
-        state.questDetailsTransientTexts.clear();
+        state.questDetails.questDetailsTransientImages.clear();
+        state.questDetails.questDetailsTransientTexts.clear();
     }
 
     public static void clearSnapGuides(TabletUiState state) {
         if (state == null) {
             return;
         }
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
-        state.snapGuideX = 0;
-        state.snapGuideY = 0;
+        state.canvas.snapGuideXVisible = false;
+        state.canvas.snapGuideYVisible = false;
+        state.canvas.snapGuideX = 0;
+        state.canvas.snapGuideY = 0;
     }
 
     private static void clearSharedLayerTransformSnapshots(TabletUiState state) {
-        state.dragStartPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.dragStartTextPositions.clear();
-        state.resizeStartScales.clear();
-        state.resizeStartPositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        state.rotateStartPositions.clear();
-        state.rotateStartCenters.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
-        state.resizeStartLeft = 0;
-        state.resizeStartTop = 0;
-        state.resizeStartRight = 0;
-        state.resizeStartBottom = 0;
-        state.resizeStartMouseX = 0;
-        state.resizeStartMouseY = 0;
-        state.rotatePivotX = 0.0;
-        state.rotatePivotY = 0.0;
-        state.rotateStartAngle = 0.0;
-        state.rotatePreviewAngle = 0.0;
-        state.rotateStartBoundsLeft = 0;
-        state.rotateStartBoundsTop = 0;
-        state.rotateStartBoundsRight = 0;
-        state.rotateStartBoundsBottom = 0;
-        state.dragSelectionDeltaX = 0;
-        state.dragSelectionDeltaY = 0;
-        state.dragStartBoundsLeft = 0;
-        state.dragStartBoundsTop = 0;
-        state.dragStartBoundsRight = 0;
-        state.dragStartBoundsBottom = 0;
-        state.dragStartSelectionLeft = 0;
-        state.dragStartSelectionTop = 0;
-        state.dragStartSelectionRight = 0;
-        state.dragStartSelectionBottom = 0;
+        state.canvas.dragStartPositions.clear();
+        state.canvas.dragStartImagePositions.clear();
+        state.canvas.dragStartTextPositions.clear();
+        state.canvas.resizeStartScales.clear();
+        state.canvas.resizeStartPositions.clear();
+        state.canvas.resizeStartImageLayers.clear();
+        state.canvas.resizeStartTextLayers.clear();
+        state.canvas.rotateStartPositions.clear();
+        state.canvas.rotateStartCenters.clear();
+        state.canvas.rotateStartImageLayers.clear();
+        state.canvas.rotateStartTextLayers.clear();
+        state.canvas.resizeStartLeft = 0;
+        state.canvas.resizeStartTop = 0;
+        state.canvas.resizeStartRight = 0;
+        state.canvas.resizeStartBottom = 0;
+        state.canvas.resizeStartMouseX = 0;
+        state.canvas.resizeStartMouseY = 0;
+        state.canvas.rotatePivotX = 0.0;
+        state.canvas.rotatePivotY = 0.0;
+        state.canvas.rotateStartAngle = 0.0;
+        state.canvas.rotatePreviewAngle = 0.0;
+        state.canvas.rotateStartBoundsLeft = 0;
+        state.canvas.rotateStartBoundsTop = 0;
+        state.canvas.rotateStartBoundsRight = 0;
+        state.canvas.rotateStartBoundsBottom = 0;
+        state.canvas.dragSelectionDeltaX = 0;
+        state.canvas.dragSelectionDeltaY = 0;
+        state.canvas.dragStartBoundsLeft = 0;
+        state.canvas.dragStartBoundsTop = 0;
+        state.canvas.dragStartBoundsRight = 0;
+        state.canvas.dragStartBoundsBottom = 0;
+        state.canvas.dragStartSelectionLeft = 0;
+        state.canvas.dragStartSelectionTop = 0;
+        state.canvas.dragStartSelectionRight = 0;
+        state.canvas.dragStartSelectionBottom = 0;
     }
 }

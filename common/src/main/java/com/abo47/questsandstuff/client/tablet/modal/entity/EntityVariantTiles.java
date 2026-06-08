@@ -90,10 +90,10 @@ final class EntityVariantTiles {
                 model.tiles(),
                 model.emptyText(),
                 ScrollState.bind(
-                        () -> state.entityVariantScroll,
-                        value -> state.entityVariantScroll = value,
-                        () -> state.entityVariantScrollDragging,
-                        dragging -> state.entityVariantScrollDragging = dragging
+                        () -> state.pickers.entityVariantScroll,
+                        value -> state.pickers.entityVariantScroll = value,
+                        () -> state.pickers.entityVariantScrollDragging,
+                        dragging -> state.pickers.entityVariantScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -123,11 +123,11 @@ final class EntityVariantTiles {
         boolean active = folder.key().equals(EntityVariantCatalog.variantFolderFor(model.entityId(), model.selected()));
         surface.addWidget(folderTile(folder, active, tileX, tileY, tileW, tileH));
         ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
-            state.entityVariantFolder = folder.key();
-            state.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
-            state.entityVariantSearch = "";
-            state.entityVariantSearchFocused = false;
-            state.entityVariantScroll = 0;
+            state.pickers.entityVariantFolder = folder.key();
+            state.pickers.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
+            state.pickers.entityVariantSearch = "";
+            state.pickers.entityVariantSearchFocused = false;
+            state.pickers.entityVariantScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder opened target={} entity={} folder={}", model.target(), model.entityId(), folder.key());
             refresh.run();
         });
@@ -140,7 +140,7 @@ final class EntityVariantTiles {
         boolean active = entry.key().equals(model.selected());
         surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, tileW, tileH, model.activeFolder()));
         ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
-            state.entityVariantSelected = entry.key();
+            state.pickers.entityVariantSelected = entry.key();
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant selected target={} entity={} variant={}", model.target(), model.entityId(), entry.key());
             if (click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
                 EntityVariantApplyActions.apply(player, state, model.target(), entry.key());

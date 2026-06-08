@@ -17,27 +17,27 @@ final class QuestObjectiveListInteractions {
     }
 
     static void select(TabletUiState state, String kind, String id) {
-        state.questDetailsSelectedObjectiveKind = "requirements".equals(kind) ? "requirement" : kind;
-        state.questDetailsSelectedObjectiveKind = "rewards".equals(kind) ? "reward" : state.questDetailsSelectedObjectiveKind;
-        state.questDetailsSelectedObjectiveId = id == null ? "" : id;
+        state.questDetails.questDetailsSelectedObjectiveKind = "requirements".equals(kind) ? "requirement" : kind;
+        state.questDetails.questDetailsSelectedObjectiveKind = "rewards".equals(kind) ? "reward" : state.questDetails.questDetailsSelectedObjectiveKind;
+        state.questDetails.questDetailsSelectedObjectiveId = id == null ? "" : id;
     }
 
     static boolean clearSelection(TabletUiState state, String reason) {
         if (state == null) {
             return false;
         }
-        boolean hadSelection = !state.questDetailsSelectedObjectiveKind.isBlank()
-                || !state.questDetailsSelectedObjectiveId.isBlank();
-        boolean hadDrag = state.questDetailsObjectiveDragPending
-                || state.questDetailsObjectiveDragActive
-                || !state.questDetailsObjectiveDragKind.isBlank()
-                || !state.questDetailsObjectiveDragId.isBlank();
-        boolean hadRename = state.questDetailsObjectiveRenameOpen;
+        boolean hadSelection = !state.questDetails.questDetailsSelectedObjectiveKind.isBlank()
+                || !state.questDetails.questDetailsSelectedObjectiveId.isBlank();
+        boolean hadDrag = state.questDetails.questDetailsObjectiveDragPending
+                || state.questDetails.questDetailsObjectiveDragActive
+                || !state.questDetails.questDetailsObjectiveDragKind.isBlank()
+                || !state.questDetails.questDetailsObjectiveDragId.isBlank();
+        boolean hadRename = state.questDetails.questDetailsObjectiveRenameOpen;
         if (!hadSelection && !hadDrag && !hadRename) {
             return false;
         }
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedObjectiveKind = "";
+        state.questDetails.questDetailsSelectedObjectiveId = "";
         ContextMenuState.clearDeleteConfirm(state);
         clearDrag(state);
         QuestDetailsTransientState.closeObjectiveRename(state);
@@ -47,17 +47,17 @@ final class QuestObjectiveListInteractions {
 
     static void selectAndBeginDrag(TabletUiState state, String kind, String id, double mouseX, double mouseY) {
         select(state, kind, id);
-        state.questDetailsDescriptionSelection.setPrimaryTextId("");
-        state.questDetailsDescriptionSelection.setPrimaryImageId("");
-        state.questDetailsDescriptionSelection.textIds().clear();
-        state.questDetailsDescriptionSelection.imageIds().clear();
-        state.questDetailsObjectiveDragPending = true;
-        state.questDetailsObjectiveDragActive = false;
-        state.questDetailsObjectiveDragKind = ("requirement".equals(kind) || "requirements".equals(kind)) ? "requirements" : "rewards";
-        state.questDetailsObjectiveDragId = id;
-        state.questDetailsObjectiveDragStartX = (int) Math.round(mouseX);
-        state.questDetailsObjectiveDragStartY = (int) Math.round(mouseY);
-        state.questDetailsObjectiveDragTargetIndex = -1;
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        state.questDetails.questDetailsObjectiveDragPending = true;
+        state.questDetails.questDetailsObjectiveDragActive = false;
+        state.questDetails.questDetailsObjectiveDragKind = ("requirement".equals(kind) || "requirements".equals(kind)) ? "requirements" : "rewards";
+        state.questDetails.questDetailsObjectiveDragId = id;
+        state.questDetails.questDetailsObjectiveDragStartX = (int) Math.round(mouseX);
+        state.questDetails.questDetailsObjectiveDragStartY = (int) Math.round(mouseY);
+        state.questDetails.questDetailsObjectiveDragTargetIndex = -1;
     }
 
     static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
@@ -65,24 +65,24 @@ final class QuestObjectiveListInteractions {
             clearDrag(state);
             return false;
         }
-        if (!state.questDetailsObjectiveDragKind.equals(kind)) {
+        if (!state.questDetails.questDetailsObjectiveDragKind.equals(kind)) {
             return false;
         }
-        if (state.questDetailsObjectiveDragActive) {
+        if (state.questDetails.questDetailsObjectiveDragActive) {
             int next = objectiveInsertIndexAtY(state, entries, kind, listY, listBottom, localY);
-            if (next != state.questDetailsObjectiveDragTargetIndex) {
-                state.questDetailsObjectiveDragTargetIndex = next;
+            if (next != state.questDetails.questDetailsObjectiveDragTargetIndex) {
+                state.questDetails.questDetailsObjectiveDragTargetIndex = next;
                 refresh.run();
             }
             return true;
         }
-        if (state.questDetailsObjectiveDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.questDetailsObjectiveDragStartX, state.questDetailsObjectiveDragStartY)) {
+        if (state.questDetails.questDetailsObjectiveDragPending && button == 0) {
+            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.questDetails.questDetailsObjectiveDragStartX, state.questDetails.questDetailsObjectiveDragStartY)) {
                 return true;
             }
-            state.questDetailsObjectiveDragPending = false;
-            state.questDetailsObjectiveDragActive = true;
-            state.questDetailsObjectiveDragTargetIndex = objectiveInsertIndexAtY(state, entries, kind, listY, listBottom, localY);
+            state.questDetails.questDetailsObjectiveDragPending = false;
+            state.questDetails.questDetailsObjectiveDragActive = true;
+            state.questDetails.questDetailsObjectiveDragTargetIndex = objectiveInsertIndexAtY(state, entries, kind, listY, listBottom, localY);
             refresh.run();
             return true;
         }
@@ -94,12 +94,12 @@ final class QuestObjectiveListInteractions {
             clearDrag(state);
             return false;
         }
-        if (state.questDetailsObjectiveDragActive && state.questDetailsObjectiveDragKind.equals(kind)) {
+        if (state.questDetails.questDetailsObjectiveDragActive && state.questDetails.questDetailsObjectiveDragKind.equals(kind)) {
             finishDrag(player, state, questId, entries);
             refresh.run();
             return true;
         }
-        if (state.questDetailsObjectiveDragPending && state.questDetailsObjectiveDragKind.equals(kind)) {
+        if (state.questDetails.questDetailsObjectiveDragPending && state.questDetails.questDetailsObjectiveDragKind.equals(kind)) {
             clearDrag(state);
             refresh.run();
             return true;
@@ -115,55 +115,55 @@ final class QuestObjectiveListInteractions {
     }
 
     static boolean deleteSelected(Player player, TabletUiState state, String questId) {
-        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
-        boolean task = "requirement".equals(state.questDetailsSelectedObjectiveKind);
+        boolean task = "requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind);
         if (task) {
-            EditorCommandClient.removeQuestTask(player, questId, state.questDetailsSelectedObjectiveId);
-        } else if ("reward".equals(state.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.removeQuestReward(player, questId, state.questDetailsSelectedObjectiveId);
+            EditorCommandClient.removeQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
+        } else if ("reward".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
+            EditorCommandClient.removeQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
         } else {
             return false;
         }
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedObjectiveKind = "";
+        state.questDetails.questDetailsSelectedObjectiveId = "";
         clearDrag(state);
         return true;
     }
 
     static boolean moveSelected(Player player, TabletUiState state, String questId, int offset) {
-        if (!QuestDetailsEditState.canEdit(state) || state.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
+        if (!QuestDetailsEditState.canEdit(state) || state.questDetails.questDetailsSelectedObjectiveId.isBlank() || offset == 0) {
             return false;
         }
-        if ("requirement".equals(state.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.moveQuestTask(player, questId, state.questDetailsSelectedObjectiveId, offset);
+        if ("requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
+            EditorCommandClient.moveQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
             return true;
         }
-        if ("reward".equals(state.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.moveQuestReward(player, questId, state.questDetailsSelectedObjectiveId, offset);
+        if ("reward".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
+            EditorCommandClient.moveQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
             return true;
         }
         return false;
     }
 
     static void clearDrag(TabletUiState state) {
-        state.questDetailsObjectiveDragPending = false;
-        state.questDetailsObjectiveDragActive = false;
-        state.questDetailsObjectiveDragKind = "";
-        state.questDetailsObjectiveDragId = "";
-        state.questDetailsObjectiveDragTargetIndex = -1;
+        state.questDetails.questDetailsObjectiveDragPending = false;
+        state.questDetails.questDetailsObjectiveDragActive = false;
+        state.questDetails.questDetailsObjectiveDragKind = "";
+        state.questDetails.questDetailsObjectiveDragId = "";
+        state.questDetails.questDetailsObjectiveDragTargetIndex = -1;
     }
 
     private static int objectiveInsertIndexAtY(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY) {
-        int scroll = "requirements".equals(kind) ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        int scroll = "requirements".equals(kind) ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
         return CardReorderController.insertIndexAtY(localY, listY, listBottom, scroll, QuestDetailsObjectivesPanel.LIST_PAD, QuestDetailsObjectivesPanel.CARD_H, QuestDetailsObjectivesPanel.CARD_GAP, entries.size());
     }
 
     private static void finishDrag(Player player, TabletUiState state, String questId, List<QuestDetailsObjectiveEntry> entries) {
-        String moving = state.questDetailsObjectiveDragId;
-        int target = Math.max(0, state.questDetailsObjectiveDragTargetIndex);
-        boolean requirement = "requirements".equals(state.questDetailsObjectiveDragKind);
+        String moving = state.questDetails.questDetailsObjectiveDragId;
+        int target = Math.max(0, state.questDetails.questDetailsObjectiveDragTargetIndex);
+        boolean requirement = "requirements".equals(state.questDetails.questDetailsObjectiveDragKind);
         clearDrag(state);
         if (moving.isBlank()) {
             return;

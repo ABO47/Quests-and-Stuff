@@ -25,31 +25,31 @@ public final class ModalLayerWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return state.modalWindowClosing || super.mouseClicked(mouseX, mouseY, button);
+        return state.modal.modalWindowClosing || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return state.modalWindowClosing || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return state.modal.modalWindowClosing || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return state.modalWindowClosing || super.mouseReleased(mouseX, mouseY, button);
+        return state.modal.modalWindowClosing || super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
-        return state.modalWindowClosing || super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+        return state.modal.modalWindowClosing || super.mouseWheelMove(mouseX, mouseY, wheelDelta);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return state.modalWindowClosing || super.keyPressed(keyCode, scanCode, modifiers);
+        return state.modal.modalWindowClosing || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        return state.modalWindowClosing || super.charTyped(codePoint, modifiers);
+        return state.modal.modalWindowClosing || super.charTyped(codePoint, modifiers);
     }
 }

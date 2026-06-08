@@ -45,14 +45,14 @@ public final class TabletItemInventoryPickerModal {
         int gridY = headY + headH + 4;
         int gridW = w - sidePad * 2;
         int gridH = h - gridY - 8;
-        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.itemInventorySearch, 80, value -> {
-            state.itemInventorySearch = SearchFilter.normalizeUserInput(value);
-            state.itemInventoryScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] inventory item search query='{}'", state.itemInventorySearch);
+        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.pickers.itemInventorySearch, 80, value -> {
+            state.pickers.itemInventorySearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.itemInventoryScroll = 0;
+            QuestsAndStuffMod.debugLog("[QnS:UI] inventory item search query='{}'", state.pickers.itemInventorySearch);
             refresh.run();
-        }, focused -> state.itemInventorySearchFocused = focused);
+        }, focused -> state.pickers.itemInventorySearchFocused = focused);
 
-        List<ItemStack> entries = inventoryEntries(player, state.itemInventorySearch);
+        List<ItemStack> entries = inventoryEntries(player, state.pickers.itemInventorySearch);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -67,10 +67,10 @@ public final class TabletItemInventoryPickerModal {
                 entries,
                 TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
                 ScrollState.bind(
-                        () -> state.itemInventoryScroll,
-                        value -> state.itemInventoryScroll = value,
-                        () -> state.itemInventoryScrollDragging,
-                        dragging -> state.itemInventoryScrollDragging = dragging
+                        () -> state.pickers.itemInventoryScroll,
+                        value -> state.pickers.itemInventoryScroll = value,
+                        () -> state.pickers.itemInventoryScrollDragging,
+                        dragging -> state.pickers.itemInventoryScrollDragging = dragging
                 ),
                 null,
                 refresh,

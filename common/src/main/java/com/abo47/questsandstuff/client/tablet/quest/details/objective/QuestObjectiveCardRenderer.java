@@ -163,7 +163,7 @@ final class QuestObjectiveCardRenderer {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        boolean editSelected = kind.startsWith(state.questDetailsSelectedObjectiveKind) && id.equals(state.questDetailsSelectedObjectiveId);
+        boolean editSelected = kind.startsWith(state.questDetails.questDetailsSelectedObjectiveKind) && id.equals(state.questDetails.questDetailsSelectedObjectiveId);
         boolean claimSelected = claimChoiceEntry && QuestObjectiveSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
         int accent = selectableReward ? (claimSelected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;

@@ -15,8 +15,8 @@ class QuestObjectiveSelectableRewardsTest {
 
         QuestObjectiveSelectableRewards.selectChoice(state, "reward_item_0002");
 
-        assertEquals("", state.questDetailsSelectedObjectiveKind);
-        assertEquals("", state.questDetailsSelectedObjectiveId);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveKind);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveId);
         assertTrue(QuestObjectiveSelectableRewards.isSelectedChoice(state, "reward_item_0002"));
     }
 
@@ -52,8 +52,8 @@ class QuestObjectiveSelectableRewardsTest {
 
         QuestObjectiveSelectableRewards.selectChoice(state, "reward_selectable_0001\u001Fchoice_a");
 
-        assertEquals("", state.questDetailsSelectedObjectiveKind);
-        assertEquals("", state.questDetailsSelectedObjectiveId);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveKind);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveId);
         assertTrue(QuestObjectiveSelectableRewards.isSelectedChoice(state, "reward_selectable_0001\u001Fchoice_a"));
         assertTrue(QuestObjectiveSelectableRewards.allSelectableRewardsSelected(quest, state));
     }
@@ -79,8 +79,8 @@ class QuestObjectiveSelectableRewardsTest {
 
         assertTrue(QuestObjectiveListInteractions.clearSelection(state, "outside_card_click"));
 
-        assertEquals("", state.questDetailsSelectedObjectiveKind);
-        assertEquals("", state.questDetailsSelectedObjectiveId);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveKind);
+        assertEquals("", state.questDetails.questDetailsSelectedObjectiveId);
         assertTrue(QuestObjectiveSelectableRewards.isSelectedChoice(state, "reward_item_0002"));
     }
 

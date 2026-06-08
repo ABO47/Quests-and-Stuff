@@ -49,11 +49,11 @@ final class CanvasViewportClickController {
         if (!canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
         }
-        int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvasPanelX + state.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvasPanelY + state.canvasViewportY, mouseY);
+        int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
 
-        if (state.blueprintPlacement.active()) {
-            if (!state.canEdit) {
+        if (state.canvas.blueprintPlacement.active()) {
+            if (!state.root.canEdit) {
                 CanvasBlueprintController.cancelPlacement(state);
                 refresher.run();
                 return true;
@@ -83,15 +83,15 @@ final class CanvasViewportClickController {
         }
 
         if (button == 2) {
-            state.draggingCanvas = true;
-            state.dragCurrentX = localX;
-            state.dragCurrentY = localY;
+            state.canvas.draggingCanvas = true;
+            state.canvas.dragCurrentX = localX;
+            state.canvas.dragCurrentY = localY;
             canvasViewport.beginCanvasPan();
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas pan start button=middle x={} y={} locked={} zoom={}", localX, localY, state.gridCanvasLocked, state.canvasZoom);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas pan start button=middle x={} y={} locked={} zoom={}", localX, localY, state.canvas.gridCanvasLocked, state.canvas.canvasZoom);
             return true;
         }
 
-        if (!state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             boolean handledByEditor = canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
             if (handledByEditor) {
                 return true;
@@ -103,7 +103,7 @@ final class CanvasViewportClickController {
             }
         }
 
-        if (state.contextMenuOpen) {
+        if (state.contextMenu.contextMenuOpen) {
             if (button == 0) {
                 if (canvasViewport.callSuperMouseClicked(mouseX, mouseY, button)) {
                     refresher.run();
@@ -118,10 +118,10 @@ final class CanvasViewportClickController {
             }
         }
 
-        boolean textMenuHit = state.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY);
-        boolean textEditorHit = state.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
-        boolean textOwnerHit = state.canvasTextMenuOpen && textEditor.isOwnerHit(localX, localY);
-        if (state.canvasTextMenuOpen && !textMenuHit && !textEditorHit && !textOwnerHit) {
+        boolean textMenuHit = state.canvas.canvasTextMenuOpen && textEditor.isMenuHit(localX, localY);
+        boolean textEditorHit = state.canvas.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
+        boolean textOwnerHit = state.canvas.canvasTextMenuOpen && textEditor.isOwnerHit(localX, localY);
+        if (state.canvas.canvasTextMenuOpen && !textMenuHit && !textEditorHit && !textOwnerHit) {
             TextStyleSession.closeMainCanvas(state);
             refresher.run();
         }
@@ -135,7 +135,7 @@ final class CanvasViewportClickController {
                 textEditor.close("transform_start");
             } else {
                 if (textEditorHit) {
-                    int cursor = editingText == null ? state.canvasTextEditDraft.length() : CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
+                    int cursor = editingText == null ? state.canvas.canvasTextEditDraft.length() : CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
                     TextEditSession.moveCursor(state, cursor, canvasViewport.shiftDown());
                     TextEditSession.startRangeSelection(state);
                     canvasViewport.setFocus(true);
@@ -148,7 +148,7 @@ final class CanvasViewportClickController {
                 }
                 textEditor.close("outside_click");
                 refresher.run();
-                if (state.mouseMode != CanvasMouseMode.DRAG_CANVAS) {
+                if (state.canvas.mouseMode != CanvasMouseMode.DRAG_CANVAS) {
                     return true;
                 }
             }
@@ -164,17 +164,17 @@ final class CanvasViewportClickController {
         }
 
         QuestCardLayout hit = TabletUiFactory.hitTestCard(cards, localX, localY);
-        CanvasImageLayer imageHit = state.canEdit ? CanvasRenderer.hitTestCanvasImage(state, localX, localY) : null;
-        if (imageHit == null && state.canEdit) {
+        CanvasImageLayer imageHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasImage(state, localX, localY) : null;
+        if (imageHit == null && state.root.canEdit) {
             imageHit = CanvasRenderer.hitTestSelectedCanvasImageControls(state, localX, localY);
         }
-        CanvasTextLayer textHit = state.canEdit ? CanvasRenderer.hitTestCanvasText(state, localX, localY) : null;
-        if (textHit == null && state.canEdit) {
+        CanvasTextLayer textHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasText(state, localX, localY) : null;
+        if (textHit == null && state.root.canEdit) {
             textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
         }
         String selectedGroup = TabletStateQueries.selectedGroupName(state);
-        List<CanvasImageLayer> canvasImages = state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasTextLayer> canvasTexts = state.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(
                 state,
                 cards,
@@ -187,19 +187,19 @@ final class CanvasViewportClickController {
         hit = layerHit.quest();
         imageHit = layerHit.image();
         textHit = layerHit.text();
-        if (state.canEdit && button == 1) {
+        if (state.root.canEdit && button == 1) {
             CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit);
             return true;
         }
 
-        if (!state.canEdit) {
+        if (!state.root.canEdit) {
             if (hit != null) {
-                state.canvasSelection.questIds().clear();
-                state.canvasSelection.questIds().add(hit.questId());
-                state.lastJumpQuest = hit.questId();
+                state.canvas.canvasSelection.questIds().clear();
+                state.canvas.canvasSelection.questIds().add(hit.questId());
+                state.chapterPanel.lastJumpQuest = hit.questId();
                 if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag()) && !ClientQuestCache.questHiddenPreview(hit.tag())) {
-                    int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
-                    int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
+                    int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+                    int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
                     QuestDetailsWindow.openAtSource(
                             state,
                             hit.questId(),
@@ -223,7 +223,7 @@ final class CanvasViewportClickController {
             return true;
         }
 
-        if (state.mouseMode == CanvasMouseMode.ADD_QUEST && button == 0) {
+        if (state.canvas.mouseMode == CanvasMouseMode.ADD_QUEST && button == 0) {
             if (hit == null) {
                 CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
                 int logicalX = TabletUiFactory.snapToGrid(state, anchor.x);
@@ -241,19 +241,19 @@ final class CanvasViewportClickController {
             return true;
         }
 
-        if (state.mouseMode == CanvasMouseMode.CONNECT_QUESTS) {
+        if (state.canvas.mouseMode == CanvasMouseMode.CONNECT_QUESTS) {
             return CanvasConnectionClickActions.handleConnectMode(canvasViewport, state, player, refresher, hit, button);
         }
 
-        if (state.mouseMode == CanvasMouseMode.DRAG_CANVAS) {
-            state.draggingCanvas = true;
-            state.dragCurrentX = localX;
-            state.dragCurrentY = localY;
+        if (state.canvas.mouseMode == CanvasMouseMode.DRAG_CANVAS) {
+            state.canvas.draggingCanvas = true;
+            state.canvas.dragCurrentX = localX;
+            state.canvas.dragCurrentY = localY;
             canvasViewport.beginCanvasPan();
             return true;
         }
 
-        if (state.mouseMode == CanvasMouseMode.SELECT_MOVE) {
+        if (state.canvas.mouseMode == CanvasMouseMode.SELECT_MOVE) {
             CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit);
             return true;
         }

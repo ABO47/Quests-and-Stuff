@@ -11,7 +11,7 @@ final class CanvasGridMath {
     }
 
     static int snapToGrid(TabletUiState state, int value) {
-        if (!state.gridSnapLocked) {
+        if (!state.canvas.gridSnapLocked) {
             return value;
         }
         int step = gridSize(state);
@@ -62,7 +62,7 @@ final class CanvasGridMath {
 
     static float snapScaleToGrid(TabletUiState state, float scale) {
         float normalized = Math.max(0.5f, scale);
-        if (!state.gridSnapLocked) {
+        if (!state.canvas.gridSnapLocked) {
             return normalized;
         }
         int grid = gridSize(state);
@@ -97,7 +97,7 @@ final class CanvasGridMath {
     }
 
     static int gridSize(TabletUiState state) {
-        int index = Math.max(0, Math.min(TabletUiFactory.GRID_SIZES.length - 1, state.gridSizeIndex));
+        int index = Math.max(0, Math.min(TabletUiFactory.GRID_SIZES.length - 1, state.canvas.gridSizeIndex));
         return Math.max(1, TabletUiFactory.GRID_SIZES[index]);
     }
 

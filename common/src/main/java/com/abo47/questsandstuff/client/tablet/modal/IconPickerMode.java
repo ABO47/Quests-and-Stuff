@@ -92,7 +92,7 @@ public enum IconPickerMode {
             boolean useItemPicker
     ) {
         if (state != null) {
-            state.iconMode = normalize(state.iconMode, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+            state.pickers.iconMode = normalize(state.pickers.iconMode, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         }
     }
 
@@ -100,9 +100,9 @@ public enum IconPickerMode {
         if (state == null) {
             return;
         }
-        IconPickerMode current = normalize(state.iconMode, false, true, false, false, false);
-        state.iconMode = cycleIn(current, direction, MODEL_ITEM_CYCLE);
-        state.iconScroll = 0;
+        IconPickerMode current = normalize(state.pickers.iconMode, false, true, false, false, false);
+        state.pickers.iconMode = cycleIn(current, direction, MODEL_ITEM_CYCLE);
+        state.pickers.iconScroll = 0;
     }
 
     static void cycle(
@@ -116,9 +116,9 @@ public enum IconPickerMode {
             return;
         }
         IconPickerMode[] cycle = cycleFor(supportsEntityIcons, supportsInventoryIcons, useItemPicker);
-        IconPickerMode current = normalize(state.iconMode, false, false, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
-        state.iconMode = cycleIn(current, direction, cycle);
-        state.iconScroll = 0;
+        IconPickerMode current = normalize(state.pickers.iconMode, false, false, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+        state.pickers.iconMode = cycleIn(current, direction, cycle);
+        state.pickers.iconScroll = 0;
     }
 
     public static void reset(TabletUiState state) {
@@ -131,7 +131,7 @@ public enum IconPickerMode {
 
     static void resetTo(TabletUiState state, IconPickerMode mode) {
         if (state != null) {
-            state.iconMode = safe(mode);
+            state.pickers.iconMode = safe(mode);
         }
     }
 

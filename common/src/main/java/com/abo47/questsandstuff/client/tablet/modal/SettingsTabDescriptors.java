@@ -36,7 +36,7 @@ final class SettingsTabDescriptors {
     }
 
     static SettingsTabDescriptor active(TabletUiState state) {
-        return descriptor(state.settingsTab);
+        return descriptor(state.modal.settingsTab);
     }
 
     static SettingsTabDescriptor descriptor(int tab) {

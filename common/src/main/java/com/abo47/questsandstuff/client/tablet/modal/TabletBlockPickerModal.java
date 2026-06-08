@@ -59,12 +59,12 @@ public final class TabletBlockPickerModal {
         int gridY = headY + headH + 4;
         int gridH = h - gridY - 8;
 
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.blockSearch, 96, value -> {
-            state.blockSearch = SearchFilter.normalizeUserInput(value);
-            state.blockScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] block search mode={} query='{}'", blockModeName(state), state.blockSearch);
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.blockSearch, 96, value -> {
+            state.pickers.blockSearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.blockScroll = 0;
+            QuestsAndStuffMod.debugLog("[QnS:UI] block search mode={} query='{}'", blockModeName(state), state.pickers.blockSearch);
             refresh.run();
-        }, focused -> state.blockSearchFocused = focused);
+        }, focused -> state.pickers.blockSearchFocused = focused);
         TabletCycleButton.addIconModeButton(
                 modal,
                 gridX,
@@ -72,17 +72,17 @@ public final class TabletBlockPickerModal {
                 modeW,
                 headH,
                 2,
-                () -> state.blockTagMode ? 1 : 0,
+                () -> state.pickers.blockTagMode ? 1 : 0,
                 index -> index == 1 ? "mode_tags" : "mode_items",
                 null,
                 direction -> {
-                    state.blockTagMode = !state.blockTagMode;
-                    state.blockScroll = 0;
+                    state.pickers.blockTagMode = !state.pickers.blockTagMode;
+                    state.pickers.blockScroll = 0;
                     QuestsAndStuffMod.debugLog("[QnS:UI] block picker mode={}", blockModeName(state));
                     refresh.run();
                 });
 
-        List<BlockChoice> entries = entries(state.blockSearch, state.blockTagMode);
+        List<BlockChoice> entries = entries(state.pickers.blockSearch, state.pickers.blockTagMode);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -97,10 +97,10 @@ public final class TabletBlockPickerModal {
                 entries,
                 TabletVocabulary.text(QuestVocabulary.NO_BLOCKS),
                 ScrollState.bind(
-                        () -> state.blockScroll,
-                        value -> state.blockScroll = value,
-                        () -> state.blockScrollDragging,
-                        dragging -> state.blockScrollDragging = dragging
+                        () -> state.pickers.blockScroll,
+                        value -> state.pickers.blockScroll = value,
+                        () -> state.pickers.blockScrollDragging,
+                        dragging -> state.pickers.blockScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -118,7 +118,7 @@ public final class TabletBlockPickerModal {
         }
         ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
             if (!entry.value().isBlank()) {
-                String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modalCanvasModelTarget);
+                String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
                 if (!canvasModelTarget.isBlank()) {
                     if (!TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry.value())) {
                         return;
@@ -211,7 +211,7 @@ public final class TabletBlockPickerModal {
     }
 
     private static String blockModeName(TabletUiState state) {
-        return state.blockTagMode || (state.blockSearch != null && state.blockSearch.trim().startsWith("#")) ? "tags" : "blocks";
+        return state.pickers.blockTagMode || (state.pickers.blockSearch != null && state.pickers.blockSearch.trim().startsWith("#")) ? "tags" : "blocks";
     }
 
     private record BlockChoice(String value, String previewId, String displayName, ItemStack[] previews, boolean tag) {

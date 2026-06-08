@@ -21,19 +21,19 @@ final class EditorChapterCommandClient {
     }
 
     static void cycleGroup(TabletUiState state, int dir) {
-        List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.canEdit);
+        List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.root.canEdit);
         if (groups.isEmpty()) {
-            state.selectedGroup = "";
-            state.groupDraft = "";
+            state.root.selectedGroup = "";
+            state.chapterPanel.groupDraft = "";
             return;
         }
-        int idx = groups.indexOf(state.selectedGroup);
+        int idx = groups.indexOf(state.root.selectedGroup);
         if (idx < 0) {
             idx = 0;
         }
         idx = (idx + dir + groups.size()) % groups.size();
-        state.selectedGroup = groups.get(idx);
-        state.groupDraft = state.selectedGroup;
+        state.root.selectedGroup = groups.get(idx);
+        state.chapterPanel.groupDraft = state.root.selectedGroup;
     }
 
     static String selectedGroupName(TabletUiState state) {
@@ -41,15 +41,15 @@ final class EditorChapterCommandClient {
     }
 
     static boolean canEditGroups(TabletUiState state) {
-        return state.canEdit;
+        return state.root.canEdit;
     }
 
     static boolean canManageGroups(TabletUiState state) {
-        return state.canEdit;
+        return state.root.canEdit;
     }
 
     static String resolveGroupDraft(TabletUiState state, String fallback) {
-        String sanitized = sanitizeGroupName(state.groupDraft);
+        String sanitized = sanitizeGroupName(state.chapterPanel.groupDraft);
         if (!sanitized.isBlank()) {
             return sanitized;
         }
@@ -168,18 +168,18 @@ final class EditorChapterCommandClient {
                 case "create" -> {
                     editor.createGroup(serverPlayer, to);
                     if (!to.isBlank()) {
-                        state.recentlyCreatedGroups.add(to);
+                        state.chapterPanel.recentlyCreatedGroups.add(to);
                     }
                 }
                 case "rename" -> {
                     editor.renameGroup(serverPlayer, from, to);
-                    if (state.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
-                        state.recentlyCreatedGroups.add(to);
+                    if (state.chapterPanel.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
+                        state.chapterPanel.recentlyCreatedGroups.add(to);
                     }
                 }
                 case "delete" -> {
                     editor.deleteGroup(serverPlayer, from);
-                    state.recentlyCreatedGroups.remove(from);
+                    state.chapterPanel.recentlyCreatedGroups.remove(from);
                 }
                 case "move" -> editor.moveGroup(serverPlayer, from, offset);
                 case "move_to" -> editor.moveGroupToIndex(serverPlayer, from, offset);
@@ -213,18 +213,18 @@ final class EditorChapterCommandClient {
             case "create" -> {
                 ClientQuestCache.createGroupLocal(to);
                 if (!to.isBlank()) {
-                    state.recentlyCreatedGroups.add(to);
+                    state.chapterPanel.recentlyCreatedGroups.add(to);
                 }
             }
             case "rename" -> {
                 ClientQuestCache.renameGroupLocal(from, to);
-                if (state.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
-                    state.recentlyCreatedGroups.add(to);
+                if (state.chapterPanel.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
+                    state.chapterPanel.recentlyCreatedGroups.add(to);
                 }
             }
             case "delete" -> {
                 ClientQuestCache.deleteGroupLocal(from);
-                state.recentlyCreatedGroups.remove(from);
+                state.chapterPanel.recentlyCreatedGroups.remove(from);
             }
             case "move" -> ClientQuestCache.moveGroupLocal(from, offset);
             case "move_to" -> ClientQuestCache.moveGroupToIndexLocal(from, offset);

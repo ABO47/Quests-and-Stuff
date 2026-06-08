@@ -20,7 +20,7 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
         int viewportH = fit[1] - 1;
-        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, state.questDetailsDescScroll);
+        state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, state.questDetails.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
         canvas.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
@@ -45,7 +45,7 @@ public final class QuestDetailsDescriptionPanel {
     private static void renderScrollbar(WidgetGroup canvas, TabletUiState state, QuestDetailsDescriptionModel model, Runnable refresh, String questId, int canvasW, int viewportH) {
         int scrollMax = QuestDetailsDescriptionLayout.descriptionScrollMax(model, viewportH);
         if (scrollMax <= 0) {
-            state.questDetailsDescScrollDragging = false;
+            state.questDetails.questDetailsDescScrollDragging = false;
             return;
         }
         int knobH = QuestDetailsDescriptionLayout.descriptionScrollKnobHeight(viewportH, scrollMax);
@@ -54,19 +54,19 @@ public final class QuestDetailsDescriptionPanel {
                 0,
                 DragScrollBarWidget.RESERVED_WIDTH,
                 Math.max(1, viewportH),
-                () -> state.questDetailsDescScroll,
+                () -> state.questDetails.questDetailsDescScroll,
                 () -> scrollMax,
                 () -> knobH,
-                value -> state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, value),
-                () -> state.questDetailsDescScrollDragging,
+                value -> state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, value),
+                () -> state.questDetails.questDetailsDescScrollDragging,
                 dragging -> {
-                    if (state.questDetailsDescScrollDragging != dragging) {
-                        QuestsAndStuffMod.debugLog("[QnS:UI] quest details description scrollbar {} quest={} scroll={}", dragging ? "start" : "finish", questId, state.questDetailsDescScroll);
+                    if (state.questDetails.questDetailsDescScrollDragging != dragging) {
+                        QuestsAndStuffMod.debugLog("[QnS:UI] quest details description scrollbar {} quest={} scroll={}", dragging ? "start" : "finish", questId, state.questDetails.questDetailsDescScroll);
                     }
-                    state.questDetailsDescScrollDragging = dragging;
+                    state.questDetails.questDetailsDescScrollDragging = dragging;
                 },
                 refresh,
-                ModColors.scrollTrack(state.questDetailsDescScrollDragging),
+                ModColors.scrollTrack(state.questDetails.questDetailsDescScrollDragging),
                 ModColors.scrollThumb(false),
                 ModColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH

@@ -50,9 +50,9 @@ class ConnectionRendererMetadataTest {
     void metadataFallsBackToLocalUiEdgeStateWhenTargetHasNoSavedOverride() {
         TabletUiState state = new TabletUiState();
         String edgeKey = QuestConnectionMetadata.edgeKey("quest/source", "quest/target");
-        state.connectionColorsByGroup.computeIfAbsent("main", ignored -> new HashMap<>()).put(edgeKey, 0xAA8844);
-        state.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
-        state.hiddenConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
+        state.canvas.connectionColorsByGroup.computeIfAbsent("main", ignored -> new HashMap<>()).put(edgeKey, 0xAA8844);
+        state.canvas.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
+        state.canvas.hiddenConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
 
         QuestConnectionMetadata metadata = ConnectionRenderer.connectionMetadata(
                 state,

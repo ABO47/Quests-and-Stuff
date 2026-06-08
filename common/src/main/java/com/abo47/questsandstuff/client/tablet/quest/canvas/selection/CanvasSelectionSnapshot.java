@@ -46,8 +46,8 @@ public record CanvasSelectionSnapshot(
         CanvasLayerSelectionSnapshot layers = CanvasLayerSelectionSnapshot.capture(
                 selection.imageIds(),
                 selection.textIds(),
-                state.canvasImagesByGroup.getOrDefault(group, List.of()),
-                state.canvasTextsByGroup.getOrDefault(group, List.of())
+                state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()),
+                state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())
         );
         if (layers.hasBounds()) {
             minX = Math.min(minX, layers.left());

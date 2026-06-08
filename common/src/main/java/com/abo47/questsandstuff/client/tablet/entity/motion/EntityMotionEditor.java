@@ -64,23 +64,23 @@ public final class EntityMotionEditor {
         if (state == null) {
             return;
         }
-        boolean wasOpen = state.entityMotionEditorOpen;
-        String scope = state.entityMotionEditorScope;
-        String imageId = state.entityMotionEditorImageId;
-        state.entityMotionEditorOpen = false;
-        state.entityMotionEditorScope = "";
-        state.entityMotionEditorGroup = "";
-        state.entityMotionEditorQuestId = "";
-        state.entityMotionEditorImageId = "";
-        state.entityMotionEditorX = 0;
-        state.entityMotionEditorY = 0;
-        state.entityMotionEditorW = 0;
-        state.entityMotionEditorH = 0;
-        state.entityMotionYawDraft = "";
-        state.entityMotionSpinDraft = "";
-        state.entityMotionFocusedField = "";
-        state.entityMotionYawSliderDragging = false;
-        state.entityMotionSpinSliderDragging = false;
+        boolean wasOpen = state.questDetails.entityMotionEditorOpen;
+        String scope = state.questDetails.entityMotionEditorScope;
+        String imageId = state.questDetails.entityMotionEditorImageId;
+        state.questDetails.entityMotionEditorOpen = false;
+        state.questDetails.entityMotionEditorScope = "";
+        state.questDetails.entityMotionEditorGroup = "";
+        state.questDetails.entityMotionEditorQuestId = "";
+        state.questDetails.entityMotionEditorImageId = "";
+        state.questDetails.entityMotionEditorX = 0;
+        state.questDetails.entityMotionEditorY = 0;
+        state.questDetails.entityMotionEditorW = 0;
+        state.questDetails.entityMotionEditorH = 0;
+        state.questDetails.entityMotionYawDraft = "";
+        state.questDetails.entityMotionSpinDraft = "";
+        state.questDetails.entityMotionFocusedField = "";
+        state.questDetails.entityMotionYawSliderDragging = false;
+        state.questDetails.entityMotionSpinSliderDragging = false;
         if (wasOpen) {
             QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor close scope={} image={}", scope, imageId);
         }
@@ -88,41 +88,41 @@ public final class EntityMotionEditor {
 
     public static boolean isMainCanvasOpen(TabletUiState state) {
         return state != null
-                && state.entityMotionEditorOpen
-                && (EntityMotionTargets.SCOPE_CANVAS.equals(state.entityMotionEditorScope)
-                || EntityMotionTargets.SCOPE_QUEST_ICON.equals(state.entityMotionEditorScope));
+                && state.questDetails.entityMotionEditorOpen
+                && (EntityMotionTargets.SCOPE_CANVAS.equals(state.questDetails.entityMotionEditorScope)
+                || EntityMotionTargets.SCOPE_QUEST_ICON.equals(state.questDetails.entityMotionEditorScope));
     }
 
     public static boolean isChapterPanelOpen(TabletUiState state) {
-        return state != null && state.entityMotionEditorOpen && EntityMotionTargets.SCOPE_CHAPTER_ICON.equals(state.entityMotionEditorScope);
+        return state != null && state.questDetails.entityMotionEditorOpen && EntityMotionTargets.SCOPE_CHAPTER_ICON.equals(state.questDetails.entityMotionEditorScope);
     }
 
     public static boolean isQuestDetailsOpen(TabletUiState state) {
         return state != null
-                && state.entityMotionEditorOpen
-                && (EntityMotionTargets.SCOPE_QUEST_DETAILS.equals(state.entityMotionEditorScope)
-                || EntityMotionTargets.SCOPE_OBJECTIVE_ICON.equals(state.entityMotionEditorScope));
+                && state.questDetails.entityMotionEditorOpen
+                && (EntityMotionTargets.SCOPE_QUEST_DETAILS.equals(state.questDetails.entityMotionEditorScope)
+                || EntityMotionTargets.SCOPE_OBJECTIVE_ICON.equals(state.questDetails.entityMotionEditorScope));
     }
 
     public static boolean isDragging(TabletUiState state) {
-        return state != null && (state.entityMotionYawSliderDragging || state.entityMotionSpinSliderDragging);
+        return state != null && (state.questDetails.entityMotionYawSliderDragging || state.questDetails.entityMotionSpinSliderDragging);
     }
 
     public static boolean isMainCanvasHit(TabletUiState state, double localX, double localY) {
-        return isMainCanvasOpen(state) && inside(localX, localY, state.entityMotionEditorX, state.entityMotionEditorY, state.entityMotionEditorW, state.entityMotionEditorH);
+        return isMainCanvasOpen(state) && inside(localX, localY, state.questDetails.entityMotionEditorX, state.questDetails.entityMotionEditorY, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
     public static boolean isQuestDetailsHit(TabletUiState state, double mouseX, double mouseY) {
         if (!isQuestDetailsOpen(state)) {
             return false;
         }
-        int x = state.questDetailsScreenX + state.entityMotionEditorX;
-        int y = state.questDetailsScreenY + state.entityMotionEditorY;
-        return inside(mouseX, mouseY, x, y, state.entityMotionEditorW, state.entityMotionEditorH);
+        int x = state.questDetails.questDetailsScreenX + state.questDetails.entityMotionEditorX;
+        int y = state.questDetails.questDetailsScreenY + state.questDetails.entityMotionEditorY;
+        return inside(mouseX, mouseY, x, y, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
     public static boolean isChapterPanelHit(TabletUiState state, double localX, double localY) {
-        return isChapterPanelOpen(state) && inside(localX, localY, state.entityMotionEditorX, state.entityMotionEditorY, state.entityMotionEditorW, state.entityMotionEditorH);
+        return isChapterPanelOpen(state) && inside(localX, localY, state.questDetails.entityMotionEditorX, state.questDetails.entityMotionEditorY, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
     public static void renderMainCanvas(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh) {
@@ -158,7 +158,7 @@ public final class EntityMotionEditor {
             close(state);
             return;
         }
-        EntityMotionPopup.render(modal, state, player, refresh, motion, state.questDetailsW, state.questDetailsH);
+        EntityMotionPopup.render(modal, state, player, refresh, motion, state.questDetails.questDetailsW, state.questDetails.questDetailsH);
     }
 
     private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {

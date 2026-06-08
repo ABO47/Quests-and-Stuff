@@ -66,9 +66,9 @@ public final class TabletAssetPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        boolean soundPicker = (!ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTarget).isBlank()
-                || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modalQuestCompletionSoundTargets).isEmpty())
-                && state.assetBrowseDir != null && state.assetBrowseDir.startsWith("sounds");
+        boolean soundPicker = (!ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget).isBlank()
+                || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets).isEmpty())
+                && state.pickers.assetBrowseDir != null && state.pickers.assetBrowseDir.startsWith("sounds");
         boolean blueprintPicker = isBlueprintPicker(state);
         boolean hudPicker = isHudBackgroundPicker(state);
         boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker;
@@ -79,8 +79,8 @@ public final class TabletAssetPickerModal {
         if (blueprintPicker) {
             addBlueprintHeaderActions(modal, state, refresh, w);
         }
-        String dir = state.assetBrowseDir == null ? "" : state.assetBrowseDir;
-        List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.assetSearch));
+        String dir = state.pickers.assetBrowseDir == null ? "" : state.pickers.assetBrowseDir;
+        List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.pickers.assetSearch));
         if (!blueprintPicker) {
             assets = assets.stream()
                     .filter(entry -> !"blueprints".equals(entry.relativePath()) && !entry.relativePath().startsWith("blueprints/"))
@@ -93,7 +93,7 @@ public final class TabletAssetPickerModal {
         int rightW = libraryLayout.rightW();
         int previewH = libraryLayout.bodyH();
         WidgetGroup preview = ModalLibraryLayout.previewPanel(libraryLayout);
-        String selected = state.assetSelected == null ? "" : state.assetSelected;
+        String selected = state.pickers.assetSelected == null ? "" : state.pickers.assetSelected;
         preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()
                 ? TabletModalPanel.tr(blueprintPicker ? "ui.questsandstuff.blueprints.none_selected" : soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
@@ -106,7 +106,7 @@ public final class TabletAssetPickerModal {
                 int volumeY = Math.max(46, previewH - 24);
                 int playY = 34;
                 int playH = Math.max(34, volumeY - playY - 8);
-                preview.addWidget(new SoundPreviewPlayerWidget(8, playY, leftW - 16, playH, previewSound, () -> state.soundVolumeDraft));
+                preview.addWidget(new SoundPreviewPlayerWidget(8, playY, leftW - 16, playH, previewSound, () -> state.pickers.soundVolumeDraft));
                 SoundVolumeControls.add(preview, state, player, refresh, 8, volumeY, leftW - 16, previewSound);
             }
         } else if (blueprintPicker || selectedKind == AssetLibrary.AssetKind.BLUEPRINT) {
@@ -123,7 +123,7 @@ public final class TabletAssetPickerModal {
             addHudBackgroundOptions(preview, state, refresh, leftW, previewH);
         }
         if (!selected.isBlank() && dims != null) {
-            boolean grayscale = isQuestBackgroundPicker(state) && state.modalQuestBackgroundGrayscale;
+            boolean grayscale = isQuestBackgroundPicker(state) && state.modal.modalQuestBackgroundGrayscale;
             IGuiTexture texture = chapterBackgroundTexture(selected, grayscale);
             if (texture != null) {
                 int areaW = leftW - 16;
@@ -146,17 +146,17 @@ public final class TabletAssetPickerModal {
         int searchW = canGoBack
                 ? Math.max(40, backX - rightX - HEADER_GAP)
                 : Math.max(40, firstHeaderButtonX - rightX - HEADER_GAP);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.assetSearch, 80, value -> {
-            state.assetSearch = SearchFilter.normalizeUserInput(value);
-            state.assetGridScroll = 0;
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.assetSearch, 80, value -> {
+            state.pickers.assetSearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.assetGridScroll = 0;
             refresh.run();
-        }, focused -> state.assetSearchFocused = focused);
+        }, focused -> state.pickers.assetSearchFocused = focused);
 
         if (canGoBack) {
             modal.addWidget(WindowChrome.iconButton(backX, backY, backSize, backSize, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
-                state.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
-                state.assetGridScroll = 0;
-                state.assetContextOpen = false;
+                state.pickers.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
+                state.pickers.assetGridScroll = 0;
+                state.pickers.assetContextOpen = false;
                 refresh.run();
             }));
         }
@@ -178,19 +178,19 @@ public final class TabletAssetPickerModal {
                 assets,
                 "No assets",
                 ScrollState.bind(
-                        () -> state.assetGridScroll,
-                        value -> state.assetGridScroll = value,
-                        () -> state.assetGridScrollDragging,
-                        dragging -> state.assetGridScrollDragging = dragging
+                        () -> state.pickers.assetGridScroll,
+                        value -> state.pickers.assetGridScroll = value,
+                        () -> state.pickers.assetGridScrollDragging,
+                        dragging -> state.pickers.assetGridScrollDragging = dragging
                 ),
                 () -> {
-                    state.assetContextOpen = false;
-                    state.assetRenameOpen = false;
+                    state.pickers.assetContextOpen = false;
+                    state.pickers.assetRenameOpen = false;
                 },
                 refresh,
                 (surface, entry, index, x, y, cellW, cellH, layout) -> {
             String relative = entry.relativePath();
-            boolean renaming = state.assetRenameOpen && relative.equals(state.assetContextFile) && !entry.directory();
+            boolean renaming = state.pickers.assetRenameOpen && relative.equals(state.pickers.assetContextFile) && !entry.directory();
             WidgetGroup tile = new WidgetGroup(x, y, cellW, cellH);
             if (relative.equals(selected)) {
                 tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 54)));
@@ -246,10 +246,10 @@ public final class TabletAssetPickerModal {
             }
             ButtonWidget hit = flatHitButton(x, y, cellW, cellH, click -> {
                 if (click.button == 1) {
-                    state.assetContextOpen = true;
-                    state.assetContextFile = relative;
+                    state.pickers.assetContextOpen = true;
+                    state.pickers.assetContextFile = relative;
                     anchorAssetContextAtPointer(state, w, h);
-                    state.assetRenameOpen = false;
+                    state.pickers.assetRenameOpen = false;
                     ContextMenuState.clearDeleteConfirm(state);
                     ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
                     refresh.run();
@@ -257,12 +257,12 @@ public final class TabletAssetPickerModal {
                 }
                 boolean doubleClick = click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("asset", relative));
                 if (entry.directory()) {
-                    state.assetBrowseDir = relative;
-                    state.assetGridScroll = 0;
-                    state.assetContextOpen = false;
+                    state.pickers.assetBrowseDir = relative;
+                    state.pickers.assetGridScroll = 0;
+                    state.pickers.assetContextOpen = false;
                 } else {
-                    state.assetSelected = relative;
-                    state.assetContextFile = relative;
+                    state.pickers.assetSelected = relative;
+                    state.pickers.assetContextFile = relative;
                     if (doubleClick) {
                         TabletModalPanel.runAssetBackgroundAction(player, state, relative);
                         closeAll(state);
@@ -274,21 +274,21 @@ public final class TabletAssetPickerModal {
             surface.addWidget(hit);
                 });
 
-        if (state.assetContextOpen && !state.assetContextFile.isBlank()) {
+        if (state.pickers.assetContextOpen && !state.pickers.assetContextFile.isBlank()) {
             addAssetContextDismissLayer(modal, state, refresh, w, h);
             addContext(modal, state, player, refresh, w, h, rightW, assets);
         }
-        if (state.blueprintCodeOpen) {
+        if (state.modal.blueprintCodeOpen) {
             TabletBlueprintCodeModal.add(modal, state, refresh, w, h);
         }
         return search;
     }
 
     public static boolean handleKeyPressed(TabletUiState state, Runnable refresh, int keyCode) {
-        if (!ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER) || keyCode != GLFW.GLFW_KEY_F3 || state.assetSelected == null || state.assetSelected.isBlank()) {
+        if (!ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER) || keyCode != GLFW.GLFW_KEY_F3 || state.pickers.assetSelected == null || state.pickers.assetSelected.isBlank()) {
             return false;
         }
-        beginInlineRename(state, state.assetSelected);
+        beginInlineRename(state, state.pickers.assetSelected);
         refresh.run();
         return true;
     }
@@ -299,8 +299,8 @@ public final class TabletAssetPickerModal {
         int modalX = ModalContextMenuPlacement.modalX(state, w);
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
-            state.assetContextOpen = false;
-            state.assetRenameOpen = false;
+            state.pickers.assetContextOpen = false;
+            state.pickers.assetRenameOpen = false;
             ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         });
@@ -315,13 +315,13 @@ public final class TabletAssetPickerModal {
                 w,
                 12,
                 null,
-                value -> state.assetRenameDraft = value == null ? "" : value.trim(),
+                value -> state.pickers.assetRenameDraft = value == null ? "" : value.trim(),
                 () -> {
                     commitAssetRename(state, renameRef[0]);
                     refresh.run();
                 },
                 () -> {
-                    state.assetRenameOpen = false;
+                    state.pickers.assetRenameOpen = false;
                     refresh.run();
                 },
                 () -> {
@@ -332,22 +332,22 @@ public final class TabletAssetPickerModal {
         renameRef[0] = rename;
         rename.setClientSideWidget();
         rename.setMaxStringLength(80);
-        rename.setCurrentString(state.assetRenameDraft.isBlank() ? TabletModalPanel.fileNameFromRelativePath(relative) : state.assetRenameDraft);
+        rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? TabletModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
         StyledTextFields.applyStandardStyle(rename, ModColors.SURFACE_BASE, ModColors.BORDER_ACCENT);
         rename.setFocus(true);
         return rename;
     }
 
     private static void anchorAssetContextAtPointer(TabletUiState state, int modalW, int modalH) {
-        state.assetContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
-        state.assetContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
+        state.pickers.assetContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
+        state.pickers.assetContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
     }
 
     private static void addBlueprintHeaderActions(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
         int importX = headerChainButtonX(w, 1);
         int exportX = headerChainButtonX(w, 2);
         modal.addWidget(WindowChrome.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
-            TabletBlueprintCodeModal.openExport(state, state.assetSelected);
+            TabletBlueprintCodeModal.openExport(state, state.pickers.assetSelected);
             refresh.run();
         }));
         modal.addWidget(WindowChrome.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
@@ -368,8 +368,8 @@ public final class TabletAssetPickerModal {
         if (!isQuestBackgroundPicker(state)) {
             return;
         }
-        String target = ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modalQuestBackgroundTargets).isEmpty()
-                ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget)
+        String target = ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets).isEmpty()
+                ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget)
                 : "batch";
         int rowY = Math.max(48, previewH - 24);
         preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE), ModColors.TEXT_SECONDARY));
@@ -379,8 +379,8 @@ public final class TabletAssetPickerModal {
                 rowY,
                 ToggleSwitchWidget.DEFAULT_WIDTH,
                 ToggleSwitchWidget.DEFAULT_HEIGHT,
-                () -> state.modalQuestBackgroundGrayscale,
-                enabled -> state.modalQuestBackgroundGrayscale = enabled,
+                () -> state.modal.modalQuestBackgroundGrayscale,
+                enabled -> state.modal.modalQuestBackgroundGrayscale = enabled,
                 refresh,
                 new Component[]{
                         Component.translatable(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE_TOOLTIP)
@@ -389,12 +389,12 @@ public final class TabletAssetPickerModal {
     }
 
     private static boolean isQuestBackgroundPicker(TabletUiState state) {
-        return !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modalQuestBackgroundTarget).isBlank()
-                || !ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modalQuestBackgroundTargets).isEmpty();
+        return !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget).isBlank()
+                || !ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets).isEmpty();
     }
 
     private static boolean isBlueprintPicker(TabletUiState state) {
-        return !ModalTargetState.target(state, BLUEPRINT, state.modalBlueprintTarget).isBlank();
+        return !ModalTargetState.target(state, BLUEPRINT, state.modal.modalBlueprintTarget).isBlank();
     }
 
     private static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
@@ -412,17 +412,17 @@ public final class TabletAssetPickerModal {
                 QuestHudLayout.opacityPercent(element),
                 next -> {
                     QuestHudLayout.setOpacityPercent(element, next);
-                    state.modalHudBackgroundOpacityDraft = QuestHudLayout.opacityPercent(element);
+                    state.modal.modalHudBackgroundOpacityDraft = QuestHudLayout.opacityPercent(element);
                     refresh.run();
                 },
                 refresh,
-                () -> state.modalHudBackgroundOpacityDragging,
-                dragging -> state.modalHudBackgroundOpacityDragging = dragging,
+                () -> state.modal.modalHudBackgroundOpacityDragging,
+                dragging -> state.modal.modalHudBackgroundOpacityDragging = dragging,
                 new Component[]{Component.translatable("ui.questsandstuff.hud.opacity")}
         );
         preview.addWidget(button(8, rowY + 32, leftW - 16, 14, TabletModalPanel.tr("ui.questsandstuff.hud.remove_background"), ModColors.SURFACE_PANEL_ALT, ModColors.WARNING, click -> {
             QuestHudLayout.setBackground(element, "");
-            state.assetSelected = "";
+            state.pickers.assetSelected = "";
             refresh.run();
         }));
     }
@@ -432,7 +432,7 @@ public final class TabletAssetPickerModal {
     }
 
     private static QuestHudLayout.Element hudElement(TabletUiState state) {
-        String target = ModalTargetState.target(state, HUD_BACKGROUND, state.modalHudBackgroundTarget);
+        String target = ModalTargetState.target(state, HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
         if ("completion".equalsIgnoreCase(target)) {
             return QuestHudLayout.Element.COMPLETION;
         }
@@ -444,7 +444,7 @@ public final class TabletAssetPickerModal {
 
     private static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH, int rightW, List<AssetLibrary.AssetEntry> assets) {
         AssetLibrary.AssetEntry contextEntry = assets.stream()
-                .filter(asset -> asset.relativePath().equals(state.assetContextFile))
+                .filter(asset -> asset.relativePath().equals(state.pickers.assetContextFile))
                 .findFirst()
                 .orElse(null);
         boolean isDir = contextEntry != null && contextEntry.directory();
@@ -453,18 +453,18 @@ public final class TabletAssetPickerModal {
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        ModalContextMenuPlacement.Placement placement = ModalContextMenuPlacement.fitToRootFromModal(state, state.assetContextX, state.assetContextY, ctxW, menuH, modalW, modalH);
+        ModalContextMenuPlacement.Placement placement = ModalContextMenuPlacement.fitToRootFromModal(state, state.pickers.assetContextX, state.pickers.assetContextY, ctxW, menuH, modalW, modalH);
         int ctxX = placement.x();
         int ctxY = placement.y();
-        state.assetContextMenuX = ctxX;
-        state.assetContextMenuY = ctxY;
-        state.assetContextMenuW = ctxW;
-        state.assetContextMenuH = menuH;
+        state.pickers.assetContextMenuX = ctxX;
+        state.pickers.assetContextMenuY = ctxY;
+        state.pickers.assetContextMenuW = ctxW;
+        state.pickers.assetContextMenuH = menuH;
         modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, ModColors.BORDER_ACCENT, state, action -> {
             if (action.closeAfterClick()) {
-                state.assetContextOpen = false;
-                if (!state.assetRenameOpen) {
-                    state.assetRenameDraft = "";
+                state.pickers.assetContextOpen = false;
+                if (!state.pickers.assetRenameOpen) {
+                    state.pickers.assetRenameDraft = "";
                 }
                 ContextMenuState.clearDeleteConfirm(state);
             }
@@ -476,56 +476,56 @@ public final class TabletAssetPickerModal {
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", ModColors.INTERACTIVE, () -> {
             if (isDir) {
-                state.assetBrowseDir = state.assetContextFile;
-                state.assetGridScroll = 0;
+                state.pickers.assetBrowseDir = state.pickers.assetContextFile;
+                state.pickers.assetGridScroll = 0;
             } else {
-                state.assetSelected = state.assetContextFile;
-                TabletModalPanel.runAssetBackgroundAction(player, state, state.assetContextFile);
+                state.pickers.assetSelected = state.pickers.assetContextFile;
+                TabletModalPanel.runAssetBackgroundAction(player, state, state.pickers.assetContextFile);
                 closeAll(state);
             }
         }));
         if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
             actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", ModColors.INTERACTIVE, () ->
-                    TabletBlueprintCodeModal.openExport(state, state.assetContextFile)));
+                    TabletBlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
-            String deleteKey = "asset:delete:" + state.assetContextFile;
+            String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
             actions.add(ContextActions.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
-                deleteAssetFile(state.assetContextFile);
-                state.assetContextOpen = false;
-                state.assetRenameOpen = false;
+                deleteAssetFile(state.pickers.assetContextFile);
+                state.pickers.assetContextOpen = false;
+                state.pickers.assetRenameOpen = false;
             }));
         }
         if (!isDir) {
-            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.assetContextFile)));
+            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
         }
         return actions;
     }
 
     private static void beginInlineRename(TabletUiState state, String relative) {
-        state.assetContextOpen = false;
-        state.assetContextFile = relative == null ? "" : relative;
-        state.assetRenameOpen = !state.assetContextFile.isBlank();
-        state.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.assetContextFile);
-        state.assetSearchFocused = false;
+        state.pickers.assetContextOpen = false;
+        state.pickers.assetContextFile = relative == null ? "" : relative;
+        state.pickers.assetRenameOpen = !state.pickers.assetContextFile.isBlank();
+        state.pickers.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.pickers.assetContextFile);
+        state.pickers.assetSearchFocused = false;
         ContextMenuState.clearDeleteConfirm(state);
     }
 
     private static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {
-        String oldRelative = state.assetContextFile;
+        String oldRelative = state.pickers.assetContextFile;
         String parent = TabletModalPanel.parentRelativePath(oldRelative);
-        String name = rename == null || rename.getCurrentString() == null ? state.assetRenameDraft : rename.getCurrentString().trim();
+        String name = rename == null || rename.getCurrentString() == null ? state.pickers.assetRenameDraft : rename.getCurrentString().trim();
         if (oldRelative == null || oldRelative.isBlank() || name.isBlank()) {
-            state.assetRenameOpen = false;
-            state.assetContextOpen = false;
+            state.pickers.assetRenameOpen = false;
+            state.pickers.assetContextOpen = false;
             return;
         }
         String nextRelative = renamedAssetPath(oldRelative, parent, name);
         renameAssetFile(oldRelative, name);
-        state.assetContextFile = nextRelative;
-        state.assetSelected = nextRelative;
-        state.assetRenameOpen = false;
-        state.assetContextOpen = false;
+        state.pickers.assetContextFile = nextRelative;
+        state.pickers.assetSelected = nextRelative;
+        state.pickers.assetRenameOpen = false;
+        state.pickers.assetContextOpen = false;
     }
 
     private static String renamedAssetPath(String oldRelative, String parent, String name) {

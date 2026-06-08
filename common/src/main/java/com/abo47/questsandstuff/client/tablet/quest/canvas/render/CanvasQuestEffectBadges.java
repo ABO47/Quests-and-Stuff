@@ -60,7 +60,7 @@ public final class CanvasQuestEffectBadges {
 
     private static List<Badge> badges(TabletUiState state, CompoundTag tag) {
         List<Badge> badges = new ArrayList<>();
-        boolean editor = state != null && state.canEdit;
+        boolean editor = state != null && state.root.canEdit;
         if (editor ? tag.getBoolean("visual_hidden") : ClientQuestCache.questHiddenPreview(tag)) {
             badges.add(new Badge("eye-off"));
         }

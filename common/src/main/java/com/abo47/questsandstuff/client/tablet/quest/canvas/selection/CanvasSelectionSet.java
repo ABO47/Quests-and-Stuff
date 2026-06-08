@@ -20,15 +20,15 @@ public final class CanvasSelectionSet {
     }
 
     public static CanvasSelectionSet current(TabletUiState state) {
-        Set<String> imageIds = new LinkedHashSet<>(state.canvasSelection.imageIds());
-        if (!state.canvasSelection.primaryImageId().isBlank()) {
-            imageIds.add(state.canvasSelection.primaryImageId());
+        Set<String> imageIds = new LinkedHashSet<>(state.canvas.canvasSelection.imageIds());
+        if (!state.canvas.canvasSelection.primaryImageId().isBlank()) {
+            imageIds.add(state.canvas.canvasSelection.primaryImageId());
         }
-        Set<String> textIds = new LinkedHashSet<>(state.canvasSelection.textIds());
-        if (!state.canvasSelection.primaryTextId().isBlank()) {
-            textIds.add(state.canvasSelection.primaryTextId());
+        Set<String> textIds = new LinkedHashSet<>(state.canvas.canvasSelection.textIds());
+        if (!state.canvas.canvasSelection.primaryTextId().isBlank()) {
+            textIds.add(state.canvas.canvasSelection.primaryTextId());
         }
-        return new CanvasSelectionSet(state.canvasSelection.questIds(), imageIds, textIds);
+        return new CanvasSelectionSet(state.canvas.canvasSelection.questIds(), imageIds, textIds);
     }
 
     public Set<String> questIds() {

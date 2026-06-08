@@ -35,11 +35,11 @@ public final class QuestDetailsWindow {
     }
 
     public static boolean isVisible(TabletUiState state) {
-        return state != null && (state.questDetailsOpen || state.questDetailsClosing);
+        return state != null && (state.questDetails.questDetailsOpen || state.questDetails.questDetailsClosing);
     }
 
     public static boolean isInteractive(TabletUiState state) {
-        return state != null && state.questDetailsOpen && !state.questDetailsClosing;
+        return state != null && state.questDetails.questDetailsOpen && !state.questDetails.questDetailsClosing;
     }
 
     public static boolean finishCloseIfDone(TabletUiState state) {

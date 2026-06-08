@@ -12,27 +12,27 @@ class QuestDetailsWindowTransformCleanupTest {
     @Test
     void closeClearsQuestDetailsTransformSessionBeforeAnimationFinishes() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsOpen = true;
-        state.questDetailsQuestId = "quest/a";
-        state.questDetailsTransformKind = "desc_image";
-        state.questDetailsTransformId = "image:a";
-        state.questDetailsTransformMode = "move";
-        state.questDetailsTransformAxis = "move_x";
-        state.questDetailsTransientImages.put("image:a", image("image:a"));
-        state.dragStartImagePositions.put("image:a", new CanvasPoint(10, 20));
-        state.snapGuideXVisible = true;
-        state.snapGuideYVisible = true;
+        state.questDetails.questDetailsOpen = true;
+        state.questDetails.questDetailsQuestId = "quest/a";
+        state.questDetails.questDetailsTransformKind = "desc_image";
+        state.questDetails.questDetailsTransformId = "image:a";
+        state.questDetails.questDetailsTransformMode = "move";
+        state.questDetails.questDetailsTransformAxis = "move_x";
+        state.questDetails.questDetailsTransientImages.put("image:a", image("image:a"));
+        state.canvas.dragStartImagePositions.put("image:a", new CanvasPoint(10, 20));
+        state.canvas.snapGuideXVisible = true;
+        state.canvas.snapGuideYVisible = true;
 
         QuestDetailsWindow.close(state);
 
-        assertTrue(state.questDetailsTransformKind.isBlank());
-        assertTrue(state.questDetailsTransformId.isBlank());
-        assertTrue(state.questDetailsTransformMode.isBlank());
-        assertTrue(state.questDetailsTransformAxis.isBlank());
-        assertTrue(state.questDetailsTransientImages.isEmpty());
-        assertTrue(state.dragStartImagePositions.isEmpty());
-        assertFalse(state.snapGuideXVisible);
-        assertFalse(state.snapGuideYVisible);
+        assertTrue(state.questDetails.questDetailsTransformKind.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformId.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformMode.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformAxis.isBlank());
+        assertTrue(state.questDetails.questDetailsTransientImages.isEmpty());
+        assertTrue(state.canvas.dragStartImagePositions.isEmpty());
+        assertFalse(state.canvas.snapGuideXVisible);
+        assertFalse(state.canvas.snapGuideYVisible);
     }
 
     private static CanvasImageLayer image(String id) {

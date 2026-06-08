@@ -12,39 +12,39 @@ class TabletShortcutActionsTransformCleanupTest {
     @Test
     void escapeCancelsMainCanvasTransformSession() {
         TabletUiState state = new TabletUiState();
-        state.draggingCanvasImage = true;
-        state.canvasImageTransformAxis = "move_x";
-        state.transientCanvasImages.put("image:a", image("image:a"));
-        state.transientQuestPositions.put("quest/a", new CanvasPoint(10, 20));
-        state.snapGuideXVisible = true;
-        state.snapGuideYVisible = true;
+        state.canvas.draggingCanvasImage = true;
+        state.canvas.canvasImageTransformAxis = "move_x";
+        state.canvas.transientCanvasImages.put("image:a", image("image:a"));
+        state.canvas.transientQuestPositions.put("quest/a", new CanvasPoint(10, 20));
+        state.canvas.snapGuideXVisible = true;
+        state.canvas.snapGuideYVisible = true;
 
         assertTrue(TabletShortcutActions.cancelTransient(state));
 
-        assertFalse(state.draggingCanvasImage);
-        assertTrue(state.canvasImageTransformAxis.isBlank());
-        assertTrue(state.transientCanvasImages.isEmpty());
-        assertTrue(state.transientQuestPositions.isEmpty());
-        assertFalse(state.snapGuideXVisible);
-        assertFalse(state.snapGuideYVisible);
+        assertFalse(state.canvas.draggingCanvasImage);
+        assertTrue(state.canvas.canvasImageTransformAxis.isBlank());
+        assertTrue(state.canvas.transientCanvasImages.isEmpty());
+        assertTrue(state.canvas.transientQuestPositions.isEmpty());
+        assertFalse(state.canvas.snapGuideXVisible);
+        assertFalse(state.canvas.snapGuideYVisible);
     }
 
     @Test
     void escapeCancelsQuestDetailsTransformWithoutClearingMainPreviews() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsTransformKind = "desc_image";
-        state.questDetailsTransformId = "image:b";
-        state.questDetailsTransformMode = "move";
-        state.questDetailsTransientImages.put("image:b", image("image:b"));
-        state.transientCanvasImages.put("image:a", image("image:a"));
+        state.questDetails.questDetailsTransformKind = "desc_image";
+        state.questDetails.questDetailsTransformId = "image:b";
+        state.questDetails.questDetailsTransformMode = "move";
+        state.questDetails.questDetailsTransientImages.put("image:b", image("image:b"));
+        state.canvas.transientCanvasImages.put("image:a", image("image:a"));
 
         assertTrue(TabletShortcutActions.cancelTransient(state));
 
-        assertTrue(state.questDetailsTransformKind.isBlank());
-        assertTrue(state.questDetailsTransformId.isBlank());
-        assertTrue(state.questDetailsTransformMode.isBlank());
-        assertTrue(state.questDetailsTransientImages.isEmpty());
-        assertFalse(state.transientCanvasImages.isEmpty());
+        assertTrue(state.questDetails.questDetailsTransformKind.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformId.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformMode.isBlank());
+        assertTrue(state.questDetails.questDetailsTransientImages.isEmpty());
+        assertFalse(state.canvas.transientCanvasImages.isEmpty());
     }
 
     private static CanvasImageLayer image(String id) {

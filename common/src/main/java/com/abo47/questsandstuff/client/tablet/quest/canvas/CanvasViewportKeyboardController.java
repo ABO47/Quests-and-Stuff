@@ -29,13 +29,13 @@ final class CanvasViewportKeyboardController {
         if (textEditor.handleKeyPressed(keyCode)) {
             return true;
         }
-        if (state.canEdit && viewport.ctrlDown() && keyCode == GLFW.GLFW_KEY_C) {
+        if (state.root.canEdit && viewport.ctrlDown() && keyCode == GLFW.GLFW_KEY_C) {
             if (CanvasClipboardController.copySelectionToClipboard(viewport, state)) {
                 refresher.run();
             }
             return true;
         }
-        if (state.canEdit && viewport.ctrlDown() && keyCode == GLFW.GLFW_KEY_V) {
+        if (state.root.canEdit && viewport.ctrlDown() && keyCode == GLFW.GLFW_KEY_V) {
             if (CanvasClipboardController.pasteNearSelectionOrViewportCenter(viewport.player(), state, viewport)) {
                 refresher.run();
             }

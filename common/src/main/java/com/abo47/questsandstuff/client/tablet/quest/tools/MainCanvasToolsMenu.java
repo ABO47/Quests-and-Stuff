@@ -41,7 +41,7 @@ final class MainCanvasToolsMenu {
         final int toolSlot = toolsW;
         final int menuPad = 1;
         final int toolGap = 2;
-        final boolean editTools = state.canEdit;
+        final boolean editTools = state.root.canEdit;
         final int toolCount = editTools ? 10 : 2;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
@@ -68,28 +68,28 @@ final class MainCanvasToolsMenu {
         addEditRows(rows, state, player, refresh);
         addRewardRows(rows, refresh);
 
-        state.toolsGridSizeMenuOpen = false;
-        state.toolsGridOpacityMenuOpen = false;
+        state.canvas.toolsGridSizeMenuOpen = false;
+        state.canvas.toolsGridOpacityMenuOpen = false;
         addAnimatedMenu(toolsMenu, state, menu);
         rememberBounds(state, menuX, menuY, menuW, menuH);
     }
 
     private static void addEditRows(ToolMenuRows rows, TabletUiState state, Player player, Runnable refresh) {
-        CanvasToolRows.grid(rows, state.gridEnabled, () -> {
-                    state.gridEnabled = !state.gridEnabled;
+        CanvasToolRows.grid(rows, state.canvas.gridEnabled, () -> {
+                    state.canvas.gridEnabled = !state.canvas.gridEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid toggle enabled={}", state.gridEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid toggle enabled={}", state.canvas.gridEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.snap(rows, state.gridSnapLocked, () -> {
-                    state.gridSnapLocked = !state.gridSnapLocked;
+        CanvasToolRows.snap(rows, state.canvas.gridSnapLocked, () -> {
+                    state.canvas.gridSnapLocked = !state.canvas.gridSnapLocked;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool snap-to-grid enabled={}", state.gridSnapLocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool snap-to-grid enabled={}", state.canvas.gridSnapLocked);
                     refresh.run();
                 });
 
-        CanvasToolRows.centerX(rows, state.centerSnapXEnabled, () -> {
+        CanvasToolRows.centerX(rows, state.canvas.centerSnapXEnabled, () -> {
                     int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
                     if (selectionCount > 0) {
                         CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
@@ -97,13 +97,13 @@ final class MainCanvasToolsMenu {
                         refresh.run();
                         return;
                     }
-                    state.centerSnapXEnabled = !state.centerSnapXEnabled;
+                    state.canvas.centerSnapXEnabled = !state.canvas.centerSnapXEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-vertical-center-guide enabled={}", state.centerSnapXEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-vertical-center-guide enabled={}", state.canvas.centerSnapXEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.centerY(rows, state.centerSnapYEnabled, () -> {
+        CanvasToolRows.centerY(rows, state.canvas.centerSnapYEnabled, () -> {
                     int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
                     if (selectionCount > 0) {
                         CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
@@ -111,53 +111,53 @@ final class MainCanvasToolsMenu {
                         refresh.run();
                         return;
                     }
-                    state.centerSnapYEnabled = !state.centerSnapYEnabled;
+                    state.canvas.centerSnapYEnabled = !state.canvas.centerSnapYEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-horizontal-center-guide enabled={}", state.centerSnapYEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-horizontal-center-guide enabled={}", state.canvas.centerSnapYEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.objectSnap(rows, state.objectSnapEnabled, () -> {
-                    state.objectSnapEnabled = !state.objectSnapEnabled;
+        CanvasToolRows.objectSnap(rows, state.canvas.objectSnapEnabled, () -> {
+                    state.canvas.objectSnapEnabled = !state.canvas.objectSnapEnabled;
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool element-guides enabled={}", state.objectSnapEnabled);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool element-guides enabled={}", state.canvas.objectSnapEnabled);
                     refresh.run();
                 });
 
-        CanvasToolRows.gridOpacity(rows, state.gridOpacityPercent, rightClick -> {
-                    int next = cyclePercent(state.gridOpacityPercent, toolPercentStep(), rightClick);
+        CanvasToolRows.gridOpacity(rows, state.canvas.gridOpacityPercent, rightClick -> {
+                    int next = cyclePercent(state.canvas.gridOpacityPercent, toolPercentStep(), rightClick);
                     applyGridOpacityPercent(state, next);
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid-opacity percent={}", state.gridOpacityPercent);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid-opacity percent={}", state.canvas.gridOpacityPercent);
                     refresh.run();
                 });
 
-        CanvasToolRows.backgroundOpacity(rows, state.canvasBgOpacityPercent, rightClick -> {
-                    int next = cyclePercent(state.canvasBgOpacityPercent, toolPercentStep(), rightClick);
+        CanvasToolRows.backgroundOpacity(rows, state.canvas.canvasBgOpacityPercent, rightClick -> {
+                    int next = cyclePercent(state.canvas.canvasBgOpacityPercent, toolPercentStep(), rightClick);
                     applyCanvasBgOpacityPercent(state, next);
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-bg-opacity percent={}", state.canvasBgOpacityPercent);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-bg-opacity percent={}", state.canvas.canvasBgOpacityPercent);
                     refresh.run();
                 });
 
-        CanvasToolRows.canvasLock(rows, state.gridCanvasLocked, () -> {
-                    state.gridCanvasLocked = !state.gridCanvasLocked;
-                    if (state.gridCanvasLocked) {
+        CanvasToolRows.canvasLock(rows, state.canvas.gridCanvasLocked, () -> {
+                    state.canvas.gridCanvasLocked = !state.canvas.gridCanvasLocked;
+                    if (state.canvas.gridCanvasLocked) {
                         CanvasCameraController.setOffset(state, 0, 0, false);
                     }
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-canvas enabled={}", state.gridCanvasLocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool lock-canvas enabled={}", state.canvas.gridCanvasLocked);
                     refresh.run();
                 });
 
-        CanvasToolRows.splitterLock(rows, state.chapterSplitterLocked, () -> {
-                    state.chapterSplitterLocked = !state.chapterSplitterLocked;
-                    if (state.chapterSplitterLocked) {
-                        state.draggingChapterSplitter = false;
+        CanvasToolRows.splitterLock(rows, state.chapterPanel.chapterSplitterLocked, () -> {
+                    state.chapterPanel.chapterSplitterLocked = !state.chapterPanel.chapterSplitterLocked;
+                    if (state.chapterPanel.chapterSplitterLocked) {
+                        state.canvas.draggingChapterSplitter = false;
                         TabletResizeCursor.update(false);
                     }
                     persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool splitter-lock enabled={} width={}", state.chapterSplitterLocked, chapterPanelWidth(state));
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool splitter-lock enabled={} width={}", state.chapterPanel.chapterSplitterLocked, chapterPanelWidth(state));
                     refresh.run();
                 });
     }
@@ -180,17 +180,17 @@ final class MainCanvasToolsMenu {
     }
 
     private static void addReadOnlyRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
-        rows.toggle(state.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
-                !state.chapterSplitterLocked,
+        rows.toggle(state.chapterPanel.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
+                state.chapterPanel.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
+                !state.chapterPanel.chapterSplitterLocked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),
-                        Component.translatable(state.chapterSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
+                        Component.translatable(state.chapterPanel.chapterSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
                 },
                 () -> {
-                    state.chapterSplitterLocked = !state.chapterSplitterLocked;
-                    if (state.chapterSplitterLocked) {
-                        state.draggingChapterSplitter = false;
+                    state.chapterPanel.chapterSplitterLocked = !state.chapterPanel.chapterSplitterLocked;
+                    if (state.chapterPanel.chapterSplitterLocked) {
+                        state.canvas.draggingChapterSplitter = false;
                         TabletResizeCursor.update(false);
                     }
                     persistUiState(state);
@@ -199,10 +199,10 @@ final class MainCanvasToolsMenu {
     }
 
     private static void rememberBounds(TabletUiState state, int menuX, int menuY, int menuW, int menuH) {
-        state.toolsMenuX = menuX;
-        state.toolsMenuY = menuY;
-        state.toolsMenuW = menuW;
-        state.toolsMenuH = menuH;
+        state.canvas.toolsMenuX = menuX;
+        state.canvas.toolsMenuY = menuY;
+        state.canvas.toolsMenuW = menuW;
+        state.canvas.toolsMenuH = menuH;
     }
 
     private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {
@@ -210,6 +210,6 @@ final class MainCanvasToolsMenu {
             toolsMenu.addWidget(menu);
             return;
         }
-        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
+        toolsMenu.addWidget(AnchoredMenuRevealWidget.tools(menu, () -> state.canvas.toolsMenuAnimationStartMs, () -> ToolMenuAnimation.mainOpening(state)));
     }
 }

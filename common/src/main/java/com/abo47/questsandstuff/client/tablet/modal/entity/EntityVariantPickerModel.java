@@ -33,7 +33,7 @@ record EntityVariantPickerModel(
         List<EntityVariantTile> tiles
 ) {
     static EntityVariantPickerModel create(TabletUiState state) {
-        String target = ModalTargetState.target(state, ModalSession.TargetSlot.ENTITY_VARIANT, state.entityVariantTarget);
+        String target = ModalTargetState.target(state, ModalSession.TargetSlot.ENTITY_VARIANT, state.pickers.entityVariantTarget);
         String asset = currentAsset(state, target);
         String entityId = EntityPreviewRenderer.entityId(asset);
         List<EntityVariantCatalog.VariantEntry> allVariants = EntityVariantCatalog.variantsFor(entityId);
@@ -46,11 +46,11 @@ record EntityVariantPickerModel(
         String activeFolder = foldered ? activeFolder(state, entityId) : "";
         boolean browsingFolder = foldered && !activeFolder.isBlank();
         List<EntityVariantCatalog.VariantFolder> folders = foldered && !browsingFolder
-                ? EntityVariantCatalog.variantFoldersFor(entityId, state.entityVariantSearch)
+                ? EntityVariantCatalog.variantFoldersFor(entityId, state.pickers.entityVariantSearch)
                 : List.of();
         List<EntityVariantCatalog.VariantEntry> variants = browsingFolder
-                ? EntityVariantCatalog.variantsForFolder(entityId, activeFolder, state.entityVariantSearch)
-                : foldered ? List.of() : EntityVariantCatalog.search(entityId, state.entityVariantSearch);
+                ? EntityVariantCatalog.variantsForFolder(entityId, activeFolder, state.pickers.entityVariantSearch)
+                : foldered ? List.of() : EntityVariantCatalog.search(entityId, state.pickers.entityVariantSearch);
         return new EntityVariantPickerModel(
                 target,
                 asset,
@@ -85,29 +85,29 @@ record EntityVariantPickerModel(
     }
 
     private static String activeFolder(TabletUiState state, String entityId) {
-        String folder = state.entityVariantFolder == null ? "" : state.entityVariantFolder.trim().toLowerCase(Locale.ROOT);
+        String folder = state.pickers.entityVariantFolder == null ? "" : state.pickers.entityVariantFolder.trim().toLowerCase(Locale.ROOT);
         if (folder.isBlank()) {
             return "";
         }
         for (EntityVariantCatalog.VariantFolder entry : EntityVariantCatalog.variantFoldersFor(entityId, "")) {
             if (entry.key().equals(folder)) {
-                state.entityVariantFolder = folder;
+                state.pickers.entityVariantFolder = folder;
                 return folder;
             }
         }
-        state.entityVariantFolder = "";
+        state.pickers.entityVariantFolder = "";
         return "";
     }
 
     private static String selectedVariant(TabletUiState state, String entityId, String asset, List<EntityVariantCatalog.VariantEntry> variants) {
-        String selected = EntityVariantCatalog.normalizeVariantKey(entityId, state.entityVariantSelected);
+        String selected = EntityVariantCatalog.normalizeVariantKey(entityId, state.pickers.entityVariantSelected);
         if (selected.isBlank()) {
             selected = EntityVariantCatalog.normalizeVariantKey(entityId, EntityPreviewRenderer.entityVariant(asset));
         }
         if (selected.isBlank() && !variants.isEmpty()) {
             selected = variants.get(0).key();
         }
-        state.entityVariantSelected = selected;
+        state.pickers.entityVariantSelected = selected;
         return selected;
     }
 

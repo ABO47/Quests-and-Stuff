@@ -34,13 +34,13 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     void clear() {
-        state.questDetailsDescriptionSelection.setPrimaryTextId("");
-        state.questDetailsDescriptionSelection.setPrimaryImageId("");
-        state.questDetailsDescriptionSelection.textIds().clear();
-        state.questDetailsDescriptionSelection.imageIds().clear();
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
-        state.selectionBoundsVisible = false;
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        state.questDetails.questDetailsSelectedObjectiveKind = "";
+        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.canvas.selectionBoundsVisible = false;
     }
 
     int count() {
@@ -48,40 +48,40 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     boolean isSelectedText(String id) {
-        return id.equals(state.questDetailsDescriptionSelection.primaryTextId()) || state.questDetailsDescriptionSelection.textIds().contains(id);
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryTextId()) || state.questDetails.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
     boolean isSelectedImage(String id) {
-        return id.equals(state.questDetailsDescriptionSelection.primaryImageId()) || state.questDetailsDescriptionSelection.imageIds().contains(id);
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
     void finishBoxSelection(QuestDetailsDescriptionModel model) {
-        int minX = Math.min(state.questDetailsBoxStartX, state.questDetailsBoxCurrentX);
-        int minY = Math.min(state.questDetailsBoxStartY, state.questDetailsBoxCurrentY) + state.questDetailsDescScroll;
-        int maxX = Math.max(state.questDetailsBoxStartX, state.questDetailsBoxCurrentX);
-        int maxY = Math.max(state.questDetailsBoxStartY, state.questDetailsBoxCurrentY) + state.questDetailsDescScroll;
+        int minX = Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int minY = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY) + state.questDetails.questDetailsDescScroll;
+        int maxX = Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int maxY = Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY) + state.questDetails.questDetailsDescScroll;
         for (CanvasTextLayer text : model.texts.values()) {
             if (intersects(bounds(text.x(), text.y(), text.w(), text.h(), text.rotation()), minX, minY, maxX, maxY)) {
-                state.questDetailsDescriptionSelection.textIds().add(text.id());
-                state.questDetailsDescriptionSelection.setPrimaryTextId(text.id());
+                state.questDetails.questDetailsDescriptionSelection.textIds().add(text.id());
+                state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(text.id());
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
             if (intersects(bounds(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation()), minX, minY, maxX, maxY)) {
-                state.questDetailsDescriptionSelection.imageIds().add(image.id());
-                state.questDetailsDescriptionSelection.setPrimaryImageId(image.id());
+                state.questDetails.questDetailsDescriptionSelection.imageIds().add(image.id());
+                state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(image.id());
             }
         }
     }
 
     void drawBoxSelection(GuiGraphics graphics) {
-        if (!state.questDetailsBoxSelecting) {
+        if (!state.questDetails.questDetailsBoxSelecting) {
             return;
         }
-        int left = Math.max(0, Math.min(state.questDetailsBoxStartX, state.questDetailsBoxCurrentX));
-        int top = Math.max(0, Math.min(state.questDetailsBoxStartY, state.questDetailsBoxCurrentY));
-        int right = Math.min(contentW.getAsInt(), Math.max(state.questDetailsBoxStartX, state.questDetailsBoxCurrentX));
-        int bottom = Math.min(contentH.getAsInt(), Math.max(state.questDetailsBoxStartY, state.questDetailsBoxCurrentY));
+        int left = Math.max(0, Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX));
+        int top = Math.max(0, Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY));
+        int right = Math.min(contentW.getAsInt(), Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX));
+        int bottom = Math.min(contentH.getAsInt(), Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY));
         if (right <= left || bottom <= top) {
             return;
         }
@@ -146,9 +146,9 @@ public final class QuestDetailsDescriptionSelection {
             if (isSelectedText(drawText.id())) {
                 int[] box = bounds(drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 minX = Math.min(minX, box[0]);
-                minY = Math.min(minY, box[1] - state.questDetailsDescScroll);
+                minY = Math.min(minY, box[1] - state.questDetails.questDetailsDescScroll);
                 maxX = Math.max(maxX, box[2]);
-                maxY = Math.max(maxY, box[3] - state.questDetailsDescScroll);
+                maxY = Math.max(maxY, box[3] - state.questDetails.questDetailsDescScroll);
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
@@ -156,9 +156,9 @@ public final class QuestDetailsDescriptionSelection {
             if (isSelectedImage(drawImage.id())) {
                 int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 minX = Math.min(minX, box[0]);
-                minY = Math.min(minY, box[1] - state.questDetailsDescScroll);
+                minY = Math.min(minY, box[1] - state.questDetails.questDetailsDescScroll);
                 maxX = Math.max(maxX, box[2]);
-                maxY = Math.max(maxY, box[3] - state.questDetailsDescScroll);
+                maxY = Math.max(maxY, box[3] - state.questDetails.questDetailsDescScroll);
             }
         }
         if (minX == Integer.MAX_VALUE) {

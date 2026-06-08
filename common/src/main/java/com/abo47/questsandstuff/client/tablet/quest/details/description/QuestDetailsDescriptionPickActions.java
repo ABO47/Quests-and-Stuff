@@ -25,7 +25,7 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static void applyAssetPick(Player player, TabletUiState state, String asset) {
-        applyAssetPick(player, state, ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetailsAssetPickTarget), asset);
+        applyAssetPick(player, state, ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget), asset);
     }
 
     static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target parsed, String asset) {
@@ -61,12 +61,12 @@ final class QuestDetailsDescriptionPickActions {
                 QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);
             }
         }
-        state.questDetailsAssetPickTarget = "";
+        state.questDetails.questDetailsAssetPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details asset picked quest={} target={} asset={}", questId, parsed.kind(), asset);
     }
 
     static boolean applyIconPick(Player player, TabletUiState state, String entry) {
-        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || entry == null || entry.isBlank()
                 || (!parsed.isDescEntity() && !parsed.isDescEntityNew() && !parsed.isDescItem() && !parsed.isDescItemNew())) {
             return false;
@@ -107,12 +107,12 @@ final class QuestDetailsDescriptionPickActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details change entity quest={} image={} entity={}", questId, id, entityId);
             }
         }
-        state.questDetailsPickTarget = "";
+        state.questDetails.questDetailsPickTarget = "";
         return true;
     }
 
     static boolean applyBlockPick(Player player, TabletUiState state, String block) {
-        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || block == null || block.isBlank() || (!parsed.isDescBlock() && !parsed.isDescBlockNew())) {
             return false;
         }
@@ -149,12 +149,12 @@ final class QuestDetailsDescriptionPickActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details change block model quest={} image={} block={}", questId, id, block);
             }
         }
-        state.questDetailsPickTarget = "";
+        state.questDetails.questDetailsPickTarget = "";
         return true;
     }
 
     static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
-        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetailsPickTarget);
+        ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || recipe == null || recipe.isBlank() || (!parsed.isDescRecipe() && !parsed.isDescRecipeNew())) {
             return false;
         }
@@ -190,7 +190,7 @@ final class QuestDetailsDescriptionPickActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details change recipe card quest={} image={} recipe={}", questId, id, recipe);
             }
         }
-        state.questDetailsPickTarget = "";
+        state.questDetails.questDetailsPickTarget = "";
         return true;
     }
 
@@ -242,7 +242,7 @@ final class QuestDetailsDescriptionPickActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details change item model quest={} image={} item={}", questId, id, entry);
             }
         }
-        state.questDetailsPickTarget = "";
+        state.questDetails.questDetailsPickTarget = "";
         return true;
     }
 
@@ -251,8 +251,8 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target parsed, int color) {
-        String questId = state.questDetailsTextColorQuestId;
-        String textId = state.questDetailsTextColorTextId;
+        String questId = state.questDetails.questDetailsTextColorQuestId;
+        String textId = state.questDetails.questDetailsTextColorTextId;
         if ((questId == null || questId.isBlank() || textId == null || textId.isBlank()) && parsed.isQuestDescText()) {
             if (parsed.hasAtLeast(3)) {
                 questId = parsed.questId();
@@ -272,9 +272,9 @@ final class QuestDetailsDescriptionPickActions {
         }
         model.putText(CanvasRenderer.applyTextColorSelection(state, text, color));
         QuestDetailsDescriptionModel.save(player, questId, model);
-        state.colorPickerTarget = "";
-        state.questDetailsTextColorQuestId = "";
-        state.questDetailsTextColorTextId = "";
+        state.pickers.colorPickerTarget = "";
+        state.questDetails.questDetailsTextColorQuestId = "";
+        state.questDetails.questDetailsTextColorTextId = "";
         TextStyleSession.openQuestDetails(state, text.id());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color quest={} text={} color={}", questId, textId, color);
     }

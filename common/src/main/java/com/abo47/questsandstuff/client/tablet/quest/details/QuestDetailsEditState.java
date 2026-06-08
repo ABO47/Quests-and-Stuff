@@ -9,18 +9,18 @@ public final class QuestDetailsEditState {
     }
 
     public static boolean editorAvailable(TabletUiState state) {
-        return state != null && state.editorAvailable;
+        return state != null && state.root.editorAvailable;
     }
 
     public static boolean canEdit(TabletUiState state) {
-        return editorAvailable(state) && state.questDetailsEditMode;
+        return editorAvailable(state) && state.questDetails.questDetailsEditMode;
     }
 
     public static boolean toggle(TabletUiState state) {
         if (!editorAvailable(state)) {
             return false;
         }
-        state.questDetailsEditMode = !state.questDetailsEditMode;
+        state.questDetails.questDetailsEditMode = !state.questDetails.questDetailsEditMode;
         persistUiState(state);
         return true;
     }

@@ -62,13 +62,13 @@ public enum RecipePickerMode {
         if (state == null) {
             return;
         }
-        state.recipeMode = safe(state.recipeMode).cycle(direction);
-        state.recipeScroll = 0;
+        state.pickers.recipeMode = safe(state.pickers.recipeMode).cycle(direction);
+        state.pickers.recipeScroll = 0;
     }
 
     public static void reset(TabletUiState state) {
         if (state != null) {
-            state.recipeMode = ITEMS;
+            state.pickers.recipeMode = ITEMS;
         }
     }
 }

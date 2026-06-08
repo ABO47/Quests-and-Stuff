@@ -20,14 +20,14 @@ final class PrerequisiteConnectionActions {
         if (state == null || row == null) {
             return;
         }
-        if (row.key().equals(state.prerequisitesManagerSelectedConnectionKey)) {
-            state.prerequisitesManagerSelectedConnectionKey = "";
+        if (row.key().equals(state.modal.prerequisitesManagerSelectedConnectionKey)) {
+            state.modal.prerequisitesManagerSelectedConnectionKey = "";
         }
-        if (row.key().equals(state.prerequisitesManagerHoveredConnectionKey)) {
-            state.prerequisitesManagerHoveredConnectionKey = "";
+        if (row.key().equals(state.modal.prerequisitesManagerHoveredConnectionKey)) {
+            state.modal.prerequisitesManagerHoveredConnectionKey = "";
         }
-        state.prerequisitesManagerContextOpen = false;
-        state.prerequisitesManagerContextPrerequisiteId = "";
+        state.modal.prerequisitesManagerContextOpen = false;
+        state.modal.prerequisitesManagerContextPrerequisiteId = "";
         ContextMenuState.clearDeleteConfirm(state);
     }
 }

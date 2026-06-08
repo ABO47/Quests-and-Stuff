@@ -18,12 +18,12 @@ class TextStyleSessionTest {
 
         TextStyleSession.closeMainCanvas(state);
 
-        assertFalse(state.canvasTextMenuOpen);
-        assertEquals("", state.canvasTextMenuTarget);
-        assertEquals("", state.canvasTextFontSizeFieldTarget);
-        assertTrue(state.questDetailsTextStyleOpen);
-        assertEquals("desc:text", state.questDetailsTextStyleTarget);
-        assertEquals("desc:text", state.questDetailsTextFontSizeFieldTarget);
+        assertFalse(state.canvas.canvasTextMenuOpen);
+        assertEquals("", state.canvas.canvasTextMenuTarget);
+        assertEquals("", state.canvas.canvasTextFontSizeFieldTarget);
+        assertTrue(state.questDetails.questDetailsTextStyleOpen);
+        assertEquals("desc:text", state.questDetails.questDetailsTextStyleTarget);
+        assertEquals("desc:text", state.questDetails.questDetailsTextFontSizeFieldTarget);
     }
 
     @Test
@@ -35,13 +35,13 @@ class TextStyleSessionTest {
 
         TextStyleSession.closeQuestDetails(state);
 
-        assertFalse(state.questDetailsTextStyleOpen);
-        assertEquals("", state.questDetailsTextStyleTarget);
-        assertEquals("", state.questDetailsTextFontSizeFieldTarget);
-        assertEquals(0, state.questDetailsTextStyleMenuX);
-        assertEquals(0, state.questDetailsTextStyleMenuY);
-        assertEquals(0, state.questDetailsTextStyleMenuW);
-        assertEquals(0, state.questDetailsTextStyleMenuH);
+        assertFalse(state.questDetails.questDetailsTextStyleOpen);
+        assertEquals("", state.questDetails.questDetailsTextStyleTarget);
+        assertEquals("", state.questDetails.questDetailsTextFontSizeFieldTarget);
+        assertEquals(0, state.questDetails.questDetailsTextStyleMenuX);
+        assertEquals(0, state.questDetails.questDetailsTextStyleMenuY);
+        assertEquals(0, state.questDetails.questDetailsTextStyleMenuW);
+        assertEquals(0, state.questDetails.questDetailsTextStyleMenuH);
     }
 
     @Test
@@ -63,7 +63,7 @@ class TextStyleSessionTest {
     @Test
     void recentQuestDetailsInteractionUsesProvidedClockWindow() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsTextStyleInteractionAtMs = 1_000L;
+        state.questDetails.questDetailsTextStyleInteractionAtMs = 1_000L;
 
         assertTrue(TextStyleSession.recentlyHandledQuestDetailsClick(state, 1_200L, 350L));
         assertFalse(TextStyleSession.recentlyHandledQuestDetailsClick(state, 1_500L, 350L));

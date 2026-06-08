@@ -19,10 +19,10 @@ final class ChapterTextStyleMenu {
     }
 
     static void render(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
-        if (!state.chapterTextMenuOpen || state.chapterTextMenuTarget.isBlank()) {
+        if (!state.chapterPanel.chapterTextMenuOpen || state.chapterPanel.chapterTextMenuTarget.isBlank()) {
             return;
         }
-        int listHeight = state.chapterListHeight > 0 ? state.chapterListHeight : TabletUiFactory.chapterHeight(state) - 12;
+        int listHeight = state.chapterPanel.chapterListHeight > 0 ? state.chapterPanel.chapterListHeight : TabletUiFactory.chapterHeight(state) - 12;
         int fy = TabletUiFactory.chapterTextMenuY(state, listHeight);
         int fx = TabletUiFactory.chapterTextMenuX(state);
         int fw = TabletUiFactory.chapterTextMenuWidth(state);
@@ -30,14 +30,14 @@ final class ChapterTextStyleMenu {
             return;
         }
         int menuH = TextStyleButtons.menuHeightForWidth(fw);
-        int overlayX = TabletUiFactory.CHAPTER_X + state.chapterListOriginX + fx;
-        int overlayY = TabletUiFactory.CHAPTER_Y + state.chapterListOriginY + fy;
+        int overlayX = TabletUiFactory.CHAPTER_X + state.chapterPanel.chapterListOriginX + fx;
+        int overlayY = TabletUiFactory.CHAPTER_Y + state.chapterPanel.chapterListOriginY + fy;
         WidgetGroup floating = TextStyleButtons.shell(overlayX, overlayY, fw, menuH, click -> {
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text menu internal click target={}", state.chapterTextMenuTarget);
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text menu internal click target={}", state.chapterPanel.chapterTextMenuTarget);
             refresh.run();
         });
 
-        String target = state.chapterTextMenuTarget;
+        String target = state.chapterPanel.chapterTextMenuTarget;
         String align = ClientQuestCache.groupTextAlign(target);
         String style = ClientQuestCache.groupTextStyle(target);
         int fontSize = ClientQuestCache.groupTextSize(target);
@@ -109,7 +109,7 @@ final class ChapterTextStyleMenu {
     }
 
     private static void addFontSizeControl(WidgetGroup parent, TabletUiState state, Player player, String target, int menuWidth, int columns, int fontSize, Runnable refresh) {
-        boolean open = target.equals(state.chapterTextFontSizeFieldTarget);
+        boolean open = target.equals(state.chapterPanel.chapterTextFontSizeFieldTarget);
         if (open) {
             TextStyleButtons.addFontSizeField(parent, 7, menuWidth, columns, fontSize, value -> {
                 QuestsAndStuffMod.debugLog("[QnS:UI] chapter text size target={} size={}", target, value);
@@ -121,14 +121,14 @@ final class ChapterTextStyleMenu {
         addIconToggleButton(parent, 7, menuWidth, columns, "size", baseColor, null, new Component[]{
                 Component.literal("Font size: " + fontSize)
         }, click -> {
-            state.chapterTextFontSizeFieldTarget = target;
+            state.chapterPanel.chapterTextFontSizeFieldTarget = target;
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text font-size field target={} open=true", target);
             refresh.run();
         });
     }
 
     private static void closeFontSizeField(TabletUiState state, Runnable refresh) {
-        state.chapterTextFontSizeFieldTarget = "";
+        state.chapterPanel.chapterTextFontSizeFieldTarget = "";
         refresh.run();
     }
 

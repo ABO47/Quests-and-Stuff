@@ -9,41 +9,41 @@ final class QuestDetailsDescriptionInteractionState {
     }
 
     static void beginPanning(TabletUiState state, double mouseX, double mouseY) {
-        state.questDetailsPanning = true;
-        state.questDetailsPanStartX = (int) Math.round(mouseX);
-        state.questDetailsPanStartY = (int) Math.round(mouseY);
-        state.questDetailsPanStartScroll = state.questDetailsDescScroll;
+        state.questDetails.questDetailsPanning = true;
+        state.questDetails.questDetailsPanStartX = (int) Math.round(mouseX);
+        state.questDetails.questDetailsPanStartY = (int) Math.round(mouseY);
+        state.questDetails.questDetailsPanStartScroll = state.questDetails.questDetailsDescScroll;
     }
 
     static void beginBoxSelection(TabletUiState state, int lx, int visibleY, boolean additive, Runnable clearSelection) {
-        state.questDetailsBoxSelecting = true;
-        state.questDetailsBoxAdditive = additive;
-        state.questDetailsBoxStartX = lx;
-        state.questDetailsBoxStartY = visibleY;
-        state.questDetailsBoxCurrentX = lx;
-        state.questDetailsBoxCurrentY = visibleY;
+        state.questDetails.questDetailsBoxSelecting = true;
+        state.questDetails.questDetailsBoxAdditive = additive;
+        state.questDetails.questDetailsBoxStartX = lx;
+        state.questDetails.questDetailsBoxStartY = visibleY;
+        state.questDetails.questDetailsBoxCurrentX = lx;
+        state.questDetails.questDetailsBoxCurrentY = visibleY;
         if (!additive) {
             clearSelection.run();
         }
     }
 
     static void updateBoxSelection(TabletUiState state, int lx, int visibleY) {
-        state.questDetailsBoxCurrentX = lx;
-        state.questDetailsBoxCurrentY = visibleY;
+        state.questDetails.questDetailsBoxCurrentX = lx;
+        state.questDetails.questDetailsBoxCurrentY = visibleY;
     }
 
     static boolean scrollByWheel(TabletUiState state, QuestDetailsDescriptionModel model, int viewportH, double wheelDelta) {
-        int previous = state.questDetailsDescScroll;
+        int previous = state.questDetails.questDetailsDescScroll;
         int next = previous + (wheelDelta < 0 ? WHEEL_SCROLL_STEP : -WHEEL_SCROLL_STEP);
-        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, next);
-        return state.questDetailsDescScroll != previous;
+        state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, next);
+        return state.questDetails.questDetailsDescScroll != previous;
     }
 
     static boolean recordTextClick(TabletUiState state, String id, long nowMs, long thresholdMs) {
-        boolean doubleClick = id.equals(state.questDetailsTextLastClickId)
-                && nowMs - state.questDetailsTextLastClickAtMs <= thresholdMs;
-        state.questDetailsTextLastClickId = id;
-        state.questDetailsTextLastClickAtMs = nowMs;
+        boolean doubleClick = id.equals(state.questDetails.questDetailsTextLastClickId)
+                && nowMs - state.questDetails.questDetailsTextLastClickAtMs <= thresholdMs;
+        state.questDetails.questDetailsTextLastClickId = id;
+        state.questDetails.questDetailsTextLastClickAtMs = nowMs;
         return doubleClick;
     }
 }

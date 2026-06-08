@@ -10,7 +10,7 @@ final class CanvasQuestCardGeometry {
     }
 
     static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedGroup) {
-        CanvasPoint override = state.transientQuestPositions.get(questId);
+        CanvasPoint override = state.canvas.transientQuestPositions.get(questId);
         CompoundTag groupsTag = questTag.getCompound("groups");
         String resolvedGroup = selectedGroup == null ? "" : selectedGroup.trim();
         if (resolvedGroup.isBlank() || !groupsTag.contains(resolvedGroup)) {
@@ -92,7 +92,7 @@ final class CanvasQuestCardGeometry {
 
     private static float scaleFromGroup(TabletUiState state, String questId, CompoundTag groupTag) {
         float scale = groupTag.contains("scale") ? groupTag.getFloat("scale") : 1.0f;
-        Float transientScale = state.transientQuestScales.get(questId);
+        Float transientScale = state.canvas.transientQuestScales.get(questId);
         if (transientScale != null && !Float.isNaN(transientScale) && !Float.isInfinite(transientScale)) {
             scale = transientScale;
         }

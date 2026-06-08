@@ -41,11 +41,11 @@ class CanvasMinimapGeometryTest {
     @Test
     void worldBoundsIncludeViewportAndQuestCards() {
         TabletUiState state = new TabletUiState();
-        state.canvasZoom = 2.0f;
-        state.canvasContentW = 100;
-        state.canvasContentH = 80;
-        state.canvasOffsetX = -20;
-        state.canvasOffsetY = -10;
+        state.canvas.canvasZoom = 2.0f;
+        state.canvas.canvasContentW = 100;
+        state.canvas.canvasContentH = 80;
+        state.canvas.canvasOffsetX = -20;
+        state.canvas.canvasOffsetY = -10;
         QuestCardLayout card = new QuestCardLayout("quest", new CompoundTag(), 0, 0, 10, 10, 16, 16, 80, 70, 1.0f, 0, 0, 10, 10);
 
         CanvasMinimapGeometry.WorldBounds bounds = CanvasMinimapGeometry.worldBounds(state, List.of(card));
@@ -59,14 +59,14 @@ class CanvasMinimapGeometryTest {
     @Test
     void mapsMinimapClicksIntoWorldSpace() {
         TabletUiState state = new TabletUiState();
-        state.minimapX = 10;
-        state.minimapY = 20;
-        state.minimapW = 100;
-        state.minimapH = 50;
-        state.minimapWorldMinX = 50;
-        state.minimapWorldMinY = -25;
-        state.minimapWorldWidth = 200;
-        state.minimapWorldHeight = 100;
+        state.canvas.minimapX = 10;
+        state.canvas.minimapY = 20;
+        state.canvas.minimapW = 100;
+        state.canvas.minimapH = 50;
+        state.canvas.minimapWorldMinX = 50;
+        state.canvas.minimapWorldMinY = -25;
+        state.canvas.minimapWorldWidth = 200;
+        state.canvas.minimapWorldHeight = 100;
 
         assertEquals(150, CanvasMinimapGeometry.mapWorldX(state, 60));
         assertEquals(25, CanvasMinimapGeometry.mapWorldY(state, 45));
@@ -101,14 +101,14 @@ class CanvasMinimapGeometryTest {
     @Test
     void minimapDragCoordinatesClampToWorldBounds() {
         TabletUiState state = new TabletUiState();
-        state.minimapX = 10;
-        state.minimapY = 20;
-        state.minimapW = 100;
-        state.minimapH = 50;
-        state.minimapWorldMinX = 50;
-        state.minimapWorldMinY = -25;
-        state.minimapWorldWidth = 200;
-        state.minimapWorldHeight = 100;
+        state.canvas.minimapX = 10;
+        state.canvas.minimapY = 20;
+        state.canvas.minimapW = 100;
+        state.canvas.minimapH = 50;
+        state.canvas.minimapWorldMinX = 50;
+        state.canvas.minimapWorldMinY = -25;
+        state.canvas.minimapWorldWidth = 200;
+        state.canvas.minimapWorldHeight = 100;
 
         assertEquals(50, CanvasMinimapGeometry.mapWorldX(state, -200));
         assertEquals(250, CanvasMinimapGeometry.mapWorldX(state, 900));

@@ -22,8 +22,8 @@ class ConnectionLayoutTest {
     @Test
     void prerequisiteLinesUseResolvedStyleBeforeDrawing() {
         TabletUiState state = new TabletUiState();
-        state.canEdit = true;
-        state.selectedGroup = "main";
+        state.root.canEdit = true;
+        state.root.selectedGroup = "main";
 
         QuestCardLayout source = card("quest/source", new CompoundTag(), 10, 20, 80, 40);
         CompoundTag targetTag = targetTag("quest/source");

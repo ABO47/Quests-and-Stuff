@@ -39,7 +39,7 @@ final class RecipePickerGridRenderer {
     }
 
     private static void addInventoryGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
-        List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.recipeSearch);
+        List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.pickers.recipeSearch);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -61,7 +61,7 @@ final class RecipePickerGridRenderer {
     }
 
     private static void addFluidGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
-        List<String> entries = DisplayIconProvider.searchableFluidEntries(state.recipeSearch);
+        List<String> entries = DisplayIconProvider.searchableFluidEntries(state.pickers.recipeSearch);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -83,7 +83,7 @@ final class RecipePickerGridRenderer {
     }
 
     private static void addRecipeGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH, RecipePickerMode mode) {
-        List<RecipeChoiceIndex.RecipeChoice> entries = RecipeChoiceIndex.recipes(state.recipeSearch, mode.showingTags(state.recipeSearch));
+        List<RecipeChoiceIndex.RecipeChoice> entries = RecipeChoiceIndex.recipes(state.pickers.recipeSearch, mode.showingTags(state.pickers.recipeSearch));
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -106,10 +106,10 @@ final class RecipePickerGridRenderer {
 
     private static ScrollState scrollState(TabletUiState state) {
         return ScrollState.bind(
-                () -> state.recipeScroll,
-                value -> state.recipeScroll = value,
-                () -> state.recipeScrollDragging,
-                dragging -> state.recipeScrollDragging = dragging
+                () -> state.pickers.recipeScroll,
+                value -> state.pickers.recipeScroll = value,
+                () -> state.pickers.recipeScrollDragging,
+                dragging -> state.pickers.recipeScrollDragging = dragging
         );
     }
 

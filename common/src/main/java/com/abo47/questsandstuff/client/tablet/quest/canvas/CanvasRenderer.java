@@ -51,9 +51,9 @@ public final class CanvasRenderer {
         int viewportH = canvasViewport.getSize().height;
         int usableW = Math.max(1, viewportW - 1);
         int usableH = Math.max(1, viewportH - 1);
-        if (state.canvasLimitEnabled) {
-            usableW = Math.min(usableW, CANVAS_LIMIT_WIDTH[state.canvasLimitIndex]);
-            usableH = Math.min(usableH, CANVAS_LIMIT_HEIGHT[state.canvasLimitIndex]);
+        if (state.canvas.canvasLimitEnabled) {
+            usableW = Math.min(usableW, CANVAS_LIMIT_WIDTH[state.canvas.canvasLimitIndex]);
+            usableH = Math.min(usableH, CANVAS_LIMIT_HEIGHT[state.canvas.canvasLimitIndex]);
         }
         int cell = CanvasGeometry.gridSize(state);
         int contentW = CanvasSceneRenderer.snapCanvasContentSize(usableW, cell);
@@ -64,7 +64,7 @@ public final class CanvasRenderer {
         CanvasCameraController.afterCanvasLayout(state, selectedGroup);
         CanvasSceneRenderer.renderCanvasSurfaces(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
-        if (state.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
+        if (state.canvas.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
             WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(ModColors.SURFACE_PANEL_ALT, 36), ModColors.BORDER_ACCENT);
             canvasViewport.addWidget(bounds);
         }
@@ -83,7 +83,7 @@ public final class CanvasRenderer {
         }
         CanvasRenderStateController.pruneStaleInteractiveState(state, byQuestId.keySet());
         WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
-        if (state.canEdit && state.gridEnabled) {
+        if (state.root.canEdit && state.canvas.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
         }
         CanvasSceneRenderer.renderCanvasElements(
@@ -122,7 +122,7 @@ public final class CanvasRenderer {
         if (selectedGroup.isBlank()) {
             return false;
         }
-        if (!state.canEdit && isVisualHiddenOutsideEdit(questTag)) {
+        if (!state.root.canEdit && isVisualHiddenOutsideEdit(questTag)) {
             return false;
         }
         return groups.contains(selectedGroup);

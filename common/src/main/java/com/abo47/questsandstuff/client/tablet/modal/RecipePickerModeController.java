@@ -9,7 +9,7 @@ final class RecipePickerModeController {
     }
 
     static RecipePickerMode mode(TabletUiState state) {
-        return state == null ? RecipePickerMode.ITEMS : RecipePickerMode.safe(state.recipeMode);
+        return state == null ? RecipePickerMode.ITEMS : RecipePickerMode.safe(state.pickers.recipeMode);
     }
 
     static ContentKind contentKind(TabletUiState state) {
@@ -28,9 +28,9 @@ final class RecipePickerModeController {
         if (state == null) {
             return "";
         }
-        state.recipeSearch = SearchFilter.normalizeUserInput(value);
-        state.recipeScroll = 0;
-        return state.recipeSearch;
+        state.pickers.recipeSearch = SearchFilter.normalizeUserInput(value);
+        state.pickers.recipeScroll = 0;
+        return state.pickers.recipeSearch;
     }
 
     static RecipePickerMode cycle(TabletUiState state, int direction) {
@@ -51,7 +51,7 @@ final class RecipePickerModeController {
     }
 
     static Component[] tooltip(TabletUiState state) {
-        return mode(state).tooltip(state == null ? "" : state.recipeSearch);
+        return mode(state).tooltip(state == null ? "" : state.pickers.recipeSearch);
     }
 
     enum ContentKind {

@@ -64,14 +64,14 @@ final class QuestAppHeaderControls {
                 chapterTopY,
                 Math.max(24, initialChapterW - chapterInset * 2),
                 chapterHeaderH,
-                () -> state.chapterSearch,
+                () -> state.chapterPanel.chapterSearch,
                 Integer.MAX_VALUE,
                 value -> {
-                    state.chapterSearch = SearchFilter.normalizeUserInput(value);
-                    state.chapterScroll = 0;
+                    state.chapterPanel.chapterSearch = SearchFilter.normalizeUserInput(value);
+                    state.chapterPanel.chapterScroll = 0;
                     refresh.run();
                 },
-                focused -> state.chapterSearchFocused = focused
+                focused -> state.chapterPanel.chapterSearchFocused = focused
         );
 
         TextFieldWidget searchField = StyledTextFields.search(
@@ -79,16 +79,16 @@ final class QuestAppHeaderControls {
                 topY,
                 60,
                 headerH,
-                () -> state.search,
+                () -> state.root.search,
                 Integer.MAX_VALUE,
                 value -> {
-                    state.search = SearchFilter.normalizeUserInput(value);
-                    if (!state.search.isBlank()) {
+                    state.root.search = SearchFilter.normalizeUserInput(value);
+                    if (!state.root.search.isBlank()) {
                         CanvasRenderer.jumpToBestMatch(state);
                     }
                     refresh.run();
                 },
-                focused -> state.searchFocused = focused
+                focused -> state.root.searchFocused = focused
         );
 
         WidgetGroup canvasHeaderSurface = new WidgetGroup(canvasHeaderX, topY, 60, headerH);
@@ -104,8 +104,8 @@ final class QuestAppHeaderControls {
         TabletIconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", ModColors.WARNING, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuState.close(state);
-            state.chapterMenuOpen = false;
-            state.assetContextOpen = false;
+            state.chapterPanel.chapterMenuOpen = false;
+            state.pickers.assetContextOpen = false;
             CanvasBlueprintController.openBlueprintLibrary(state);
             QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] library opened from main header");
             refresh.run();
@@ -113,22 +113,22 @@ final class QuestAppHeaderControls {
         TabletIconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", ModColors.INTERACTIVE, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuState.close(state);
-            state.chapterMenuOpen = false;
-            state.assetContextOpen = false;
+            state.chapterPanel.chapterMenuOpen = false;
+            state.pickers.assetContextOpen = false;
             QuestRewardClaimActions.claimAll(player, "");
             refresh.run();
         });
         TabletIconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", ModColors.INTERACTIVE, click -> {
-            if (!state.editorAvailable) {
+            if (!state.root.editorAvailable) {
                 return;
             }
-            state.editMode = !state.editMode;
-            state.canEdit = state.editorAvailable && state.editMode;
+            state.root.editMode = !state.root.editMode;
+            state.root.canEdit = state.root.editorAvailable && state.root.editMode;
             ContextMenuState.close(state);
-            state.chapterMenuOpen = false;
-            state.assetContextOpen = false;
+            state.chapterPanel.chapterMenuOpen = false;
+            state.pickers.assetContextOpen = false;
             persistUiState(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] editor mode toggle enabled={}", state.editMode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] editor mode toggle enabled={}", state.root.editMode);
             refresh.run();
         });
 
@@ -144,10 +144,10 @@ final class QuestAppHeaderControls {
     }
 
     void syncFocus(TabletUiState state) {
-        if (state.searchFocused) {
+        if (state.root.searchFocused) {
             searchField.setFocus(true);
         }
-        if (state.chapterSearchFocused) {
+        if (state.chapterPanel.chapterSearchFocused) {
             chapterSearchField.setFocus(true);
         }
     }
@@ -159,10 +159,10 @@ final class QuestAppHeaderControls {
         toolsButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
         boolean settingsActive = settingsActive(state);
         settingsButton.visuals(headerVisuals(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE, settingsActive ? ModColors.SUCCESS : ModColors.INTERACTIVE));
-        boolean activeBlueprintPlacement = state.blueprintPlacement.active();
+        boolean activeBlueprintPlacement = state.canvas.blueprintPlacement.active();
         blueprintButton.visuals(headerVisuals(activeBlueprintPlacement ? withAlpha(ModColors.WARNING, 38) : ModColors.SURFACE_PANEL_ALT, activeBlueprintPlacement ? ModColors.WARNING : ModColors.BORDER_BASE, activeBlueprintPlacement ? ModColors.WARNING : ModColors.INTERACTIVE));
         claimAllButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
-        editorButton.visuals(headerVisuals(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR, state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
+        editorButton.visuals(headerVisuals(withAlpha(state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR, state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }
 
     void layoutChapter(boolean chapterCollapsed, int dynamicListX, int dynamicListW, int chapterTopY, int chapterHeaderH) {
@@ -173,8 +173,8 @@ final class QuestAppHeaderControls {
 
     void layoutCanvas(TabletUiState state, int headerX, int headerW, int topY, int headerH, int toolsW, int topGap) {
         toolsX = headerX + headerW - toolsW;
-        boolean showEditorToggle = state.editorAvailable;
-        boolean showBlueprintButton = state.canEdit && state.editMode;
+        boolean showEditorToggle = state.root.editorAvailable;
+        boolean showBlueprintButton = state.root.canEdit && state.root.editMode;
         boolean showToolsButton = true;
         int editorX = showEditorToggle ? toolsX - topGap - toolsW : toolsX;
         int claimAllX = (showEditorToggle ? editorX : toolsX) - topGap - toolsW;
@@ -189,7 +189,7 @@ final class QuestAppHeaderControls {
         searchField.setSize(searchW, headerH);
         layoutHeaderButton(editorButton, editorX, topY, toolsW, headerH, showEditorToggle, new Component[]{
                 Component.translatable("ui.questsandstuff.tools.editor_toggle"),
-                Component.translatable(state.editMode
+                Component.translatable(state.root.editMode
                         ? "ui.questsandstuff.tools.editor_state_on"
                         : "ui.questsandstuff.tools.editor_state_off")
         });
@@ -230,15 +230,15 @@ final class QuestAppHeaderControls {
         }
         ToolMenuAnimation.closeMain(state);
         ContextMenuState.close(state);
-        state.chapterMenuOpen = false;
-        state.assetContextOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
+        state.pickers.assetContextOpen = false;
         ModalOpenActions.openSettingsPanel(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] settings panel toggle open=true");
         refresh.run();
     }
 
     private static boolean settingsActive(TabletUiState state) {
-        return ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SETTINGS_PANEL) && !state.modalWindowClosing;
+        return ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SETTINGS_PANEL) && !state.modal.modalWindowClosing;
     }
 
     private static TabletIconTextButton headerButton(int x, int y, int width, int height, String icon, int accentColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {

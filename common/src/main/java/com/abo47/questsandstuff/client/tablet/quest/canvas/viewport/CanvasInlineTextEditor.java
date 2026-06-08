@@ -42,19 +42,19 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean isOwnerHit(int localX, int localY) {
-        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+        if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
     public boolean isMenuHit(int localX, int localY) {
-        if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
+        if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }
@@ -69,21 +69,21 @@ public final class CanvasInlineTextEditor {
 
     public void begin(CanvasTextLayer text) {
         TextEditSession.beginMainCanvas(state, text.id(), text.text());
-        state.canvasSelection.setPrimaryTextId(text.id());
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.textIds().add(text.id());
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.questIds().clear();
-        state.draggingCanvasText = false;
-        state.resizingCanvasText = false;
-        state.rotatingCanvasText = false;
+        state.canvas.canvasSelection.setPrimaryTextId(text.id());
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.textIds().add(text.id());
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.draggingCanvasText = false;
+        state.canvas.resizingCanvasText = false;
+        state.canvas.rotatingCanvasText = false;
         viewport.setFocus(true);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit start id={}", text.id());
     }
 
     public void close(String reason) {
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit close id={} reason={} length={}", state.canvasTextEditTarget, reason, state.canvasTextEditDraft.length());
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit close id={} reason={} length={}", state.canvas.canvasTextEditTarget, reason, state.canvas.canvasTextEditDraft.length());
         TextEditSession.closeMainCanvas(state, false);
     }
 
@@ -91,7 +91,7 @@ public final class CanvasInlineTextEditor {
         if (!TextEditSession.isMainCanvasEditing(state)) {
             return null;
         }
-        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextEditTarget);
+        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -191,7 +191,7 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean dragSelectionTo(int localX, int localY) {
-        if (!state.selectingCanvasTextRange || !TextEditSession.isMainCanvasEditing(state)) {
+        if (!state.canvas.selectingCanvasTextRange || !TextEditSession.isMainCanvasEditing(state)) {
             return false;
         }
         CanvasTextLayer editingText = activeText();
@@ -245,13 +245,13 @@ public final class CanvasInlineTextEditor {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        String id = state.canvasTextEditTarget;
+        String id = state.canvas.canvasTextEditTarget;
         CanvasLayerMutations.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvas.canvasTextEditDraft.length(), state.canvas.canvasTextEditCursor);
         return true;
     }
 
     private CanvasTextLayer fitEditedText(CanvasTextLayer text) {
-        return state.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 }

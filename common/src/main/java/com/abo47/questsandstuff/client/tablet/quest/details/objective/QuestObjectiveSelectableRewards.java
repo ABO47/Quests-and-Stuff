@@ -112,10 +112,10 @@ final class QuestObjectiveSelectableRewards {
             String groupId = choiceGroupId(id);
             String choiceId = choiceId(id);
             if (!groupId.isBlank() && !choiceId.isBlank()) {
-                state.questDetailsSelectableRewardChoices.put(groupId, choiceId);
+                state.questDetails.questDetailsSelectableRewardChoices.put(groupId, choiceId);
             }
         } else {
-            state.questDetailsSelectableRewardChoices.put(STANDALONE_SELECTION_KEY, id);
+            state.questDetails.questDetailsSelectableRewardChoices.put(STANDALONE_SELECTION_KEY, id);
         }
     }
 
@@ -124,14 +124,14 @@ final class QuestObjectiveSelectableRewards {
             return false;
         }
         if (!isSelectableChoiceId(id)) {
-            return id.equals(state.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
+            return id.equals(state.questDetails.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
         }
         String groupId = choiceGroupId(id);
         String choiceId = choiceId(id);
         if (groupId.isBlank() || choiceId.isBlank()) {
             return false;
         }
-        return choiceId.equals(state.questDetailsSelectableRewardChoices.get(groupId));
+        return choiceId.equals(state.questDetails.questDetailsSelectableRewardChoices.get(groupId));
     }
 
     static void makeSelectable(Player player, String questId, String rewardId) {
@@ -229,7 +229,7 @@ final class QuestObjectiveSelectableRewards {
         if (state == null || groupId == null || groupId.isBlank()) {
             return "";
         }
-        String selected = state.questDetailsSelectableRewardChoices.get(groupId);
+        String selected = state.questDetails.questDetailsSelectableRewardChoices.get(groupId);
         if (selected != null && !selected.isBlank()) {
             return selected.trim();
         }
@@ -237,7 +237,7 @@ final class QuestObjectiveSelectableRewards {
     }
 
     private static boolean isStandaloneSelected(TabletUiState state, String rewardId) {
-        return state != null && rewardId != null && rewardId.equals(state.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
+        return state != null && rewardId != null && rewardId.equals(state.questDetails.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
     }
 
     private static boolean choiceExists(JsonObject selectable, String choiceId) {

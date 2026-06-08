@@ -78,7 +78,7 @@ public final class CanvasBlueprintMiniRenderer {
         return new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasBlueprint blueprint = CanvasBlueprintStore.read(state.blueprintPlacement.asset());
+                CanvasBlueprint blueprint = CanvasBlueprintStore.read(state.canvas.blueprintPlacement.asset());
                 if (blueprint.isEmpty()) {
                     return;
                 }
@@ -89,7 +89,7 @@ public final class CanvasBlueprintMiniRenderer {
                 CanvasBlueprintController.PlacementAnchor anchor = CanvasBlueprintController.placementAnchor(state, blueprint, localX, localY);
                 int anchorScreenX = originX + CanvasGeometry.screenX(state, anchor.x());
                 int anchorScreenY = originY + CanvasGeometry.screenY(state, anchor.y());
-                drawBlueprint(graphics, mouseX, mouseY, anchorScreenX, anchorScreenY, CanvasRenderer.clampZoom(state.canvasZoom), blueprint, partialTicks, 150);
+                drawBlueprint(graphics, mouseX, mouseY, anchorScreenX, anchorScreenY, CanvasRenderer.clampZoom(state.canvas.canvasZoom), blueprint, partialTicks, 150);
             }
         };
     }

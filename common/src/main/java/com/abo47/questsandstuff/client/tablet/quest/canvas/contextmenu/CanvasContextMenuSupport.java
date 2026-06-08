@@ -43,7 +43,7 @@ public final class CanvasContextMenuSupport {
     }
 
     public static int contextMenuWidth(TabletUiState state) {
-        return state.contextMenuWidthPx > 0 ? state.contextMenuWidthPx : 118;
+        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : 118;
     }
 
     public static int contextMenuHeight(int visibleRows) {
@@ -57,10 +57,10 @@ public final class CanvasContextMenuSupport {
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
         int w = contextMenuWidth(state);
-        int h = state.contextMenuHeightPx > 0 ? state.contextMenuHeightPx : contextMenuHeight(Math.max(1, state.contextMenuRows));
-        return x >= state.contextMenuX && y >= state.contextMenuY
-                && x <= state.contextMenuX + w
-                && y <= state.contextMenuY + h;
+        int h = state.contextMenu.contextMenuHeightPx > 0 ? state.contextMenu.contextMenuHeightPx : contextMenuHeight(Math.max(1, state.contextMenu.contextMenuRows));
+        return x >= state.contextMenu.contextMenuX && y >= state.contextMenu.contextMenuY
+                && x <= state.contextMenu.contextMenuX + w
+                && y <= state.contextMenu.contextMenuY + h;
     }
 
     public static boolean clickContextMenu(CanvasViewport canvasViewport, TabletUiState state, int x, int y) {
@@ -78,13 +78,13 @@ public final class CanvasContextMenuSupport {
         List<ContextAction> rows = ContextMenuPanel.rowActions(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rows.size(), maxVisibleRows);
         int scrollMax = Math.max(0, rows.size() - visibleRows);
-        int scroll = ScrollController.clamp(state.contextMenuScroll, scrollMax);
+        int scroll = ScrollController.clamp(state.contextMenu.contextMenuScroll, scrollMax);
         boolean needsScroll = scrollMax > 0;
         int menuW = contextMenuWidth(actions, canvasViewport.getSize().width);
         int rowWidth = needsScroll ? menuW - 14 : menuW - 8;
 
-        int relX = x - state.contextMenuX;
-        int relY = y - state.contextMenuY;
+        int relX = x - state.contextMenu.contextMenuX;
+        int relY = y - state.contextMenu.contextMenuY;
         if (handlePromotedClick(promoted, relX, relY, menuW, state)) {
             return true;
         }
@@ -125,7 +125,7 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = visiblePromoted.get(i);
-            ContextMenuState.setLastClick(state, state.contextMenuX + relX, state.contextMenuY + relY);
+            ContextMenuState.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
@@ -169,8 +169,8 @@ public final class CanvasContextMenuSupport {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return false;
         }
-        List<CanvasImageLayer> images = state.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvasTextsByGroup.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
         List<QuestCardLayout> cards = canvasViewport.cardCache();
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : cards) {

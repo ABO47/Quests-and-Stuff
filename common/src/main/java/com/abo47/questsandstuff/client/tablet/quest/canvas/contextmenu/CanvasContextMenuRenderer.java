@@ -36,12 +36,12 @@ final class CanvasContextMenuRenderer {
         }
         int scrollMax = Math.max(0, rowCount - visibleRows);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        int menuX = ContextMenuPlacement.fitRightOrLeft(state.contextMenuAnchorX, canvasViewport.getSize().width, menuW);
-        int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
+        int menuX = ContextMenuPlacement.fitRightOrLeft(state.contextMenu.contextMenuAnchorX, canvasViewport.getSize().width, menuW);
+        int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenu.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
         ContextMenuState.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
 
         canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> close(state)));
-        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenuScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 close(state);
             }

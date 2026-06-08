@@ -16,8 +16,8 @@ final class QuestDetailsWindowGeometry {
         if (state == null) {
             return TabletUiFactory.CHAPTER_W;
         }
-        state.questDetailsLeftPanelWidth = QuestDetailsSplitterWidget.clampDetailsLeftWidth(state.questDetailsLeftPanelWidth);
-        return state.questDetailsLeftPanelWidth;
+        state.questDetails.questDetailsLeftPanelWidth = QuestDetailsSplitterWidget.clampDetailsLeftWidth(state.questDetails.questDetailsLeftPanelWidth);
+        return state.questDetails.questDetailsLeftPanelWidth;
     }
 
     static int canvasPanelWidth(int leftW) {

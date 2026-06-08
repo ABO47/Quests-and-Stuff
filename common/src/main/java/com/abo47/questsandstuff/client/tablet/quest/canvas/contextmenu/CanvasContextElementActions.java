@@ -36,52 +36,52 @@ final class CanvasContextElementActions {
     }
 
     static void addImageActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
-        if (state.contextMenuTarget != ContextMenuTarget.IMAGE || state.contextCanvasImageId.isBlank()) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.IMAGE || state.contextMenu.contextCanvasImageId.isBlank()) {
             return;
         }
-        CanvasImageLayer contextImage = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
+        CanvasImageLayer contextImage = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextMenu.contextCanvasImageId);
         if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuState.clearDeleteConfirm(state);
                 ContextMenuState.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card group={} image={}", selectedGroup, state.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuState.clearDeleteConfirm(state);
                 ContextMenuState.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity group={} image={}", selectedGroup, state.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
             EntityIconControls.addEntityVariantAndMotionActions(
                     actions,
                     state,
                     contextImage.asset(),
-                    ModalTargets.canvasImage(selectedGroup, state.contextCanvasImageId),
+                    ModalTargets.canvasImage(selectedGroup, state.contextMenu.contextCanvasImageId),
                     () -> ContextMenuState.close(state),
                     () -> {
-                        EntityMotionEditor.openMainCanvas(state, selectedGroup, state.contextCanvasImageId, state.contextMenuX, state.contextMenuY);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion group={} image={}", selectedGroup, state.contextCanvasImageId);
+                        EntityMotionEditor.openMainCanvas(state, selectedGroup, state.contextMenu.contextCanvasImageId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                     },
                     canvasViewport::refresh
             );
         } else if (contextImage != null && (ModelAssetPreviewRenderer.isItemAsset(contextImage.asset()) || ModelAssetPreviewRenderer.isItemTagAsset(contextImage.asset()))) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuState.clearDeleteConfirm(state);
                 ContextMenuState.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model group={} image={}", selectedGroup, state.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ModColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
+                ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedGroup, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuState.clearDeleteConfirm(state);
                 ContextMenuState.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model group={} image={}", selectedGroup, state.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         }
@@ -90,58 +90,58 @@ final class CanvasContextElementActions {
                 && CanvasSelectionActions.isImageSelected(state, contextImage.id())) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
-                CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
+                CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextMenu.contextCanvasImageId);
                 if (image == null) {
                     return;
                 }
                 CanvasLayerMutations.putCanvasImage(state, selectedGroup, image.withCenteredPivot());
-                state.canvasSelection.setPrimaryImageId(image.id());
-                state.canvasSelection.imageIds().clear();
-                state.canvasSelection.imageIds().add(image.id());
-                state.canvasSelection.setPrimaryTextId("");
-                state.canvasSelection.textIds().clear();
+                state.canvas.canvasSelection.setPrimaryImageId(image.id());
+                state.canvas.canvasSelection.imageIds().clear();
+                state.canvas.canvasSelection.imageIds().add(image.id());
+                state.canvas.canvasSelection.setPrimaryTextId("");
+                state.canvas.canvasSelection.textIds().clear();
             }, canvasViewport::refresh);
         }
-        if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextCanvasImageId)) {
+        if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextMenu.contextCanvasImageId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
-                boolean changed = CanvasGridFitController.fitImageToGrid(state, selectedGroup, state.contextCanvasImageId);
+                boolean changed = CanvasGridFitController.fitImageToGrid(state, selectedGroup, state.contextMenu.contextCanvasImageId);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=image id={} changed={}", state.contextCanvasImageId, changed);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=image id={} changed={}", state.contextMenu.contextCanvasImageId, changed);
                 canvasViewport.refresh();
             }));
         }
-        addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.imageKey(state.contextCanvasImageId), "image", state.contextCanvasImageId);
+        addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.imageKey(state.contextMenu.contextCanvasImageId), "image", state.contextMenu.contextCanvasImageId);
     }
 
     static void addTextActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
-        if (state.contextMenuTarget != ContextMenuTarget.TEXT || state.contextCanvasTextId.isBlank()) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.TEXT || state.contextMenu.contextCanvasTextId.isBlank()) {
             return;
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.edit_text"), "rename", ModColors.INTERACTIVE, () -> {
-            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, selectedGroup, state.contextCanvasTextId);
-            TextEditSession.beginMainCanvas(state, state.contextCanvasTextId, text == null ? "" : text.text());
-            state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, selectedGroup, state.contextMenu.contextCanvasTextId);
+            TextEditSession.beginMainCanvas(state, state.contextMenu.contextCanvasTextId, text == null ? "" : text.text());
+            state.canvas.canvasSelection.setPrimaryTextId(state.contextMenu.contextCanvasTextId);
             canvasViewport.setFocus(true);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_text id={}", state.contextCanvasTextId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_text id={}", state.contextMenu.contextCanvasTextId);
             canvasViewport.refresh();
         }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, false, () -> {
-            TextStyleSession.openMainCanvas(state, state.contextCanvasTextId);
-            state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
+            TextStyleSession.openMainCanvas(state, state.contextMenu.contextCanvasTextId);
+            state.canvas.canvasSelection.setPrimaryTextId(state.contextMenu.contextCanvasTextId);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=text_style id={}", state.contextCanvasTextId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=text_style id={}", state.contextMenu.contextCanvasTextId);
             canvasViewport.refresh();
         }));
-        if (CanvasGridFitController.canFitTextToGrid(state, selectedGroup, state.contextCanvasTextId)) {
+        if (CanvasGridFitController.canFitTextToGrid(state, selectedGroup, state.contextMenu.contextCanvasTextId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
-                boolean changed = CanvasGridFitController.fitTextToGrid(state, selectedGroup, state.contextCanvasTextId);
+                boolean changed = CanvasGridFitController.fitTextToGrid(state, selectedGroup, state.contextMenu.contextCanvasTextId);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=text id={} changed={}", state.contextCanvasTextId, changed);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=text id={} changed={}", state.contextMenu.contextCanvasTextId, changed);
                 canvasViewport.refresh();
             }));
         }
-        addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.textKey(state.contextCanvasTextId), "text", state.contextCanvasTextId);
+        addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.textKey(state.contextMenu.contextCanvasTextId), "text", state.contextMenu.contextCanvasTextId);
     }
 
     private static void addLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup, String layerKey, String targetName, String targetId) {

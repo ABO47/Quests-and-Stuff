@@ -63,16 +63,16 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return true;
         }
         if (button == 0 && isMouseOverElement(mouseX, mouseY) && isChapterScrollBarHit(localX, localY, state)) {
-            state.chapterScrollDragging = true;
-            int previous = state.chapterScroll;
+            state.chapterPanel.chapterScrollDragging = true;
+            int previous = state.chapterPanel.chapterScroll;
             updateChapterScrollByMouse(localY, state);
-            if (state.chapterScroll != previous) {
+            if (state.chapterPanel.chapterScroll != previous) {
                 refreshChapterViews.run();
             }
             return true;
         }
         if (button == 0 && isMouseOverElement(mouseX, mouseY)) {
-            if (!state.pendingChapterRename.isBlank() || ModalStateQueries.anyOpen(state) || state.chapterTextMenuOpen) {
+            if (!state.canvas.pendingChapterRename.isBlank() || ModalStateQueries.anyOpen(state) || state.chapterPanel.chapterTextMenuOpen) {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
             if (openIconPickerAt(localX, localY)) {
@@ -85,33 +85,33 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state.chapterScrollDragging) {
-            int previous = state.chapterScroll;
+        if (state.chapterPanel.chapterScrollDragging) {
+            int previous = state.chapterPanel.chapterScroll;
             updateChapterScrollByMouse(TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY), state);
-            if (state.chapterScroll != previous) {
+            if (state.chapterPanel.chapterScroll != previous) {
                 refreshChapterViews.run();
             }
             return true;
         }
-        if (state.chapterDragActive) {
+        if (state.chapterPanel.chapterDragActive) {
             int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
             int nextTarget = chapterInsertIndexAtY(localY, state);
-            if (nextTarget != state.chapterDragTargetIndex) {
-                state.chapterDragTargetIndex = nextTarget;
-                QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag preview moving={} targetIndex={}", state.chapterDragName, nextTarget);
+            if (nextTarget != state.chapterPanel.chapterDragTargetIndex) {
+                state.chapterPanel.chapterDragTargetIndex = nextTarget;
+                QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag preview moving={} targetIndex={}", state.chapterPanel.chapterDragName, nextTarget);
                 refreshChapterViews.run();
             }
             return true;
         }
-        if (state.chapterDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterDragStartX, state.chapterDragStartY)) {
+        if (state.chapterPanel.chapterDragPending && button == 0) {
+            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
                 return true;
             }
-            state.chapterDragPending = false;
-            state.chapterDragActive = true;
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragActive = true;
             int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
-            state.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterDragName, state.chapterDragTargetIndex);
+            state.chapterPanel.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterPanel.chapterDragName, state.chapterPanel.chapterDragTargetIndex);
             refreshChapterViews.run();
             return true;
         }
@@ -120,19 +120,19 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (state.chapterScrollDragging) {
-            state.chapterScrollDragging = false;
+        if (state.chapterPanel.chapterScrollDragging) {
+            state.chapterPanel.chapterScrollDragging = false;
             refreshChapterViews.run();
             return true;
         }
-        if (state.chapterDragActive) {
+        if (state.chapterPanel.chapterDragActive) {
             finishChapterDrag();
             return true;
         }
-        if (state.chapterDragPending) {
-            state.chapterDragPending = false;
-            state.chapterDragName = "";
-            state.chapterDragTargetIndex = -1;
+        if (state.chapterPanel.chapterDragPending) {
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragName = "";
+            state.chapterPanel.chapterDragTargetIndex = -1;
             return true;
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -147,9 +147,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return true;
         }
         int step = Math.max(8, chapterRowStep(state) / 3);
-        int next = ScrollController.wheel(state.chapterScroll, state.chapterScrollMax, step, wheelDelta);
-        if (next != state.chapterScroll) {
-            state.chapterScroll = next;
+        int next = ScrollController.wheel(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax, step, wheelDelta);
+        if (next != state.chapterPanel.chapterScroll) {
+            state.chapterPanel.chapterScroll = next;
             refreshChapterViews.run();
         }
         return true;
@@ -164,18 +164,18 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         } else {
             clearChapterSelection();
         }
-        state.chapterDragPending = false;
-        state.chapterDragActive = false;
-        state.chapterDragName = "";
-        state.chapterDragTargetIndex = -1;
-        if (state.canEdit) {
+        state.chapterPanel.chapterDragPending = false;
+        state.chapterPanel.chapterDragActive = false;
+        state.chapterPanel.chapterDragName = "";
+        state.chapterPanel.chapterDragTargetIndex = -1;
+        if (state.root.canEdit) {
             String menuTarget = hit == null || hit.isBlank() ? "" : hit;
-            state.chapterMenuOpen = true;
+            state.chapterPanel.chapterMenuOpen = true;
             ContextMenuAnimation.start(state, ContextMenuAnimation.CHAPTER_KEY);
-            state.chapterMenuOpenedByClick = true;
-            state.chapterMenuTarget = menuTarget;
-            state.chapterMenuX = CHAPTER_X + localX;
-            state.chapterMenuY = CHAPTER_Y + localY;
+            state.chapterPanel.chapterMenuOpenedByClick = true;
+            state.chapterPanel.chapterMenuTarget = menuTarget;
+            state.chapterPanel.chapterMenuX = CHAPTER_X + localX;
+            state.chapterPanel.chapterMenuY = CHAPTER_Y + localY;
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter context menu open target={} emptyArea={}", menuTarget.isBlank() ? "<none>" : menuTarget, hit == null || hit.isBlank());
         }
         refresh.run();
@@ -185,30 +185,30 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         String hit = chapterAtY(localY, state);
         if (hit != null && !hit.isBlank() && isChapterCardAreaHit(localX, localY, state)) {
             if (!canOpenChapter(hit)) {
-                state.chapterMenuOpen = false;
-                state.chapterDragPending = false;
-                state.chapterDragActive = false;
-                state.chapterDragName = "";
-                state.chapterDragTargetIndex = -1;
+                state.chapterPanel.chapterMenuOpen = false;
+                state.chapterPanel.chapterDragPending = false;
+                state.chapterPanel.chapterDragActive = false;
+                state.chapterPanel.chapterDragName = "";
+                state.chapterPanel.chapterDragTargetIndex = -1;
                 refresh.run();
                 return true;
             }
             selectChapterDirect(hit);
-            state.chapterMenuOpen = false;
-            if (EditorCommandClient.canManageGroups(state) && (state.chapterSearch == null || state.chapterSearch.isBlank())) {
-                state.chapterDragPending = true;
-                state.chapterDragStartX = (int) Math.round(mouseX);
-                state.chapterDragStartY = (int) Math.round(mouseY);
-                state.chapterDragActive = false;
-                state.chapterDragName = hit;
-                state.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
+            state.chapterPanel.chapterMenuOpen = false;
+            if (EditorCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
+                state.chapterPanel.chapterDragPending = true;
+                state.chapterPanel.chapterDragStartX = (int) Math.round(mouseX);
+                state.chapterPanel.chapterDragStartY = (int) Math.round(mouseY);
+                state.chapterPanel.chapterDragActive = false;
+                state.chapterPanel.chapterDragName = hit;
+                state.chapterPanel.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
             }
             refresh.run();
             return true;
         }
         if (isChapterCardAreaHit(localX, localY, state)) {
             clearChapterSelection();
-            state.chapterMenuOpen = false;
+            state.chapterPanel.chapterMenuOpen = false;
             refresh.run();
             return true;
         }
@@ -224,11 +224,11 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return false;
         }
         selectChapterDirect(hit);
-        state.chapterMenuOpen = false;
-        state.chapterDragPending = false;
-        state.chapterDragActive = false;
-        state.chapterDragName = "";
-        state.chapterDragTargetIndex = -1;
+        state.chapterPanel.chapterMenuOpen = false;
+        state.chapterPanel.chapterDragPending = false;
+        state.chapterPanel.chapterDragActive = false;
+        state.chapterPanel.chapterDragName = "";
+        state.chapterPanel.chapterDragTargetIndex = -1;
         ModalOpenActions.openChapterIconPicker(state, hit);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", hit);
         refresh.run();
@@ -240,13 +240,13 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (index < 0) {
             return false;
         }
-        int cardLeft = state.chapterCardHitLeft;
-        int cardRight = state.chapterCardHitRight;
+        int cardLeft = state.chapterPanel.chapterCardHitLeft;
+        int cardRight = state.chapterPanel.chapterCardHitRight;
         int cardWidth = Math.max(1, cardRight - cardLeft);
-        boolean collapsed = state.chapterPanelCollapsed || state.chapterListWidth <= 54;
+        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= 54;
         int iconLeft = collapsed ? cardLeft + Math.max(0, (cardWidth - CONTENT_ICON_SIZE) / 2) : cardLeft + 2;
         int rowStep = chapterRowStep(state);
-        int iconTop = state.chapterRowStartY + index * rowStep - state.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);
+        int iconTop = state.chapterPanel.chapterRowStartY + index * rowStep - state.chapterPanel.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);
         return localX >= iconLeft
                 && localX < iconLeft + CONTENT_ICON_SIZE
                 && localY >= iconTop
@@ -254,13 +254,13 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private java.util.List<String> visibleChapterGroups() {
-        String query = SearchFilter.normalize(state.chapterSearch);
+        String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
         for (String group : ClientQuestCache.groupOrder()) {
             if (com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
-            if (!state.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {
@@ -272,11 +272,11 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private void finishChapterDrag() {
-        String moving = state.chapterDragName;
-        int target = Math.max(0, state.chapterDragTargetIndex);
-        state.chapterDragActive = false;
-        state.chapterDragName = "";
-        state.chapterDragTargetIndex = -1;
+        String moving = state.chapterPanel.chapterDragName;
+        int target = Math.max(0, state.chapterPanel.chapterDragTargetIndex);
+        state.chapterPanel.chapterDragActive = false;
+        state.chapterPanel.chapterDragName = "";
+        state.chapterPanel.chapterDragTargetIndex = -1;
         if (!moving.isBlank()) {
             int fromIndex = ClientQuestCache.groupOrder().indexOf(moving);
             int size = ClientQuestCache.groupOrder().size();
@@ -285,21 +285,21 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
                 runGroupAction(player, state, "move_to", moving, "", target);
             }
-            state.selectedGroup = moving;
+            state.root.selectedGroup = moving;
             persistUiState(state);
         }
         refresh.run();
     }
 
     private void clearChapterSelection() {
-        state.selectedGroup = "";
-        state.groupDraft = "";
-        state.chapterDraftName = "";
-        state.pendingChapterRename = "";
-        state.chapterTextMenuOpen = false;
-        state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeFieldTarget = "";
-        state.chapterSelectionJustChanged = false;
+        state.root.selectedGroup = "";
+        state.chapterPanel.groupDraft = "";
+        state.chapterPanel.chapterDraftName = "";
+        state.canvas.pendingChapterRename = "";
+        state.chapterPanel.chapterTextMenuOpen = false;
+        state.chapterPanel.chapterTextMenuTarget = "";
+        state.chapterPanel.chapterTextFontSizeFieldTarget = "";
+        state.chapterPanel.chapterSelectionJustChanged = false;
         persistUiState(state);
     }
 
@@ -310,19 +310,19 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (!canOpenChapter(group)) {
             return;
         }
-        state.selectedGroup = group;
-        state.groupDraft = group;
-        state.chapterDraftName = group;
-        state.pendingChapterRename = "";
-        state.chapterTextMenuOpen = false;
-        state.chapterTextMenuTarget = "";
-        state.chapterTextFontSizeFieldTarget = "";
-        state.chapterSelectionJustChanged = true;
+        state.root.selectedGroup = group;
+        state.chapterPanel.groupDraft = group;
+        state.chapterPanel.chapterDraftName = group;
+        state.canvas.pendingChapterRename = "";
+        state.chapterPanel.chapterTextMenuOpen = false;
+        state.chapterPanel.chapterTextMenuTarget = "";
+        state.chapterPanel.chapterTextFontSizeFieldTarget = "";
+        state.chapterPanel.chapterSelectionJustChanged = true;
         ClientQuestCache.clearGroupCompletionNotice(group);
         persistUiState(state);
     }
 
     private boolean canOpenChapter(String group) {
-        return state.canEdit || ClientQuestCache.groupOpenablePreview(group);
+        return state.root.canEdit || ClientQuestCache.groupOpenablePreview(group);
     }
 }

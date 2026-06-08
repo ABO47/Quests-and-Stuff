@@ -46,7 +46,7 @@ public final class TabletPanelChrome {
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
-        drawCanvasPanelChrome(graphics, panel, state.canvasViewportX, state.canvasViewportY, state.canvasViewportW, state.canvasViewportH);
+        drawCanvasPanelChrome(graphics, panel, state.canvas.canvasViewportX, state.canvas.canvasViewportY, state.canvas.canvasViewportW, state.canvas.canvasViewportH);
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH) {
@@ -76,7 +76,7 @@ public final class TabletPanelChrome {
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
-        drawCanvasPanelOutlines(graphics, panel, state.canvasViewportX, state.canvasViewportY, state.canvasViewportW, state.canvasViewportH, state.canEdit, state.gridEnabled, state.gridOpacityPercent, TabletGridControls.defaultGridColor(state));
+        drawCanvasPanelOutlines(graphics, panel, state.canvas.canvasViewportX, state.canvas.canvasViewportY, state.canvas.canvasViewportW, state.canvas.canvasViewportH, state.root.canEdit, state.canvas.gridEnabled, state.canvas.gridOpacityPercent, TabletGridControls.defaultGridColor(state));
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent) {

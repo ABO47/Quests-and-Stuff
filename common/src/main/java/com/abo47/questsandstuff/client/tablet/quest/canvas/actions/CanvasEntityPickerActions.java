@@ -48,12 +48,12 @@ public final class CanvasEntityPickerActions {
             return false;
         }
         CanvasLayerMutations.putCanvasImage(state, parsed.group(), current.withAsset(EntityPreviewRenderer.entityAsset(entityId)));
-        state.canvasSelection.setPrimaryImageId(current.id());
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.imageIds().add(current.id());
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryImageId(current.id());
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.imageIds().add(current.id());
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
         ContextMenuState.close(state);
         ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed group={} image={} entity={}", parsed.group(), current.id(), entityId);
@@ -63,27 +63,27 @@ public final class CanvasEntityPickerActions {
     private static void addEntity(TabletUiState state, String entityId, String group) {
         String id = StableIdAllocator.nextId("ent", canvasImageIds(state, group));
         int size = Math.max(48, CanvasGeometry.gridSize(state) * 4);
-        int x = state.canvasImageLogicalX - size / 2;
-        int y = state.canvasImageLogicalY - size / 2;
-        if (!state.gridSnapLocked) {
+        int x = state.canvas.canvasImageLogicalX - size / 2;
+        int y = state.canvas.canvasImageLogicalY - size / 2;
+        if (!state.canvas.gridSnapLocked) {
             x = TabletUiFactory.snapToGrid(state, x);
             y = TabletUiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, size, size);
         CanvasImageLayer image = new CanvasImageLayer(id, EntityPreviewRenderer.entityAsset(entityId), clamped.x, clamped.y, size, size, 0);
-        if (state.gridSnapLocked) {
+        if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
         CanvasLayerMutations.putCanvasImage(state, group, image);
-        state.canvasSelection.setPrimaryImageId(id);
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.questIds().clear();
-        state.draggingCanvasImage = false;
-        state.resizingCanvasImage = false;
-        state.rotatingCanvasImage = false;
-        state.mouseMode = CanvasMouseMode.SELECT_MOVE;
+        state.canvas.canvasSelection.setPrimaryImageId(id);
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.draggingCanvasImage = false;
+        state.canvas.resizingCanvasImage = false;
+        state.canvas.rotatingCanvasImage = false;
+        state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
         ContextMenuState.close(state);
         ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity added group={} id={} entity={} pos={},{} size={}x{}", group, id, entityId, clamped.x, clamped.y, size, size);
@@ -91,7 +91,7 @@ public final class CanvasEntityPickerActions {
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;

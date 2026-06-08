@@ -25,11 +25,11 @@ public final class ModalContextMenuPlacement {
     }
 
     public static int localPointerX(TabletUiState state, int modalW) {
-        return state.modalWindowLastPointerX - modalX(state, modalW);
+        return state.modal.modalWindowLastPointerX - modalX(state, modalW);
     }
 
     public static int localPointerY(TabletUiState state, int modalH) {
-        return state.modalWindowLastPointerY - modalY(state, modalH);
+        return state.modal.modalWindowLastPointerY - modalY(state, modalH);
     }
 
     public static int modalX(TabletUiState state, int modalW) {

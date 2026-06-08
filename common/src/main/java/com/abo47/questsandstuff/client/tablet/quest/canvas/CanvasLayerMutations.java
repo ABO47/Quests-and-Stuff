@@ -88,63 +88,63 @@ public final class CanvasLayerMutations {
         if (state == null || image == null) {
             return image;
         }
-        return state.transientCanvasImages.getOrDefault(image.id(), image);
+        return state.canvas.transientCanvasImages.getOrDefault(image.id(), image);
     }
 
     public static CanvasTextLayer effectiveCanvasText(TabletUiState state, CanvasTextLayer text) {
         if (state == null || text == null) {
             return text;
         }
-        return state.transientCanvasTexts.getOrDefault(text.id(), text);
+        return state.canvas.transientCanvasTexts.getOrDefault(text.id(), text);
     }
 
     public static CanvasImageLayer effectiveQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
         if (state == null || image == null) {
             return image;
         }
-        return state.questDetailsTransientImages.getOrDefault(image.id(), image);
+        return state.questDetails.questDetailsTransientImages.getOrDefault(image.id(), image);
     }
 
     public static CanvasTextLayer effectiveQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
         if (state == null || text == null) {
             return text;
         }
-        return state.questDetailsTransientTexts.getOrDefault(text.id(), text);
+        return state.questDetails.questDetailsTransientTexts.getOrDefault(text.id(), text);
     }
 
     public static void putTransientCanvasImage(TabletUiState state, CanvasImageLayer image) {
         if (state == null || image == null || image.id().isBlank()) {
             return;
         }
-        state.transientCanvasImages.put(image.id(), image);
+        state.canvas.transientCanvasImages.put(image.id(), image);
     }
 
     public static void putTransientCanvasText(TabletUiState state, CanvasTextLayer text) {
         if (state == null || text == null || text.id().isBlank()) {
             return;
         }
-        state.transientCanvasTexts.put(text.id(), text);
+        state.canvas.transientCanvasTexts.put(text.id(), text);
     }
 
     public static void putTransientQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
         if (state == null || image == null || image.id().isBlank()) {
             return;
         }
-        state.questDetailsTransientImages.put(image.id(), image);
+        state.questDetails.questDetailsTransientImages.put(image.id(), image);
     }
 
     public static void putTransientQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
         if (state == null || text == null || text.id().isBlank()) {
             return;
         }
-        state.questDetailsTransientTexts.put(text.id(), text);
+        state.questDetails.questDetailsTransientTexts.put(text.id(), text);
     }
 
     public static boolean commitTransientCanvasImage(TabletUiState state, String group, String imageId) {
         if (state == null || group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return false;
         }
-        CanvasImageLayer preview = state.transientCanvasImages.remove(imageId);
+        CanvasImageLayer preview = state.canvas.transientCanvasImages.remove(imageId);
         if (preview == null) {
             return false;
         }
@@ -156,7 +156,7 @@ public final class CanvasLayerMutations {
         if (state == null || group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return false;
         }
-        CanvasTextLayer preview = state.transientCanvasTexts.remove(textId);
+        CanvasTextLayer preview = state.canvas.transientCanvasTexts.remove(textId);
         if (preview == null) {
             return false;
         }

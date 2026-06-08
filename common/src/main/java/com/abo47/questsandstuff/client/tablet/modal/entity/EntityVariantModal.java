@@ -38,17 +38,17 @@ public final class EntityVariantModal {
         int backSize = 18;
         int backX = rightX + rightW - backSize - 22;
         int searchW = model.browsingFolder() ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.entityVariantSearch, 80, value -> {
-            state.entityVariantSearch = SearchFilter.normalizeUserInput(value);
-            state.entityVariantScroll = 0;
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.entityVariantSearch, 80, value -> {
+            state.pickers.entityVariantSearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.entityVariantScroll = 0;
             refresh.run();
-        }, focused -> state.entityVariantSearchFocused = focused);
+        }, focused -> state.pickers.entityVariantSearchFocused = focused);
 
         if (model.browsingFolder()) {
             EntityVariantTiles.addBackButton(modal, backX, backY, backSize, backSize, () -> {
-                state.entityVariantFolder = "";
-                state.entityVariantSearch = "";
-                state.entityVariantScroll = 0;
+                state.pickers.entityVariantFolder = "";
+                state.pickers.entityVariantSearch = "";
+                state.pickers.entityVariantScroll = 0;
                 QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder back target={} entity={}", model.target(), model.entityId());
                 refresh.run();
             });

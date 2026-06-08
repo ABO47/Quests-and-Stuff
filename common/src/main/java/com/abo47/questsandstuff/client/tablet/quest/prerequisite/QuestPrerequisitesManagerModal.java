@@ -53,16 +53,16 @@ public final class QuestPrerequisitesManagerModal {
         addHeader(modal, state, refresh, w);
         ModalLibraryLayout.Metrics layout = ModalLibraryLayout.calculate(w, h);
 
-        String questId = safe(state.prerequisitesManagerQuestId);
+        String questId = safe(state.modal.prerequisitesManagerQuestId);
         CompoundTag questTag = ClientQuestCache.quest(questId);
         String group = TabletStateQueries.selectedGroupName(state);
-        PrerequisiteConnectionModel model = PrerequisiteConnectionModel.build(questId, questTag, group, state.prerequisitesManagerSearch, state.prerequisitesManagerExternalMode);
+        PrerequisiteConnectionModel model = PrerequisiteConnectionModel.build(questId, questTag, group, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
 
         PrerequisiteRowsPanel.add(modal, state, refresh, layout, w, h, model.questId(), model.rows());
-        addPreview(modal, state, model, layout, group, state.prerequisitesManagerExternalMode);
+        addPreview(modal, state, model, layout, group, state.modal.prerequisitesManagerExternalMode);
 
-        if (state.prerequisitesManagerContextOpen && !state.prerequisitesManagerContextPrerequisiteId.isBlank()) {
+        if (state.modal.prerequisitesManagerContextOpen && !state.modal.prerequisitesManagerContextPrerequisiteId.isBlank()) {
             addContextDismissLayer(modal, state, refresh, w, h);
             addConnectionContext(modal, state, player, refresh, w, h, model);
         }
@@ -73,16 +73,16 @@ public final class QuestPrerequisitesManagerModal {
         modal.addWidget(label(8, 6, TabletVocabulary.text(QuestVocabulary.MODAL_CONNECTIONS_MANAGER), ModColors.TEXT_PRIMARY));
         int closeAnchorX = w - HEADER_CLOSE_ANCHOR_RIGHT_PAD;
         int modeX = headerModeButtonX(w);
-        String labelKey = state.prerequisitesManagerExternalMode ? QuestVocabulary.CONNECTIONS_MODE_EXTERNAL : QuestVocabulary.CONNECTIONS_MODE_LOCAL;
+        String labelKey = state.modal.prerequisitesManagerExternalMode ? QuestVocabulary.CONNECTIONS_MODE_EXTERNAL : QuestVocabulary.CONNECTIONS_MODE_LOCAL;
         ButtonWidget mode = WindowChrome.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
-            state.prerequisitesManagerExternalMode = !state.prerequisitesManagerExternalMode;
-            state.prerequisitesManagerScroll = 0;
-            state.prerequisitesManagerContextOpen = false;
-            state.prerequisitesManagerContextPrerequisiteId = "";
-            state.prerequisitesManagerSelectedConnectionKey = "";
-            state.prerequisitesManagerHoveredConnectionKey = "";
+            state.modal.prerequisitesManagerExternalMode = !state.modal.prerequisitesManagerExternalMode;
+            state.modal.prerequisitesManagerScroll = 0;
+            state.modal.prerequisitesManagerContextOpen = false;
+            state.modal.prerequisitesManagerContextPrerequisiteId = "";
+            state.modal.prerequisitesManagerSelectedConnectionKey = "";
+            state.modal.prerequisitesManagerHoveredConnectionKey = "";
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.prerequisitesManagerExternalMode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.modal.prerequisitesManagerExternalMode);
             refresh.run();
         });
         mode.setHoverTooltips(new Component[]{Component.translatable(labelKey)});
@@ -93,12 +93,12 @@ public final class QuestPrerequisitesManagerModal {
     private static TextFieldWidget addSearch(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW) {
         int modeX = headerModeButtonX(modalW);
         int searchW = Math.max(40, modeX - layout.rightX() - HEADER_SEARCH_TO_BUTTON_GAP);
-        return ModalShell.addSearchField(modal, layout.rightX(), 2, searchW, 16, state.prerequisitesManagerSearch, 80, value -> {
-            state.prerequisitesManagerSearch = SearchFilter.normalizeUserInput(value);
-            state.prerequisitesManagerScroll = 0;
-            state.prerequisitesManagerHoveredConnectionKey = "";
+        return ModalShell.addSearchField(modal, layout.rightX(), 2, searchW, 16, state.modal.prerequisitesManagerSearch, 80, value -> {
+            state.modal.prerequisitesManagerSearch = SearchFilter.normalizeUserInput(value);
+            state.modal.prerequisitesManagerScroll = 0;
+            state.modal.prerequisitesManagerHoveredConnectionKey = "";
             refresh.run();
-        }, focused -> state.prerequisitesManagerSearchFocused = focused);
+        }, focused -> state.modal.prerequisitesManagerSearchFocused = focused);
     }
 
     private static int headerModeButtonX(int modalW) {
@@ -111,20 +111,20 @@ public final class QuestPrerequisitesManagerModal {
         preview.addWidget(label(8, 8, crop(model.targetTitle(), 22), ModColors.TEXT_SECONDARY));
         String countKey = externalMode ? QuestVocabulary.CONNECTIONS_EXTERNAL_COUNT : QuestVocabulary.CONNECTIONS_LOCAL_COUNT;
         preview.addWidget(label(8, 20, TabletVocabulary.text(countKey, model.modeRows().size()), ModColors.TEXT_MUTED));
-        if (!state.prerequisitesManagerSearch.isBlank()) {
+        if (!state.modal.prerequisitesManagerSearch.isBlank()) {
             preview.addWidget(label(8, 32, TabletVocabulary.text(QuestVocabulary.PREREQUISITES_CONNECTION_COUNT, model.rows().size()), ModColors.TEXT_MUTED));
         }
 
         CanvasBlueprint blueprint = PrerequisitePreviewBuilder.build(group, model, externalMode);
-        int previewY = state.prerequisitesManagerSearch.isBlank() ? 42 : 54;
+        int previewY = state.modal.prerequisitesManagerSearch.isBlank() ? 42 : 54;
         preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(
                 8,
                 previewY,
                 layout.leftW() - 16,
                 Math.max(24, layout.bodyH() - previewY - 10),
                 blueprint,
-                () -> model.highlightedQuests(PrerequisiteConnectionModel.highlightedConnections(state.prerequisitesManagerHoveredConnectionKey, state.prerequisitesManagerSelectedConnectionKey)),
-                () -> PrerequisiteConnectionModel.highlightedConnections(state.prerequisitesManagerHoveredConnectionKey, state.prerequisitesManagerSelectedConnectionKey)
+                () -> model.highlightedQuests(PrerequisiteConnectionModel.highlightedConnections(state.modal.prerequisitesManagerHoveredConnectionKey, state.modal.prerequisitesManagerSelectedConnectionKey)),
+                () -> PrerequisiteConnectionModel.highlightedConnections(state.modal.prerequisitesManagerHoveredConnectionKey, state.modal.prerequisitesManagerSelectedConnectionKey)
         ));
         modal.addWidget(preview);
     }
@@ -135,7 +135,7 @@ public final class QuestPrerequisitesManagerModal {
         int modalX = ModalContextMenuPlacement.modalX(state, w);
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
-            state.prerequisitesManagerContextOpen = false;
+            state.modal.prerequisitesManagerContextOpen = false;
             ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         });
@@ -143,9 +143,9 @@ public final class QuestPrerequisitesManagerModal {
     }
 
     private static void addConnectionContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, PrerequisiteConnectionModel model) {
-        PrerequisiteConnectionRow row = model.selectedRow(state.prerequisitesManagerSelectedConnectionKey);
+        PrerequisiteConnectionRow row = model.selectedRow(state.modal.prerequisitesManagerSelectedConnectionKey);
         if (row == null) {
-            state.prerequisitesManagerContextOpen = false;
+            state.modal.prerequisitesManagerContextOpen = false;
             return;
         }
         List<ContextAction> actions = List.of(ContextActions.warningDelete(
@@ -158,15 +158,15 @@ public final class QuestPrerequisitesManagerModal {
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        ModalContextMenuPlacement.Placement placement = ModalContextMenuPlacement.fitToRootFromModal(state, state.prerequisitesManagerContextX, state.prerequisitesManagerContextY, ctxW, menuH, w, h);
-        state.prerequisitesManagerContextMenuX = placement.x();
-        state.prerequisitesManagerContextMenuY = placement.y();
-        state.prerequisitesManagerContextMenuW = placement.w();
-        state.prerequisitesManagerContextMenuH = placement.h();
+        ModalContextMenuPlacement.Placement placement = ModalContextMenuPlacement.fitToRootFromModal(state, state.modal.prerequisitesManagerContextX, state.modal.prerequisitesManagerContextY, ctxW, menuH, w, h);
+        state.modal.prerequisitesManagerContextMenuX = placement.x();
+        state.modal.prerequisitesManagerContextMenuY = placement.y();
+        state.modal.prerequisitesManagerContextMenuW = placement.w();
+        state.modal.prerequisitesManagerContextMenuH = placement.h();
         modal.addWidget(ContextMenuPanel.build(placement.x(), placement.y(), placement.w(), actions, 0, visibleRows, ModColors.BORDER_ACCENT, state, action -> {
             if (action.closeAfterClick()) {
-                state.prerequisitesManagerContextOpen = false;
-                state.prerequisitesManagerContextPrerequisiteId = "";
+                state.modal.prerequisitesManagerContextOpen = false;
+                state.modal.prerequisitesManagerContextPrerequisiteId = "";
                 ContextMenuState.clearDeleteConfirm(state);
             }
             refresh.run();

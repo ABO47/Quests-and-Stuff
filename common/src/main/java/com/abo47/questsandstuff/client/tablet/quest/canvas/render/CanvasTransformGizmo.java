@@ -42,16 +42,16 @@ public final class CanvasTransformGizmo {
     }
 
     public static CanvasTransformMode activeMode(TabletUiState state) {
-        return CanvasTransformMode.fromId(state == null ? "" : state.transformGizmoMode);
+        return CanvasTransformMode.fromId(state == null ? "" : state.canvas.transformGizmoMode);
     }
 
     public static void setMode(TabletUiState state, CanvasTransformMode mode) {
         if (state != null && mode != null) {
-            boolean changed = !mode.id.equals(state.transformGizmoMode);
-            state.transformGizmoMode = mode.id;
+            boolean changed = !mode.id.equals(state.canvas.transformGizmoMode);
+            state.canvas.transformGizmoMode = mode.id;
             if (changed) {
-                state.canvasImageTransformAxis = "";
-                state.questDetailsTransformAxis = "";
+                state.canvas.canvasImageTransformAxis = "";
+                state.questDetails.questDetailsTransformAxis = "";
             }
         }
     }
@@ -314,46 +314,46 @@ public final class CanvasTransformGizmo {
     }
 
     private static boolean isRotating(TabletUiState state) {
-        return state.rotatingCanvasImage || "rotate".equals(state.questDetailsTransformMode);
+        return state.canvas.rotatingCanvasImage || "rotate".equals(state.questDetails.questDetailsTransformMode);
     }
 
     private static boolean isMoving(TabletUiState state) {
-        return state.draggingCanvasImage || "move".equals(state.questDetailsTransformMode);
+        return state.canvas.draggingCanvasImage || "move".equals(state.questDetails.questDetailsTransformMode);
     }
 
     private static boolean isResizing(TabletUiState state) {
-        return state.resizingCanvasImage || "resize".equals(state.questDetailsTransformMode);
+        return state.canvas.resizingCanvasImage || "resize".equals(state.questDetails.questDetailsTransformMode);
     }
 
     private static String activeAxis(TabletUiState state) {
-        if (state.rotatingCanvasImage && state.canvasImageTransformAxis != null && !state.canvasImageTransformAxis.isBlank()) {
-            return state.canvasImageTransformAxis;
+        if (state.canvas.rotatingCanvasImage && state.canvas.canvasImageTransformAxis != null && !state.canvas.canvasImageTransformAxis.isBlank()) {
+            return state.canvas.canvasImageTransformAxis;
         }
-        if ("rotate".equals(state.questDetailsTransformMode) && state.questDetailsTransformAxis != null && !state.questDetailsTransformAxis.isBlank()) {
-            return state.questDetailsTransformAxis;
+        if ("rotate".equals(state.questDetails.questDetailsTransformMode) && state.questDetails.questDetailsTransformAxis != null && !state.questDetails.questDetailsTransformAxis.isBlank()) {
+            return state.questDetails.questDetailsTransformAxis;
         }
-        if (state.canvasImageTransformAxis != null && !state.canvasImageTransformAxis.isBlank()) {
-            return state.canvasImageTransformAxis;
+        if (state.canvas.canvasImageTransformAxis != null && !state.canvas.canvasImageTransformAxis.isBlank()) {
+            return state.canvas.canvasImageTransformAxis;
         }
-        return state.questDetailsTransformAxis == null ? "" : state.questDetailsTransformAxis;
+        return state.questDetails.questDetailsTransformAxis == null ? "" : state.questDetails.questDetailsTransformAxis;
     }
 
     private static String activeMoveAxis(TabletUiState state) {
-        if (state.draggingCanvasImage) {
-            return moveAxisOrFree(state.canvasImageTransformAxis);
+        if (state.canvas.draggingCanvasImage) {
+            return moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         }
-        if ("move".equals(state.questDetailsTransformMode)) {
-            return moveAxisOrFree(state.questDetailsTransformAxis);
+        if ("move".equals(state.questDetails.questDetailsTransformMode)) {
+            return moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
         }
         return AXIS_MOVE_FREE;
     }
 
     private static String activeResizeAxis(TabletUiState state) {
-        if (state.resizingCanvasImage && state.canvasImageTransformAxis != null && !state.canvasImageTransformAxis.isBlank()) {
-            return state.canvasImageTransformAxis;
+        if (state.canvas.resizingCanvasImage && state.canvas.canvasImageTransformAxis != null && !state.canvas.canvasImageTransformAxis.isBlank()) {
+            return state.canvas.canvasImageTransformAxis;
         }
-        if ("resize".equals(state.questDetailsTransformMode) && state.questDetailsTransformAxis != null && !state.questDetailsTransformAxis.isBlank()) {
-            return state.questDetailsTransformAxis;
+        if ("resize".equals(state.questDetails.questDetailsTransformMode) && state.questDetails.questDetailsTransformAxis != null && !state.questDetails.questDetailsTransformAxis.isBlank()) {
+            return state.questDetails.questDetailsTransformAxis;
         }
         return AXIS_RESIZE_SE;
     }

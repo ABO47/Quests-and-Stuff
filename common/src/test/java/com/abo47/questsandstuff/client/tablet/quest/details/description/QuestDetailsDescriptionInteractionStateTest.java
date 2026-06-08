@@ -14,14 +14,14 @@ class QuestDetailsDescriptionInteractionStateTest {
     @Test
     void beginPanningCapturesPointerAndCurrentScroll() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsDescScroll = 42;
+        state.questDetails.questDetailsDescScroll = 42;
 
         QuestDetailsDescriptionInteractionState.beginPanning(state, 10.4D, 25.6D);
 
-        assertTrue(state.questDetailsPanning);
-        assertEquals(10, state.questDetailsPanStartX);
-        assertEquals(26, state.questDetailsPanStartY);
-        assertEquals(42, state.questDetailsPanStartScroll);
+        assertTrue(state.questDetails.questDetailsPanning);
+        assertEquals(10, state.questDetails.questDetailsPanStartX);
+        assertEquals(26, state.questDetails.questDetailsPanStartY);
+        assertEquals(42, state.questDetails.questDetailsPanStartScroll);
     }
 
     @Test
@@ -31,18 +31,18 @@ class QuestDetailsDescriptionInteractionStateTest {
 
         QuestDetailsDescriptionInteractionState.beginBoxSelection(state, 12, 34, false, clears::incrementAndGet);
 
-        assertTrue(state.questDetailsBoxSelecting);
-        assertFalse(state.questDetailsBoxAdditive);
-        assertEquals(12, state.questDetailsBoxStartX);
-        assertEquals(34, state.questDetailsBoxStartY);
-        assertEquals(12, state.questDetailsBoxCurrentX);
-        assertEquals(34, state.questDetailsBoxCurrentY);
+        assertTrue(state.questDetails.questDetailsBoxSelecting);
+        assertFalse(state.questDetails.questDetailsBoxAdditive);
+        assertEquals(12, state.questDetails.questDetailsBoxStartX);
+        assertEquals(34, state.questDetails.questDetailsBoxStartY);
+        assertEquals(12, state.questDetails.questDetailsBoxCurrentX);
+        assertEquals(34, state.questDetails.questDetailsBoxCurrentY);
         assertEquals(1, clears.get());
 
         QuestDetailsDescriptionInteractionState.updateBoxSelection(state, 30, 40);
 
-        assertEquals(30, state.questDetailsBoxCurrentX);
-        assertEquals(40, state.questDetailsBoxCurrentY);
+        assertEquals(30, state.questDetails.questDetailsBoxCurrentX);
+        assertEquals(40, state.questDetails.questDetailsBoxCurrentY);
     }
 
     @Test
@@ -52,7 +52,7 @@ class QuestDetailsDescriptionInteractionStateTest {
 
         QuestDetailsDescriptionInteractionState.beginBoxSelection(state, 1, 2, true, clears::incrementAndGet);
 
-        assertTrue(state.questDetailsBoxAdditive);
+        assertTrue(state.questDetails.questDetailsBoxAdditive);
         assertEquals(0, clears.get());
     }
 
@@ -69,19 +69,19 @@ class QuestDetailsDescriptionInteractionStateTest {
     @Test
     void wheelScrollUsesDescriptionClamp() {
         TabletUiState state = new TabletUiState();
-        state.editorAvailable = true;
-        state.questDetailsEditMode = true;
+        state.root.editorAvailable = true;
+        state.questDetails.questDetailsEditMode = true;
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(new CanvasTextLayer("text", "Tall", 20, 20, 80, 220, 0, "left", "normal", 0xFFFFFF));
 
         boolean changed = QuestDetailsDescriptionInteractionState.scrollByWheel(state, model, 100, -1.0D);
 
         assertTrue(changed);
-        assertEquals(18, state.questDetailsDescScroll);
+        assertEquals(18, state.questDetails.questDetailsDescScroll);
 
         changed = QuestDetailsDescriptionInteractionState.scrollByWheel(state, model, 100, 1.0D);
 
         assertTrue(changed);
-        assertEquals(0, state.questDetailsDescScroll);
+        assertEquals(0, state.questDetails.questDetailsDescScroll);
     }
 }

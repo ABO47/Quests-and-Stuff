@@ -112,22 +112,22 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean beginSelectedRename(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
-        if (!state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (!state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             QuestDetailsObjectivesPanel.openObjectiveRenameEditor(
                     state,
                     questId,
-                    state.questDetailsSelectedObjectiveId,
-                    "requirement".equals(state.questDetailsSelectedObjectiveKind)
+                    state.questDetails.questDetailsSelectedObjectiveId,
+                    "requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind)
             );
             return true;
         }
         if (!questId.isBlank()) {
             EditorCommandClient.beginQuestTitleChange(state, questId);
-            state.questDetailsTitleFocused = true;
+            state.questDetails.questDetailsTitleFocused = true;
             return true;
         }
         return false;
@@ -153,7 +153,7 @@ final class QuestDetailsWindowActions {
             return false;
         }
         String questId = questId(state);
-        if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
@@ -170,8 +170,8 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank()) {
             return false;
         }
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedObjectiveKind = "";
+        state.questDetails.questDetailsSelectedObjectiveId = "";
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         return QuestDetailsDescriptionPanel.selectAllDescription(state, model);
     }
@@ -181,7 +181,7 @@ final class QuestDetailsWindowActions {
             return false;
         }
         String questId = questId(state);
-        if (questId.isBlank() || !state.questDetailsSelectedObjectiveId.isBlank()) {
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
@@ -241,14 +241,14 @@ final class QuestDetailsWindowActions {
     }
 
     private static String editableQuestId(TabletUiState state) {
-        if (state == null || !state.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
             return "";
         }
         return questId(state);
     }
 
     private static String questId(TabletUiState state) {
-        return state == null ? "" : state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        return state == null ? "" : state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
     }
 
     private static int[] viewport(TabletUiState state) {

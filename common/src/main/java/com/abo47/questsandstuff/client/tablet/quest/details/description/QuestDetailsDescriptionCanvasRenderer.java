@@ -38,11 +38,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGrid(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        if (!state.questDetailsGridEnabled || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
-        int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, state.questDetailsGridOpacityPercent))) / 100));
+        int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, state.questDetails.questDetailsGridOpacityPercent))) / 100));
         int color = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
         int spanW = contentW;
         int spanH = contentH;
@@ -51,7 +51,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         for (int x = 0; x <= spanW; x += cell) {
             graphics.fill(contentX + x, contentY, contentX + x + 1, contentY + paintH, color);
         }
-        int offset = Math.floorMod(-state.questDetailsDescScroll, cell);
+        int offset = Math.floorMod(-state.questDetails.questDetailsDescScroll, cell);
         for (int y = offset; y <= spanH; y += cell) {
             graphics.fill(contentX, contentY + y, contentX + paintW, contentY + y + 1, color);
         }
@@ -61,7 +61,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     private static void drawDescriptionBackground(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        int opacityPercent = Math.max(0, Math.min(100, state.questDetailsCanvasBgOpacityPercent));
+        int opacityPercent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
         if (CanvasBackgroundOpacity.alpha(opacityPercent) <= 0) {
             return;
         }
@@ -90,16 +90,16 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGuides(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        if (!QuestDetailsEditState.canEdit(state) || (!state.snapGuideXVisible && !state.snapGuideYVisible)) {
+        if (!QuestDetailsEditState.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
-        if (state.snapGuideXVisible && state.snapGuideX >= 0 && state.snapGuideX <= contentW) {
-            int x = contentX + state.snapGuideX;
+        if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX <= contentW) {
+            int x = contentX + state.canvas.snapGuideX;
             graphics.fill(x, contentY, x + 1, contentY + contentH + 1, color);
         }
-        if (state.snapGuideYVisible && state.snapGuideY >= 0 && state.snapGuideY <= contentH) {
-            int y = contentY + state.snapGuideY;
+        if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY <= contentH) {
+            int y = contentY + state.canvas.snapGuideY;
             graphics.fill(contentX, y, contentX + contentW + 1, y + 1, color);
         }
     }
@@ -114,8 +114,8 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
-        boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvasTextEditTarget);
-        CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvasTextEditDraft) : drawText;
+        boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
+        CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
         withSelectionGeometry(state, contentW, contentH, () -> drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing));
         if (isSelectedText(state, drawText.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
@@ -159,42 +159,42 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void withSelectionGeometry(TabletUiState state, int contentW, int contentH, Runnable draw) {
-        int oldContentX = state.canvasContentX;
-        int oldContentY = state.canvasContentY;
-        int oldContentW = state.canvasContentW;
-        int oldContentH = state.canvasContentH;
-        int oldOffsetX = state.canvasOffsetX;
-        int oldOffsetY = state.canvasOffsetY;
-        float oldZoom = state.canvasZoom;
-        boolean oldGridSnap = state.gridSnapLocked;
-        state.canvasContentX = 0;
-        state.canvasContentY = -state.questDetailsDescScroll;
-        state.canvasContentW = contentW;
-        state.canvasContentH = contentH;
-        state.canvasOffsetX = 0;
-        state.canvasOffsetY = 0;
-        state.canvasZoom = 1.0f;
-        state.gridSnapLocked = state.questDetailsGridSnapLocked;
+        int oldContentX = state.canvas.canvasContentX;
+        int oldContentY = state.canvas.canvasContentY;
+        int oldContentW = state.canvas.canvasContentW;
+        int oldContentH = state.canvas.canvasContentH;
+        int oldOffsetX = state.canvas.canvasOffsetX;
+        int oldOffsetY = state.canvas.canvasOffsetY;
+        float oldZoom = state.canvas.canvasZoom;
+        boolean oldGridSnap = state.canvas.gridSnapLocked;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = -state.questDetails.questDetailsDescScroll;
+        state.canvas.canvasContentW = contentW;
+        state.canvas.canvasContentH = contentH;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.gridSnapLocked = state.questDetails.questDetailsGridSnapLocked;
         try {
             draw.run();
         } finally {
-            state.canvasContentX = oldContentX;
-            state.canvasContentY = oldContentY;
-            state.canvasContentW = oldContentW;
-            state.canvasContentH = oldContentH;
-            state.canvasOffsetX = oldOffsetX;
-            state.canvasOffsetY = oldOffsetY;
-            state.canvasZoom = oldZoom;
-            state.gridSnapLocked = oldGridSnap;
+            state.canvas.canvasContentX = oldContentX;
+            state.canvas.canvasContentY = oldContentY;
+            state.canvas.canvasContentW = oldContentW;
+            state.canvas.canvasContentH = oldContentH;
+            state.canvas.canvasOffsetX = oldOffsetX;
+            state.canvas.canvasOffsetY = oldOffsetY;
+            state.canvas.canvasZoom = oldZoom;
+            state.canvas.gridSnapLocked = oldGridSnap;
         }
     }
 
     private static boolean isSelectedText(TabletUiState state, String id) {
-        return id.equals(state.questDetailsDescriptionSelection.primaryTextId()) || state.questDetailsDescriptionSelection.textIds().contains(id);
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryTextId()) || state.questDetails.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
     private static boolean isSelectedImage(TabletUiState state, String id) {
-        return id.equals(state.questDetailsDescriptionSelection.primaryImageId()) || state.questDetailsDescriptionSelection.imageIds().contains(id);
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
     private static int selectedCount(TabletUiState state) {

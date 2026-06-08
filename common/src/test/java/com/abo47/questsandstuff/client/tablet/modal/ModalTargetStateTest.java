@@ -15,12 +15,12 @@ class ModalTargetStateTest {
     void parsedTargetPrefersCapturedSessionTargetOverStaleField() {
         TabletUiState state = new TabletUiState();
         ModalOpenActions.openRecipePicker(state, ModalTargets.taskRecipe("quest", "task", "recipe"));
-        state.questDetailsPickTarget = ModalTargets.taskBlock("stale", "task", "block");
+        state.questDetails.questDetailsPickTarget = ModalTargets.taskBlock("stale", "task", "block");
 
         ModalTargetParser.Target target = ModalTargetState.parsedTarget(
                 state,
                 ModalSession.TargetSlot.QUEST_DETAILS_PICK,
-                state.questDetailsPickTarget
+                state.questDetails.questDetailsPickTarget
         );
 
         assertTrue(target.isTaskRecipe());
@@ -46,13 +46,13 @@ class ModalTargetStateTest {
     void targetSetPrefersCapturedSessionSetAndCleansFallbacks() {
         TabletUiState state = new TabletUiState();
         ModalOpenActions.openBatchQuestBackgroundPicker(state, List.of("one", "two"), "background", false);
-        state.modalQuestBackgroundTargets.clear();
-        state.modalQuestBackgroundTargets.add("stale");
+        state.modal.modalQuestBackgroundTargets.clear();
+        state.modal.modalQuestBackgroundTargets.add("stale");
 
         Set<String> sessionTargets = ModalTargetState.targetSet(
                 state,
                 ModalSession.TargetSetSlot.QUEST_BACKGROUND,
-                state.modalQuestBackgroundTargets
+                state.modal.modalQuestBackgroundTargets
         );
 
         assertEquals(Set.of("one", "two"), sessionTargets);

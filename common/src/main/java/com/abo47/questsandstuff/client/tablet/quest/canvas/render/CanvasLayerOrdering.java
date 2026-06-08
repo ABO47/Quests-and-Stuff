@@ -51,7 +51,7 @@ public final class CanvasLayerOrdering {
         if (selected.isEmpty()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
         for (String key : selected) {
             if (!order.contains(key)) {
                 order.add(key);
@@ -70,7 +70,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.addAll(0, moved);
         }
-        state.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
+        state.canvas.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
     }
 
     public static List<String> normalize(
@@ -119,10 +119,10 @@ public final class CanvasLayerOrdering {
                 defaults.add(key);
             }
         }
-        List<String> existing = state.canvasLayerOrderByGroup.get(group);
+        List<String> existing = state.canvas.canvasLayerOrderByGroup.get(group);
         if (existing == null || existing.isEmpty()) {
             List<String> orderedDefaults = keepConnectionsBehindQuests(defaults);
-            state.canvasLayerOrderByGroup.put(group, orderedDefaults);
+            state.canvas.canvasLayerOrderByGroup.put(group, orderedDefaults);
             return orderedDefaults;
         }
         List<String> normalized = new ArrayList<>();
@@ -138,7 +138,7 @@ public final class CanvasLayerOrdering {
             }
         }
         List<String> ordered = keepConnectionsBehindQuests(normalized);
-        state.canvasLayerOrderByGroup.put(group, ordered);
+        state.canvas.canvasLayerOrderByGroup.put(group, ordered);
         return ordered;
     }
 
@@ -165,10 +165,10 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
         if (!order.contains(key)) {
             order.add(key);
-            state.canvasLayerOrderByGroup.put(group, order);
+            state.canvas.canvasLayerOrderByGroup.put(group, order);
         }
     }
 
@@ -176,12 +176,12 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
         if (order.remove(key)) {
             if (order.isEmpty()) {
-                state.canvasLayerOrderByGroup.remove(group);
+                state.canvas.canvasLayerOrderByGroup.remove(group);
             } else {
-                state.canvasLayerOrderByGroup.put(group, order);
+                state.canvas.canvasLayerOrderByGroup.put(group, order);
             }
         }
     }
@@ -227,7 +227,7 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
         order.remove(key);
         if (front && key.startsWith(CONNECTION_PREFIX)) {
             int firstQuestIndex = firstQuestIndex(order);
@@ -241,7 +241,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.add(0, key);
         }
-        state.canvasLayerOrderByGroup.put(group, order);
+        state.canvas.canvasLayerOrderByGroup.put(group, order);
     }
 
     private static List<String> keepConnectionsBehindQuests(List<String> order) {

@@ -239,7 +239,7 @@ public final class CanvasElementGeometry {
     }
 
     private static int visualScreenSize(TabletUiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {
-        int preferred = Math.max(1, Math.round(visualLogicalSize * CanvasRenderer.clampZoom(state.canvasZoom)));
+        int preferred = Math.max(1, Math.round(visualLogicalSize * CanvasRenderer.clampZoom(state.canvas.canvasZoom)));
         int insideSlot = Math.max(1, slotScreenSize - 1);
         if (visualLogicalSize + 1 >= slotLogicalSize) {
             return insideSlot;

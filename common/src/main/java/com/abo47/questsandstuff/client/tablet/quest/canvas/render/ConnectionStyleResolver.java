@@ -29,7 +29,7 @@ final class ConnectionStyleResolver {
                 return colorsTag.getInt(metadataKey);
             }
         }
-        Map<String, Integer> colors = state.connectionColorsByGroup.get(group);
+        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.get(group);
         if (colors == null) {
             return ModColors.TEXT_SECONDARY;
         }
@@ -50,7 +50,7 @@ final class ConnectionStyleResolver {
                 }
             }
         }
-        Set<String> hidden = state.hiddenConnectionsByGroup.get(group);
+        Set<String> hidden = state.canvas.hiddenConnectionsByGroup.get(group);
         return hidden != null && hidden.contains(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId));
     }
 
@@ -66,7 +66,7 @@ final class ConnectionStyleResolver {
                 return QuestConnectionMode.fromSerializedName(modes.getString(metadataKey)) != QuestConnectionMode.GRID;
             }
         }
-        Set<String> grid = state.gridConnectionsByGroup.get(group);
+        Set<String> grid = state.canvas.gridConnectionsByGroup.get(group);
         return grid == null || !grid.contains(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId));
     }
 

@@ -11,7 +11,7 @@ public final class CanvasChapterSwitchAnimation {
         if (state == null) {
             return;
         }
-        state.canvasChapterSwitchGroup = normalize(selectedGroup);
+        state.chapterPanel.canvasChapterSwitchGroup = normalize(selectedGroup);
         clear(state);
     }
 
@@ -20,7 +20,7 @@ public final class CanvasChapterSwitchAnimation {
     }
 
     public static boolean finishIfDone(TabletUiState state) {
-        if (state == null || state.canvasChapterSwitchAnimationStartMs <= 0L) {
+        if (state == null || state.chapterPanel.canvasChapterSwitchAnimationStartMs <= 0L) {
             return false;
         }
         clear(state);
@@ -28,8 +28,8 @@ public final class CanvasChapterSwitchAnimation {
     }
 
     private static void clear(TabletUiState state) {
-        state.canvasChapterSwitchAnimationStartMs = 0L;
-        state.canvasChapterSwitchDirection = 1;
+        state.chapterPanel.canvasChapterSwitchAnimationStartMs = 0L;
+        state.chapterPanel.canvasChapterSwitchDirection = 1;
     }
 
     private static String normalize(String value) {

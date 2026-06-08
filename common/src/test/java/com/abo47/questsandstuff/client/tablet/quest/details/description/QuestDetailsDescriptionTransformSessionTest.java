@@ -16,10 +16,10 @@ class QuestDetailsDescriptionTransformSessionTest {
     @Test
     void beginUpdateAndClearDescriptionTransformUsesSharedSessionCleanup() {
         TabletUiState state = new TabletUiState();
-        state.dragStartTextPositions.put("stale", new CanvasPoint(1, 2));
-        state.questDetailsTransientTexts.put("stale", text("stale", 1, 2));
-        state.snapGuideXVisible = true;
-        state.snapGuideYVisible = true;
+        state.canvas.dragStartTextPositions.put("stale", new CanvasPoint(1, 2));
+        state.questDetails.questDetailsTransientTexts.put("stale", text("stale", 1, 2));
+        state.canvas.snapGuideXVisible = true;
+        state.canvas.snapGuideYVisible = true;
 
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(text("text:a", 10, 20));
@@ -39,26 +39,26 @@ class QuestDetailsDescriptionTransformSessionTest {
         );
         CanvasLayerMutations.putTransientQuestDetailsText(state, model.text("text:a").moveTo(25, 45));
 
-        CanvasTextLayer moved = state.questDetailsTransientTexts.get("text:a");
+        CanvasTextLayer moved = state.questDetails.questDetailsTransientTexts.get("text:a");
         assertEquals(25, moved.x());
         assertEquals(45, moved.y());
-        assertTrue(state.dragStartTextPositions.isEmpty());
-        assertFalse(state.questDetailsTransientTexts.isEmpty());
+        assertTrue(state.canvas.dragStartTextPositions.isEmpty());
+        assertFalse(state.questDetails.questDetailsTransientTexts.isEmpty());
 
         CanvasTransformSessions.clearQuestDetailsSession(state);
 
-        assertTrue(state.questDetailsTransformKind.isBlank());
-        assertTrue(state.questDetailsTransformId.isBlank());
-        assertTrue(state.questDetailsTransientTexts.isEmpty());
-        assertFalse(state.snapGuideXVisible);
-        assertFalse(state.snapGuideYVisible);
+        assertTrue(state.questDetails.questDetailsTransformKind.isBlank());
+        assertTrue(state.questDetails.questDetailsTransformId.isBlank());
+        assertTrue(state.questDetails.questDetailsTransientTexts.isEmpty());
+        assertFalse(state.canvas.snapGuideXVisible);
+        assertFalse(state.canvas.snapGuideYVisible);
     }
 
     @Test
     void descriptionTransformUsesSharedObjectSnapGuides() {
         TabletUiState state = new TabletUiState();
-        state.questDetailsObjectSnapEnabled = true;
-        state.questDetailsGridSnapLocked = true;
+        state.questDetails.questDetailsObjectSnapEnabled = true;
+        state.questDetails.questDetailsGridSnapLocked = true;
 
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(text("moving", 45, 45));
@@ -81,10 +81,10 @@ class QuestDetailsDescriptionTransformSessionTest {
 
         assertEquals(49, model.text("moving").x());
         assertEquals(45, model.text("moving").y());
-        assertTrue(state.snapGuideXVisible);
-        assertTrue(state.snapGuideYVisible);
-        assertEquals(129, state.snapGuideX);
-        assertEquals(45, state.snapGuideY);
+        assertTrue(state.canvas.snapGuideXVisible);
+        assertTrue(state.canvas.snapGuideYVisible);
+        assertEquals(129, state.canvas.snapGuideX);
+        assertEquals(45, state.canvas.snapGuideY);
     }
 
     private static CanvasTextLayer text(String id, int x, int y) {

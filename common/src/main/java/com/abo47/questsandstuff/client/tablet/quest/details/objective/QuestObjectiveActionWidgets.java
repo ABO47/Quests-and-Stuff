@@ -64,7 +64,7 @@ final class QuestObjectiveActionWidgets {
     static void renderProgress(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         int barW = w;
         float progressValue = Math.max(0.0f, Math.min(1.0f, quest.getFloat("progress")));
-        boolean locallyClaimed = state != null && questId.equals(state.questDetailsClaimedOverrideQuestId);
+        boolean locallyClaimed = state != null && questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         boolean claimed = quest.getBoolean("claimed") || locallyClaimed;
         boolean claimable = quest.getBoolean("completed") && !claimed;
         section.addWidget(TabletUiFactory.panel(x, y, barW, h, ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
@@ -93,7 +93,7 @@ final class QuestObjectiveActionWidgets {
                 }
                 if (canClaimNow) {
                     if (state != null) {
-                        state.questDetailsClaimedOverrideQuestId = questId;
+                        state.questDetails.questDetailsClaimedOverrideQuestId = questId;
                     }
                     ClientQuestCache.setQuestClaimedLocal(questId, true);
                 }

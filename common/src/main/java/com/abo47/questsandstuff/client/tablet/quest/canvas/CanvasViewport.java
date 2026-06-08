@@ -120,8 +120,8 @@ public final class CanvasViewport extends WidgetGroup {
     void beginCanvasPan() {
         livePanX = 0;
         livePanY = 0;
-        state.canvasLivePanX = 0;
-        state.canvasLivePanY = 0;
+        state.canvas.canvasLivePanX = 0;
+        state.canvas.canvasLivePanY = 0;
         applyLivePanToLayer();
     }
 
@@ -135,8 +135,8 @@ public final class CanvasViewport extends WidgetGroup {
         CanvasPoint nextLivePan = CanvasCameraController.previewPanDelta(state, livePanX + dx, livePanY + dy);
         livePanX = nextLivePan.x;
         livePanY = nextLivePan.y;
-        state.canvasLivePanX = livePanX;
-        state.canvasLivePanY = livePanY;
+        state.canvas.canvasLivePanX = livePanX;
+        state.canvas.canvasLivePanY = livePanY;
         applyLivePanToLayer();
         return true;
     }
@@ -152,11 +152,11 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     boolean selectionDragPreviewSupported() {
-        return !state.canvasSelection.questIds().isEmpty()
-                || !state.canvasSelection.primaryImageId().isBlank()
-                || !state.canvasSelection.primaryTextId().isBlank()
-                || !state.canvasSelection.imageIds().isEmpty()
-                || !state.canvasSelection.textIds().isEmpty();
+        return !state.canvas.canvasSelection.questIds().isEmpty()
+                || !state.canvas.canvasSelection.primaryImageId().isBlank()
+                || !state.canvas.canvasSelection.primaryTextId().isBlank()
+                || !state.canvas.canvasSelection.imageIds().isEmpty()
+                || !state.canvas.canvasSelection.textIds().isEmpty();
     }
 
     boolean previewSelectionDrag() {
@@ -164,7 +164,7 @@ public final class CanvasViewport extends WidgetGroup {
             return false;
         }
         ensureSelectionLayerBases();
-        if (!state.canvasSelection.questIds().isEmpty() && selectionQuestLayerBases.isEmpty()) {
+        if (!state.canvas.canvasSelection.questIds().isEmpty() && selectionQuestLayerBases.isEmpty()) {
             return false;
         }
         int dx = selectionDragScreenX();
@@ -188,7 +188,7 @@ public final class CanvasViewport extends WidgetGroup {
         if (!selectionQuestLayerBases.isEmpty()) {
             return;
         }
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             WidgetGroup layer = questCardLayers.get(questId);
             if (layer != null) {
                 selectionQuestLayerBases.put(questId, new LayerPosition(layer.getSelfPositionX(), layer.getSelfPositionY()));
@@ -197,25 +197,25 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     private void previewSelectionBounds(int dx, int dy) {
-        if (state.dragStartSelectionRight <= state.dragStartSelectionLeft
-                || state.dragStartSelectionBottom <= state.dragStartSelectionTop) {
+        if (state.canvas.dragStartSelectionRight <= state.canvas.dragStartSelectionLeft
+                || state.canvas.dragStartSelectionBottom <= state.canvas.dragStartSelectionTop) {
             return;
         }
-        state.selectionBoundsVisible = true;
-        state.selectionBoundsLeft = state.dragStartSelectionLeft + dx;
-        state.selectionBoundsTop = state.dragStartSelectionTop + dy;
-        state.selectionBoundsRight = state.dragStartSelectionRight + dx;
-        state.selectionBoundsBottom = state.dragStartSelectionBottom + dy;
+        state.canvas.selectionBoundsVisible = true;
+        state.canvas.selectionBoundsLeft = state.canvas.dragStartSelectionLeft + dx;
+        state.canvas.selectionBoundsTop = state.canvas.dragStartSelectionTop + dy;
+        state.canvas.selectionBoundsRight = state.canvas.dragStartSelectionRight + dx;
+        state.canvas.selectionBoundsBottom = state.canvas.dragStartSelectionBottom + dy;
     }
 
     private int selectionDragScreenX() {
-        return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.dragStartBoundsLeft);
+        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
     }
 
     private int selectionDragScreenY() {
-        return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.dragStartBoundsTop);
+        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
     }
 
     void commitCanvasPan() {
@@ -225,8 +225,8 @@ public final class CanvasViewport extends WidgetGroup {
         CanvasCameraController.panByScreen(state, livePanX, livePanY, true);
         livePanX = 0;
         livePanY = 0;
-        state.canvasLivePanX = 0;
-        state.canvasLivePanY = 0;
+        state.canvas.canvasLivePanX = 0;
+        state.canvas.canvasLivePanY = 0;
         applyLivePanToLayer();
     }
 

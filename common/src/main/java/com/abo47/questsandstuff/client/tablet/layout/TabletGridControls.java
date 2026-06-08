@@ -32,44 +32,44 @@ public final class TabletGridControls {
 
     public static int defaultGridOpacityPercent(TabletUiState state) {
         if (GRID_OPACITY.length == 0) {
-            return Math.max(0, Math.min(100, state.gridOpacityPercent));
+            return Math.max(0, Math.min(100, state.canvas.gridOpacityPercent));
         }
-        int index = Math.max(0, Math.min(GRID_OPACITY.length - 1, state.gridOpacityIndex));
+        int index = Math.max(0, Math.min(GRID_OPACITY.length - 1, state.canvas.gridOpacityIndex));
         return Math.max(0, Math.min(100, GRID_OPACITY[index]));
     }
 
     public static int defaultGridColor(TabletUiState state) {
-        if (state == null || state.gridColor == 0) {
+        if (state == null || state.canvas.gridColor == 0) {
             return ModColors.TEXT_PRIMARY;
         }
-        return state.gridColor;
+        return state.canvas.gridColor;
     }
 
     public static int defaultCanvasBgOpacityPercent(TabletUiState state) {
         if (CANVAS_BG_OPACITY.length == 0) {
-            return Math.max(0, Math.min(100, state.canvasBgOpacityPercent));
+            return Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
         }
-        int index = Math.max(0, Math.min(CANVAS_BG_OPACITY.length - 1, state.canvasBgOpacityIndex));
+        int index = Math.max(0, Math.min(CANVAS_BG_OPACITY.length - 1, state.canvas.canvasBgOpacityIndex));
         return Math.max(0, Math.min(100, CANVAS_BG_OPACITY[index]));
     }
 
     public static void applyGridOpacityPercent(TabletUiState state, int percent) {
         int clamped = Math.max(0, Math.min(100, percent));
-        state.gridOpacityPercent = clamped;
-        state.gridOpacityIndex = nearestIndex(GRID_OPACITY, clamped);
-        state.toolsGridOpacityDraft = Integer.toString(clamped);
+        state.canvas.gridOpacityPercent = clamped;
+        state.canvas.gridOpacityIndex = nearestIndex(GRID_OPACITY, clamped);
+        state.canvas.toolsGridOpacityDraft = Integer.toString(clamped);
     }
 
     public static void applyGridColor(TabletUiState state, int color) {
         if (state != null) {
-            state.gridColor = color;
+            state.canvas.gridColor = color;
         }
     }
 
     public static void applyCanvasBgOpacityPercent(TabletUiState state, int percent) {
         int clamped = Math.max(0, Math.min(100, percent));
-        state.canvasBgOpacityPercent = clamped;
-        state.canvasBgOpacityIndex = nearestIndex(CANVAS_BG_OPACITY, clamped);
+        state.canvas.canvasBgOpacityPercent = clamped;
+        state.canvas.canvasBgOpacityIndex = nearestIndex(CANVAS_BG_OPACITY, clamped);
     }
 
     public static int cyclePercent(int current, int step, boolean backwards) {

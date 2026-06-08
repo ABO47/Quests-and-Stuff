@@ -12,25 +12,25 @@ public final class ChapterDragController {
     }
 
     public static boolean handleDrag(TabletUiState state, Player player, Runnable refresh, int rootY, double mouseX, double mouseY, int button) {
-        if (state.chapterDragActive) {
+        if (state.chapterPanel.chapterDragActive) {
             int localY = (int) Math.round(mouseY - rootY - TabletUiFactory.CHAPTER_Y);
             int nextTarget = TabletUiFactory.chapterInsertIndexAtY(localY, state);
-            if (nextTarget != state.chapterDragTargetIndex) {
-                state.chapterDragTargetIndex = nextTarget;
-                QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag preview moving={} targetIndex={}", state.chapterDragName, nextTarget);
+            if (nextTarget != state.chapterPanel.chapterDragTargetIndex) {
+                state.chapterPanel.chapterDragTargetIndex = nextTarget;
+                QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag preview moving={} targetIndex={}", state.chapterPanel.chapterDragName, nextTarget);
                 refresh.run();
             }
             return true;
         }
-        if (state.chapterDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterDragStartX, state.chapterDragStartY)) {
+        if (state.chapterPanel.chapterDragPending && button == 0) {
+            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
                 return true;
             }
-            state.chapterDragPending = false;
-            state.chapterDragActive = true;
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragActive = true;
             int localY = (int) Math.round(mouseY - rootY - TabletUiFactory.CHAPTER_Y);
-            state.chapterDragTargetIndex = TabletUiFactory.chapterInsertIndexAtY(localY, state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterDragName, state.chapterDragTargetIndex);
+            state.chapterPanel.chapterDragTargetIndex = TabletUiFactory.chapterInsertIndexAtY(localY, state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterPanel.chapterDragName, state.chapterPanel.chapterDragTargetIndex);
             refresh.run();
             return true;
         }
@@ -38,15 +38,15 @@ public final class ChapterDragController {
     }
 
     public static boolean finish(TabletUiState state, Player player, Runnable refresh) {
-        if (state.chapterDragActive) {
+        if (state.chapterPanel.chapterDragActive) {
             finishActive(state, player);
             refresh.run();
             return true;
         }
-        if (state.chapterDragPending) {
-            state.chapterDragPending = false;
-            state.chapterDragName = "";
-            state.chapterDragTargetIndex = -1;
+        if (state.chapterPanel.chapterDragPending) {
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragName = "";
+            state.chapterPanel.chapterDragTargetIndex = -1;
             refresh.run();
             return true;
         }
@@ -54,12 +54,12 @@ public final class ChapterDragController {
     }
 
     private static void finishActive(TabletUiState state, Player player) {
-        String moving = state.chapterDragName;
-        int target = Math.max(0, state.chapterDragTargetIndex);
-        state.chapterDragActive = false;
-        state.chapterDragPending = false;
-        state.chapterDragName = "";
-        state.chapterDragTargetIndex = -1;
+        String moving = state.chapterPanel.chapterDragName;
+        int target = Math.max(0, state.chapterPanel.chapterDragTargetIndex);
+        state.chapterPanel.chapterDragActive = false;
+        state.chapterPanel.chapterDragPending = false;
+        state.chapterPanel.chapterDragName = "";
+        state.chapterPanel.chapterDragTargetIndex = -1;
         if (moving.isBlank()) {
             return;
         }
@@ -70,7 +70,7 @@ public final class ChapterDragController {
         if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
             TabletUiFactory.runGroupAction(player, state, "move_to", moving, "", target);
         }
-        state.selectedGroup = moving;
+        state.root.selectedGroup = moving;
         TabletUiFactory.persistUiState(state);
     }
 }

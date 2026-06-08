@@ -13,11 +13,11 @@ class CanvasGeometryPartitionTest {
     @Test
     void coordinateMapperConvertsBetweenLogicalAndScreenSpace() {
         TabletUiState state = new TabletUiState();
-        state.canvasContentX = 10;
-        state.canvasContentY = 20;
-        state.canvasOffsetX = 5;
-        state.canvasOffsetY = -3;
-        state.canvasZoom = 2.0f;
+        state.canvas.canvasContentX = 10;
+        state.canvas.canvasContentY = 20;
+        state.canvas.canvasOffsetX = 5;
+        state.canvas.canvasOffsetY = -3;
+        state.canvas.canvasZoom = 2.0f;
 
         assertEquals(29, CanvasGeometry.screenX(state, 7));
         assertEquals(5.0, CanvasGeometry.screenToLogicalX(state, 25), 0.0001);
@@ -28,9 +28,9 @@ class CanvasGeometryPartitionTest {
     @Test
     void questCardGeometryBuildsSlotAndVisualBounds() {
         TabletUiState state = new TabletUiState();
-        state.canvasContentX = 4;
-        state.canvasContentY = 6;
-        state.canvasZoom = 1.0f;
+        state.canvas.canvasContentX = 4;
+        state.canvas.canvasContentY = 6;
+        state.canvas.canvasZoom = 1.0f;
         CompoundTag questTag = new CompoundTag();
         CompoundTag groups = new CompoundTag();
         CompoundTag main = new CompoundTag();
@@ -79,9 +79,9 @@ class CanvasGeometryPartitionTest {
     @Test
     void canvasClampKeepsRotatedBoundsInsideContent() {
         TabletUiState state = new TabletUiState();
-        state.gridCanvasLocked = true;
-        state.canvasContentW = 100;
-        state.canvasContentH = 100;
+        state.canvas.gridCanvasLocked = true;
+        state.canvas.canvasContentW = 100;
+        state.canvas.canvasContentH = 100;
 
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, 90, 90, 20, 10, 10, 5, 90);
 

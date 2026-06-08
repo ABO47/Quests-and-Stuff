@@ -34,7 +34,7 @@ final class QuestObjectiveSectionWidget {
     static void renderRewards(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestDetailsObjectiveEntry> rewards = QuestObjectiveEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
         List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditState.canEdit(state));
-        boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetailsClaimedOverrideQuestId);
+        boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestDetailsObjectivesPanel.TITLE_H, 4, rewardsClaimed);
         section.addWidget(label(8, 6, QuestVocabulary.rewards(), ModColors.TEXT_PRIMARY));
         renderCards(section, state, player, refresh, questId, displayRewards, w, h, QuestDetailsObjectivesPanel.TITLE_H, false, rewardsClaimed);
@@ -50,9 +50,9 @@ final class QuestObjectiveSectionWidget {
                 }
                 int delta = wheelDelta < 0 ? 16 : -16;
                 if ("requirements".equals(kind)) {
-                    state.questDetailsReqScroll = Math.max(0, state.questDetailsReqScroll + delta);
+                    state.questDetails.questDetailsReqScroll = Math.max(0, state.questDetails.questDetailsReqScroll + delta);
                 } else {
-                    state.questDetailsRewardScroll = Math.max(0, state.questDetailsRewardScroll + delta);
+                    state.questDetails.questDetailsRewardScroll = Math.max(0, state.questDetails.questDetailsRewardScroll + delta);
                 }
                 refresh.run();
                 return true;
@@ -123,7 +123,7 @@ final class QuestObjectiveSectionWidget {
     }
 
     private static boolean isObjectiveScrollDragging(TabletUiState state, String kind) {
-        return "requirements".equals(kind) ? state.questDetailsReqScrollDragging : state.questDetailsRewardScrollDragging;
+        return "requirements".equals(kind) ? state.questDetails.questDetailsReqScrollDragging : state.questDetails.questDetailsRewardScrollDragging;
     }
 
     private static int scrollbarX(int sectionW) {
@@ -138,25 +138,25 @@ final class QuestObjectiveSectionWidget {
         int visibleH = Math.max(1, h - listY - 4);
         int maxStart = scrollMax(entries, visibleH);
         if (requirements) {
-            state.questDetailsReqScroll = ScrollController.clamp(state.questDetailsReqScroll, maxStart);
+            state.questDetails.questDetailsReqScroll = ScrollController.clamp(state.questDetails.questDetailsReqScroll, maxStart);
         } else {
-            state.questDetailsRewardScroll = ScrollController.clamp(state.questDetailsRewardScroll, maxStart);
+            state.questDetails.questDetailsRewardScroll = ScrollController.clamp(state.questDetails.questDetailsRewardScroll, maxStart);
         }
         String kind = requirements ? "requirements" : "rewards";
         int listW = maxStart > 0 ? w - DragScrollBarWidget.RESERVED_WIDTH : w;
         WidgetGroup list = clippedList(0, listY, listW, visibleH, state, player, refresh, questId, entries, kind, listY, h - 4);
         section.addWidget(list);
-        int scroll = requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        int scroll = requirements ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
         if (entries.isEmpty()) {
             return;
         }
         int cardW = maxStart > 0 ? w - 12 - DragScrollBarWidget.RESERVED_WIDTH : w - 12;
         int y = QuestDetailsObjectivesPanel.LIST_PAD - scroll;
-        int ghostIndex = Math.max(0, Math.min(entries.size(), state.questDetailsObjectiveDragTargetIndex));
-        boolean showGhost = state.questDetailsObjectiveDragActive
-                && kind.equals(state.questDetailsObjectiveDragKind)
-                && !state.questDetailsObjectiveDragId.isBlank();
-        QuestDetailsObjectiveEntry ghostEntry = draggedEntry(entries, state.questDetailsObjectiveDragId);
+        int ghostIndex = Math.max(0, Math.min(entries.size(), state.questDetails.questDetailsObjectiveDragTargetIndex));
+        boolean showGhost = state.questDetails.questDetailsObjectiveDragActive
+                && kind.equals(state.questDetails.questDetailsObjectiveDragKind)
+                && !state.questDetails.questDetailsObjectiveDragId.isBlank();
+        QuestDetailsObjectiveEntry ghostEntry = draggedEntry(entries, state.questDetails.questDetailsObjectiveDragId);
         for (int index = 0; index < entries.size(); index++) {
             if (showGhost && index == ghostIndex) {
                 QuestObjectiveGhostCards.render(list, ghostEntry, requirements, 6, y, cardW);
@@ -267,26 +267,26 @@ final class QuestObjectiveSectionWidget {
                 y,
                 DragScrollBarWidget.RESERVED_WIDTH,
                 h,
-                () -> requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll,
+                () -> requirements ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll,
                 () -> maxStart,
                 () -> knobH,
                 value -> {
                     if (requirements) {
-                        state.questDetailsReqScroll = value;
+                        state.questDetails.questDetailsReqScroll = value;
                     } else {
-                        state.questDetailsRewardScroll = value;
+                        state.questDetails.questDetailsRewardScroll = value;
                     }
                 },
-                () -> requirements ? state.questDetailsReqScrollDragging : state.questDetailsRewardScrollDragging,
+                () -> requirements ? state.questDetails.questDetailsReqScrollDragging : state.questDetails.questDetailsRewardScrollDragging,
                 dragging -> {
                     if (requirements) {
-                        state.questDetailsReqScrollDragging = dragging;
+                        state.questDetails.questDetailsReqScrollDragging = dragging;
                     } else {
-                        state.questDetailsRewardScrollDragging = dragging;
+                        state.questDetails.questDetailsRewardScrollDragging = dragging;
                     }
                 },
                 refresh,
-                ModColors.scrollTrack(requirements ? state.questDetailsReqScrollDragging : state.questDetailsRewardScrollDragging),
+                ModColors.scrollTrack(requirements ? state.questDetails.questDetailsReqScrollDragging : state.questDetails.questDetailsRewardScrollDragging),
                 ModColors.scrollThumb(false),
                 ModColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
@@ -297,7 +297,7 @@ final class QuestObjectiveSectionWidget {
         if (localY < listY || localY > listBottom || entries.isEmpty()) {
             return null;
         }
-        int scroll = "requirements".equals(kind) ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        int scroll = "requirements".equals(kind) ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
         int contentY = localY - listY + scroll - QuestDetailsObjectivesPanel.LIST_PAD;
         if (contentY < 0) {
             return null;

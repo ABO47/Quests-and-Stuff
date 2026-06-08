@@ -43,16 +43,16 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;
         }
-        boolean detailsContextWasOpen = state.questDetailsContextOpen;
+        boolean detailsContextWasOpen = state.questDetails.questDetailsContextOpen;
         boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
         boolean textStyleWasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state);
         boolean textStyleHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
         boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
         boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
         boolean motionEditorHit = motionEditorWasOpen && EntityMotionEditor.isQuestDetailsHit(state, mouseX, mouseY);
-        String selectedObjectiveKindBefore = state.questDetailsSelectedObjectiveKind;
-        String selectedObjectiveIdBefore = state.questDetailsSelectedObjectiveId;
-        boolean dragPendingBefore = state.questDetailsObjectiveDragPending;
+        String selectedObjectiveKindBefore = state.questDetails.questDetailsSelectedObjectiveKind;
+        String selectedObjectiveIdBefore = state.questDetails.questDetailsSelectedObjectiveId;
+        boolean dragPendingBefore = state.questDetails.questDetailsObjectiveDragPending;
         boolean clearObjectiveSelection = (button == 0 || button == 1)
                 && !detailsContextHit
                 && !textStyleHit
@@ -93,11 +93,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         if (!QuestDetailsWindow.isInside(state, mouseX, mouseY)) {
             closeFloatingDetailsState();
             refresh.run();
-        } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetailsContextOpen && !detailsContextHit) {
+        } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetails.questDetailsContextOpen && !detailsContextHit) {
             QuestDetailsTransientState.closeContext(state);
             ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
-        } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetailsTextStyleOpen) {
+        } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetails.questDetailsTextStyleOpen) {
             closeTextStyle("outside_click");
             refresh.run();
         } else if (selectionCleared) {
@@ -113,15 +113,15 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             boolean dragPendingBefore,
             boolean detailsContextWasOpen
     ) {
-        if (!selectedKindBefore.equals(state.questDetailsSelectedObjectiveKind)
-                || !selectedIdBefore.equals(state.questDetailsSelectedObjectiveId)) {
+        if (!selectedKindBefore.equals(state.questDetails.questDetailsSelectedObjectiveKind)
+                || !selectedIdBefore.equals(state.questDetails.questDetailsSelectedObjectiveId)) {
             return true;
         }
-        if (!dragPendingBefore && state.questDetailsObjectiveDragPending && !state.questDetailsObjectiveDragId.isBlank()) {
+        if (!dragPendingBefore && state.questDetails.questDetailsObjectiveDragPending && !state.questDetails.questDetailsObjectiveDragId.isBlank()) {
             return true;
         }
-        if (!detailsContextWasOpen && state.questDetailsContextOpen) {
-            return "requirement".equals(state.questDetailsContextKind) || "reward".equals(state.questDetailsContextKind);
+        if (!detailsContextWasOpen && state.questDetails.questDetailsContextOpen) {
+            return "requirement".equals(state.questDetails.questDetailsContextKind) || "reward".equals(state.questDetails.questDetailsContextKind);
         }
         return false;
     }
@@ -196,8 +196,8 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     private void closeTextStyle(String reason) {
-        boolean wasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetailsTextStyleTarget.isBlank();
-        String target = state.questDetailsTextStyleTarget == null ? "" : state.questDetailsTextStyleTarget;
+        boolean wasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetails.questDetailsTextStyleTarget.isBlank();
+        String target = state.questDetails.questDetailsTextStyleTarget == null ? "" : state.questDetails.questDetailsTextStyleTarget;
         TextStyleSession.closeQuestDetails(state);
         if (wasOpen) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason={}", target, reason);

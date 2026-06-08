@@ -72,7 +72,7 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (state.chapterScrollDragging) {
+        if (state.chapterPanel.chapterScrollDragging) {
             updateChapterScrollDrag(root, state, refresher, mouseY);
             return true;
         }
@@ -105,8 +105,8 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (state.chapterScrollDragging) {
-            state.chapterScrollDragging = false;
+        if (state.chapterPanel.chapterScrollDragging) {
+            state.chapterPanel.chapterScrollDragging = false;
             refresher.run();
             return true;
         }
@@ -154,23 +154,23 @@ final class TabletRootPointerRouter {
         if (!TabletUiFactory.isChapterScrollBarHit(localX, localY, state)) {
             return false;
         }
-        state.chapterDragPending = false;
-        state.chapterDragActive = false;
-        state.chapterDragName = "";
-        state.chapterDragTargetIndex = -1;
-        state.chapterScrollDragging = true;
-        int previous = state.chapterScroll;
+        state.chapterPanel.chapterDragPending = false;
+        state.chapterPanel.chapterDragActive = false;
+        state.chapterPanel.chapterDragName = "";
+        state.chapterPanel.chapterDragTargetIndex = -1;
+        state.chapterPanel.chapterScrollDragging = true;
+        int previous = state.chapterPanel.chapterScroll;
         TabletUiFactory.updateChapterScrollByMouse(localY, state);
-        if (state.chapterScroll != previous) {
+        if (state.chapterPanel.chapterScroll != previous) {
             refresher.run();
         }
         return true;
     }
 
     private static void updateChapterScrollDrag(TabletRootWidget root, TabletUiState state, Runnable refresher, double mouseY) {
-        int previous = state.chapterScroll;
+        int previous = state.chapterPanel.chapterScroll;
         TabletUiFactory.updateChapterScrollByMouse(localChapterY(root, mouseY), state);
-        if (state.chapterScroll != previous) {
+        if (state.chapterPanel.chapterScroll != previous) {
             refresher.run();
         }
     }

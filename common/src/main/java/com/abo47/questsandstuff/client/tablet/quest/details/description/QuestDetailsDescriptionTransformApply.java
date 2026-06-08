@@ -12,21 +12,21 @@ final class QuestDetailsDescriptionTransformApply {
     }
 
     static void preview(TabletUiState state, QuestDetailsDescriptionModel model) {
-        if ("desc_text".equals(state.questDetailsTransformKind)) {
-            CanvasTextLayer text = model.text(state.questDetailsTransformId);
+        if ("desc_text".equals(state.questDetails.questDetailsTransformKind)) {
+            CanvasTextLayer text = model.text(state.questDetails.questDetailsTransformId);
             if (text != null) {
                 CanvasLayerMutations.putTransientQuestDetailsText(state, text);
             }
             return;
         }
-        if ("desc_image".equals(state.questDetailsTransformKind)) {
-            CanvasImageLayer image = model.image(state.questDetailsTransformId);
+        if ("desc_image".equals(state.questDetails.questDetailsTransformKind)) {
+            CanvasImageLayer image = model.image(state.questDetails.questDetailsTransformId);
             if (image != null) {
                 CanvasLayerMutations.putTransientQuestDetailsImage(state, image);
             }
             return;
         }
-        if ("selection".equals(state.questDetailsTransformKind)) {
+        if ("selection".equals(state.questDetails.questDetailsTransformKind)) {
             for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
                 CanvasTextLayer text = model.text(textId);
                 if (text != null) {
@@ -43,7 +43,7 @@ final class QuestDetailsDescriptionTransformApply {
     }
 
     static CommitInfo commit(Player player, TabletUiState state, String questId, QuestDetailsDescriptionTransform transforms, QuestDetailsDescriptionModel model, int pointerX, int pointerY) {
-        CommitInfo info = new CommitInfo(state.questDetailsTransformKind, state.questDetailsTransformId, state.questDetailsTransformMode);
+        CommitInfo info = new CommitInfo(state.questDetails.questDetailsTransformKind, state.questDetails.questDetailsTransformId, state.questDetails.questDetailsTransformMode);
         transforms.applyTransform(model, pointerX, pointerY);
         CanvasTransformSessions.clearQuestDetailsSession(state);
         QuestDetailsDescriptionModel.save(player, questId, model);
@@ -51,8 +51,8 @@ final class QuestDetailsDescriptionTransformApply {
     }
 
     static void clearEditDragState(TabletUiState state) {
-        state.selectingCanvasTextRange = false;
-        state.questDetailsBoxSelecting = false;
+        state.canvas.selectingCanvasTextRange = false;
+        state.questDetails.questDetailsBoxSelecting = false;
         CanvasTransformSessions.clearQuestDetailsSession(state);
     }
 

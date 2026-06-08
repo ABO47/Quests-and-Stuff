@@ -60,7 +60,7 @@ final class QuestObjectiveMenuSupport {
                 icon,
                 task ? ModalTargets.objectiveTask(questId, objectiveId) : ModalTargets.objectiveReward(questId, objectiveId),
                 () -> QuestDetailsTransientState.closeContext(state),
-                () -> EntityMotionEditor.openObjectiveIcon(state, questId, objectiveId, task, state.questDetailsContextX, state.questDetailsContextY),
+                () -> EntityMotionEditor.openObjectiveIcon(state, questId, objectiveId, task, state.questDetails.questDetailsContextX, state.questDetails.questDetailsContextY),
                 () -> {
                 }
         );

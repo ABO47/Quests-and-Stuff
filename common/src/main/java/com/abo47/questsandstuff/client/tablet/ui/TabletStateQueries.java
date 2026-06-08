@@ -19,8 +19,8 @@ public final class TabletStateQueries {
     }
 
     public static String selectedGroupName(TabletUiState state) {
-        String selected = sanitizeGroupName(state == null ? "" : state.selectedGroup);
-        if (state == null || state.canEdit || selected.isBlank() || ClientQuestCache.groupOpenablePreview(selected)) {
+        String selected = sanitizeGroupName(state == null ? "" : state.root.selectedGroup);
+        if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestCache.groupOpenablePreview(selected)) {
             return selected;
         }
         for (String group : ClientQuestCache.selectableGroupOrder(false)) {
@@ -33,19 +33,19 @@ public final class TabletStateQueries {
     }
 
     public static String singleSelectedQuestId(TabletUiState state) {
-        if (state == null || state.canvasSelection.questIds().size() != 1) {
+        if (state == null || state.canvas.canvasSelection.questIds().size() != 1) {
             return "";
         }
-        String questId = state.canvasSelection.questIds().iterator().next();
+        String questId = state.canvas.canvasSelection.questIds().iterator().next();
         return questId == null ? "" : questId;
     }
 
     public static List<String> selectedQuestIdSnapshot(TabletUiState state) {
-        return state == null ? List.of() : List.copyOf(state.canvasSelection.questIds());
+        return state == null ? List.of() : List.copyOf(state.canvas.canvasSelection.questIds());
     }
 
     public static boolean hasSelectedQuests(TabletUiState state) {
-        return state != null && !state.canvasSelection.questIds().isEmpty();
+        return state != null && !state.canvas.canvasSelection.questIds().isEmpty();
     }
 
     public static String sanitizeGroupName(String value) {

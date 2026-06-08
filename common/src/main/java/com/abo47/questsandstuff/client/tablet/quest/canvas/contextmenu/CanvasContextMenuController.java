@@ -34,7 +34,7 @@ public final class CanvasContextMenuController {
     }
 
     private static boolean exclusiveSubmenuOpen(TabletUiState state) {
-        return state.contextQuestCompletionSoundMenuOpen;
+        return state.contextMenu.contextQuestCompletionSoundMenuOpen;
     }
 
     public static List<EdgeRef> selectedConnectedEdges(TabletUiState state, String group) {

@@ -38,10 +38,10 @@ public final class QuestDetailsObjectivesPanel {
     }
 
     public static boolean isCardHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen) {
+        if (state == null || !state.questDetails.questDetailsOpen) {
             return false;
         }
-        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         if (questId.isBlank()) {
             return false;
         }
@@ -51,8 +51,8 @@ public final class QuestDetailsObjectivesPanel {
         }
 
         int leftW = QuestDetailsWindow.leftPanelWidth(state);
-        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
-        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int x = state.questDetails.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
         int w = leftPanelContentW(leftW);
         int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + SECTION_GAP;
@@ -69,10 +69,10 @@ public final class QuestDetailsObjectivesPanel {
     }
 
     public static ItemStack hoveredViewerStack(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetailsOpen) {
+        if (state == null || !state.questDetails.questDetailsOpen) {
             return ItemStack.EMPTY;
         }
-        String questId = state.questDetailsQuestId == null ? "" : state.questDetailsQuestId.trim();
+        String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         if (questId.isBlank()) {
             return ItemStack.EMPTY;
         }
@@ -81,8 +81,8 @@ public final class QuestDetailsObjectivesPanel {
             return ItemStack.EMPTY;
         }
 
-        int x = state.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
-        int y = state.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int x = state.questDetails.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
         int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
@@ -197,7 +197,7 @@ public final class QuestDetailsObjectivesPanel {
         if (localX < LIST_PAD || localX >= LIST_PAD + cardW) {
             return false;
         }
-        int scroll = requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        int scroll = requirements ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
         scroll = Math.max(0, Math.min(scroll, maxStart));
         int contentY = localY - TITLE_H + scroll - LIST_PAD;
         if (contentY < 0) {
@@ -231,7 +231,7 @@ public final class QuestDetailsObjectivesPanel {
         }
         int visibleH = Math.max(1, h - TITLE_H - 4);
         int maxStart = QuestObjectiveSectionWidget.scrollMax(entries, visibleH);
-        int scroll = requirements ? state.questDetailsReqScroll : state.questDetailsRewardScroll;
+        int scroll = requirements ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
         scroll = Math.max(0, Math.min(scroll, maxStart));
         int listTop = y + TITLE_H;
         int iconX = x + LIST_PAD + 8;

@@ -28,7 +28,7 @@ final class QuestObjectiveXpEditor {
     }
 
     static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
-        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.xpPicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
@@ -79,7 +79,7 @@ final class QuestObjectiveXpEditor {
     }
 
     private static void commitTask(Player player, TabletUiState state, String mode, String collection) {
-        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         String questId = picker.xpQuestId();
         String id = picker.xpEntryId();
         JsonObject existing = existingJson(questId, id, true);
@@ -92,7 +92,7 @@ final class QuestObjectiveXpEditor {
     }
 
     private static void commitReward(Player player, TabletUiState state, String mode) {
-        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         String questId = picker.xpQuestId();
         String id = picker.xpEntryId();
         JsonObject existing = existingJson(questId, id, false);

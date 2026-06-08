@@ -19,12 +19,12 @@ public final class ChapterContextMenu {
 
     public static void rebuild(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
         overlay.clearAllWidgets();
-        if (!state.chapterMenuOpen) {
+        if (!state.chapterPanel.chapterMenuOpen) {
             return;
         }
         ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height);
-        state.chapterMenuX = layout.menuX();
-        state.chapterMenuY = layout.menuY();
+        state.chapterPanel.chapterMenuX = layout.menuX();
+        state.chapterPanel.chapterMenuY = layout.menuY();
         List<ContextAction> actions = ChapterContextMenuRows.actions(layout, state, player, refresh);
         overlay.addWidget(ContextMenuPanel.build(
                 layout.menuX(),
@@ -45,7 +45,7 @@ public final class ChapterContextMenu {
     }
 
     public static boolean click(TabletUiState state, Player player, Runnable refresh, int x, int y) {
-        if (!state.chapterMenuOpen) {
+        if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
         ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));

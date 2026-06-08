@@ -27,12 +27,12 @@ public final class TabletRecipePickerModal {
         int gridY = headY + headH + 4;
         int gridH = h - gridY - 8;
 
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.recipeSearch, 96, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.recipeSearch, 96, value -> {
             String query = RecipePickerModeController.setSearch(state, value);
             RecipePickerMode mode = RecipePickerModeController.mode(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", mode.logName(query), query);
             refresh.run();
-        }, focused -> state.recipeSearchFocused = focused);
+        }, focused -> state.pickers.recipeSearchFocused = focused);
 
         TabletCycleButton.addIconModeButton(
                 modal,
@@ -46,7 +46,7 @@ public final class TabletRecipePickerModal {
                 RecipePickerModeController.tooltip(state),
                 direction -> {
                     RecipePickerMode nextMode = RecipePickerModeController.cycle(state, direction);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", nextMode.logName(state.recipeSearch), direction < 0 ? "backward" : "forward");
+                    QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", nextMode.logName(state.pickers.recipeSearch), direction < 0 ? "backward" : "forward");
                     refresh.run();
                 });
         RecipePickerApplyActions.addRecipeViewerKeyHandler(modal, state, player, refresh);

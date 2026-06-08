@@ -22,7 +22,7 @@ final class QuestObjectiveTypePickerMenu {
     }
 
     static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
-        QuestDetailsPickerSession picker = state.questDetailsPickerSession;
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.typePicker() || !QuestDetailsEditState.canEdit(state)) {
             return;
         }

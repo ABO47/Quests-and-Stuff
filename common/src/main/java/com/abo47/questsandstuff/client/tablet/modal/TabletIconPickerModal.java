@@ -45,21 +45,21 @@ public final class TabletIconPickerModal {
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         int sidePad = 8;
-        String detailsTarget = ModalTargetState.target(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
-        String canvasEntityTarget = ModalTargetState.target(state, CANVAS_ENTITY, state.modalCanvasEntityTarget);
-        String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modalCanvasModelTarget);
-        ModalTargetParser.Target details = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetailsPickTarget);
-        ModalTargetParser.Target canvasModel = ModalTargetState.parsedTarget(state, CANVAS_MODEL, state.modalCanvasModelTarget);
+        String detailsTarget = ModalTargetState.target(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
+        String canvasEntityTarget = ModalTargetState.target(state, CANVAS_ENTITY, state.modal.modalCanvasEntityTarget);
+        String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
+        ModalTargetParser.Target details = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
+        ModalTargetParser.Target canvasModel = ModalTargetState.parsedTarget(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
         boolean entityPicker = !canvasEntityTarget.isBlank() || details.isEntityIconPickerTarget();
         boolean itemModelPicker = canvasModel.isItemModelPickerTarget() || details.isItemModelPickerTarget();
         boolean useItemPicker = IconPickerMode.isUseItemPickerTarget(details);
-        String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modalChapterTarget);
+        String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modal.modalChapterTarget);
         final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedGroupName(state) : resolvedChapterTarget;
-        String questTarget = ModalTargetState.target(state, QUEST, state.modalQuestTarget);
+        String questTarget = ModalTargetState.target(state, QUEST, state.modal.modalQuestTarget);
         boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, questTarget, chapterTarget);
         boolean supportsInventoryIcons = supportsInventoryIconSelection(detailsTarget, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
         IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
-        IconPickerMode mode = IconPickerMode.safe(state.iconMode);
+        IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
         int headY = 22;
         int headH = 18;
         int modeW = entityPicker ? 0 : headH;
@@ -73,12 +73,12 @@ public final class TabletIconPickerModal {
         int slot = 18;
 
         TabletModalPanel.addModalClose(modal, gridX + gridW - headH, 4, headH, state, refresh);
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.iconSearch, 80, value -> {
-            state.iconSearch = SearchFilter.normalizeUserInput(value);
-            state.iconScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", IconPickerMode.safe(state.iconMode).logName(), state.iconSearch);
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.iconSearch, 80, value -> {
+            state.pickers.iconSearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.iconScroll = 0;
+            QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", IconPickerMode.safe(state.pickers.iconMode).logName(), state.pickers.iconSearch);
             refresh.run();
-        }, focused -> state.iconSearchFocused = focused);
+        }, focused -> state.pickers.iconSearchFocused = focused);
 
         if (itemModelPicker) {
             IconPickerMode[] cycle = IconPickerMode.modelItemCycle();
@@ -89,12 +89,12 @@ public final class TabletIconPickerModal {
                     modeW,
                     headH,
                     cycle.length,
-                    () -> IconPickerMode.cycleIndex(state.iconMode, cycle),
+                    () -> IconPickerMode.cycleIndex(state.pickers.iconMode, cycle),
                     index -> IconPickerMode.iconAt(cycle, index),
                     mode.tooltip(),
                     direction -> {
                         IconPickerMode.cycleModelItems(state, direction);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
+                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.pickers.iconMode).logName(), cycleDirectionName(direction));
                         refresh.run();
                     });
         } else if (!entityPicker) {
@@ -106,12 +106,12 @@ public final class TabletIconPickerModal {
                     modeW,
                     headH,
                     cycle.length,
-                    () -> IconPickerMode.cycleIndex(state.iconMode, cycle),
+                    () -> IconPickerMode.cycleIndex(state.pickers.iconMode, cycle),
                     index -> IconPickerMode.iconAt(cycle, index),
                     mode.tooltip(),
                     direction -> {
                         IconPickerMode.cycle(state, supportsEntityIcons, supportsInventoryIcons, useItemPicker, direction);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
+                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.pickers.iconMode).logName(), cycleDirectionName(direction));
                         refresh.run();
                     });
         }
@@ -121,7 +121,7 @@ public final class TabletIconPickerModal {
         boolean pickingFluidIcons = mode.showingFluids() && !entityPicker && !itemModelPicker;
         if (pickingInventoryIcons) {
             String inventoryTarget = inventoryIconTarget(detailsTarget, questTarget, chapterTarget);
-            List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.iconSearch);
+            List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.pickers.iconSearch);
             TiledPickerPanel.add(
                     modal,
                     gridX,
@@ -136,10 +136,10 @@ public final class TabletIconPickerModal {
                     entries,
                     TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
-                            () -> state.iconScroll,
-                            value -> state.iconScroll = value,
-                            () -> state.iconScrollDragging,
-                            dragging -> state.iconScrollDragging = dragging
+                            () -> state.pickers.iconScroll,
+                            value -> state.pickers.iconScroll = value,
+                            () -> state.pickers.iconScrollDragging,
+                            dragging -> state.pickers.iconScrollDragging = dragging
                     ),
                     null,
                     refresh,
@@ -147,11 +147,11 @@ public final class TabletIconPickerModal {
             );
         } else {
             List<String> entries = itemModelPicker
-                    ? searchableModelItemEntries(state.iconSearch, mode.showingTags())
+                    ? searchableModelItemEntries(state.pickers.iconSearch, mode.showingTags())
                     : pickingEntityIcons
-                    ? EntityPreviewRenderer.searchableSpawnEggEntries(state.iconSearch)
+                    ? EntityPreviewRenderer.searchableSpawnEggEntries(state.pickers.iconSearch)
                     : pickingFluidIcons
-                    ? DisplayIconProvider.searchableFluidEntries(state.iconSearch)
+                    ? DisplayIconProvider.searchableFluidEntries(state.pickers.iconSearch)
                     : searchableIconEntries(state);
             TiledPickerPanel.add(
                     modal,
@@ -167,10 +167,10 @@ public final class TabletIconPickerModal {
                     entries,
                     TabletModalPanel.tr("ui.questsandstuff.common.none_short"),
                     ScrollState.bind(
-                            () -> state.iconScroll,
-                            value -> state.iconScroll = value,
-                            () -> state.iconScrollDragging,
-                            dragging -> state.iconScrollDragging = dragging
+                            () -> state.pickers.iconScroll,
+                            value -> state.pickers.iconScroll = value,
+                            () -> state.pickers.iconScrollDragging,
+                            dragging -> state.pickers.iconScrollDragging = dragging
                     ),
                     null,
                     refresh,
@@ -220,14 +220,14 @@ public final class TabletIconPickerModal {
     }
 
     private static List<String> searchableIconEntries(TabletUiState state) {
-        IconPickerMode mode = IconPickerMode.safe(state.iconMode);
+        IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
         if (mode.showingFluids()) {
-            return DisplayIconProvider.searchableFluidEntries(state.iconSearch);
+            return DisplayIconProvider.searchableFluidEntries(state.pickers.iconSearch);
         }
         if (mode == IconPickerMode.USABLE_ITEMS) {
-            return DisplayIconProvider.searchableUsableItemEntries(state.iconSearch);
+            return DisplayIconProvider.searchableUsableItemEntries(state.pickers.iconSearch);
         }
-        return DisplayIconProvider.searchableEntries(state.iconSearch, mode.showingTags());
+        return DisplayIconProvider.searchableEntries(state.pickers.iconSearch, mode.showingTags());
     }
 
     private static List<String> searchableModelItemEntries(String search, boolean tagMode) {
@@ -274,7 +274,7 @@ public final class TabletIconPickerModal {
             refresh.run();
             return;
         }
-        state.questDetailsPickTarget = target;
+        state.questDetails.questDetailsPickTarget = target;
         QuestDetailsWindow.applyInventoryItemPick(player, state, stack);
         closeAll(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] icon inventory pick applied target={} hasNbt={}", target, stack.hasTag());

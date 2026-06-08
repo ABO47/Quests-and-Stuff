@@ -94,12 +94,12 @@ final class ConnectionLayout {
             int viewportH
     ) {
         List<ConnectionLine> lines = new ArrayList<>();
-        if (!state.canEdit) {
+        if (!state.root.canEdit) {
             return lines;
         }
-        Set<String> pendingSources = new HashSet<>(state.connectSourceQuestIds);
-        if (!state.connectSourceQuestId.isBlank()) {
-            pendingSources.add(state.connectSourceQuestId);
+        Set<String> pendingSources = new HashSet<>(state.canvas.connectSourceQuestIds);
+        if (!state.canvas.connectSourceQuestId.isBlank()) {
+            pendingSources.add(state.canvas.connectSourceQuestId);
         }
         for (String sourceQuestId : pendingSources) {
             QuestCardLayout source = byQuestId.get(sourceQuestId);

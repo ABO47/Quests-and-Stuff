@@ -46,14 +46,14 @@ class TabletActiveStateTest {
     @Test
     void selectPastedQuestsMergesServerIdsWithPendingClipboardLayerIds() {
         TabletUiState state = new TabletUiState();
-        state.selectedGroup = "old_group";
-        state.groupDraft = "old_group";
-        state.chapterDraftName = "old_group";
-        state.canvasSelection.questIds().add("old_quest");
-        state.canvasSelection.imageIds().add("old_image");
-        state.canvasSelection.textIds().add("old_text");
-        state.canvasClipboard.recordPastedImage(" local_image ");
-        state.canvasClipboard.recordPastedText(" local_text ");
+        state.root.selectedGroup = "old_group";
+        state.chapterPanel.groupDraft = "old_group";
+        state.chapterPanel.chapterDraftName = "old_group";
+        state.canvas.canvasSelection.questIds().add("old_quest");
+        state.canvas.canvasSelection.imageIds().add("old_image");
+        state.canvas.canvasSelection.textIds().add("old_text");
+        state.clipboard.canvasClipboard.recordPastedImage(" local_image ");
+        state.clipboard.canvasClipboard.recordPastedText(" local_text ");
 
         AtomicInteger refreshes = new AtomicInteger();
         TabletActiveState.setActiveTabletRefresh(refreshes::incrementAndGet);
@@ -61,19 +61,19 @@ class TabletActiveStateTest {
 
         TabletActiveState.selectPastedQuests(pastePayload());
 
-        assertEquals("pasted_group", state.selectedGroup);
-        assertEquals("pasted_group", state.groupDraft);
-        assertEquals("pasted_group", state.chapterDraftName);
-        assertEquals("quest:new", state.lastJumpQuest);
-        assertTrue(state.canvasSelection.questIds().contains("quest:new"));
-        assertTrue(state.canvasSelection.imageIds().contains("remote_image"));
-        assertTrue(state.canvasSelection.imageIds().contains("local_image"));
-        assertTrue(state.canvasSelection.textIds().contains("remote_text"));
-        assertTrue(state.canvasSelection.textIds().contains("local_text"));
-        assertEquals("local_image", state.canvasSelection.primaryImageId());
-        assertEquals("local_text", state.canvasSelection.primaryTextId());
-        assertTrue(state.canvasClipboard.pendingPastedImageIds().isEmpty());
-        assertTrue(state.canvasClipboard.pendingPastedTextIds().isEmpty());
+        assertEquals("pasted_group", state.root.selectedGroup);
+        assertEquals("pasted_group", state.chapterPanel.groupDraft);
+        assertEquals("pasted_group", state.chapterPanel.chapterDraftName);
+        assertEquals("quest:new", state.chapterPanel.lastJumpQuest);
+        assertTrue(state.canvas.canvasSelection.questIds().contains("quest:new"));
+        assertTrue(state.canvas.canvasSelection.imageIds().contains("remote_image"));
+        assertTrue(state.canvas.canvasSelection.imageIds().contains("local_image"));
+        assertTrue(state.canvas.canvasSelection.textIds().contains("remote_text"));
+        assertTrue(state.canvas.canvasSelection.textIds().contains("local_text"));
+        assertEquals("local_image", state.canvas.canvasSelection.primaryImageId());
+        assertEquals("local_text", state.canvas.canvasSelection.primaryTextId());
+        assertTrue(state.clipboard.canvasClipboard.pendingPastedImageIds().isEmpty());
+        assertTrue(state.clipboard.canvasClipboard.pendingPastedTextIds().isEmpty());
         assertTrue(ClientQuestCache.groupOrder().contains("pasted_group"));
         assertEquals(1, refreshes.get());
     }

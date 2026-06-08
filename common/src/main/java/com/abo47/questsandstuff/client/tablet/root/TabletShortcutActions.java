@@ -57,38 +57,38 @@ final class TabletShortcutActions {
             return false;
         }
         boolean changed = false;
-        if (state.boxSelecting || state.draggingSelection || state.resizingSelection || state.rotatingSelection
-                || state.draggingCanvas || state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage
-                || state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
-            state.boxSelecting = false;
-            state.draggingCanvas = false;
+        if (state.canvas.boxSelecting || state.canvas.draggingSelection || state.canvas.resizingSelection || state.canvas.rotatingSelection
+                || state.canvas.draggingCanvas || state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage
+                || state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
+            state.canvas.boxSelecting = false;
+            state.canvas.draggingCanvas = false;
             CanvasTransformSessions.clearMainCanvasSession(state);
             changed = true;
         }
-        if (state.questDetailsBoxSelecting || state.questDetailsPanning || state.questDetailsDescScrollDragging || !state.questDetailsTransformKind.isBlank()) {
-            state.questDetailsBoxSelecting = false;
-            state.questDetailsPanning = false;
-            state.questDetailsDescScrollDragging = false;
+        if (state.questDetails.questDetailsBoxSelecting || state.questDetails.questDetailsPanning || state.questDetails.questDetailsDescScrollDragging || !state.questDetails.questDetailsTransformKind.isBlank()) {
+            state.questDetails.questDetailsBoxSelecting = false;
+            state.questDetails.questDetailsPanning = false;
+            state.questDetails.questDetailsDescScrollDragging = false;
             CanvasTransformSessions.clearQuestDetailsSession(state);
             changed = true;
         }
-        if (state.chapterDragPending || state.chapterDragActive || state.questDetailsObjectiveDragPending || state.questDetailsObjectiveDragActive) {
-            state.chapterDragPending = false;
-            state.chapterDragActive = false;
-            state.chapterDragName = "";
-            state.chapterDragTargetIndex = -1;
-            state.questDetailsObjectiveDragPending = false;
-            state.questDetailsObjectiveDragActive = false;
-            state.questDetailsObjectiveDragKind = "";
-            state.questDetailsObjectiveDragId = "";
-            state.questDetailsObjectiveDragTargetIndex = -1;
+        if (state.chapterPanel.chapterDragPending || state.chapterPanel.chapterDragActive || state.questDetails.questDetailsObjectiveDragPending || state.questDetails.questDetailsObjectiveDragActive) {
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragActive = false;
+            state.chapterPanel.chapterDragName = "";
+            state.chapterPanel.chapterDragTargetIndex = -1;
+            state.questDetails.questDetailsObjectiveDragPending = false;
+            state.questDetails.questDetailsObjectiveDragActive = false;
+            state.questDetails.questDetailsObjectiveDragKind = "";
+            state.questDetails.questDetailsObjectiveDragId = "";
+            state.questDetails.questDetailsObjectiveDragTargetIndex = -1;
             changed = true;
         }
         return changed;
     }
 
     private static boolean beginRename(TabletUiState state) {
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.beginSelectedRename(state);
         }
         String selectedQuestId = TabletStateQueries.singleSelectedQuestId(state);
@@ -97,16 +97,16 @@ final class TabletShortcutActions {
             return true;
         }
         if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
-                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
-            state.pendingChapterRename = state.selectedGroup;
-            state.chapterDraftName = state.selectedGroup;
+                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && state.root.selectedGroup != null && !state.root.selectedGroup.isBlank()) {
+            state.canvas.pendingChapterRename = state.root.selectedGroup;
+            state.chapterPanel.chapterDraftName = state.root.selectedGroup;
             return true;
         }
         return false;
     }
 
     private static boolean deleteSelection(Player player, TabletUiState state, CanvasViewport canvasViewport) {
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.deleteSelected(player, state);
         }
         String group = TabletStateQueries.selectedGroupName(state);
@@ -129,32 +129,32 @@ final class TabletShortcutActions {
     }
 
     private static boolean selectAll(TabletUiState state, CanvasViewport canvasViewport) {
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.selectAllDescription(state);
         }
         if (canvasViewport == null) {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.textIds().clear();
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            state.canvasSelection.imageIds().add(image.id());
-            state.canvasSelection.setPrimaryImageId(image.id());
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+            state.canvas.canvasSelection.imageIds().add(image.id());
+            state.canvas.canvasSelection.setPrimaryImageId(image.id());
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            state.canvasSelection.textIds().add(text.id());
-            state.canvasSelection.setPrimaryTextId(text.id());
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+            state.canvas.canvasSelection.textIds().add(text.id());
+            state.canvas.canvasSelection.setPrimaryTextId(text.id());
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas group={} quests={} images={} texts={}",
-                group, state.canvasSelection.questIds().size(), state.canvasSelection.imageIds().size(), state.canvasSelection.textIds().size());
+                group, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size());
         return true;
     }
 
     private static boolean duplicateSelection(Player player, TabletUiState state, CanvasViewport canvasViewport) {
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.duplicateSelected(player, state);
         }
         if (canvasViewport == null) {
@@ -165,7 +165,7 @@ final class TabletShortcutActions {
     }
 
     private static boolean nudgeSelection(Player player, TabletUiState state, CanvasViewport canvasViewport, int keyCode, boolean shift) {
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.nudgeSelected(player, state, nudgeDx(keyCode, shift, CanvasGeometry.gridSize(state)), nudgeDy(keyCode, shift, CanvasGeometry.gridSize(state)));
         }
         if (canvasViewport == null) {
@@ -177,7 +177,7 @@ final class TabletShortcutActions {
         String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
         Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             QuestCardLayout card = canvasViewport.cardLookup().get(questId);
             if (card != null) {
                 questMoves.put(questId, new CanvasPoint(Math.max(0, card.logicalX() + dx), Math.max(0, card.logicalY() + dy)));
@@ -212,7 +212,7 @@ final class TabletShortcutActions {
     }
 
     private static boolean activeEditMode(TabletUiState state) {
-        return state.questDetailsOpen ? QuestDetailsEditState.canEdit(state) : state.canEdit;
+        return state.questDetails.questDetailsOpen ? QuestDetailsEditState.canEdit(state) : state.root.canEdit;
     }
 
     private static int nudgeDx(int keyCode, boolean shift, int step) {

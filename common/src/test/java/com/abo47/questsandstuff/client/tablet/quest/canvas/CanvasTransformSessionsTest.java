@@ -21,29 +21,29 @@ class CanvasTransformSessionsTest {
     void mainCanvasSessionClearsFlagsPreviewsAndStartSnapshotsWithoutClearingSelection() {
         TabletUiState state = new TabletUiState();
         seedMainCanvasTransform(state);
-        state.canvasSelection.setPrimaryImageId("image/a");
-        state.canvasSelection.imageIds().add("image/a");
+        state.canvas.canvasSelection.setPrimaryImageId("image/a");
+        state.canvas.canvasSelection.imageIds().add("image/a");
 
         CanvasTransformSessions.clearMainCanvasSession(state);
 
-        assertFalse(state.draggingSelection);
-        assertFalse(state.resizingSelection);
-        assertFalse(state.rotatingSelection);
-        assertFalse(state.draggingCanvasImage);
-        assertFalse(state.resizingCanvasImage);
-        assertFalse(state.rotatingCanvasImage);
-        assertFalse(state.draggingCanvasText);
-        assertFalse(state.resizingCanvasText);
-        assertFalse(state.rotatingCanvasText);
-        assertEquals("", state.canvasImageTransformAxis);
-        assertTrue(state.transientQuestPositions.isEmpty());
-        assertTrue(state.transientQuestScales.isEmpty());
-        assertTrue(state.transientCanvasImages.isEmpty());
-        assertTrue(state.transientCanvasTexts.isEmpty());
+        assertFalse(state.canvas.draggingSelection);
+        assertFalse(state.canvas.resizingSelection);
+        assertFalse(state.canvas.rotatingSelection);
+        assertFalse(state.canvas.draggingCanvasImage);
+        assertFalse(state.canvas.resizingCanvasImage);
+        assertFalse(state.canvas.rotatingCanvasImage);
+        assertFalse(state.canvas.draggingCanvasText);
+        assertFalse(state.canvas.resizingCanvasText);
+        assertFalse(state.canvas.rotatingCanvasText);
+        assertEquals("", state.canvas.canvasImageTransformAxis);
+        assertTrue(state.canvas.transientQuestPositions.isEmpty());
+        assertTrue(state.canvas.transientQuestScales.isEmpty());
+        assertTrue(state.canvas.transientCanvasImages.isEmpty());
+        assertTrue(state.canvas.transientCanvasTexts.isEmpty());
         assertSharedSnapshotsCleared(state);
         assertGuidesCleared(state);
-        assertEquals("image/a", state.canvasSelection.primaryImageId());
-        assertTrue(state.canvasSelection.imageIds().contains("image/a"));
+        assertEquals("image/a", state.canvas.canvasSelection.primaryImageId());
+        assertTrue(state.canvas.canvasSelection.imageIds().contains("image/a"));
     }
 
     @Test
@@ -54,14 +54,14 @@ class CanvasTransformSessionsTest {
 
         CanvasTransformSessions.clearQuestDetailsSession(state);
 
-        assertEquals("image:a", state.transientCanvasImages.keySet().iterator().next());
-        assertEquals("text:a", state.transientCanvasTexts.keySet().iterator().next());
-        assertEquals("", state.questDetailsTransformKind);
-        assertEquals("", state.questDetailsTransformId);
-        assertEquals("", state.questDetailsTransformMode);
-        assertEquals("", state.questDetailsTransformAxis);
-        assertTrue(state.questDetailsTransientImages.isEmpty());
-        assertTrue(state.questDetailsTransientTexts.isEmpty());
+        assertEquals("image:a", state.canvas.transientCanvasImages.keySet().iterator().next());
+        assertEquals("text:a", state.canvas.transientCanvasTexts.keySet().iterator().next());
+        assertEquals("", state.questDetails.questDetailsTransformKind);
+        assertEquals("", state.questDetails.questDetailsTransformId);
+        assertEquals("", state.questDetails.questDetailsTransformMode);
+        assertEquals("", state.questDetails.questDetailsTransformAxis);
+        assertTrue(state.questDetails.questDetailsTransientImages.isEmpty());
+        assertTrue(state.questDetails.questDetailsTransientTexts.isEmpty());
         assertSharedSnapshotsCleared(state);
         assertGuidesCleared(state);
     }
@@ -69,32 +69,32 @@ class CanvasTransformSessionsTest {
     @Test
     void previewClearsAreSurfaceScoped() {
         TabletUiState state = new TabletUiState();
-        state.transientCanvasImages.put("image:a", image("image:a"));
-        state.transientCanvasTexts.put("text:a", text("text:a"));
-        state.questDetailsTransientImages.put("image:b", image("image:b"));
-        state.questDetailsTransientTexts.put("text:b", text("text:b"));
+        state.canvas.transientCanvasImages.put("image:a", image("image:a"));
+        state.canvas.transientCanvasTexts.put("text:a", text("text:a"));
+        state.questDetails.questDetailsTransientImages.put("image:b", image("image:b"));
+        state.questDetails.questDetailsTransientTexts.put("text:b", text("text:b"));
 
         CanvasTransformSessions.clearMainCanvasPreviews(state);
 
-        assertTrue(state.transientCanvasImages.isEmpty());
-        assertTrue(state.transientCanvasTexts.isEmpty());
-        assertFalse(state.questDetailsTransientImages.isEmpty());
-        assertFalse(state.questDetailsTransientTexts.isEmpty());
+        assertTrue(state.canvas.transientCanvasImages.isEmpty());
+        assertTrue(state.canvas.transientCanvasTexts.isEmpty());
+        assertFalse(state.questDetails.questDetailsTransientImages.isEmpty());
+        assertFalse(state.questDetails.questDetailsTransientTexts.isEmpty());
 
         CanvasTransformSessions.clearQuestDetailsPreviews(state);
 
-        assertTrue(state.questDetailsTransientImages.isEmpty());
-        assertTrue(state.questDetailsTransientTexts.isEmpty());
+        assertTrue(state.questDetails.questDetailsTransientImages.isEmpty());
+        assertTrue(state.questDetails.questDetailsTransientTexts.isEmpty());
     }
 
     @Test
     void elementBeginAndUpdateClearStaleSnapshotsBeforeCreatingPreview() {
         TabletUiState state = new TabletUiState();
-        state.selectedGroup = "main";
-        state.canvasZoom = 1.0f;
-        state.canvasContentW = 512;
-        state.canvasContentH = 512;
-        state.canvasImagesByGroup.put("main", List.of(image("image:a")));
+        state.root.selectedGroup = "main";
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.canvasContentW = 512;
+        state.canvas.canvasContentH = 512;
+        state.canvas.canvasImagesByGroup.put("main", List.of(image("image:a")));
         seedMainCanvasTransform(state);
 
         CanvasTransformSessions.clearMainCanvasSession(state);
@@ -102,15 +102,15 @@ class CanvasTransformSessionsTest {
         transforms.beginImageTransform(image("image:a"), 20, 20);
         CanvasLayerMutations.putTransientCanvasImage(state, image("image:a").moveTo(36, 36));
 
-        assertTrue(state.dragStartImagePositions.isEmpty());
-        assertTrue(state.resizeStartImageLayers.isEmpty());
-        assertTrue(state.rotateStartImageLayers.isEmpty());
-        assertFalse(state.transientCanvasImages.isEmpty());
-        assertEquals("image:a", state.canvasSelection.primaryImageId());
+        assertTrue(state.canvas.dragStartImagePositions.isEmpty());
+        assertTrue(state.canvas.resizeStartImageLayers.isEmpty());
+        assertTrue(state.canvas.rotateStartImageLayers.isEmpty());
+        assertFalse(state.canvas.transientCanvasImages.isEmpty());
+        assertEquals("image:a", state.canvas.canvasSelection.primaryImageId());
 
         CanvasTransformSessions.clearMainCanvasSession(state);
 
-        assertTrue(state.transientCanvasImages.isEmpty());
+        assertTrue(state.canvas.transientCanvasImages.isEmpty());
     }
 
     @Test
@@ -120,100 +120,100 @@ class CanvasTransformSessionsTest {
 
         new CanvasSelectionTransformController(state, new CanvasElementTransformController(state)).clear();
 
-        assertFalse(state.draggingSelection);
-        assertFalse(state.resizingSelection);
-        assertFalse(state.rotatingSelection);
-        assertTrue(state.transientQuestPositions.isEmpty());
-        assertTrue(state.transientCanvasImages.isEmpty());
+        assertFalse(state.canvas.draggingSelection);
+        assertFalse(state.canvas.resizingSelection);
+        assertFalse(state.canvas.rotatingSelection);
+        assertTrue(state.canvas.transientQuestPositions.isEmpty());
+        assertTrue(state.canvas.transientCanvasImages.isEmpty());
         assertSharedSnapshotsCleared(state);
         assertGuidesCleared(state);
     }
 
     private static void seedMainCanvasTransform(TabletUiState state) {
-        state.draggingSelection = true;
-        state.resizingSelection = true;
-        state.rotatingSelection = true;
-        state.draggingCanvasImage = true;
-        state.resizingCanvasImage = true;
-        state.rotatingCanvasImage = true;
-        state.canvasImageTransformAxis = CanvasTransformGizmo.AXIS_MOVE_X;
-        state.draggingCanvasText = true;
-        state.resizingCanvasText = true;
-        state.rotatingCanvasText = true;
-        state.transientQuestPositions.put("quest/a", new CanvasPoint(1, 2));
-        state.transientQuestScales.put("quest/a", 1.5f);
-        state.transientCanvasImages.put("image:a", image("image:a"));
-        state.transientCanvasTexts.put("text:a", text("text:a"));
+        state.canvas.draggingSelection = true;
+        state.canvas.resizingSelection = true;
+        state.canvas.rotatingSelection = true;
+        state.canvas.draggingCanvasImage = true;
+        state.canvas.resizingCanvasImage = true;
+        state.canvas.rotatingCanvasImage = true;
+        state.canvas.canvasImageTransformAxis = CanvasTransformGizmo.AXIS_MOVE_X;
+        state.canvas.draggingCanvasText = true;
+        state.canvas.resizingCanvasText = true;
+        state.canvas.rotatingCanvasText = true;
+        state.canvas.transientQuestPositions.put("quest/a", new CanvasPoint(1, 2));
+        state.canvas.transientQuestScales.put("quest/a", 1.5f);
+        state.canvas.transientCanvasImages.put("image:a", image("image:a"));
+        state.canvas.transientCanvasTexts.put("text:a", text("text:a"));
         seedSharedSnapshots(state);
     }
 
     private static void seedQuestDetailsTransform(TabletUiState state) {
-        state.questDetailsTransformKind = "desc_image";
-        state.questDetailsTransformId = "image:b";
-        state.questDetailsTransformMode = "move";
-        state.questDetailsTransformAxis = CanvasTransformGizmo.AXIS_MOVE_Y;
-        state.questDetailsTransformStartMouseX = 11;
-        state.questDetailsTransformStartMouseY = 12;
-        state.questDetailsTransformStartX = 13;
-        state.questDetailsTransformStartY = 14;
-        state.questDetailsTransformStartW = 15;
-        state.questDetailsTransformStartH = 16;
-        state.questDetailsTransformStartPivotX = 17;
-        state.questDetailsTransformStartPivotY = 18;
-        state.questDetailsTransformStartRotation = 19;
-        state.questDetailsTransformStartYaw = 20;
-        state.questDetailsTransformStartPitch = 21;
-        state.questDetailsTransformPivotX = 22.0;
-        state.questDetailsTransformPivotY = 23.0;
-        state.questDetailsTransformStartAngle = 24.0;
-        state.questDetailsTransientImages.put("image:b", image("image:b"));
-        state.questDetailsTransientTexts.put("text:b", text("text:b"));
+        state.questDetails.questDetailsTransformKind = "desc_image";
+        state.questDetails.questDetailsTransformId = "image:b";
+        state.questDetails.questDetailsTransformMode = "move";
+        state.questDetails.questDetailsTransformAxis = CanvasTransformGizmo.AXIS_MOVE_Y;
+        state.questDetails.questDetailsTransformStartMouseX = 11;
+        state.questDetails.questDetailsTransformStartMouseY = 12;
+        state.questDetails.questDetailsTransformStartX = 13;
+        state.questDetails.questDetailsTransformStartY = 14;
+        state.questDetails.questDetailsTransformStartW = 15;
+        state.questDetails.questDetailsTransformStartH = 16;
+        state.questDetails.questDetailsTransformStartPivotX = 17;
+        state.questDetails.questDetailsTransformStartPivotY = 18;
+        state.questDetails.questDetailsTransformStartRotation = 19;
+        state.questDetails.questDetailsTransformStartYaw = 20;
+        state.questDetails.questDetailsTransformStartPitch = 21;
+        state.questDetails.questDetailsTransformPivotX = 22.0;
+        state.questDetails.questDetailsTransformPivotY = 23.0;
+        state.questDetails.questDetailsTransformStartAngle = 24.0;
+        state.questDetails.questDetailsTransientImages.put("image:b", image("image:b"));
+        state.questDetails.questDetailsTransientTexts.put("text:b", text("text:b"));
         seedSharedSnapshots(state);
     }
 
     private static void seedSharedSnapshots(TabletUiState state) {
-        state.dragStartPositions.put("quest/a", new CanvasPoint(1, 2));
-        state.dragStartImagePositions.put("image:a", new CanvasPoint(3, 4));
-        state.dragStartTextPositions.put("text:a", new CanvasPoint(5, 6));
-        state.resizeStartScales.put("quest/a", 1.5f);
-        state.resizeStartPositions.put("quest/a", new CanvasPoint(7, 8));
-        state.resizeStartImageLayers.put("image:a", image("image:a"));
-        state.resizeStartTextLayers.put("text:a", text("text:a"));
-        state.rotateStartPositions.put("quest/a", new CanvasPoint(9, 10));
-        state.rotateStartCenters.put("quest/a", new CanvasDoublePoint(11.0, 12.0));
-        state.rotateStartImageLayers.put("image:a", image("image:a"));
-        state.rotateStartTextLayers.put("text:a", text("text:a"));
-        state.rotatePreviewAngle = 1.25;
-        state.dragSelectionDeltaX = 3;
-        state.dragSelectionDeltaY = 4;
-        state.snapGuideXVisible = true;
-        state.snapGuideYVisible = true;
-        state.snapGuideX = 100;
-        state.snapGuideY = 120;
+        state.canvas.dragStartPositions.put("quest/a", new CanvasPoint(1, 2));
+        state.canvas.dragStartImagePositions.put("image:a", new CanvasPoint(3, 4));
+        state.canvas.dragStartTextPositions.put("text:a", new CanvasPoint(5, 6));
+        state.canvas.resizeStartScales.put("quest/a", 1.5f);
+        state.canvas.resizeStartPositions.put("quest/a", new CanvasPoint(7, 8));
+        state.canvas.resizeStartImageLayers.put("image:a", image("image:a"));
+        state.canvas.resizeStartTextLayers.put("text:a", text("text:a"));
+        state.canvas.rotateStartPositions.put("quest/a", new CanvasPoint(9, 10));
+        state.canvas.rotateStartCenters.put("quest/a", new CanvasDoublePoint(11.0, 12.0));
+        state.canvas.rotateStartImageLayers.put("image:a", image("image:a"));
+        state.canvas.rotateStartTextLayers.put("text:a", text("text:a"));
+        state.canvas.rotatePreviewAngle = 1.25;
+        state.canvas.dragSelectionDeltaX = 3;
+        state.canvas.dragSelectionDeltaY = 4;
+        state.canvas.snapGuideXVisible = true;
+        state.canvas.snapGuideYVisible = true;
+        state.canvas.snapGuideX = 100;
+        state.canvas.snapGuideY = 120;
     }
 
     private static void assertSharedSnapshotsCleared(TabletUiState state) {
-        assertTrue(state.dragStartPositions.isEmpty());
-        assertTrue(state.dragStartImagePositions.isEmpty());
-        assertTrue(state.dragStartTextPositions.isEmpty());
-        assertTrue(state.resizeStartScales.isEmpty());
-        assertTrue(state.resizeStartPositions.isEmpty());
-        assertTrue(state.resizeStartImageLayers.isEmpty());
-        assertTrue(state.resizeStartTextLayers.isEmpty());
-        assertTrue(state.rotateStartPositions.isEmpty());
-        assertTrue(state.rotateStartCenters.isEmpty());
-        assertTrue(state.rotateStartImageLayers.isEmpty());
-        assertTrue(state.rotateStartTextLayers.isEmpty());
-        assertEquals(0.0, state.rotatePreviewAngle, 0.0001);
-        assertEquals(0, state.dragSelectionDeltaX);
-        assertEquals(0, state.dragSelectionDeltaY);
+        assertTrue(state.canvas.dragStartPositions.isEmpty());
+        assertTrue(state.canvas.dragStartImagePositions.isEmpty());
+        assertTrue(state.canvas.dragStartTextPositions.isEmpty());
+        assertTrue(state.canvas.resizeStartScales.isEmpty());
+        assertTrue(state.canvas.resizeStartPositions.isEmpty());
+        assertTrue(state.canvas.resizeStartImageLayers.isEmpty());
+        assertTrue(state.canvas.resizeStartTextLayers.isEmpty());
+        assertTrue(state.canvas.rotateStartPositions.isEmpty());
+        assertTrue(state.canvas.rotateStartCenters.isEmpty());
+        assertTrue(state.canvas.rotateStartImageLayers.isEmpty());
+        assertTrue(state.canvas.rotateStartTextLayers.isEmpty());
+        assertEquals(0.0, state.canvas.rotatePreviewAngle, 0.0001);
+        assertEquals(0, state.canvas.dragSelectionDeltaX);
+        assertEquals(0, state.canvas.dragSelectionDeltaY);
     }
 
     private static void assertGuidesCleared(TabletUiState state) {
-        assertFalse(state.snapGuideXVisible);
-        assertFalse(state.snapGuideYVisible);
-        assertEquals(0, state.snapGuideX);
-        assertEquals(0, state.snapGuideY);
+        assertFalse(state.canvas.snapGuideXVisible);
+        assertFalse(state.canvas.snapGuideYVisible);
+        assertEquals(0, state.canvas.snapGuideX);
+        assertEquals(0, state.canvas.snapGuideY);
     }
 
     private static CanvasImageLayer image(String id) {

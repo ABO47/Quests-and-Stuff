@@ -38,18 +38,18 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.dr
 
 public final class ModalPanelRouter {
     private static final List<ModalPanelDescriptor> MODAL_DESCRIPTORS = List.of(
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ICON_PICKER, TabletIconPickerModal::rebuild, state -> state.iconSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ASSET_PICKER, TabletAssetPickerModal::rebuild, state -> state.assetSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.BIOME_PICKER, TabletBiomePickerModal::rebuild, state -> state.biomeSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ADVANCEMENT_PICKER, TabletAdvancementPickerModal::rebuild, state -> state.advancementSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.RECIPE_PICKER, TabletRecipePickerModal::rebuild, state -> state.recipeSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.STRUCTURE_PICKER, TabletStructurePickerModal::rebuild, state -> state.structureSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.BLOCK_PICKER, TabletBlockPickerModal::rebuild, state -> state.blockSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.STAT_PICKER, TabletStatPickerModal::rebuild, state -> state.statSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.DIMENSION_PICKER, TabletDimensionPickerModal::rebuild, state -> state.dimensionSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, TabletLootTablePickerModal::rebuild, state -> state.lootTableSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, TabletItemInventoryPickerModal::rebuild, state -> state.itemInventorySearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.SOUND_PICKER, TabletSoundPickerModal::rebuild, state -> state.soundSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ICON_PICKER, TabletIconPickerModal::rebuild, state -> state.pickers.iconSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ASSET_PICKER, TabletAssetPickerModal::rebuild, state -> state.pickers.assetSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.BIOME_PICKER, TabletBiomePickerModal::rebuild, state -> state.pickers.biomeSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ADVANCEMENT_PICKER, TabletAdvancementPickerModal::rebuild, state -> state.pickers.advancementSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.RECIPE_PICKER, TabletRecipePickerModal::rebuild, state -> state.pickers.recipeSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.STRUCTURE_PICKER, TabletStructurePickerModal::rebuild, state -> state.pickers.structureSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.BLOCK_PICKER, TabletBlockPickerModal::rebuild, state -> state.pickers.blockSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.STAT_PICKER, TabletStatPickerModal::rebuild, state -> state.pickers.statSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.DIMENSION_PICKER, TabletDimensionPickerModal::rebuild, state -> state.pickers.dimensionSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, TabletLootTablePickerModal::rebuild, state -> state.pickers.lootTableSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, TabletItemInventoryPickerModal::rebuild, state -> state.pickers.itemInventorySearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.SOUND_PICKER, TabletSoundPickerModal::rebuild, state -> state.pickers.soundSearchFocused),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.COLOR_PICKER, (modal, state, player, refresh, w, h) -> {
                 TabletColorPickerModal.rebuild(modal, state, player, refresh, w, h);
                 return null;
@@ -58,8 +58,8 @@ public final class ModalPanelRouter {
                 TabletThemePickerModal.rebuild(modal, state, refresh, w, h);
                 return null;
             }, state -> false),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, TabletEntityVariantModal::rebuild, state -> state.entityVariantSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesManagerModal::rebuild, state -> state.prerequisitesManagerSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, TabletEntityVariantModal::rebuild, state -> state.pickers.entityVariantSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesManagerModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.SETTINGS_PANEL, (modal, state, player, refresh, w, h) -> {
                 TabletSettingsModal.rebuild(modal, state, refresh, w, h);
                 return null;
@@ -71,7 +71,7 @@ public final class ModalPanelRouter {
 
     public static void rebuildChapterModal(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
         overlay.clearAllWidgets();
-        if (!ModalStateQueries.anyOpen(state) && !state.modalWindowClosing) {
+        if (!ModalStateQueries.anyOpen(state) && !state.modal.modalWindowClosing) {
             return;
         }
         ModalPanelDescriptor descriptor = descriptor(ModalStateQueries.activeType(state));
@@ -102,18 +102,18 @@ public final class ModalPanelRouter {
         };
         modal.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
         TextFieldWidget searchField = descriptor.rebuild(modal, state, player, refresh, w, h);
-        modal.setActive(!state.modalWindowClosing);
+        modal.setActive(!state.modal.modalWindowClosing);
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
             overlay.addWidget(SourceOriginRevealWidget.window(
                     modal,
-                    () -> state.modalWindowAnimationStartMs,
-                    () -> !state.modalWindowClosing,
+                    () -> state.modal.modalWindowAnimationStartMs,
+                    () -> !state.modal.modalWindowClosing,
                     () -> sourceRect(state)
             ));
         } else {
             overlay.addWidget(modal);
         }
-        if (!state.modalWindowClosing) {
+        if (!state.modal.modalWindowClosing) {
             restoreSearchFocus(state, descriptor, searchField);
         }
     }
@@ -131,19 +131,19 @@ public final class ModalPanelRouter {
         if (!QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
             return 140;
         }
-        float amount = SourceOriginRevealWidget.windowOpenAmount(state.modalWindowAnimationStartMs, !state.modalWindowClosing);
+        float amount = SourceOriginRevealWidget.windowOpenAmount(state.modal.modalWindowAnimationStartMs, !state.modal.modalWindowClosing);
         return Math.round(140 * amount);
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
-        if (!state.modalWindowAnimationHasSource) {
+        if (!state.modal.modalWindowAnimationHasSource) {
             return null;
         }
         return new SourceOriginRevealWidget.SourceRect(
-                state.modalWindowAnimationSourceX,
-                state.modalWindowAnimationSourceY,
-                state.modalWindowAnimationSourceW,
-                state.modalWindowAnimationSourceH
+                state.modal.modalWindowAnimationSourceX,
+                state.modal.modalWindowAnimationSourceY,
+                state.modal.modalWindowAnimationSourceW,
+                state.modal.modalWindowAnimationSourceH
         );
     }
 

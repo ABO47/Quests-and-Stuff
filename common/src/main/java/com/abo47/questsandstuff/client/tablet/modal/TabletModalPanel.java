@@ -41,7 +41,7 @@ public final class TabletModalPanel {
         int closeY = Math.max(0, y - 3);
         Runnable close = () -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] modal close click");
-            state.iconSearchFocused = false;
+            state.pickers.iconSearchFocused = false;
             closeAll(state);
             refresh.run();
         };
@@ -52,10 +52,10 @@ public final class TabletModalPanel {
         String safeKey = key == null ? "" : key;
         long now = System.currentTimeMillis();
         boolean accepted = !safeKey.isBlank()
-                && safeKey.equals(state.pickerLastClickKey)
-                && now - state.pickerLastClickAtMs <= 350L;
-        state.pickerLastClickKey = safeKey;
-        state.pickerLastClickAtMs = now;
+                && safeKey.equals(state.pickers.pickerLastClickKey)
+                && now - state.pickers.pickerLastClickAtMs <= 350L;
+        state.pickers.pickerLastClickKey = safeKey;
+        state.pickers.pickerLastClickAtMs = now;
         return accepted;
     }
 

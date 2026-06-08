@@ -119,7 +119,7 @@ public final class TabletRootWidget extends WidgetGroup {
     }
 
     private void drawFullscreenBackdrop(GuiGraphics graphics) {
-        if (state == null || !state.fullScreenMode) {
+        if (state == null || !state.root.fullScreenMode) {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();

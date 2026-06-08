@@ -25,27 +25,27 @@ public final class CanvasMiniNotificationController {
         if (canvasViewport == null || state == null || !canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return;
         }
-        state.canvasPointerX = clamp(mouseX - canvasViewport.getPositionX(), 0, Math.max(0, canvasViewport.getSizeWidth() - 1));
-        state.canvasPointerY = clamp(mouseY - canvasViewport.getPositionY(), 0, Math.max(0, canvasViewport.getSizeHeight() - 1));
-        state.canvasPointerKnown = true;
+        state.canvas.canvasPointerX = clamp(mouseX - canvasViewport.getPositionX(), 0, Math.max(0, canvasViewport.getSizeWidth() - 1));
+        state.canvas.canvasPointerY = clamp(mouseY - canvasViewport.getPositionY(), 0, Math.max(0, canvasViewport.getSizeHeight() - 1));
+        state.canvas.canvasPointerKnown = true;
     }
 
     public static void show(TabletUiState state, String translationKey, int localX, int localY) {
         if (state == null || translationKey == null || translationKey.isBlank() || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
             return;
         }
-        state.canvasMiniNotification.show(translationKey, localX, localY, System.currentTimeMillis(), DURATION_MS);
+        state.canvas.canvasMiniNotification.show(translationKey, localX, localY, System.currentTimeMillis(), DURATION_MS);
     }
 
     public static void showAtPointer(TabletUiState state, CanvasViewport canvasViewport, String translationKey) {
-        int x = state != null && state.canvasPointerKnown ? state.canvasPointerX : Math.max(0, canvasViewport.getSizeWidth() / 2);
-        int y = state != null && state.canvasPointerKnown ? state.canvasPointerY : Math.max(0, canvasViewport.getSizeHeight() / 2);
+        int x = state != null && state.canvas.canvasPointerKnown ? state.canvas.canvasPointerX : Math.max(0, canvasViewport.getSizeWidth() / 2);
+        int y = state != null && state.canvas.canvasPointerKnown ? state.canvas.canvasPointerY : Math.max(0, canvasViewport.getSizeHeight() / 2);
         show(state, translationKey, x, y);
     }
 
     public static WidgetGroup render(CanvasViewport canvasViewport, TabletUiState state) {
         if (state == null
-                || !state.canvasMiniNotification.active(System.currentTimeMillis())
+                || !state.canvas.canvasMiniNotification.active(System.currentTimeMillis())
                 || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
             return null;
         }
@@ -60,17 +60,17 @@ public final class CanvasMiniNotificationController {
     }
 
     private static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int viewportW, int viewportH) {
-        long remaining = state.canvasMiniNotification.untilMs() - System.currentTimeMillis();
+        long remaining = state.canvas.canvasMiniNotification.untilMs() - System.currentTimeMillis();
         if (remaining <= 0L) {
             return;
         }
         var font = Minecraft.getInstance().font;
-        String text = I18n.get(state.canvasMiniNotification.translationKey());
+        String text = I18n.get(state.canvas.canvasMiniNotification.translationKey());
         int textW = font.width(text);
-        int localX = clamp(state.canvasMiniNotification.x() + CURSOR_GAP, 2, Math.max(2, viewportW - textW - 2));
-        int localY = state.canvasMiniNotification.y() + CURSOR_GAP;
+        int localX = clamp(state.canvas.canvasMiniNotification.x() + CURSOR_GAP, 2, Math.max(2, viewportW - textW - 2));
+        int localY = state.canvas.canvasMiniNotification.y() + CURSOR_GAP;
         if (localY + font.lineHeight > viewportH - 2) {
-            localY = state.canvasMiniNotification.y() - font.lineHeight - CURSOR_GAP;
+            localY = state.canvas.canvasMiniNotification.y() - font.lineHeight - CURSOR_GAP;
         }
         localY = clamp(localY, 2, Math.max(2, viewportH - font.lineHeight - 2));
         int alpha = remaining < FADE_MS ? clamp((int) (remaining * 255L / FADE_MS), 0, 255) : 255;

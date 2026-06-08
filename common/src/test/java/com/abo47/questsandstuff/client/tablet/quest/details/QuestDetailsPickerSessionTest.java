@@ -15,7 +15,7 @@ class QuestDetailsPickerSessionTest {
 
         QuestDetailsTransientState.openTypePicker(state, "requirement_change", "task_a");
 
-        QuestDetailsPickerSession session = state.questDetailsPickerSession;
+        QuestDetailsPickerSession session = state.questDetails.questDetailsPickerSession;
         assertTrue(session.typePicker());
         assertFalse(session.itemSourcePicker());
         assertFalse(session.xpPicker());
@@ -32,7 +32,7 @@ class QuestDetailsPickerSessionTest {
         QuestDetailsTransientState.openTypePicker(state, "requirement", "");
         QuestDetailsTransientState.openItemSourcePicker(state, "task_item|quest_a|task_a|questsandstuff:item");
 
-        QuestDetailsPickerSession itemSource = state.questDetailsPickerSession;
+        QuestDetailsPickerSession itemSource = state.questDetails.questDetailsPickerSession;
         assertTrue(itemSource.itemSourcePicker());
         assertFalse(itemSource.typePicker());
         assertEquals("task_item|quest_a|task_a|questsandstuff:item", itemSource.itemSourceTarget());
@@ -42,7 +42,7 @@ class QuestDetailsPickerSessionTest {
         QuestDetailsTransientState.openTypePicker(state, "reward_change", "reward_a");
         QuestDetailsTransientState.openXpPicker(state, "quest_a", "reward_a", false);
 
-        QuestDetailsPickerSession xp = state.questDetailsPickerSession;
+        QuestDetailsPickerSession xp = state.questDetails.questDetailsPickerSession;
         assertTrue(xp.xpPicker());
         assertFalse(xp.typePicker());
         assertFalse(xp.itemSourcePicker());
@@ -57,8 +57,8 @@ class QuestDetailsPickerSessionTest {
         QuestDetailsTransientState.openTypePicker(state, "reward", "");
 
         assertTrue(QuestDetailsTransientState.closeFloatingPopups(state));
-        assertEquals(QuestDetailsPickerSession.Type.NONE, state.questDetailsPickerSession.type());
-        assertFalse(state.questDetailsPickerSession.active());
+        assertEquals(QuestDetailsPickerSession.Type.NONE, state.questDetails.questDetailsPickerSession.type());
+        assertFalse(state.questDetails.questDetailsPickerSession.active());
         assertFalse(QuestDetailsTransientState.closeFloatingPopups(state));
     }
 
@@ -82,8 +82,8 @@ class QuestDetailsPickerSessionTest {
 
     private static TabletUiState contextAt(int x, int y) {
         TabletUiState state = new TabletUiState();
-        state.questDetailsContextX = x;
-        state.questDetailsContextY = y;
+        state.questDetails.questDetailsContextX = x;
+        state.questDetails.questDetailsContextY = y;
         return state;
     }
 }

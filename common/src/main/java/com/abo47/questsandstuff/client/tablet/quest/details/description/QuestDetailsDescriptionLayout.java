@@ -68,7 +68,7 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static int snap(TabletUiState state, int value) {
-        if (!state.questDetailsGridSnapLocked) {
+        if (!state.questDetails.questDetailsGridSnapLocked) {
             return value;
         }
         int step = Math.max(1, CanvasGeometry.gridSize(state));
@@ -84,12 +84,12 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static CanvasTextLayer fitAndClampText(TabletUiState state, CanvasTextLayer text, int contentW) {
-        CanvasTextLayer fitted = state.questDetailsGridSnapLocked ? fittedText(state, text) : text;
+        CanvasTextLayer fitted = state.questDetails.questDetailsGridSnapLocked ? fittedText(state, text) : text;
         return clampTextToColumn(state, fitted, contentW);
     }
 
     static CanvasImageLayer fitAndClampImage(TabletUiState state, CanvasImageLayer image, int contentW) {
-        CanvasImageLayer fitted = state.questDetailsGridSnapLocked ? fittedImage(state, image) : image;
+        CanvasImageLayer fitted = state.questDetails.questDetailsGridSnapLocked ? fittedImage(state, image) : image;
         return clampImageToColumn(state, fitted, contentW);
     }
 
@@ -151,7 +151,7 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static int visibleTopEdge(TabletUiState state) {
-        int scrollTop = state == null ? 0 : Math.max(0, state.questDetailsDescScroll);
+        int scrollTop = state == null ? 0 : Math.max(0, state.questDetails.questDetailsDescScroll);
         return scrollTop + LOCKED_EDGE_INSET;
     }
 

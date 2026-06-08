@@ -40,52 +40,52 @@ final class CanvasContextQuestActions {
     }
 
     static void addQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
-        if (state.contextMenuTarget != ContextMenuTarget.QUEST || state.contextQuestId.isBlank()) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.QUEST || state.contextMenu.contextQuestId.isBlank()) {
             return;
         }
-        CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
+        CompoundTag questTag = ClientQuestCache.quest(state.contextMenu.contextQuestId);
         ContextMenuState.closeExclusiveSubmenus(state);
-        if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextQuestId)) {
+        if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextMenu.contextQuestId)) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
-                state.connectSourceQuestId = state.contextQuestId;
-                state.connectSourceQuestIds.clear();
-                if (state.canvasSelection.questIds().contains(state.contextQuestId) && state.canvasSelection.questIds().size() > 1) {
-                    state.connectSourceQuestIds.addAll(state.canvasSelection.questIds());
+                state.canvas.connectSourceQuestId = state.contextMenu.contextQuestId;
+                state.canvas.connectSourceQuestIds.clear();
+                if (state.canvas.canvasSelection.questIds().contains(state.contextMenu.contextQuestId) && state.canvas.canvasSelection.questIds().size() > 1) {
+                    state.canvas.connectSourceQuestIds.addAll(state.canvas.canvasSelection.questIds());
                 } else {
-                    state.canvasSelection.questIds().clear();
-                    state.canvasSelection.questIds().add(state.contextQuestId);
-                    state.connectSourceQuestIds.add(state.contextQuestId);
+                    state.canvas.canvasSelection.questIds().clear();
+                    state.canvas.canvasSelection.questIds().add(state.contextMenu.contextQuestId);
+                    state.canvas.connectSourceQuestIds.add(state.contextMenu.contextQuestId);
                 }
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connect_to sources={}", state.connectSourceQuestIds);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connect_to sources={}", state.canvas.connectSourceQuestIds);
                 canvasViewport.refresh();
             }));
         }
         actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, () -> {
             openQuestDetails(canvasViewport, state);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_TITLE), "rename", ModColors.INTERACTIVE, () -> {
-            EditorCommandClient.beginQuestTitleChange(state, state.contextQuestId);
+            EditorCommandClient.beginQuestTitleChange(state, state.contextMenu.contextQuestId);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
-        QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextQuestId);
+        QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
         if (CanvasGridFitController.canFitQuestToGrid(state, contextQuest)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitQuestToGrid(player, state, contextQuest);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextQuestId, changed);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextMenu.contextQuestId, changed);
                 canvasViewport.refresh();
             }));
         }
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
-            EditorCommandClient.resetQuestProgress(player, state.contextQuestId);
+            EditorCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
         addQuestRepeatableAction(actions, canvasViewport, state, player, questTag);
@@ -93,9 +93,9 @@ final class CanvasContextQuestActions {
         addQuestVisibilityActions(actions, canvasViewport, state, player, questTag);
         addCompletionSoundActions(actions, canvasViewport, state, questTag);
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {
-            EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextQuestId));
+            EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextMenu.contextQuestId));
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
         addQuestBackgroundActions(actions, canvasViewport, state, player, questTag);
@@ -103,11 +103,11 @@ final class CanvasContextQuestActions {
                 actions,
                 state,
                 questTag.getString("icon"),
-                ModalTargets.questIcon(state.contextQuestId),
+                ModalTargets.questIcon(state.contextMenu.contextQuestId),
                 () -> ContextMenuState.close(state),
                 () -> {
-                    EntityMotionEditor.openQuestIcon(state, state.contextQuestId, state.contextMenuX, state.contextMenuY);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_icon_motion quest={}", state.contextQuestId);
+                    EntityMotionEditor.openQuestIcon(state, state.contextMenu.contextQuestId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_icon_motion quest={}", state.contextMenu.contextQuestId);
                 },
                 canvasViewport::refresh
         );
@@ -118,19 +118,19 @@ final class CanvasContextQuestActions {
         actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openQuestBackgroundPicker(
                     state,
-                    state.contextQuestId,
+                    state.contextMenu.contextQuestId,
                     questTag.getString("quest_background"),
                     questTag.getBoolean("quest_background_grayscale")
             );
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_BACKGROUND), "delete", ModColors.WARNING, () -> {
-                EditorCommandClient.setQuestBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                EditorCommandClient.setQuestBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextQuestId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextMenu.contextQuestId);
                 canvasViewport.refresh();
             }));
         }
@@ -141,16 +141,16 @@ final class CanvasContextQuestActions {
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_COMPLETION_SOUND), "audio-lines", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_GAME_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
-                    ModalOpenActions.openQuestGameSoundPicker(state, state.contextQuestId, sound);
+                    ModalOpenActions.openQuestGameSoundPicker(state, state.contextMenu.contextQuestId, sound);
                     ContextMenuState.closeExclusiveSubmenus(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_game quest={} sound={}", state.contextQuestId, sound);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_game quest={} sound={}", state.contextMenu.contextQuestId, sound);
                     canvasViewport.refresh();
                 }),
                 ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_CUSTOM_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
-                    ModalOpenActions.openQuestCustomCompletionSoundPicker(state, state.contextQuestId, sound);
+                    ModalOpenActions.openQuestCustomCompletionSoundPicker(state, state.contextMenu.contextQuestId, sound);
                     ContextMenuState.closeExclusiveSubmenus(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_custom quest={} sound={}", state.contextQuestId, sound);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_custom quest={} sound={}", state.contextMenu.contextQuestId, sound);
                     canvasViewport.refresh();
                 })
         )));
@@ -159,31 +159,31 @@ final class CanvasContextQuestActions {
     private static void addCompletionHudBackgroundActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
         String currentBackground = questTag == null ? "" : questTag.getString("completion_hud_background");
         actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ModColors.INTERACTIVE, () -> {
-            ModalOpenActions.openQuestCompletionHudBackgroundPicker(state, state.contextQuestId, currentBackground);
+            ModalOpenActions.openQuestCompletionHudBackgroundPicker(state, state.contextMenu.contextQuestId, currentBackground);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextQuestId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
         if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
             actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), "delete", ModColors.WARNING, () -> {
-                EditorCommandClient.setQuestCompletionHudBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                EditorCommandClient.setQuestCompletionHudBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextQuestId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextMenu.contextQuestId);
                 canvasViewport.refresh();
             }));
         }
     }
 
     private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {
-        QuestCardLayout card = canvasViewport.cardLookup().get(state.contextQuestId);
-        int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);
-        int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvasPanelY + state.canvasViewportY);
+        QuestCardLayout card = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
+        int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+        int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
         if (card == null) {
             QuestDetailsWindow.openAtSource(
                     state,
-                    state.contextQuestId,
-                    viewportScreenX + state.contextMenuX,
-                    viewportScreenY + state.contextMenuY,
+                    state.contextMenu.contextQuestId,
+                    viewportScreenX + state.contextMenu.contextMenuX,
+                    viewportScreenY + state.contextMenu.contextMenuY,
                     1,
                     1
             );
@@ -191,7 +191,7 @@ final class CanvasContextQuestActions {
         }
         QuestDetailsWindow.openAtSource(
                 state,
-                state.contextQuestId,
+                state.contextMenu.contextQuestId,
                 viewportScreenX + card.x(),
                 viewportScreenY + card.y(),
                 card.width(),
@@ -200,14 +200,14 @@ final class CanvasContextQuestActions {
     }
 
     private static void addQuestPrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
-        int connectionCount = prerequisiteCount(questTag) + outgoingConnectionCount(state.contextQuestId);
+        int connectionCount = prerequisiteCount(questTag) + outgoingConnectionCount(state.contextMenu.contextQuestId);
         if (connectionCount <= 0) {
             return;
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
-            ModalOpenActions.openPrerequisitesManager(state, state.contextQuestId);
+            ModalOpenActions.openPrerequisitesManager(state, state.contextMenu.contextQuestId);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextQuestId, connectionCount);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextMenu.contextQuestId, connectionCount);
             canvasViewport.refresh();
         }));
     }
@@ -262,9 +262,9 @@ final class CanvasContextQuestActions {
                 repeatable ? "repeat-off" : "repeat",
                 repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> {
-                    EditorCommandClient.setQuestRepeatable(player, state.contextQuestId, !repeatable);
+                    EditorCommandClient.setQuestRepeatable(player, state.contextMenu.contextQuestId, !repeatable);
                     ContextMenuState.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextQuestId, !repeatable);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextMenu.contextQuestId, !repeatable);
                     canvasViewport.refresh();
                 }));
     }
@@ -279,9 +279,9 @@ final class CanvasContextQuestActions {
                 lockUntilUnlocked ? "unlock_quest" : "lock_quest",
                 lockUntilUnlocked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> {
-                    EditorCommandClient.setQuestHiddenMode(player, state.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
+                    EditorCommandClient.setQuestHiddenMode(player, state.contextMenu.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
                     ContextMenuState.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextQuestId, !lockUntilUnlocked);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !lockUntilUnlocked);
                     canvasViewport.refresh();
                 }));
     }
@@ -293,28 +293,28 @@ final class CanvasContextQuestActions {
                 hidden ? "eye" : "eye-off",
                 hidden ? ModColors.SUCCESS : ModColors.WARNING,
                 () -> {
-                    EditorCommandClient.setQuestVisualHidden(player, state.contextQuestId, !hidden);
+                    EditorCommandClient.setQuestVisualHidden(player, state.contextMenu.contextQuestId, !hidden);
                     ContextMenuState.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextQuestId, !hidden);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !hidden);
                     canvasViewport.refresh();
                 }));
     }
 
     private static void addQuestLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
-        String layerKey = CanvasLayerOrdering.questKey(state.contextQuestId);
+        String layerKey = CanvasLayerOrdering.questKey(state.contextMenu.contextQuestId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
-                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, true);
+                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextMenu.contextQuestId, true);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextQuestId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextMenu.contextQuestId);
                 canvasViewport.refresh();
             }));
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
-                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, false);
+                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextMenu.contextQuestId, false);
                 ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextQuestId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextMenu.contextQuestId);
                 canvasViewport.refresh();
             }));
         }

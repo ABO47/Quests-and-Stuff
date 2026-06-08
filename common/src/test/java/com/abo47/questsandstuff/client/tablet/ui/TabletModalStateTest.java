@@ -31,13 +31,13 @@ class TabletModalStateTest {
 
         TabletModalState.applyModalType(state, ModalWindowManager.ModalType.ICON_PICKER);
 
-        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modal.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, ModalStateQueries.activeType(state));
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
 
         TabletModalState.applyModalType(state, ModalWindowManager.ModalType.SOUND_PICKER);
 
-        assertEquals(ModalWindowManager.ModalType.SOUND_PICKER, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.SOUND_PICKER, state.modal.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.SOUND_PICKER, ModalStateQueries.activeType(state));
         assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SOUND_PICKER));
@@ -46,56 +46,56 @@ class TabletModalStateTest {
     @Test
     void openModalReplacesPreviousOpenModalAndCancelsClosingState() {
         TabletUiState state = new TabletUiState();
-        state.modalWindowClosing = true;
-        state.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
+        state.modal.modalWindowClosing = true;
+        state.modal.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
 
         TabletModalState.openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
 
-        assertFalse(state.modalWindowClosing);
+        assertFalse(state.modal.modalWindowClosing);
         assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER));
-        assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, state.modal.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, ModalStateQueries.activeType(state));
     }
 
     @Test
     void openModalCapturesRecentPointerSourceInsideRoot() {
         TabletUiState state = new TabletUiState();
-        state.tabletRootWidth = 320;
-        state.tabletRootHeight = 240;
+        state.root.tabletRootWidth = 320;
+        state.root.tabletRootHeight = 240;
 
         TabletModalState.rememberPointerSource(state, 20, 30);
         TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
 
-        assertTrue(state.modalWindowAnimationHasSource);
-        assertEquals(12, state.modalWindowAnimationSourceX);
-        assertEquals(22, state.modalWindowAnimationSourceY);
-        assertEquals(16, state.modalWindowAnimationSourceW);
-        assertEquals(16, state.modalWindowAnimationSourceH);
-        assertTrue(state.modalWindowAnimationStartMs > 0L);
+        assertTrue(state.modal.modalWindowAnimationHasSource);
+        assertEquals(12, state.modal.modalWindowAnimationSourceX);
+        assertEquals(22, state.modal.modalWindowAnimationSourceY);
+        assertEquals(16, state.modal.modalWindowAnimationSourceW);
+        assertEquals(16, state.modal.modalWindowAnimationSourceH);
+        assertTrue(state.modal.modalWindowAnimationStartMs > 0L);
     }
 
     @Test
     void animatedCloseKeepsTheModalActiveUntilTheWindowDurationEnds() {
         TabletUiState state = new TabletUiState();
         TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
-        state.iconSearchFocused = true;
+        state.pickers.iconSearchFocused = true;
 
         TabletModalState.closeAllModals(state);
 
-        assertTrue(state.modalWindowClosing);
+        assertTrue(state.modal.modalWindowClosing);
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
-        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
-        assertFalse(state.iconSearchFocused);
+        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modal.modalSession.type());
+        assertFalse(state.pickers.iconSearchFocused);
         assertFalse(TabletModalState.finishClosingIfDone(state));
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
 
-        state.modalWindowAnimationStartMs = System.currentTimeMillis() - 1_000L;
+        state.modal.modalWindowAnimationStartMs = System.currentTimeMillis() - 1_000L;
 
         assertTrue(TabletModalState.finishClosingIfDone(state));
-        assertFalse(state.modalWindowClosing);
+        assertFalse(state.modal.modalWindowClosing);
         assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
-        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modal.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
     }
 
@@ -105,14 +105,14 @@ class TabletModalStateTest {
         TabletModalState.openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
 
         TabletModalState.closeAllModals(state);
-        assertTrue(state.modalWindowClosing);
+        assertTrue(state.modal.modalWindowClosing);
 
         TabletModalState.openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
 
-        assertFalse(state.modalWindowClosing);
+        assertFalse(state.modal.modalWindowClosing);
         assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
-        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, ModalStateQueries.activeType(state));
         assertFalse(TabletModalState.finishClosingIfDone(state));
     }
@@ -120,7 +120,7 @@ class TabletModalStateTest {
     @Test
     void activeTypeUsesTheModalSessionOnly() {
         TabletUiState state = new TabletUiState();
-        state.modalSession = ModalSession.open(ModalWindowManager.ModalType.BLOCK_PICKER);
+        state.modal.modalSession = ModalSession.open(ModalWindowManager.ModalType.BLOCK_PICKER);
 
         assertEquals(ModalWindowManager.ModalType.BLOCK_PICKER, ModalStateQueries.activeType(state));
         assertTrue(ModalStateQueries.anyOpen(state));
@@ -142,12 +142,12 @@ class TabletModalStateTest {
     @Test
     void immediateCloseClearsTheActiveSession() {
         TabletUiState state = new TabletUiState();
-        state.modalSession = ModalSession.open(ModalWindowManager.ModalType.RECIPE_PICKER);
+        state.modal.modalSession = ModalSession.open(ModalWindowManager.ModalType.RECIPE_PICKER);
 
         TabletModalState.closeAllModalsImmediately(state);
 
-        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
-        assertFalse(state.modalSession.active());
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modal.modalSession.type());
+        assertFalse(state.modal.modalSession.active());
         assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
     }
 
@@ -157,16 +157,16 @@ class TabletModalStateTest {
 
         ModalOpenActions.openBatchQuestBackgroundPicker(state, List.of("quest_a", " quest_b "), "background.png", true);
 
-        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
-        assertEquals("", state.modalSession.target(ModalSession.TargetSlot.QUEST_BACKGROUND));
-        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_a"));
-        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_b"));
-        assertEquals("background.png", state.modalSession.selectedValue());
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
+        assertEquals("", state.modal.modalSession.target(ModalSession.TargetSlot.QUEST_BACKGROUND));
+        assertTrue(state.modal.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_a"));
+        assertTrue(state.modal.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_b"));
+        assertEquals("background.png", state.modal.modalSession.selectedValue());
 
         TabletModalState.closeAllModalsImmediately(state);
 
-        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
-        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).isEmpty());
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modal.modalSession.type());
+        assertTrue(state.modal.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).isEmpty());
     }
 
     @Test
@@ -175,137 +175,137 @@ class TabletModalStateTest {
 
         TabletModalState.closeAllModalsImmediately(state);
 
-        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
-        assertFalse(state.modalSession.active());
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modal.modalSession.type());
+        assertFalse(state.modal.modalSession.active());
         assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
         assertFalse(ModalStateQueries.anyOpen(state));
-        assertEquals("", state.modalQuestTarget);
-        assertEquals("", state.modalChapterTarget);
-        assertEquals("", state.modalCanvasBackgroundTarget);
-        assertEquals("", state.modalCanvasImageTarget);
-        assertEquals("", state.modalCanvasEntityTarget);
-        assertEquals("", state.modalCanvasModelTarget);
-        assertEquals("", state.modalBlueprintTarget);
-        assertEquals("", state.questDetailsPickTarget);
-        assertEquals("", state.questDetailsAssetPickTarget);
-        assertFalse(state.modalQuestBackgroundGrayscale);
-        assertFalse(state.modalQuestBackgroundTargets.contains("quest_a"));
-        assertFalse(state.modalQuestCompletionHudBackgroundTargets.contains("quest_b"));
-        assertFalse(state.assetContextOpen);
-        assertFalse(state.assetRenameOpen);
-        assertFalse(state.blueprintCodeOpen);
-        assertFalse(state.blueprintCodeImportMode);
-        assertEquals("", state.blueprintCodeTarget);
-        assertEquals("", state.blueprintCodeDraft);
-        assertEquals("", state.blueprintCodeMessage);
-        assertFalse(state.iconSearchFocused);
-        assertFalse(state.iconScrollDragging);
-        assertEquals(IconPickerMode.ITEMS, state.iconMode);
-        assertFalse(state.recipeSearchFocused);
-        assertFalse(state.recipeScrollDragging);
-        assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
-        assertFalse(state.blockSearchFocused);
-        assertFalse(state.blockScrollDragging);
-        assertFalse(state.blockTagMode);
-        assertFalse(state.biomeSearchFocused);
-        assertFalse(state.biomeScrollDragging);
-        assertFalse(state.advancementSearchFocused);
-        assertFalse(state.advancementScrollDragging);
-        assertFalse(state.structureSearchFocused);
-        assertFalse(state.structureScrollDragging);
-        assertFalse(state.statSearchFocused);
-        assertFalse(state.statScrollDragging);
-        assertFalse(state.dimensionSearchFocused);
-        assertFalse(state.dimensionScrollDragging);
-        assertFalse(state.lootTableSearchFocused);
-        assertFalse(state.lootTableScrollDragging);
-        assertFalse(state.itemInventorySearchFocused);
-        assertFalse(state.itemInventoryScrollDragging);
-        assertFalse(state.soundSearchFocused);
-        assertFalse(state.soundScrollDragging);
-        assertEquals("", state.soundSelected);
-        assertEquals("", state.pickerLastClickKey);
-        assertEquals(0L, state.pickerLastClickAtMs);
-        assertFalse(state.colorPaletteContextOpen);
-        assertEquals(Integer.MIN_VALUE, state.colorPaletteContextValue);
-        assertFalse(state.colorPaletteScrollDragging);
-        assertFalse(state.themeScrollDragging);
-        assertFalse(state.settingsScrollDragging);
-        assertEquals("", state.prerequisitesManagerQuestId);
-        assertEquals("", state.prerequisitesManagerSearch);
-        assertFalse(state.prerequisitesManagerExternalMode);
-        assertFalse(state.prerequisitesManagerContextOpen);
-        assertEquals("", state.prerequisitesManagerSelectedConnectionKey);
-        assertEquals("", state.prerequisitesManagerHoveredConnectionKey);
-        assertFalse(state.modalWindowClosing);
-        assertFalse(state.modalWindowAnimationHasSource);
-        assertEquals(0L, state.modalWindowAnimationStartMs);
+        assertEquals("", state.modal.modalQuestTarget);
+        assertEquals("", state.modal.modalChapterTarget);
+        assertEquals("", state.modal.modalCanvasBackgroundTarget);
+        assertEquals("", state.modal.modalCanvasImageTarget);
+        assertEquals("", state.modal.modalCanvasEntityTarget);
+        assertEquals("", state.modal.modalCanvasModelTarget);
+        assertEquals("", state.modal.modalBlueprintTarget);
+        assertEquals("", state.questDetails.questDetailsPickTarget);
+        assertEquals("", state.questDetails.questDetailsAssetPickTarget);
+        assertFalse(state.modal.modalQuestBackgroundGrayscale);
+        assertFalse(state.modal.modalQuestBackgroundTargets.contains("quest_a"));
+        assertFalse(state.modal.modalQuestCompletionHudBackgroundTargets.contains("quest_b"));
+        assertFalse(state.pickers.assetContextOpen);
+        assertFalse(state.pickers.assetRenameOpen);
+        assertFalse(state.modal.blueprintCodeOpen);
+        assertFalse(state.modal.blueprintCodeImportMode);
+        assertEquals("", state.modal.blueprintCodeTarget);
+        assertEquals("", state.modal.blueprintCodeDraft);
+        assertEquals("", state.modal.blueprintCodeMessage);
+        assertFalse(state.pickers.iconSearchFocused);
+        assertFalse(state.pickers.iconScrollDragging);
+        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
+        assertFalse(state.pickers.recipeSearchFocused);
+        assertFalse(state.pickers.recipeScrollDragging);
+        assertEquals(RecipePickerMode.ITEMS, state.pickers.recipeMode);
+        assertFalse(state.pickers.blockSearchFocused);
+        assertFalse(state.pickers.blockScrollDragging);
+        assertFalse(state.pickers.blockTagMode);
+        assertFalse(state.pickers.biomeSearchFocused);
+        assertFalse(state.pickers.biomeScrollDragging);
+        assertFalse(state.pickers.advancementSearchFocused);
+        assertFalse(state.pickers.advancementScrollDragging);
+        assertFalse(state.pickers.structureSearchFocused);
+        assertFalse(state.pickers.structureScrollDragging);
+        assertFalse(state.pickers.statSearchFocused);
+        assertFalse(state.pickers.statScrollDragging);
+        assertFalse(state.pickers.dimensionSearchFocused);
+        assertFalse(state.pickers.dimensionScrollDragging);
+        assertFalse(state.pickers.lootTableSearchFocused);
+        assertFalse(state.pickers.lootTableScrollDragging);
+        assertFalse(state.pickers.itemInventorySearchFocused);
+        assertFalse(state.pickers.itemInventoryScrollDragging);
+        assertFalse(state.pickers.soundSearchFocused);
+        assertFalse(state.pickers.soundScrollDragging);
+        assertEquals("", state.pickers.soundSelected);
+        assertEquals("", state.pickers.pickerLastClickKey);
+        assertEquals(0L, state.pickers.pickerLastClickAtMs);
+        assertFalse(state.pickers.colorPaletteContextOpen);
+        assertEquals(Integer.MIN_VALUE, state.pickers.colorPaletteContextValue);
+        assertFalse(state.pickers.colorPaletteScrollDragging);
+        assertFalse(state.modal.themeScrollDragging);
+        assertFalse(state.modal.settingsScrollDragging);
+        assertEquals("", state.modal.prerequisitesManagerQuestId);
+        assertEquals("", state.modal.prerequisitesManagerSearch);
+        assertFalse(state.modal.prerequisitesManagerExternalMode);
+        assertFalse(state.modal.prerequisitesManagerContextOpen);
+        assertEquals("", state.modal.prerequisitesManagerSelectedConnectionKey);
+        assertEquals("", state.modal.prerequisitesManagerHoveredConnectionKey);
+        assertFalse(state.modal.modalWindowClosing);
+        assertFalse(state.modal.modalWindowAnimationHasSource);
+        assertEquals(0L, state.modal.modalWindowAnimationStartMs);
     }
 
     private static TabletUiState dirtyModalState() {
         TabletUiState state = new TabletUiState();
-        state.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
-        state.modalWindowClosing = true;
-        state.modalWindowAnimationHasSource = true;
-        state.modalWindowAnimationStartMs = 123L;
-        state.modalQuestTarget = "quest";
-        state.modalChapterTarget = "chapter";
-        state.modalCanvasBackgroundTarget = "canvas";
-        state.modalCanvasImageTarget = "image";
-        state.modalCanvasEntityTarget = "entity";
-        state.modalCanvasModelTarget = "model";
-        state.modalBlueprintTarget = "blueprint";
-        state.questDetailsPickTarget = "details";
-        state.questDetailsAssetPickTarget = "asset_details";
-        state.modalQuestBackgroundTargets.add("quest_a");
-        state.modalQuestBackgroundGrayscale = true;
-        state.modalQuestCompletionHudBackgroundTargets.add("quest_b");
-        state.assetContextOpen = true;
-        state.assetRenameOpen = true;
-        state.blueprintCodeOpen = true;
-        state.blueprintCodeImportMode = true;
-        state.blueprintCodeTarget = "target";
-        state.blueprintCodeDraft = "draft";
-        state.blueprintCodeMessage = "message";
-        state.iconSearchFocused = true;
-        state.iconScrollDragging = true;
-        state.iconMode = IconPickerMode.INVENTORY;
-        state.recipeSearchFocused = true;
-        state.recipeScrollDragging = true;
-        state.recipeMode = RecipePickerMode.INVENTORY;
-        state.blockSearchFocused = true;
-        state.blockScrollDragging = true;
-        state.blockTagMode = true;
-        state.biomeSearchFocused = true;
-        state.biomeScrollDragging = true;
-        state.advancementSearchFocused = true;
-        state.advancementScrollDragging = true;
-        state.structureSearchFocused = true;
-        state.structureScrollDragging = true;
-        state.statSearchFocused = true;
-        state.statScrollDragging = true;
-        state.dimensionSearchFocused = true;
-        state.dimensionScrollDragging = true;
-        state.lootTableSearchFocused = true;
-        state.lootTableScrollDragging = true;
-        state.itemInventorySearchFocused = true;
-        state.itemInventoryScrollDragging = true;
-        state.soundSearchFocused = true;
-        state.soundScrollDragging = true;
-        state.soundSelected = "minecraft:note_block.pling";
-        state.pickerLastClickKey = "click";
-        state.pickerLastClickAtMs = 456L;
-        state.colorPaletteContextOpen = true;
-        state.colorPaletteContextValue = 0xFF00FF00;
-        state.colorPaletteScrollDragging = true;
-        state.themeScrollDragging = true;
-        state.settingsScrollDragging = true;
-        state.prerequisitesManagerQuestId = "quest";
-        state.prerequisitesManagerSearch = "query";
-        state.prerequisitesManagerExternalMode = true;
-        state.prerequisitesManagerContextOpen = true;
-        state.prerequisitesManagerSelectedConnectionKey = "selected";
-        state.prerequisitesManagerHoveredConnectionKey = "hovered";
+        state.modal.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
+        state.modal.modalWindowClosing = true;
+        state.modal.modalWindowAnimationHasSource = true;
+        state.modal.modalWindowAnimationStartMs = 123L;
+        state.modal.modalQuestTarget = "quest";
+        state.modal.modalChapterTarget = "chapter";
+        state.modal.modalCanvasBackgroundTarget = "canvas";
+        state.modal.modalCanvasImageTarget = "image";
+        state.modal.modalCanvasEntityTarget = "entity";
+        state.modal.modalCanvasModelTarget = "model";
+        state.modal.modalBlueprintTarget = "blueprint";
+        state.questDetails.questDetailsPickTarget = "details";
+        state.questDetails.questDetailsAssetPickTarget = "asset_details";
+        state.modal.modalQuestBackgroundTargets.add("quest_a");
+        state.modal.modalQuestBackgroundGrayscale = true;
+        state.modal.modalQuestCompletionHudBackgroundTargets.add("quest_b");
+        state.pickers.assetContextOpen = true;
+        state.pickers.assetRenameOpen = true;
+        state.modal.blueprintCodeOpen = true;
+        state.modal.blueprintCodeImportMode = true;
+        state.modal.blueprintCodeTarget = "target";
+        state.modal.blueprintCodeDraft = "draft";
+        state.modal.blueprintCodeMessage = "message";
+        state.pickers.iconSearchFocused = true;
+        state.pickers.iconScrollDragging = true;
+        state.pickers.iconMode = IconPickerMode.INVENTORY;
+        state.pickers.recipeSearchFocused = true;
+        state.pickers.recipeScrollDragging = true;
+        state.pickers.recipeMode = RecipePickerMode.INVENTORY;
+        state.pickers.blockSearchFocused = true;
+        state.pickers.blockScrollDragging = true;
+        state.pickers.blockTagMode = true;
+        state.pickers.biomeSearchFocused = true;
+        state.pickers.biomeScrollDragging = true;
+        state.pickers.advancementSearchFocused = true;
+        state.pickers.advancementScrollDragging = true;
+        state.pickers.structureSearchFocused = true;
+        state.pickers.structureScrollDragging = true;
+        state.pickers.statSearchFocused = true;
+        state.pickers.statScrollDragging = true;
+        state.pickers.dimensionSearchFocused = true;
+        state.pickers.dimensionScrollDragging = true;
+        state.pickers.lootTableSearchFocused = true;
+        state.pickers.lootTableScrollDragging = true;
+        state.pickers.itemInventorySearchFocused = true;
+        state.pickers.itemInventoryScrollDragging = true;
+        state.pickers.soundSearchFocused = true;
+        state.pickers.soundScrollDragging = true;
+        state.pickers.soundSelected = "minecraft:note_block.pling";
+        state.pickers.pickerLastClickKey = "click";
+        state.pickers.pickerLastClickAtMs = 456L;
+        state.pickers.colorPaletteContextOpen = true;
+        state.pickers.colorPaletteContextValue = 0xFF00FF00;
+        state.pickers.colorPaletteScrollDragging = true;
+        state.modal.themeScrollDragging = true;
+        state.modal.settingsScrollDragging = true;
+        state.modal.prerequisitesManagerQuestId = "quest";
+        state.modal.prerequisitesManagerSearch = "query";
+        state.modal.prerequisitesManagerExternalMode = true;
+        state.modal.prerequisitesManagerContextOpen = true;
+        state.modal.prerequisitesManagerSelectedConnectionKey = "selected";
+        state.modal.prerequisitesManagerHoveredConnectionKey = "hovered";
         return state;
     }
 }

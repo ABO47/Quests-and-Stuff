@@ -34,9 +34,9 @@ final class CanvasSmartSnapper {
             Set<String> movingImageIds,
             Set<String> movingTextIds
     ) {
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
-        if (!moving.valid() || (!state.centerSnapXEnabled && !state.centerSnapYEnabled && !state.objectSnapEnabled)) {
+        state.canvas.snapGuideXVisible = false;
+        state.canvas.snapGuideYVisible = false;
+        if (!moving.valid() || (!state.canvas.centerSnapXEnabled && !state.canvas.centerSnapYEnabled && !state.canvas.objectSnapEnabled)) {
             return CanvasSnapEngine.SnapResult.NONE;
         }
 
@@ -44,11 +44,11 @@ final class CanvasSmartSnapper {
                 moving,
                 snapTargets(state, cards, group, movingQuestIds, movingImageIds, movingTextIds),
                 new CanvasSnapEngine.SnapSettings(
-                        state.centerSnapXEnabled,
-                        state.centerSnapYEnabled,
-                        state.objectSnapEnabled,
-                        state.canvasContentW / 2.0D,
-                        state.canvasContentH / 2.0D,
+                        state.canvas.centerSnapXEnabled,
+                        state.canvas.centerSnapYEnabled,
+                        state.canvas.objectSnapEnabled,
+                        state.canvas.canvasContentW / 2.0D,
+                        state.canvas.canvasContentH / 2.0D,
                         snapThresholdLogical(state)
                 )
         ));
@@ -64,7 +64,7 @@ final class CanvasSmartSnapper {
             Set<String> movingImageIds,
             Set<String> movingTextIds
     ) {
-        if (!state.objectSnapEnabled) {
+        if (!state.canvas.objectSnapEnabled) {
             return List.of();
         }
         List<CanvasSnapEngine.Bounds> targets = new ArrayList<>();
@@ -73,12 +73,12 @@ final class CanvasSmartSnapper {
                 targets.add(CanvasSnapBounds.forQuestCard(card));
             }
         }
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!movingImageIds.contains(image.id())) {
                 targets.add(CanvasSnapBounds.forImage(image));
             }
         }
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!movingTextIds.contains(text.id())) {
                 targets.add(CanvasSnapBounds.forText(text));
             }
@@ -88,19 +88,19 @@ final class CanvasSmartSnapper {
 
     private static void showGuides(TabletUiState state, CanvasSnapEngine.SnapResult result) {
         if (result.guideXVisible()) {
-            state.snapGuideX = CanvasGeometry.screenX(state, result.guideX());
-            state.snapGuideXVisible = true;
+            state.canvas.snapGuideX = CanvasGeometry.screenX(state, result.guideX());
+            state.canvas.snapGuideXVisible = true;
         }
         if (result.guideYVisible()) {
-            state.snapGuideY = CanvasGeometry.screenY(state, result.guideY());
-            state.snapGuideYVisible = true;
+            state.canvas.snapGuideY = CanvasGeometry.screenY(state, result.guideY());
+            state.canvas.snapGuideYVisible = true;
         }
     }
 
     private static int snapThresholdLogical(TabletUiState state) {
-        float zoom = CanvasRenderer.clampZoom(state.canvasZoom);
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int screenThreshold = Math.max(1, Math.round(5.0f / zoom));
-        if (!state.gridSnapLocked) {
+        if (!state.canvas.gridSnapLocked) {
             return screenThreshold;
         }
         int gridReach = Math.max(1, (CanvasGeometry.gridSize(state) + 1) / 2);

@@ -34,12 +34,12 @@ public final class CanvasGridFitController {
             return false;
         }
         CanvasLayerMutations.putCanvasImage(state, group, fitted);
-        state.canvasSelection.setPrimaryImageId(imageId);
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.imageIds().add(imageId);
-        state.canvasSelection.setPrimaryTextId("");
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryImageId(imageId);
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.imageIds().add(imageId);
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
         return true;
     }
 
@@ -58,12 +58,12 @@ public final class CanvasGridFitController {
             return false;
         }
         CanvasLayerMutations.putCanvasText(state, group, fitted);
-        state.canvasSelection.setPrimaryTextId(textId);
-        state.canvasSelection.textIds().clear();
-        state.canvasSelection.textIds().add(textId);
-        state.canvasSelection.setPrimaryImageId("");
-        state.canvasSelection.imageIds().clear();
-        state.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.setPrimaryTextId(textId);
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.textIds().add(textId);
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
         return true;
     }
 
@@ -91,8 +91,8 @@ public final class CanvasGridFitController {
             scales.put(card.questId(), fitted.scale());
             EditorCommandClient.runCanvasScaleAction(player, state, scales);
         }
-        state.canvasSelection.questIds().clear();
-        state.canvasSelection.questIds().add(card.questId());
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.questIds().add(card.questId());
         return true;
     }
 
@@ -100,7 +100,7 @@ public final class CanvasGridFitController {
         if (state == null || group == null || group.isBlank()) {
             return false;
         }
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId == null ? null : byQuestId.get(questId);
             if (canFitQuestToGrid(state, card)) {
                 return true;
@@ -126,7 +126,7 @@ public final class CanvasGridFitController {
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new HashMap<>();
         Map<String, Float> questScales = new HashMap<>();
-        for (String questId : state.canvasSelection.questIds()) {
+        for (String questId : state.canvas.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId == null ? null : byQuestId.get(questId);
             if (card == null) {
                 continue;
@@ -143,7 +143,7 @@ public final class CanvasGridFitController {
         }
 
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -155,7 +155,7 @@ public final class CanvasGridFitController {
         }
 
         Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -185,13 +185,13 @@ public final class CanvasGridFitController {
 
     private static FittedQuest fittedQuest(TabletUiState state, QuestCardLayout card) {
         int grid = CanvasGeometry.gridSize(state);
-        boolean oldSnap = state.gridSnapLocked;
-        state.gridSnapLocked = true;
+        boolean oldSnap = state.canvas.gridSnapLocked;
+        state.canvas.gridSnapLocked = true;
         float scale;
         try {
             scale = CanvasGeometry.snapScaleToGrid(state, card.scale());
         } finally {
-            state.gridSnapLocked = oldSnap;
+            state.canvas.gridSnapLocked = oldSnap;
         }
         int x = snapToGrid(card.logicalX(), grid);
         int y = snapToGrid(card.logicalY(), grid);
@@ -209,7 +209,7 @@ public final class CanvasGridFitController {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
                 .filter(image -> image.id().equals(imageId))
                 .findFirst()
                 .orElse(null);

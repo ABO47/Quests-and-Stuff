@@ -136,14 +136,14 @@ public final class QuestAppComposer {
             rootMaskLeft.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-            state.editorAvailable = player.hasPermissions(2);
-            state.canEdit = state.editorAvailable && state.editMode;
-            if (!state.canEdit) {
-                state.toolsGridSizeMenuOpen = false;
-                state.toolsGridOpacityMenuOpen = false;
-                state.chapterMenuOpen = false;
+            state.root.editorAvailable = player.hasPermissions(2);
+            state.root.canEdit = state.root.editorAvailable && state.root.editMode;
+            if (!state.root.canEdit) {
+                state.canvas.toolsGridSizeMenuOpen = false;
+                state.canvas.toolsGridOpacityMenuOpen = false;
+                state.chapterPanel.chapterMenuOpen = false;
                 ContextMenuState.close(state);
-                state.canvasSelection.questIds().clear();
+                state.canvas.canvasSelection.questIds().clear();
             }
             TabletShellBootstrap.keepSelectedGroupValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;
@@ -152,12 +152,12 @@ public final class QuestAppComposer {
             int chapterH = chapterHeight(state);
             int canvasH = canvasHeight(state);
             root.setSize(currentRootW, currentRootH);
-            state.chapterPanelWidth = chapterPanelWidth(state);
-            state.chapterPanelCollapsed = isChapterPanelCollapsed(state);
+            state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
+            state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
             int chapterW = chapterPanelWidth(state);
             int canvasX = canvasPanelX(state);
             int canvasW = canvasPanelWidth(state);
-            boolean chapterCollapsed = state.chapterPanelCollapsed;
+            boolean chapterCollapsed = state.chapterPanel.chapterPanelCollapsed;
             int dynamicListY = chapterCollapsed ? 0 : chapterListY;
             int collapsedChapterInset = 0;
             int dynamicListX = chapterCollapsed ? collapsedChapterInset : chapterSideInset;
@@ -186,10 +186,10 @@ public final class QuestAppComposer {
                 splitterRef[0].setSize(SPLITTER_W, chapterH);
             }
 
-            state.canvasPanelX = canvasX;
-            state.canvasPanelY = CANVAS_Y;
-            state.canvasPanelW = canvasW;
-            state.canvasPanelH = canvasH;
+            state.canvas.canvasPanelX = canvasX;
+            state.canvas.canvasPanelY = CANVAS_Y;
+            state.canvas.canvasPanelW = canvasW;
+            state.canvas.canvasPanelH = canvasH;
 
             int[] viewport = canvasViewportBounds(canvasW, canvasH, topH);
             int viewportX = viewport[0];
@@ -198,19 +198,19 @@ public final class QuestAppComposer {
             int viewportH = viewport[3];
             int innerAvailableW = Math.max(1, viewportW - 1);
             int innerAvailableH = Math.max(1, viewportH - 1);
-            state.gridSizeIndex = clampGridSizeIndex(state.gridSizeIndex);
-            int cell = Math.max(1, GRID_SIZES[state.gridSizeIndex]);
+            state.canvas.gridSizeIndex = clampGridSizeIndex(state.canvas.gridSizeIndex);
+            int cell = Math.max(1, GRID_SIZES[state.canvas.gridSizeIndex]);
             int gridCols = Math.max(1, innerAvailableW / cell);
             int gridRows = Math.max(1, innerAvailableH / cell);
-            state.gridCellPx = cell;
-            state.gridCols = gridCols;
-            state.gridRows = gridRows;
+            state.canvas.gridCellPx = cell;
+            state.canvas.gridCols = gridCols;
+            state.canvas.gridRows = gridRows;
             canvasViewport.setSelfPosition(viewportX, viewportY);
             canvasViewport.setSize(viewportW, viewportH);
-            state.canvasViewportX = viewportX;
-            state.canvasViewportY = viewportY;
-            state.canvasViewportW = viewportW;
-            state.canvasViewportH = viewportH;
+            state.canvas.canvasViewportX = viewportX;
+            state.canvas.canvasViewportY = viewportY;
+            state.canvas.canvasViewportW = viewportW;
+            state.canvas.canvasViewportH = viewportH;
             int holeX = canvasX + viewportX;
             int holeY = CANVAS_Y + viewportY;
             int holeW = viewportW;
@@ -278,7 +278,7 @@ public final class QuestAppComposer {
     }
 
     private static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
-        root.setBackground(state != null && state.fullScreenMode
+        root.setBackground(state != null && state.root.fullScreenMode
                 ? Surfaces.transparent()
                 : Surfaces.transparentBorder(ModColors.BORDER_BASE));
     }

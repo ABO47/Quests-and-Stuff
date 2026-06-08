@@ -43,12 +43,12 @@ final class TabletActiveState {
         if (state == null) {
             return;
         }
-        state.canvasImagesByGroup.clear();
-        state.canvasImagesByGroup.putAll(ClientQuestCache.canvasImagesByGroup());
-        state.canvasTextsByGroup.clear();
-        state.canvasTextsByGroup.putAll(ClientQuestCache.canvasTextsByGroup());
-        state.canvasLayerOrderByGroup.clear();
-        state.canvasLayerOrderByGroup.putAll(ClientQuestCache.canvasLayerOrderByGroup());
+        state.canvas.canvasImagesByGroup.clear();
+        state.canvas.canvasImagesByGroup.putAll(ClientQuestCache.canvasImagesByGroup());
+        state.canvas.canvasTextsByGroup.clear();
+        state.canvas.canvasTextsByGroup.putAll(ClientQuestCache.canvasTextsByGroup());
+        state.canvas.canvasLayerOrderByGroup.clear();
+        state.canvas.canvasLayerOrderByGroup.putAll(ClientQuestCache.canvasLayerOrderByGroup());
     }
 
     static void syncActiveCanvasStateFromCache() {
@@ -76,52 +76,52 @@ final class TabletActiveState {
         String group = payload == null ? "" : payload.getString("group").trim();
         if (!group.isBlank()) {
             ClientQuestCache.createGroupLocal(group);
-            activeTabletState.selectedGroup = group;
-            activeTabletState.groupDraft = group;
-            activeTabletState.chapterDraftName = group;
-            activeTabletState.recentlyCreatedGroups.remove(group);
+            activeTabletState.root.selectedGroup = group;
+            activeTabletState.chapterPanel.groupDraft = group;
+            activeTabletState.chapterPanel.chapterDraftName = group;
+            activeTabletState.chapterPanel.recentlyCreatedGroups.remove(group);
             TabletPersistence.persistUiState(activeTabletState);
         }
-        activeTabletState.canvasSelection.questIds().clear();
-        activeTabletState.canvasSelection.setPrimaryImageId("");
-        activeTabletState.canvasSelection.setPrimaryTextId("");
-        activeTabletState.canvasSelection.imageIds().clear();
-        activeTabletState.canvasSelection.textIds().clear();
+        activeTabletState.canvas.canvasSelection.questIds().clear();
+        activeTabletState.canvas.canvasSelection.setPrimaryImageId("");
+        activeTabletState.canvas.canvasSelection.setPrimaryTextId("");
+        activeTabletState.canvas.canvasSelection.imageIds().clear();
+        activeTabletState.canvas.canvasSelection.textIds().clear();
         for (int i = 0; i < ids.size(); i++) {
             String questId = ids.getString(i);
             if (questId != null && !questId.isBlank()) {
-                activeTabletState.canvasSelection.questIds().add(questId);
-                activeTabletState.lastJumpQuest = questId;
+                activeTabletState.canvas.canvasSelection.questIds().add(questId);
+                activeTabletState.chapterPanel.lastJumpQuest = questId;
             }
         }
         for (int i = 0; i < images.size(); i++) {
             String imageId = images.getString(i);
             if (imageId != null && !imageId.isBlank()) {
-                activeTabletState.canvasSelection.imageIds().add(imageId);
-                activeTabletState.canvasSelection.setPrimaryImageId(imageId);
+                activeTabletState.canvas.canvasSelection.imageIds().add(imageId);
+                activeTabletState.canvas.canvasSelection.setPrimaryImageId(imageId);
             }
         }
         for (int i = 0; i < texts.size(); i++) {
             String textId = texts.getString(i);
             if (textId != null && !textId.isBlank()) {
-                activeTabletState.canvasSelection.textIds().add(textId);
-                activeTabletState.canvasSelection.setPrimaryTextId(textId);
+                activeTabletState.canvas.canvasSelection.textIds().add(textId);
+                activeTabletState.canvas.canvasSelection.setPrimaryTextId(textId);
             }
         }
-        activeTabletState.canvasSelection.imageIds().addAll(activeTabletState.canvasClipboard.pendingPastedImageIds());
-        activeTabletState.canvasSelection.textIds().addAll(activeTabletState.canvasClipboard.pendingPastedTextIds());
-        String pendingImage = activeTabletState.canvasClipboard.lastPendingPastedImageId();
-        String pendingText = activeTabletState.canvasClipboard.lastPendingPastedTextId();
+        activeTabletState.canvas.canvasSelection.imageIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedImageIds());
+        activeTabletState.canvas.canvasSelection.textIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedTextIds());
+        String pendingImage = activeTabletState.clipboard.canvasClipboard.lastPendingPastedImageId();
+        String pendingText = activeTabletState.clipboard.canvasClipboard.lastPendingPastedTextId();
         if (!pendingImage.isBlank()) {
-            activeTabletState.canvasSelection.setPrimaryImageId(pendingImage);
+            activeTabletState.canvas.canvasSelection.setPrimaryImageId(pendingImage);
         }
         if (!pendingText.isBlank()) {
-            activeTabletState.canvasSelection.setPrimaryTextId(pendingText);
+            activeTabletState.canvas.canvasSelection.setPrimaryTextId(pendingText);
         }
-        activeTabletState.canvasClipboard.clearPendingPastedLayers();
-        activeTabletState.recentlyCreatedGroups.remove(EditorCommandClient.selectedGroupName(activeTabletState));
+        activeTabletState.clipboard.canvasClipboard.clearPendingPastedLayers();
+        activeTabletState.chapterPanel.recentlyCreatedGroups.remove(EditorCommandClient.selectedGroupName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={}",
-                EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvasSelection.questIds().size(), activeTabletState.canvasSelection.imageIds().size(), activeTabletState.canvasSelection.textIds().size());
+                EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size());
         refreshActiveTablet();
     }
 }
