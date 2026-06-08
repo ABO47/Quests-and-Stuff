@@ -28,6 +28,8 @@ class TabletPureHelperCoverageTest {
                 entry("main canvas smart snap adapter", "com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSmartSnapperTest"),
                 entry("quest card background defaults", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRendererTest"),
                 entry("mini quest card renderer", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRendererTest"),
+                entry("context action tones", "com.abo47.questsandstuff.client.tablet.context.ContextActionToneTest"),
+                entry("context action layout", "com.abo47.questsandstuff.client.tablet.context.ContextActionLayoutTest"),
                 entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest")
         );
 

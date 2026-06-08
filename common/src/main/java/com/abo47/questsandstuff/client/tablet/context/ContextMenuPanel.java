@@ -12,7 +12,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -21,9 +20,9 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindo
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ContextMenuPanel {
-    public static final int PROMOTED_BAR_H = 18;
-    public static final int PROMOTED_BUTTON = 16;
-    private static final int OUTER_PAD = 4;
+    public static final int PROMOTED_BAR_H = ContextActionLayout.PROMOTED_BAR_H;
+    public static final int PROMOTED_BUTTON = ContextActionLayout.PROMOTED_BUTTON;
+    private static final int OUTER_PAD = ContextActionLayout.OUTER_PAD;
     private static final int SCROLLBAR_EXTRA_W = 14;
     private static final int ROW_EXTRA_W = 8;
 
@@ -165,118 +164,47 @@ public final class ContextMenuPanel {
     }
 
     public static int heightForRows(int visibleRows) {
-        return OUTER_PAD * 2 + Math.max(1, visibleRows) * CONTEXT_ROW_H;
+        return ContextActionLayout.heightForRows(visibleRows);
     }
 
     public static int heightFor(List<ContextAction> actions, int visibleRows) {
-        List<ContextAction> promoted = promotedActions(actions);
-        int rowCount = rowActionCount(actions);
-        return heightForCounts(promoted.size(), rowCount, visibleRows);
+        return ContextActionLayout.heightFor(actions, visibleRows);
     }
 
     public static int heightForCounts(int promotedCount, int rowCount, int visibleRows) {
-        int rowH = rowCount == 0 ? 0 : Math.max(1, Math.min(visibleRows, rowCount)) * CONTEXT_ROW_H;
-        return OUTER_PAD * 2 + (promotedCount <= 0 ? 0 : PROMOTED_BAR_H) + rowH;
+        return ContextActionLayout.heightForCounts(promotedCount, rowCount, visibleRows);
     }
 
     public static int rowActionCount(List<ContextAction> actions) {
-        return rowActions(actions).size();
+        return ContextActionLayout.rowActionCount(actions);
     }
 
     public static List<ContextAction> promotedActions(List<ContextAction> actions) {
-        List<ContextAction> promoted = orderedPromotedActions(actions);
-        return promoted.size() < 2 ? List.of() : promoted;
-    }
-
-    private static List<ContextAction> orderedPromotedActions(List<ContextAction> actions) {
-        List<ContextAction> promoted = new ArrayList<>();
-        List<ContextAction> deleteActions = new ArrayList<>();
-        if (actions != null) {
-            for (ContextAction action : actions) {
-                if (action != null && action.promoted()) {
-                    if (isDeleteAction(action)) {
-                        deleteActions.add(action);
-                    } else {
-                        promoted.add(action);
-                    }
-                }
-            }
-        }
-        promoted.addAll(deleteActions);
-        return promoted;
+        return ContextActionLayout.promotedActions(actions);
     }
 
     public static List<ContextAction> rowActions(List<ContextAction> actions) {
-        List<ContextAction> rows = new ArrayList<>();
-        boolean showPromotedBar = orderedPromotedActions(actions).size() >= 2;
-        if (actions != null) {
-            for (ContextAction action : actions) {
-                if (action != null && (!showPromotedBar || !action.promoted())) {
-                    rows.add(action);
-                }
-            }
-        }
-        return rows;
+        return ContextActionLayout.rowActions(actions);
     }
 
     public static int rowTop(List<ContextAction> promotedActions) {
-        return OUTER_PAD + (promotedActions == null || promotedActions.isEmpty() ? 0 : PROMOTED_BAR_H);
+        return ContextActionLayout.rowTop(promotedActions);
     }
 
     public static int safeVisibleRows(int rowCount, int visibleRows) {
-        if (rowCount <= 0) {
-            return 0;
-        }
-        return Math.max(1, Math.min(visibleRows, rowCount));
+        return ContextActionLayout.safeVisibleRows(rowCount, visibleRows);
     }
 
     public static int visiblePromotedCount(List<ContextAction> promoted, int menuW) {
-        if (promoted == null || promoted.isEmpty()) {
-            return 0;
-        }
-        int available = Math.max(PROMOTED_BUTTON, menuW - OUTER_PAD * 2);
-        int maxButtons = Math.max(1, available / PROMOTED_BUTTON);
-        return Math.min(promoted.size(), maxButtons);
+        return ContextActionLayout.visiblePromotedCount(promoted, menuW);
     }
 
     public static List<ContextAction> visiblePromotedActions(List<ContextAction> promoted, int menuW) {
-        int visible = visiblePromotedCount(promoted, menuW);
-        if (visible <= 0) {
-            return List.of();
-        }
-        if (promoted.size() <= visible) {
-            return promoted;
-        }
-
-        List<ContextAction> visibleActions = new ArrayList<>(visible);
-        List<ContextAction> deleteActions = new ArrayList<>();
-        for (ContextAction action : promoted) {
-            if (isDeleteAction(action)) {
-                deleteActions.add(action);
-            }
-        }
-        if (deleteActions.isEmpty()) {
-            return promoted.subList(0, visible);
-        }
-
-        int deleteCount = Math.min(deleteActions.size(), visible);
-        int regularSlots = visible - deleteCount;
-        for (ContextAction action : promoted) {
-            if (visibleActions.size() >= regularSlots) {
-                break;
-            }
-            if (!isDeleteAction(action)) {
-                visibleActions.add(action);
-            }
-        }
-        visibleActions.addAll(deleteActions.subList(deleteActions.size() - deleteCount, deleteActions.size()));
-        return visibleActions;
+        return ContextActionLayout.visiblePromotedActions(promoted, menuW);
     }
 
     public static int promotedButtonX(int menuW, int visible, int index) {
-        int available = Math.max(PROMOTED_BUTTON, menuW - OUTER_PAD * 2);
-        int center = Math.round(((index + 0.5f) * available) / Math.max(1, visible));
-        return OUTER_PAD + Math.max(0, center - PROMOTED_BUTTON / 2);
+        return ContextActionLayout.promotedButtonX(menuW, visible, index);
     }
 
     public static boolean click(
@@ -469,13 +397,7 @@ public final class ContextMenuPanel {
     }
 
     private static int preferredWidth(List<ContextAction> actions, int minWidth, int maxWidth) {
-        List<String> labels = new ArrayList<>();
-        for (ContextAction action : rowActions(actions)) {
-            labels.add(action.label());
-        }
-        int rowWidth = ContextMenuSystem.preferredMenuWidth(labels, minWidth, maxWidth);
-        int promotedWidth = promotedActions(actions).size() * PROMOTED_BUTTON + OUTER_PAD * 2;
-        return Math.max(rowWidth, Math.min(maxWidth, Math.max(minWidth, promotedWidth)));
+        return ContextActionLayout.preferredWidth(actions, minWidth, maxWidth);
     }
 
     private static WidgetGroup menuPanel(int x, int y, int w, int h, int borderColor, boolean needsScroll, ScrollState scrollState, Runnable refresh, int scrollMax) {
@@ -541,7 +463,4 @@ public final class ContextMenuPanel {
         });
     }
 
-    private static boolean isDeleteAction(ContextAction action) {
-        return "delete".equals(action.icon());
-    }
 }
