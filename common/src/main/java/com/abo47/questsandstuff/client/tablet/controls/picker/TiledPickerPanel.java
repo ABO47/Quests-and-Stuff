@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.modal;
+package com.abo47.questsandstuff.client.tablet.controls.picker;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;

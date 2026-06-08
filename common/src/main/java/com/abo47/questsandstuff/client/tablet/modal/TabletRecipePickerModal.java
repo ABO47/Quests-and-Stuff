@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrati
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;

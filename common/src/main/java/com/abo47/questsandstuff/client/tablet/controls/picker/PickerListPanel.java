@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.modal;
+package com.abo47.questsandstuff.client.tablet.controls.picker;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
@@ -12,11 +12,11 @@ import java.util.List;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
-final class PickerListPanel {
+public final class PickerListPanel {
     private PickerListPanel() {
     }
 
-    static <T> WidgetGroup add(
+    public static <T> WidgetGroup add(
             WidgetGroup modal,
             int x,
             int y,
@@ -92,7 +92,7 @@ final class PickerListPanel {
     }
 
     @FunctionalInterface
-    interface RowRenderer<T> {
+    public interface RowRenderer<T> {
         void render(WidgetGroup list, T entry, int index, int rowY, int rowW);
     }
 }
