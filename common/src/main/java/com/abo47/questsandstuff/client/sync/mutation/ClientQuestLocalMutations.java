@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -337,14 +338,14 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        String id = objectiveId(jsonValue);
+        String id = objectiveId(normalizedQuest, bucketName, jsonValue);
         if (id.isBlank()) {
             return;
         }
         CompoundTag bucket = quest.getCompound(bucketName);
         CompoundTag entry = bucket.getCompound(id);
         entry.putString(QuestSyncKeys.Objective.JSON, jsonValue);
-        entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
+        entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(normalizedQuest, id, bucketName, jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
         bucket.put(id, entry);
         quest.put(bucketName, bucket);
         appendObjectiveOrder(quest, orderName, id);
@@ -370,22 +371,42 @@ public final class ClientQuestLocalMutations {
         quest.put(orderName, next);
     }
 
-    private static String objectiveId(String jsonValue) {
+    private static String objectiveId(String questId, String bucketName, String jsonValue) {
         try {
             JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
             return json.has("id") && !json.get("id").isJsonNull() ? json.get("id").getAsString().trim() : "";
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed reading optimistic objective id quest={} bucket={} json={}",
+                    questId,
+                    bucketName,
+                    abbreviateJson(jsonValue),
+                    exception
+            );
             return "";
         }
     }
 
-    private static String objectiveType(String jsonValue, String fallback) {
+    private static String objectiveType(String questId, String objectiveId, String bucketName, String jsonValue, String fallback) {
         try {
             JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
             return json.has("type") && !json.get("type").isJsonNull() ? json.get("type").getAsString().trim() : fallback;
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed reading optimistic objective type quest={} objective={} bucket={} json={}",
+                    questId,
+                    objectiveId,
+                    bucketName,
+                    abbreviateJson(jsonValue),
+                    exception
+            );
             return fallback == null ? "" : fallback;
         }
+    }
+
+    private static String abbreviateJson(String jsonValue) {
+        String value = jsonValue == null ? "" : jsonValue.replace('\n', ' ').replace('\r', ' ').trim();
+        return value.length() <= 120 ? value : value.substring(0, 117) + "...";
     }
 
     private static CompoundTag mutableGroupView(String questId, String group) {

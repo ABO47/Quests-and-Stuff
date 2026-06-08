@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -48,7 +49,13 @@ final class QuestObjectiveItemStacks {
         }
         try {
             return json.get(key).getAsInt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] objective int fallback key={} fallback={} diagnostic={}",
+                    key,
+                    fallback,
+                    exception.toString()
+            );
             return fallback;
         }
     }
@@ -66,7 +73,14 @@ final class QuestObjectiveItemStacks {
         if (!nbt.isBlank()) {
             try {
                 stack.setTag(TagParser.parseTag(nbt));
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
+                QuestsAndStuffMod.LOGGER.warn(
+                        "[QnS:UI] Invalid objective item NBT item={} amount={} nbt={}",
+                        itemId,
+                        amount,
+                        nbt,
+                        exception
+                );
                 return ItemStack.EMPTY;
             }
         }

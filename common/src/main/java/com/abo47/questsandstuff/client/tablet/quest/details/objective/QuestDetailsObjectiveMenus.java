@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
@@ -24,7 +24,6 @@ import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
@@ -433,11 +432,14 @@ public final class QuestDetailsObjectiveMenus {
     }
 
     private static JsonObject parseObjectiveJson(String value) {
-        try {
-            return JsonParser.parseString(value == null || value.isBlank() ? "{}" : value).getAsJsonObject();
-        } catch (Exception ignored) {
-            return new JsonObject();
+        QuestObjectiveJsons.ParseResult result = QuestObjectiveJsons.readResult(value);
+        if (!result.valid()) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] objective menu json fallback diagnostic={}",
+                    result.diagnostic()
+            );
         }
+        return result.value();
     }
 
     private static String inventoryTarget(String target) {

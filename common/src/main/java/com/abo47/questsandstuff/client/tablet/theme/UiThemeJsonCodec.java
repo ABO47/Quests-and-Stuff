@@ -32,10 +32,10 @@ final class UiThemeJsonCodec {
                 for (Map.Entry<String, JsonElement> entry : colorsJson.entrySet()) {
                     String role = normalizeRole(entry.getKey());
                     int fallback = colors.getOrDefault(role, ModColors.DEFAULT_TEXT_SECONDARY);
-                    colors.put(role, parseColor(entry.getValue(), fallback));
+                    colors.put(role, parseColor(entry.getValue(), fallback, themePath, "colors." + entry.getKey()));
                     String uiKey = normalizeUiColorKey(entry.getKey());
                     if (uiColors.containsKey(uiKey)) {
-                        uiColors.put(uiKey, parseColor(entry.getValue(), uiColors.get(uiKey)));
+                        uiColors.put(uiKey, parseColor(entry.getValue(), uiColors.get(uiKey), themePath, "colors." + entry.getKey()));
                     }
                 }
             }
@@ -71,11 +71,12 @@ final class UiThemeJsonCodec {
                 for (Map.Entry<String, JsonElement> entry : colorJson.entrySet()) {
                     String key = normalizeUiColorKey(entry.getKey());
                     if (colors.containsKey(key)) {
-                        colors.put(key, parseColor(entry.getValue(), colors.get(key)));
+                        colors.put(key, parseColor(entry.getValue(), colors.get(key), themePath, "colors." + entry.getKey()));
                     }
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading theme info {}, using preview defaults", themePath, exception);
         }
         return new UiThemeManager.ThemeInfo(
                 id,
@@ -134,7 +135,7 @@ final class UiThemeJsonCodec {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
-    private static int parseColor(JsonElement element, int fallback) {
+    private static int parseColor(JsonElement element, int fallback, Path themePath, String key) {
         if (element == null || element.isJsonNull()) {
             return fallback;
         }
@@ -160,7 +161,15 @@ final class UiThemeJsonCodec {
                 }
                 return Integer.parseInt(raw);
             }
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:UI] Invalid theme color theme={} key={} value={} fallback={}",
+                    themePath,
+                    key,
+                    element,
+                    String.format(Locale.ROOT, "0x%08X", fallback),
+                    exception
+            );
         }
         return fallback;
     }

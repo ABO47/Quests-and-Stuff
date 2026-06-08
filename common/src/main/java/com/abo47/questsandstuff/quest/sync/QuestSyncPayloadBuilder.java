@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -205,7 +206,7 @@ final class QuestSyncPayloadBuilder {
             QuestTaskDefinition task = entry.getValue();
             CompoundTag taskTag = new CompoundTag();
             taskTag.putString(QuestSyncKeys.Objective.TYPE, task.type().toString());
-            taskTag.putString(QuestSyncKeys.Objective.JSON, encodeTask(task));
+            taskTag.putString(QuestSyncKeys.Objective.JSON, encodeTask(definition.id(), entry.getKey(), task));
             if (progress != null) {
                 var taskProgress = progress.getTaskProgress(entry.getKey(), task);
                 taskTag.putFloat(QuestSyncKeys.Objective.PROGRESS, task.getProgress(taskProgress));
@@ -223,7 +224,7 @@ final class QuestSyncPayloadBuilder {
             QuestRewardDefinition reward = entry.getValue();
             CompoundTag rewardTag = new CompoundTag();
             rewardTag.putString(QuestSyncKeys.Objective.TYPE, reward.type().toString());
-            rewardTag.putString(QuestSyncKeys.Objective.JSON, encodeReward(reward));
+            rewardTag.putString(QuestSyncKeys.Objective.JSON, encodeReward(definition.id(), entry.getKey(), reward));
             rewardTag.putBoolean(QuestSyncKeys.Objective.SELECTABLE, reward.selectable());
             rewardTag.putBoolean(QuestSyncKeys.Objective.MASS_CLAIMABLE, reward.canBeMassClaimed());
             rewardsTag.put(entry.getKey(), rewardTag);
@@ -231,22 +232,50 @@ final class QuestSyncPayloadBuilder {
         return rewardsTag;
     }
 
-    private static String encodeTask(QuestTaskDefinition task) {
+    private static String encodeTask(String questId, String taskId, QuestTaskDefinition task) {
         try {
-            JsonElement encoded = QuestTaskDefinition.CODEC.encodeStart(JsonOps.INSTANCE, task)
-                    .getOrThrow(false, ignored -> {});
-            return encoded.toString();
-        } catch (Exception ignored) {
+            return QuestTaskDefinition.CODEC.encodeStart(JsonOps.INSTANCE, task)
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Sync] Failed encoding task JSON quest={} task={} type={} diagnostic={}",
+                            questId,
+                            taskId,
+                            task == null ? "" : task.type(),
+                            diagnostic
+                    ))
+                    .map(JsonElement::toString)
+                    .orElse("{}");
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed encoding task JSON quest={} task={} type={}",
+                    questId,
+                    taskId,
+                    task == null ? "" : task.type(),
+                    exception
+            );
             return "{}";
         }
     }
 
-    private static String encodeReward(QuestRewardDefinition reward) {
+    private static String encodeReward(String questId, String rewardId, QuestRewardDefinition reward) {
         try {
-            JsonElement encoded = QuestRewardDefinition.CODEC.encodeStart(JsonOps.INSTANCE, reward)
-                    .getOrThrow(false, ignored -> {});
-            return encoded.toString();
-        } catch (Exception ignored) {
+            return QuestRewardDefinition.CODEC.encodeStart(JsonOps.INSTANCE, reward)
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Sync] Failed encoding reward JSON quest={} reward={} type={} diagnostic={}",
+                            questId,
+                            rewardId,
+                            reward == null ? "" : reward.type(),
+                            diagnostic
+                    ))
+                    .map(JsonElement::toString)
+                    .orElse("{}");
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed encoding reward JSON quest={} reward={} type={}",
+                    questId,
+                    rewardId,
+                    reward == null ? "" : reward.type(),
+                    exception
+            );
             return "{}";
         }
     }

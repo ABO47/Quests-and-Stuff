@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -68,7 +69,11 @@ public record CanvasBlueprint(
             entryTag.putInt("source_y", quest.sourceY());
             entryTag.putFloat("scale", quest.scale());
             Tag definitionTag = QuestDefinition.CODEC.encodeStart(NbtOps.INSTANCE, quest.definition())
-                    .result()
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Blueprint] Failed encoding quest definition for packet source={} diagnostic={}",
+                            quest.sourceId(),
+                            diagnostic
+                    ))
                     .orElseGet(CompoundTag::new);
             if (definitionTag instanceof CompoundTag compound) {
                 entryTag.put("definition", compound);
@@ -130,7 +135,11 @@ public record CanvasBlueprint(
             entry.addProperty("source_y", quest.sourceY());
             entry.addProperty("scale", quest.scale());
             entry.add("definition", QuestDefinition.CODEC.encodeStart(JsonOps.INSTANCE, quest.definition())
-                    .result()
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Blueprint] Failed encoding quest definition for json source={} diagnostic={}",
+                            quest.sourceId(),
+                            diagnostic
+                    ))
                     .orElseGet(JsonObject::new));
             questArray.add(entry);
         }
@@ -160,18 +169,23 @@ public record CanvasBlueprint(
                     continue;
                 }
                 JsonObject entry = element.getAsJsonObject();
+                String sourceId = string(entry, "source_id");
                 QuestDefinition definition = QuestDefinition.CODEC.parse(JsonOps.INSTANCE, entry.get("definition"))
-                        .result()
+                        .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                                "[QnS:Blueprint] Failed parsing quest definition from json source={} diagnostic={}",
+                                sourceId,
+                                diagnostic
+                        ))
                         .orElse(null);
                 if (definition == null) {
                     continue;
                 }
                 quests.add(new QuestEntry(
-                        string(entry, "source_id"),
+                        sourceId,
                         string(entry, "source_group"),
-                        integer(entry, "source_x", 0),
-                        integer(entry, "source_y", 0),
-                        floating(entry, "scale", 1.0f),
+                        integer(entry, "source_x", 0, "quest:" + sourceId),
+                        integer(entry, "source_y", 0, "quest:" + sourceId),
+                        floating(entry, "scale", 1.0f, "quest:" + sourceId),
                         definition
                 ));
             }
@@ -179,22 +193,27 @@ public record CanvasBlueprint(
             List<String> order = new ArrayList<>();
             JsonArray orderArray = array(root, "layer_order");
             for (JsonElement element : orderArray) {
-                String value = element == null ? "" : element.getAsString();
+                String value = stringValue(element, "layer_order");
                 if (!value.isBlank()) {
                     order.add(value);
                 }
             }
             return new CanvasBlueprint(
-                    integer(root, "schema", CURRENT_SCHEMA),
+                    integer(root, "schema", CURRENT_SCHEMA, "root"),
                     string(root, "name"),
-                    integer(root, "origin_x", 0),
-                    integer(root, "origin_y", 0),
+                    integer(root, "origin_x", 0, "root"),
+                    integer(root, "origin_y", 0, "root"),
                     quests,
                     imagesFromJson(array(root, "images")),
                     textsFromJson(array(root, "texts")),
                     order
             );
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Blueprint] Failed parsing blueprint json length={}",
+                    raw.length(),
+                    exception
+            );
             return empty();
         }
     }
@@ -207,7 +226,12 @@ public record CanvasBlueprint(
         if (tag == null) {
             return null;
         }
-        return QuestDefinition.CODEC.parse(NbtOps.INSTANCE, tag).result().orElse(null);
+        return QuestDefinition.CODEC.parse(NbtOps.INSTANCE, tag)
+                .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                        "[QnS:Blueprint] Failed parsing quest definition from packet diagnostic={}",
+                        diagnostic
+                ))
+                .orElse(null);
     }
 
     private static JsonArray imagesToJson(List<CanvasImageLayer> images) {
@@ -242,21 +266,21 @@ public record CanvasBlueprint(
             if (id.isBlank()) {
                 continue;
             }
-            int width = integer(entry, "w", 80);
-            int height = integer(entry, "h", 80);
+            int width = integer(entry, "w", 80, "image:" + id);
+            int height = integer(entry, "h", 80, "image:" + id);
             images.add(new CanvasImageLayer(
                     id,
                     string(entry, "asset"),
-                    integer(entry, "x", 0),
-                    integer(entry, "y", 0),
+                    integer(entry, "x", 0, "image:" + id),
+                    integer(entry, "y", 0, "image:" + id),
                     width,
                     height,
-                    integer(entry, "rotation", 0),
-                    integer(entry, "entity_yaw", CanvasImageLayer.DEFAULT_ENTITY_YAW),
-                    integer(entry, "entity_spin_speed", CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED),
-                    integer(entry, "model_pitch", CanvasImageLayer.DEFAULT_MODEL_PITCH),
-                    integer(entry, "pivot_x", width / 2),
-                    integer(entry, "pivot_y", height / 2)
+                    integer(entry, "rotation", 0, "image:" + id),
+                    integer(entry, "entity_yaw", CanvasImageLayer.DEFAULT_ENTITY_YAW, "image:" + id),
+                    integer(entry, "entity_spin_speed", CanvasImageLayer.DEFAULT_ENTITY_SPIN_SPEED, "image:" + id),
+                    integer(entry, "model_pitch", CanvasImageLayer.DEFAULT_MODEL_PITCH, "image:" + id),
+                    integer(entry, "pivot_x", width / 2, "image:" + id),
+                    integer(entry, "pivot_y", height / 2, "image:" + id)
             ));
         }
         return images;
@@ -350,22 +374,45 @@ public record CanvasBlueprint(
         return element == null || element.isJsonNull() ? "" : element.getAsString();
     }
 
-    private static int integer(JsonObject object, String key, int fallback) {
+    private static int integer(JsonObject object, String key, int fallback, String context) {
         try {
             JsonElement element = object == null ? null : object.get(key);
             return element == null || element.isJsonNull() ? fallback : element.getAsInt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Blueprint] Failed reading integer field context={} key={} fallback={}",
+                    context,
+                    key,
+                    fallback,
+                    exception
+            );
             return fallback;
         }
     }
 
-    private static float floating(JsonObject object, String key, float fallback) {
+    private static float floating(JsonObject object, String key, float fallback, String context) {
         try {
             JsonElement element = object == null ? null : object.get(key);
             float value = element == null || element.isJsonNull() ? fallback : element.getAsFloat();
             return Float.isNaN(value) || Float.isInfinite(value) ? fallback : value;
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Blueprint] Failed reading float field context={} key={} fallback={}",
+                    context,
+                    key,
+                    fallback,
+                    exception
+            );
             return fallback;
+        }
+    }
+
+    private static String stringValue(JsonElement element, String context) {
+        try {
+            return element == null || element.isJsonNull() ? "" : element.getAsString();
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Blueprint] Failed reading string value context={}", context, exception);
+            return "";
         }
     }
 

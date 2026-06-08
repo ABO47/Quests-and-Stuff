@@ -43,4 +43,13 @@ class QuestObjectiveJsonsTest {
         assertEquals("questsandstuff:check", QuestObjectiveJsons.asString(result.value(), "type", ""));
         assertEquals("", result.diagnostic());
     }
+
+    @Test
+    void fieldAccessorsFallbackForWrongJsonTypes() {
+        QuestObjectiveJsons.ParseResult result = QuestObjectiveJsons.readResult("{\"id\":{\"nested\":true},\"manual\":{\"nested\":true}}");
+
+        assertTrue(result.valid());
+        assertEquals("fallback", QuestObjectiveJsons.asString(result.value(), "id", "fallback"));
+        assertTrue(QuestObjectiveJsons.asBoolean(result.value(), "manual", true));
+    }
 }

@@ -64,7 +64,8 @@ public final class TabletUiStatePersistence {
             state.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetailsCanvasLocked);
             state.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetailsGridOpacityPercent);
             state.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetailsCanvasBgOpacityPercent);
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading UI state from {}, keeping defaults", UI_STATE_FILE, exception);
         }
     }
 
@@ -132,7 +133,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsBoolean();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("boolean", key, fallback, exception);
             return fallback;
         }
     }
@@ -147,7 +149,8 @@ public final class TabletUiStatePersistence {
                 return fallback;
             }
             return Math.max(0.5f, Math.min(3.0f, value));
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("float", key, fallback, exception);
             return fallback;
         }
     }
@@ -158,7 +161,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsInt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("int", key, fallback, exception);
             return fallback;
         }
     }
@@ -169,7 +173,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsString();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("string", key, fallback, exception);
             return fallback;
         }
     }
@@ -192,9 +197,26 @@ public final class TabletUiStatePersistence {
                     state.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint(centerX, centerY));
                     state.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
                 }
-            } catch (Exception ignored) {
+            } catch (RuntimeException exception) {
+                QuestsAndStuffMod.LOGGER.warn(
+                        "[QnS:UI] Invalid persisted canvas camera group={} file={}",
+                        group,
+                        UI_STATE_FILE,
+                        exception
+                );
             }
         }
+    }
+
+    private static void logFieldFallback(String type, String key, Object fallback, RuntimeException exception) {
+        QuestsAndStuffMod.LOGGER.warn(
+                "[QnS:UI] Invalid persisted UI state field type={} key={} fallback={} file={}",
+                type,
+                key,
+                fallback,
+                UI_STATE_FILE,
+                exception
+        );
     }
 
     private static JsonObject writeCanvasCameras(TabletUiState state) {

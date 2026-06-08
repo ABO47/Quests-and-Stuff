@@ -59,7 +59,13 @@ final class QuestObjectiveJsons {
         }
         try {
             return json.get(key).getAsString();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] objective json string fallback key={} fallback={} diagnostic={}",
+                    key,
+                    fallback,
+                    exception.toString()
+            );
             return fallback;
         }
     }
@@ -70,7 +76,13 @@ final class QuestObjectiveJsons {
         }
         try {
             return json.get(key).getAsBoolean();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] objective json boolean fallback key={} fallback={} diagnostic={}",
+                    key,
+                    fallback,
+                    exception.toString()
+            );
             return fallback;
         }
     }

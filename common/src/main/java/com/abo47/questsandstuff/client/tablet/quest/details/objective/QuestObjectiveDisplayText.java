@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
@@ -26,7 +27,11 @@ final class QuestObjectiveDisplayText {
         }
         try {
             return Math.max(1, json.get("amount").getAsInt());
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] objective amount fallback key=amount fallback=1 diagnostic={}",
+                    exception.toString()
+            );
             return 1;
         }
     }

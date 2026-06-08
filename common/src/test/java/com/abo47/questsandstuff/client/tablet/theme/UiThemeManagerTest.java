@@ -80,6 +80,25 @@ class UiThemeManagerTest {
         assertEquals(DEFAULT_PALETTE, currentPalette());
     }
 
+    @Test
+    void malformedThemeColorFallsBackForOnlyThatKey() throws Exception {
+        Path theme = tempDir.resolve("partial_bad_color.json");
+        Files.writeString(theme, """
+                {
+                  "name": "Partial",
+                  "colors": {
+                    "surface_base": "#FF010203",
+                    "surface_panel": "not-a-color"
+                  }
+                }
+                """);
+
+        UiThemeManager.applyLoadedState(UiThemeJsonCodec.loadUiThemeState(theme));
+
+        assertEquals(0xFF010203, ModColors.SURFACE_BASE);
+        assertEquals(ModColors.DEFAULT_SURFACE_PANEL, ModColors.SURFACE_PANEL);
+    }
+
     private static String customThemeJson() {
         return """
                 {

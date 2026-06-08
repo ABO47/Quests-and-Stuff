@@ -31,4 +31,36 @@ class CanvasBlueprintCodeTest {
         assertEquals(1, decoded.images().size());
         assertEquals("pics/test.png", decoded.images().get(0).asset());
     }
+
+    @Test
+    void malformedBlueprintCodeFallsBackToEmptyBlueprint() {
+        CanvasBlueprint decoded = CanvasBlueprintCode.decode(CanvasBlueprintCode.PREFIX + "not-valid-base64");
+
+        assertTrue(decoded.isEmpty());
+    }
+
+    @Test
+    void malformedBlueprintJsonFieldsUseSafeFallbacks() {
+        CanvasBlueprint decoded = CanvasBlueprint.fromJson("""
+                {
+                  "name": "Broken fields",
+                  "origin_x": "bad",
+                  "images": [
+                    {
+                      "id": "img_bad",
+                      "asset": "pics/test.png",
+                      "x": "bad",
+                      "w": "wide"
+                    }
+                  ],
+                  "layer_order": ["image:img_bad"]
+                }
+                """);
+
+        assertFalse(decoded.isEmpty());
+        assertEquals(0, decoded.originX());
+        assertEquals(1, decoded.images().size());
+        assertEquals(0, decoded.images().get(0).x());
+        assertEquals(80, decoded.images().get(0).w());
+    }
 }

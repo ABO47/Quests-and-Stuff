@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +26,13 @@ public final class CanvasBlueprintCode {
                 gzip.write(json);
             }
             return PREFIX + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes.toByteArray());
-        } catch (Exception ignored) {
+        } catch (RuntimeException | java.io.IOException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Blueprint] Failed encoding blueprint name={} contents={}",
+                    blueprint.name(),
+                    blueprint.contentCount(),
+                    exception
+            );
             return "";
         }
     }
@@ -46,7 +54,13 @@ public final class CanvasBlueprintCode {
             try (GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
                 return CanvasBlueprint.fromJson(new String(gzip.readAllBytes(), StandardCharsets.UTF_8));
             }
-        } catch (Exception ignored) {
+        } catch (IllegalArgumentException | java.io.IOException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Blueprint] Failed decoding blueprint code prefixPresent={} length={}",
+                    raw.regionMatches(true, 0, PREFIX, 0, PREFIX.length()),
+                    raw.length(),
+                    exception
+            );
             return CanvasBlueprint.empty();
         }
     }
