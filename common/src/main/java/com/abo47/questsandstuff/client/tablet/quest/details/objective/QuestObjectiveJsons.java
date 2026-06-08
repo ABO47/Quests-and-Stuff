@@ -62,62 +62,90 @@ final class QuestObjectiveJsons {
     }
 
     static JsonObject defaultTask(String id, String typePath) {
-        String type = MOD + typePath;
-        if ("xp".equals(typePath)) {
-            JsonObject json = base(id, type);
-            json.addProperty("amount", 1);
-            json.addProperty("mode", "points");
-            json.addProperty("collection", "automatic");
-            json.addProperty("icon", XP_CARD_ICON);
-            return json;
-        }
-        if ("stat".equals(typePath)) {
-            return simpleTask(id, type, "minecraft:jump", "stat");
-        }
-        if ("location".equals(typePath)) {
-            JsonObject json = base(id, type);
-            json.addProperty("mode", "dimension");
-            json.addProperty("dimension", "minecraft:overworld");
-            json.addProperty("x", 0);
-            json.addProperty("y", 64);
-            json.addProperty("z", 0);
-            json.addProperty("radius", 6);
-            json.addProperty("icon", "minecraft:compass");
-            return json;
-        }
-        if ("check".equals(typePath) || "dummy".equals(typePath)) {
-            JsonObject json = base(id, type);
-            json.addProperty("target", id);
-            json.addProperty("icon", "manual_check");
-            return json;
-        }
-        if ("item".equals(typePath)) {
-            JsonObject json = base(id, type);
-            json.addProperty("item", "minecraft:stone");
-            json.addProperty("amount", 1);
-            json.addProperty("nbt", "");
-            json.addProperty("collection", "automatic");
-            return json;
-        }
-        return simpleTask(id, type, defaultTarget(typePath), fallbackIcon(typePath));
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.taskChoice(typePath);
+        return choice == null ? simpleDefaultTask(id, typePath) : choice.defaultJson(id);
     }
 
     static JsonObject defaultReward(String id, String typePath) {
-        String type = MOD + typePath;
-        JsonObject json = base(id, type);
-        if ("xp".equals(typePath)) {
-            json.addProperty("amount", 1);
-            json.addProperty("mode", "points");
-            json.addProperty("icon", XP_CARD_ICON);
-        } else if ("loot_table".equals(typePath) || "loot".equals(typePath)) {
-            json.addProperty("loot_table", "minecraft:chests/simple_dungeon");
-            json.addProperty("title", "Simple dungeon");
-            json.addProperty("icon", "minecraft:chest");
-        } else if ("command".equals(typePath)) {
-            json.addProperty("command", "say Quest reward");
-            json.addProperty("title", "Command");
-            json.addProperty("icon", "minecraft:command_block");
-        }
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.rewardChoice(typePath);
+        return choice == null ? base(id, MOD + typePath) : choice.defaultJson(id);
+    }
+
+    static JsonObject simpleDefaultTask(String id, String typePath) {
+        return simpleTask(id, MOD + typePath, defaultTarget(typePath), fallbackIcon(typePath));
+    }
+
+    static JsonObject xpTask(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("amount", 1);
+        json.addProperty("mode", "points");
+        json.addProperty("collection", "automatic");
+        json.addProperty("icon", XP_CARD_ICON);
+        return json;
+    }
+
+    static JsonObject statTask(String id, String typePath) {
+        return simpleTask(id, MOD + typePath, "minecraft:jump", "stat");
+    }
+
+    static JsonObject locationTask(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("mode", "dimension");
+        json.addProperty("dimension", "minecraft:overworld");
+        json.addProperty("x", 0);
+        json.addProperty("y", 64);
+        json.addProperty("z", 0);
+        json.addProperty("radius", 6);
+        json.addProperty("icon", "minecraft:compass");
+        return json;
+    }
+
+    static JsonObject checkTask(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("target", id);
+        json.addProperty("icon", "manual_check");
+        return json;
+    }
+
+    static JsonObject itemTask(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("item", "minecraft:stone");
+        json.addProperty("amount", 1);
+        json.addProperty("nbt", "");
+        json.addProperty("collection", "automatic");
+        return json;
+    }
+
+    static JsonObject itemReward(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("item", "minecraft:diamond");
+        json.addProperty("amount", 1);
+        json.addProperty("nbt", "");
+        json.addProperty("icon", "minecraft:diamond");
+        return json;
+    }
+
+    static JsonObject xpReward(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("amount", 1);
+        json.addProperty("mode", "points");
+        json.addProperty("icon", XP_CARD_ICON);
+        return json;
+    }
+
+    static JsonObject lootTableReward(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("loot_table", "minecraft:chests/simple_dungeon");
+        json.addProperty("title", "Simple dungeon");
+        json.addProperty("icon", "minecraft:chest");
+        return json;
+    }
+
+    static JsonObject commandReward(String id, String typePath) {
+        JsonObject json = base(id, MOD + typePath);
+        json.addProperty("command", "say Quest reward");
+        json.addProperty("title", "Command");
+        json.addProperty("icon", "minecraft:command_block");
         return json;
     }
 

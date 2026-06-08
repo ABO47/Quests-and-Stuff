@@ -330,25 +330,29 @@ public final class QuestObjectiveEditActions {
     }
 
     static void beginTaskAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
-        String type = QuestObjectiveJsons.MOD + typePath;
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.taskChoice(typePath);
+        String type = choice == null ? QuestObjectiveJsons.MOD + typePath : choice.fullType();
         String id = QuestObjectiveJsons.nextId(quest.getCompound("tasks"), "task_" + typePath);
-        beginTask(player, state, questId, id, type, typePath, true);
+        beginTask(player, state, questId, id, type, typePath, choice, true);
     }
 
     static void beginTaskChange(Player player, TabletUiState state, String questId, String id, String typePath) {
-        String type = QuestObjectiveJsons.MOD + typePath;
-        beginTask(player, state, questId, id, type, typePath, false);
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.taskChoice(typePath);
+        String type = choice == null ? QuestObjectiveJsons.MOD + typePath : choice.fullType();
+        beginTask(player, state, questId, id, type, typePath, choice, false);
     }
 
     static void beginRewardAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
-        String type = QuestObjectiveJsons.MOD + typePath;
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.rewardChoice(typePath);
+        String type = choice == null ? QuestObjectiveJsons.MOD + typePath : choice.fullType();
         String id = QuestObjectiveJsons.nextId(quest.getCompound("rewards"), "reward_" + typePath);
-        beginReward(player, state, questId, id, type, typePath, true);
+        beginReward(player, state, questId, id, type, typePath, choice, true);
     }
 
     static void beginRewardChange(Player player, TabletUiState state, String questId, String id, String typePath) {
-        String type = QuestObjectiveJsons.MOD + typePath;
-        beginReward(player, state, questId, id, type, typePath, false);
+        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.rewardChoice(typePath);
+        String type = choice == null ? QuestObjectiveJsons.MOD + typePath : choice.fullType();
+        beginReward(player, state, questId, id, type, typePath, choice, false);
     }
 
     static void openCommandRewardEditor(TabletUiState state, String questId, String id, String command, String title, String icon) {
@@ -404,77 +408,87 @@ public final class QuestObjectiveEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details objective renamed quest={} id={} task={} title={}", questId, id, task, normalizedTitle);
     }
 
-    private static void beginTask(Player player, TabletUiState state, String questId, String id, String type, String typePath, boolean add) {
-        if ("item".equals(typePath)) {
+    private static void beginTask(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestDetailsTypeChoice choice, boolean add) {
+        QuestObjectiveEditFlow flow = choice == null ? QuestObjectiveEditFlow.DIRECT_JSON : choice.editFlow();
+        if (flow == QuestObjectiveEditFlow.ITEM_SOURCE_PICKER) {
             QuestDetailsTransientState.openItemSourcePicker(state, ModalTargets.taskItem(questId, id, type));
             return;
         }
-        if ("biome".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.BIOME_PICKER) {
             QuestDetailsWindow.openBiomePicker(state, ModalTargets.taskBiome(questId, id, type));
             return;
         }
-        if ("advancement".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.ADVANCEMENT_PICKER) {
             QuestDetailsWindow.openAdvancementPicker(state, ModalTargets.taskAdvancement(questId, id, type));
             return;
         }
-        if ("recipe".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.RECIPE_PICKER) {
             QuestDetailsWindow.openRecipePicker(state, ModalTargets.taskRecipe(questId, id, type));
             return;
         }
-        if ("structure".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.STRUCTURE_PICKER) {
             QuestDetailsWindow.openStructurePicker(state, ModalTargets.taskStructure(questId, id, type));
             return;
         }
-        if ("block_interact".equals(typePath) || "block_interaction".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.BLOCK_PICKER) {
             QuestDetailsWindow.openBlockPicker(state, ModalTargets.taskBlock(questId, id, type));
             return;
         }
-        if ("stat".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.STAT_PICKER) {
             QuestDetailsWindow.openStatPicker(state, ModalTargets.taskStat(questId, id, type));
             return;
         }
-        if ("location".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.DIMENSION_PICKER) {
             QuestDetailsWindow.openDimensionPicker(state, ModalTargets.taskDimension(questId, id, type));
             return;
         }
-        if ("kill_entity".equals(typePath) || "entity_interact".equals(typePath) || "entity_interaction".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.ENTITY_ICON_PICKER) {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskEntity(questId, id, type));
             return;
         }
-        if ("xp".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.XP_PICKER) {
             QuestDetailsTransientState.openXpPicker(state, questId, id, true);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp requirement picker open quest={} task={} add={}", questId, id, add);
             return;
         }
-        if ("item_use".equals(typePath) || "item_interact".equals(typePath) || "item_interaction".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.SIMPLE_ICON_PICKER) {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskSimpleIcon(questId, id, type));
             return;
         }
-        EditorCommandClient.putQuestTaskJson(player, questId, QuestObjectiveJsons.defaultTask(id, typePath).toString());
+        EditorCommandClient.putQuestTaskJson(player, questId, defaultTaskJson(id, typePath, choice).toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details {} task quest={} task={} type={}", add ? "add" : "change", questId, id, typePath);
     }
 
-    private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, boolean add) {
-        if ("item".equals(typePath)) {
+    private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestDetailsTypeChoice choice, boolean add) {
+        QuestObjectiveEditFlow flow = choice == null ? QuestObjectiveEditFlow.DIRECT_JSON : choice.editFlow();
+        if (flow == QuestObjectiveEditFlow.ITEM_SOURCE_PICKER) {
             QuestDetailsTransientState.openItemSourcePicker(state, ModalTargets.rewardItem(questId, id, type));
             return;
         }
-        if ("command".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.COMMAND_EDITOR) {
             openCommandRewardEditor(state, questId, id, "", "Command", "minecraft:command_block");
             return;
         }
-        if ("loot_table".equals(typePath) || "loot".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.LOOT_TABLE_PICKER) {
             QuestDetailsWindow.openLootTablePicker(state, ModalTargets.rewardLootTable(questId, id, type));
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details loot table picker open quest={} reward={} type={} add={}", questId, id, typePath, add);
             return;
         }
-        if ("xp".equals(typePath)) {
+        if (flow == QuestObjectiveEditFlow.XP_PICKER) {
             QuestDetailsTransientState.openXpPicker(state, questId, id, false);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp reward picker open quest={} reward={} add={}", questId, id, add);
             return;
         }
-        EditorCommandClient.putQuestRewardJson(player, questId, QuestObjectiveJsons.defaultReward(id, typePath).toString());
+        EditorCommandClient.putQuestRewardJson(player, questId, defaultRewardJson(id, typePath, choice).toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details {} reward quest={} reward={} type={}", add ? "add" : "change", questId, id, typePath);
+    }
+
+    private static JsonObject defaultTaskJson(String id, String typePath, QuestDetailsTypeChoice choice) {
+        return choice == null ? QuestObjectiveJsons.defaultTask(id, typePath) : choice.defaultJson(id);
+    }
+
+    private static JsonObject defaultRewardJson(String id, String typePath, QuestDetailsTypeChoice choice) {
+        return choice == null ? QuestObjectiveJsons.defaultReward(id, typePath) : choice.defaultJson(id);
     }
 
     public static String objectiveIcon(String questId, String id, boolean task) {
