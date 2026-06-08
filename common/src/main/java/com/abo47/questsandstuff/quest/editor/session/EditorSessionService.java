@@ -21,16 +21,12 @@ import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import com.abo47.questsandstuff.util.QuestClipboardDebugLog;
-import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +48,7 @@ public final class EditorSessionService {
     private final EditorChapterSessionActions chapterActions;
     private final EditorCanvasSessionActions canvasActions;
     private final EditorUndoRedoActions undoRedoActions;
+    private final EditorSessionState sessionState;
 
     private final Map<UUID, EditorSession> sessions = new HashMap<>();
 
@@ -71,6 +68,7 @@ public final class EditorSessionService {
         this.chapterActions = new EditorChapterSessionActions(chapterEdits);
         this.canvasActions = new EditorCanvasSessionActions(canvasEdits, clipboardEdits);
         this.undoRedoActions = new EditorUndoRedoActions(this, definitionStore, runtimeEngine, syncService);
+        this.sessionState = new EditorSessionState(definitionStore);
     }
 
     public String groupLabel(ServerPlayer player) {
@@ -371,50 +369,27 @@ public final class EditorSessionService {
     }
 
     public EditorSession session(ServerPlayer player) {
-        return sessions.computeIfAbsent(player.getUUID(), ignored -> createSession());
-    }
-
-    private EditorSession createSession() {
-        EditorSession session = new EditorSession();
-        List<String> groups = groups();
-        session.currentGroup = groups.isEmpty() ? "" : groups.get(0);
-        normalizeQuestSelection(session);
-        return session;
+        return sessions.computeIfAbsent(player.getUUID(), ignored -> sessionState.createSession());
     }
 
     public void normalizeQuestSelection(EditorSession session) {
-        List<String> questIds = questIdsInGroup(session.currentGroup);
-        if (questIds.isEmpty()) {
-            session.currentQuest = "-";
-            return;
-        }
-        if (!questIds.contains(session.currentQuest)) {
-            session.currentQuest = questIds.get(0);
-        }
+        sessionState.normalizeQuestSelection(session);
     }
 
     public List<String> groups() {
-        return new ArrayList<>(definitionStore.groupOrder());
+        return sessionState.groups();
     }
 
     public List<String> questIdsInGroup(String group) {
-        return definitionStore.questDefinitions().stream()
-                .filter(quest -> quest.display().groups().containsKey(group))
-                .map(QuestDefinition::id)
-                .sorted(Comparator.naturalOrder())
-                .toList();
+        return sessionState.questIdsInGroup(group);
     }
 
     public String nextQuestId(String group) {
-        return QuestNaming.nextQuestId(group, definitionStore.questIds());
+        return sessionState.nextQuestId(group);
     }
 
     public String nextQuestId(String group, Set<String> reservedIds) {
-        Set<String> reserved = new HashSet<>(definitionStore.questIds());
-        if (reservedIds != null) {
-            reserved.addAll(reservedIds);
-        }
-        return QuestNaming.nextQuestId(group, reserved);
+        return sessionState.nextQuestId(group, reservedIds);
     }
 
     public void clipboardDebug(String message) {
@@ -444,24 +419,15 @@ public final class EditorSessionService {
     }
 
     public void ensureGroupExists(String rawGroup) {
-        String group = normalizeGroup(rawGroup);
-        if (group.isBlank()) {
-            return;
-        }
-        List<String> groups = new ArrayList<>(definitionStore.groupOrder());
-        if (groups.contains(group)) {
-            return;
-        }
-        groups.add(group);
-        definitionStore.setGroupOrder(groups);
+        sessionState.ensureGroupExists(rawGroup);
     }
 
     public static String normalizeGroup(String groupName) {
-        return groupName == null ? "" : groupName.trim();
+        return EditorSessionNames.normalizeGroup(groupName);
     }
 
     public static String normalizeQuestId(String questId) {
-        return questId == null ? "" : questId.trim();
+        return EditorSessionNames.normalizeQuestId(questId);
     }
 
     public enum EditorMode {
