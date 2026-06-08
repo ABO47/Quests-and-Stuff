@@ -2,17 +2,25 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TabletSelector;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.network.chat.Component;
 
-import java.util.List;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 
 public final class TabletSettingsModal {
     private static final int PAD = 8;
     private static final int TAB_Y = 22;
     private static final int TAB_H = 20;
+    private static final int TAB_GAP = 4;
     private static final int LIST_Y = 50;
 
     private TabletSettingsModal() {
@@ -62,23 +70,49 @@ public final class TabletSettingsModal {
     }
 
     private static void addTabs(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
-        TabletSelector.add(
-                modal,
-                PAD,
-                TAB_Y,
-                Math.max(64, w - PAD * 2),
-                TAB_H,
-                tabOptions(),
-                () -> SettingsTabDescriptors.active(state),
-                tab -> selectTab(state, tab, refresh),
-                SettingsTabDescriptors.all().size()
-        );
+        int totalW = Math.max(1, w - PAD * 2);
+        int count = Math.max(1, SettingsTabDescriptors.all().size());
+        int available = Math.max(count, totalW - TAB_GAP * (count - 1));
+        int tabW = Math.max(1, available / count);
+        int remainder = Math.max(0, available - tabW * count);
+        int tabX = PAD;
+        for (int i = 0; i < count; i++) {
+            SettingsTabDescriptor tab = SettingsTabDescriptors.all().get(i);
+            int currentW = tabW + (i < remainder ? 1 : 0);
+            addTab(modal, state, refresh, tabX, currentW, tab);
+            tabX += currentW + TAB_GAP;
+        }
     }
 
-    private static List<TabletSelector.Option<SettingsTabDescriptor>> tabOptions() {
-        return SettingsTabDescriptors.all().stream()
-                .map(tab -> TabletSelector.option(tab, TabletModalPanel.tr(tab.labelKey())))
-                .toList();
+    private static void addTab(WidgetGroup modal, TabletUiState state, Runnable refresh, int x, int w, SettingsTabDescriptor tab) {
+        boolean active = state.modal.settingsTab == tab.id();
+        int tabY = active ? TAB_Y : TAB_Y + 3;
+        int tabH = active ? TAB_H : TAB_H - 3;
+        int fill = active ? withAlpha(ModColors.SURFACE_BASE, 250) : withAlpha(ModColors.SURFACE_PANEL_ALT, 142);
+        int border = active ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
+        addTabShadow(modal, x, tabY, w, tabH, active);
+        modal.addWidget(panel(x, tabY, w, tabH, fill, border));
+        modal.addWidget(label(
+                x + 8,
+                tabY + 6,
+                SearchFilter.crop(TabletModalPanel.tr(tab.labelKey()), Math.max(8, (w - 16) / 6)),
+                active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED
+        ));
+        ButtonWidget hit = flatHitButton(x, tabY, w, tabH, click -> selectTab(state, tab, refresh));
+        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, active ? 72 : 42), ModColors.BORDER_ACCENT));
+        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82)));
+        hit.setHoverTooltips(Component.translatable(tab.labelKey()));
+        modal.addWidget(hit);
+    }
+
+    private static void addTabShadow(WidgetGroup modal, int x, int y, int w, int h, boolean active) {
+        WidgetGroup cast = new WidgetGroup(x + 3, y + 4, w, h);
+        cast.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, active ? 126 : 78)));
+        modal.addWidget(cast);
+
+        WidgetGroup soft = new WidgetGroup(x + 1, y + 2, w, h);
+        soft.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL, active ? 58 : 34)));
+        modal.addWidget(soft);
     }
 
     private static void selectTab(TabletUiState state, SettingsTabDescriptor tab, Runnable refresh) {

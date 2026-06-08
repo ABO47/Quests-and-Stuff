@@ -19,7 +19,6 @@ class TabletPureHelperCoverageTest {
                 entry("client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest"),
                 entry("optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest"),
                 entry("text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest"),
-                entry("selector builders", "com.abo47.questsandstuff.client.tablet.controls.TabletSelectorTest"),
                 entry("tablet state queries", "com.abo47.questsandstuff.client.tablet.ui.TabletStateQueriesTest"),
                 entry("quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest"),
                 entry("recipe choice index", "com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndexTest"),
