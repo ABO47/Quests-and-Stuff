@@ -328,10 +328,6 @@ public class TabletUiState {
     public String entityMotionFocusedField = "";
     public boolean entityMotionYawSliderDragging;
     public boolean entityMotionSpinSliderDragging;
-    public boolean createQuestModalOpen;
-    public String createQuestTitle = "";
-    public int createQuestLogicalX;
-    public int createQuestLogicalY;
     public String pendingQuestTitleChangeId = "";
     public String questTitleDraft = "";
     public boolean questDetailsOpen;

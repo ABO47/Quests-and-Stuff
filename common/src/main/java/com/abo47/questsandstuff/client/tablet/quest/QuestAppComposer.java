@@ -143,7 +143,6 @@ public final class QuestAppComposer {
                 state.toolsGridOpacityMenuOpen = false;
                 state.chapterMenuOpen = false;
                 ContextMenuState.close(state);
-                state.createQuestModalOpen = false;
                 state.selectedQuestIds.clear();
             }
             TabletShellBootstrap.keepSelectedGroupValid(state, true);

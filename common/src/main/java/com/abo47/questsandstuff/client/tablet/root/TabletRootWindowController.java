@@ -39,11 +39,6 @@ public final class TabletRootWindowController {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details close via escape");
             return true;
         }
-        if (state.createQuestModalOpen) {
-            state.createQuestModalOpen = false;
-            state.createQuestTitle = "";
-            return true;
-        }
         if (state.assetContextOpen || state.assetRenameOpen) {
             state.assetContextOpen = false;
             state.assetRenameOpen = false;
@@ -114,7 +109,6 @@ public final class TabletRootWindowController {
                 || !state.questDetailsTextEditTarget.isBlank()
                 || !state.pendingQuestTitleChangeId.isBlank()
                 || !state.pendingChapterRename.isBlank()
-                || state.createQuestModalOpen
                 || root != null && hasFocusedTextField(root);
     }
 

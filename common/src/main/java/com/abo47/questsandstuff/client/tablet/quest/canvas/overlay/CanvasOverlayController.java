@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasCreateQuestModal;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController.EdgeRef;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -29,7 +28,6 @@ public final class CanvasOverlayController {
         CanvasContextMenuController.renderCanvasContextMenu(canvasViewport, state);
         CanvasTextStyleMenu.render(canvasViewport, state, canvasViewport::refresh);
         EntityMotionEditor.renderMainCanvas(canvasViewport, state, canvasViewport.player(), canvasViewport::refresh);
-        CanvasCreateQuestModal.render(canvasViewport, state);
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {

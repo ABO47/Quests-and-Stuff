@@ -170,7 +170,7 @@ public final class CanvasSelectionRenderer {
             int maxW,
             int maxH
     ) {
-        if (!state.canEdit || state.createQuestModalOpen || state.questDetailsOpen) {
+        if (!state.canEdit || state.questDetailsOpen) {
             return;
         }
         drawBoxSelectionRect(graphics, originX, originY, maxW, maxH, state);

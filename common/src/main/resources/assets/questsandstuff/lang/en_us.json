@@ -360,8 +360,6 @@
   "ui.questsandstuff.modal.blueprints": "Blueprints",
   "ui.questsandstuff.modal.choose_item_icon": "Choose Item Icon",
   "ui.questsandstuff.modal.color_picker": "Color Picker",
-  "ui.questsandstuff.modal.create_quest_hint": "Right-click canvas > Create Named Quest",
-  "ui.questsandstuff.modal.create_quest_title": "Create Quest At Cursor",
   "ui.questsandstuff.modal.custom_sounds": "Custom Sounds",
   "ui.questsandstuff.modal.connections_manager": "Connections Manager",
   "ui.questsandstuff.sound.level": "Sound Level",

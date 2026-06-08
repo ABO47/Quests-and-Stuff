@@ -34,7 +34,6 @@ public final class ContextMenuState {
         state.contextLogicalY = logicalY;
         state.contextPointerLogicalX = pointerLogicalX;
         state.contextPointerLogicalY = pointerLogicalY;
-        state.createQuestModalOpen = false;
         clearTarget(state);
         resetMenuMetrics(state);
         clearDeleteConfirm(state);

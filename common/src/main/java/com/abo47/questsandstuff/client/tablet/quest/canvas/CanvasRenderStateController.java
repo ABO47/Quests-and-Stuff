@@ -38,7 +38,6 @@ final class CanvasRenderStateController {
             return;
         }
         ContextMenuState.close(state);
-        state.createQuestModalOpen = false;
         state.boxSelecting = false;
     }
 }
