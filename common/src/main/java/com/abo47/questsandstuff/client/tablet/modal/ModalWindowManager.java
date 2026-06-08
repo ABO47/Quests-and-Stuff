@@ -1,84 +1,75 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+
 public final class ModalWindowManager {
     public enum ModalType {
-        NONE,
-        ICON_PICKER,
-        ASSET_PICKER,
-        BIOME_PICKER,
-        ADVANCEMENT_PICKER,
-        RECIPE_PICKER,
-        STRUCTURE_PICKER,
-        BLOCK_PICKER,
-        STAT_PICKER,
-        DIMENSION_PICKER,
-        LOOT_TABLE_PICKER,
-        ITEM_INVENTORY_PICKER,
-        SOUND_PICKER,
-        COLOR_PICKER,
-        THEME_PICKER,
-        ENTITY_VARIANT_PICKER,
-        PREREQUISITES_MANAGER,
-        SETTINGS_PANEL
+        NONE(null, null),
+        ICON_PICKER(state -> state.iconPickerOpen, (state, open) -> state.iconPickerOpen = open),
+        ASSET_PICKER(state -> state.assetPickerOpen, (state, open) -> state.assetPickerOpen = open),
+        BIOME_PICKER(state -> state.biomePickerOpen, (state, open) -> state.biomePickerOpen = open),
+        ADVANCEMENT_PICKER(state -> state.advancementPickerOpen, (state, open) -> state.advancementPickerOpen = open),
+        RECIPE_PICKER(state -> state.recipePickerOpen, (state, open) -> state.recipePickerOpen = open),
+        STRUCTURE_PICKER(state -> state.structurePickerOpen, (state, open) -> state.structurePickerOpen = open),
+        BLOCK_PICKER(state -> state.blockPickerOpen, (state, open) -> state.blockPickerOpen = open),
+        STAT_PICKER(state -> state.statPickerOpen, (state, open) -> state.statPickerOpen = open),
+        DIMENSION_PICKER(state -> state.dimensionPickerOpen, (state, open) -> state.dimensionPickerOpen = open),
+        LOOT_TABLE_PICKER(state -> state.lootTablePickerOpen, (state, open) -> state.lootTablePickerOpen = open),
+        ITEM_INVENTORY_PICKER(state -> state.itemInventoryPickerOpen, (state, open) -> state.itemInventoryPickerOpen = open),
+        SOUND_PICKER(state -> state.soundPickerOpen, (state, open) -> state.soundPickerOpen = open),
+        COLOR_PICKER(state -> state.colorPickerOpen, (state, open) -> state.colorPickerOpen = open),
+        THEME_PICKER(state -> state.themePickerOpen, (state, open) -> state.themePickerOpen = open),
+        ENTITY_VARIANT_PICKER(state -> state.entityVariantPickerOpen, (state, open) -> state.entityVariantPickerOpen = open),
+        PREREQUISITES_MANAGER(state -> state.prerequisitesManagerOpen, (state, open) -> state.prerequisitesManagerOpen = open),
+        SETTINGS_PANEL(state -> state.settingsPanelOpen, (state, open) -> state.settingsPanelOpen = open);
+
+        private final FlagReader flagReader;
+        private final FlagWriter flagWriter;
+
+        ModalType(FlagReader flagReader, FlagWriter flagWriter) {
+            this.flagReader = flagReader;
+            this.flagWriter = flagWriter;
+        }
+
+        public boolean flagOpen(TabletUiState state) {
+            return state != null && flagReader != null && flagReader.open(state);
+        }
+
+        private void setFlag(TabletUiState state, boolean open) {
+            if (state != null && flagWriter != null) {
+                flagWriter.set(state, open);
+            }
+        }
     }
 
     private ModalWindowManager() {
     }
 
-    public static ModalType activeType(boolean iconOpen, boolean assetOpen, boolean colorOpen) {
-        if (iconOpen) return ModalType.ICON_PICKER;
-        if (assetOpen) return ModalType.ASSET_PICKER;
-        if (colorOpen) return ModalType.COLOR_PICKER;
+    public static void applyOpenFlags(TabletUiState state, ModalType activeType) {
+        ModalType safeType = activeType == null ? ModalType.NONE : activeType;
+        for (ModalType type : ModalType.values()) {
+            type.setFlag(state, type == safeType);
+        }
+    }
+
+    public static ModalType typeFromFlags(TabletUiState state) {
+        if (state == null) {
+            return ModalType.NONE;
+        }
+        for (ModalType type : ModalType.values()) {
+            if (type.flagOpen(state)) {
+                return type;
+            }
+        }
         return ModalType.NONE;
     }
 
-    public static boolean anyOpen(boolean iconOpen, boolean assetOpen, boolean colorOpen) {
-        return iconOpen || assetOpen || colorOpen;
+    private interface FlagReader {
+        boolean open(TabletUiState state);
     }
 
-    public static boolean anyOpen(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean colorOpen) {
-        return iconOpen || assetOpen || biomeOpen || colorOpen;
-    }
-
-    public static boolean anyOpen(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean colorOpen, boolean themeOpen) {
-        return iconOpen || assetOpen || biomeOpen || colorOpen || themeOpen;
-    }
-
-    public static boolean anyOpen(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen) {
-        return iconOpen || assetOpen || biomeOpen || colorOpen || themeOpen || entityVariantOpen;
-    }
-
-    public static boolean anyOpen(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean lootTableOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen) {
-        return iconOpen || assetOpen || biomeOpen || lootTableOpen || colorOpen || themeOpen || entityVariantOpen;
-    }
-
-    public static ModalFlags open(ModalType type) {
-        return new ModalFlags(
-                type == ModalType.ICON_PICKER,
-                type == ModalType.ASSET_PICKER,
-                type == ModalType.BIOME_PICKER,
-                type == ModalType.ADVANCEMENT_PICKER,
-                type == ModalType.RECIPE_PICKER,
-                type == ModalType.STRUCTURE_PICKER,
-                type == ModalType.BLOCK_PICKER,
-                type == ModalType.STAT_PICKER,
-                type == ModalType.DIMENSION_PICKER,
-                type == ModalType.LOOT_TABLE_PICKER,
-                type == ModalType.ITEM_INVENTORY_PICKER,
-                type == ModalType.SOUND_PICKER,
-                type == ModalType.COLOR_PICKER,
-                type == ModalType.THEME_PICKER,
-                type == ModalType.ENTITY_VARIANT_PICKER,
-                type == ModalType.PREREQUISITES_MANAGER,
-                type == ModalType.SETTINGS_PANEL
-        );
-    }
-
-    public static ModalFlags closeAll() {
-        return open(ModalType.NONE);
-    }
-
-    public record ModalFlags(boolean iconOpen, boolean assetOpen, boolean biomeOpen, boolean advancementOpen, boolean recipeOpen, boolean structureOpen, boolean blockOpen, boolean statOpen, boolean dimensionOpen, boolean lootTableOpen, boolean itemInventoryOpen, boolean soundOpen, boolean colorOpen, boolean themeOpen, boolean entityVariantOpen, boolean prerequisitesManagerOpen, boolean settingsOpen) {
+    private interface FlagWriter {
+        void set(TabletUiState state, boolean open);
     }
 }

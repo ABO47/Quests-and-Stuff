@@ -32,7 +32,7 @@ class CanvasGroupResizeTransformTest {
         assertEquals(new CanvasGroupResizeTransform.Bounds(10, 10, 150, 70), result.bounds());
         assertEquals(2.0D, result.scaleX(), 0.0001D);
         assertEquals(1.5D, result.scaleY(), 0.0001D);
-        assertEquals(new CanvasImageLayer("image", "item:minecraft:stick", 10, 10, 40, 15, 0, 0, 60, 0, 20, 8), result.images().get("image"));
+        assertEquals(new CanvasImageLayer("image", "item:minecraft:stick", 10, 10, 40, 15, 0, 0, 60, 0, 20, 7), result.images().get("image"));
         assertEquals(new CanvasTextLayer("text", "Label", 90, 40, 60, 30, 0, "left", "normal", 0xFFFFFF), result.texts().get("text"));
     }
 

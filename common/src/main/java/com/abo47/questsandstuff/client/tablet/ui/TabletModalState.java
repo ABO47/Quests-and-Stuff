@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -14,24 +15,10 @@ public final class TabletModalState {
     private TabletModalState() {
     }
 
-    static void applyModalFlags(TabletUiState state, ModalWindowManager.ModalFlags flags) {
-        state.iconPickerOpen = flags.iconOpen();
-        state.assetPickerOpen = flags.assetOpen();
-        state.biomePickerOpen = flags.biomeOpen();
-        state.advancementPickerOpen = flags.advancementOpen();
-        state.recipePickerOpen = flags.recipeOpen();
-        state.structurePickerOpen = flags.structureOpen();
-        state.blockPickerOpen = flags.blockOpen();
-        state.statPickerOpen = flags.statOpen();
-        state.dimensionPickerOpen = flags.dimensionOpen();
-        state.lootTablePickerOpen = flags.lootTableOpen();
-        state.itemInventoryPickerOpen = flags.itemInventoryOpen();
-        state.soundPickerOpen = flags.soundOpen();
-        state.colorPickerOpen = flags.colorOpen();
-        state.themePickerOpen = flags.themeOpen();
-        state.entityVariantPickerOpen = flags.entityVariantOpen();
-        state.prerequisitesManagerOpen = flags.prerequisitesManagerOpen();
-        state.settingsPanelOpen = flags.settingsOpen();
+    static void applyModalType(TabletUiState state, ModalWindowManager.ModalType type) {
+        ModalWindowManager.ModalType safeType = type == null ? ModalWindowManager.ModalType.NONE : type;
+        ModalWindowManager.applyOpenFlags(state, safeType);
+        state.modalSession = ModalSession.open(safeType);
     }
 
     public static void openModal(TabletUiState state, ModalWindowManager.ModalType type) {
@@ -39,7 +26,7 @@ public final class TabletModalState {
             return;
         }
         state.modalWindowClosing = false;
-        applyModalFlags(state, ModalWindowManager.open(type));
+        applyModalType(state, type);
         startOpenAnimation(state, type);
     }
 
@@ -137,8 +124,9 @@ public final class TabletModalState {
     private static void finishCloseAllModals(TabletUiState state) {
         boolean closingSoundPicker = state.modalQuestCompletionSoundTarget != null && !state.modalQuestCompletionSoundTarget.isBlank()
                 || !state.modalQuestCompletionSoundTargets.isEmpty();
-        applyModalFlags(state, ModalWindowManager.closeAll());
+        applyModalType(state, ModalWindowManager.ModalType.NONE);
         state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
         state.modalCanvasBackgroundTarget = "";
         state.modalCanvasImageTarget = "";
         state.modalCanvasEntityTarget = "";
@@ -175,6 +163,7 @@ public final class TabletModalState {
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
+        state.iconTagMode = false;
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
@@ -184,12 +173,14 @@ public final class TabletModalState {
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeTagMode = false;
         state.recipeInventoryMode = false;
         state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
         state.blockSearchFocused = false;
+        state.blockTagMode = false;
         state.blockScrollDragging = false;
         state.statSearchFocused = false;
         state.statScrollDragging = false;
@@ -225,17 +216,20 @@ public final class TabletModalState {
         state.modalHudBackgroundOpacityDragging = false;
         state.iconScrollDragging = false;
         state.iconSearchFocused = false;
+        state.iconTagMode = false;
         state.biomeSearchFocused = false;
         state.biomeScrollDragging = false;
         state.advancementSearchFocused = false;
         state.advancementScrollDragging = false;
         state.recipeSearchFocused = false;
+        state.recipeTagMode = false;
         state.recipeInventoryMode = false;
         state.recipeFluidMode = false;
         state.recipeScrollDragging = false;
         state.structureSearchFocused = false;
         state.structureScrollDragging = false;
         state.blockSearchFocused = false;
+        state.blockTagMode = false;
         state.blockScrollDragging = false;
         state.statSearchFocused = false;
         state.statScrollDragging = false;

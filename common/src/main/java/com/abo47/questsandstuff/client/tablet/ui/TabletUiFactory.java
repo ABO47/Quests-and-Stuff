@@ -5,7 +5,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletShellComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -216,10 +215,6 @@ public final class TabletUiFactory {
 
     public static int withAlpha(int color, int alpha) {
         return TabletWidgets.withAlpha(color, alpha);
-    }
-
-    public static void applyModalFlags(TabletUiState state, ModalWindowManager.ModalFlags flags) {
-        TabletModalState.applyModalFlags(state, flags);
     }
 
     public static int chapterBackgroundFill(String background, int fallback) {

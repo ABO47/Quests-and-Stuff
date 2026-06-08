@@ -48,10 +48,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.biomeSearch = "";
-        state.biomeScroll = 0;
-        state.biomeScrollDragging = false;
-        state.biomeSearchFocused = false;
+        ModalPickerStates.biome(state).reset();
         openModal(state, ModalWindowManager.ModalType.BIOME_PICKER);
     }
 
@@ -60,10 +57,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.advancementSearch = "";
-        state.advancementScroll = 0;
-        state.advancementScrollDragging = false;
-        state.advancementSearchFocused = false;
+        ModalPickerStates.advancement(state).reset();
         openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
     }
 
@@ -72,13 +66,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.recipeSearch = "";
-        state.recipeTagMode = false;
-        state.recipeInventoryMode = false;
-        state.recipeFluidMode = false;
-        state.recipeScroll = 0;
-        state.recipeScrollDragging = false;
-        state.recipeSearchFocused = false;
+        resetRecipePicker(state);
         openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
     }
 
@@ -87,10 +75,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.structureSearch = "";
-        state.structureScroll = 0;
-        state.structureScrollDragging = false;
-        state.structureSearchFocused = false;
+        ModalPickerStates.structure(state).reset();
         openModal(state, ModalWindowManager.ModalType.STRUCTURE_PICKER);
     }
 
@@ -99,11 +84,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.blockSearch = "";
-        state.blockTagMode = false;
-        state.blockScroll = 0;
-        state.blockScrollDragging = false;
-        state.blockSearchFocused = false;
+        resetBlockPicker(state);
         openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
@@ -112,10 +93,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.statSearch = "";
-        state.statScroll = 0;
-        state.statScrollDragging = false;
-        state.statSearchFocused = false;
+        ModalPickerStates.stat(state).reset();
         openModal(state, ModalWindowManager.ModalType.STAT_PICKER);
     }
 
@@ -124,10 +102,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.dimensionSearch = "";
-        state.dimensionScroll = 0;
-        state.dimensionScrollDragging = false;
-        state.dimensionSearchFocused = false;
+        ModalPickerStates.dimension(state).reset();
         openModal(state, ModalWindowManager.ModalType.DIMENSION_PICKER);
     }
 
@@ -136,10 +111,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.lootTableSearch = "";
-        state.lootTableScroll = 0;
-        state.lootTableScrollDragging = false;
-        state.lootTableSearchFocused = false;
+        ModalPickerStates.lootTable(state).reset();
         openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
     }
 
@@ -148,10 +120,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
-        state.itemInventorySearch = "";
-        state.itemInventoryScroll = 0;
-        state.itemInventoryScrollDragging = false;
-        state.itemInventorySearchFocused = false;
+        ModalPickerStates.itemInventory(state).reset();
         openModal(state, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER);
     }
 
@@ -186,11 +155,8 @@ public final class ModalOpenActions {
     public static void openPrerequisitesManager(TabletUiState state, String questId) {
         closeBeforeOpen(state);
         state.prerequisitesManagerQuestId = questId == null ? "" : questId.trim();
-        state.prerequisitesManagerSearch = "";
-        state.prerequisitesManagerSearchFocused = false;
+        ModalPickerStates.prerequisitesManager(state).reset();
         state.prerequisitesManagerExternalMode = false;
-        state.prerequisitesManagerScroll = 0;
-        state.prerequisitesManagerScrollDragging = false;
         state.prerequisitesManagerContextOpen = false;
         state.prerequisitesManagerContextPrerequisiteId = "";
         state.prerequisitesManagerSelectedConnectionKey = "";
@@ -471,11 +437,7 @@ public final class ModalOpenActions {
         state.modalQuestTarget = "";
         state.canvasImageLogicalX = logicalX;
         state.canvasImageLogicalY = logicalY;
-        state.blockSearch = "";
-        state.blockTagMode = false;
-        state.blockScroll = 0;
-        state.blockScrollDragging = false;
-        state.blockSearchFocused = false;
+        resetBlockPicker(state);
         openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
     }
 
@@ -490,13 +452,7 @@ public final class ModalOpenActions {
         state.questDetailsPickTarget = target == null ? "" : target;
         state.canvasImageLogicalX = logicalX;
         state.canvasImageLogicalY = logicalY;
-        state.recipeSearch = "";
-        state.recipeTagMode = false;
-        state.recipeInventoryMode = false;
-        state.recipeFluidMode = false;
-        state.recipeScroll = 0;
-        state.recipeScrollDragging = false;
-        state.recipeSearchFocused = false;
+        resetRecipePicker(state);
         openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
     }
 
@@ -505,24 +461,18 @@ public final class ModalOpenActions {
         state.entityVariantTarget = target == null ? "" : target;
         state.entityVariantSelected = EntityPreviewRenderer.entityVariant(icon == null ? "" : icon);
         state.entityVariantFolder = "";
-        state.entityVariantSearch = "";
-        state.entityVariantSearchFocused = false;
-        state.entityVariantScroll = 0;
-        state.entityVariantScrollDragging = false;
+        ModalPickerStates.entityVariant(state).reset();
         state.contextDeleteConfirmKey = "";
         openModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER);
     }
 
     private static void resetIconPicker(TabletUiState state) {
-        state.iconSearch = "";
-        state.iconSearchFocused = false;
+        ModalPickerStates.icon(state).reset();
         state.iconTagMode = false;
         state.iconAllItemsMode = false;
         state.iconEntityMode = false;
         state.iconInventoryMode = false;
         state.iconFluidMode = false;
-        state.iconScroll = 0;
-        state.iconScrollDragging = false;
     }
 
     private static void resetAssetPicker(TabletUiState state) {
@@ -534,17 +484,23 @@ public final class ModalOpenActions {
         state.blueprintCodeDraft = "";
         state.blueprintCodeMessage = "";
         state.assetBrowseDir = "";
-        state.assetSearch = "";
-        state.assetSearchFocused = false;
-        state.assetGridScroll = 0;
-        state.assetGridScrollDragging = false;
+        ModalPickerStates.asset(state).reset();
     }
 
     private static void resetSoundPicker(TabletUiState state) {
-        state.soundSearch = "";
-        state.soundSearchFocused = false;
-        state.soundScroll = 0;
-        state.soundScrollDragging = false;
+        ModalPickerStates.sound(state).reset();
+    }
+
+    private static void resetRecipePicker(TabletUiState state) {
+        ModalPickerStates.recipe(state).reset();
+        state.recipeTagMode = false;
+        state.recipeInventoryMode = false;
+        state.recipeFluidMode = false;
+    }
+
+    private static void resetBlockPicker(TabletUiState state) {
+        ModalPickerStates.block(state).reset();
+        state.blockTagMode = false;
     }
 
     private static int completionSoundVolume(String questId) {

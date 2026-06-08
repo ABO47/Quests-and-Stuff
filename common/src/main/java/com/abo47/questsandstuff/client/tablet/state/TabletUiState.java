@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -128,6 +129,7 @@ public class TabletUiState {
     public boolean entityVariantPickerOpen;
     public boolean settingsPanelOpen;
     public boolean prerequisitesManagerOpen;
+    public ModalSession modalSession = ModalSession.none();
     public boolean modalWindowClosing;
     public long modalWindowAnimationStartMs;
     public boolean modalWindowAnimationHasSource;

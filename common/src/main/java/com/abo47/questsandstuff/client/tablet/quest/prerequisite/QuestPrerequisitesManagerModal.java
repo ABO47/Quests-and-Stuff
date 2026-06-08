@@ -104,7 +104,7 @@ public final class QuestPrerequisitesManagerModal {
         int closeAnchorX = w - HEADER_CLOSE_ANCHOR_RIGHT_PAD;
         int modeX = headerModeButtonX(w);
         String labelKey = state.prerequisitesManagerExternalMode ? QuestVocabulary.CONNECTIONS_MODE_EXTERNAL : QuestVocabulary.CONNECTIONS_MODE_LOCAL;
-        ButtonWidget mode = WindowChrome.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "external-link", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+        ButtonWidget mode = WindowChrome.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
             state.prerequisitesManagerExternalMode = !state.prerequisitesManagerExternalMode;
             state.prerequisitesManagerScroll = 0;
             state.prerequisitesManagerContextOpen = false;
