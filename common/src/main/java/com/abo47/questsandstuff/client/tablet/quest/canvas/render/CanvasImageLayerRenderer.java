@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasImageLayerRenderer {
     private CanvasImageLayerRenderer() {

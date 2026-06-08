@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
@@ -19,17 +21,17 @@ final class TabletAssets {
 
     static int chapterBackgroundFill(String background, int fallback) {
         return switch (background == null ? "" : background) {
-            case "hexagons" -> TabletWidgets.withAlpha(ModColors.INTERACTIVE, 86);
-            case "octagons" -> TabletWidgets.withAlpha(ModColors.WARNING, 86);
-            case "circles" -> TabletWidgets.withAlpha(ModColors.SUCCESS, 86);
-            case "diamonds" -> TabletWidgets.withAlpha(ModColors.TEXT_SECONDARY, 86);
-            case "gears" -> TabletWidgets.withAlpha(ModColors.BORDER_ACCENT, 92);
-            case "hearts" -> TabletWidgets.withAlpha(ModColors.ERROR, 74);
-            case "pentagons" -> TabletWidgets.withAlpha(ModColors.INTERACTIVE, 108);
-            case "rounded_squares" -> TabletWidgets.withAlpha(ModColors.SURFACE_PANEL_ALT, 120);
+            case "hexagons" -> withAlpha(ModColors.INTERACTIVE, 86);
+            case "octagons" -> withAlpha(ModColors.WARNING, 86);
+            case "circles" -> withAlpha(ModColors.SUCCESS, 86);
+            case "diamonds" -> withAlpha(ModColors.TEXT_SECONDARY, 86);
+            case "gears" -> withAlpha(ModColors.BORDER_ACCENT, 92);
+            case "hearts" -> withAlpha(ModColors.ERROR, 74);
+            case "pentagons" -> withAlpha(ModColors.INTERACTIVE, 108);
+            case "rounded_squares" -> withAlpha(ModColors.SURFACE_PANEL_ALT, 120);
             default -> {
                 if (background != null && !background.isBlank() && !"default".equals(background) && chapterBackgroundTexture(background) != null) {
-                    yield TabletWidgets.withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
+                    yield withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
                 }
                 yield fallback;
             }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestObjectiveCardRenderer {
     private QuestObjectiveCardRenderer() {

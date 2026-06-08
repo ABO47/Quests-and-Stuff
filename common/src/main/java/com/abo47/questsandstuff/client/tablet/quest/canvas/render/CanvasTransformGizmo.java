@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasTransformGizmo {
     private static final int HANDLE = 7;

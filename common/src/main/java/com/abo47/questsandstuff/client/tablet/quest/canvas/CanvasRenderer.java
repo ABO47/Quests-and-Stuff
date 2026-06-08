@@ -35,7 +35,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_L
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_LIMIT_WIDTH;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasRenderer {
     public static final float MIN_CANVAS_ZOOM = 0.5f;

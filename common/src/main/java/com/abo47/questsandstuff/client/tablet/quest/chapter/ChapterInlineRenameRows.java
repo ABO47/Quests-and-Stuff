@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -34,7 +36,7 @@ final class ChapterInlineRenameRows {
                 y,
                 cardW,
                 TabletUiFactory.CHAPTER_CARD_H,
-                TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 108),
+                withAlpha(ModColors.INTERACTIVE, 108),
                 ModColors.BORDER_ACCENT
         ));
         if (icon != null && !icon.isBlank()) {

@@ -10,7 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class PickerListPanel {
     private PickerListPanel() {

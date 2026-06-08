@@ -30,7 +30,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestDetailsWindowLayout {
     private QuestDetailsWindowLayout() {

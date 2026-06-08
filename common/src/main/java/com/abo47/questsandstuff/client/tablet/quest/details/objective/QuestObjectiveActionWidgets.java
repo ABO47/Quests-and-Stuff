@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
@@ -70,7 +72,7 @@ final class QuestObjectiveActionWidgets {
         String progressKey = ProgressAnimations.key("details", questId);
         ProgressTexture texture = new ProgressTexture(
                 IGuiTexture.EMPTY,
-                Surfaces.fill(TabletUiFactory.withAlpha(fillColor, claimed ? 95 : 180))
+                Surfaces.fill(withAlpha(fillColor, claimed ? 95 : 180))
         ).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT);
         ProgressWidget progressFill = new ProgressWidget(() -> ProgressAnimations.value(progressKey, progressValue), x + 1, y + 1, Math.max(1, barW - 2), Math.max(1, h - 2), texture);
         progressFill.setClientSideWidget();
@@ -98,8 +100,8 @@ final class QuestObjectiveActionWidgets {
                 refresh.run();
             });
             hit.setHoverTooltips(new Component[]{TabletVocabulary.component(QuestVocabulary.CLAIM_ALL_REWARDS)});
-            hit.setHoverTexture(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
-            hit.setClickedTexture(Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SUCCESS, 80)));
+            hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.SUCCESS, 45), ModColors.BORDER_ACCENT));
+            hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.SUCCESS, 80)));
             section.addWidget(hit);
         }
     }

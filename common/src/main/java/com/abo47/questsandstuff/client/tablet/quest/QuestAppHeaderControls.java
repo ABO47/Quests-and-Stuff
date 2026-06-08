@@ -23,7 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;

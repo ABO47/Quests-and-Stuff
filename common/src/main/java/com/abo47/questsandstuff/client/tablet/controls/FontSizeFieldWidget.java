@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -48,7 +50,7 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         setValidator(FontSizeFieldWidget::digitsOnly);
         setTextResponder(this::handleChanged);
         setCurrentString(Integer.toString(this.currentValue));
-        setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 150), ModColors.BORDER_ACCENT));
+        setBackground(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 150), ModColors.BORDER_ACCENT));
         setTextColor(ModColors.TEXT_PRIMARY);
         updateTooltip();
     }

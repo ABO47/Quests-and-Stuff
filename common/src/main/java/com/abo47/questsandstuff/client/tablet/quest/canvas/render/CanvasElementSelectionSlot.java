@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasElementSelectionSlot {
     private static final int HANDLE_SIZE = 6;

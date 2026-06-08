@@ -16,7 +16,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestDetailsSplitterWidget extends WidgetGroup {
     private static final int MIN_DETAILS_LEFT_W = 120;

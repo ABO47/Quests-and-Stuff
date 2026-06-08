@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.context;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -47,7 +49,7 @@ public final class ContextMenuSystem {
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         WidgetGroup rowBg = new WidgetGroup(4, y, width, UiThemeTokens.CONTEXT_ROW_H);
-        rowBg.setBackground(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 84)));
+        rowBg.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL_ALT, 84)));
         menu.addWidget(rowBg);
 
         int iconY = centeredY(y, UiThemeTokens.CONTEXT_ROW_H, CONTEXT_ICON_SIZE);
@@ -63,8 +65,8 @@ public final class ContextMenuSystem {
         }
 
         ButtonWidget hit = flatHitButton(4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
-        hit.setHoverTexture(Surfaces.bordered(UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 64), UiThemeTokens.withAlpha(ModColors.BORDER_ACCENT, 220)));
-        hit.setClickedTexture(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 95)));
+        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 64), withAlpha(ModColors.BORDER_ACCENT, 220)));
+        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
     }
 
@@ -81,7 +83,7 @@ public final class ContextMenuSystem {
     }
 
     public static void drawVanillaPanel(GuiGraphics graphics, int x, int y, int width, int height, int borderColor) {
-        graphics.fill(x, y, x + width, y + height, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 246));
+        graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 246));
         graphics.renderOutline(x, y, width, height, borderColor);
     }
 
@@ -92,10 +94,10 @@ public final class ContextMenuSystem {
     public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, int iconColor, boolean hovered) {
         int rowX = menuX + OUTER_PAD;
         int rowH = rowHeight();
-        graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 84));
+        graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, withAlpha(ModColors.SURFACE_PANEL_ALT, 84));
         if (hovered) {
-            graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 64));
-            graphics.renderOutline(rowX, rowY, rowWidth, rowH, UiThemeTokens.withAlpha(ModColors.BORDER_ACCENT, 220));
+            graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, withAlpha(ModColors.INTERACTIVE, 64));
+            graphics.renderOutline(rowX, rowY, rowWidth, rowH, withAlpha(ModColors.BORDER_ACCENT, 220));
         }
         drawVanillaIcon(graphics, menuX + ICON_X, centeredY(rowY, rowH, CONTEXT_ICON_SIZE), icon, iconColor);
         drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, ModColors.TEXT_PRIMARY);
@@ -113,7 +115,7 @@ public final class ContextMenuSystem {
 
     public static void addSeparator(WidgetGroup menu, int y, int width) {
         WidgetGroup sep = new WidgetGroup(4, y + 1, width, 1);
-        sep.setBackground(Surfaces.fill(UiThemeTokens.withAlpha(ModColors.BORDER_BASE, 120)));
+        sep.setBackground(Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 120)));
         menu.addWidget(sep);
     }
 
@@ -255,10 +257,10 @@ public final class ContextMenuSystem {
     }
 
     private static ButtonWidget flatHitButton(int x, int y, int w, int h, Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ButtonWidget button = new ButtonWidget(x, y, w, h, Surfaces.fill(0x00000000), callback);
+        ButtonWidget button = new ButtonWidget(x, y, w, h, Surfaces.transparentFill(), callback);
         button.setClientSideWidget();
-        button.setHoverTexture(Surfaces.fill(0x00000000));
-        button.setClickedTexture(Surfaces.fill(0x00000000));
+        button.setHoverTexture(Surfaces.transparentFill());
+        button.setClickedTexture(Surfaces.transparentFill());
         return button;
     }
 

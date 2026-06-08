@@ -213,10 +213,6 @@ public final class TabletUiFactory {
         return CanvasRenderer.isContextMenuHit(state, x, y);
     }
 
-    public static int withAlpha(int color, int alpha) {
-        return TabletWidgets.withAlpha(color, alpha);
-    }
-
     public static int chapterBackgroundFill(String background, int fallback) {
         return TabletAssets.chapterBackgroundFill(background, fallback);
     }

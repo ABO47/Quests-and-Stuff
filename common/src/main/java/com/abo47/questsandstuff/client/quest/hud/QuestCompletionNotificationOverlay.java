@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -127,7 +128,7 @@ public final class QuestCompletionNotificationOverlay {
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
         int contentW = Math.max(0, safeW - 14);
-        int text = TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, alpha);
+        int text = withAlpha(ModColors.TEXT_PRIMARY, alpha);
 
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
         if (safeH >= 10) {
@@ -145,7 +146,7 @@ public final class QuestCompletionNotificationOverlay {
         if (safeH >= 27) {
             graphics.drawString(font, completed, x + 7, y + 4, text, false);
             String title = cropToWidth(font, titleValue, contentW);
-            graphics.drawString(font, title, x + 7, y + 14, TabletUiFactory.withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
+            graphics.drawString(font, title, x + 7, y + 14, withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
             return;
         }
         String title = cropToWidth(font, titleValue == null || titleValue.isBlank() ? completed : titleValue, contentW);

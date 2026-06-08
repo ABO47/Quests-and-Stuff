@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.panel;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -88,7 +90,7 @@ public final class ModalPanelRouter {
                 if (alpha <= 0) {
                     return;
                 }
-                graphics.fill(getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + getSizeHeight(), TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, alpha));
+                graphics.fill(getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
             }
         };
         overlay.addWidget(dim);
@@ -99,7 +101,7 @@ public final class ModalPanelRouter {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
-        modal.setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
+        modal.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
         TextFieldWidget searchField = descriptor.rebuild(modal, state, player, refresh, w, h);
         modal.setActive(!state.modalWindowClosing);
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {

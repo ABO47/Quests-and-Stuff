@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveHudDisplay;
@@ -119,9 +121,9 @@ public final class PinnedQuestHudOverlay {
         Font font = minecraft.font;
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
-        int titleColor = TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, 235);
-        int secondary = TabletUiFactory.withAlpha(ModColors.TEXT_SECONDARY, 202);
-        int muted = TabletUiFactory.withAlpha(ModColors.TEXT_MUTED, 154);
+        int titleColor = withAlpha(ModColors.TEXT_PRIMARY, 235);
+        int secondary = withAlpha(ModColors.TEXT_SECONDARY, 202);
+        int muted = withAlpha(ModColors.TEXT_MUTED, 154);
 
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.PINNED, x, y, safeW, safeH, selected);
         if (safeW < PAD * 2 + 8 || safeH < 12) {
@@ -186,9 +188,9 @@ public final class PinnedQuestHudOverlay {
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + PAD, y + 5, TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + PAD, y + 5, withAlpha(ModColors.TEXT_PRIMARY, 230), false);
         if (safeH >= 28) {
-            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + PAD, y + HEADER_HEIGHT + 2, TabletUiFactory.withAlpha(ModColors.TEXT_MUTED, 170), false);
+            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + PAD, y + HEADER_HEIGHT + 2, withAlpha(ModColors.TEXT_MUTED, 170), false);
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ToggleSwitchWidget extends SwitchWidget {
     public static final int DEFAULT_WIDTH = 34;

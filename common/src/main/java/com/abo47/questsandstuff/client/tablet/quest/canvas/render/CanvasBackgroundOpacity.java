@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +16,7 @@ public final class CanvasBackgroundOpacity {
     }
 
     public static int color(int color, int percent) {
-        return UiThemeTokens.withAlpha(color, alpha(percent));
+        return withAlpha(color, alpha(percent));
     }
 
     public static void drawFill(GuiGraphics graphics, int x, int y, int width, int height, int color, int percent) {

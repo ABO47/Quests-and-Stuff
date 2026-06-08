@@ -23,14 +23,14 @@ public final class IconOnlyButton extends ButtonWidget {
     private boolean drawingHover;
 
     private IconOnlyButton(int x, int y, int size, ResourceLocation icon, int normalColor, int hoverColor, Consumer<ClickData> callback) {
-        super(x, y, size, size, Surfaces.fill(0x00000000), callback);
+        super(x, y, size, size, Surfaces.transparentFill(), callback);
         this.iconSize = Math.max(8, size - 2);
         this.normalColor = normalColor;
         this.hoverColor = hoverColor;
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> drawingHover ? this.hoverColor : this.normalColor);
         setClientSideWidget();
-        setHoverTexture(Surfaces.fill(0x00000000));
-        setClickedTexture(Surfaces.fill(0x00000000));
+        setHoverTexture(Surfaces.transparentFill());
+        setClickedTexture(Surfaces.transparentFill());
     }
 
     public static IconOnlyButton create(int x, int y, int size, String icon, int color, Consumer<ClickData> callback) {

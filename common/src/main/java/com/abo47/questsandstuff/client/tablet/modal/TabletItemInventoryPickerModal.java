@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
     private static final int TILE = 18;
@@ -92,7 +92,7 @@ public final class TabletItemInventoryPickerModal {
         ItemStack preview = stack.copy();
         preview.setCount(1);
         surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
             if (onPick != null) {
                 onPick.accept(stack.copy());
             }

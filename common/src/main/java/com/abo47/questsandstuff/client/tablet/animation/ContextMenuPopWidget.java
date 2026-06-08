@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -102,7 +103,7 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x + 2, y + 3, x + getSizeWidth() + 2, y + getSizeHeight() + 3, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, alpha));
+        graphics.fill(x + 2, y + 3, x + getSizeWidth() + 2, y + getSizeHeight() + 3, withAlpha(ModColors.SURFACE_BASE, alpha));
     }
 
     private void drawVeil(GuiGraphics graphics, float amount) {
@@ -112,7 +113,7 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, alpha));
+        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
     }
 
     private long startMs() {

@@ -46,7 +46,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitB
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.renameAssetFile;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.searchAssetEntries;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletAssetPickerModal {
     private static final int HEADER_BUTTON_SIZE = 18;

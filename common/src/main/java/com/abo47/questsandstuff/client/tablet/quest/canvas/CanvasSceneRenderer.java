@@ -44,7 +44,7 @@ import java.util.function.BiConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasSceneRenderer {
     private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
@@ -61,7 +61,7 @@ final class CanvasSceneRenderer {
     }
 
     static void applyCanvasBackground(WidgetGroup canvasViewport) {
-        canvasViewport.setBackground(Surfaces.fill(0x00000000));
+        canvasViewport.setBackground(Surfaces.transparentFill());
     }
 
     static void renderGridOverlay(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
@@ -443,10 +443,10 @@ final class CanvasSceneRenderer {
         Component status = ClientQuestCache.questLockedPreview(tag)
                 ? Component.translatable("ui.questsandstuff.quest.locked")
                 : Component.literal(progress + "%");
-        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), Surfaces.fill(0x00000000), click -> {});
+        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), Surfaces.transparentFill(), click -> {});
         hit.setClientSideWidget();
-        hit.setHoverTexture(Surfaces.fill(0x00000000));
-        hit.setClickedTexture(Surfaces.fill(0x00000000));
+        hit.setHoverTexture(Surfaces.transparentFill());
+        hit.setClickedTexture(Surfaces.transparentFill());
         hit.setHoverTooltips(new Component[]{
                 Component.literal(title),
                 status

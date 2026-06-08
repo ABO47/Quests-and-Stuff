@@ -15,7 +15,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestDetailsHeader {
     private QuestDetailsHeader() {
@@ -139,7 +139,7 @@ final class QuestDetailsHeader {
         boolean framed = QuestDetailsEditState.canEdit(state);
         titleField.setBackground(framed
                 ? Surfaces.bordered(ModColors.SURFACE_BASE, editing ? ModColors.INTERACTIVE : ModColors.BORDER_BASE)
-                : Surfaces.fill(0x00000000));
+                : Surfaces.transparentFill());
         titleField.setTextColor(ModColors.TEXT_PRIMARY);
         titleField.setActive(framed);
         if (editing) {

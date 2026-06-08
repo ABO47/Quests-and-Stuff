@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.IntSupplier;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class QuestDetailsDescriptionSelection {
     private static final int SELECTION_PAD = 4;

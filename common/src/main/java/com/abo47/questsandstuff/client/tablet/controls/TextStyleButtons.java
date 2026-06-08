@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -27,14 +29,14 @@ public final class TextStyleButtons {
 
     public static WidgetGroup shell(int x, int y, int width, int height, Consumer<ClickData> callback) {
         WidgetGroup floating = new WidgetGroup(x, y, width, height);
-        floating.setBackground(Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT));
+        floating.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT));
         floating.addWidget(TabletUiFactory.panel(
                 1,
                 1,
                 Math.max(1, width - 2),
                 Math.max(1, height - 2),
-                TabletUiFactory.withAlpha(ModColors.SURFACE_PANEL_ALT, 212),
-                TabletUiFactory.withAlpha(ModColors.BORDER_BASE, 130)
+                withAlpha(ModColors.SURFACE_PANEL_ALT, 212),
+                withAlpha(ModColors.BORDER_BASE, 130)
         ));
         floating.addWidget(TabletUiFactory.flatHitButton(0, 0, width, height, callback));
         return floating;
@@ -110,17 +112,17 @@ public final class TextStyleButtons {
         int iconColor = iconTint == null ? (active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY) : iconTint;
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
                 TabletIconTextButton.State.of(
-                        active ? TabletUiFactory.withAlpha(accent, 158) : TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 72),
-                        active ? accent : TabletUiFactory.withAlpha(ModColors.BORDER_BASE, 116),
+                        active ? withAlpha(accent, 158) : withAlpha(ModColors.SURFACE_BASE, 72),
+                        active ? accent : withAlpha(ModColors.BORDER_BASE, 116),
                         iconColor
                 ),
                 TabletIconTextButton.State.of(
-                        active ? TabletUiFactory.withAlpha(accent, 196) : TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 82),
-                        active ? ModColors.TEXT_PRIMARY : TabletUiFactory.withAlpha(ModColors.BORDER_ACCENT, 210),
+                        active ? withAlpha(accent, 196) : withAlpha(ModColors.INTERACTIVE, 82),
+                        active ? ModColors.TEXT_PRIMARY : withAlpha(ModColors.BORDER_ACCENT, 210),
                         iconColor
                 ),
                 TabletIconTextButton.State.of(
-                        active ? TabletUiFactory.withAlpha(accent, 222) : TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 118),
+                        active ? withAlpha(accent, 222) : withAlpha(ModColors.INTERACTIVE, 118),
                         active ? ModColors.TEXT_PRIMARY : ModColors.BORDER_ACCENT,
                         iconColor
                 )

@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
 public final class ConnectionRenderer {

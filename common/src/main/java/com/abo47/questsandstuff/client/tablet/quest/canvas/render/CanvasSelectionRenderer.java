@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = 4;

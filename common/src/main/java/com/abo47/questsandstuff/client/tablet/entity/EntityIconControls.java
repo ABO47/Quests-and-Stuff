@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
@@ -9,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import java.util.List;
@@ -77,8 +79,8 @@ public final class EntityIconControls {
         ModalOpenActions.openEntityVariantPicker(state, target, icon);
     }
 
-    public static GuiTextureGroup iconHoverTexture() {
-        return Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 60), ModColors.BORDER_ACCENT);
+    public static IGuiTexture iconHoverTexture() {
+        return Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 60), ModColors.BORDER_ACCENT);
     }
 
     public static String pendingRemoveIconLabel(TabletUiState state, String key, String fallback) {

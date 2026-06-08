@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasQuestEffectBadges {
     private static final int MAX_BADGES = 6;

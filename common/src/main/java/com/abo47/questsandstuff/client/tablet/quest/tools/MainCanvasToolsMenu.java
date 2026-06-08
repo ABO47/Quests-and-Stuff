@@ -23,7 +23,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class MainCanvasToolsMenu {
     private MainCanvasToolsMenu() {

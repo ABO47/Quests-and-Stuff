@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -18,8 +19,8 @@ public final class TabletPanelChrome {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int soft = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 82);
-        int hard = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 120);
+        int soft = withAlpha(ModColors.SURFACE_BASE, 82);
+        int hard = withAlpha(ModColors.SURFACE_BASE, 120);
         graphics.fill(x + 4, y + 5, x + w + 4, y + h + 5, soft);
         graphics.fill(x + 2, y + 3, x + w + 2, y + h + 3, hard);
     }
@@ -36,12 +37,12 @@ public final class TabletPanelChrome {
         if (w <= 2 || h <= 2) {
             return;
         }
-        int highlight = UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 22);
-        int shade = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 96);
+        int highlight = withAlpha(ModColors.TEXT_PRIMARY, 22);
+        int shade = withAlpha(ModColors.SURFACE_BASE, 96);
         graphics.fill(x + 1, y + 1, x + w - 1, y + 2, highlight);
-        graphics.fill(x + 1, y + 2, x + 2, y + h - 1, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 10));
+        graphics.fill(x + 1, y + 2, x + 2, y + h - 1, withAlpha(ModColors.TEXT_PRIMARY, 10));
         graphics.fill(x + 1, y + h - 2, x + w - 1, y + h - 1, shade);
-        graphics.fill(x + w - 2, y + 2, x + w - 1, y + h - 1, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 70));
+        graphics.fill(x + w - 2, y + 2, x + w - 1, y + h - 1, withAlpha(ModColors.SURFACE_BASE, 70));
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
@@ -133,12 +134,12 @@ public final class TabletPanelChrome {
         if (w <= 1 || h <= 1) {
             return;
         }
-        int highlight = UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 18);
-        int shade = UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 86);
+        int highlight = withAlpha(ModColors.TEXT_PRIMARY, 18);
+        int shade = withAlpha(ModColors.SURFACE_BASE, 86);
         graphics.fill(x, y, x + w, y + 1, highlight);
-        graphics.fill(x, y + 1, x + 1, y + h, UiThemeTokens.withAlpha(ModColors.TEXT_PRIMARY, 8));
+        graphics.fill(x, y + 1, x + 1, y + h, withAlpha(ModColors.TEXT_PRIMARY, 8));
         graphics.fill(x, y + h - 1, x + w, y + h, shade);
-        graphics.fill(x + w - 1, y + 1, x + w, y + h, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, 62));
+        graphics.fill(x + w - 1, y + 1, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 62));
     }
 
     private static int gridLineColor(int gridOpacityPercent, int gridColor) {

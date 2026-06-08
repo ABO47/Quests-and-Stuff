@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletRecipePickerModal {
     private static final int TILE = 18;
@@ -185,7 +185,7 @@ public final class TabletRecipePickerModal {
         } else {
             surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
             if (!entry.value().isBlank()) {
                 applyRecipePick(player, state, entry.value(), refresh);
             }
@@ -209,7 +209,7 @@ public final class TabletRecipePickerModal {
     private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
             if (entry != null && !entry.isBlank()) {
                 applyRecipePick(player, state, entry, refresh);
             }

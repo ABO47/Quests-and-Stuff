@@ -20,7 +20,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ChapterSplitterWidget extends WidgetGroup {
     private static final int DRAG_THRESHOLD_PX = 3;

@@ -15,7 +15,7 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.c
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolButtons.addToggle;
 
 final class QuestDetailsToolsMenu {

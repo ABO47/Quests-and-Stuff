@@ -32,7 +32,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitB
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runGroupAction;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runQuestIconAction;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletIconPickerModal {
     private TabletIconPickerModal() {

@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -235,9 +236,9 @@ public final class QuestHudLayoutEditScreen extends Screen {
     }
 
     private void renderEditSurface(GuiGraphics graphics) {
-        graphics.fill(0, 0, width, height, TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 86));
-        int lightLine = TabletUiFactory.withAlpha(ModColors.BORDER_BASE, 62);
-        int strongLine = TabletUiFactory.withAlpha(ModColors.BORDER_ACCENT, 78);
+        graphics.fill(0, 0, width, height, withAlpha(ModColors.SURFACE_BASE, 86));
+        int lightLine = withAlpha(ModColors.BORDER_BASE, 62);
+        int strongLine = withAlpha(ModColors.BORDER_ACCENT, 78);
         for (int x = 0; x <= width; x += GRID_STEP) {
             graphics.fill(x, 0, x + 1, height, x % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
         }
@@ -246,7 +247,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
         }
         Minecraft minecraft = Minecraft.getInstance();
         String title = getTitle().getString();
-        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, TabletUiFactory.withAlpha(ModColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, withAlpha(ModColors.TEXT_PRIMARY, 230), false);
     }
 
     private void renderHudPreviews(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -288,7 +289,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
 
     private void drawResizeHandle(GuiGraphics graphics, QuestHudLayout.HudBox box) {
         QuestHudLayout.HudBox handle = resizeHandle(box);
-        graphics.fill(handle.x(), handle.y(), handle.x() + handle.width(), handle.y() + handle.height(), TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 220));
+        graphics.fill(handle.x(), handle.y(), handle.x() + handle.width(), handle.y() + handle.height(), withAlpha(ModColors.SURFACE_BASE, 220));
         graphics.renderOutline(handle.x(), handle.y(), handle.width(), handle.height(), ModColors.SUCCESS);
     }
 
@@ -297,10 +298,10 @@ public final class QuestHudLayoutEditScreen extends Screen {
         int fillAlpha = Math.round(18.0f * opacity);
         int outlineAlpha = Math.round(185.0f * opacity);
         if (fillAlpha > 0) {
-            graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), TabletUiFactory.withAlpha(ModColors.INTERACTIVE, fillAlpha));
+            graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), withAlpha(ModColors.INTERACTIVE, fillAlpha));
         }
         if (outlineAlpha > 0) {
-            graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), TabletUiFactory.withAlpha(ModColors.SUCCESS, outlineAlpha));
+            graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), withAlpha(ModColors.SUCCESS, outlineAlpha));
         }
     }
 

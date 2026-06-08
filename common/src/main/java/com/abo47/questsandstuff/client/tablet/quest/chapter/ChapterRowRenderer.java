@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
@@ -47,7 +49,7 @@ final class ChapterRowRenderer {
             return;
         }
 
-        int baseFill = selected ? TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 82) : ModColors.SURFACE_PANEL_ALT;
+        int baseFill = selected ? withAlpha(ModColors.INTERACTIVE, 82) : ModColors.SURFACE_PANEL_ALT;
         int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), baseFill);
         int border = selected ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
@@ -215,7 +217,7 @@ final class ChapterRowRenderer {
 
     private static void renderLockedFilter(WidgetGroup chapterList, int x, int y, int w, int h) {
         WidgetGroup filter = new WidgetGroup(x, y, w, h);
-        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.Surfaces.fill(TabletUiFactory.withAlpha(ModColors.SURFACE_BASE, 150)));
+        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 150)));
         chapterList.addWidget(filter);
     }
 
@@ -314,7 +316,7 @@ final class ChapterRowRenderer {
             int h = getSizeHeight();
             boolean hovered = isMouseOverElement(mouseX, mouseY);
             if (selected || hovered) {
-                int fill = selected ? TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 108) : TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 44);
+                int fill = selected ? withAlpha(ModColors.INTERACTIVE, 108) : withAlpha(ModColors.INTERACTIVE, 44);
                 int fillSize = Math.min(w, h);
                 int fillX = x + Math.max(0, (w - fillSize) / 2);
                 int fillY = y + Math.max(0, (h - fillSize) / 2);

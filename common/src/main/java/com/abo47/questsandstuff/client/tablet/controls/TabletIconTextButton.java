@@ -4,7 +4,6 @@ import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
@@ -84,11 +83,11 @@ public final class TabletIconTextButton extends ButtonWidget {
         IGuiTexture background = Surfaces.bordered(state.fillColor(), state.borderColor());
         IGuiTexture icon = iconTexture(state.iconColor());
         if (label == null) {
-            return new GuiTextureGroup(background, icon);
+            return Surfaces.group(background, icon);
         }
         TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
         text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
-        return new GuiTextureGroup(background, icon, text);
+        return Surfaces.group(background, icon, text);
     }
 
     private IGuiTexture iconTexture(int color) {

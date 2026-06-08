@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTEXT_ROW_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindowsContextRow;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ContextMenuPanel {
     public static final int PROMOTED_BAR_H = 18;
