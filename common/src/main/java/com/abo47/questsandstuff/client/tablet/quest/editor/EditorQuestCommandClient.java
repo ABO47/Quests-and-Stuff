@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -16,7 +17,6 @@ import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.util.QuestNaming;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
@@ -175,12 +175,13 @@ final class EditorQuestCommandClient {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuestServices.editor(serverPlayer.server).removeQuest(serverPlayer, questId);
-            return;
-        }
-        ClientQuestCache.removeQuestLocal(questId);
-        ModNetwork.sendToServer(new C2SEditorRemoveQuestPacket(questId));
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).removeQuest(serverPlayer, questId),
+                () -> {
+                    ClientQuestCache.removeQuestLocal(questId);
+                    ModNetwork.sendToServer(new C2SEditorRemoveQuestPacket(questId));
+                });
     }
 
     static String predictNextQuestId(TabletUiState state) {
@@ -198,12 +199,15 @@ final class EditorQuestCommandClient {
         String predictedId = predictNextQuestId(state);
         String normalizedTitle = title == null ? "" : title.trim();
 
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuestServices.editor(serverPlayer.server).addQuest(serverPlayer, group, predictedId, logicalX, logicalY, normalizedTitle);
-        } else {
-            ClientQuestCache.createEditorQuestLocal(predictedId, group, logicalX, logicalY, normalizedTitle);
-            ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, logicalX, logicalY, normalizedTitle));
-        }
+        int targetX = logicalX;
+        int targetY = logicalY;
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).addQuest(serverPlayer, group, predictedId, targetX, targetY, normalizedTitle),
+                () -> {
+                    ClientQuestCache.createEditorQuestLocal(predictedId, group, targetX, targetY, normalizedTitle);
+                    ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, targetX, targetY, normalizedTitle));
+                });
 
         state.selectedQuestIds.clear();
         state.selectedQuestIds.add(predictedId);
@@ -282,11 +286,10 @@ final class EditorQuestCommandClient {
             return;
         }
         ClientQuestCache.resetQuestProgressLocal(normalizedQuestId);
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuestServices.engine(serverPlayer.server).resetQuest(serverPlayer, normalizedQuestId);
-            return;
-        }
-        ModNetwork.sendToServer(new C2SResetQuestPacket(normalizedQuestId));
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.engine(serverPlayer.server).resetQuest(serverPlayer, normalizedQuestId),
+                () -> ModNetwork.sendToServer(new C2SResetQuestPacket(normalizedQuestId)));
     }
 
     static void moveQuestTask(Player player, String questId, String taskId, int offset) {
@@ -439,12 +442,13 @@ final class EditorQuestCommandClient {
     }
 
     private static void runQuestDisplayAction(Player player, String questId, String title, String subtitle) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuestServices.editor(serverPlayer.server).updateQuestDisplay(serverPlayer, questId, title, subtitle);
-            ClientQuestCache.setQuestDisplayLocal(questId, title, subtitle);
-            return;
-        }
         ClientQuestCache.setQuestDisplayLocal(questId, title, subtitle);
-        ModNetwork.sendToServer(new C2SEditorUpdateQuestPacket(questId, title == null ? "" : title, subtitle == null ? "" : subtitle));
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).updateQuestDisplay(serverPlayer, questId, title, subtitle),
+                () -> ModNetwork.sendToServer(new C2SEditorUpdateQuestPacket(
+                        questId,
+                        title == null ? "" : title,
+                        subtitle == null ? "" : subtitle)));
     }
 }

@@ -2,13 +2,13 @@ package com.abo47.questsandstuff.client.tablet.shell;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -59,11 +59,10 @@ public final class TabletShellBootstrap {
             if (!canUseEditorHistory(state)) {
                 return;
             }
-            if (player instanceof ServerPlayer serverPlayer) {
-                QuestServices.editor(serverPlayer.server).undo(serverPlayer);
-            } else {
-                ModNetwork.sendToServer(new C2SEditorControlPacket("undo"));
-            }
+            IntegratedServerActions.run(
+                    player,
+                    serverPlayer -> QuestServices.editor(serverPlayer.server).undo(serverPlayer),
+                    () -> ModNetwork.sendToServer(new C2SEditorControlPacket("undo")));
         };
     }
 
@@ -72,11 +71,10 @@ public final class TabletShellBootstrap {
             if (!canUseEditorHistory(state)) {
                 return;
             }
-            if (player instanceof ServerPlayer serverPlayer) {
-                QuestServices.editor(serverPlayer.server).redo(serverPlayer);
-            } else {
-                ModNetwork.sendToServer(new C2SEditorControlPacket("redo"));
-            }
+            IntegratedServerActions.run(
+                    player,
+                    serverPlayer -> QuestServices.editor(serverPlayer.server).redo(serverPlayer),
+                    () -> ModNetwork.sendToServer(new C2SEditorControlPacket("redo")));
         };
     }
 
