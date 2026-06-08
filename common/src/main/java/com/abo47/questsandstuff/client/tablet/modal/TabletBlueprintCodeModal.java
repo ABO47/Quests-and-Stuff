@@ -15,7 +15,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget;
 import net.minecraft.client.Minecraft;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
@@ -30,7 +29,6 @@ final class TabletBlueprintCodeModal {
     private static final int GAP = 3;
     private static final int CODE_Y = 32;
     private static final int CODE_H = 44;
-    private static final int CODE_WRAP_COLUMN = 92;
 
     private TabletBlueprintCodeModal() {
     }
@@ -127,8 +125,8 @@ final class TabletBlueprintCodeModal {
         CodeEditorWidget editor = new CodeEditorWidget(PAD, CODE_Y, panelW - PAD * 2, CODE_H);
         editor.codeEditor.setLanguageDefinitionUnformatted();
         editor.setBackground(Surfaces.bordered(ModColors.recessedSurface(), ModColors.BORDER_BASE));
-        editor.setLines(codeLines(state.blueprintCodeDraft));
-        editor.setOnTextChanged(lines -> state.blueprintCodeDraft = String.join("\n", lines).trim());
+        editor.setLines(editorLines(state.blueprintCodeDraft));
+        editor.setOnTextChanged(lines -> state.blueprintCodeDraft = rawCode(lines));
         editor.setFocus(true);
         panel.addWidget(editor);
     }
@@ -152,25 +150,18 @@ final class TabletBlueprintCodeModal {
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] imported code saved path={} entries={}", saved, blueprint.contentCount());
     }
 
-    private static List<String> codeLines(String value) {
+    static List<String> editorLines(String value) {
         String raw = value == null ? "" : value;
-        if (raw.isBlank()) {
+        if (raw.isEmpty()) {
             return List.of("");
         }
-        List<String> lines = new ArrayList<>();
-        for (String line : raw.split("\\R", -1)) {
-            addWrappedLine(lines, line);
-        }
-        return lines.isEmpty() ? List.of("") : lines;
+        return List.of(raw.split("\\R", -1));
     }
 
-    private static void addWrappedLine(List<String> lines, String line) {
-        if (line == null || line.isEmpty()) {
-            lines.add("");
-            return;
+    static String rawCode(List<String> lines) {
+        if (lines == null || lines.isEmpty()) {
+            return "";
         }
-        for (int start = 0; start < line.length(); start += CODE_WRAP_COLUMN) {
-            lines.add(line.substring(start, Math.min(line.length(), start + CODE_WRAP_COLUMN)));
-        }
+        return String.join("\n", lines);
     }
 }
