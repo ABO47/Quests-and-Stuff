@@ -21,6 +21,8 @@ class TabletPureHelperCoverageTest {
                 entry("text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest"),
                 entry("selector builders", "com.abo47.questsandstuff.client.tablet.controls.TabletSelectorTest"),
                 entry("quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest"),
+                entry("recipe choice index", "com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndexTest"),
+                entry("recipe picker mode controller", "com.abo47.questsandstuff.client.tablet.modal.RecipePickerModeControllerTest"),
                 entry("recipe viewer capabilities", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityMatrixTest"),
                 entry("recipe viewer selection rules", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionRulesTest"),
                 entry("prerequisite connection model", "com.abo47.questsandstuff.client.tablet.quest.prerequisite.PrerequisiteConnectionModelTest"),
