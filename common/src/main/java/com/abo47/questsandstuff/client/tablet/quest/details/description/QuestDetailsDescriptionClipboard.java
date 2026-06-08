@@ -18,12 +18,7 @@ public final class QuestDetailsDescriptionClipboard {
         if (text == null) {
             return;
         }
-        state.canvasQuestClipboardAvailable = false;
-        state.canvasImageClipboard.clear();
-        state.canvasTextClipboard.clear();
-        state.canvasTextClipboard.add(text);
-        state.canvasClipboardOriginX = text.x();
-        state.canvasClipboardOriginY = text.y();
+        state.canvasClipboard.store(false, java.util.List.of(), java.util.List.of(text), text.x(), text.y());
     }
 
     public static void copyImage(TabletUiState state, QuestDetailsDescriptionModel model, String id) {
@@ -31,12 +26,7 @@ public final class QuestDetailsDescriptionClipboard {
         if (image == null) {
             return;
         }
-        state.canvasQuestClipboardAvailable = false;
-        state.canvasImageClipboard.clear();
-        state.canvasTextClipboard.clear();
-        state.canvasImageClipboard.add(image);
-        state.canvasClipboardOriginX = image.x();
-        state.canvasClipboardOriginY = image.y();
+        state.canvasClipboard.store(false, java.util.List.of(image), java.util.List.of(), image.x(), image.y());
     }
 
     public static void pasteAtContext(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
@@ -46,13 +36,13 @@ public final class QuestDetailsDescriptionClipboard {
     }
 
     public static boolean pasteFromKeyboard(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
-        if (state == null || model == null || state.canvasImageClipboard.isEmpty() && state.canvasTextClipboard.isEmpty()) {
+        if (state == null || model == null || !state.canvasClipboard.hasCanvasLayers()) {
             return false;
         }
         int[] anchor = keyboardPasteAnchor(state, model, viewportW, viewportH);
         pasteAt(player, state, questId, model, anchor[0], anchor[1], Math.max(1, viewportW - 1));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] quest details pasted shortcut quest={} texts={} images={} anchor={},{}",
-                questId, state.canvasTextClipboard.size(), state.canvasImageClipboard.size(), anchor[0], anchor[1]);
+                questId, state.canvasClipboard.textCount(), state.canvasClipboard.imageCount(), anchor[0], anchor[1]);
         return true;
     }
 
@@ -81,10 +71,10 @@ public final class QuestDetailsDescriptionClipboard {
     }
 
     private static void pasteAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int anchorX, int anchorY, int contentW) {
-        int dx = anchorX - state.canvasClipboardOriginX;
-        int dy = anchorY - state.canvasClipboardOriginY;
+        int dx = anchorX - state.canvasClipboard.originX();
+        int dy = anchorY - state.canvasClipboard.originY();
         QuestDetailsDescriptionSelectionState.clear(state);
-        for (CanvasTextLayer text : state.canvasTextClipboard) {
+        for (CanvasTextLayer text : state.canvasClipboard.textLayers()) {
             String id = StableIdAllocator.nextId("txt", model.texts.keySet());
             CanvasTextLayer pasted = new CanvasTextLayer(id, text.text(), text.x() + dx, text.y() + dy, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
             pasted = QuestDetailsDescriptionLayout.fitAndClampText(state, pasted, contentW);
@@ -93,7 +83,7 @@ public final class QuestDetailsDescriptionClipboard {
             state.questDetailsSelectedTextIds.add(id);
             state.questDetailsSelectedTextId = id;
         }
-        for (CanvasImageLayer image : state.canvasImageClipboard) {
+        for (CanvasImageLayer image : state.canvasClipboard.imageLayers()) {
             String id = StableIdAllocator.nextId(imageIdPrefix(image), model.images.keySet());
             CanvasImageLayer pasted = new CanvasImageLayer(id, image.asset(), image.x() + dx, image.y() + dy, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             pasted = QuestDetailsDescriptionLayout.fitAndClampImage(state, pasted, contentW);

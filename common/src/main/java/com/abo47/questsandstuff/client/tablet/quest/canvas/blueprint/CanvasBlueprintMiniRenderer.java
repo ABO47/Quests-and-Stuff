@@ -78,7 +78,7 @@ public final class CanvasBlueprintMiniRenderer {
         return new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasBlueprint blueprint = CanvasBlueprintStore.read(state.blueprintPlacementAsset);
+                CanvasBlueprint blueprint = CanvasBlueprintStore.read(state.blueprintPlacement.asset());
                 if (blueprint.isEmpty()) {
                     return;
                 }

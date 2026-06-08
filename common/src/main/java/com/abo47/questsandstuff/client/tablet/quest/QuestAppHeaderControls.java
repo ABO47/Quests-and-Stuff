@@ -159,7 +159,8 @@ final class QuestAppHeaderControls {
         toolsButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
         boolean settingsActive = settingsActive(state);
         settingsButton.visuals(headerVisuals(settingsActive ? withAlpha(ModColors.SUCCESS, 38) : ModColors.SURFACE_PANEL_ALT, settingsActive ? ModColors.SUCCESS : ModColors.BORDER_BASE, settingsActive ? ModColors.SUCCESS : ModColors.INTERACTIVE));
-        blueprintButton.visuals(headerVisuals(state.blueprintPlacementActive ? withAlpha(ModColors.WARNING, 38) : ModColors.SURFACE_PANEL_ALT, state.blueprintPlacementActive ? ModColors.WARNING : ModColors.BORDER_BASE, state.blueprintPlacementActive ? ModColors.WARNING : ModColors.INTERACTIVE));
+        boolean activeBlueprintPlacement = state.blueprintPlacement.active();
+        blueprintButton.visuals(headerVisuals(activeBlueprintPlacement ? withAlpha(ModColors.WARNING, 38) : ModColors.SURFACE_PANEL_ALT, activeBlueprintPlacement ? ModColors.WARNING : ModColors.BORDER_BASE, activeBlueprintPlacement ? ModColors.WARNING : ModColors.INTERACTIVE));
         claimAllButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
         editorButton.visuals(headerVisuals(withAlpha(state.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.editMode ? ModColors.SUCCESS : ModColors.ERROR, state.editMode ? ModColors.SUCCESS : ModColors.ERROR));
     }

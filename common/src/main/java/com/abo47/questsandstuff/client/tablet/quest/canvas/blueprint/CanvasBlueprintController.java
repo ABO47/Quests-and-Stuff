@@ -33,7 +33,7 @@ public final class CanvasBlueprintController {
     }
 
     public static void openBlueprintLibrary(TabletUiState state) {
-        ModalOpenActions.openBlueprintPicker(state, state.blueprintPlacementAsset);
+        ModalOpenActions.openBlueprintPicker(state, state.blueprintPlacement.asset());
     }
 
     public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, TabletUiState state, int noticeX, int noticeY) {
@@ -52,7 +52,7 @@ public final class CanvasBlueprintController {
         }
         String saved = CanvasBlueprintStore.save(blueprint, blueprint.name());
         if (!saved.isBlank()) {
-            state.blueprintPlacementAsset = saved;
+            state.blueprintPlacement.rememberAsset(saved);
         }
         return saved;
     }
@@ -66,29 +66,29 @@ public final class CanvasBlueprintController {
         if (blueprint.isEmpty()) {
             return;
         }
-        state.blueprintPlacementActive = true;
-        state.blueprintPlacementAsset = path;
+        state.blueprintPlacement.begin(path);
         ContextMenuState.close(state);
         state.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
     }
 
     public static boolean cancelPlacement(TabletUiState state) {
-        if (state == null || !state.blueprintPlacementActive) {
+        if (state == null || !state.blueprintPlacement.active()) {
             return false;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement cancel path={}", state.blueprintPlacementAsset);
-        state.blueprintPlacementActive = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement cancel path={}", state.blueprintPlacement.asset());
+        state.blueprintPlacement.cancel();
         return true;
     }
 
     public static boolean placeAt(Player player, TabletUiState state, int localX, int localY) {
-        if (state == null || !state.blueprintPlacementActive) {
+        if (state == null || !state.blueprintPlacement.active()) {
             return false;
         }
-        CanvasBlueprint blueprint = CanvasBlueprintStore.read(state.blueprintPlacementAsset);
+        String asset = state.blueprintPlacement.asset();
+        CanvasBlueprint blueprint = CanvasBlueprintStore.read(asset);
         if (blueprint.isEmpty()) {
-            state.blueprintPlacementActive = false;
+            state.blueprintPlacement.cancel();
             return false;
         }
         PlacementAnchor anchor = placementAnchor(state, blueprint, localX, localY);
@@ -97,17 +97,16 @@ public final class CanvasBlueprintController {
         state.selectedCanvasTextId = "";
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasTextIds.clear();
-        state.pendingPastedCanvasImageIds.clear();
-        state.pendingPastedCanvasTextIds.clear();
+        state.canvasClipboard.clearPendingPastedLayers();
         EditorCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
-        state.blueprintPlacementActive = false;
+        state.blueprintPlacement.finish();
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement commit path={} anchor={},{} entries={}",
-                state.blueprintPlacementAsset, anchor.x(), anchor.y(), blueprint.contentCount());
+                asset, anchor.x(), anchor.y(), blueprint.contentCount());
         return true;
     }
 
     public static WidgetGroup placementGhost(CanvasViewport canvasViewport, TabletUiState state) {
-        if (state == null || !state.blueprintPlacementActive || state.blueprintPlacementAsset == null || state.blueprintPlacementAsset.isBlank()) {
+        if (state == null || !state.blueprintPlacement.active() || !state.blueprintPlacement.hasAsset()) {
             return null;
         }
         return CanvasBlueprintMiniRenderer.placementGhost(canvasViewport, state);

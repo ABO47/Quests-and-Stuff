@@ -179,7 +179,7 @@ public final class QuestDetailsDescriptionMenus {
                 QuestDetailsDescriptionModel.save(player, questId, model);
             }));
         }
-        if (!state.canvasImageClipboard.isEmpty() || !state.canvasTextClipboard.isEmpty()) {
+        if (state.canvasClipboard.hasCanvasLayers()) {
             actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_PASTE), "paste", ModColors.SUCCESS, () -> {
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsDescriptionClipboard.pasteAtContext(player, state, questId, model, x, y);

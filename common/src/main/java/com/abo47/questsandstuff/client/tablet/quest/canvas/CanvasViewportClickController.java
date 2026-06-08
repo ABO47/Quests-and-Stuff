@@ -50,7 +50,7 @@ final class CanvasViewportClickController {
         int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvasPanelX + state.canvasViewportX, mouseX);
         int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvasPanelY + state.canvasViewportY, mouseY);
 
-        if (state.blueprintPlacementActive) {
+        if (state.blueprintPlacement.active()) {
             if (!state.canEdit) {
                 CanvasBlueprintController.cancelPlacement(state);
                 refresher.run();

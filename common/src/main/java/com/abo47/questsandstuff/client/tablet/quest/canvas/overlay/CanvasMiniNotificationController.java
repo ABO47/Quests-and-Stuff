@@ -34,10 +34,7 @@ public final class CanvasMiniNotificationController {
         if (state == null || translationKey == null || translationKey.isBlank() || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
             return;
         }
-        state.canvasMiniNotificationKey = translationKey;
-        state.canvasMiniNotificationX = localX;
-        state.canvasMiniNotificationY = localY;
-        state.canvasMiniNotificationUntilMs = System.currentTimeMillis() + DURATION_MS;
+        state.canvasMiniNotification.show(translationKey, localX, localY, System.currentTimeMillis(), DURATION_MS);
     }
 
     public static void showAtPointer(TabletUiState state, CanvasViewport canvasViewport, String translationKey) {
@@ -48,8 +45,7 @@ public final class CanvasMiniNotificationController {
 
     public static WidgetGroup render(CanvasViewport canvasViewport, TabletUiState state) {
         if (state == null
-                || state.canvasMiniNotificationKey.isBlank()
-                || System.currentTimeMillis() >= state.canvasMiniNotificationUntilMs
+                || !state.canvasMiniNotification.active(System.currentTimeMillis())
                 || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
             return null;
         }
@@ -64,17 +60,17 @@ public final class CanvasMiniNotificationController {
     }
 
     private static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int viewportW, int viewportH) {
-        long remaining = state.canvasMiniNotificationUntilMs - System.currentTimeMillis();
+        long remaining = state.canvasMiniNotification.untilMs() - System.currentTimeMillis();
         if (remaining <= 0L) {
             return;
         }
         var font = Minecraft.getInstance().font;
-        String text = I18n.get(state.canvasMiniNotificationKey);
+        String text = I18n.get(state.canvasMiniNotification.translationKey());
         int textW = font.width(text);
-        int localX = clamp(state.canvasMiniNotificationX + CURSOR_GAP, 2, Math.max(2, viewportW - textW - 2));
-        int localY = state.canvasMiniNotificationY + CURSOR_GAP;
+        int localX = clamp(state.canvasMiniNotification.x() + CURSOR_GAP, 2, Math.max(2, viewportW - textW - 2));
+        int localY = state.canvasMiniNotification.y() + CURSOR_GAP;
         if (localY + font.lineHeight > viewportH - 2) {
-            localY = state.canvasMiniNotificationY - font.lineHeight - CURSOR_GAP;
+            localY = state.canvasMiniNotification.y() - font.lineHeight - CURSOR_GAP;
         }
         localY = clamp(localY, 2, Math.max(2, viewportH - font.lineHeight - 2));
         int alpha = remaining < FADE_MS ? clamp((int) (remaining * 255L / FADE_MS), 0, 255) : 255;

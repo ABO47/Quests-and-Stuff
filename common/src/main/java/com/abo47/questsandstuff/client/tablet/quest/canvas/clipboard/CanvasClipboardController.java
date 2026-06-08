@@ -54,10 +54,7 @@ public final class CanvasClipboardController {
     }
 
     public static boolean hasClipboardContent(TabletUiState state) {
-        return state != null
-                && (state.canvasQuestClipboardAvailable
-                || !state.canvasImageClipboard.isEmpty()
-                || !state.canvasTextClipboard.isEmpty());
+        return state != null && state.canvasClipboard.hasContent();
     }
 
     public static boolean pasteAtContext(Player player, TabletUiState state) {
@@ -143,13 +140,7 @@ public final class CanvasClipboardController {
         }
 
         CanvasPoint origin = clipboardOrigin(state, canvasViewport, copiedQuestIds, copiedImages, copiedTexts);
-        state.canvasQuestClipboardAvailable = !copiedQuestIds.isEmpty();
-        state.canvasImageClipboard.clear();
-        state.canvasImageClipboard.addAll(copiedImages);
-        state.canvasTextClipboard.clear();
-        state.canvasTextClipboard.addAll(copiedTexts);
-        state.canvasClipboardOriginX = origin.x;
-        state.canvasClipboardOriginY = origin.y;
+        state.canvasClipboard.store(!copiedQuestIds.isEmpty(), copiedImages, copiedTexts, origin.x, origin.y);
         ContextMenuState.clearDeleteConfirm(state);
 
         if (!copiedQuestIds.isEmpty()) {
@@ -245,17 +236,16 @@ public final class CanvasClipboardController {
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasTextId = "";
         state.selectedCanvasTextIds.clear();
-        state.pendingPastedCanvasImageIds.clear();
-        state.pendingPastedCanvasTextIds.clear();
+        state.canvasClipboard.clearPendingPastedLayers();
 
         boolean pastedElements = pasteCanvasElements(state, group, anchorX, anchorY);
-        if (state.canvasQuestClipboardAvailable) {
+        if (state.canvasClipboard.hasQuestClipboard()) {
             EditorCommandClient.runCanvasPasteClipboardAction(player, group, anchorX, anchorY);
         }
 
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste requested source={} group={} quests={} images={} texts={} anchor={},{}",
-                source, group, state.canvasQuestClipboardAvailable, state.canvasImageClipboard.size(), state.canvasTextClipboard.size(), anchorX, anchorY);
-        return state.canvasQuestClipboardAvailable || pastedElements;
+                source, group, state.canvasClipboard.hasQuestClipboard(), state.canvasClipboard.imageCount(), state.canvasClipboard.textCount(), anchorX, anchorY);
+        return state.canvasClipboard.hasQuestClipboard() || pastedElements;
     }
 
     private static boolean pasteCanvasElements(TabletUiState state, String group, int anchorX, int anchorY) {
@@ -263,10 +253,10 @@ public final class CanvasClipboardController {
         Set<String> existingImageIds = existingImageIds(state, group);
         Set<String> existingTextIds = existingTextIds(state, group);
         int index = 0;
-        for (CanvasImageLayer image : List.copyOf(state.canvasImageClipboard)) {
+        for (CanvasImageLayer image : state.canvasClipboard.imageLayers()) {
             String id = uniqueLayerId("img", existingImageIds);
-            int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.canvasClipboardOriginX);
-            int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.canvasClipboardOriginY);
+            int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.canvasClipboard.originX());
+            int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             if (state.gridSnapLocked) {
@@ -275,14 +265,14 @@ public final class CanvasClipboardController {
             CanvasLayerMutations.putCanvasImage(state, group, duplicate);
             state.selectedCanvasImageIds.add(id);
             state.selectedCanvasImageId = id;
-            state.pendingPastedCanvasImageIds.add(id);
+            state.canvasClipboard.recordPastedImage(id);
             pasted = true;
             index++;
         }
-        for (CanvasTextLayer text : List.copyOf(state.canvasTextClipboard)) {
+        for (CanvasTextLayer text : state.canvasClipboard.textLayers()) {
             String id = uniqueLayerId("txt", existingTextIds);
-            int x = TabletUiFactory.snapToGrid(state, anchorX + text.x() - state.canvasClipboardOriginX);
-            int y = TabletUiFactory.snapToGrid(state, anchorY + text.y() - state.canvasClipboardOriginY);
+            int x = TabletUiFactory.snapToGrid(state, anchorX + text.x() - state.canvasClipboard.originX());
+            int y = TabletUiFactory.snapToGrid(state, anchorY + text.y() - state.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
             CanvasTextLayer duplicate = new CanvasTextLayer(id, text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
             if (state.gridSnapLocked) {
@@ -291,7 +281,7 @@ public final class CanvasClipboardController {
             CanvasLayerMutations.putCanvasText(state, group, duplicate);
             state.selectedCanvasTextIds.add(id);
             state.selectedCanvasTextId = id;
-            state.pendingPastedCanvasTextIds.add(id);
+            state.canvasClipboard.recordPastedText(id);
             pasted = true;
             index++;
         }

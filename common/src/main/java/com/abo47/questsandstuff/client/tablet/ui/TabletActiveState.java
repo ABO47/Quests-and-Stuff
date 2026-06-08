@@ -108,18 +108,17 @@ final class TabletActiveState {
                 activeTabletState.selectedCanvasTextId = textId;
             }
         }
-        activeTabletState.selectedCanvasImageIds.addAll(activeTabletState.pendingPastedCanvasImageIds);
-        activeTabletState.selectedCanvasTextIds.addAll(activeTabletState.pendingPastedCanvasTextIds);
-        String pendingImage = activeTabletState.pendingPastedCanvasImageIds.stream().reduce((first, second) -> second).orElse("");
-        String pendingText = activeTabletState.pendingPastedCanvasTextIds.stream().reduce((first, second) -> second).orElse("");
+        activeTabletState.selectedCanvasImageIds.addAll(activeTabletState.canvasClipboard.pendingPastedImageIds());
+        activeTabletState.selectedCanvasTextIds.addAll(activeTabletState.canvasClipboard.pendingPastedTextIds());
+        String pendingImage = activeTabletState.canvasClipboard.lastPendingPastedImageId();
+        String pendingText = activeTabletState.canvasClipboard.lastPendingPastedTextId();
         if (!pendingImage.isBlank()) {
             activeTabletState.selectedCanvasImageId = pendingImage;
         }
         if (!pendingText.isBlank()) {
             activeTabletState.selectedCanvasTextId = pendingText;
         }
-        activeTabletState.pendingPastedCanvasImageIds.clear();
-        activeTabletState.pendingPastedCanvasTextIds.clear();
+        activeTabletState.canvasClipboard.clearPendingPastedLayers();
         activeTabletState.recentlyCreatedGroups.remove(EditorCommandClient.selectedGroupName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={}",
                 EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedCanvasImageIds.size(), activeTabletState.selectedCanvasTextIds.size());

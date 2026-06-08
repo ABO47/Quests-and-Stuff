@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class QuestDetailsDescriptionEditActions {
@@ -185,15 +186,14 @@ final class QuestDetailsDescriptionEditActions {
     }
 
     static void copyDescriptionSelection(TabletUiState state, QuestDetailsDescriptionModel model) {
-        state.canvasQuestClipboardAvailable = false;
-        state.canvasImageClipboard.clear();
-        state.canvasTextClipboard.clear();
+        List<CanvasImageLayer> copiedImages = new ArrayList<>();
+        List<CanvasTextLayer> copiedTexts = new ArrayList<>();
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
             if (text != null) {
-                state.canvasTextClipboard.add(text);
+                copiedTexts.add(text);
                 minX = Math.min(minX, text.x());
                 minY = Math.min(minY, text.y());
             }
@@ -201,13 +201,12 @@ final class QuestDetailsDescriptionEditActions {
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
             if (image != null) {
-                state.canvasImageClipboard.add(image);
+                copiedImages.add(image);
                 minX = Math.min(minX, image.x());
                 minY = Math.min(minY, image.y());
             }
         }
-        state.canvasClipboardOriginX = minX == Integer.MAX_VALUE ? 0 : minX;
-        state.canvasClipboardOriginY = minY == Integer.MAX_VALUE ? 0 : minY;
+        state.canvasClipboard.store(false, copiedImages, copiedTexts, minX == Integer.MAX_VALUE ? 0 : minX, minY == Integer.MAX_VALUE ? 0 : minY);
     }
 
     static boolean copySelectedDescriptionToClipboard(TabletUiState state, QuestDetailsDescriptionModel model) {
@@ -216,8 +215,8 @@ final class QuestDetailsDescriptionEditActions {
         }
         copyDescriptionSelection(state, model);
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] quest details copied selection texts={} images={}",
-                state.canvasTextClipboard.size(), state.canvasImageClipboard.size());
-        return !state.canvasTextClipboard.isEmpty() || !state.canvasImageClipboard.isEmpty();
+                state.canvasClipboard.textCount(), state.canvasClipboard.imageCount());
+        return state.canvasClipboard.hasCanvasLayers();
     }
 
     static boolean selectAllDescription(TabletUiState state, QuestDetailsDescriptionModel model) {
