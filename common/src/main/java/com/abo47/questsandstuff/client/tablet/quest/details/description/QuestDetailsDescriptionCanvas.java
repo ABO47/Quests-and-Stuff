@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
@@ -326,22 +327,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         String transformMode = state.questDetailsTransformMode;
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
         transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
         QuestDetailsDescriptionModel.save(player, questId, model);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details description transform commit quest={} kind={} id={} mode={}", questId, transformKind, transformId, transformMode);
-        state.questDetailsTransformId = "";
-        state.questDetailsTransformKind = "";
-        state.questDetailsTransformMode = "";
-        state.questDetailsTransformAxis = "";
-        state.dragStartTextPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
-        state.rotatePreviewAngle = 0.0;
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
         refresh.run();
         return true;
     }
@@ -386,9 +374,9 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             state.questDetailsTransformAxis = "";
             return;
         }
-        state.questDetailsTransformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
+        String transformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
         if (gizmoMode == CanvasTransformMode.MOVE) {
-            state.questDetailsTransformAxis = CanvasTransformGizmo.moveAxisOrFree(state.questDetailsTransformAxis);
+            transformAxis = CanvasTransformGizmo.moveAxisOrFree(transformAxis);
         }
         boolean resizeHit = gizmoMode == CanvasTransformMode.RESIZE
                 || (!gizmoSupported && gizmoMode == null && hitTest.inResizeHandle(rect, lx, visibleY));
@@ -396,6 +384,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
                 || (!gizmoSupported && gizmoMode == null && hitTest.inRotateHandle(rect, lx, visibleY));
         boolean selectionMove = selection.count() > 1 && hitTest.isHitSelected(hit) && !resizeHit && !rotateHit;
         transforms.beginTransform(model, hit.kind(), hit.id(), new QuestDetailsDescriptionTransform.ElementRect(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation()), selectionMove, resizeHit, rotateHit, lx, visibleY, ly);
+        state.questDetailsTransformAxis = selectionMove ? "" : transformAxis;
     }
 
     private boolean shiftMoveHit(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
@@ -528,20 +517,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private void clearEditDragState() {
         state.selectingCanvasTextRange = false;
         state.questDetailsBoxSelecting = false;
-        state.questDetailsTransformId = "";
-        state.questDetailsTransformKind = "";
-        state.questDetailsTransformMode = "";
-        state.questDetailsTransformAxis = "";
-        state.dragStartTextPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
-        state.rotatePreviewAngle = 0.0;
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
     }
 
     private static void toggle(java.util.Set<String> values, String id) {

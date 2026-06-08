@@ -188,12 +188,7 @@ final class CanvasViewportInputController {
             String group = TabletUiFactory.selectedGroupName(state);
             CanvasRenderer.commitTransientCanvasImage(state, group, state.selectedCanvasImageId);
             CanvasRenderer.persistCanvasImage(state, group, state.selectedCanvasImageId);
-            state.draggingCanvasImage = false;
-            state.resizingCanvasImage = false;
-            state.rotatingCanvasImage = false;
-            state.canvasImageTransformAxis = "";
-            state.snapGuideXVisible = false;
-            state.snapGuideYVisible = false;
+            CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
@@ -201,11 +196,7 @@ final class CanvasViewportInputController {
             String group = TabletUiFactory.selectedGroupName(state);
             CanvasRenderer.commitTransientCanvasText(state, group, state.selectedCanvasTextId);
             CanvasRenderer.persistCanvasText(state, group, state.selectedCanvasTextId);
-            state.draggingCanvasText = false;
-            state.resizingCanvasText = false;
-            state.rotatingCanvasText = false;
-            state.snapGuideXVisible = false;
-            state.snapGuideYVisible = false;
+            CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }

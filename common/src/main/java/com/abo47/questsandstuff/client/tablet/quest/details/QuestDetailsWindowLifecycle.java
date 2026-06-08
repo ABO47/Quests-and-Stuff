@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -125,7 +125,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsTextFontSizeFieldTarget = "";
         state.questDetailsTextColorQuestId = "";
         state.questDetailsTextColorTextId = "";
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
         EntityMotionEditor.close(state);
         state.questDetailsTitleFocused = false;
         if (closingQuestId.equals(state.pendingQuestTitleChangeId)) {
@@ -184,7 +184,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsPickTarget = "";
         state.questDetailsAssetPickTarget = "";
         state.questDetailsClaimedOverrideQuestId = "";
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
     }
 
     private static void startOpenAnimation(TabletUiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {

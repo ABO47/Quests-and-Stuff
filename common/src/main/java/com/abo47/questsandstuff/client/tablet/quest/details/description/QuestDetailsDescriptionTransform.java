@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformAxisDelta;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -39,7 +39,7 @@ public final class QuestDetailsDescriptionTransform {
             beginSelectionTransform(model, lx, visibleY, "move");
             return;
         }
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
         state.questDetailsTransformKind = kind;
         state.questDetailsTransformId = id;
         int screenContentX = screenContentX();
@@ -75,18 +75,12 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     void beginSelectionTransform(QuestDetailsDescriptionModel model, int lx, int visibleY, String mode) {
-        CanvasRenderer.clearTransientQuestDetailsTransforms(state);
+        CanvasTransformSessions.clearQuestDetailsSession(state);
         state.questDetailsTransformKind = "selection";
         state.questDetailsTransformId = "selection";
         state.questDetailsTransformMode = mode == null || mode.isBlank() ? "move" : mode;
         state.questDetailsTransformStartMouseX = screenContentX() + lx;
         state.questDetailsTransformStartMouseY = screenContentY() + visibleY;
-        state.dragStartTextPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
         for (CanvasTextLayer text : model.texts.values()) {
             if (isSelectedText(text.id())) {
                 state.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));

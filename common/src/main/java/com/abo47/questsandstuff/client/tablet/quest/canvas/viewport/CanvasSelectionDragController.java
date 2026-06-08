@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -24,6 +25,7 @@ final class CanvasSelectionDragController {
     }
 
     void beginDrag(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {
+        CanvasTransformSessions.clearMainCanvasSession(state);
         state.draggingSelection = true;
         state.resizingSelection = false;
         state.rotatingSelection = false;
@@ -33,12 +35,6 @@ final class CanvasSelectionDragController {
         state.dragCurrentY = localY;
         state.dragSelectionDeltaX = 0;
         state.dragSelectionDeltaY = 0;
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
-        state.dragStartPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.dragStartTextPositions.clear();
-        CanvasRenderer.clearTransientCanvasTransforms(state);
         for (String questId : state.selectedQuestIds) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card != null) {

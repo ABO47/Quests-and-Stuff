@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -160,9 +161,7 @@ public final class TabletRootWindowController {
             changed = true;
         }
         if (!state.questDetailsTransformKind.isBlank() || !state.questDetailsTransformId.isBlank()) {
-            state.questDetailsTransformKind = "";
-            state.questDetailsTransformId = "";
-            state.questDetailsTransformMode = "";
+            CanvasTransformSessions.clearQuestDetailsSession(state);
             changed = true;
         }
         if (state.questDetailsBoxSelecting) {

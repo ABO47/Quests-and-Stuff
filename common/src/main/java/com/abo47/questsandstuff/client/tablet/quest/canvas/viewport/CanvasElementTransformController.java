@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformAxisDelta;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
@@ -28,7 +29,7 @@ public final class CanvasElementTransformController {
     }
 
     public void beginImageTransform(CanvasImageLayer image, int localX, int localY) {
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasTransformSessions.clearMainCanvasSession(state);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
         boolean selectedBeforeClick = image.id().equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(image.id());
         if (gizmoSupported && !selectedBeforeClick) {
@@ -172,7 +173,7 @@ public final class CanvasElementTransformController {
     }
 
     public void beginTextTransform(CanvasTextLayer text, int localX, int localY) {
-        CanvasRenderer.clearTransientCanvasTransforms(state);
+        CanvasTransformSessions.clearMainCanvasSession(state);
         state.selectedCanvasTextId = text.id();
         state.selectedCanvasImageId = "";
         state.selectedCanvasTextIds.clear();

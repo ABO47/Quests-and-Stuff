@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -57,33 +58,15 @@ final class TabletShortcutActions {
                 || state.draggingCanvas || state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage
                 || state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             state.boxSelecting = false;
-            state.draggingSelection = false;
-            state.resizingSelection = false;
-            state.rotatingSelection = false;
             state.draggingCanvas = false;
-            state.draggingCanvasImage = false;
-            state.resizingCanvasImage = false;
-            state.rotatingCanvasImage = false;
-            state.canvasImageTransformAxis = "";
-            state.draggingCanvasText = false;
-            state.resizingCanvasText = false;
-            state.rotatingCanvasText = false;
-            state.transientQuestPositions.clear();
-            state.transientQuestScales.clear();
-            CanvasRenderer.clearTransientCanvasTransforms(state);
-            state.snapGuideXVisible = false;
-            state.snapGuideYVisible = false;
+            CanvasTransformSessions.clearMainCanvasSession(state);
             changed = true;
         }
         if (state.questDetailsBoxSelecting || state.questDetailsPanning || state.questDetailsDescScrollDragging || !state.questDetailsTransformKind.isBlank()) {
             state.questDetailsBoxSelecting = false;
             state.questDetailsPanning = false;
             state.questDetailsDescScrollDragging = false;
-            state.questDetailsTransformKind = "";
-            state.questDetailsTransformId = "";
-            state.questDetailsTransformMode = "";
-            state.questDetailsTransformAxis = "";
-            CanvasRenderer.clearTransientCanvasTransforms(state);
+            CanvasTransformSessions.clearQuestDetailsSession(state);
             changed = true;
         }
         if (state.chapterDragPending || state.chapterDragActive || state.questDetailsObjectiveDragPending || state.questDetailsObjectiveDragActive) {

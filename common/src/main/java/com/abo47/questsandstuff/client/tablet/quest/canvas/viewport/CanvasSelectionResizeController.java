@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroupResizeTransform;
@@ -25,6 +26,7 @@ final class CanvasSelectionResizeController {
     }
 
     void beginResize(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {
+        CanvasTransformSessions.clearMainCanvasSession(state);
         state.draggingSelection = false;
         state.resizingSelection = true;
         state.rotatingSelection = false;
@@ -34,13 +36,6 @@ final class CanvasSelectionResizeController {
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
-        state.resizeStartScales.clear();
-        state.resizeStartPositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        CanvasRenderer.clearTransientCanvasTransforms(state);
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
         for (String questId : state.selectedQuestIds) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card == null) {

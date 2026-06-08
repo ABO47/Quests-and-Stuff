@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -52,38 +53,7 @@ public final class CanvasSelectionTransformController {
     }
 
     public void clear() {
-        state.dragStartPositions.clear();
-        state.dragStartImagePositions.clear();
-        state.dragStartTextPositions.clear();
-        state.resizeStartScales.clear();
-        state.resizeStartPositions.clear();
-        state.resizeStartImageLayers.clear();
-        state.resizeStartTextLayers.clear();
-        state.rotateStartPositions.clear();
-        state.rotateStartCenters.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
-        state.rotateStartBoundsLeft = 0;
-        state.rotateStartBoundsTop = 0;
-        state.rotateStartBoundsRight = 0;
-        state.rotateStartBoundsBottom = 0;
-        state.rotatePreviewAngle = 0.0;
-        state.dragSelectionDeltaX = 0;
-        state.dragSelectionDeltaY = 0;
-        state.dragStartBoundsLeft = 0;
-        state.dragStartBoundsTop = 0;
-        state.dragStartBoundsRight = 0;
-        state.dragStartBoundsBottom = 0;
-        state.dragStartSelectionLeft = 0;
-        state.dragStartSelectionTop = 0;
-        state.dragStartSelectionRight = 0;
-        state.dragStartSelectionBottom = 0;
-        state.snapGuideXVisible = false;
-        state.snapGuideYVisible = false;
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
-        state.transientCanvasImages.clear();
-        state.transientCanvasTexts.clear();
+        CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
 }

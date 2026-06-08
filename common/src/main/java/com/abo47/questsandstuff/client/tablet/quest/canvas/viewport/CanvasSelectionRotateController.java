@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -26,16 +27,10 @@ final class CanvasSelectionRotateController {
     }
 
     void beginRotate(int localX, int localY, Map<String, QuestCardLayout> byQuestId) {
+        CanvasTransformSessions.clearMainCanvasSession(state);
         state.draggingSelection = false;
         state.resizingSelection = false;
         state.rotatingSelection = true;
-        state.rotateStartPositions.clear();
-        state.rotateStartCenters.clear();
-        state.rotateStartImageLayers.clear();
-        state.rotateStartTextLayers.clear();
-        CanvasRenderer.clearTransientCanvasTransforms(state);
-        state.transientQuestPositions.clear();
-        state.transientQuestScales.clear();
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;

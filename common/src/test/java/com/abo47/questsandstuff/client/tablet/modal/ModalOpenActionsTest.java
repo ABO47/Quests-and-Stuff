@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,5 +92,34 @@ class ModalOpenActionsTest {
         assertEquals(5, state.canvasImageLogicalX);
         assertEquals(9, state.canvasImageLogicalY);
         assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+    }
+
+    @Test
+    void openingModalClearsActiveTransformSessions() {
+        TabletUiState state = new TabletUiState();
+        state.draggingCanvasImage = true;
+        state.transientCanvasImages.put("image:a", image("image:a"));
+        state.transientQuestPositions.put("quest/a", new CanvasPoint(10, 20));
+        state.questDetailsTransformKind = "desc_image";
+        state.questDetailsTransformId = "image:b";
+        state.questDetailsTransientImages.put("image:b", image("image:b"));
+        state.snapGuideXVisible = true;
+        state.snapGuideYVisible = true;
+
+        ModalOpenActions.openColorPicker(state, "theme", 0xFF00AA);
+
+        assertTrue(state.colorPickerOpen);
+        assertFalse(state.draggingCanvasImage);
+        assertTrue(state.transientCanvasImages.isEmpty());
+        assertTrue(state.transientQuestPositions.isEmpty());
+        assertTrue(state.questDetailsTransformKind.isBlank());
+        assertTrue(state.questDetailsTransformId.isBlank());
+        assertTrue(state.questDetailsTransientImages.isEmpty());
+        assertFalse(state.snapGuideXVisible);
+        assertFalse(state.snapGuideYVisible);
+    }
+
+    private static CanvasImageLayer image(String id) {
+        return new CanvasImageLayer(id, "item:minecraft:diamond", 10, 20, 40, 50, 0);
     }
 }

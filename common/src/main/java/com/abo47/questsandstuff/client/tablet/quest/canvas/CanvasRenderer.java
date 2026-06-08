@@ -260,7 +260,7 @@ public final class CanvasRenderer {
         state.selectedCanvasTextId = "";
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasTextIds.clear();
-        clearTransientCanvasTransforms(state);
+        CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
     public static QuestCardLayout hitTestCard(List<QuestCardLayout> cards, int x, int y) {
@@ -434,22 +434,6 @@ public final class CanvasRenderer {
         for (String textId : selectedCanvasTextIds(state)) {
             commitTransientCanvasText(state, group, textId);
         }
-    }
-
-    public static void clearTransientCanvasTransforms(TabletUiState state) {
-        if (state == null) {
-            return;
-        }
-        state.transientCanvasImages.clear();
-        state.transientCanvasTexts.clear();
-    }
-
-    public static void clearTransientQuestDetailsTransforms(TabletUiState state) {
-        if (state == null) {
-            return;
-        }
-        state.questDetailsTransientImages.clear();
-        state.questDetailsTransientTexts.clear();
     }
 
     public static void updateCanvasText(TabletUiState state, String group, String textId, java.util.function.UnaryOperator<CanvasTextLayer> updater) {
