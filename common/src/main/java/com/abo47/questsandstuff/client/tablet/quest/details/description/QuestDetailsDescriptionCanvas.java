@@ -1,27 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -30,24 +11,89 @@ import javax.annotation.Nonnull;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final TabletUiState state;
-    private final Player player;
-    private final Runnable refresh;
     private final String questId;
-    private final QuestDetailsDescriptionTransform transforms;
-    private final QuestDetailsDescriptionTextEdit textEdit;
     private final QuestDetailsDescriptionSelection selection;
-    private final QuestDetailsDescriptionHitTest hitTest;
+    private final QuestDetailsDescriptionEventRouter events;
 
     QuestDetailsDescriptionCanvas(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId) {
         super(x, y, w, h);
         this.state = state;
-        this.player = player;
-        this.refresh = refresh;
         this.questId = questId;
-        this.transforms = new QuestDetailsDescriptionTransform(state, this::contentX, this::contentY, this::contentW, this::contentH);
-        this.textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
+        QuestDetailsDescriptionTransform transforms = new QuestDetailsDescriptionTransform(state, this::contentX, this::contentY, this::contentW, this::contentH);
+        QuestDetailsDescriptionTextEdit textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
         this.selection = new QuestDetailsDescriptionSelection(state, this::contentX, this::contentY, this::contentW, this::contentH);
-        this.hitTest = new QuestDetailsDescriptionHitTest(state, selection, this::contentW, this::contentH);
+        QuestDetailsDescriptionHitTest hitTest = new QuestDetailsDescriptionHitTest(state, selection, this::contentW, this::contentH);
+        this.events = new QuestDetailsDescriptionEventRouter(
+                state,
+                player,
+                refresh,
+                questId,
+                transforms,
+                textEdit,
+                selection,
+                hitTest,
+                new QuestDetailsDescriptionEventRouter.Surface() {
+                    @Override
+                    public boolean isMouseOverElement(double mouseX, double mouseY) {
+                        return QuestDetailsDescriptionCanvas.this.isMouseOverElement(mouseX, mouseY);
+                    }
+
+                    @Override
+                    public boolean mouseWheelMoveFallback(double mouseX, double mouseY, double wheelDelta) {
+                        return QuestDetailsDescriptionCanvas.super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+                    }
+
+                    @Override
+                    public boolean mouseClickedFallback(double mouseX, double mouseY, int button) {
+                        return QuestDetailsDescriptionCanvas.super.mouseClicked(mouseX, mouseY, button);
+                    }
+
+                    @Override
+                    public boolean mouseDraggedFallback(double mouseX, double mouseY, int button, double dragX, double dragY) {
+                        return QuestDetailsDescriptionCanvas.super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+                    }
+
+                    @Override
+                    public boolean mouseReleasedFallback(double mouseX, double mouseY, int button) {
+                        return QuestDetailsDescriptionCanvas.super.mouseReleased(mouseX, mouseY, button);
+                    }
+
+                    @Override
+                    public boolean keyPressedFallback(int keyCode, int scanCode, int modifiers) {
+                        return QuestDetailsDescriptionCanvas.super.keyPressed(keyCode, scanCode, modifiers);
+                    }
+
+                    @Override
+                    public boolean charTypedFallback(char codePoint, int modifiers) {
+                        return QuestDetailsDescriptionCanvas.super.charTyped(codePoint, modifiers);
+                    }
+
+                    @Override
+                    public void focus(boolean focus) {
+                        QuestDetailsDescriptionCanvas.this.setFocus(focus);
+                    }
+
+                    @Override
+                    public int contentX() {
+                        return QuestDetailsDescriptionCanvas.this.contentX();
+                    }
+
+                    @Override
+                    public int contentY() {
+                        return QuestDetailsDescriptionCanvas.this.contentY();
+                    }
+
+                    @Override
+                    public int contentW() {
+                        return QuestDetailsDescriptionCanvas.this.contentW();
+                    }
+
+                    @Override
+                    public int contentH() {
+                        return QuestDetailsDescriptionCanvas.this.contentH();
+                    }
+                }
+        );
     }
 
     @Override
@@ -74,396 +120,32 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
-        if (shouldYieldToContextMenu(mouseX, mouseY)) {
-            return false;
-        }
-        if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
-            return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
-        }
-        if (!isMouseOverElement(mouseX, mouseY)) {
-            return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
-        }
-        int previous = state.questDetailsDescScroll;
-        setScroll(previous + (wheelDelta < 0 ? 18 : -18));
-        if (state.questDetailsDescScroll != previous) {
-            refresh.run();
-        }
-        return true;
+        return events.mouseWheelMove(mouseX, mouseY, wheelDelta);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (shouldYieldToContextMenu(mouseX, mouseY)) {
-            return false;
-        }
-        if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
-        if (!isMouseOverElement(mouseX, mouseY)) {
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (button == 2) {
-            state.questDetailsPanning = true;
-            state.questDetailsPanStartX = (int) Math.round(mouseX);
-            state.questDetailsPanStartY = (int) Math.round(mouseY);
-            state.questDetailsPanStartScroll = state.questDetailsDescScroll;
-            QuestDetailsTransientState.closeContext(state);
-            ToolMenuAnimation.closeQuestDetails(state);
-            return true;
-        }
-        if (!QuestDetailsEditState.canEdit(state)) {
-            return true;
-        }
-        int lx = localX(mouseX);
-        int visibleY = localY(mouseY);
-        int ly = visibleY + state.questDetailsDescScroll;
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY);
-        if (button == 0 && selection.count() > 1) {
-            if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
-                transforms.beginSelectionTransform(model, lx, visibleY, "rotate");
-                TextStyleSession.closeQuestDetails(state);
-                refresh.run();
-                return true;
-            }
-            if (selection.selectionResizeHandleHit(model, lx, visibleY)) {
-                transforms.beginSelectionTransform(model, lx, visibleY, "resize");
-                TextStyleSession.closeQuestDetails(state);
-                refresh.run();
-                return true;
-            }
-        }
-        if (button == 0 && textEdit.isEditing()) {
-            CanvasTextLayer editingText = model.text(state.questDetailsTextEditTarget);
-            QuestDetailsDescriptionHitTest.Rect editingRect = editingText == null
-                    ? null
-                    : new QuestDetailsDescriptionHitTest.Rect(editingText.x(), editingText.y(), editingText.w(), editingText.h(), editingText.rotation());
-            boolean transformHandleHit = editingRect != null && (hitTest.inResizeHandle(editingRect, lx, visibleY) || hitTest.inRotateHandle(editingRect, lx, visibleY));
-            if (transformHandleHit) {
-                textEdit.finish("transform-start");
-            } else if (editingText != null && textEdit.hitTextEditor(editingText, lx, visibleY)) {
-                textEdit.updateCursor(model, editingText.id(), lx, visibleY, !Widget.isShiftDown());
-                TextEditSession.startRangeSelection(state);
-                setFocus(true);
-                refresh.run();
-                return true;
-            } else {
-                textEdit.finish("outside-click");
-                refresh.run();
-                return true;
-            }
-        }
-        if (button == 1) {
-            boolean selectionHit = (hit == null && selection.selectionBoundsHit(model, lx, visibleY))
-                    || (hit != null && selection.count() > 1 && hitTest.isHitSelected(hit));
-            storeContextPosition(mouseX, mouseY, lx, visibleY);
-            QuestDetailsTransientState.openContext(
-                    state,
-                    selectionHit ? "desc_selection" : (hit == null ? "description" : hit.kind()),
-                    hit == null ? "" : hit.id(),
-                    state.questDetailsContextX,
-                    state.questDetailsContextY
-            );
-            ToolMenuAnimation.closeQuestDetails(state);
-            EntityMotionEditor.close(state);
-            refresh.run();
-            return true;
-        }
-        if (button != 0) {
-            return true;
-        }
-        QuestDetailsTransientState.closeContext(state);
-        QuestDetailsTransientState.closeTypePicker(state);
-        if (hit == null) {
-            if (selection.selectionBoundsHit(model, lx, visibleY)) {
-                transforms.beginSelectionTransform(model, lx, visibleY);
-                TextStyleSession.closeQuestDetails(state);
-                refresh.run();
-                return true;
-            }
-            textEdit.finish("canvas-click");
-            state.questDetailsBoxSelecting = true;
-            state.questDetailsBoxAdditive = Widget.isShiftDown();
-            state.questDetailsBoxStartX = lx;
-            state.questDetailsBoxStartY = visibleY;
-            state.questDetailsBoxCurrentX = lx;
-            state.questDetailsBoxCurrentY = visibleY;
-            if (!state.questDetailsBoxAdditive) {
-                selection.clear();
-            }
-            refresh.run();
-            return true;
-        }
-        QuestDetailsDescriptionHitTest.Rect hitRect = hitTest.rect(model, hit);
-        if ("desc_image".equals(hit.kind())) {
-            CanvasImageLayer hitImage = model.image(hit.id());
-            if (hitImage != null && CanvasTransformGizmo.supports(hitImage.asset()) && !selection.isSelectedImage(hit.id())) {
-                CanvasTransformGizmo.setMode(state, CanvasTransformMode.MOVE);
-            }
-        }
-        boolean groupHit = selection.count() > 1 && hitTest.isHitSelected(hit);
-        CanvasTransformMode clickedGizmoMode = groupHit ? null : hitTest.imageGizmoMode(model, hit, lx, visibleY);
-        boolean resizeHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.RESIZE || hitTest.inResizeHandle(hitRect, lx, visibleY));
-        boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
-        boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
-        if (Widget.isShiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
-            toggleSelection(hit);
-            TextStyleSession.closeQuestDetails(state);
-            refresh.run();
-            return true;
-        }
-        if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit && handleTextDoubleClick(hit)) {
-            select(hit);
-            textEdit.begin(model, hit.id(), () -> setFocus(true));
-            refresh.run();
-            return true;
-        }
-        select(hit);
-        if ("desc_text".equals(hit.kind()) && TextEditSession.isEditingTarget(state, hit.id())) {
-            textEdit.updateCursor(model, hit.id(), lx, visibleY, true);
-            setFocus(true);
-            refresh.run();
-            return true;
-        }
-        beginTransform(model, hit, lx, visibleY, ly);
-        refresh.run();
-        return true;
+        return events.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (shouldYieldToContextMenu(mouseX, mouseY)) {
-            return false;
-        }
-        if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        }
-        if (state.questDetailsPanning) {
-            int dy = (int) Math.round(mouseY) - state.questDetailsPanStartY;
-            setScroll(state.questDetailsPanStartScroll - dy);
-            return true;
-        }
-        if (!QuestDetailsEditState.canEdit(state)) {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        }
-        if (textEdit.dragSelectionTo(localX(mouseX), localY(mouseY))) {
-            return true;
-        }
-        if (state.questDetailsBoxSelecting) {
-            state.questDetailsBoxCurrentX = localX(mouseX);
-            state.questDetailsBoxCurrentY = localY(mouseY);
-            return true;
-        }
-        if (state.questDetailsTransformId.isBlank()) {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
-        previewTransform(model);
-        if ("desc_text".equals(state.questDetailsTransformKind)
-                && state.questDetailsTextStyleOpen
-                && state.questDetailsTransformId.equals(state.questDetailsTextStyleTarget)) {
-            refresh.run();
-        }
-        return true;
+        return events.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleKey(keyCode)) {
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return events.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return super.charTyped(codePoint, modifiers);
-        }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleChar(codePoint)) {
-            return true;
-        }
-        return super.charTyped(codePoint, modifiers);
+        return events.charTyped(codePoint, modifiers);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (shouldYieldToContextMenu(mouseX, mouseY)) {
-            return false;
-        }
-        if (isQuestDetailsTextStyleMenuHit(mouseX, mouseY)) {
-            return super.mouseReleased(mouseX, mouseY, button);
-        }
-        if (state.questDetailsPanning) {
-            state.questDetailsPanning = false;
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details description pan commit quest={} scroll={}", questId, state.questDetailsDescScroll);
-            refresh.run();
-            return true;
-        }
-        if (!QuestDetailsEditState.canEdit(state)) {
-            clearEditDragState();
-            return super.mouseReleased(mouseX, mouseY, button);
-        }
-        if (state.selectingCanvasTextRange && textEdit.isEditing()) {
-            TextEditSession.finishRangeSelection(state);
-            refresh.run();
-            return true;
-        }
-        if (state.questDetailsBoxSelecting) {
-            state.questDetailsBoxSelecting = false;
-            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-            selection.finishBoxSelection(model);
-            refresh.run();
-            return true;
-        }
-        if (state.questDetailsTransformId.isBlank()) {
-            return super.mouseReleased(mouseX, mouseY, button);
-        }
-        String transformKind = state.questDetailsTransformKind;
-        String transformId = state.questDetailsTransformId;
-        String transformMode = state.questDetailsTransformMode;
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
-        CanvasTransformSessions.clearQuestDetailsSession(state);
-        QuestDetailsDescriptionModel.save(player, questId, model);
-        QuestsAndStuffMod.debugLog("[QnS:UI] quest details description transform commit quest={} kind={} id={} mode={}", questId, transformKind, transformId, transformMode);
-        refresh.run();
-        return true;
-    }
-
-    private void previewTransform(QuestDetailsDescriptionModel model) {
-        if ("desc_text".equals(state.questDetailsTransformKind)) {
-            CanvasTextLayer text = model.text(state.questDetailsTransformId);
-            if (text != null) {
-                CanvasLayerMutations.putTransientQuestDetailsText(state, text);
-            }
-            return;
-        }
-        if ("desc_image".equals(state.questDetailsTransformKind)) {
-            CanvasImageLayer image = model.image(state.questDetailsTransformId);
-            if (image != null) {
-                CanvasLayerMutations.putTransientQuestDetailsImage(state, image);
-            }
-            return;
-        }
-        if ("selection".equals(state.questDetailsTransformKind)) {
-            for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
-                CanvasTextLayer text = model.text(textId);
-                if (text != null) {
-                    CanvasLayerMutations.putTransientQuestDetailsText(state, text);
-                }
-            }
-            for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
-                CanvasImageLayer image = model.image(imageId);
-                if (image != null) {
-                    CanvasLayerMutations.putTransientQuestDetailsImage(state, image);
-                }
-            }
-        }
-    }
-
-    private void beginTransform(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit, int lx, int visibleY, int ly) {
-        QuestDetailsDescriptionHitTest.Rect rect = hitTest.rect(model, hit);
-        CanvasImageLayer image = "desc_image".equals(hit.kind()) ? model.image(hit.id()) : null;
-        boolean gizmoSupported = image != null && CanvasTransformGizmo.supports(image.asset());
-        CanvasTransformMode gizmoMode = hitTest.imageGizmoMode(model, hit, lx, visibleY);
-        if (gizmoSupported && gizmoMode == null) {
-            state.questDetailsTransformAxis = "";
-            return;
-        }
-        String transformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
-        if (gizmoMode == CanvasTransformMode.MOVE) {
-            transformAxis = CanvasTransformGizmo.moveAxisOrFree(transformAxis);
-        }
-        boolean resizeHit = gizmoMode == CanvasTransformMode.RESIZE
-                || (!gizmoSupported && gizmoMode == null && hitTest.inResizeHandle(rect, lx, visibleY));
-        boolean rotateHit = gizmoMode == CanvasTransformMode.ROTATE
-                || (!gizmoSupported && gizmoMode == null && hitTest.inRotateHandle(rect, lx, visibleY));
-        boolean selectionMove = selection.count() > 1 && hitTest.isHitSelected(hit) && !resizeHit && !rotateHit;
-        transforms.beginTransform(model, hit.kind(), hit.id(), new QuestDetailsDescriptionTransform.ElementRect(rect.x(), rect.y(), rect.w(), rect.h(), rect.rotation()), selectionMove, resizeHit, rotateHit, lx, visibleY, ly);
-        state.questDetailsTransformAxis = selectionMove ? "" : transformAxis;
-    }
-
-    private boolean shiftMoveHit(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
-        if (!Widget.isShiftDown() || !"desc_image".equals(hit.kind())) {
-            return false;
-        }
-        CanvasImageLayer image = model.image(hit.id());
-        CanvasTransformMode active = CanvasTransformGizmo.activeMode(state);
-        if (image == null || !CanvasTransformGizmo.supports(image.asset()) || (active != CanvasTransformMode.MOVE && active != CanvasTransformMode.RESIZE)) {
-            return false;
-        }
-        return true;
-    }
-
-    private void select(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
-        if ("desc_text".equals(hit.kind())) {
-            if (selection.count() > 1 && selection.isSelectedText(hit.id())) {
-                state.questDetailsDescriptionSelection.setPrimaryTextId(hit.id());
-            } else {
-                state.questDetailsDescriptionSelection.textIds().clear();
-                state.questDetailsDescriptionSelection.imageIds().clear();
-                state.questDetailsDescriptionSelection.textIds().add(hit.id());
-                state.questDetailsDescriptionSelection.setPrimaryImageId("");
-            }
-            state.questDetailsDescriptionSelection.setPrimaryTextId(hit.id());
-        } else {
-            if (selection.count() > 1 && selection.isSelectedImage(hit.id())) {
-                state.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
-            } else {
-                state.questDetailsDescriptionSelection.textIds().clear();
-                state.questDetailsDescriptionSelection.imageIds().clear();
-                state.questDetailsDescriptionSelection.imageIds().add(hit.id());
-                state.questDetailsDescriptionSelection.setPrimaryTextId("");
-            }
-            state.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
-            TextStyleSession.closeQuestDetails(state);
-        }
-    }
-
-    private void toggleSelection(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetailsSelectedObjectiveKind = "";
-        state.questDetailsSelectedObjectiveId = "";
-        if ("desc_text".equals(hit.kind())) {
-            toggle(state.questDetailsDescriptionSelection.textIds(), hit.id());
-            state.questDetailsDescriptionSelection.setPrimaryTextId(state.questDetailsDescriptionSelection.textIds().contains(hit.id()) ? hit.id() : state.questDetailsDescriptionSelection.textIds().stream().findFirst().orElse(""));
-        } else {
-            toggle(state.questDetailsDescriptionSelection.imageIds(), hit.id());
-            state.questDetailsDescriptionSelection.setPrimaryImageId(state.questDetailsDescriptionSelection.imageIds().contains(hit.id()) ? hit.id() : state.questDetailsDescriptionSelection.imageIds().stream().findFirst().orElse(""));
-        }
-    }
-
-    private boolean handleTextDoubleClick(QuestDetailsDescriptionHitTest.Hit hit) {
-        long now = System.currentTimeMillis();
-        boolean doubleClick = hit.id().equals(state.questDetailsTextLastClickId) && now - state.questDetailsTextLastClickAtMs <= 350L;
-        state.questDetailsTextLastClickId = hit.id();
-        state.questDetailsTextLastClickAtMs = now;
-        return doubleClick;
-    }
-
-    private int localX(double mouseX) {
-        return QuestDetailsMouse.localX(state, mouseX, contentX(), contentW());
-    }
-
-    private int localY(double mouseY) {
-        return QuestDetailsMouse.localY(state, mouseY, contentY(), contentH());
-    }
-
-    private int pointerScreenX(double mouseX) {
-        return QuestDetailsMouse.screenX(state, contentX()) + localX(mouseX);
-    }
-
-    private int pointerScreenY(double mouseY) {
-        return QuestDetailsMouse.screenY(state, contentY()) + localY(mouseY);
+        return events.mouseReleased(mouseX, mouseY, button);
     }
 
     private void withScissor(GuiGraphics graphics, Runnable draw) {
@@ -484,49 +166,5 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     private int contentH() {
         return Math.max(1, getSizeHeight() - 1);
-    }
-
-    private void setScroll(int scroll) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-        state.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, contentH(), scroll);
-    }
-
-    private void storeContextPosition(double mouseX, double mouseY, int lx, int ly) {
-        QuestDetailsMouse.openContextAtPointer(state, state.questDetailsContextKind, state.questDetailsContextId, mouseX, mouseY, getPositionX(), getPositionY(), lx, ly);
-    }
-
-    private boolean isQuestDetailsTextStyleMenuHit(double mouseX, double mouseY) {
-        if (!state.questDetailsTextStyleOpen || state.questDetailsTextStyleMenuW <= 0 || state.questDetailsTextStyleMenuH <= 0) {
-            return false;
-        }
-        if (QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY)) {
-            return true;
-        }
-        int localMenuX = state.questDetailsTextStyleMenuX - (QuestDetailsMouse.screenX(state, contentX()) - state.questDetailsScreenX);
-        int localMenuY = state.questDetailsTextStyleMenuY - (QuestDetailsMouse.screenY(state, contentY()) - state.questDetailsScreenY);
-        return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH)
-                || inside(mouseX, mouseY, state.questDetailsScreenX + localMenuX, state.questDetailsScreenY + localMenuY,
-                state.questDetailsTextStyleMenuW, state.questDetailsTextStyleMenuH);
-    }
-
-    private boolean shouldYieldToContextMenu(double mouseX, double mouseY) {
-        return state.questDetailsContextOpen
-                && (state.contextMenuScrollDragging || QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY));
-    }
-
-    private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {
-        return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
-    }
-
-    private void clearEditDragState() {
-        state.selectingCanvasTextRange = false;
-        state.questDetailsBoxSelecting = false;
-        CanvasTransformSessions.clearQuestDetailsSession(state);
-    }
-
-    private static void toggle(java.util.Set<String> values, String id) {
-        if (!values.add(id)) {
-            values.remove(id);
-        }
     }
 }
