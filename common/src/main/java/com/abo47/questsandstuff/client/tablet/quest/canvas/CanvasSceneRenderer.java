@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasQuestEff
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -23,16 +24,13 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
@@ -47,8 +45,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selected
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasSceneRenderer {
-    private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
-
     private CanvasSceneRenderer() {
     }
 
@@ -207,10 +203,10 @@ final class CanvasSceneRenderer {
         CompoundTag tag = card.tag();
         WidgetGroup cardLayer = new WidgetGroup(card.x(), card.y(), card.width(), card.height());
         QuestCardLayout localCard = localCard(card);
-        float progress = questProgress(tag);
-        boolean customBackground = renderQuestBackground(cardLayer, localCard, tag, progress);
-        if (!customBackground && tag.getBoolean("unlocked") && progress > 0.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
-            renderQuestProgressFill(cardLayer, localCard, progress);
+        float progress = QuestCardBackgroundRenderer.questProgress(tag);
+        boolean customBackground = QuestCardBackgroundRenderer.renderWidgetBackground(cardLayer, localCard.x(), localCard.y(), localCard.width(), localCard.height(), tag, progress);
+        if (!customBackground && QuestCardBackgroundRenderer.shouldShowProgressFill(tag, progress)) {
+            QuestCardBackgroundRenderer.renderWidgetProgressFill(cardLayer, localCard.x(), localCard.y(), localCard.width(), localCard.height(), progress);
         }
         renderQuestIcon(cardLayer, localCard);
         renderLockedPreviewState(cardLayer, localCard);
@@ -246,54 +242,6 @@ final class CanvasSceneRenderer {
                 card.width(),
                 card.height()
         );
-    }
-
-    private static boolean renderQuestBackground(WidgetGroup canvasViewport, QuestCardLayout card, CompoundTag tag, float progress) {
-        String background = tag.getString("quest_background");
-        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
-            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
-            return false;
-        }
-        IGuiTexture texture = chapterBackgroundTexture(background, tag.getBoolean("quest_background_grayscale"));
-        if (texture == null) {
-            canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag))));
-            return false;
-        }
-        canvasViewport.addWidget(new ImageWidget(card.x(), card.y(), card.width(), card.height(), texture));
-        int filter = questBackgroundFilter(tag);
-        if ((filter >>> 24) != 0) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), filter);
-        } else if (tag.getBoolean("unlocked") && progress > 0.0f && progress < 1.0f && !tag.getBoolean("completed") && !tag.getBoolean("claimed")) {
-            int fillW = Math.max(1, Math.min(card.width(), Math.round(card.width() * progress)));
-            addSolidRect(canvasViewport, card.x(), card.y(), fillW, card.height(), withAlpha(ModColors.SUCCESS, 54));
-        }
-        return true;
-    }
-
-    private static int defaultQuestBackgroundTint(CompoundTag tag) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
-            return withAlpha(ModColors.TEXT_SECONDARY, 255);
-        }
-        if (tag.getBoolean("claimed")) {
-            return withAlpha(ModColors.WARNING, 255);
-        }
-        if (tag.getBoolean("completed")) {
-            return withAlpha(ModColors.SUCCESS, 255);
-        }
-        return tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
-    }
-
-    private static int questBackgroundFilter(CompoundTag tag) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
-            return withAlpha(ModColors.SURFACE_BASE, 138);
-        }
-        if (tag.getBoolean("claimed")) {
-            return withAlpha(ModColors.WARNING, 94);
-        }
-        if (tag.getBoolean("completed")) {
-            return withAlpha(ModColors.SUCCESS, 82);
-        }
-        return 0x00000000;
     }
 
     private static void renderQuestRenameField(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {
@@ -337,27 +285,6 @@ final class CanvasSceneRenderer {
         if (ClientQuestCache.questLockedPreview(card.tag())) {
             addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
         }
-    }
-
-    private static float questProgress(CompoundTag tag) {
-        boolean hasTasks = !tag.getCompound("tasks").isEmpty();
-        float progress = Math.max(0.0f, Math.min(1.0f, tag.getFloat("progress")));
-        if (hasTasks && (tag.getBoolean("completed") || tag.getBoolean("claimed"))) {
-            progress = 1.0f;
-        }
-        return progress;
-    }
-
-    private static void renderQuestProgressFill(WidgetGroup canvasViewport, QuestCardLayout card, float progress) {
-        int fillW = Math.max(1, Math.min(card.width(), Math.round(card.width() * progress)));
-        ResourceTexture fillTexture = new ResourceTexture(DEFAULT_QUEST_BG).setColor(withAlpha(ModColors.SUCCESS, 255));
-        canvasViewport.addWidget(new WidgetGroup(card.x(), card.y(), card.width(), card.height()) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), fillW, getSizeHeight(),
-                        () -> fillTexture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight()));
-            }
-        });
     }
 
     private static void renderSearchState(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
@@ -436,10 +363,7 @@ final class CanvasSceneRenderer {
         if (title == null || title.isBlank()) {
             title = card.questId();
         }
-        int progress = Math.round(Math.max(0.0f, Math.min(1.0f, tag.getFloat("progress"))) * 100.0f);
-        if (!tag.getCompound("tasks").isEmpty() && (tag.getBoolean("completed") || tag.getBoolean("claimed"))) {
-            progress = 100;
-        }
+        int progress = QuestCardBackgroundRenderer.progressPercent(tag);
         Component status = ClientQuestCache.questLockedPreview(tag)
                 ? Component.translatable("ui.questsandstuff.quest.locked")
                 : Component.literal(progress + "%");

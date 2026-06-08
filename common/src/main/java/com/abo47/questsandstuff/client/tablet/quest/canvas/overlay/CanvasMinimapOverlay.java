@@ -5,20 +5,16 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -30,7 +26,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
 import javax.annotation.Nonnull;
@@ -42,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasMinimapOverlay {
@@ -50,7 +44,6 @@ final class CanvasMinimapOverlay {
     private static final int VISUAL_CONNECTION_GRID_STEP = 16;
     private static final float MINIMAP_CHEVRON_SCALE = 0.45f;
     private static final float BODY_REVEAL_START = 0.48f;
-    private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
 
     private CanvasMinimapOverlay() {
     }
@@ -349,83 +342,9 @@ final class CanvasMinimapOverlay {
             return;
         }
 
-        drawQuestBackground(graphics, tag, x, y, quest.w(), quest.h(), mouseX, mouseY, quest.alpha());
-        int min = Math.min(quest.w(), quest.h());
-        int pad = Math.max(1, Math.round(min * 0.16f));
-        int iconSize = Math.max(1, min - pad * 2);
-        int iconX = x + (quest.w() - iconSize) / 2;
-        int iconY = y + (quest.h() - iconSize) / 2;
-        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize, tag.getString("icon"), partialTicks, quest.alpha());
-
-        if (state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
-            graphics.fill(x, y, x + quest.w(), y + quest.h(), withAlpha(ModColors.SURFACE_BASE, Math.min(120, quest.alpha() / 2)));
-        }
-        if (quest.questId() != null && state.selectedQuestIds.contains(quest.questId())) {
-            drawHighlightBorder(graphics, x, y, quest.w(), quest.h(), quest.alpha());
-        }
-    }
-
-    private static void drawQuestBackground(GuiGraphics graphics, CompoundTag tag, int x, int y, int w, int h, int mouseX, int mouseY, int alpha) {
-        String background = tag.getString("quest_background");
-        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
-            drawTextureAlpha(graphics, new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag)), mouseX, mouseY, x, y, w, h, alpha);
-            return;
-        }
-        IGuiTexture texture = chapterBackgroundTexture(background, tag.getBoolean("quest_background_grayscale"));
-        if (texture == null) {
-            drawTextureAlpha(graphics, new ResourceTexture(DEFAULT_QUEST_BG).setColor(defaultQuestBackgroundTint(tag)), mouseX, mouseY, x, y, w, h, alpha);
-            return;
-        }
-        drawTextureAlpha(graphics, texture, mouseX, mouseY, x, y, w, h, alpha);
-        int filter = questBackgroundFilter(tag, alpha);
-        if ((filter >>> 24) != 0) {
-            graphics.fill(x, y, x + w, y + h, filter);
-        }
-    }
-
-    private static int defaultQuestBackgroundTint(CompoundTag tag) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
-            return withAlpha(ModColors.TEXT_SECONDARY, 255);
-        }
-        if (tag.getBoolean("claimed")) {
-            return withAlpha(ModColors.WARNING, 255);
-        }
-        if (tag.getBoolean("completed")) {
-            return withAlpha(ModColors.SUCCESS, 255);
-        }
-        return tag.getBoolean("unlocked") ? withAlpha(ModColors.INTERACTIVE, 255) : withAlpha(ModColors.TEXT_SECONDARY, 255);
-    }
-
-    private static int questBackgroundFilter(CompoundTag tag, int alpha) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
-            return scaledAlpha(ModColors.SURFACE_BASE, 138, alpha);
-        }
-        if (tag.getBoolean("claimed")) {
-            return scaledAlpha(ModColors.WARNING, 94, alpha);
-        }
-        if (tag.getBoolean("completed")) {
-            return scaledAlpha(ModColors.SUCCESS, 82, alpha);
-        }
-        return 0x00000000;
-    }
-
-    private static int scaledAlpha(int color, int baseAlpha, int alpha) {
-        return withAlpha(color, Math.max(0, Math.min(255, Math.round(baseAlpha * (Math.max(0, Math.min(255, alpha)) / 255.0f)))));
-    }
-
-    private static void drawTextureAlpha(GuiGraphics graphics, IGuiTexture texture, int mouseX, int mouseY, int x, int y, int w, int h, int alpha) {
-        int safeAlpha = Math.max(0, Math.min(255, alpha));
-        if (texture == null || safeAlpha <= 0) {
-            return;
-        }
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, safeAlpha / 255.0f);
-        try {
-            texture.draw(graphics, mouseX, mouseY, x, y, w, h);
-        } finally {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        }
+        boolean hiddenOverlay = state.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed");
+        boolean highlighted = quest.questId() != null && state.selectedQuestIds.contains(quest.questId());
+        QuestMiniCardRenderer.drawTagCard(graphics, tag, x, y, quest.w(), quest.h(), mouseX, mouseY, partialTicks, quest.alpha(), hiddenOverlay, highlighted);
     }
 
     private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
@@ -466,11 +385,6 @@ final class CanvasMinimapOverlay {
 
     private static int snapToStep(int value, int step) {
         return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
-    }
-
-    private static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int w, int h, int alpha) {
-        int color = withAlpha(ModColors.BORDER_ACCENT, Math.min(255, alpha));
-        drawBorder(graphics, x, y, w, h, color);
     }
 
     private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {

@@ -24,6 +24,8 @@ class TabletPureHelperCoverageTest {
                 entry("recipe viewer selection rules", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionRulesTest"),
                 entry("shared smart snap engine", "com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngineTest"),
                 entry("main canvas smart snap adapter", "com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSmartSnapperTest"),
+                entry("quest card background defaults", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRendererTest"),
+                entry("mini quest card renderer", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRendererTest"),
                 entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest")
         );
 

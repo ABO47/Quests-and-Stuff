@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLay
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -18,12 +18,9 @@ import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
@@ -34,11 +31,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasBlueprintMiniRenderer {
-    private static final ResourceLocation DEFAULT_QUEST_BG = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
     private static final int GRID_CONNECTION_STEP = 16;
 
     private CanvasBlueprintMiniRenderer() {
@@ -283,45 +278,7 @@ public final class CanvasBlueprintMiniRenderer {
         QuestDefinition definition = quest.definition();
         QuestDisplay display = definition == null ? QuestDisplay.DEFAULT : definition.display();
         boolean gated = definition != null && !definition.prerequisites().isEmpty();
-        drawQuestBackground(graphics, mouseX, mouseY, display, rect, gated, alpha);
-        int min = Math.min(rect.w(), rect.h());
-        int pad = Math.max(1, Math.round(min * 0.16f));
-        int iconSize = Math.max(1, min - pad * 2);
-        int iconX = rect.x() + (rect.w() - iconSize) / 2;
-        int iconY = rect.y() + (rect.h() - iconSize) / 2;
-        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize, display.icon(), partialTicks, alpha);
-        if (display.visualHidden() || gated) {
-            graphics.fill(rect.x(), rect.y(), rect.x() + rect.w(), rect.y() + rect.h(), withAlpha(ModColors.SURFACE_BASE, Math.min(130, alpha / 2)));
-        }
-        if (highlighted) {
-            drawHighlightBorder(graphics, rect, alpha);
-        }
-    }
-
-    private static void drawHighlightBorder(GuiGraphics graphics, BlueprintRect rect, int alpha) {
-        int color = withAlpha(ModColors.BORDER_ACCENT, Math.min(255, alpha));
-        graphics.fill(rect.x() - 2, rect.y() - 2, rect.x() + rect.w() + 2, rect.y(), color);
-        graphics.fill(rect.x() - 2, rect.y() + rect.h(), rect.x() + rect.w() + 2, rect.y() + rect.h() + 2, color);
-        graphics.fill(rect.x() - 2, rect.y(), rect.x(), rect.y() + rect.h(), color);
-        graphics.fill(rect.x() + rect.w(), rect.y(), rect.x() + rect.w() + 2, rect.y() + rect.h(), color);
-    }
-
-    private static void drawQuestBackground(GuiGraphics graphics, int mouseX, int mouseY, QuestDisplay display, BlueprintRect rect, boolean gated, int alpha) {
-        String background = display.questBackground();
-        if (background == null || background.isBlank() || QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(background)) {
-            new ResourceTexture(DEFAULT_QUEST_BG)
-                    .setColor(withAlpha(display.visualHidden() || gated ? ModColors.TEXT_SECONDARY : ModColors.INTERACTIVE, alpha))
-                    .draw(graphics, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h());
-            return;
-        }
-        IGuiTexture texture = chapterBackgroundTexture(background, display.questBackgroundGrayscale());
-        if (texture == null) {
-            new ResourceTexture(DEFAULT_QUEST_BG)
-                    .setColor(withAlpha(ModColors.INTERACTIVE, alpha))
-                    .draw(graphics, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h());
-            return;
-        }
-        drawTextureAlpha(graphics, texture, mouseX, mouseY, rect.x(), rect.y(), rect.w(), rect.h(), alpha);
+        QuestMiniCardRenderer.drawDisplayCard(graphics, display, gated, rect.x(), rect.y(), rect.w(), rect.h(), mouseX, mouseY, partialTicks, alpha, highlighted);
     }
 
     private static void drawImage(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint blueprint, CanvasImageLayer image, int alpha) {
@@ -367,10 +324,6 @@ public final class CanvasBlueprintMiniRenderer {
                 text.fontSize(),
                 spans
         );
-    }
-
-    private static void drawTextureAlpha(GuiGraphics graphics, IGuiTexture texture, int mouseX, int mouseY, int x, int y, int width, int height, int alpha) {
-        withShaderAlpha(alpha, () -> texture.draw(graphics, mouseX, mouseY, x, y, width, height));
     }
 
     private static void withShaderAlpha(int alpha, Runnable draw) {
