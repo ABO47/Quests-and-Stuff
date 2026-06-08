@@ -13,6 +13,7 @@ class TabletPureHelperCoverageTest {
         Map<String, String> coverage = Map.ofEntries(
                 entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.TabletModalStateTest"),
                 entry("picker sessions", "com.abo47.questsandstuff.client.tablet.modal.ModalPickerStatesTest"),
+                entry("settings descriptors", "com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptorsTest"),
                 entry("transform sessions", "com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessionsTest"),
                 entry("sync keys and chunks", "com.abo47.questsandstuff.quest.sync.QuestSyncPayloadBuilderTest"),
                 entry("client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest"),
