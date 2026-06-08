@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TabletSelector;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -36,7 +37,6 @@ public final class TabletSettingsModal {
     private static final int PAD = 8;
     private static final int TAB_Y = 22;
     private static final int TAB_H = 20;
-    private static final int TAB_GAP = 4;
     private static final int LIST_Y = 50;
     private static final int ROW_H = 26;
     private static final int ROW_INSET = 4;
@@ -107,55 +107,46 @@ public final class TabletSettingsModal {
     }
 
     private static void addTabs(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
-        int totalW = Math.max(1, w - PAD * 2);
-        int count = Math.max(1, TABS.size());
-        int available = Math.max(count, totalW - TAB_GAP * (count - 1));
-        int tabW = Math.max(1, available / count);
-        int remainder = Math.max(0, available - tabW * count);
-        int tabX = PAD;
-        for (int i = 0; i < count; i++) {
-            SettingTab tab = TABS.get(i);
-            int currentW = tabW + (i < remainder ? 1 : 0);
-            addTab(modal, state, refresh, tabX, currentW, tab);
-            tabX += currentW + TAB_GAP;
-        }
+        TabletSelector.add(
+                modal,
+                PAD,
+                TAB_Y,
+                Math.max(64, w - PAD * 2),
+                TAB_H,
+                tabOptions(),
+                () -> activeSettingTab(state),
+                tab -> selectTab(state, tab, refresh),
+                TABS.size()
+        );
     }
 
-    private static void addTab(WidgetGroup modal, TabletUiState state, Runnable refresh, int x, int w, SettingTab tab) {
-        boolean active = state.settingsTab == tab.id();
-        int tabY = active ? TAB_Y : TAB_Y + 3;
-        int tabH = active ? TAB_H : TAB_H - 3;
-        int fill = active ? withAlpha(ModColors.SURFACE_BASE, 250) : withAlpha(ModColors.SURFACE_PANEL_ALT, 142);
-        int border = active ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
-        addTabShadow(modal, x, tabY, w, tabH, active);
-        modal.addWidget(panel(x, tabY, w, tabH, fill, border));
-        modal.addWidget(label(x + 8, tabY + 6, SearchFilter.crop(TabletModalPanel.tr(tab.labelKey()), Math.max(8, (w - 16) / 6)), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED));
-        ButtonWidget hit = flatHitButton(x, tabY, w, tabH, click -> {
-            if (state.settingsTab == tab.id()) {
-                return;
+    private static List<TabletSelector.Option<SettingTab>> tabOptions() {
+        return TABS.stream()
+                .map(tab -> TabletSelector.option(tab, TabletModalPanel.tr(tab.labelKey())))
+                .toList();
+    }
+
+    private static SettingTab activeSettingTab(TabletUiState state) {
+        int active = activeTab(state.settingsTab);
+        for (SettingTab tab : TABS) {
+            if (tab.id() == active) {
+                return tab;
             }
-            state.settingsTab = tab.id();
-            state.settingsScroll = 0;
-            state.settingsScrollDragging = false;
-            state.themeScroll = 0;
-            state.themeScrollDragging = false;
-            QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
-            refresh.run();
-        });
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, active ? 72 : 42), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82)));
-        hit.setHoverTooltips(Component.translatable(tab.labelKey()));
-        modal.addWidget(hit);
+        }
+        return TABS.get(0);
     }
 
-    private static void addTabShadow(WidgetGroup modal, int x, int y, int w, int h, boolean active) {
-        WidgetGroup cast = new WidgetGroup(x + 3, y + 4, w, h);
-        cast.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, active ? 126 : 78)));
-        modal.addWidget(cast);
-
-        WidgetGroup soft = new WidgetGroup(x + 1, y + 2, w, h);
-        soft.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL, active ? 58 : 34)));
-        modal.addWidget(soft);
+    private static void selectTab(TabletUiState state, SettingTab tab, Runnable refresh) {
+        if (tab == null || state.settingsTab == tab.id()) {
+            return;
+        }
+        state.settingsTab = tab.id();
+        state.settingsScroll = 0;
+        state.settingsScrollDragging = false;
+        state.themeScroll = 0;
+        state.themeScrollDragging = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
+        refresh.run();
     }
 
     private static List<SettingOption> options(int tab, TabletUiState state) {

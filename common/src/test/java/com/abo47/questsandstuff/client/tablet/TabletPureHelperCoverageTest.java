@@ -17,6 +17,7 @@ class TabletPureHelperCoverageTest {
                 "client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest",
                 "optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest",
                 "text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest",
+                "selector builders", "com.abo47.questsandstuff.client.tablet.controls.TabletSelectorTest",
                 "objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest"
         );
 
