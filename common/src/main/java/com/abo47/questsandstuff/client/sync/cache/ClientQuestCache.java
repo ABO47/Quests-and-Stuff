@@ -181,79 +181,31 @@ public final class ClientQuestCache {
     }
 
     public static boolean groupLockedPreview(String group) {
-        if (!groupLockUntilUnlocked(group)) {
-            return false;
-        }
-        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
-            CompoundTag quest = entry.getValue();
-            if (!quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(group)) {
-                continue;
-            }
-            if (quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED) || quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
-                return false;
-            }
-        }
-        return true;
+        return ClientQuestPreviewRules.groupLocked(group);
     }
 
     public static boolean groupHiddenPreview(String group) {
-        if (!groupHideUntilUnlocked(group)) {
-            return false;
-        }
-        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
-            CompoundTag quest = entry.getValue();
-            if (!quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(group)) {
-                continue;
-            }
-            if (quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED) || quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
-                return false;
-            }
-        }
-        return true;
+        return ClientQuestPreviewRules.groupHidden(group);
     }
 
     public static boolean groupOpenablePreview(String group) {
-        return !groupLockedPreview(group) && !groupHiddenPreview(group);
+        return ClientQuestPreviewRules.groupOpenable(group);
     }
 
     public static List<String> selectableGroupOrder(boolean canEdit) {
-        if (canEdit) {
-            return groupOrder();
-        }
-        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
-        for (String group : groupOrder()) {
-            if (groupOpenablePreview(group)) {
-                groups.add(group);
-            }
-        }
-        return List.copyOf(groups);
+        return ClientQuestPreviewRules.selectableGroupOrder(canEdit);
     }
 
     public static List<String> visibleGroupOrder(boolean canEdit) {
-        if (canEdit) {
-            return groupOrder();
-        }
-        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
-        for (String group : groupOrder()) {
-            if (!groupHiddenPreview(group)) {
-                groups.add(group);
-            }
-        }
-        return List.copyOf(groups);
+        return ClientQuestPreviewRules.visibleGroupOrder(canEdit);
     }
 
     public static boolean questLockedPreview(CompoundTag quest) {
-        return quest != null
-                && "locked".equals(quest.getString(QuestSyncKeys.Quest.HIDDEN_MODE))
-                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
-                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
+        return ClientQuestPreviewRules.questLocked(quest);
     }
 
     public static boolean questHiddenPreview(CompoundTag quest) {
-        return quest != null
-                && quest.getBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN)
-                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
-                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
+        return ClientQuestPreviewRules.questHidden(quest);
     }
 
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
