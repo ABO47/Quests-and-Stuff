@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
@@ -123,7 +125,7 @@ public final class CanvasSelectionActions {
             EditorCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
         if (changed) {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
         }
         return changed;
     }

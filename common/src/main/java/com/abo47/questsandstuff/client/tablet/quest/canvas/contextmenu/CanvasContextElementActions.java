@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -39,16 +41,16 @@ final class CanvasContextElementActions {
         if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
-                state.contextDeleteConfirmKey = "";
-                state.contextMenuOpen = false;
+                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuState.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card group={} image={}", selectedGroup, state.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
-                state.contextDeleteConfirmKey = "";
-                state.contextMenuOpen = false;
+                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuState.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity group={} image={}", selectedGroup, state.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
@@ -57,7 +59,7 @@ final class CanvasContextElementActions {
                     state,
                     contextImage.asset(),
                     ModalTargets.canvasImage(selectedGroup, state.contextCanvasImageId),
-                    () -> state.contextMenuOpen = false,
+                    () -> ContextMenuState.close(state),
                     () -> {
                         EntityMotionEditor.openMainCanvas(state, selectedGroup, state.contextCanvasImageId, state.contextMenuX, state.contextMenuY);
                         QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion group={} image={}", selectedGroup, state.contextCanvasImageId);
@@ -67,16 +69,16 @@ final class CanvasContextElementActions {
         } else if (contextImage != null && (ModelAssetPreviewRenderer.isItemAsset(contextImage.asset()) || ModelAssetPreviewRenderer.isItemTagAsset(contextImage.asset()))) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
-                state.contextDeleteConfirmKey = "";
-                state.contextMenuOpen = false;
+                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuState.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model group={} image={}", selectedGroup, state.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
-                state.contextDeleteConfirmKey = "";
-                state.contextMenuOpen = false;
+                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuState.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model group={} image={}", selectedGroup, state.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
@@ -101,7 +103,7 @@ final class CanvasContextElementActions {
         if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextCanvasImageId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitImageToGrid(state, selectedGroup, state.contextCanvasImageId);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=image id={} changed={}", state.contextCanvasImageId, changed);
                 canvasViewport.refresh();
             }));
@@ -125,7 +127,7 @@ final class CanvasContextElementActions {
             state.canvasTextMenuTarget = state.contextCanvasTextId;
             state.selectedCanvasTextId = state.contextCanvasTextId;
             canvasViewport.setFocus(true);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_text id={}", state.contextCanvasTextId);
             canvasViewport.refresh();
         }));
@@ -133,14 +135,14 @@ final class CanvasContextElementActions {
             state.canvasTextMenuOpen = true;
             state.canvasTextMenuTarget = state.contextCanvasTextId;
             state.selectedCanvasTextId = state.contextCanvasTextId;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=text_style id={}", state.contextCanvasTextId);
             canvasViewport.refresh();
         }));
         if (CanvasGridFitController.canFitTextToGrid(state, selectedGroup, state.contextCanvasTextId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitTextToGrid(state, selectedGroup, state.contextCanvasTextId);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=text id={} changed={}", state.contextCanvasTextId, changed);
                 canvasViewport.refresh();
             }));
@@ -156,7 +158,7 @@ final class CanvasContextElementActions {
                 } else {
                     CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, true);
                 }
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target={} id={}", targetName, targetId);
                 canvasViewport.refresh();
             }));
@@ -168,7 +170,7 @@ final class CanvasContextElementActions {
                 } else {
                     CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, false);
                 }
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target={} id={}", targetName, targetId);
                 canvasViewport.refresh();
             }));

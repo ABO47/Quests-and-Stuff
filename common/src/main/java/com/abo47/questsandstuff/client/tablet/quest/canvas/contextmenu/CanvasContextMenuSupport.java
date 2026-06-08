@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -63,16 +64,12 @@ public final class CanvasContextMenuSupport {
     }
 
     public static boolean clickContextMenu(CanvasViewport canvasViewport, TabletUiState state, int x, int y) {
-        if (!state.contextMenuOpen || !isContextMenuHit(state, x, y)) {
+        if (!ContextMenuState.isOpen(state) || !isContextMenuHit(state, x, y)) {
             return false;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
-            state.contextMenuOpen = false;
-            state.contextQuestCompletionSoundMenuOpen = false;
-            state.contextMenuScroll = 0;
-            state.contextMenuScrollMax = 0;
-            state.contextMenuScrollDragging = false;
+            ContextMenuState.close(state);
             return true;
         }
 
@@ -104,21 +101,14 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
-            state.contextLastClickX = x;
-            state.contextLastClickY = y;
+            ContextMenuState.setLastClick(state, x, y);
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
         }
-        state.contextMenuOpen = false;
-        state.contextMenuRows = 0;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
-        state.contextQuestCompletionSoundMenuOpen = false;
+        ContextMenuState.close(state);
         return true;
     }
 
@@ -135,31 +125,20 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = visiblePromoted.get(i);
-            state.contextLastClickX = state.contextMenuX + relX;
-            state.contextLastClickY = state.contextMenuY + relY;
+            ContextMenuState.setLastClick(state, state.contextMenuX + relX, state.contextMenuY + relY);
             ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextMenuScroll = 0;
-            state.contextMenuScrollMax = 0;
-            state.contextMenuScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
-            state.contextQuestCompletionSoundMenuOpen = false;
+            ContextMenuState.close(state);
             return true;
         }
         return true;
     }
 
     public static void scrollContextMenu(TabletUiState state, double wheelDelta) {
-        if (!state.contextMenuOpen || state.contextMenuScrollMax <= 0 || wheelDelta == 0) {
-            return;
-        }
-        int step = wheelDelta > 0 ? -1 : 1;
-        state.contextMenuScroll = ScrollController.clamp(state.contextMenuScroll + step, state.contextMenuScrollMax);
+        ContextMenuState.scrollByWheel(state, wheelDelta);
     }
 
     public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {

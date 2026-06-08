@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -139,7 +140,7 @@ class PrerequisiteConnectionModelTest {
         state.prerequisitesManagerHoveredConnectionKey = row.key();
         state.prerequisitesManagerContextOpen = true;
         state.prerequisitesManagerContextPrerequisiteId = row.sourceId();
-        state.contextDeleteConfirmKey = "connection:remove:" + row.key();
+        ContextMenuState.confirmDeleteClick(state, "connection:remove:" + row.key());
 
         assertTrue(PrerequisiteConnectionActions.canRemove(row));
         assertFalse(PrerequisiteConnectionActions.canRemove(new PrerequisiteConnectionRow("", "quest/focus", "", "", "", "", PrerequisiteConnectionKind.INCOMING)));

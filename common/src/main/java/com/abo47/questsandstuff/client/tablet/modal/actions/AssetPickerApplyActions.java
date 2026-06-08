@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -127,8 +129,8 @@ public final class AssetPickerApplyActions {
         state.resizingCanvasImage = false;
         state.rotatingCanvasImage = false;
         state.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        state.contextMenuOpen = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.close(state);
+        ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas image added group={} id={} asset={} pos={},{} size={}x{}", group, id, asset, clamped.x, clamped.y, imageW, imageH);
     }
 

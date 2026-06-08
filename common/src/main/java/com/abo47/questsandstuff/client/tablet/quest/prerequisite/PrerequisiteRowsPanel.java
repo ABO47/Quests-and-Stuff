@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
@@ -73,7 +75,7 @@ final class PrerequisiteRowsPanel {
                 ),
                 () -> {
                     state.prerequisitesManagerContextOpen = false;
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                 },
                 refresh,
                 (surface, row, index, x, y, cellW, cellH, tileLayout) -> renderConnectionRow(surface, state, refresh, modalW, modalH, questId, row, x, y, cellW, cellH)
@@ -101,7 +103,7 @@ final class PrerequisiteRowsPanel {
                 openConnectionContextAtPointer(state, modalW, modalH, row);
             } else if (click.button == 0) {
                 state.prerequisitesManagerContextOpen = false;
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager row_click quest={} connection={} button={}", questId, row.key(), click.button);
             refresh.run();
@@ -143,7 +145,7 @@ final class PrerequisiteRowsPanel {
         state.prerequisitesManagerSelectedConnectionKey = row.key();
         state.prerequisitesManagerContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
         state.prerequisitesManagerContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
         ContextMenuAnimation.start(state, CONTEXT_ANIMATION_KEY);
     }
 }

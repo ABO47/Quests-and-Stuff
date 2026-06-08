@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -95,8 +97,8 @@ public final class CanvasRecipeCardActions {
         state.selectedCanvasTextId = "";
         state.selectedCanvasTextIds.clear();
         state.selectedQuestIds.clear();
-        state.contextMenuOpen = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.close(state);
+        ContextMenuState.clearDeleteConfirm(state);
     }
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {

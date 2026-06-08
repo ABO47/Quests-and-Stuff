@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
@@ -118,12 +120,12 @@ public final class QuestDetailsObjectiveMenus {
         }
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.PICK_ITEM), "icon", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsTransientState.closeItemSourcePicker(state);
             QuestDetailsWindow.openIconPicker(state, target);
         }));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.FROM_INVENTORY), "backpack", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsTransientState.closeItemSourcePicker(state);
             QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
         }));
@@ -139,13 +141,13 @@ public final class QuestDetailsObjectiveMenus {
     private static void addCreateActions(List<ContextAction> actions, TabletUiState state, String kind) {
         if (kind.startsWith("requirement")) {
             actions.add(ContextActions.add(TabletVocabulary.text(QuestVocabulary.ADD_REQUIREMENT), () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 openTypePicker(state, "requirement");
             }));
         }
         if (kind.startsWith("reward")) {
             actions.add(ContextActions.add(TabletVocabulary.text(QuestVocabulary.ADD_REWARD), () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 openTypePicker(state, "reward");
             }));
         }
@@ -153,11 +155,11 @@ public final class QuestDetailsObjectiveMenus {
 
     private static void addRequirementActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, String contextId) {
         actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CHANGE_REQUIREMENT), "rename", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             openTypePicker(state, "requirement_change", contextId);
         }));
         actions.add(ContextActions.promotedRename(TabletVocabulary.text(QuestVocabulary.RENAME_REQUIREMENT), () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, true);
         }));
         CompoundTag requirementTag = ClientQuestCache.quest(questId)
@@ -166,15 +168,15 @@ public final class QuestDetailsObjectiveMenus {
         JsonObject requirementJson = parseObjectiveJson(requirementTag.getString("json"));
         if (QuestObjectiveXpEditor.isXp(requirementJson)) {
             actions.add(editSubmenu(List.of(ContextActions.rename(TabletVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsTransientState.openXpPicker(state, questId, contextId, true);
             }))));
         }
         addMoveActions(actions, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             EditorCommandClient.moveQuestTask(player, questId, contextId, -1);
         }, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             EditorCommandClient.moveQuestTask(player, questId, contextId, 1);
         });
         actions.add(visualsSubmenu(state, questId, contextId, true));
@@ -193,38 +195,38 @@ public final class QuestDetailsObjectiveMenus {
         List<ContextAction> editActions = new ArrayList<>();
         if ("command".equals(QuestObjectiveJsons.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
             editActions.add(ContextActions.rename(TabletVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
         }
         if (QuestObjectiveXpEditor.isXp(rewardJson)) {
             editActions.add(ContextActions.rename(TabletVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsTransientState.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
             editActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "selectable", ModColors.INTERACTIVE, () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));
         }
         actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CHANGE_REWARD), "rename", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             openTypePicker(state, "reward_change", contextId);
         }));
         actions.add(ContextActions.promotedRename(TabletVocabulary.text(QuestVocabulary.RENAME_REWARD), () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, false);
         }));
         if (!editActions.isEmpty()) {
             actions.add(editSubmenu(editActions));
         }
         addMoveActions(actions, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             EditorCommandClient.moveQuestReward(player, questId, contextId, -1);
         }, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             EditorCommandClient.moveQuestReward(player, questId, contextId, 1);
         });
         actions.add(visualsSubmenu(state, questId, contextId, false));
@@ -350,7 +352,7 @@ public final class QuestDetailsObjectiveMenus {
     private static ContextAction visualsSubmenu(TabletUiState state, String questId, String objectiveId, boolean task) {
         List<ContextAction> visualActions = new ArrayList<>();
         visualActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, objectiveId) : ModalTargets.rewardIcon(questId, objectiveId));
         }));
         addEntityIconActions(visualActions, state, questId, objectiveId, task);

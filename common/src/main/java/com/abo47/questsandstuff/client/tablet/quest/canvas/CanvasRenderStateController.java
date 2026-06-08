@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -35,11 +37,7 @@ final class CanvasRenderStateController {
         if (state.canEdit) {
             return;
         }
-        state.contextMenuOpen = false;
-        state.contextMenuRows = 0;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
+        ContextMenuState.close(state);
         state.createQuestModalOpen = false;
         state.boxSelecting = false;
     }

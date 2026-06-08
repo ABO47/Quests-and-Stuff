@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
@@ -101,7 +103,7 @@ final class QuestAppHeaderControls {
         TabletIconTextButton settingsButton = headerButton(0, 0, toolsW, headerH, "settings-2", ModColors.INTERACTIVE, click -> toggleSettingsPanel(state, refresh));
         TabletIconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", ModColors.WARNING, click -> {
             ToolMenuAnimation.closeMain(state);
-            state.contextMenuOpen = false;
+            ContextMenuState.close(state);
             state.chapterMenuOpen = false;
             state.assetContextOpen = false;
             CanvasBlueprintController.openBlueprintLibrary(state);
@@ -110,7 +112,7 @@ final class QuestAppHeaderControls {
         });
         TabletIconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", ModColors.INTERACTIVE, click -> {
             ToolMenuAnimation.closeMain(state);
-            state.contextMenuOpen = false;
+            ContextMenuState.close(state);
             state.chapterMenuOpen = false;
             state.assetContextOpen = false;
             QuestRewardClaimActions.claimAll(player, "");
@@ -122,7 +124,7 @@ final class QuestAppHeaderControls {
             }
             state.editMode = !state.editMode;
             state.canEdit = state.editorAvailable && state.editMode;
-            state.contextMenuOpen = false;
+            ContextMenuState.close(state);
             state.chapterMenuOpen = false;
             state.assetContextOpen = false;
             persistUiState(state);
@@ -226,7 +228,7 @@ final class QuestAppHeaderControls {
             return;
         }
         ToolMenuAnimation.closeMain(state);
-        state.contextMenuOpen = false;
+        ContextMenuState.close(state);
         state.chapterMenuOpen = false;
         state.assetContextOpen = false;
         ModalOpenActions.openSettingsPanel(state);

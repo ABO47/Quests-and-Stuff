@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
@@ -21,13 +23,13 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextH = 0;
         state.questDetailsContextScroll = 0;
         state.questDetailsContextScrollMax = 0;
-        state.contextMenuScrollDragging = false;
+        ContextMenuState.setScrollDragging(state, false);
         closeTypePicker(state);
         closeItemSourcePicker(state);
         closeXpPicker(state);
         closeCommandRewardEditor(state);
         closeObjectiveRename(state);
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
     }
 
     public static void closeContext(TabletUiState state) {
@@ -36,8 +38,8 @@ public final class QuestDetailsTransientState {
         state.questDetailsContextId = "";
         state.questDetailsContextScroll = 0;
         state.questDetailsContextScrollMax = 0;
-        state.contextMenuScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.setScrollDragging(state, false);
+        ContextMenuState.clearDeleteConfirm(state);
     }
 
     public static void openTypePicker(TabletUiState state, String kind, String targetId) {

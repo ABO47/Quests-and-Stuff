@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -79,7 +81,7 @@ public final class QuestPrerequisitesManagerModal {
             state.prerequisitesManagerContextPrerequisiteId = "";
             state.prerequisitesManagerSelectedConnectionKey = "";
             state.prerequisitesManagerHoveredConnectionKey = "";
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.prerequisitesManagerExternalMode);
             refresh.run();
         });
@@ -134,7 +136,7 @@ public final class QuestPrerequisitesManagerModal {
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.prerequisitesManagerContextOpen = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         });
         modal.addWidget(dismiss);
@@ -165,7 +167,7 @@ public final class QuestPrerequisitesManagerModal {
             if (action.closeAfterClick()) {
                 state.prerequisitesManagerContextOpen = false;
                 state.prerequisitesManagerContextPrerequisiteId = "";
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
             }
             refresh.run();
         }, CONTEXT_ANIMATION_KEY, w, h));

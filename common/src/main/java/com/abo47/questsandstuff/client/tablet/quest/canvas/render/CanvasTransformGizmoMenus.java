@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
@@ -22,7 +24,7 @@ public final class CanvasTransformGizmoMenus {
 
     public static void addCenterPivotAction(List<ContextAction> actions, TabletUiState state, Runnable centerPivot, Runnable refresh) {
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CENTER_PIVOT), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             centerPivot.run();
             QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo center_pivot");
             refresh.run();
@@ -33,7 +35,7 @@ public final class CanvasTransformGizmoMenus {
         boolean active = CanvasTransformGizmo.activeMode(state) == mode;
         actions.add(ContextActions.stayOpen(TabletVocabulary.text(labelKey), mode.icon, active ? ModColors.SUCCESS : ModColors.INTERACTIVE, () -> {
             CanvasTransformGizmo.setMode(state, mode);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo mode={}", mode.id);
             refresh.run();
         }));

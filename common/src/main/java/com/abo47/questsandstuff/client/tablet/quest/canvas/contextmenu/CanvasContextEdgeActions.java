@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -29,7 +31,7 @@ final class CanvasContextEdgeActions {
         boolean direct = CanvasRenderer.isConnectionDirect(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget);
         actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ModColors.INTERACTIVE, () -> {
             EditorCommandClient.runConnectionModeAction(player, state.contextEdgeTarget, state.contextEdgeSource, direct);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_connection_mode source={} target={} direct={}", state.contextEdgeSource, state.contextEdgeTarget, !direct);
             canvasViewport.refresh();
         }));
@@ -42,7 +44,7 @@ final class CanvasContextEdgeActions {
         boolean hidden = CanvasRenderer.isConnectionHidden(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget);
         actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ModColors.INTERACTIVE : ModColors.WARNING, () -> {
             EditorCommandClient.runConnectionHiddenAction(player, state.contextEdgeTarget, state.contextEdgeSource, !hidden);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", state.contextEdgeSource, state.contextEdgeTarget, !hidden);
             canvasViewport.refresh();
         }));
@@ -55,7 +57,7 @@ final class CanvasContextEdgeActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
                 CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, true);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", edgeId);
                 canvasViewport.refresh();
             }));
@@ -63,7 +65,7 @@ final class CanvasContextEdgeActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
                 CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, false);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", edgeId);
                 canvasViewport.refresh();
             }));

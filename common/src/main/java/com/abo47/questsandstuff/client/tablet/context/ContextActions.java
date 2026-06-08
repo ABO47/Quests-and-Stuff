@@ -50,7 +50,7 @@ public final class ContextActions {
     }
 
     public static ContextAction delete(TabletUiState state, String key, String label, Runnable deleteAction) {
-        boolean confirming = key != null && key.equals(state.contextDeleteConfirmKey);
+        boolean confirming = ContextMenuState.isDeleteConfirming(state, key);
         return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ActionTone.DANGER, confirming, true, () -> {
             if (confirmDeleteClick(state, key)) {
                 deleteAction.run();
@@ -59,7 +59,7 @@ public final class ContextActions {
     }
 
     public static ContextAction warningDelete(TabletUiState state, String key, String label, Runnable deleteAction) {
-        boolean confirming = key != null && key.equals(state.contextDeleteConfirmKey);
+        boolean confirming = ContextMenuState.isDeleteConfirming(state, key);
         return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ActionTone.WARNING, confirming, () -> {
             if (confirmDeleteClick(state, key)) {
                 deleteAction.run();

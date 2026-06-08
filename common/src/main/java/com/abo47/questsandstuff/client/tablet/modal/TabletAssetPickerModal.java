@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
@@ -244,7 +246,7 @@ public final class TabletAssetPickerModal {
                     state.assetContextFile = relative;
                     anchorAssetContextAtPointer(state, w, h);
                     state.assetRenameOpen = false;
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
                     refresh.run();
                     return;
@@ -295,7 +297,7 @@ public final class TabletAssetPickerModal {
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.assetContextOpen = false;
             state.assetRenameOpen = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         });
         modal.addWidget(dismiss);
@@ -458,7 +460,7 @@ public final class TabletAssetPickerModal {
                 if (!state.assetRenameOpen) {
                     state.assetRenameDraft = "";
                 }
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
             }
             refresh.run();
         }, modalW, modalH));
@@ -500,7 +502,7 @@ public final class TabletAssetPickerModal {
         state.assetRenameOpen = !state.assetContextFile.isBlank();
         state.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.assetContextFile);
         state.assetSearchFocused = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
     }
 
     private static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {

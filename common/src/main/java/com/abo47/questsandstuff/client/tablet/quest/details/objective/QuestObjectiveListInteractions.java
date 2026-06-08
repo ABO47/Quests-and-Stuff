@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
@@ -36,7 +38,7 @@ final class QuestObjectiveListInteractions {
         }
         state.questDetailsSelectedObjectiveKind = "";
         state.questDetailsSelectedObjectiveId = "";
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
         clearDrag(state);
         QuestDetailsTransientState.closeObjectiveRename(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] objective selection cleared reason={}", reason == null ? "" : reason);

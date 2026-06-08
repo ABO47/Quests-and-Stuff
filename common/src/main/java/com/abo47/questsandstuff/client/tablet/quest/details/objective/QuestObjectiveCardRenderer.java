@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -96,7 +98,7 @@ final class QuestObjectiveCardRenderer {
             return;
         }
         var hit = flatHitButton(x, y, QuestDetailsObjectivesPanel.ICON, QuestDetailsObjectivesPanel.ICON, click -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, id) : ModalTargets.rewardIcon(questId, id));
             refresh.run();
         });

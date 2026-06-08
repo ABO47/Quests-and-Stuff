@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
@@ -140,7 +142,7 @@ public final class QuestAppComposer {
                 state.toolsGridSizeMenuOpen = false;
                 state.toolsGridOpacityMenuOpen = false;
                 state.chapterMenuOpen = false;
-                state.contextMenuOpen = false;
+                ContextMenuState.close(state);
                 state.createQuestModalOpen = false;
                 state.selectedQuestIds.clear();
             }

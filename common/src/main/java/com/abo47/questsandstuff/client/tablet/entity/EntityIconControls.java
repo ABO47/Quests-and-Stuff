@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -30,7 +32,7 @@ public final class EntityIconControls {
 
     public static void addChangeIconHit(WidgetGroup parent, TabletUiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
         var hit = TabletUiFactory.flatHitButton(x, y, size, size, click -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             openPicker.run();
             refresh.run();
         });
@@ -60,7 +62,7 @@ public final class EntityIconControls {
             }));
         }
         actions.add(ContextActions.editMotion(() -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             openMotion.run();
             closeOwner.run();
             refresh.run();

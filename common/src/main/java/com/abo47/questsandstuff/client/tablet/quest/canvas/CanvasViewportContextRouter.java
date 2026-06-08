@@ -7,8 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -24,13 +23,7 @@ final class CanvasViewportContextRouter {
     }
 
     static void closeContextMenu(TabletUiState state) {
-        state.contextMenuOpen = false;
-        state.contextMenuRows = 0;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
-        state.contextQuestCompletionSoundMenuOpen = false;
+        ContextMenuState.close(state);
     }
 
     static void openContextMenu(
@@ -48,38 +41,18 @@ final class CanvasViewportContextRouter {
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
         int logicalX = anchor.x;
         int logicalY = anchor.y;
-        state.contextPointerLogicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
-        state.contextPointerLogicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        state.contextMenuOpen = true;
-        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        int pointerLogicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        int pointerLogicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        ContextMenuState.openCanvas(state, localX, localY, logicalX, logicalY, pointerLogicalX, pointerLogicalY);
         EntityMotionEditor.close(state);
-        state.contextMenuX = localX;
-        state.contextMenuY = localY;
-        state.contextMenuAnchorX = localX;
-        state.contextMenuAnchorY = localY;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
-        state.contextQuestCompletionSoundMenuOpen = false;
-        state.createQuestModalOpen = false;
-        state.contextLogicalX = logicalX;
-        state.contextLogicalY = logicalY;
-        state.contextQuestId = "";
-        state.contextEdgeSource = "";
-        state.contextEdgeTarget = "";
-        state.contextCanvasImageId = "";
-        state.contextCanvasTextId = "";
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
-            state.contextMenuTarget = ContextMenuTarget.SELECTION;
+            ContextMenuState.targetSelection(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
         } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit)) {
-            state.contextMenuTarget = ContextMenuTarget.EDGE;
-            state.contextEdgeSource = edgeHit.sourceQuestId();
-            state.contextEdgeTarget = edgeHit.targetQuestId();
+            ContextMenuState.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextEdgeSource, state.contextEdgeTarget);
         } else if (textHit != null) {
-            state.contextMenuTarget = ContextMenuTarget.TEXT;
-            state.contextCanvasTextId = textHit.id();
+            ContextMenuState.targetText(state, textHit.id());
             state.selectedCanvasTextId = textHit.id();
             state.selectedCanvasTextIds.clear();
             state.selectedCanvasTextIds.add(textHit.id());
@@ -88,8 +61,7 @@ final class CanvasViewportContextRouter {
             state.selectedQuestIds.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=text id={}", textHit.id());
         } else if (imageHit != null) {
-            state.contextMenuTarget = ContextMenuTarget.IMAGE;
-            state.contextCanvasImageId = imageHit.id();
+            ContextMenuState.targetImage(state, imageHit.id());
             state.selectedCanvasImageId = imageHit.id();
             state.selectedCanvasImageIds.clear();
             state.selectedCanvasImageIds.add(imageHit.id());
@@ -98,20 +70,17 @@ final class CanvasViewportContextRouter {
             state.selectedQuestIds.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=image id={}", imageHit.id());
         } else if (hit != null) {
-            state.contextMenuTarget = ContextMenuTarget.QUEST;
-            state.contextQuestId = hit.questId();
+            ContextMenuState.targetQuest(state, hit.questId());
             if (!state.selectedQuestIds.contains(hit.questId())) {
                 state.selectedQuestIds.clear();
                 state.selectedQuestIds.add(hit.questId());
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=quest quest={}", state.contextQuestId);
         } else if (edgeHit != null) {
-            state.contextMenuTarget = ContextMenuTarget.EDGE;
-            state.contextEdgeSource = edgeHit.sourceQuestId();
-            state.contextEdgeTarget = edgeHit.targetQuestId();
+            ContextMenuState.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextEdgeSource, state.contextEdgeTarget);
         } else {
-            state.contextMenuTarget = ContextMenuTarget.CANVAS;
+            ContextMenuState.targetCanvas(state);
             CanvasSelectionActions.clearCanvasSelection(state);
             state.connectSourceQuestId = "";
             state.connectSourceQuestIds.clear();

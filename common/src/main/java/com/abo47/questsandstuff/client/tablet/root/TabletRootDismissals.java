@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -54,17 +56,11 @@ final class TabletRootDismissals {
         }
         if (clickState.chapterMenuWasOpen() && state.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
             state.chapterMenuOpen = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             changed = true;
         }
         if (clickState.contextMenuWasOpen() && state.contextMenuOpen && !clickState.contextMenuHit()) {
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextMenuScroll = 0;
-            state.contextMenuScrollMax = 0;
-            state.contextMenuScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
-            state.contextQuestCompletionSoundMenuOpen = false;
+            ContextMenuState.close(state);
             changed = true;
         }
         if (clickState.chapterTextMenuWasOpen() && state.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
@@ -82,7 +78,7 @@ final class TabletRootDismissals {
         if (state.assetContextOpen && !clickState.assetContextHit()) {
             state.assetContextOpen = false;
             state.assetRenameOpen = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             changed = true;
         }
         boolean insideCanvasViewport = TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY);

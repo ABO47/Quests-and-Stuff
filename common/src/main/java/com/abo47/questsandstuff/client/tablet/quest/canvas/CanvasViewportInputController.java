@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
@@ -157,7 +158,7 @@ final class CanvasViewportInputController {
         if (state.contextMenuOpen && state.contextMenuScrollDragging) {
             viewport.callSuperMouseReleased(mouseX, mouseY, button);
             if (state.contextMenuScrollDragging) {
-                state.contextMenuScrollDragging = false;
+                ContextMenuState.setScrollDragging(state, false);
             }
             refresher.run();
             return true;

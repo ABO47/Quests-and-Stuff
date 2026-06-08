@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
@@ -168,11 +170,7 @@ final class QuestDetailsWindowLifecycle {
         state.draggingSelection = false;
         state.resizingSelection = false;
         state.rotatingSelection = false;
-        state.contextMenuOpen = false;
-        state.contextMenuRows = 0;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
+        ContextMenuState.close(state);
         state.canvasTextMenuOpen = false;
         state.canvasTextMenuTarget = "";
         state.canvasTextFontSizeFieldTarget = "";

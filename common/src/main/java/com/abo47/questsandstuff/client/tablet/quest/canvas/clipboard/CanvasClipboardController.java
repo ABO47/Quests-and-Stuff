@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -148,7 +150,7 @@ public final class CanvasClipboardController {
         state.canvasTextClipboard.addAll(copiedTexts);
         state.canvasClipboardOriginX = origin.x;
         state.canvasClipboardOriginY = origin.y;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
 
         if (!copiedQuestIds.isEmpty()) {
             EditorCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);

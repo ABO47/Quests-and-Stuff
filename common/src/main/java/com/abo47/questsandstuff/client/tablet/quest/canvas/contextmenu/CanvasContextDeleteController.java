@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
@@ -69,13 +70,13 @@ public final class CanvasContextDeleteController {
         if (state.contextMenuTarget == ContextMenuTarget.IMAGE && !state.contextCanvasImageId.isBlank()) {
             boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, state.contextCanvasImageId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, state.contextCanvasImageId, removed);
-            state.contextCanvasImageId = "";
+            ContextMenuState.clearTarget(state);
             return;
         }
         if (state.contextMenuTarget == ContextMenuTarget.TEXT && !state.contextCanvasTextId.isBlank()) {
             boolean removed = CanvasLayerMutations.removeCanvasText(state, group, state.contextCanvasTextId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, state.contextCanvasTextId, removed);
-            state.contextCanvasTextId = "";
+            ContextMenuState.clearTarget(state);
             return;
         }
 

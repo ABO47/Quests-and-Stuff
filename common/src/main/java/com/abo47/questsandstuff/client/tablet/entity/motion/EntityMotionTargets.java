@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -169,7 +171,7 @@ final class EntityMotionTargets {
         state.entityMotionFocusedField = "";
         state.entityMotionYawSliderDragging = false;
         state.entityMotionSpinSliderDragging = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
     }
 
     private static void applyCanvasMotion(TabletUiState state, int yaw, int spin, boolean sync) {

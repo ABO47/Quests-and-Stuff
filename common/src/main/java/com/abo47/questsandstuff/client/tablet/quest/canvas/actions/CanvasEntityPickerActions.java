@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.actions;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -48,8 +50,8 @@ public final class CanvasEntityPickerActions {
         state.selectedCanvasTextId = "";
         state.selectedCanvasTextIds.clear();
         state.selectedQuestIds.clear();
-        state.contextMenuOpen = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.close(state);
+        ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed group={} image={} entity={}", parsed.group(), current.id(), entityId);
         return true;
     }
@@ -78,8 +80,8 @@ public final class CanvasEntityPickerActions {
         state.resizingCanvasImage = false;
         state.rotatingCanvasImage = false;
         state.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        state.contextMenuOpen = false;
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.close(state);
+        ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity added group={} id={} entity={} pos={},{} size={}x{}", group, id, entityId, clamped.x, clamped.y, size, size);
     }
 

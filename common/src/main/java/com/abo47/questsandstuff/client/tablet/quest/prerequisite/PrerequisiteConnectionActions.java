@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 final class PrerequisiteConnectionActions {
@@ -26,6 +28,6 @@ final class PrerequisiteConnectionActions {
         }
         state.prerequisitesManagerContextOpen = false;
         state.prerequisitesManagerContextPrerequisiteId = "";
-        state.contextDeleteConfirmKey = "";
+        ContextMenuState.clearDeleteConfirm(state);
     }
 }

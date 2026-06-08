@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
@@ -84,14 +86,14 @@ public final class ModalOpenActions {
             state.colorPaletteContextOpen = false;
             state.colorPaletteContextValue = Integer.MIN_VALUE;
             state.colorPaletteScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
         });
     }
 
     public static void openThemePicker(TabletUiState state) {
         openPickerModal(state, ModalWindowManager.ModalType.THEME_PICKER, () -> {
             state.themeScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
         });
     }
 
@@ -100,7 +102,7 @@ public final class ModalOpenActions {
             state.settingsTab = 0;
             state.settingsScroll = 0;
             state.settingsScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
         });
     }
 
@@ -113,8 +115,8 @@ public final class ModalOpenActions {
             state.prerequisitesManagerContextPrerequisiteId = "";
             state.prerequisitesManagerSelectedConnectionKey = "";
             state.prerequisitesManagerHoveredConnectionKey = "";
-            state.contextDeleteConfirmKey = "";
-            state.contextMenuOpen = false;
+            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuState.close(state);
         });
     }
 
@@ -242,7 +244,7 @@ public final class ModalOpenActions {
             state.entityVariantSelected = EntityPreviewRenderer.entityVariant(clean(icon));
             state.entityVariantFolder = "";
             ModalPickerStates.entityVariant(state).reset();
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
         });
     }
 
@@ -296,7 +298,7 @@ public final class ModalOpenActions {
         openPickerModal(state, ModalWindowManager.ModalType.SOUND_PICKER, () -> {
             resetSoundPicker(state);
             configureTargets.run();
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             state.soundVolumeDraft = completionSoundVolume(volumeQuestId);
             state.soundVolumeDragging = false;
             state.soundSelected = clean(currentSound).isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
@@ -306,7 +308,7 @@ public final class ModalOpenActions {
     private static void openAssetSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
         openAssetPickerSession(state, clean(currentSound).isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound, () -> {
             configureTargets.run();
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             state.soundVolumeDraft = completionSoundVolume(volumeQuestId);
             state.soundVolumeDragging = false;
             state.assetBrowseDir = "sounds";
@@ -383,12 +385,7 @@ public final class ModalOpenActions {
 
     private static void closeBeforeOpen(TabletUiState state) {
         ModalCloseActions.closeAllImmediately(state);
-        state.contextMenuOpen = false;
-        state.contextMenuRows = 0;
-        state.contextMenuScroll = 0;
-        state.contextMenuScrollMax = 0;
-        state.contextMenuScrollDragging = false;
-        state.contextQuestCompletionSoundMenuOpen = false;
+        ContextMenuState.close(state);
         state.questDetailsContextOpen = false;
         state.questDetailsContextKind = "";
         state.questDetailsContextId = "";

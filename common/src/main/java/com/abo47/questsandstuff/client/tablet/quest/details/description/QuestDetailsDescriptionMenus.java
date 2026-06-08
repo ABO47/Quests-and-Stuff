@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
@@ -134,38 +136,38 @@ public final class QuestDetailsDescriptionMenus {
     private static void addDescriptionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
         List<ContextAction> addActions = new ArrayList<>();
         addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_TEXT_BOX), "text", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addTextAt(player, state, questId, model, x, y);
         }));
         addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_IMAGE), "image", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
         }));
         addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_ENTITY), "entity", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addEntityAt(state, questId, x, y);
         }));
         addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_ITEM), "icon", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addItemAt(state, questId, x, y);
         }));
         addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_BLOCK), "add_block", ModColors.SUCCESS, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addBlockAt(state, questId, x, y);
         }));
         if (RecipeViewerIntegrations.hasAvailableViewer()) {
             addActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD_RECIPE_CARD), "recipe", ModColors.SUCCESS, () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
             }));
         }
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_ADD), "add", ModColors.SUCCESS, addActions));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
         }));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_GRID_COLOR), "style_color", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             int color = TabletGridControls.defaultGridColor(state);
             ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_grid_color color={}", color);
@@ -179,7 +181,7 @@ public final class QuestDetailsDescriptionMenus {
         }
         if (!state.canvasImageClipboard.isEmpty() || !state.canvasTextClipboard.isEmpty()) {
             actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_PASTE), "paste", ModColors.SUCCESS, () -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsDescriptionClipboard.pasteAtContext(player, state, questId, model, x, y);
             }));
         }
@@ -187,7 +189,7 @@ public final class QuestDetailsDescriptionMenus {
 
     private static void addTextActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {
         actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT_TEXT), "rename", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             CanvasTextLayer text = model.text(state.questDetailsContextId);
             state.questDetailsTextEditTarget = text == null ? "" : text.id();
             state.questDetailsTextEditDraft = text == null ? "" : text.text();
@@ -202,25 +204,25 @@ public final class QuestDetailsDescriptionMenus {
             state.questDetailsTextStyleTarget = text == null ? "" : text.id();
         }));
         actions.add(new ContextAction(TabletVocabulary.text(QuestVocabulary.CONTEXT_TEXT_STYLE), "style", ModColors.INTERACTIVE, false, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             state.questDetailsTextStyleOpen = true;
             state.questDetailsTextStyleTarget = state.questDetailsContextId;
         }));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitTextToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
         addOrderActions(actions, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         });
         actions.add(ContextActions.copy(() -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionClipboard.copyText(state, model, state.questDetailsContextId);
         }));
         String deleteKey = "quest_details_text:" + questId + ":" + state.questDetailsContextId;
@@ -237,7 +239,7 @@ public final class QuestDetailsDescriptionMenus {
         boolean blockImage = contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset());
         boolean recipeImage = contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset());
         actions.add(ContextActions.promoted(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, state.questDetailsContextId));
             } else if (itemImage) {
@@ -254,7 +256,7 @@ public final class QuestDetailsDescriptionMenus {
             String entityId = EntityPreviewRenderer.entityId(contextImage.asset());
             if (EntityVariantCatalog.hasVariants(entityId)) {
                 actions.add(ContextActions.changeVariant(() -> {
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     String imageId = state.questDetailsContextId;
                     QuestDetailsTransientState.closeContext(state);
                     ModalOpenActions.openEntityVariantPicker(state, ModalTargets.questDetailsImage(questId, imageId), contextImage.asset());
@@ -262,7 +264,7 @@ public final class QuestDetailsDescriptionMenus {
                 }));
             }
             actions.add(ContextActions.editMotion(() -> {
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 EntityMotionEditor.openQuestDetails(state, questId, state.questDetailsContextId, state.questDetailsContextX, state.questDetailsContextY);
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=edit_entity_motion quest={} image={}", questId, state.questDetailsContextId);
             }));
@@ -285,20 +287,20 @@ public final class QuestDetailsDescriptionMenus {
             }, refresh);
         }
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitImageToGrid(player, state, questId, model, state.questDetailsContextId);
         }));
         addOrderActions(actions, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         });
         actions.add(ContextActions.copy(() -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionClipboard.copyImage(state, model, state.questDetailsContextId);
         }));
         String deleteKey = "quest_details_image:" + questId + ":" + state.questDetailsContextId;
@@ -346,29 +348,29 @@ public final class QuestDetailsDescriptionMenus {
         }
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_ALIGN), "align-center-horizontal", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
                 }),
                 ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_VERTICAL_CENTER), "align-center-vertical", ModColors.INTERACTIVE, () -> {
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, false);
                 })
         )));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitSelectionToGrid(player, state, questId, model);
         }));
         addOrderActions(actions, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, true);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }, () -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, false);
             QuestDetailsDescriptionModel.save(player, questId, model);
         });
         actions.add(ContextActions.copy(() -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.copyDescriptionSelection(state, model);
         }));
         String deleteKey = "quest_details_selection:" + questId;

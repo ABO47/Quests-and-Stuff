@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
@@ -92,7 +94,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             refresh.run();
         } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetailsContextOpen && !detailsContextHit) {
             QuestDetailsTransientState.closeContext(state);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetailsTextStyleOpen) {
             closeTextStyle("outside_click");

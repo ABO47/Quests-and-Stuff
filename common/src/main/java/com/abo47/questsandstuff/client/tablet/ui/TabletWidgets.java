@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -80,16 +81,10 @@ final class TabletWidgets {
     }
 
     static String pendingDeleteLabel(TabletUiState state, String key, String fallback) {
-        return key != null && key.equals(state.contextDeleteConfirmKey) ? "Sure?" : fallback;
+        return ContextMenuState.pendingDeleteLabel(state, key, fallback);
     }
 
     static boolean confirmDeleteClick(TabletUiState state, String key) {
-        String safeKey = key == null ? "" : key;
-        if (safeKey.equals(state.contextDeleteConfirmKey)) {
-            state.contextDeleteConfirmKey = "";
-            return true;
-        }
-        state.contextDeleteConfirmKey = safeKey;
-        return false;
+        return ContextMenuState.confirmDeleteClick(state, key);
     }
 }

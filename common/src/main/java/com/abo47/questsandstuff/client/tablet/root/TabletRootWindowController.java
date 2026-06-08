@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -45,7 +47,7 @@ public final class TabletRootWindowController {
         if (state.assetContextOpen || state.assetRenameOpen) {
             state.assetContextOpen = false;
             state.assetRenameOpen = false;
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             return true;
         }
         if (state.colorPaletteContextOpen) {
@@ -61,13 +63,7 @@ public final class TabletRootWindowController {
             return true;
         }
         if (state.contextMenuOpen) {
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextMenuScroll = 0;
-            state.contextMenuScrollMax = 0;
-            state.contextMenuScrollDragging = false;
-            state.contextDeleteConfirmKey = "";
-            state.contextQuestCompletionSoundMenuOpen = false;
+            ContextMenuState.close(state);
             return true;
         }
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
@@ -77,7 +73,7 @@ public final class TabletRootWindowController {
         if (state.chapterMenuOpen) {
             state.chapterMenuOpen = false;
             state.chapterMenuTarget = "";
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             return true;
         }
         if (state.toolsMenuOpen || state.toolsMenuClosing || state.toolsGridSizeMenuOpen || state.toolsGridOpacityMenuOpen) {

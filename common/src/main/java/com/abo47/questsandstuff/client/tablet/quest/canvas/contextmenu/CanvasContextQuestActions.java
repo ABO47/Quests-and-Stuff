@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -42,7 +44,7 @@ final class CanvasContextQuestActions {
             return;
         }
         CompoundTag questTag = ClientQuestCache.quest(state.contextQuestId);
-        state.contextQuestCompletionSoundMenuOpen = false;
+        ContextMenuState.closeExclusiveSubmenus(state);
         if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextQuestId)) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
                 state.connectSourceQuestId = state.contextQuestId;
@@ -54,20 +56,20 @@ final class CanvasContextQuestActions {
                     state.selectedQuestIds.add(state.contextQuestId);
                     state.connectSourceQuestIds.add(state.contextQuestId);
                 }
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connect_to sources={}", state.connectSourceQuestIds);
                 canvasViewport.refresh();
             }));
         }
         actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, () -> {
             openQuestDetails(canvasViewport, state);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_TITLE), "rename", ModColors.INTERACTIVE, () -> {
             EditorCommandClient.beginQuestTitleChange(state, state.contextQuestId);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
@@ -75,14 +77,14 @@ final class CanvasContextQuestActions {
         if (CanvasGridFitController.canFitQuestToGrid(state, contextQuest)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitQuestToGrid(player, state, contextQuest);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextQuestId, changed);
                 canvasViewport.refresh();
             }));
         }
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
             EditorCommandClient.resetQuestProgress(player, state.contextQuestId);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
@@ -92,7 +94,7 @@ final class CanvasContextQuestActions {
         addCompletionSoundActions(actions, canvasViewport, state, questTag);
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, () -> {
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextQuestId));
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
@@ -102,7 +104,7 @@ final class CanvasContextQuestActions {
                 state,
                 questTag.getString("icon"),
                 ModalTargets.questIcon(state.contextQuestId),
-                () -> state.contextMenuOpen = false,
+                () -> ContextMenuState.close(state),
                 () -> {
                     EntityMotionEditor.openQuestIcon(state, state.contextQuestId, state.contextMenuX, state.contextMenuY);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_icon_motion quest={}", state.contextQuestId);
@@ -120,14 +122,14 @@ final class CanvasContextQuestActions {
                     questTag.getString("quest_background"),
                     questTag.getBoolean("quest_background_grayscale")
             );
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_BACKGROUND), "delete", ModColors.WARNING, () -> {
                 EditorCommandClient.setQuestBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextQuestId);
                 canvasViewport.refresh();
             }));
@@ -140,14 +142,14 @@ final class CanvasContextQuestActions {
                 ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_GAME_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
                     ModalOpenActions.openQuestGameSoundPicker(state, state.contextQuestId, sound);
-                    state.contextQuestCompletionSoundMenuOpen = false;
+                    ContextMenuState.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_game quest={} sound={}", state.contextQuestId, sound);
                     canvasViewport.refresh();
                 }),
                 ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_USE_CUSTOM_SOUND), "audio-lines", ModColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
                     ModalOpenActions.openQuestCustomCompletionSoundPicker(state, state.contextQuestId, sound);
-                    state.contextQuestCompletionSoundMenuOpen = false;
+                    ContextMenuState.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_custom quest={} sound={}", state.contextQuestId, sound);
                     canvasViewport.refresh();
                 })
@@ -158,14 +160,14 @@ final class CanvasContextQuestActions {
         String currentBackground = questTag == null ? "" : questTag.getString("completion_hud_background");
         actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openQuestCompletionHudBackgroundPicker(state, state.contextQuestId, currentBackground);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextQuestId);
             canvasViewport.refresh();
         }));
         if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
             actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), "delete", ModColors.WARNING, () -> {
                 EditorCommandClient.setQuestCompletionHudBackground(player, state.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextQuestId);
                 canvasViewport.refresh();
             }));
@@ -204,7 +206,7 @@ final class CanvasContextQuestActions {
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openPrerequisitesManager(state, state.contextQuestId);
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextQuestId, connectionCount);
             canvasViewport.refresh();
         }));
@@ -261,7 +263,7 @@ final class CanvasContextQuestActions {
                 repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> {
                     EditorCommandClient.setQuestRepeatable(player, state.contextQuestId, !repeatable);
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextQuestId, !repeatable);
                     canvasViewport.refresh();
                 }));
@@ -278,7 +280,7 @@ final class CanvasContextQuestActions {
                 lockUntilUnlocked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 () -> {
                     EditorCommandClient.setQuestHiddenMode(player, state.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextQuestId, !lockUntilUnlocked);
                     canvasViewport.refresh();
                 }));
@@ -292,7 +294,7 @@ final class CanvasContextQuestActions {
                 hidden ? ModColors.SUCCESS : ModColors.WARNING,
                 () -> {
                     EditorCommandClient.setQuestVisualHidden(player, state.contextQuestId, !hidden);
-                    state.contextDeleteConfirmKey = "";
+                    ContextMenuState.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextQuestId, !hidden);
                     canvasViewport.refresh();
                 }));
@@ -303,7 +305,7 @@ final class CanvasContextQuestActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
                 CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, true);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextQuestId);
                 canvasViewport.refresh();
             }));
@@ -311,7 +313,7 @@ final class CanvasContextQuestActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
                 CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, false);
-                state.contextDeleteConfirmKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextQuestId);
                 canvasViewport.refresh();
             }));
