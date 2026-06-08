@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModalPickerStatesTest {
     @Test
@@ -41,6 +42,42 @@ class ModalPickerStatesTest {
         assertEquals(16, state.assetGridScroll);
         assertFalse(state.assetSearchFocused);
         assertFalse(state.assetGridScrollDragging);
+    }
+
+    @Test
+    void activePickerBindingUpdatesModalSessionPayload() {
+        TabletUiState state = new TabletUiState();
+        ModalOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
+
+        SearchScrollState picker = ModalPickerStates.recipe(state);
+        picker.setSearch(" Stone\n");
+        picker.setFocused(true);
+        picker.setScrollValue(18);
+        picker.setDragging(true);
+
+        assertEquals(" stone ", state.recipeSearch);
+        assertEquals(" stone ", state.modalSession.picker().search());
+        assertTrue(state.modalSession.picker().focused());
+        assertEquals(18, state.recipeScroll);
+        assertEquals(18, state.modalSession.picker().scroll());
+        assertTrue(state.modalSession.picker().dragging());
+    }
+
+    @Test
+    void switchingPickerTypeCreatesFreshSessionPayload() {
+        TabletUiState state = new TabletUiState();
+        ModalOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
+        ModalPickerStates.recipe(state).setSearch("stone");
+        ModalPickerStates.recipe(state).setScrollValue(22);
+
+        ModalOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
+
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
+        assertEquals("", state.modalSession.picker().search());
+        assertEquals(0, state.modalSession.picker().scroll());
+        assertEquals("icons/new.png", state.modalSession.selectedValue());
+        assertEquals("", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
+        assertEquals("reward_icon|quest|reward|icon", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK));
     }
 
     @Test

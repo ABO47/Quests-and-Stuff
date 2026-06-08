@@ -3,12 +3,20 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
 public final class ModalPickerStates {
     private ModalPickerStates() {
     }
 
     public static SearchScrollState icon(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ICON_PICKER,
                 () -> state.iconSearch,
                 value -> state.iconSearch = value,
                 () -> state.iconSearchFocused,
@@ -21,7 +29,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState asset(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ASSET_PICKER,
                 () -> state.assetSearch,
                 value -> state.assetSearch = value,
                 () -> state.assetSearchFocused,
@@ -34,7 +44,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState biome(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.BIOME_PICKER,
                 () -> state.biomeSearch,
                 value -> state.biomeSearch = value,
                 () -> state.biomeSearchFocused,
@@ -47,7 +59,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState advancement(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ADVANCEMENT_PICKER,
                 () -> state.advancementSearch,
                 value -> state.advancementSearch = value,
                 () -> state.advancementSearchFocused,
@@ -60,7 +74,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState recipe(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.RECIPE_PICKER,
                 () -> state.recipeSearch,
                 value -> state.recipeSearch = value,
                 () -> state.recipeSearchFocused,
@@ -73,7 +89,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState structure(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.STRUCTURE_PICKER,
                 () -> state.structureSearch,
                 value -> state.structureSearch = value,
                 () -> state.structureSearchFocused,
@@ -86,7 +104,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState block(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.BLOCK_PICKER,
                 () -> state.blockSearch,
                 value -> state.blockSearch = value,
                 () -> state.blockSearchFocused,
@@ -99,7 +119,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState stat(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.STAT_PICKER,
                 () -> state.statSearch,
                 value -> state.statSearch = value,
                 () -> state.statSearchFocused,
@@ -112,7 +134,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState dimension(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.DIMENSION_PICKER,
                 () -> state.dimensionSearch,
                 value -> state.dimensionSearch = value,
                 () -> state.dimensionSearchFocused,
@@ -125,7 +149,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState lootTable(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
                 () -> state.lootTableSearch,
                 value -> state.lootTableSearch = value,
                 () -> state.lootTableSearchFocused,
@@ -138,7 +164,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState itemInventory(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER,
                 () -> state.itemInventorySearch,
                 value -> state.itemInventorySearch = value,
                 () -> state.itemInventorySearchFocused,
@@ -151,7 +179,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState sound(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.SOUND_PICKER,
                 () -> state.soundSearch,
                 value -> state.soundSearch = value,
                 () -> state.soundSearchFocused,
@@ -164,7 +194,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState entityVariant(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER,
                 () -> state.entityVariantSearch,
                 value -> state.entityVariantSearch = value,
                 () -> state.entityVariantSearchFocused,
@@ -177,7 +209,9 @@ public final class ModalPickerStates {
     }
 
     public static SearchScrollState prerequisitesManager(TabletUiState state) {
-        return SearchScrollState.bind(
+        return bind(
+                state,
+                ModalWindowManager.ModalType.PREREQUISITES_MANAGER,
                 () -> state.prerequisitesManagerSearch,
                 value -> state.prerequisitesManagerSearch = value,
                 () -> state.prerequisitesManagerSearchFocused,
@@ -187,5 +221,60 @@ public final class ModalPickerStates {
                 () -> state.prerequisitesManagerScrollDragging,
                 value -> state.prerequisitesManagerScrollDragging = value
         );
+    }
+
+    private static SearchScrollState bind(
+            TabletUiState state,
+            ModalWindowManager.ModalType type,
+            Supplier<String> searchSupplier,
+            Consumer<String> searchConsumer,
+            BooleanSupplier focusedSupplier,
+            Consumer<Boolean> focusedConsumer,
+            IntSupplier scrollSupplier,
+            IntConsumer scrollConsumer,
+            BooleanSupplier draggingSupplier,
+            Consumer<Boolean> draggingConsumer
+    ) {
+        return SearchScrollState.bind(
+                searchSupplier,
+                value -> {
+                    searchConsumer.accept(value);
+                    ModalSession session = activeSession(state, type);
+                    if (session != null) {
+                        session.setPickerSearch(value);
+                    }
+                },
+                focusedSupplier,
+                value -> {
+                    focusedConsumer.accept(value);
+                    ModalSession session = activeSession(state, type);
+                    if (session != null) {
+                        session.setPickerFocused(value);
+                    }
+                },
+                scrollSupplier,
+                value -> {
+                    scrollConsumer.accept(value);
+                    ModalSession session = activeSession(state, type);
+                    if (session != null) {
+                        session.setPickerScroll(value);
+                    }
+                },
+                draggingSupplier,
+                value -> {
+                    draggingConsumer.accept(value);
+                    ModalSession session = activeSession(state, type);
+                    if (session != null) {
+                        session.setPickerDragging(value);
+                    }
+                }
+        );
+    }
+
+    private static ModalSession activeSession(TabletUiState state, ModalWindowManager.ModalType type) {
+        if (state == null || state.modalSession == null || !state.modalSession.active() || state.modalSession.type() != type) {
+            return null;
+        }
+        return state.modalSession;
     }
 }

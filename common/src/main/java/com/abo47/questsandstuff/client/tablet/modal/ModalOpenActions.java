@@ -45,84 +45,39 @@ public final class ModalOpenActions {
     }
 
     public static void openBiomePicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.biome(state).reset();
-        openModal(state, ModalWindowManager.ModalType.BIOME_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.BIOME_PICKER, () -> ModalPickerStates.biome(state).reset());
     }
 
     public static void openAdvancementPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.advancement(state).reset();
-        openModal(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.ADVANCEMENT_PICKER, () -> ModalPickerStates.advancement(state).reset());
     }
 
     public static void openRecipePicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        resetRecipePicker(state);
-        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.RECIPE_PICKER, () -> resetRecipePicker(state));
     }
 
     public static void openStructurePicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.structure(state).reset();
-        openModal(state, ModalWindowManager.ModalType.STRUCTURE_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.STRUCTURE_PICKER, () -> ModalPickerStates.structure(state).reset());
     }
 
     public static void openBlockPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        resetBlockPicker(state);
-        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.BLOCK_PICKER, () -> resetBlockPicker(state));
     }
 
     public static void openStatPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.stat(state).reset();
-        openModal(state, ModalWindowManager.ModalType.STAT_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.STAT_PICKER, () -> ModalPickerStates.stat(state).reset());
     }
 
     public static void openDimensionPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.dimension(state).reset();
-        openModal(state, ModalWindowManager.ModalType.DIMENSION_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.DIMENSION_PICKER, () -> ModalPickerStates.dimension(state).reset());
     }
 
     public static void openLootTablePicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.lootTable(state).reset();
-        openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.LOOT_TABLE_PICKER, () -> ModalPickerStates.lootTable(state).reset());
     }
 
     public static void openItemInventoryPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        ModalPickerStates.itemInventory(state).reset();
-        openModal(state, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER);
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, () -> ModalPickerStates.itemInventory(state).reset());
     }
 
     public static void openColorPicker(TabletUiState state, String target, int color) {
@@ -498,6 +453,23 @@ public final class ModalOpenActions {
     private static void resetBlockPicker(TabletUiState state) {
         ModalPickerStates.block(state).reset();
         state.blockTagMode = false;
+    }
+
+    private static void openQuestDetailsPicker(TabletUiState state, String target, ModalWindowManager.ModalType type, Runnable reset) {
+        closeBeforeOpen(state);
+        clearQuestAndChapterTargets(state);
+        state.questDetailsPickTarget = clean(target);
+        reset.run();
+        openModal(state, type);
+    }
+
+    private static void clearQuestAndChapterTargets(TabletUiState state) {
+        state.modalQuestTarget = "";
+        state.modalChapterTarget = "";
+    }
+
+    private static String clean(String value) {
+        return value == null ? "" : value;
     }
 
     private static int completionSoundVolume(String questId) {

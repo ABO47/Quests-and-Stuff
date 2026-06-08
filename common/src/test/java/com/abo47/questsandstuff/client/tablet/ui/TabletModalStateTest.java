@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
@@ -9,6 +10,8 @@ import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -135,6 +138,24 @@ class TabletModalStateTest {
         assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
         assertFalse(state.modalSession.active());
         assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
+    }
+
+    @Test
+    void modalSessionCapturesBatchTargetsAndClearsThemOnClose() {
+        TabletUiState state = new TabletUiState();
+
+        ModalOpenActions.openBatchQuestBackgroundPicker(state, List.of("quest_a", " quest_b "), "background.png", true);
+
+        assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
+        assertEquals("", state.modalSession.target(ModalSession.TargetSlot.QUEST_BACKGROUND));
+        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_a"));
+        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).contains("quest_b"));
+        assertEquals("background.png", state.modalSession.selectedValue());
+
+        TabletModalState.closeAllModalsImmediately(state);
+
+        assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
+        assertTrue(state.modalSession.targetSet(ModalSession.TargetSetSlot.QUEST_BACKGROUND).isEmpty());
     }
 
     @Test

@@ -26,10 +26,14 @@ class ModalOpenActionsTest {
         assertTrue(state.assetPickerOpen);
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
         assertEquals("reward_icon|quest|reward|icon", state.questDetailsAssetPickTarget);
+        assertEquals("reward_icon|quest|reward|icon", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK));
         assertEquals("icons/new.png", state.assetSelected);
+        assertEquals("icons/new.png", state.modalSession.selectedValue());
         assertEquals("", state.assetSearch);
+        assertEquals("", state.modalSession.picker().search());
         assertFalse(state.assetSearchFocused);
         assertEquals(0, state.assetGridScroll);
+        assertEquals(0, state.modalSession.picker().scroll());
         assertFalse(state.assetGridScrollDragging);
         assertFalse(state.assetContextOpen);
         assertFalse(state.assetRenameOpen);
@@ -49,13 +53,17 @@ class ModalOpenActionsTest {
         assertTrue(state.recipePickerOpen);
         assertEquals(ModalWindowManager.ModalType.RECIPE_PICKER, state.modalSession.type());
         assertEquals("task_recipe|quest|task|questsandstuff:recipe", state.questDetailsPickTarget);
+        assertEquals("task_recipe|quest|task|questsandstuff:recipe", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
         assertEquals(12, state.canvasImageLogicalX);
         assertEquals(34, state.canvasImageLogicalY);
         assertEquals("", state.recipeSearch);
+        assertEquals("", state.modalSession.picker().search());
         assertFalse(state.recipeSearchFocused);
         assertEquals(0, state.recipeScroll);
+        assertEquals(0, state.modalSession.picker().scroll());
         assertFalse(state.recipeScrollDragging);
         assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
+        assertEquals(RecipePickerMode.ITEMS.name(), state.modalSession.mode());
     }
 
     @Test
@@ -72,11 +80,13 @@ class ModalOpenActionsTest {
         assertTrue(state.iconPickerOpen);
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertEquals(ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"), state.questDetailsPickTarget);
+        assertEquals(ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"), state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
         assertEquals("", state.iconSearch);
         assertFalse(state.iconSearchFocused);
         assertEquals(0, state.iconScroll);
         assertFalse(state.iconScrollDragging);
         assertEquals(IconPickerMode.USABLE_ITEMS, state.iconMode);
+        assertEquals(IconPickerMode.USABLE_ITEMS.name(), state.modalSession.mode());
     }
 
     @Test
@@ -89,6 +99,7 @@ class ModalOpenActionsTest {
         assertTrue(state.iconPickerOpen);
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modalCanvasEntityTarget);
+        assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modalSession.target(ModalSession.TargetSlot.CANVAS_ENTITY));
         assertEquals(5, state.canvasImageLogicalX);
         assertEquals(9, state.canvasImageLogicalY);
         assertEquals(IconPickerMode.ENTITIES, state.iconMode);
