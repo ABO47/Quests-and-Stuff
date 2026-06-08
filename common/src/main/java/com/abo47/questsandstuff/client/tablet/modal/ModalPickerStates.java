@@ -13,6 +13,29 @@ public final class ModalPickerStates {
     private ModalPickerStates() {
     }
 
+    public static SearchScrollState forType(TabletUiState state, ModalWindowManager.ModalType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Modal type is required");
+        }
+        return switch (type) {
+            case ICON_PICKER -> icon(state);
+            case ASSET_PICKER -> asset(state);
+            case BIOME_PICKER -> biome(state);
+            case ADVANCEMENT_PICKER -> advancement(state);
+            case RECIPE_PICKER -> recipe(state);
+            case STRUCTURE_PICKER -> structure(state);
+            case BLOCK_PICKER -> block(state);
+            case STAT_PICKER -> stat(state);
+            case DIMENSION_PICKER -> dimension(state);
+            case LOOT_TABLE_PICKER -> lootTable(state);
+            case ITEM_INVENTORY_PICKER -> itemInventory(state);
+            case SOUND_PICKER -> sound(state);
+            case ENTITY_VARIANT_PICKER -> entityVariant(state);
+            case PREREQUISITES_MANAGER -> prerequisitesManager(state);
+            default -> throw new IllegalArgumentException("Modal type has no picker state: " + type);
+        };
+    }
+
     public static SearchScrollState icon(TabletUiState state) {
         return bind(
                 state,

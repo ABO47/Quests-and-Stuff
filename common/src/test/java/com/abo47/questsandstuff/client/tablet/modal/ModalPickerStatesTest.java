@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModalPickerStatesTest {
@@ -42,6 +43,33 @@ class ModalPickerStatesTest {
         assertEquals(16, state.assetGridScroll);
         assertFalse(state.assetSearchFocused);
         assertFalse(state.assetGridScrollDragging);
+    }
+
+    @Test
+    void typeLookupBindsEverySimpleResourceListPicker() {
+        TabletUiState state = new TabletUiState();
+
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.BIOME_PICKER).setSearch("plains");
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER).setSearch("story");
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.STRUCTURE_PICKER).setSearch("village");
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.STAT_PICKER).setSearch("jump");
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.DIMENSION_PICKER).setSearch("nether");
+        ModalPickerStates.forType(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER).setSearch("chests");
+
+        assertEquals("plains", state.biomeSearch);
+        assertEquals("story", state.advancementSearch);
+        assertEquals("village", state.structureSearch);
+        assertEquals("jump", state.statSearch);
+        assertEquals("nether", state.dimensionSearch);
+        assertEquals("chests", state.lootTableSearch);
+    }
+
+    @Test
+    void typeLookupRejectsModalsWithoutPickerState() {
+        TabletUiState state = new TabletUiState();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.SETTINGS_PANEL));
     }
 
     @Test

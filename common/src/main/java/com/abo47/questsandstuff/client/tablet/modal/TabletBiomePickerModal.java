@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
@@ -24,19 +23,10 @@ public final class TabletBiomePickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
+                        ModalWindowManager.ModalType.BIOME_PICKER,
                         TabletVocabulary.text(QuestVocabulary.CHOOSE_BIOME),
                         TabletVocabulary.text(QuestVocabulary.NO_BIOMES),
                         "biome",
-                        () -> state.biomeSearch,
-                        value -> state.biomeSearch = value,
-                        value -> state.biomeScroll = value,
-                        focused -> state.biomeSearchFocused = focused,
-                        ScrollState.bind(
-                                () -> state.biomeScroll,
-                                value -> state.biomeScroll = value,
-                                () -> state.biomeScrollDragging,
-                                dragging -> state.biomeScrollDragging = dragging
-                        ),
                         TabletBiomePickerModal::biomes,
                         TabletBiomePickerModal::displayName,
                         QuestDetailsWindow::applyBiomePick,

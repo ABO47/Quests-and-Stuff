@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -36,19 +35,10 @@ public final class TabletStatPickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
+                        ModalWindowManager.ModalType.STAT_PICKER,
                         TabletVocabulary.text(QuestVocabulary.CHOOSE_STAT),
                         TabletVocabulary.text(QuestVocabulary.NO_STATS),
                         "stat",
-                        () -> state.statSearch,
-                        value -> state.statSearch = value,
-                        value -> state.statScroll = value,
-                        focused -> state.statSearchFocused = focused,
-                        ScrollState.bind(
-                                () -> state.statScroll,
-                                value -> state.statScroll = value,
-                                () -> state.statScrollDragging,
-                                dragging -> state.statScrollDragging = dragging
-                        ),
                         TabletStatPickerModal::stats,
                         TabletStatPickerModal::displayName,
                         QuestDetailsWindow::applyStatPick,
