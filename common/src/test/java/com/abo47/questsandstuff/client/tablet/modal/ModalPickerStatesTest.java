@@ -131,6 +131,8 @@ class ModalPickerStatesTest {
         assertEquals(0, state.recipeScroll);
         assertEquals("mode_tags", state.recipeMode.icon());
         assertEquals("tags", state.recipeMode.logName(state.recipeSearch));
+        assertEquals(1, RecipePickerMode.cycleIndex(state.recipeMode));
+        assertEquals("mode_tags", RecipePickerMode.iconAt(1));
 
         state.recipeScroll = 18;
         RecipePickerMode.cycle(state, 1);
@@ -139,6 +141,7 @@ class ModalPickerStatesTest {
         assertEquals(0, state.recipeScroll);
         assertEquals("mode_fluids", state.recipeMode.icon());
         assertEquals("fluids", state.recipeMode.logName(state.recipeSearch));
+        assertEquals(4, RecipePickerMode.cycleSize());
 
         state.recipeScroll = 9;
         RecipePickerMode.cycle(state, -1);
@@ -186,6 +189,9 @@ class ModalPickerStatesTest {
 
         assertEquals(IconPickerMode.INVENTORY, state.iconMode);
         assertEquals("mode_inventory", state.iconMode.icon());
+        IconPickerMode[] cycle = IconPickerMode.cycleForContext(true, true, false);
+        assertEquals(4, IconPickerMode.cycleIndex(state.iconMode, cycle));
+        assertEquals("mode_inventory", IconPickerMode.iconAt(cycle, 4));
 
         IconPickerMode.cycle(state, true, true, false, -1);
 
@@ -217,6 +223,8 @@ class ModalPickerStatesTest {
         IconPickerMode.cycleModelItems(state, 1);
 
         assertEquals(IconPickerMode.TAGS, state.iconMode);
+        assertEquals(1, IconPickerMode.cycleIndex(state.iconMode, IconPickerMode.modelItemCycle()));
+        assertEquals("mode_tags", IconPickerMode.iconAt(IconPickerMode.modelItemCycle(), 1));
 
         IconPickerMode.cycleModelItems(state, 1);
 

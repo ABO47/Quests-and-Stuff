@@ -23,6 +23,18 @@ public enum RecipePickerMode {
         return CYCLE[Math.floorMod(ordinal() + direction, CYCLE.length)];
     }
 
+    static int cycleIndex(RecipePickerMode mode) {
+        return safe(mode).ordinal();
+    }
+
+    static int cycleSize() {
+        return CYCLE.length;
+    }
+
+    static String iconAt(int index) {
+        return CYCLE[Math.floorMod(index, CYCLE.length)].icon();
+    }
+
     String icon() {
         return icon;
     }

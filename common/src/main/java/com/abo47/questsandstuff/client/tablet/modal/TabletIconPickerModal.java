@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -74,19 +75,39 @@ public final class TabletIconPickerModal {
         }, focused -> state.iconSearchFocused = focused);
 
         if (itemModelPicker) {
-            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, mode.icon(), mode.tooltip(), click -> {
-                int direction = iconCycleDirection(click.button);
-                IconPickerMode.cycleModelItems(state, direction);
-                QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
-                refresh.run();
-            });
+            IconPickerMode[] cycle = IconPickerMode.modelItemCycle();
+            TabletCycleButton.addIconModeButton(
+                    modal,
+                    gridX,
+                    headY,
+                    modeW,
+                    headH,
+                    cycle.length,
+                    () -> IconPickerMode.cycleIndex(state.iconMode, cycle),
+                    index -> IconPickerMode.iconAt(cycle, index),
+                    mode.tooltip(),
+                    direction -> {
+                        IconPickerMode.cycleModelItems(state, direction);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
+                        refresh.run();
+                    });
         } else if (!entityPicker) {
-            TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, mode.icon(), mode.tooltip(), click -> {
-                int direction = iconCycleDirection(click.button);
-                IconPickerMode.cycle(state, supportsEntityIcons, supportsInventoryIcons, useItemPicker, direction);
-                QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
-                refresh.run();
-            });
+            IconPickerMode[] cycle = IconPickerMode.cycleForContext(supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+            TabletCycleButton.addIconModeButton(
+                    modal,
+                    gridX,
+                    headY,
+                    modeW,
+                    headH,
+                    cycle.length,
+                    () -> IconPickerMode.cycleIndex(state.iconMode, cycle),
+                    index -> IconPickerMode.iconAt(cycle, index),
+                    mode.tooltip(),
+                    direction -> {
+                        IconPickerMode.cycle(state, supportsEntityIcons, supportsInventoryIcons, useItemPicker, direction);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.iconMode).logName(), cycleDirectionName(direction));
+                        refresh.run();
+                    });
         }
 
         boolean pickingEntityIcons = mode.showingEntities();
@@ -252,10 +273,6 @@ public final class TabletIconPickerModal {
         closeAll(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] icon inventory pick applied target={} hasNbt={}", target, stack.hasTag());
         refresh.run();
-    }
-
-    private static int iconCycleDirection(int button) {
-        return button == 1 ? -1 : 1;
     }
 
     private static String cycleDirectionName(int direction) {

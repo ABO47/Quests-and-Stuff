@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrati
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -79,13 +80,22 @@ public final class TabletRecipePickerModal {
             refresh.run();
         }, focused -> state.recipeSearchFocused = focused);
         RecipePickerMode mode = RecipePickerMode.safe(state.recipeMode);
-        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, mode.icon(), mode.tooltip(state.recipeSearch), click -> {
-            int direction = click.button == 1 ? -1 : 1;
-            RecipePickerMode.cycle(state, direction);
-            RecipePickerMode nextMode = RecipePickerMode.safe(state.recipeMode);
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", nextMode.logName(state.recipeSearch), direction < 0 ? "backward" : "forward");
-            refresh.run();
-        });
+        TabletCycleButton.addIconModeButton(
+                modal,
+                gridX,
+                headY,
+                modeW,
+                headH,
+                RecipePickerMode.cycleSize(),
+                () -> RecipePickerMode.cycleIndex(state.recipeMode),
+                RecipePickerMode::iconAt,
+                mode.tooltip(state.recipeSearch),
+                direction -> {
+                    RecipePickerMode.cycle(state, direction);
+                    RecipePickerMode nextMode = RecipePickerMode.safe(state.recipeMode);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] recipe picker mode={} direction={}", nextMode.logName(state.recipeSearch), direction < 0 ? "backward" : "forward");
+                    refresh.run();
+                });
         addRecipeViewerKeyHandler(modal, state, player, refresh);
 
         mode = RecipePickerMode.safe(state.recipeMode);

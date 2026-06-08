@@ -55,6 +55,30 @@ public enum IconPickerMode {
         return new Component[]{Component.translatable("ui.questsandstuff.icon_picker.mode." + logName)};
     }
 
+    static IconPickerMode[] modelItemCycle() {
+        return MODEL_ITEM_CYCLE;
+    }
+
+    static IconPickerMode[] cycleForContext(boolean supportsEntityIcons, boolean supportsInventoryIcons, boolean useItemPicker) {
+        return cycleFor(supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+    }
+
+    static int cycleIndex(IconPickerMode mode, IconPickerMode[] cycle) {
+        IconPickerMode current = safe(mode);
+        IconPickerMode[] safeCycle = cycle == null || cycle.length == 0 ? GENERAL_CYCLE : cycle;
+        for (int i = 0; i < safeCycle.length; i++) {
+            if (safeCycle[i] == current) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    static String iconAt(IconPickerMode[] cycle, int index) {
+        IconPickerMode[] safeCycle = cycle == null || cycle.length == 0 ? GENERAL_CYCLE : cycle;
+        return safeCycle[Math.floorMod(index, safeCycle.length)].icon();
+    }
+
     static IconPickerMode safe(IconPickerMode mode) {
         return mode == null ? ITEMS : mode;
     }

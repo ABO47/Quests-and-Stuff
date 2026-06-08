@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -63,12 +64,22 @@ public final class TabletBlockPickerModal {
             QuestsAndStuffMod.debugLog("[QnS:UI] block search mode={} query='{}'", blockModeName(state), state.blockSearch);
             refresh.run();
         }, focused -> state.blockSearchFocused = focused);
-        TabletModalPanel.addModeToggleIconButton(modal, gridX, headY, modeW, headH, state.blockTagMode ? "mode_tags" : "mode_items", click -> {
-            state.blockTagMode = !state.blockTagMode;
-            state.blockScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] block picker mode={}", blockModeName(state));
-            refresh.run();
-        });
+        TabletCycleButton.addIconModeButton(
+                modal,
+                gridX,
+                headY,
+                modeW,
+                headH,
+                2,
+                () -> state.blockTagMode ? 1 : 0,
+                index -> index == 1 ? "mode_tags" : "mode_items",
+                null,
+                direction -> {
+                    state.blockTagMode = !state.blockTagMode;
+                    state.blockScroll = 0;
+                    QuestsAndStuffMod.debugLog("[QnS:UI] block picker mode={}", blockModeName(state));
+                    refresh.run();
+                });
 
         List<BlockChoice> entries = entries(state.blockSearch, state.blockTagMode);
         TiledPickerPanel.add(

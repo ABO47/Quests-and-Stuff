@@ -13,9 +13,7 @@ import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -25,11 +23,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
 
 public final class TabletModalPanel {
@@ -73,29 +69,6 @@ public final class TabletModalPanel {
 
     static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
         return CanvasModelPickerActions.run(state, target, pickedValue);
-    }
-
-    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        addModeToggleIconButton(parent, x, y, w, h, iconName, null, callback);
-    }
-
-    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, Component[] tooltip, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        WidgetGroup base = panel(x, y, w, h, withAlpha(ModColors.INTERACTIVE, 120), ModColors.BORDER_ACCENT);
-        parent.addWidget(base);
-        var texture = UiIconAtlas.iconTexture(iconName);
-        if (texture != null) {
-            int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, Math.min(w - 4, h - 4)));
-            int iconX = x + (w - iconSize) / 2;
-            int iconY = y + (h - iconSize) / 2;
-            parent.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, texture));
-        }
-        ButtonWidget hit = flatHitButton(x, y, w, h, callback);
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
-        if (tooltip != null && tooltip.length > 0) {
-            hit.setHoverTooltips(tooltip);
-        }
-        parent.addWidget(hit);
     }
 
     public static Component[] iconTooltip(String entry) {
