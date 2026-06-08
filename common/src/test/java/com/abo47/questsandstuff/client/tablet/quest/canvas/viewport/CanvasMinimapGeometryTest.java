@@ -71,4 +71,48 @@ class CanvasMinimapGeometryTest {
         assertEquals(150, CanvasMinimapGeometry.mapWorldX(state, 60));
         assertEquals(25, CanvasMinimapGeometry.mapWorldY(state, 45));
     }
+
+    @Test
+    void expandedLayoutDefinesPanelToggleAndMapHitRects() {
+        CanvasMinimapGeometry.Layout layout = CanvasMinimapGeometry.layout(240, 180, false);
+
+        assertTrue(CanvasMinimapGeometry.hit(90, 84, layout.panelX(), layout.panelY(), layout.panelW(), layout.panelH()));
+        assertTrue(CanvasMinimapGeometry.hit(232, 84, layout.toggleX(), layout.toggleY(), layout.toggleW(), layout.toggleH()));
+        assertTrue(CanvasMinimapGeometry.hit(95, 88, layout.mapX(), layout.mapY(), layout.mapW(), layout.mapH()));
+        assertFalse(CanvasMinimapGeometry.hit(88, 84, layout.panelX(), layout.panelY(), layout.panelW(), layout.panelH()));
+        assertFalse(CanvasMinimapGeometry.hit(229, 84, layout.toggleX(), layout.toggleY(), layout.toggleW(), layout.toggleH()));
+    }
+
+    @Test
+    void collapsedLayoutUsesPanelAsToggleHitRect() {
+        CanvasMinimapGeometry.Layout layout = CanvasMinimapGeometry.layout(240, 180, true);
+
+        assertEquals(layout.panelX(), layout.toggleX());
+        assertEquals(layout.panelY(), layout.toggleY());
+        assertEquals(layout.panelW(), layout.toggleW());
+        assertEquals(layout.panelH(), layout.toggleH());
+        assertEquals(0, layout.mapW());
+        assertEquals(0, layout.mapH());
+        assertTrue(CanvasMinimapGeometry.hit(232, 134, layout.panelX(), layout.panelY(), layout.panelW(), layout.panelH()));
+        assertTrue(CanvasMinimapGeometry.hit(232, 134, layout.toggleX(), layout.toggleY(), layout.toggleW(), layout.toggleH()));
+        assertFalse(CanvasMinimapGeometry.hit(230, 134, layout.panelX(), layout.panelY(), layout.panelW(), layout.panelH()));
+    }
+
+    @Test
+    void minimapDragCoordinatesClampToWorldBounds() {
+        TabletUiState state = new TabletUiState();
+        state.minimapX = 10;
+        state.minimapY = 20;
+        state.minimapW = 100;
+        state.minimapH = 50;
+        state.minimapWorldMinX = 50;
+        state.minimapWorldMinY = -25;
+        state.minimapWorldWidth = 200;
+        state.minimapWorldHeight = 100;
+
+        assertEquals(50, CanvasMinimapGeometry.mapWorldX(state, -200));
+        assertEquals(250, CanvasMinimapGeometry.mapWorldX(state, 900));
+        assertEquals(-25, CanvasMinimapGeometry.mapWorldY(state, -200));
+        assertEquals(75, CanvasMinimapGeometry.mapWorldY(state, 900));
+    }
 }
