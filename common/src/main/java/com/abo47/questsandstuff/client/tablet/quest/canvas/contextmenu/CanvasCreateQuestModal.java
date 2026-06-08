@@ -1,11 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.resources.language.I18n;
@@ -32,13 +31,15 @@ public final class CanvasCreateQuestModal {
         int y = Math.max(8, h / 2 - modalH / 2);
 
         WidgetGroup modal = panel(x, y, modalW, modalH, withAlpha(ModColors.SURFACE_PANEL, 240), ModColors.INTERACTIVE);
-        TextFieldWidget titleField = new TextFieldWidget(8, 18, modalW - 16, 14, () -> state.createQuestTitle, value -> {
-            state.createQuestTitle = value == null ? "" : value.trim();
-        });
-        titleField.setClientSideWidget();
-        titleField.setBordered(false);
-        titleField.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        titleField.setTextColor(ModColors.TEXT_PRIMARY);
+        TextFieldWidget titleField = StyledTextFields.textField(
+                8,
+                18,
+                modalW - 16,
+                14,
+                () -> state.createQuestTitle,
+                Integer.MAX_VALUE,
+                value -> state.createQuestTitle = value == null ? "" : value.trim()
+        );
 
         modal.addWidgets(
                 label(8, 6, tr("ui.questsandstuff.modal.create_quest_title"), ModColors.TEXT_PRIMARY),

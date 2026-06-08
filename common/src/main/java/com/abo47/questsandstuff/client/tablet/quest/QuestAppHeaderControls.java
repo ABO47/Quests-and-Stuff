@@ -1,23 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
+import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -57,33 +57,37 @@ final class QuestAppHeaderControls {
     }
 
     static QuestAppHeaderControls create(Player player, TabletUiState state, Runnable refresh, int chapterInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int canvasHeaderX, int topY, int headerH) {
-        TextFieldWidget chapterSearchField = new TextFieldWidget(chapterInset, chapterTopY, Math.max(24, initialChapterW - chapterInset * 2), chapterHeaderH, () -> state.chapterSearch, value -> {
-            state.chapterSearch = SearchFilter.normalizeUserInput(value);
-            state.chapterScroll = 0;
-            refresh.run();
-        }) {
-            @Override
-            public void onFocusChanged(Widget lastFocus, Widget focus) {
-                super.onFocusChanged(lastFocus, focus);
-                state.chapterSearchFocused = isFocus();
-            }
-        };
-        configureSearchField(chapterSearchField);
+        TextFieldWidget chapterSearchField = StyledTextFields.search(
+                chapterInset,
+                chapterTopY,
+                Math.max(24, initialChapterW - chapterInset * 2),
+                chapterHeaderH,
+                () -> state.chapterSearch,
+                Integer.MAX_VALUE,
+                value -> {
+                    state.chapterSearch = SearchFilter.normalizeUserInput(value);
+                    state.chapterScroll = 0;
+                    refresh.run();
+                },
+                focused -> state.chapterSearchFocused = focused
+        );
 
-        TextFieldWidget searchField = new TextFieldWidget(canvasHeaderX, topY, 60, headerH, () -> state.search, value -> {
-            state.search = SearchFilter.normalizeUserInput(value);
-            if (!state.search.isBlank()) {
-                CanvasRenderer.jumpToBestMatch(state);
-            }
-            refresh.run();
-        }) {
-            @Override
-            public void onFocusChanged(Widget lastFocus, Widget focus) {
-                super.onFocusChanged(lastFocus, focus);
-                state.searchFocused = isFocus();
-            }
-        };
-        configureSearchField(searchField);
+        TextFieldWidget searchField = StyledTextFields.search(
+                canvasHeaderX,
+                topY,
+                60,
+                headerH,
+                () -> state.search,
+                Integer.MAX_VALUE,
+                value -> {
+                    state.search = SearchFilter.normalizeUserInput(value);
+                    if (!state.search.isBlank()) {
+                        CanvasRenderer.jumpToBestMatch(state);
+                    }
+                    refresh.run();
+                },
+                focused -> state.searchFocused = focused
+        );
 
         WidgetGroup canvasHeaderSurface = new WidgetGroup(canvasHeaderX, topY, 60, headerH);
         canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
@@ -254,11 +258,4 @@ final class QuestAppHeaderControls {
         button.setActive(visible);
     }
 
-    private static void configureSearchField(TextFieldWidget field) {
-        field.setClientSideWidget();
-        field.setValidator(SearchFilter::normalizeUserInput);
-        field.setBordered(false);
-        field.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        field.setTextColor(ModColors.TEXT_PRIMARY);
-    }
 }

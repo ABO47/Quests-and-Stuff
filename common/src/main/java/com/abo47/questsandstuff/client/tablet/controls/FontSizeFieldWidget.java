@@ -4,7 +4,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import net.minecraft.network.chat.Component;
@@ -47,7 +46,7 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         setClientSideWidget();
         setBordered(false);
         setMaxStringLength(3);
-        setValidator(FontSizeFieldWidget::digitsOnly);
+        StyledTextFields.applyIntegerValidator(this, MIN, MAX);
         setTextResponder(this::handleChanged);
         setCurrentString(Integer.toString(this.currentValue));
         setBackground(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 150), ModColors.BORDER_ACCENT));
@@ -128,7 +127,7 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
     @Override
     protected void onTextChanged(String newTextString) {
         String lastText = getCurrentString();
-        String nextText = digitsOnly(newTextString);
+        String nextText = textValidator.apply(newTextString);
         boolean changed = !nextText.equals(lastText);
         if (changed || !nextText.equals(newTextString)) {
             if (nextText.equals(newTextString)) {
@@ -182,20 +181,6 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         } catch (NumberFormatException ignored) {
             return fallback;
         }
-    }
-
-    private static String digitsOnly(String raw) {
-        if (raw == null || raw.isEmpty()) {
-            return "";
-        }
-        StringBuilder builder = new StringBuilder(Math.min(raw.length(), 3));
-        for (int i = 0; i < raw.length() && builder.length() < 3; i++) {
-            char c = raw.charAt(i);
-            if (c >= '0' && c <= '9') {
-                builder.append(c);
-            }
-        }
-        return builder.toString();
     }
 
     private static int clamp(int value) {

@@ -47,15 +47,12 @@ public final class PercentSliderControls {
                 setDragging
         ));
 
-        TextFieldWidget field = StyledTextFields.numberField(
+        TextFieldWidget field = StyledTextFields.percentageField(
                 x + sliderW + GAP,
                 y + 1,
                 FIELD_W,
                 14,
                 normalize(value),
-                0,
-                100,
-                3,
                 raw -> {
                     if (onChange != null) {
                         onChange.accept(parsePercent(raw, value));

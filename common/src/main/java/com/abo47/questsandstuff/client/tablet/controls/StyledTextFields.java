@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.util.SafeNames;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import org.lwjgl.glfw.GLFW;
@@ -23,7 +24,20 @@ public final class StyledTextFields {
             Consumer<String> responder,
             Consumer<Boolean> focusResponder
     ) {
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, null, responder) {
+        return search(x, y, width, height, () -> current, maxLength, responder, focusResponder);
+    }
+
+    public static TextFieldWidget search(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder,
+            Consumer<Boolean> focusResponder
+    ) {
+        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder) {
             @Override
             public void onFocusChanged(Widget lastFocus, Widget focus) {
                 super.onFocusChanged(lastFocus, focus);
@@ -33,7 +47,7 @@ public final class StyledTextFields {
             }
         };
         field.setClientSideWidget();
-        field.setCurrentString(current == null ? "" : current);
+        field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
         field.setValidator(SearchFieldController::normalizeUserSearch);
         applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
@@ -114,6 +128,83 @@ public final class StyledTextFields {
         field.setTextColor(ModColors.TEXT_PRIMARY);
     }
 
+    public static TextFieldWidget textField(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder
+    ) {
+        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder);
+        field.setClientSideWidget();
+        field.setCurrentString(currentText(textSupplier));
+        field.setMaxStringLength(maxLength);
+        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        return field;
+    }
+
+    public static TextFieldWidget resourceLocationField(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                textSupplier,
+                maxLength,
+                responder,
+                commit,
+                cancel,
+                blur,
+                null,
+                ModColors.SURFACE_BASE,
+                ModColors.BORDER_BASE
+        );
+        return applyResourceLocationValidator(field);
+    }
+
+    public static TextFieldWidget compoundTagField(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                textSupplier,
+                maxLength,
+                responder,
+                commit,
+                cancel,
+                blur,
+                null,
+                ModColors.SURFACE_BASE,
+                ModColors.BORDER_BASE
+        );
+        return applyCompoundTagValidator(field);
+    }
+
     public static TextFieldWidget numberField(
             int x,
             int y,
@@ -128,7 +219,7 @@ public final class StyledTextFields {
             Runnable cancel,
             Runnable blur
     ) {
-        return numberField(x, y, width, height, current, min, max, maxLength, responder, commit, cancel, blur, null);
+        return integerField(x, y, width, height, current, min, max, maxLength, responder, commit, cancel, blur, null);
     }
 
     public static TextFieldWidget numberField(
@@ -146,115 +237,150 @@ public final class StyledTextFields {
             Runnable blur,
             Consumer<Boolean> focusResponder
     ) {
-        Runnable safeCommit = commit == null ? () -> {
-        } : commit;
-        Runnable safeCancel = cancel == null ? () -> {
-        } : cancel;
-        Runnable safeBlur = blur == null ? safeCommit : blur;
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, null, responder) {
-            private boolean suppressNextBlur;
-            private boolean sanitizing;
-
-            @Override
-            public void onFocusChanged(Widget lastFocus, Widget focus) {
-                super.onFocusChanged(lastFocus, focus);
-                if (focusResponder != null) {
-                    focusResponder.accept(isFocus());
-                }
-                if (lastFocus == this && focus != this) {
-                    if (suppressNextBlur) {
-                        suppressNextBlur = false;
-                        return;
-                    }
-                    safeBlur.run();
-                }
-            }
-
-            @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-                if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-                    safeCommit.run();
-                    suppressNextBlur = true;
-                    setFocus(false);
-                    return true;
-                }
-                if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                    safeCancel.run();
-                    suppressNextBlur = true;
-                    setFocus(false);
-                    return true;
-                }
-                boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
-                sanitizeVisibleNumber(this, min, max);
-                return handled;
-            }
-
-            @Override
-            public boolean charTyped(char codePoint, int modifiers) {
-                if (codePoint < '0' || codePoint > '9') {
-                    return false;
-                }
-                boolean handled = super.charTyped(codePoint, modifiers);
-                sanitizeVisibleNumber(this, min, max);
-                return handled;
-            }
-
-            @Override
-            protected void onTextChanged(String newTextString) {
-                if (sanitizing) {
-                    super.onTextChanged(newTextString);
-                    return;
-                }
-                String normalized = normalizeNumberInput(newTextString, getCurrentString(), min, max);
-                if (!normalized.equals(newTextString)) {
-                    sanitizing = true;
-                    setCurrentString(normalized);
-                    sanitizing = false;
-                    if (isClientSideWidget && responder != null) {
-                        responder.accept(normalized);
-                    }
-                    return;
-                }
-                super.onTextChanged(normalized);
-            }
-        };
-        field.setClientSideWidget();
-        field.setCurrentString(Integer.toString(current));
-        field.setMaxStringLength(maxLength);
-        field.setValidator(value -> normalizeNumberInput(value, field.getCurrentString(), min, max));
-        applyStandardStyle(field, ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE);
-        return field;
+        return integerField(x, y, width, height, current, min, max, maxLength, responder, commit, cancel, blur, focusResponder);
     }
 
-    private static void sanitizeVisibleNumber(TextFieldWidget field, int min, int max) {
-        String raw = field.getRawCurrentString();
-        String normalized = normalizeNumberInput(raw, field.getCurrentString(), min, max);
-        if (!normalized.equals(raw)) {
-            field.setCurrentString(normalized);
-        }
+    public static TextFieldWidget integerField(
+            int x,
+            int y,
+            int width,
+            int height,
+            int current,
+            int min,
+            int max,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        return integerField(x, y, width, height, current, min, max, maxLength, responder, commit, cancel, blur, null);
     }
 
-    private static String normalizeNumberInput(String value, String fallback, int min, int max) {
-        String raw = value == null ? "" : value;
-        if (raw.isBlank()) {
-            return "";
-        }
-        StringBuilder digits = new StringBuilder();
-        for (int i = 0; i < raw.length(); i++) {
-            char c = raw.charAt(i);
-            if (c >= '0' && c <= '9') {
-                digits.append(c);
-            }
-        }
-        if (digits.isEmpty()) {
-            return fallback == null ? "" : fallback;
-        }
-        try {
-            int parsed = Integer.parseInt(digits.toString());
-            return Integer.toString(Math.max(min, Math.min(max, parsed)));
-        } catch (NumberFormatException ignored) {
-            return Integer.toString(max);
-        }
+    public static TextFieldWidget integerField(
+            int x,
+            int y,
+            int width,
+            int height,
+            int current,
+            int min,
+            int max,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur,
+            Consumer<Boolean> focusResponder
+    ) {
+        int value = clamp(current, min, max);
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                () -> Integer.toString(value),
+                maxLength,
+                responder,
+                commit,
+                cancel,
+                blur,
+                focusResponder,
+                ModColors.SURFACE_PANEL_ALT,
+                ModColors.BORDER_BASE
+        );
+        return applyIntegerValidator(field, min, max);
+    }
+
+    public static TextFieldWidget floatField(
+            int x,
+            int y,
+            int width,
+            int height,
+            float current,
+            float min,
+            float max,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        float value = clamp(current, min, max);
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                () -> Float.toString(value),
+                maxLength,
+                responder,
+                commit,
+                cancel,
+                blur,
+                null,
+                ModColors.SURFACE_PANEL_ALT,
+                ModColors.BORDER_BASE
+        );
+        return applyFloatValidator(field, min, max);
+    }
+
+    public static TextFieldWidget percentageField(
+            int x,
+            int y,
+            int width,
+            int height,
+            int current,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                () -> Integer.toString(clamp(current, 0, 100)),
+                3,
+                responder,
+                commit,
+                cancel,
+                blur,
+                null,
+                ModColors.SURFACE_PANEL_ALT,
+                ModColors.BORDER_BASE
+        );
+        return applyPercentageValidator(field);
+    }
+
+    public static TextFieldWidget identifierField(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur
+    ) {
+        TextFieldWidget field = configuredCommitField(
+                x,
+                y,
+                width,
+                height,
+                textSupplier,
+                maxLength,
+                responder,
+                commit,
+                cancel,
+                blur,
+                null,
+                ModColors.SURFACE_BASE,
+                ModColors.BORDER_BASE
+        );
+        return applyIdentifierValidator(field);
     }
 
     public static TextFieldWidget hexField(
@@ -284,5 +410,83 @@ public final class StyledTextFields {
         field.setValidator(SearchFieldController::normalizeHexInput);
         applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
         return field;
+    }
+
+    public static TextFieldWidget applyResourceLocationValidator(TextFieldWidget field) {
+        return field.setResourceLocationOnly();
+    }
+
+    public static TextFieldWidget applyCompoundTagValidator(TextFieldWidget field) {
+        return field.setCompoundTagOnly();
+    }
+
+    public static TextFieldWidget applyIntegerValidator(TextFieldWidget field, int min, int max) {
+        return field.setNumbersOnly(min, max);
+    }
+
+    public static TextFieldWidget applyPercentageValidator(TextFieldWidget field) {
+        return applyIntegerValidator(field, 0, 100);
+    }
+
+    public static TextFieldWidget applyFloatValidator(TextFieldWidget field, float min, float max) {
+        return field.setNumbersOnly(min, max);
+    }
+
+    public static TextFieldWidget applyIdentifierValidator(TextFieldWidget field) {
+        field.setValidator(value -> {
+            String fallback = SafeNames.identifier(field.getCurrentString(), "");
+            return SafeNames.identifier(value, fallback);
+        });
+        return field;
+    }
+
+    private static TextFieldWidget configuredCommitField(
+            int x,
+            int y,
+            int width,
+            int height,
+            Supplier<String> textSupplier,
+            int maxLength,
+            Consumer<String> responder,
+            Runnable commit,
+            Runnable cancel,
+            Runnable blur,
+            Consumer<Boolean> focusResponder,
+            int fillColor,
+            int borderColor
+    ) {
+        TextFieldWidget field = commitField(
+                x,
+                y,
+                width,
+                height,
+                textSupplier,
+                responder,
+                commit,
+                cancel,
+                blur,
+                focusResponder
+        );
+        field.setClientSideWidget();
+        field.setCurrentString(currentText(textSupplier));
+        field.setMaxStringLength(maxLength);
+        applyStandardStyle(field, fillColor, borderColor);
+        return field;
+    }
+
+    private static String currentText(Supplier<String> textSupplier) {
+        if (textSupplier == null) {
+            return "";
+        }
+        String value = textSupplier.get();
+        return value == null ? "" : value;
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
     }
 }
