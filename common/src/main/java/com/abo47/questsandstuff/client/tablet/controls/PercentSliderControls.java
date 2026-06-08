@@ -1,6 +1,5 @@
-package com.abo47.questsandstuff.client.tablet.modal;
+package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -10,14 +9,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-final class PercentSliderControls {
+public final class PercentSliderControls {
     private static final int FIELD_W = 34;
     private static final int GAP = 6;
 
     private PercentSliderControls() {
     }
 
-    static TextFieldWidget add(
+    public static TextFieldWidget add(
             WidgetGroup parent,
             int x,
             int y,

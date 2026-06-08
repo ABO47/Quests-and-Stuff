@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.modal;
+package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
