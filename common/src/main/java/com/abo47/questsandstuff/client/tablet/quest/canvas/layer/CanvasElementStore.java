@@ -5,8 +5,9 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
 
@@ -190,37 +191,27 @@ public final class CanvasElementStore {
     }
 
     private static void sendCanvasImage(String group, CanvasImageLayer image) {
-        CompoundTag payload = new CompoundTag();
-        payload.putString("group", group);
-        payload.put("image", CanvasLayerNbt.imageToTag(image));
-        ModNetwork.sendToServer(new C2SEditorCommandPacket("canvas_image_put", payload));
+        CompoundTag payload = EditorCommandPayloads.canvasImagePut(group, image);
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_IMAGE_PUT, payload));
     }
 
     private static void sendCanvasImageRemove(String group, String imageId) {
-        CompoundTag payload = new CompoundTag();
-        payload.putString("group", group);
-        payload.putString("id", imageId);
-        ModNetwork.sendToServer(new C2SEditorCommandPacket("canvas_image_remove", payload));
+        CompoundTag payload = EditorCommandPayloads.canvasImageRemove(group, imageId);
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_IMAGE_REMOVE, payload));
     }
 
     private static void sendCanvasText(String group, CanvasTextLayer text) {
-        CompoundTag payload = new CompoundTag();
-        payload.putString("group", group);
-        payload.put("text", CanvasLayerNbt.textToTag(text));
-        ModNetwork.sendToServer(new C2SEditorCommandPacket("canvas_text_put", payload));
+        CompoundTag payload = EditorCommandPayloads.canvasTextPut(group, text);
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_TEXT_PUT, payload));
     }
 
     private static void sendCanvasTextRemove(String group, String textId) {
-        CompoundTag payload = new CompoundTag();
-        payload.putString("group", group);
-        payload.putString("id", textId);
-        ModNetwork.sendToServer(new C2SEditorCommandPacket("canvas_text_remove", payload));
+        CompoundTag payload = EditorCommandPayloads.canvasTextRemove(group, textId);
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_TEXT_REMOVE, payload));
     }
 
     private static void sendLayerOrder(TabletUiState state, String group) {
-        CompoundTag payload = new CompoundTag();
-        payload.putString("group", group);
-        payload.put("order", CanvasLayerNbt.stringsToListTag(state.canvasLayerOrderByGroup.getOrDefault(group, List.of())));
-        ModNetwork.sendToServer(new C2SEditorCommandPacket("canvas_layer_order", payload));
+        CompoundTag payload = EditorCommandPayloads.canvasLayerOrder(group, state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_LAYER_ORDER, payload));
     }
 }

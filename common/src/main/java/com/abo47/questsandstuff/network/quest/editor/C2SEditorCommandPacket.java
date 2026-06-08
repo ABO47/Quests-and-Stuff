@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -14,18 +16,18 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public record C2SEditorCommandPacket(EditorCommand command) {
-    public static final String PREREQUISITE_FIELD = "prerequisite";
+    public static final String PREREQUISITE_FIELD = EditorCommandPayloadKeys.PREREQUISITE;
 
     public C2SEditorCommandPacket(String action, CompoundTag payload) {
         this(new EditorCommand(EditorCommandType.fromWireName(action), payload));
+    }
+
+    public C2SEditorCommandPacket(EditorCommandType type, CompoundTag payload) {
+        this(new EditorCommand(type, payload));
     }
 
     public static C2SEditorCommandPacket decode(FriendlyByteBuf buf) {
@@ -43,63 +45,56 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                 var editor = QuestServices.editor(player.server);
                 CompoundTag payload = command.payload();
                 if (command.type() == EditorCommandType.MOVE_MANY) {
-                    String group = payload == null ? "" : payload.getString("group");
+                    String group = EditorCommandPayloads.group(payload);
                     Map<String, int[]> moves = new HashMap<>();
-                    ListTag moveTags = payload == null ? new ListTag() : payload.getList("moves", Tag.TAG_COMPOUND);
+                    ListTag moveTags = EditorCommandPayloads.moves(payload);
                     if (EditorCommandPayloadLimits.exceedsLimit(moveTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
                     for (int i = 0; i < moveTags.size(); i++) {
                         CompoundTag moveTag = moveTags.getCompound(i);
-                        String questId = moveTag.getString("quest");
-                        moves.put(questId, new int[]{moveTag.getInt("x"), moveTag.getInt("y")});
+                        String questId = moveTag.getString(EditorCommandPayloadKeys.QUEST);
+                        moves.put(questId, new int[]{moveTag.getInt(EditorCommandPayloadKeys.X), moveTag.getInt(EditorCommandPayloadKeys.Y)});
                     }
                     editor.moveQuestsInGroup(player, group, moves);
                     return;
                 }
                 if (command.type() == EditorCommandType.SCALE_MANY) {
-                    String group = payload == null ? "" : payload.getString("group");
+                    String group = EditorCommandPayloads.group(payload);
                     Map<String, Float> scales = new HashMap<>();
-                    ListTag scaleTags = payload == null ? new ListTag() : payload.getList("scales", Tag.TAG_COMPOUND);
+                    ListTag scaleTags = EditorCommandPayloads.scales(payload);
                     if (EditorCommandPayloadLimits.exceedsLimit(scaleTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
                     for (int i = 0; i < scaleTags.size(); i++) {
                         CompoundTag scaleTag = scaleTags.getCompound(i);
-                        String questId = scaleTag.getString("quest");
-                        scales.put(questId, scaleTag.getFloat("scale"));
+                        String questId = scaleTag.getString(EditorCommandPayloadKeys.QUEST);
+                        scales.put(questId, scaleTag.getFloat(EditorCommandPayloadKeys.SCALE));
                     }
                     editor.scaleQuestsInGroup(player, group, scales);
                     return;
                 }
                 if (command.type() == EditorCommandType.COPY_MANY) {
-                    String group = payload == null ? "" : payload.getString("group");
-                    Set<String> questIds = new LinkedHashSet<>();
-                    ListTag questTags = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
+                    String group = EditorCommandPayloads.group(payload);
+                    ListTag questTags = EditorCommandPayloads.list(payload, EditorCommandPayloadKeys.QUESTS, Tag.TAG_STRING);
                     if (EditorCommandPayloadLimits.exceedsLimit(questTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
                         return;
                     }
-                    for (int i = 0; i < questTags.size(); i++) {
-                        String questId = questTags.getString(i);
-                        if (questId != null && !questId.isBlank()) {
-                            questIds.add(questId);
-                        }
-                    }
-                    editor.copyQuestsToClipboard(player, group, questIds);
+                    editor.copyQuestsToClipboard(player, group, EditorCommandPayloads.questIds(payload));
                     return;
                 }
                 if (command.type() == EditorCommandType.PASTE_CLIPBOARD) {
-                    String group = payload == null ? "" : payload.getString("group");
-                    int x = payload == null ? 0 : payload.getInt("x");
-                    int y = payload == null ? 0 : payload.getInt("y");
+                    String group = EditorCommandPayloads.group(payload);
+                    int x = EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.X);
+                    int y = EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.Y);
                     editor.pasteClipboardInGroup(player, group, x, y);
                     return;
                 }
                 if (command.type() == EditorCommandType.PASTE_BLUEPRINT) {
-                    String group = payload == null ? "" : payload.getString("group");
-                    int x = payload == null ? 0 : payload.getInt("x");
-                    int y = payload == null ? 0 : payload.getInt("y");
-                    CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(payload == null ? null : payload.getCompound("blueprint"));
+                    String group = EditorCommandPayloads.group(payload);
+                    int x = EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.X);
+                    int y = EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.Y);
+                    CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.BLUEPRINT));
                     if (blueprint.isEmpty()) {
                         return;
                     }
@@ -107,182 +102,141 @@ public record C2SEditorCommandPacket(EditorCommand command) {
                     return;
                 }
                 if (command.type() == EditorCommandType.PREREQUISITE_ADD) {
-                    editor.setQuestPrerequisite(player, payload.getString("quest"), prerequisiteId(payload), true);
+                    editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), true);
                     return;
                 }
                 if (command.type() == EditorCommandType.PREREQUISITE_REMOVE) {
-                    editor.setQuestPrerequisite(player, payload.getString("quest"), prerequisiteId(payload), false);
+                    editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), false);
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_ICON) {
-                    editor.setQuestIcon(player, payload.getString("quest"), payload.getString("icon"));
+                    editor.setQuestIcon(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ICON));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_REPEATABLE) {
-                    editor.setQuestRepeatable(player, payload.getString("quest"), payload.getBoolean("enabled"));
+                    editor.setQuestRepeatable(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.ENABLED));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_HIDDEN_MODE) {
-                    editor.setQuestHiddenMode(player, payload.getString("quest"), payload.getString("mode"));
+                    editor.setQuestHiddenMode(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.MODE));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_VISUAL_HIDDEN) {
-                    editor.setQuestVisualHidden(player, payload.getString("quest"), payload.getBoolean("hidden"));
+                    editor.setQuestVisualHidden(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.HIDDEN));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND) {
-                    editor.setQuestCompletionSound(player, payload.getString("quest"), payload.getString("sound"));
+                    editor.setQuestCompletionSound(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.SOUND));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_MANY) {
-                    editor.setQuestCompletionSound(player, questIdsFromPayload(payload), payload.getString("sound"));
+                    editor.setQuestCompletionSound(player, EditorCommandPayloads.questIds(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.SOUND));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME) {
-                    editor.setQuestCompletionSoundVolume(player, payload.getString("quest"), payload.getInt("volume"));
+                    editor.setQuestCompletionSoundVolume(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.VOLUME));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY) {
-                    editor.setQuestCompletionSoundVolume(player, questIdsFromPayload(payload), payload.getInt("volume"));
+                    editor.setQuestCompletionSoundVolume(player, EditorCommandPayloads.questIds(payload), EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.VOLUME));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND) {
-                    editor.setQuestCompletionHudBackground(player, payload.getString("quest"), payload.getString("background"));
+                    editor.setQuestCompletionHudBackground(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY) {
-                    editor.setQuestCompletionHudBackground(player, questIdsFromPayload(payload), payload.getString("background"));
+                    editor.setQuestCompletionHudBackground(player, EditorCommandPayloads.questIds(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_BACKGROUND) {
-                    editor.setQuestBackground(player, payload.getString("quest"), payload.getString("background"), payload.getBoolean("grayscale"));
+                    editor.setQuestBackground(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.GRAYSCALE));
                     return;
                 }
                 if (command.type() == EditorCommandType.QUEST_BACKGROUND_MANY) {
-                    editor.setQuestBackground(player, questIdsFromPayload(payload), payload.getString("background"), payload.getBoolean("grayscale"));
+                    editor.setQuestBackground(player, EditorCommandPayloads.questIds(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.GRAYSCALE));
                     return;
                 }
                 if (command.type() == EditorCommandType.DESCRIPTION_PUT) {
-                    ListTag description = payload.getList("description", Tag.TAG_STRING);
+                    ListTag description = EditorCommandPayloads.description(payload);
                     if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {
                         return;
                     }
-                    editor.updateQuestDescription(player, payload.getString("quest"), stringsFromList(description));
+                    editor.updateQuestDescription(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.stringsFrom(description));
                     return;
                 }
                 if (command.type() == EditorCommandType.CONNECTION_COLOR) {
-                    editor.setConnectionColor(player, payload.getString("quest"), prerequisiteId(payload), payload.getInt("color"));
+                    editor.setConnectionColor(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.COLOR));
                     return;
                 }
                 if (command.type() == EditorCommandType.CONNECTION_MODE) {
-                    editor.setConnectionMode(player, payload.getString("quest"), prerequisiteId(payload), payload.getBoolean("grid"));
+                    editor.setConnectionMode(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.GRID));
                     return;
                 }
                 if (command.type() == EditorCommandType.CONNECTION_HIDDEN) {
-                    editor.setConnectionHidden(player, payload.getString("quest"), prerequisiteId(payload), payload.getBoolean("hidden"));
+                    editor.setConnectionHidden(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.HIDDEN));
                     return;
                 }
                 if (command.type() == EditorCommandType.TASK_PUT) {
-                    String json = payload.getString("json");
+                    String json = EditorCommandPayloads.json(payload);
                     if (EditorCommandPayloadLimits.exceedsLength(json, EditorCommandPayloadLimits.MAX_EDITOR_JSON_LENGTH)) {
                         return;
                     }
-                    editor.putQuestTask(player, payload.getString("quest"), json);
+                    editor.putQuestTask(player, EditorCommandPayloads.quest(payload), json);
                     return;
                 }
                 if (command.type() == EditorCommandType.TASK_REMOVE) {
-                    editor.removeQuestTask(player, payload.getString("quest"), payload.getString("task"));
+                    editor.removeQuestTask(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.task(payload));
                     return;
                 }
                 if (command.type() == EditorCommandType.TASK_MOVE) {
-                    editor.moveQuestTask(player, payload.getString("quest"), payload.getString("task"), payload.getInt("offset"));
+                    editor.moveQuestTask(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.task(payload), EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.OFFSET));
                     return;
                 }
                 if (command.type() == EditorCommandType.REWARD_PUT) {
-                    String json = payload.getString("json");
+                    String json = EditorCommandPayloads.json(payload);
                     if (EditorCommandPayloadLimits.exceedsLength(json, EditorCommandPayloadLimits.MAX_EDITOR_JSON_LENGTH)) {
                         return;
                     }
-                    editor.putQuestReward(player, payload.getString("quest"), json);
+                    editor.putQuestReward(player, EditorCommandPayloads.quest(payload), json);
                     return;
                 }
                 if (command.type() == EditorCommandType.REWARD_REMOVE) {
-                    editor.removeQuestReward(player, payload.getString("quest"), payload.getString("reward"));
+                    editor.removeQuestReward(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.reward(payload));
                     return;
                 }
                 if (command.type() == EditorCommandType.REWARD_MOVE) {
-                    editor.moveQuestReward(player, payload.getString("quest"), payload.getString("reward"), payload.getInt("offset"));
+                    editor.moveQuestReward(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.reward(payload), EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.OFFSET));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_IMAGE_PUT) {
-                    editor.putCanvasImage(player, payload.getString("group"), CanvasLayerNbt.imageFromTag(payload.getCompound("image")));
+                    editor.putCanvasImage(player, EditorCommandPayloads.group(payload), CanvasLayerNbt.imageFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.IMAGE)));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_IMAGE_REMOVE) {
-                    editor.removeCanvasImage(player, payload.getString("group"), payload.getString("id"));
+                    editor.removeCanvasImage(player, EditorCommandPayloads.group(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_TEXT_PUT) {
-                    CompoundTag text = payload.getCompound("text");
-                    if (EditorCommandPayloadLimits.exceedsLimit(text.getList("spans", Tag.TAG_COMPOUND), EditorCommandPayloadLimits.MAX_TEXT_SPANS)) {
+                    CompoundTag text = EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.TEXT);
+                    if (EditorCommandPayloadLimits.exceedsLimit(text.getList(EditorCommandPayloadKeys.SPANS, Tag.TAG_COMPOUND), EditorCommandPayloadLimits.MAX_TEXT_SPANS)) {
                         return;
                     }
-                    editor.putCanvasText(player, payload.getString("group"), CanvasLayerNbt.textFromTag(text));
+                    editor.putCanvasText(player, EditorCommandPayloads.group(payload), CanvasLayerNbt.textFromTag(text));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_TEXT_REMOVE) {
-                    editor.removeCanvasText(player, payload.getString("group"), payload.getString("id"));
+                    editor.removeCanvasText(player, EditorCommandPayloads.group(payload), EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID));
                     return;
                 }
                 if (command.type() == EditorCommandType.CANVAS_LAYER_ORDER) {
-                    ListTag order = payload.getList("order", Tag.TAG_STRING);
+                    ListTag order = EditorCommandPayloads.order(payload);
                     if (EditorCommandPayloadLimits.exceedsLimit(order, EditorCommandPayloadLimits.MAX_LAYER_ORDER_ENTRIES)) {
                         return;
                     }
-                    editor.setCanvasLayerOrder(player, payload.getString("group"), nonBlankStringsFromList(order));
+                    editor.setCanvasLayerOrder(player, EditorCommandPayloads.group(payload), EditorCommandPayloads.nonBlankStringsFrom(order));
                 }
             });
         }
-    }
-
-    private static List<String> stringsFromList(ListTag tags) {
-        List<String> values = new ArrayList<>();
-        for (int i = 0; i < tags.size(); i++) {
-            values.add(tags.getString(i));
-        }
-        return values;
-    }
-
-    private static List<String> nonBlankStringsFromList(ListTag tags) {
-        List<String> values = new ArrayList<>();
-        for (int i = 0; i < tags.size(); i++) {
-            String value = tags.getString(i);
-            if (value != null && !value.isBlank()) {
-                values.add(value);
-            }
-        }
-        return values;
-    }
-
-    private static String prerequisiteId(CompoundTag payload) {
-        if (payload == null) {
-            return "";
-        }
-        return payload.getString(PREREQUISITE_FIELD);
-    }
-
-    private static Set<String> questIdsFromPayload(CompoundTag payload) {
-        ListTag tags = payload == null ? new ListTag() : payload.getList("quests", Tag.TAG_STRING);
-        Set<String> questIds = new LinkedHashSet<>();
-        if (EditorCommandPayloadLimits.exceedsLimit(tags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
-            return questIds;
-        }
-        for (int i = 0; i < tags.size(); i++) {
-            String questId = tags.getString(i);
-            if (questId != null && !questId.isBlank()) {
-                questIds.add(questId);
-            }
-        }
-        return questIds;
     }
 }
