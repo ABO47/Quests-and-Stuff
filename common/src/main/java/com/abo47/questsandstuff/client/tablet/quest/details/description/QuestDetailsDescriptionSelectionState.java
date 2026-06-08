@@ -3,7 +3,6 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,28 +58,24 @@ final class QuestDetailsDescriptionSelectionState {
         state.questDetailsSelectedImageIds.clear();
         state.selectedCanvasTextId = "";
         state.selectedCanvasImageId = "";
+        state.selectedQuestIds.clear();
         state.selectedCanvasTextIds.clear();
         state.selectedCanvasImageIds.clear();
         state.selectionBoundsVisible = false;
     }
 
     static List<String> selectedLayerKeys(TabletUiState state, QuestDetailsDescriptionModel model) {
-        List<String> selected = new ArrayList<>();
-        Set<String> textIds = selectedTextIds(state);
-        Set<String> imageIds = selectedImageIds(state);
-        for (String key : model.order) {
-            if (key.startsWith(QuestDetailsDescriptionModel.ORDER_TEXT)) {
-                String id = key.substring(QuestDetailsDescriptionModel.ORDER_TEXT.length());
-                if (textIds.contains(id) && model.text(id) != null) {
-                    selected.add(key);
-                }
-            } else if (key.startsWith(QuestDetailsDescriptionModel.ORDER_IMAGE)) {
-                String id = key.substring(QuestDetailsDescriptionModel.ORDER_IMAGE.length());
-                if (imageIds.contains(id) && model.image(id) != null) {
-                    selected.add(key);
-                }
-            }
-        }
-        return selected;
+        List<String> selected = selectionSet(state).layerKeysInOrder(model.order);
+        return selected.stream()
+                .filter(key -> {
+                    if (key.startsWith(QuestDetailsDescriptionModel.ORDER_TEXT)) {
+                        return model.text(key.substring(QuestDetailsDescriptionModel.ORDER_TEXT.length())) != null;
+                    }
+                    if (key.startsWith(QuestDetailsDescriptionModel.ORDER_IMAGE)) {
+                        return model.image(key.substring(QuestDetailsDescriptionModel.ORDER_IMAGE.length())) != null;
+                    }
+                    return false;
+                })
+                .toList();
     }
 }

@@ -73,36 +73,6 @@ public final class CanvasLayerOrdering {
         state.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
     }
 
-    public static boolean isImageAboveQuest(TabletUiState state, String group, String imageId, String questId) {
-        List<String> order = state.canvasLayerOrderByGroup.get(group);
-        if (order == null || order.isEmpty()) {
-            return false;
-        }
-        int imageIndex = order.indexOf(imageKey(imageId));
-        int questIndex = order.indexOf(questKey(questId));
-        return imageIndex >= 0 && questIndex >= 0 && imageIndex > questIndex;
-    }
-
-    public static boolean isTextAboveQuest(TabletUiState state, String group, String textId, String questId) {
-        List<String> order = state.canvasLayerOrderByGroup.get(group);
-        if (order == null || order.isEmpty()) {
-            return false;
-        }
-        int textIndex = order.indexOf(textKey(textId));
-        int questIndex = order.indexOf(questKey(questId));
-        return textIndex >= 0 && questIndex >= 0 && textIndex > questIndex;
-    }
-
-    public static boolean isTextAboveImage(TabletUiState state, String group, String textId, String imageId) {
-        List<String> order = state.canvasLayerOrderByGroup.get(group);
-        if (order == null || order.isEmpty()) {
-            return true;
-        }
-        int textIndex = order.indexOf(textKey(textId));
-        int imageIndex = order.indexOf(imageKey(imageId));
-        return textIndex >= 0 && imageIndex >= 0 && textIndex > imageIndex;
-    }
-
     public static List<String> normalize(
             TabletUiState state,
             String group,
@@ -172,6 +142,25 @@ public final class CanvasLayerOrdering {
         return ordered;
     }
 
+    public static CanvasLayerOrder normalizedOrder(
+            TabletUiState state,
+            String group,
+            List<QuestCardLayout> cards,
+            List<CanvasImageLayer> images,
+            List<CanvasTextLayer> texts,
+            List<String> connectionKeys
+    ) {
+        return order(normalize(state, group, cards, images, texts, connectionKeys));
+    }
+
+    public static CanvasLayerOrder order(List<String> orderKeys) {
+        return CanvasLayerOrder.fromOrderKeys(orderKeys);
+    }
+
+    public static CanvasLayerHit resolveElementHit(List<String> orderKeys, QuestCardLayout quest, CanvasImageLayer image, CanvasTextLayer text) {
+        return order(orderKeys).resolveElementHit(quest, image, text);
+    }
+
     public static void ensurePresent(TabletUiState state, String group, String key) {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
@@ -219,19 +208,19 @@ public final class CanvasLayerOrdering {
     }
 
     public static String questKey(String questId) {
-        return QUEST_PREFIX + questId;
+        return CanvasLayerKey.quest(questId).orderKey();
     }
 
     public static String imageKey(String imageId) {
-        return IMAGE_PREFIX + imageId;
+        return CanvasLayerKey.image(imageId).orderKey();
     }
 
     public static String textKey(String textId) {
-        return TEXT_PREFIX + textId;
+        return CanvasLayerKey.text(textId).orderKey();
     }
 
     public static String connectionKey(String edgeId) {
-        return CONNECTION_PREFIX + edgeId;
+        return CanvasLayerKey.connection(edgeId).orderKey();
     }
 
     private static void moveLayer(TabletUiState state, String group, String key, boolean front) {

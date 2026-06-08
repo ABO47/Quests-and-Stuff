@@ -4,6 +4,9 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
@@ -172,17 +175,21 @@ final class CanvasViewportClickController {
         if (textHit == null && state.canEdit) {
             textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
         }
-        if (hit != null && imageHit != null && !CanvasRenderer.isImageAboveQuest(state, TabletStateQueries.selectedGroupName(state), imageHit.id(), hit.questId())) {
-            imageHit = null;
-        }
-        if (hit != null && textHit != null && !CanvasRenderer.isTextAboveQuest(state, TabletStateQueries.selectedGroupName(state), textHit.id(), hit.questId())) {
-            textHit = null;
-        }
-        if (imageHit != null && textHit != null && !CanvasRenderer.isTextAboveImage(state, TabletStateQueries.selectedGroupName(state), textHit.id(), imageHit.id())) {
-            textHit = null;
-        } else if (imageHit != null && textHit != null) {
-            imageHit = null;
-        }
+        String selectedGroup = TabletStateQueries.selectedGroupName(state);
+        List<CanvasImageLayer> canvasImages = state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasTextLayer> canvasTexts = state.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
+        List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(
+                state,
+                cards,
+                byQuestId,
+                canvasViewport.getSize().width,
+                canvasViewport.getSize().height
+        );
+        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedGroup, cards, canvasImages, canvasTexts, connectionKeys)
+                .resolveElementHit(hit, imageHit, textHit);
+        hit = layerHit.quest();
+        imageHit = layerHit.image();
+        textHit = layerHit.text();
         if (state.canEdit && button == 1) {
             CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit);
             return true;

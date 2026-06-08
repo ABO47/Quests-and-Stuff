@@ -214,18 +214,6 @@ public final class CanvasRenderer {
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static boolean isImageAboveQuest(TabletUiState state, String group, String imageId, String questId) {
-        return CanvasLayerOrdering.isImageAboveQuest(state, group, imageId, questId);
-    }
-
-    public static boolean isTextAboveQuest(TabletUiState state, String group, String textId, String questId) {
-        return CanvasLayerOrdering.isTextAboveQuest(state, group, textId, questId);
-    }
-
-    public static boolean isTextAboveImage(TabletUiState state, String group, String textId, String imageId) {
-        return CanvasLayerOrdering.isTextAboveImage(state, group, textId, imageId);
-    }
-
     public static boolean isImageSelected(TabletUiState state, String imageId) {
         return imageId != null && (imageId.equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(imageId));
     }

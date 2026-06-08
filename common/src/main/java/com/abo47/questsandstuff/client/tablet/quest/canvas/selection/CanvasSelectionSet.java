@@ -1,19 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public record CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set<String> textIds) {
-    public CanvasSelectionSet {
-        questIds = immutableCopy(questIds);
-        imageIds = immutableCopy(imageIds);
-        textIds = immutableCopy(textIds);
+public final class CanvasSelectionSet {
+    private final CanvasLayerSelection layers;
+
+    public CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set<String> textIds) {
+        this(CanvasLayerSelection.fromIds(questIds, imageIds, textIds));
+    }
+
+    public CanvasSelectionSet(CanvasLayerSelection layers) {
+        this.layers = layers == null ? new CanvasLayerSelection(Set.of()) : layers;
     }
 
     public static CanvasSelectionSet current(TabletUiState state) {
@@ -28,8 +31,24 @@ public record CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set
         return new CanvasSelectionSet(state.selectedQuestIds, imageIds, textIds);
     }
 
+    public Set<String> questIds() {
+        return layers.ids(CanvasLayerKind.QUEST);
+    }
+
+    public Set<String> imageIds() {
+        return layers.ids(CanvasLayerKind.IMAGE);
+    }
+
+    public Set<String> textIds() {
+        return layers.ids(CanvasLayerKind.TEXT);
+    }
+
+    public Set<CanvasLayerKey> typedLayerKeys() {
+        return layers.keys();
+    }
+
     public int size() {
-        return questIds.size() + imageIds.size() + textIds.size();
+        return layers.size();
     }
 
     public boolean hasMultiple() {
@@ -37,23 +56,10 @@ public record CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set
     }
 
     public List<String> layerKeys() {
-        List<String> keys = new ArrayList<>();
-        for (String questId : questIds) {
-            keys.add(CanvasLayerOrdering.questKey(questId));
-        }
-        for (String imageId : imageIds) {
-            keys.add(CanvasLayerOrdering.imageKey(imageId));
-        }
-        for (String textId : textIds) {
-            keys.add(CanvasLayerOrdering.textKey(textId));
-        }
-        return keys;
+        return layers.orderKeys();
     }
 
-    private static Set<String> immutableCopy(Set<String> source) {
-        if (source == null || source.isEmpty()) {
-            return Set.of();
-        }
-        return Collections.unmodifiableSet(new LinkedHashSet<>(source));
+    public List<String> layerKeysInOrder(List<String> orderedLayerKeys) {
+        return layers.selectedOrderKeys(orderedLayerKeys);
     }
 }
