@@ -82,6 +82,33 @@ class CanvasGroupResizeTransformTest {
         assertEquals(new CanvasGroupResizeTransform.Bounds(3, 5, 160, 96), result.bounds());
     }
 
+    @Test
+    void descriptionLikeImageAndTextResizeThroughSharedSelectionSnapshot() {
+        CanvasImageLayer modelImage = new CanvasImageLayer("model", "block:minecraft:oak_planks", 20, 30, 40, 40, 0, 45, 0, 30);
+        CanvasTextLayer text = new CanvasTextLayer("text", "Description", 70, 50, 60, 30, 0, "left", "normal", 0xFFFFFF);
+        CanvasLayerSelectionSnapshot snapshot = new CanvasLayerSelectionSnapshot(
+                20,
+                30,
+                130,
+                80,
+                Map.of(modelImage.id(), modelImage),
+                Map.of(text.id(), text)
+        );
+
+        CanvasGroupResizeTransform.Result result = CanvasGroupResizeTransform.resizeBottomRight(
+                snapshot,
+                185,
+                105,
+                constraints(false, false, CanvasGroupResizeTransform.UNBOUNDED, CanvasGroupResizeTransform.UNBOUNDED)
+        );
+
+        assertEquals(new CanvasGroupResizeTransform.Bounds(20, 30, 185, 105), result.bounds());
+        assertEquals(1.5D, result.scaleX(), 0.0001D);
+        assertEquals(1.5D, result.scaleY(), 0.0001D);
+        assertEquals(new CanvasImageLayer("model", "block:minecraft:oak_planks", 20, 30, 60, 60, 0, 45, 0, 30, 30, 30), result.images().get("model"));
+        assertEquals(new CanvasTextLayer("text", "Description", 95, 60, 90, 45, 0, "left", "normal", 0xFFFFFF), result.texts().get("text"));
+    }
+
     private static CanvasGroupResizeTransform.Constraints constraints(boolean snap, boolean preserveAspect, int maxRight, int maxBottom) {
         return new CanvasGroupResizeTransform.Constraints(
                 4,

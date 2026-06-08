@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -131,18 +132,12 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasPoint snappedSelectionDelta(int dx, int dy) {
-        int nextDx = dx;
-        int nextDy = dy;
-        if (state.gridSnapLocked) {
-            nextDx = snapDelta(dx);
-            nextDy = snapDelta(dy);
-        }
-        return CanvasSelectionBounds.clampSelectionDelta(state, nextDx, nextDy);
-    }
-
-    private int snapDelta(int delta) {
-        int grid = CanvasGeometry.gridSize(state);
-        return Math.round((float) delta / (float) grid) * grid;
+        CanvasPoint delta = LayerTransformEngine.freeDelta(
+                dx,
+                dy,
+                new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.gridSnapLocked, false)
+        );
+        return CanvasSelectionBounds.clampSelectionDelta(state, delta.x, delta.y);
     }
 
     private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
