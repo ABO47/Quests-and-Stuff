@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.util.StableIdAllocator;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
@@ -13,11 +15,42 @@ final class QuestObjectiveJsons {
     }
 
     static JsonObject read(String value) {
+        return readResult(value).value();
+    }
+
+    static ParseResult readResult(String value) {
+        String source = value == null || value.isBlank() ? "{}" : value;
         try {
-            return JsonParser.parseString(value == null || value.isBlank() ? "{}" : value).getAsJsonObject();
-        } catch (Exception ignored) {
-            return new JsonObject();
+            JsonElement parsed = JsonParser.parseString(source);
+            if (parsed == null || !parsed.isJsonObject()) {
+                return ParseResult.invalid(new JsonObject(), "expected JSON object");
+            }
+            return ParseResult.valid(parsed.getAsJsonObject());
+        } catch (Exception error) {
+            return ParseResult.invalid(new JsonObject(), error.getClass().getSimpleName() + ": " + safeMessage(error));
         }
+    }
+
+    static JsonObject readTaskForEdit(String questId, String taskId, String value) {
+        return readForEdit(questId, taskId, true, value).value();
+    }
+
+    static JsonObject readRewardForEdit(String questId, String rewardId, String value) {
+        return readForEdit(questId, rewardId, false, value).value();
+    }
+
+    static ParseResult readForEdit(String questId, String entryId, boolean task, String value) {
+        ParseResult result = readResult(value);
+        if (!result.valid()) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] malformed objective json quest={} {}={} diagnostic={}",
+                    safeId(questId),
+                    task ? "task" : "reward",
+                    safeId(entryId),
+                    result.diagnostic()
+            );
+        }
+        return result;
     }
 
     static String asString(JsonObject json, String key, String fallback) {
@@ -207,5 +240,25 @@ final class QuestObjectiveJsons {
 
     static String nextId(CompoundTag existing, String prefix) {
         return StableIdAllocator.nextId(prefix == null || prefix.isBlank() ? "entry" : prefix, existing == null ? java.util.Set.of() : existing.getAllKeys());
+    }
+
+    private static String safeId(String value) {
+        return value == null ? "" : value;
+    }
+
+    private static String safeMessage(Exception error) {
+        String message = error.getMessage();
+        return message == null || message.isBlank() ? "invalid JSON" : message;
+    }
+
+    record ParseResult(boolean valid, JsonObject value, String diagnostic) {
+        static ParseResult valid(JsonObject value) {
+            return new ParseResult(true, value == null ? new JsonObject() : value, "");
+        }
+
+        static ParseResult invalid(JsonObject value, String diagnostic) {
+            String safeDiagnostic = diagnostic == null || diagnostic.isBlank() ? "invalid JSON" : diagnostic;
+            return new ParseResult(false, value == null ? new JsonObject() : value, safeDiagnostic);
+        }
     }
 }

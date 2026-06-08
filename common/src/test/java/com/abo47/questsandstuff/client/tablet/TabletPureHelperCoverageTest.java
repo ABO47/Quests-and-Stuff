@@ -36,6 +36,7 @@ class TabletPureHelperCoverageTest {
                 entry("description layer selection", "com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionSelectionStateTest"),
                 entry("context action tones", "com.abo47.questsandstuff.client.tablet.context.ContextActionToneTest"),
                 entry("context action layout", "com.abo47.questsandstuff.client.tablet.context.ContextActionLayoutTest"),
+                entry("objective json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveJsonsTest"),
                 entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest")
         );
 

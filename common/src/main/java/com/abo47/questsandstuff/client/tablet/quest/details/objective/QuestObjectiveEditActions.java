@@ -309,7 +309,7 @@ public final class QuestObjectiveEditActions {
         }
         CompoundTag quest = ClientQuestCache.quest(parsed.questId());
         CompoundTag reward = quest.getCompound("rewards").getCompound(parsed.entryId());
-        JsonObject existing = QuestObjectiveJsons.read(reward.getString("json"));
+        JsonObject existing = QuestObjectiveJsons.readRewardForEdit(parsed.questId(), parsed.entryId(), reward.getString("json"));
         String type = !parsed.type().isBlank() ? parsed.type() : QuestObjectiveJsons.MOD + "loot_table";
         JsonObject json = QuestObjectiveLootTableRewardEditor.isLootTable(existing)
                 ? existing.deepCopy()
@@ -362,7 +362,7 @@ public final class QuestObjectiveEditActions {
     static void openExistingCommandRewardEditor(TabletUiState state, String questId, String id) {
         CompoundTag quest = ClientQuestCache.quest(questId);
         CompoundTag reward = quest.getCompound("rewards").getCompound(id);
-        JsonObject json = QuestObjectiveJsons.read(reward.getString("json"));
+        JsonObject json = QuestObjectiveJsons.readRewardForEdit(questId, id, reward.getString("json"));
         openCommandRewardEditor(
                 state,
                 questId,
@@ -376,7 +376,7 @@ public final class QuestObjectiveEditActions {
     static void openObjectiveRenameEditor(TabletUiState state, String questId, String id, boolean task) {
         CompoundTag quest = ClientQuestCache.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
-        JsonObject json = QuestObjectiveJsons.read(entries.getCompound(id).getString("json"));
+        JsonObject json = QuestObjectiveJsons.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
         QuestDetailsTransientState.openObjectiveRename(
                 state,
                 questId,
@@ -390,7 +390,7 @@ public final class QuestObjectiveEditActions {
         CompoundTag quest = ClientQuestCache.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
-        JsonObject json = QuestObjectiveJsons.read(entry.getString("json"));
+        JsonObject json = QuestObjectiveJsons.readForEdit(questId, id, task, entry.getString("json")).value();
         if (!json.has("id")) {
             json.addProperty("id", id);
         }
@@ -574,7 +574,7 @@ public final class QuestObjectiveEditActions {
         CompoundTag quest = ClientQuestCache.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
-        JsonObject json = QuestObjectiveJsons.read(entry.getString("json"));
+        JsonObject json = QuestObjectiveJsons.readForEdit(questId, id, task, entry.getString("json")).value();
         if (!json.has("id")) {
             json.addProperty("id", id);
         }
@@ -598,7 +598,7 @@ public final class QuestObjectiveEditActions {
         CompoundTag reward = ClientQuestCache.quest(questId)
                 .getCompound("rewards")
                 .getCompound(rewardId);
-        JsonObject existing = QuestObjectiveJsons.read(reward.getString("json"));
+        JsonObject existing = QuestObjectiveJsons.readRewardForEdit(questId, rewardId, reward.getString("json"));
         if (QuestObjectiveSelectableRewards.isSelectable(existing)) {
             next.addProperty("selectable", true);
         }

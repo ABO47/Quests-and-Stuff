@@ -136,7 +136,7 @@ final class QuestObjectiveSelectableRewards {
 
     static void makeSelectable(Player player, String questId, String rewardId) {
         CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
-        JsonObject reward = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
+        JsonObject reward = QuestObjectiveJsons.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
         if (isSelectable(reward)) {
             return;
         }
@@ -253,7 +253,7 @@ final class QuestObjectiveSelectableRewards {
             return false;
         }
         CompoundTag rewards = ClientQuestCache.quest(questId).getCompound("rewards");
-        JsonObject selectable = QuestObjectiveJsons.read(rewards.getCompound(rewardId).getString("json"));
+        JsonObject selectable = QuestObjectiveJsons.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
         if (!isSelectableWrapper(selectable)) {
             return false;
         }

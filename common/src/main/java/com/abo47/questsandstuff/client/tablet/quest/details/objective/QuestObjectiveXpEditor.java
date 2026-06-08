@@ -115,7 +115,7 @@ final class QuestObjectiveXpEditor {
     private static JsonObject existingJson(String questId, String id, boolean task) {
         CompoundTag quest = ClientQuestCache.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
-        return QuestObjectiveJsons.read(entries.getCompound(id).getString("json"));
+        return QuestObjectiveJsons.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
     }
 
     private static void copyIfPresent(JsonObject source, JsonObject target, String key) {
