@@ -41,8 +41,7 @@ final class QuestProgressAdminActions {
         }
         questState.setCompleted(true, player.server.getTickCount());
         syncService.sendQuestEvent(player, "quest_completed", questId, "");
-        progressData.setDirty();
-        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, Set.of(questId)));
+        QuestRuntimeSyncs.syncChangedToAll(player, progressData, syncService, Set.of(questId));
     }
 
     void resetQuest(ServerPlayer player, String questId) {

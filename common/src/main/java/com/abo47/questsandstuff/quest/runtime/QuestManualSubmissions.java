@@ -142,10 +142,7 @@ final class QuestManualSubmissions {
                 engine.ensureUnlocks(player, targetId, state, changed, tick);
             }
         }
-        if (!changed.isEmpty()) {
-            progressData.setDirty();
-            player.server.getPlayerList().getPlayers().forEach(p -> syncService.syncDelta(p, changed));
-        }
+        QuestRuntimeSyncs.syncChangedToAll(player, progressData, syncService, changed);
     }
 
     private void applyManualTaskProgress(ServerPlayer player, List<UUID> targets, String questId, String taskId, QuestTaskDefinition task, int accepted) {
@@ -164,10 +161,7 @@ final class QuestManualSubmissions {
                 engine.ensureUnlocks(player, targetId, state, changed, tick);
             }
         }
-        if (!changed.isEmpty()) {
-            progressData.setDirty();
-            player.server.getPlayerList().getPlayers().forEach(p -> syncService.syncDelta(p, changed));
-        }
+        QuestRuntimeSyncs.syncChangedToAll(player, progressData, syncService, changed);
     }
 
     private int remainingForTargets(List<UUID> targets, String questId, String taskId, int goal) {
