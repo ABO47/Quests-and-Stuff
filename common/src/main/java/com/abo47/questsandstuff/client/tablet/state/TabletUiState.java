@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
@@ -170,15 +171,9 @@ public class TabletUiState {
     public boolean entityVariantScrollDragging;
     public String iconSearch = "";
     public boolean iconSearchFocused;
-    public boolean iconTagMode;
-    public boolean iconAllItemsMode;
-    public boolean iconEntityMode;
-    public boolean iconInventoryMode;
-    public boolean iconFluidMode;
+    public IconPickerMode iconMode = IconPickerMode.ITEMS;
     public int iconScroll;
     public boolean iconScrollDragging;
-    public String iconLastLoggedQuery = "";
-    public boolean iconLastLoggedTagMode;
     public String biomeSearch = "";
     public boolean biomeSearchFocused;
     public int biomeScroll;

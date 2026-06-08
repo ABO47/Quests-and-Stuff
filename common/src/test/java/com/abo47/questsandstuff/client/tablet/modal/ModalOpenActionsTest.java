@@ -55,4 +55,40 @@ class ModalOpenActionsTest {
         assertFalse(state.recipeScrollDragging);
         assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
     }
+
+    @Test
+    void questDetailsIconPickerUsesUsableItemsModeForItemUseTargets() {
+        TabletUiState state = new TabletUiState();
+        state.iconSearch = "old";
+        state.iconSearchFocused = true;
+        state.iconScroll = 12;
+        state.iconScrollDragging = true;
+        state.iconMode = IconPickerMode.INVENTORY;
+
+        ModalOpenActions.openQuestDetailsIconPicker(state, ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"));
+
+        assertTrue(state.iconPickerOpen);
+        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
+        assertEquals(ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"), state.questDetailsPickTarget);
+        assertEquals("", state.iconSearch);
+        assertFalse(state.iconSearchFocused);
+        assertEquals(0, state.iconScroll);
+        assertFalse(state.iconScrollDragging);
+        assertEquals(IconPickerMode.USABLE_ITEMS, state.iconMode);
+    }
+
+    @Test
+    void canvasEntityIconPickerStartsInEntityMode() {
+        TabletUiState state = new TabletUiState();
+        state.iconMode = IconPickerMode.FLUIDS;
+
+        ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
+
+        assertTrue(state.iconPickerOpen);
+        assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
+        assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modalCanvasEntityTarget);
+        assertEquals(5, state.canvasImageLogicalX);
+        assertEquals(9, state.canvasImageLogicalY);
+        assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+    }
 }

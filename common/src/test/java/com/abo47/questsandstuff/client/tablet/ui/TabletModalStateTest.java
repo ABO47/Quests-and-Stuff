@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
@@ -167,11 +168,7 @@ class TabletModalStateTest {
         assertEquals("", state.blueprintCodeMessage);
         assertFalse(state.iconSearchFocused);
         assertFalse(state.iconScrollDragging);
-        assertFalse(state.iconTagMode);
-        assertFalse(state.iconAllItemsMode);
-        assertFalse(state.iconEntityMode);
-        assertFalse(state.iconInventoryMode);
-        assertFalse(state.iconFluidMode);
+        assertEquals(IconPickerMode.ITEMS, state.iconMode);
         assertFalse(state.recipeSearchFocused);
         assertFalse(state.recipeScrollDragging);
         assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
@@ -256,11 +253,7 @@ class TabletModalStateTest {
         state.blueprintCodeMessage = "message";
         state.iconSearchFocused = true;
         state.iconScrollDragging = true;
-        state.iconTagMode = true;
-        state.iconAllItemsMode = true;
-        state.iconEntityMode = true;
-        state.iconInventoryMode = true;
-        state.iconFluidMode = true;
+        state.iconMode = IconPickerMode.INVENTORY;
         state.recipeSearchFocused = true;
         state.recipeScrollDragging = true;
         state.recipeMode = RecipePickerMode.INVENTORY;

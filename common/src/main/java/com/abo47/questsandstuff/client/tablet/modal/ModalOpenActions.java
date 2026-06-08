@@ -24,6 +24,7 @@ public final class ModalOpenActions {
         state.modalChapterTarget = "";
         state.questDetailsPickTarget = target == null ? "" : target;
         resetIconPicker(state);
+        IconPickerMode.resetForTarget(state, state.questDetailsPickTarget);
         openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
     }
 
@@ -410,6 +411,7 @@ public final class ModalOpenActions {
         state.canvasImageLogicalX = logicalX;
         state.canvasImageLogicalY = logicalY;
         resetIconPicker(state);
+        IconPickerMode.resetTo(state, IconPickerMode.ENTITIES);
         openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
     }
 
@@ -424,6 +426,7 @@ public final class ModalOpenActions {
         state.canvasImageLogicalX = logicalX;
         state.canvasImageLogicalY = logicalY;
         resetIconPicker(state);
+        IconPickerMode.resetTo(state, IconPickerMode.ITEMS);
         openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
     }
 
@@ -468,11 +471,7 @@ public final class ModalOpenActions {
 
     private static void resetIconPicker(TabletUiState state) {
         ModalPickerStates.icon(state).reset();
-        state.iconTagMode = false;
-        state.iconAllItemsMode = false;
-        state.iconEntityMode = false;
-        state.iconInventoryMode = false;
-        state.iconFluidMode = false;
+        IconPickerMode.reset(state);
     }
 
     private static void resetAssetPicker(TabletUiState state) {

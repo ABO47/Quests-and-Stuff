@@ -91,4 +91,70 @@ class ModalPickerStatesTest {
         assertEquals("mode_items", state.recipeMode.icon());
         assertEquals(RecipePickerMode.ITEMS, state.recipeMode);
     }
+
+    @Test
+    void iconModeCycleKeepsOneModeActiveAndResetsScroll() {
+        TabletUiState state = new TabletUiState();
+        state.iconMode = IconPickerMode.ITEMS;
+        state.iconScroll = 24;
+
+        IconPickerMode.cycle(state, true, true, false, 1);
+
+        assertEquals(IconPickerMode.TAGS, state.iconMode);
+        assertEquals(0, state.iconScroll);
+        assertEquals("mode_tags", state.iconMode.icon());
+        assertEquals("tags", state.iconMode.logName());
+
+        state.iconScroll = 18;
+        IconPickerMode.cycle(state, true, true, false, 1);
+
+        assertEquals(IconPickerMode.FLUIDS, state.iconMode);
+        assertEquals(0, state.iconScroll);
+        assertEquals("mode_fluids", state.iconMode.icon());
+
+        IconPickerMode.cycle(state, true, true, false, 1);
+
+        assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+        assertEquals("entity", state.iconMode.icon());
+
+        IconPickerMode.cycle(state, true, true, false, 1);
+
+        assertEquals(IconPickerMode.INVENTORY, state.iconMode);
+        assertEquals("mode_inventory", state.iconMode.icon());
+
+        IconPickerMode.cycle(state, true, true, false, -1);
+
+        assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+    }
+
+    @Test
+    void useItemIconModeCyclesUsableItemsBeforeAllItems() {
+        TabletUiState state = new TabletUiState();
+        state.iconMode = IconPickerMode.USABLE_ITEMS;
+
+        IconPickerMode.cycle(state, false, true, true, 1);
+
+        assertEquals(IconPickerMode.ITEMS, state.iconMode);
+        assertEquals("items", state.iconMode.logName());
+
+        IconPickerMode.cycle(state, false, true, true, -1);
+
+        assertEquals(IconPickerMode.USABLE_ITEMS, state.iconMode);
+        assertEquals("usable_items", state.iconMode.logName());
+        assertEquals("send-horizontal", state.iconMode.icon());
+    }
+
+    @Test
+    void modelItemIconModeOnlyCyclesItemsAndTags() {
+        TabletUiState state = new TabletUiState();
+        state.iconMode = IconPickerMode.ENTITIES;
+
+        IconPickerMode.cycleModelItems(state, 1);
+
+        assertEquals(IconPickerMode.TAGS, state.iconMode);
+
+        IconPickerMode.cycleModelItems(state, 1);
+
+        assertEquals(IconPickerMode.ITEMS, state.iconMode);
+    }
 }
