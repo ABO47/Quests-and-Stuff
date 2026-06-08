@@ -12,19 +12,14 @@ import com.google.gson.GsonBuilder;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
-import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.hasAnyGroup;
-import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizePrerequisites;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeQuestId;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.removeUngroupedDefinitions;
-import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.withId;
 
 public final class QuestDefinitionStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -36,6 +31,7 @@ public final class QuestDefinitionStore {
     private final ChapterMetadataStore chapters;
     private final QuestlineManifestStore manifest;
     private final QuestDefinitionSaveQueue saveQueue;
+    private final QuestDefinitionMutations mutations;
 
     public QuestDefinitionStore(Path root) {
         this.root = root;
@@ -44,6 +40,7 @@ public final class QuestDefinitionStore {
         this.chapters = new ChapterMetadataStore(chaptersDir);
         this.manifest = new QuestlineManifestStore(root);
         this.saveQueue = new QuestDefinitionSaveQueue(questsDir, GSON);
+        this.mutations = new QuestDefinitionMutations(questsDir, quests, chapters, saveQueue);
     }
 
     public Map<String, QuestDefinition> quests() {
@@ -87,11 +84,11 @@ public final class QuestDefinitionStore {
     }
 
     public void setGroupOrder(List<String> groups) {
-        chapters.setGroupOrder(groups, discoverGroups());
+        chapters.setGroupOrder(groups, mutations.discoverGroups());
     }
 
     public void renameGroupMetadata(String fromName, String toName) {
-        chapters.renameGroup(fromName, toName, discoverGroups());
+        chapters.renameGroup(fromName, toName, mutations.discoverGroups());
     }
 
     public String groupIcon(String group) {
@@ -207,26 +204,7 @@ public final class QuestDefinitionStore {
     }
 
     public void replaceAll(Map<String, QuestDefinition> replacement) {
-        Set<String> previousIds = new HashSet<>(quests.keySet());
-
-        quests.clear();
-        for (Map.Entry<String, QuestDefinition> entry : replacement.entrySet()) {
-            QuestDefinition clone = cloneDefinition(entry.getValue());
-            if (!hasAnyGroup(clone)) {
-                QuestsAndStuffMod.debugLog("[QnS:Store] skipped groupless replacement quest {}", entry.getKey());
-                continue;
-            }
-            quests.put(entry.getKey(), clone);
-            markDirty(entry.getKey());
-        }
-
-        for (String removedId : previousIds) {
-            if (!quests.containsKey(removedId)) {
-                remove(removedId);
-            }
-        }
-        chapters.reconcile(discoverGroups());
-        QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
+        mutations.replaceAll(replacement);
     }
 
     public void replaceAll(EditorSnapshot replacement) {
@@ -235,7 +213,7 @@ public final class QuestDefinitionStore {
         }
         replaceAll(replacement.quests());
         chapters.restore(replacement.chapters());
-        chapters.reconcile(discoverGroups());
+        chapters.reconcile(mutations.discoverGroups());
         chapters.save();
     }
 
@@ -247,7 +225,7 @@ public final class QuestDefinitionStore {
 
             quests.clear();
             quests.putAll(loaded);
-            chapters.load(discoverGroups());
+            chapters.load(mutations.discoverGroups());
             manifest.ensureExists();
 
             QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
@@ -261,80 +239,27 @@ public final class QuestDefinitionStore {
     }
 
     public void upsert(QuestDefinition definition) {
-        String canonicalId = normalizeQuestId(definition.id());
-        Set<String> knownIds = new HashSet<>(quests.keySet());
-        knownIds.add(canonicalId);
-        QuestDefinition normalized = normalizeDefinition(withId(definition, canonicalId), knownIds);
-        if (!hasAnyGroup(normalized)) {
-            QuestsAndStuffMod.debugLog("[QnS:Store] removing groupless quest {}", canonicalId);
-            remove(canonicalId);
-            return;
-        }
-        quests.put(canonicalId, normalized);
-        chapters.reconcile(discoverGroups());
-        markDirty(canonicalId);
+        mutations.upsert(definition);
     }
 
     public void upsertAll(List<QuestDefinition> definitions) {
-        if (definitions == null || definitions.isEmpty()) {
-            return;
-        }
-        Map<String, QuestDefinition> candidates = new HashMap<>();
-        Set<String> knownIds = new HashSet<>(quests.keySet());
-        for (QuestDefinition definition : definitions) {
-            if (definition == null) {
-                continue;
-            }
-            String canonicalId = normalizeQuestId(definition.id());
-            if (canonicalId.isBlank()) {
-                continue;
-            }
-            QuestDefinition candidate = withId(definition, canonicalId);
-            if (!hasAnyGroup(candidate)) {
-                continue;
-            }
-            candidates.put(canonicalId, candidate);
-            knownIds.add(canonicalId);
-        }
-        if (candidates.isEmpty()) {
-            return;
-        }
-        for (Map.Entry<String, QuestDefinition> entry : candidates.entrySet()) {
-            QuestDefinition normalized = normalizeDefinition(entry.getValue(), knownIds);
-            if (!hasAnyGroup(normalized)) {
-                remove(entry.getKey());
-                continue;
-            }
-            quests.put(entry.getKey(), normalized);
-            markDirty(entry.getKey());
-        }
-        chapters.reconcile(discoverGroups());
+        mutations.upsertAll(definitions);
     }
 
     public void remove(String questId) {
-        QuestDefinition removed = quests.remove(questId);
-        chapters.reconcile(discoverGroups());
-        saveQueue.cancel(questId);
-        QuestDefinitionFileCleanup.deleteQuestFile(questsDir, questId, removed);
+        mutations.remove(questId);
     }
 
     public void markDirty(String questId) {
-        QuestDefinition definition = quests.get(questId);
-        saveQueue.markDirty(questId, definition);
+        mutations.markDirty(questId);
     }
 
     public void saveNow(String questId) {
-        String canonicalId = normalizeQuestId(questId);
-        QuestDefinition definition = quests.get(canonicalId);
-        saveQueue.saveNow(canonicalId, definition);
+        mutations.saveNow(questId);
     }
 
     public void saveNow(Collection<String> questIds) {
-        if (questIds != null) {
-            for (String questId : questIds) {
-                saveNow(questId);
-            }
-        }
+        mutations.saveNow(questIds);
     }
 
     public void saveAll() {
@@ -342,14 +267,6 @@ public final class QuestDefinitionStore {
         chapters.save();
         manifest.save();
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
-    }
-
-    private Set<String> discoverGroups() {
-        Set<String> groups = new TreeSet<>();
-        for (QuestDefinition definition : quests.values()) {
-            groups.addAll(definition.display().groups().keySet());
-        }
-        return groups;
     }
 
     public record EditorSnapshot(Map<String, QuestDefinition> quests, ChapterMetadataSnapshot chapters) {
