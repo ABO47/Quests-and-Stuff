@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
@@ -48,7 +49,7 @@ final class CanvasSelectionBounds {
             maxY = Math.max(maxY, bounds.bottom());
         }
         for (String textId : state.dragStartTextPositions.keySet()) {
-            CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, textId);
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
             if (text == null) {
                 continue;
             }

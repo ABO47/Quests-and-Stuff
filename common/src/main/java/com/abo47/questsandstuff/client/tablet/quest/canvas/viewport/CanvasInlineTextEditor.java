@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -42,7 +44,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvasTextMenuOpen || state.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
@@ -51,7 +53,7 @@ public final class CanvasInlineTextEditor {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }
@@ -101,7 +103,7 @@ public final class CanvasInlineTextEditor {
         if (!mainCanvasTextEditOpen()) {
             return null;
         }
-        return CanvasRenderer.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextEditTarget);
+        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -281,7 +283,7 @@ public final class CanvasInlineTextEditor {
         state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
         String group = TabletStateQueries.selectedGroupName(state);
         String id = state.canvasTextEditTarget;
-        CanvasRenderer.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value))));
+        CanvasLayerMutations.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(safeStart, safeEnd, value))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, safeStart, safeEnd, value.length(), state.canvasTextEditDraft.length(), state.canvasTextEditCursor);
     }
 

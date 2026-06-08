@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -119,7 +120,7 @@ public final class AssetPickerApplyActions {
         if (state.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasRenderer.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, group, image);
         state.selectedCanvasImageId = id;
         state.selectedQuestIds.clear();
         state.draggingCanvasImage = false;

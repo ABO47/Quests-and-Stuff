@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -204,8 +206,8 @@ public final class CanvasCameraController {
                 addCard(bounds, card);
             }
         }
-        Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
-        Set<String> textIds = CanvasRenderer.selectedCanvasTextIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 addImage(bounds, image);

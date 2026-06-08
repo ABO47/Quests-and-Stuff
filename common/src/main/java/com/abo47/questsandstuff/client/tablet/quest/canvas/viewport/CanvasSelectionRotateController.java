@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
@@ -134,10 +135,10 @@ final class CanvasSelectionRotateController {
                 (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation)
         );
         for (CanvasImageLayer image : result.images().values()) {
-            CanvasRenderer.putTransientCanvasImage(state, clampRotationPreviewImage(image));
+            CanvasLayerMutations.putTransientCanvasImage(state, clampRotationPreviewImage(image));
         }
         for (CanvasTextLayer text : result.texts().values()) {
-            CanvasRenderer.putTransientCanvasText(state, clampRotationPreviewText(text));
+            CanvasLayerMutations.putTransientCanvasText(state, clampRotationPreviewText(text));
         }
     }
 

@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -110,10 +111,10 @@ final class CanvasSelectionResizeController {
             state.transientQuestScales.put(questId, targetScale);
         }
         for (CanvasImageLayer image : resize.images().values()) {
-            CanvasRenderer.putTransientCanvasImage(state, fitAndClampImage(image));
+            CanvasLayerMutations.putTransientCanvasImage(state, fitAndClampImage(image));
         }
         for (CanvasTextLayer text : resize.texts().values()) {
-            CanvasRenderer.putTransientCanvasText(state, fitAndClampText(text));
+            CanvasLayerMutations.putTransientCanvasText(state, fitAndClampText(text));
         }
     }
 

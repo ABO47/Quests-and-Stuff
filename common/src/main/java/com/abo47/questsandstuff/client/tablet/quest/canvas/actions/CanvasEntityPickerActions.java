@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.actions;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -35,12 +36,12 @@ public final class CanvasEntityPickerActions {
     }
 
     private static boolean changeEntity(TabletUiState state, String pickedItem, String entityId, EntityTarget parsed) {
-        CanvasImageLayer current = CanvasRenderer.findCanvasImage(state, parsed.group(), parsed.imageId());
+        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, parsed.group(), parsed.imageId());
         if (current == null) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity change ignored group={} image={} item={} reason=missing_image", parsed.group(), parsed.imageId(), pickedItem);
             return false;
         }
-        CanvasRenderer.putCanvasImage(state, parsed.group(), current.withAsset(EntityPreviewRenderer.entityAsset(entityId)));
+        CanvasLayerMutations.putCanvasImage(state, parsed.group(), current.withAsset(EntityPreviewRenderer.entityAsset(entityId)));
         state.selectedCanvasImageId = current.id();
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasImageIds.add(current.id());
@@ -67,7 +68,7 @@ public final class CanvasEntityPickerActions {
         if (state.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasRenderer.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, group, image);
         state.selectedCanvasImageId = id;
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasTextId = "";

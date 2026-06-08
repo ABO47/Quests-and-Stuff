@@ -1,9 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -119,8 +122,8 @@ public final class CanvasClipboardController {
     private static ClipboardSelection currentSelection(TabletUiState state) {
         return new ClipboardSelection(
                 new LinkedHashSet<>(state.selectedQuestIds),
-                CanvasRenderer.selectedCanvasImageIds(state),
-                CanvasRenderer.selectedCanvasTextIds(state)
+                CanvasSelectionActions.selectedCanvasImageIds(state),
+                CanvasSelectionActions.selectedCanvasTextIds(state)
         );
     }
 
@@ -267,7 +270,7 @@ public final class CanvasClipboardController {
             if (state.gridSnapLocked) {
                 duplicate = CanvasGridFitController.fittedImage(state, duplicate);
             }
-            CanvasRenderer.putCanvasImage(state, group, duplicate);
+            CanvasLayerMutations.putCanvasImage(state, group, duplicate);
             state.selectedCanvasImageIds.add(id);
             state.selectedCanvasImageId = id;
             state.pendingPastedCanvasImageIds.add(id);
@@ -283,7 +286,7 @@ public final class CanvasClipboardController {
             if (state.gridSnapLocked) {
                 duplicate = CanvasGridFitController.fittedText(state, duplicate);
             }
-            CanvasRenderer.putCanvasText(state, group, duplicate);
+            CanvasLayerMutations.putCanvasText(state, group, duplicate);
             state.selectedCanvasTextIds.add(id);
             state.selectedCanvasTextId = id;
             state.pendingPastedCanvasTextIds.add(id);
@@ -345,14 +348,14 @@ public final class CanvasClipboardController {
             minY = Math.min(minY, card.logicalY());
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 minX = Math.min(minX, image.x());
                 minY = Math.min(minY, image.y());
             }
         }
-        Set<String> textIds = CanvasRenderer.selectedCanvasTextIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 minX = Math.min(minX, text.x());

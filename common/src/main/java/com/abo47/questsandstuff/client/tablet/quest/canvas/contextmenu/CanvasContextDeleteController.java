@@ -1,7 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
+
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
@@ -27,7 +30,7 @@ public final class CanvasContextDeleteController {
             return !state.contextQuestId.isBlank();
         }
         if (state.contextMenuTarget == ContextMenuTarget.SELECTION) {
-            return CanvasRenderer.totalCanvasSelectionCount(state) > 0;
+            return CanvasSelectionActions.totalCanvasSelectionCount(state) > 0;
         }
         if (state.contextMenuTarget == ContextMenuTarget.IMAGE) {
             return !state.contextCanvasImageId.isBlank();
@@ -46,31 +49,31 @@ public final class CanvasContextDeleteController {
                 + "|" + state.contextCanvasImageId
                 + "|" + state.contextCanvasTextId
                 + "|" + String.join(",", state.selectedQuestIds)
-                + "|" + String.join(",", CanvasRenderer.selectedCanvasImageIds(state))
-                + "|" + String.join(",", CanvasRenderer.selectedCanvasTextIds(state));
+                + "|" + String.join(",", CanvasSelectionActions.selectedCanvasImageIds(state))
+                + "|" + String.join(",", CanvasSelectionActions.selectedCanvasTextIds(state));
     }
 
     public static void runDeleteAction(Player player, TabletUiState state) {
         String group = selectedGroupName(state);
         if (state.contextMenuTarget == ContextMenuTarget.SELECTION) {
-            for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
-                boolean removed = CanvasRenderer.removeCanvasImage(state, group, imageId);
+            for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+                boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, imageId);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, imageId, removed);
             }
-            for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
-                boolean removed = CanvasRenderer.removeCanvasText(state, group, textId);
+            for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+                boolean removed = CanvasLayerMutations.removeCanvasText(state, group, textId);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, textId, removed);
             }
         }
 
         if (state.contextMenuTarget == ContextMenuTarget.IMAGE && !state.contextCanvasImageId.isBlank()) {
-            boolean removed = CanvasRenderer.removeCanvasImage(state, group, state.contextCanvasImageId);
+            boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, state.contextCanvasImageId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, state.contextCanvasImageId, removed);
             state.contextCanvasImageId = "";
             return;
         }
         if (state.contextMenuTarget == ContextMenuTarget.TEXT && !state.contextCanvasTextId.isBlank()) {
-            boolean removed = CanvasRenderer.removeCanvasText(state, group, state.contextCanvasTextId);
+            boolean removed = CanvasLayerMutations.removeCanvasText(state, group, state.contextCanvasTextId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, state.contextCanvasTextId, removed);
             state.contextCanvasTextId = "";
             return;

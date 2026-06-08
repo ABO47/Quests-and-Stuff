@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
@@ -67,9 +69,9 @@ final class CanvasViewportContextRouter {
         state.contextEdgeTarget = "";
         state.contextCanvasImageId = "";
         state.contextCanvasTextId = "";
-        if (CanvasRenderer.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             state.contextMenuTarget = ContextMenuTarget.SELECTION;
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
         } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit)) {
             state.contextMenuTarget = ContextMenuTarget.EDGE;
             state.contextEdgeSource = edgeHit.sourceQuestId();
@@ -110,7 +112,7 @@ final class CanvasViewportContextRouter {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextEdgeSource, state.contextEdgeTarget);
         } else {
             state.contextMenuTarget = ContextMenuTarget.CANVAS;
-            CanvasRenderer.clearCanvasSelection(state);
+            CanvasSelectionActions.clearCanvasSelection(state);
             state.connectSourceQuestId = "";
             state.connectSourceQuestIds.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=canvas logicalX={} logicalY={}", logicalX, logicalY);

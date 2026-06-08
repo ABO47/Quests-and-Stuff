@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
@@ -103,7 +104,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
-        CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
+        CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
         withSelectionGeometry(state, contentW, contentH, () -> drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH));
         if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
             drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
@@ -111,7 +112,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
-        CanvasTextLayer drawText = CanvasRenderer.effectiveQuestDetailsText(state, text);
+        CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
         boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget)
                 && drawText.id().equals(state.questDetailsTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvasTextEditDraft) : drawText;

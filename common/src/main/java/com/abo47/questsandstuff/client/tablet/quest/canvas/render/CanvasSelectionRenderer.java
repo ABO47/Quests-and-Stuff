@@ -1,8 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -90,8 +93,8 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, card.y() + card.height());
         }
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
-            if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
+            CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
+            if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
@@ -102,8 +105,8 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, bounds[3]);
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
-            if (!CanvasRenderer.isTextSelected(state, drawText.id())) {
+            CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
+            if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
@@ -209,7 +212,7 @@ public final class CanvasSelectionRenderer {
             TabletUiState state,
             List<QuestCardLayout> cards
     ) {
-        if (!state.canEdit || (!state.boxSelecting && CanvasRenderer.totalCanvasSelectionCount(state) <= 1) || !state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.canEdit || (!state.boxSelecting && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) || !state.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
@@ -240,8 +243,8 @@ public final class CanvasSelectionRenderer {
         }
         String group = selectedGroupName(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
-            if (!CanvasRenderer.isImageSelected(state, drawImage.id())) {
+            CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
+            if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
@@ -260,8 +263,8 @@ public final class CanvasSelectionRenderer {
             );
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
-            if (!CanvasRenderer.isTextSelected(state, drawText.id())) {
+            CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
+            if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
@@ -335,10 +338,10 @@ public final class CanvasSelectionRenderer {
         if (state.boxSelecting) {
             return;
         }
-        if (state.selectedQuestIds.isEmpty() && CanvasRenderer.totalCanvasSelectionCount(state) == 1) {
+        if (state.selectedQuestIds.isEmpty() && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
             return;
         }
-        if (state.rotatingSelection && CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+        if (state.rotatingSelection && CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             drawRotatedSelectionBounds(graphics, originX, originY, state);
             return;
         }

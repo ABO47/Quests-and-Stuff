@@ -2,17 +2,14 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -26,10 +23,8 @@ import net.minecraft.nbt.CompoundTag;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_LIMIT_WIDTH;
@@ -46,8 +41,7 @@ public final class CanvasRenderer {
     public static void rebuildQuestCanvas(CanvasViewport canvasViewport, TabletUiState state) {
         CanvasCameraController.beforeCanvasRebuild(state);
         canvasViewport.clearAllWidgets();
-        String selectedGroup = selectedGroupName(state);
-        state.canvasZoom = clampZoom(state.canvasZoom);
+        String selectedGroup = CanvasRenderStateController.prepareRebuild(state);
         CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
@@ -66,10 +60,7 @@ public final class CanvasRenderer {
         int contentH = CanvasSceneRenderer.snapCanvasContentSize(usableH, cell);
         int contentX = Math.max(0, (usableW - contentW) / 2);
         int contentY = Math.max(0, (usableH - contentH) / 2);
-        state.canvasContentX = contentX;
-        state.canvasContentY = contentY;
-        state.canvasContentW = contentW;
-        state.canvasContentH = contentH;
+        CanvasRenderStateController.setContentBounds(state, contentX, contentY, contentW, contentH);
         CanvasCameraController.afterCanvasLayout(state, selectedGroup);
         CanvasSceneRenderer.renderCanvasSurfaces(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
@@ -90,11 +81,7 @@ public final class CanvasRenderer {
         for (QuestCardLayout card : visibleCards) {
             byQuestId.put(card.questId(), card);
         }
-        state.selectedQuestIds.retainAll(byQuestId.keySet());
-        if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.containsQuest(state.connectSourceQuestId)) {
-            state.connectSourceQuestId = "";
-        }
-        state.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.containsQuest(questId));
+        CanvasRenderStateController.pruneStaleInteractiveState(state, byQuestId.keySet());
         WidgetGroup canvasContent = new WidgetGroup(0, 0, viewportW, viewportH);
         if (state.canEdit && state.gridEnabled) {
             CanvasSceneRenderer.renderGridOverlay(canvasContent, state, contentX, contentY, contentW, contentH);
@@ -112,15 +99,7 @@ public final class CanvasRenderer {
         ConnectionRenderer.renderPendingConnections(canvasContent, state, byQuestId, viewportW, viewportH);
         CanvasSelectionRenderer.renderAlignmentGuides(canvasContent, state);
         CanvasSelectionRenderer.updateSelectionBounds(state, visibleCards);
-        if (!state.canEdit) {
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextMenuScroll = 0;
-            state.contextMenuScrollMax = 0;
-            state.contextMenuScrollDragging = false;
-            state.createQuestModalOpen = false;
-            state.boxSelecting = false;
-        }
+        CanvasRenderStateController.closeEditOnlyStateWhenReadOnly(state);
         CanvasSelectionRenderer.renderSelectionOverlay(canvasContent, state, visibleCards);
         WidgetGroup canvasContentLayer = CanvasChapterSwitchAnimation.wrap(state, canvasContent);
         canvasViewport.setCanvasContentLayer(canvasContentLayer);
@@ -161,94 +140,16 @@ public final class CanvasRenderer {
         return ConnectionRenderer.connectionColor(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
-        ConnectionRenderer.setConnectionColor(state, group, sourceQuestId, targetQuestId, color);
-    }
-
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return ConnectionRenderer.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
-    }
-
-    public static void setConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean hidden) {
-        ConnectionRenderer.setConnectionHidden(state, group, sourceQuestId, targetQuestId, hidden);
-    }
-
-    public static void toggleConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        ConnectionRenderer.toggleConnectionHidden(state, group, sourceQuestId, targetQuestId);
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return ConnectionRenderer.isConnectionDirect(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        ConnectionRenderer.toggleConnectionMode(state, group, sourceQuestId, targetQuestId);
-    }
-
     public static int snapToGrid(TabletUiState state, int value) {
         return CanvasGeometry.snapToGrid(state, value);
-    }
-
-    public static void moveQuestLayer(TabletUiState state, String group, String questId, boolean front) {
-        CanvasLayerOrdering.moveQuestLayer(state, group, questId, front);
-        CanvasElementStore.persistLayerOrder(state, group);
-    }
-
-    public static void moveImageLayer(TabletUiState state, String group, String imageId, boolean front) {
-        CanvasLayerOrdering.moveImageLayer(state, group, imageId, front);
-        CanvasElementStore.persistLayerOrder(state, group);
-    }
-
-    public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
-        CanvasLayerOrdering.moveTextLayer(state, group, textId, front);
-        CanvasElementStore.persistLayerOrder(state, group);
-    }
-
-    public static void moveConnectionLayer(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean front) {
-        CanvasLayerOrdering.moveConnectionLayer(state, group, ConnectionRenderer.edgeKey(sourceQuestId, targetQuestId), front);
-        CanvasElementStore.persistLayerOrder(state, group);
-    }
-
-    public static void moveCanvasLayers(TabletUiState state, String group, List<String> layerKeys, boolean front) {
-        CanvasLayerOrdering.moveLayers(state, group, layerKeys, front);
-        CanvasElementStore.persistLayerOrder(state, group);
-    }
-
-    public static boolean isImageSelected(TabletUiState state, String imageId) {
-        return imageId != null && (imageId.equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(imageId));
-    }
-
-    public static boolean isTextSelected(TabletUiState state, String textId) {
-        return textId != null && (textId.equals(state.selectedCanvasTextId) || state.selectedCanvasTextIds.contains(textId));
-    }
-
-    public static Set<String> selectedCanvasImageIds(TabletUiState state) {
-        Set<String> images = new LinkedHashSet<>(state.selectedCanvasImageIds);
-        if (!state.selectedCanvasImageId.isBlank()) {
-            images.add(state.selectedCanvasImageId);
-        }
-        return images;
-    }
-
-    public static Set<String> selectedCanvasTextIds(TabletUiState state) {
-        Set<String> texts = new LinkedHashSet<>(state.selectedCanvasTextIds);
-        if (!state.selectedCanvasTextId.isBlank()) {
-            texts.add(state.selectedCanvasTextId);
-        }
-        return texts;
-    }
-
-    public static int totalCanvasSelectionCount(TabletUiState state) {
-        return CanvasSelectionSet.current(state).size();
-    }
-
-    public static void clearCanvasSelection(TabletUiState state) {
-        state.selectedQuestIds.clear();
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextIds.clear();
-        CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
     public static QuestCardLayout hitTestCard(List<QuestCardLayout> cards, int x, int y) {
@@ -303,138 +204,6 @@ public final class CanvasRenderer {
         return CanvasHitTester.isCanvasImageRotateHandleHit(state, image, x, y);
     }
 
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image) {
-        CanvasElementStore.putCanvasImage(state, group, image);
-    }
-
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image, boolean syncServer) {
-        CanvasElementStore.putCanvasImage(state, group, image, syncServer);
-    }
-
-    public static boolean removeCanvasImage(TabletUiState state, String group, String imageId) {
-        return CanvasElementStore.removeCanvasImage(state, group, imageId);
-    }
-
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text) {
-        CanvasElementStore.putCanvasText(state, group, text);
-    }
-
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text, boolean syncServer) {
-        CanvasElementStore.putCanvasText(state, group, text, syncServer);
-    }
-
-    public static boolean removeCanvasText(TabletUiState state, String group, String textId) {
-        return CanvasElementStore.removeCanvasText(state, group, textId);
-    }
-
-    public static CanvasTextLayer findCanvasText(TabletUiState state, String group, String textId) {
-        return CanvasElementStore.findCanvasText(state, group, textId);
-    }
-
-    public static CanvasImageLayer findCanvasImage(TabletUiState state, String group, String imageId) {
-        return CanvasElementStore.findCanvasImage(state, group, imageId);
-    }
-
-    public static CanvasImageLayer effectiveCanvasImage(TabletUiState state, CanvasImageLayer image) {
-        if (state == null || image == null) {
-            return image;
-        }
-        return state.transientCanvasImages.getOrDefault(image.id(), image);
-    }
-
-    public static CanvasTextLayer effectiveCanvasText(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null) {
-            return text;
-        }
-        return state.transientCanvasTexts.getOrDefault(text.id(), text);
-    }
-
-    public static CanvasImageLayer effectiveQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
-        if (state == null || image == null) {
-            return image;
-        }
-        return state.questDetailsTransientImages.getOrDefault(image.id(), image);
-    }
-
-    public static CanvasTextLayer effectiveQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null) {
-            return text;
-        }
-        return state.questDetailsTransientTexts.getOrDefault(text.id(), text);
-    }
-
-    public static void putTransientCanvasImage(TabletUiState state, CanvasImageLayer image) {
-        if (state == null || image == null || image.id().isBlank()) {
-            return;
-        }
-        state.transientCanvasImages.put(image.id(), image);
-    }
-
-    public static void putTransientCanvasText(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null || text.id().isBlank()) {
-            return;
-        }
-        state.transientCanvasTexts.put(text.id(), text);
-    }
-
-    public static void putTransientQuestDetailsImage(TabletUiState state, CanvasImageLayer image) {
-        if (state == null || image == null || image.id().isBlank()) {
-            return;
-        }
-        state.questDetailsTransientImages.put(image.id(), image);
-    }
-
-    public static void putTransientQuestDetailsText(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null || text.id().isBlank()) {
-            return;
-        }
-        state.questDetailsTransientTexts.put(text.id(), text);
-    }
-
-    public static boolean commitTransientCanvasImage(TabletUiState state, String group, String imageId) {
-        if (state == null || group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
-            return false;
-        }
-        CanvasImageLayer preview = state.transientCanvasImages.remove(imageId);
-        if (preview == null) {
-            return false;
-        }
-        CanvasElementStore.putCanvasImage(state, group, preview, false);
-        return true;
-    }
-
-    public static boolean commitTransientCanvasText(TabletUiState state, String group, String textId) {
-        if (state == null || group == null || group.isBlank() || textId == null || textId.isBlank()) {
-            return false;
-        }
-        CanvasTextLayer preview = state.transientCanvasTexts.remove(textId);
-        if (preview == null) {
-            return false;
-        }
-        CanvasElementStore.putCanvasText(state, group, preview, false);
-        return true;
-    }
-
-    public static void commitSelectedTransientCanvasLayers(TabletUiState state, String group) {
-        for (String imageId : selectedCanvasImageIds(state)) {
-            commitTransientCanvasImage(state, group, imageId);
-        }
-        for (String textId : selectedCanvasTextIds(state)) {
-            commitTransientCanvasText(state, group, textId);
-        }
-    }
-
-    public static void updateCanvasText(TabletUiState state, String group, String textId, java.util.function.UnaryOperator<CanvasTextLayer> updater) {
-        CanvasElementStore.updateCanvasText(state, group, textId, updater);
-    }
-
-    public static void persistCanvasImage(TabletUiState state, String group, String imageId) {
-        CanvasElementStore.persistCanvasImage(state, group, imageId);
-    }
-
-    public static void persistCanvasText(TabletUiState state, String group, String textId) {
-        CanvasElementStore.persistCanvasText(state, group, textId);
-    }
 
     public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
         return CanvasHitTester.hitTestEdge(state, cards, byQuestId, x, y);

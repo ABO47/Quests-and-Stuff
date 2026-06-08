@@ -100,7 +100,7 @@ class CanvasTransformSessionsTest {
         CanvasTransformSessions.clearMainCanvasSession(state);
         CanvasElementTransformController transforms = new CanvasElementTransformController(state);
         transforms.beginImageTransform(image("image:a"), 20, 20);
-        CanvasRenderer.putTransientCanvasImage(state, image("image:a").moveTo(36, 36));
+        CanvasLayerMutations.putTransientCanvasImage(state, image("image:a").moveTo(36, 36));
 
         assertTrue(state.dragStartImagePositions.isEmpty());
         assertTrue(state.resizeStartImageLayers.isEmpty());

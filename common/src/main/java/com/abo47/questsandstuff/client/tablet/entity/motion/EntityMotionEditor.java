@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -14,7 +15,7 @@ public final class EntityMotionEditor {
     }
 
     public static void openMainCanvas(TabletUiState state, String group, String imageId, int x, int y) {
-        CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, group, imageId);
+        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, group, imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;
         }

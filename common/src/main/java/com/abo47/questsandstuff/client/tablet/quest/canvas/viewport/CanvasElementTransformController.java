@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
@@ -123,7 +125,7 @@ public final class CanvasElementTransformController {
                     ? rotateModelFromDrag(image, logicalX, logicalY)
                     : clampRotationPreviewImage(image.rotateTo(layerRotation(logicalX, logicalY)));
         }
-        CanvasRenderer.putTransientCanvasImage(state, next);
+        CanvasLayerMutations.putTransientCanvasImage(state, next);
     }
 
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int logicalX, int logicalY) {
@@ -204,7 +206,7 @@ public final class CanvasElementTransformController {
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.selectedCanvasTextId);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.selectedCanvasTextId);
         if (text == null) {
             return;
         }
@@ -230,7 +232,7 @@ public final class CanvasElementTransformController {
             }
             next = clampRotationPreviewText(text.rotateTo(angle));
         }
-        CanvasRenderer.putTransientCanvasText(state, next);
+        CanvasLayerMutations.putTransientCanvasText(state, next);
     }
 
     private CanvasImageLayer applySmartSnapToImage(CanvasImageLayer image, List<QuestCardLayout> cards, String group) {

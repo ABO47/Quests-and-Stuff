@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.actions;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
@@ -50,12 +51,12 @@ public final class CanvasModelPickerActions {
     private static boolean changeModel(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
         String group = parsed.part(1);
         String imageId = parsed.part(2);
-        CanvasImageLayer current = CanvasRenderer.findCanvasImage(state, group, imageId);
+        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, group, imageId);
         if (current == null) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas model change ignored group={} image={} reason=missing_image", group, imageId);
             return false;
         }
-        CanvasRenderer.putCanvasImage(state, group, current.withAsset(asset));
+        CanvasLayerMutations.putCanvasImage(state, group, current.withAsset(asset));
         selectOnlyImage(state, current.id());
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas model changed group={} image={} asset={}", group, current.id(), asset);
         return true;
@@ -77,7 +78,7 @@ public final class CanvasModelPickerActions {
         if (state.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasRenderer.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, group, image);
         selectOnlyImage(state, id);
         state.draggingCanvasImage = false;
         state.resizingCanvasImage = false;

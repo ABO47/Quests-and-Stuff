@@ -1,8 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
@@ -93,8 +96,8 @@ final class TabletShortcutActions {
             EditorCommandClient.beginQuestTitleChange(state, selectedQuestId);
             return true;
         }
-        if (!TabletStateQueries.hasSelectedQuests(state) && CanvasRenderer.selectedCanvasImageIds(state).isEmpty()
-                && CanvasRenderer.selectedCanvasTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
+        if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedCanvasImageIds(state).isEmpty()
+                && CanvasSelectionActions.selectedCanvasTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
             state.pendingChapterRename = state.selectedGroup;
             state.chapterDraftName = state.selectedGroup;
             return true;
@@ -112,14 +115,14 @@ final class TabletShortcutActions {
             EditorCommandClient.runRemoveQuestAction(player, questId);
             changed = true;
         }
-        for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
-            changed |= CanvasRenderer.removeCanvasImage(state, group, imageId);
+        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasImage(state, group, imageId);
         }
-        for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
-            changed |= CanvasRenderer.removeCanvasText(state, group, textId);
+        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasText(state, group, textId);
         }
         if (changed) {
-            CanvasRenderer.clearCanvasSelection(state);
+            CanvasSelectionActions.clearCanvasSelection(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] shortcut delete canvas selection group={}", group);
         }
         return changed;
@@ -184,19 +187,19 @@ final class TabletShortcutActions {
             EditorCommandClient.runCanvasMoveAction(player, state, questMoves);
             changed = true;
         }
-        for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
-            CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, group, imageId);
+        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+            CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, group, imageId);
             if (image != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-                CanvasRenderer.putCanvasImage(state, group, image.moveTo(point.x, point.y));
+                CanvasLayerMutations.putCanvasImage(state, group, image.moveTo(point.x, point.y));
                 changed = true;
             }
         }
-        for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
-            CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, textId);
+        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
             if (text != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
-                CanvasRenderer.putCanvasText(state, group, text.moveTo(point.x, point.y));
+                CanvasLayerMutations.putCanvasText(state, group, text.moveTo(point.x, point.y));
                 changed = true;
             }
         }

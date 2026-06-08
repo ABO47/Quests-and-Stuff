@@ -1,7 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -44,12 +47,12 @@ final class CanvasSelectionDragController {
         }
         String group = TabletStateQueries.selectedGroupName(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            if (CanvasRenderer.isImageSelected(state, image.id())) {
+            if (CanvasSelectionActions.isImageSelected(state, image.id())) {
                 state.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
             }
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            if (CanvasRenderer.isTextSelected(state, text.id())) {
+            if (CanvasSelectionActions.isTextSelected(state, text.id())) {
                 state.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
@@ -109,13 +112,13 @@ final class CanvasSelectionDragController {
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
-                CanvasRenderer.putTransientCanvasImage(state, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
+                CanvasLayerMutations.putTransientCanvasImage(state, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
         for (Map.Entry<String, CanvasPoint> entry : state.dragStartTextPositions.entrySet()) {
-            CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, entry.getKey());
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, entry.getKey());
             if (text != null) {
-                CanvasRenderer.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
+                CanvasLayerMutations.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
     }

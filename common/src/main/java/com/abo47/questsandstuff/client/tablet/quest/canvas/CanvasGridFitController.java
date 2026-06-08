@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -31,7 +33,7 @@ public final class CanvasGridFitController {
         if (image.equals(fitted)) {
             return false;
         }
-        CanvasRenderer.putCanvasImage(state, group, fitted);
+        CanvasLayerMutations.putCanvasImage(state, group, fitted);
         state.selectedCanvasImageId = imageId;
         state.selectedCanvasImageIds.clear();
         state.selectedCanvasImageIds.add(imageId);
@@ -42,12 +44,12 @@ public final class CanvasGridFitController {
     }
 
     public static boolean canFitTextToGrid(TabletUiState state, String group, String textId) {
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, textId);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
         return text != null && !text.equals(fittedText(state, text));
     }
 
     public static boolean fitTextToGrid(TabletUiState state, String group, String textId) {
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, textId);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
         if (text == null) {
             return false;
         }
@@ -55,7 +57,7 @@ public final class CanvasGridFitController {
         if (text.equals(fitted)) {
             return false;
         }
-        CanvasRenderer.putCanvasText(state, group, fitted);
+        CanvasLayerMutations.putCanvasText(state, group, fitted);
         state.selectedCanvasTextId = textId;
         state.selectedCanvasTextIds.clear();
         state.selectedCanvasTextIds.add(textId);
@@ -104,12 +106,12 @@ public final class CanvasGridFitController {
                 return true;
             }
         }
-        for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
             if (canFitImageToGrid(state, group, imageId)) {
                 return true;
             }
         }
-        for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
             if (canFitTextToGrid(state, group, textId)) {
                 return true;
             }
@@ -140,26 +142,26 @@ public final class CanvasGridFitController {
             }
         }
 
-        Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
             CanvasImageLayer fitted = fittedImage(state, image);
             if (!image.equals(fitted)) {
-                CanvasRenderer.putCanvasImage(state, group, fitted);
+                CanvasLayerMutations.putCanvasImage(state, group, fitted);
                 changed = true;
             }
         }
 
-        Set<String> textIds = CanvasRenderer.selectedCanvasTextIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
             CanvasTextLayer fitted = fittedText(state, text);
             if (!text.equals(fitted)) {
-                CanvasRenderer.putCanvasText(state, group, fitted);
+                CanvasLayerMutations.putCanvasText(state, group, fitted);
                 changed = true;
             }
         }

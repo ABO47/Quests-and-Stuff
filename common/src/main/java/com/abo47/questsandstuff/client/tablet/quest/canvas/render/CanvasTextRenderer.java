@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -26,7 +30,7 @@ public final class CanvasTextRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+                CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
                 int originX = getPositionX();
                 int originY = getPositionY();
                 CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
@@ -41,8 +45,8 @@ public final class CanvasTextRenderer {
                     drawCanvasTextCaret(graphics, state, drawText, w, h);
                 }
                 graphics.pose().popPose();
-                if (state.canEdit && CanvasRenderer.isTextSelected(state, drawText.id())) {
-                    if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+                if (state.canEdit && CanvasSelectionActions.isTextSelected(state, drawText.id())) {
+                    if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
                     CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());

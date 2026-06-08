@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
@@ -55,7 +56,7 @@ final class EntityMotionTargets {
             EntityIconMotion icon = currentQuestIconMotion(state.entityMotionEditorQuestId);
             return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
         }
-        CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, state.entityMotionEditorGroup, state.entityMotionEditorImageId);
+        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, state.entityMotionEditorGroup, state.entityMotionEditorImageId);
         return isEditableEntity(image) ? new EntityMotionValues(image.entityYaw(), image.entitySpinSpeed()) : null;
     }
 
@@ -172,12 +173,12 @@ final class EntityMotionTargets {
     }
 
     private static void applyCanvasMotion(TabletUiState state, int yaw, int spin, boolean sync) {
-        CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, state.entityMotionEditorGroup, state.entityMotionEditorImageId);
+        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, state.entityMotionEditorGroup, state.entityMotionEditorImageId);
         if (image == null) {
             EntityMotionEditor.close(state);
             return;
         }
-        CanvasRenderer.putCanvasImage(state, state.entityMotionEditorGroup, image.withEntityMotion(yaw, spin), sync);
+        CanvasLayerMutations.putCanvasImage(state, state.entityMotionEditorGroup, image.withEntityMotion(yaw, spin), sync);
     }
 
     private static void applyQuestIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {

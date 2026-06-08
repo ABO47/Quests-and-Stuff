@@ -1,8 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
@@ -32,7 +35,7 @@ final class CanvasContextElementActions {
         if (state.contextMenuTarget != ContextMenuTarget.IMAGE || state.contextCanvasImageId.isBlank()) {
             return;
         }
-        CanvasImageLayer contextImage = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
+        CanvasImageLayer contextImage = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
         if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedGroup, state.contextCanvasImageId), state.canvasImageLogicalX, state.canvasImageLogicalY);
@@ -79,15 +82,15 @@ final class CanvasContextElementActions {
             }));
         }
         if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
-                && CanvasRenderer.totalCanvasSelectionCount(state) == 1
-                && CanvasRenderer.isImageSelected(state, contextImage.id())) {
+                && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1
+                && CanvasSelectionActions.isImageSelected(state, contextImage.id())) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
-                CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
+                CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, selectedGroup, state.contextCanvasImageId);
                 if (image == null) {
                     return;
                 }
-                CanvasRenderer.putCanvasImage(state, selectedGroup, image.withCenteredPivot());
+                CanvasLayerMutations.putCanvasImage(state, selectedGroup, image.withCenteredPivot());
                 state.selectedCanvasImageId = image.id();
                 state.selectedCanvasImageIds.clear();
                 state.selectedCanvasImageIds.add(image.id());
@@ -111,7 +114,7 @@ final class CanvasContextElementActions {
             return;
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.edit_text"), "rename", ModColors.INTERACTIVE, () -> {
-            CanvasTextLayer text = CanvasRenderer.findCanvasText(state, selectedGroup, state.contextCanvasTextId);
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, selectedGroup, state.contextCanvasTextId);
             state.canvasTextEditOpen = true;
             state.canvasTextEditTarget = state.contextCanvasTextId;
             state.canvasTextEditDraft = text == null ? "" : text.text();
@@ -149,9 +152,9 @@ final class CanvasContextElementActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
                 if ("image".equals(targetName)) {
-                    CanvasRenderer.moveImageLayer(state, selectedGroup, targetId, true);
+                    CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, true);
                 } else {
-                    CanvasRenderer.moveTextLayer(state, selectedGroup, targetId, true);
+                    CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, true);
                 }
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target={} id={}", targetName, targetId);
@@ -161,9 +164,9 @@ final class CanvasContextElementActions {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
                 if ("image".equals(targetName)) {
-                    CanvasRenderer.moveImageLayer(state, selectedGroup, targetId, false);
+                    CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, false);
                 } else {
-                    CanvasRenderer.moveTextLayer(state, selectedGroup, targetId, false);
+                    CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, false);
                 }
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target={} id={}", targetName, targetId);

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -27,7 +29,7 @@ public final class CanvasTextStyleMenu {
             return;
         }
         String group = selectedGroupName(state);
-        CanvasTextLayer text = CanvasRenderer.findCanvasText(state, group, state.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasTextMenuTarget);
         if (text == null) {
             state.canvasTextMenuOpen = false;
             state.canvasTextMenuTarget = "";
@@ -42,7 +44,7 @@ public final class CanvasTextStyleMenu {
         int menuH = bounds[3];
         int columns = bounds[5];
 
-        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasRenderer.putCanvasText(state, group, fitCanvasText(state, next)), () -> {
+        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, group, fitCanvasText(state, next)), () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(group, text.id()), CanvasRenderer.activeTextColor(state, text));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker group={} id={}", group, text.id());
             refresh.run();
@@ -63,7 +65,7 @@ public final class CanvasTextStyleMenu {
             Runnable refresh
     ) {
         int toolCount = 8;
-        CanvasTextLayer menuText = CanvasRenderer.effectiveQuestDetailsText(state, text);
+        CanvasTextLayer menuText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
         int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetailsGridSnapLocked, toolCount);
         int x = viewportX + bounds[0];
         int y = viewportY + bounds[1];

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
@@ -52,7 +54,7 @@ final class CanvasContextEdgeActions {
         String layerKey = CanvasLayerOrdering.connectionKey(edgeId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
-                CanvasRenderer.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, true);
+                CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, true);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", edgeId);
                 canvasViewport.refresh();
@@ -60,7 +62,7 @@ final class CanvasContextEdgeActions {
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
-                CanvasRenderer.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, false);
+                CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextEdgeSource, state.contextEdgeTarget, false);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", edgeId);
                 canvasViewport.refresh();

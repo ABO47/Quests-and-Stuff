@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -45,7 +46,7 @@ public final class CanvasHitTester {
         String group = selectedGroupName(state);
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
-            CanvasImageLayer image = CanvasRenderer.effectiveCanvasImage(state, images.get(i));
+            CanvasImageLayer image = CanvasLayerMutations.effectiveCanvasImage(state, images.get(i));
             CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             double[] local = canvasImageLocalScreenPoint(state, image, x, y);
             if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
@@ -66,7 +67,7 @@ public final class CanvasHitTester {
         if (image == null) {
             return null;
         }
-        image = CanvasRenderer.effectiveCanvasImage(state, image);
+        image = CanvasLayerMutations.effectiveCanvasImage(state, image);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
         if (gizmoSupported && CanvasTransformGizmo.controlHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch(), x, y)) {
             return image;
@@ -119,7 +120,7 @@ public final class CanvasHitTester {
         String group = selectedGroupName(state);
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
-            CanvasTextLayer text = CanvasRenderer.effectiveCanvasText(state, texts.get(i));
+            CanvasTextLayer text = CanvasLayerMutations.effectiveCanvasText(state, texts.get(i));
             CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
             double[] local = canvasTextLocalScreenPoint(state, text, x, y);
             if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
@@ -140,7 +141,7 @@ public final class CanvasHitTester {
         if (text == null) {
             return null;
         }
-        text = CanvasRenderer.effectiveCanvasText(state, text);
+        text = CanvasLayerMutations.effectiveCanvasText(state, text);
         if (isCanvasTextResizeHandleHit(state, text, x, y) || isCanvasTextRotateHandleHit(state, text, x, y)) {
             return text;
         }
@@ -174,7 +175,7 @@ public final class CanvasHitTester {
         int columns = TextStyleButtons.columnsForWidth(menuW);
         int menuH = TextStyleButtons.menuHeightForColumns(columns);
         int buttonW = TextStyleButtons.buttonWidth(menuW, columns);
-        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
         int[] textBounds = rotatedTextScreenBounds(state, drawText);
         MenuCandidate best = bestMenuCandidate(textBounds, viewportW, viewportH, menuW, menuH);
         int x = best.x();
@@ -186,7 +187,7 @@ public final class CanvasHitTester {
         if (state == null || text == null) {
             return false;
         }
-        CanvasTextLayer drawText = CanvasRenderer.effectiveCanvasText(state, text);
+        CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
         double[] local = canvasTextLocalScreenPoint(state, drawText, x, y);
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3;

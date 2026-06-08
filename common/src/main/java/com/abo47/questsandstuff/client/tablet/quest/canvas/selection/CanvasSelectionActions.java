@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,8 +25,45 @@ public final class CanvasSelectionActions {
     private CanvasSelectionActions() {
     }
 
+    public static boolean isImageSelected(TabletUiState state, String imageId) {
+        return imageId != null && (imageId.equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(imageId));
+    }
+
+    public static boolean isTextSelected(TabletUiState state, String textId) {
+        return textId != null && (textId.equals(state.selectedCanvasTextId) || state.selectedCanvasTextIds.contains(textId));
+    }
+
+    public static Set<String> selectedCanvasImageIds(TabletUiState state) {
+        Set<String> images = new LinkedHashSet<>(state.selectedCanvasImageIds);
+        if (!state.selectedCanvasImageId.isBlank()) {
+            images.add(state.selectedCanvasImageId);
+        }
+        return images;
+    }
+
+    public static Set<String> selectedCanvasTextIds(TabletUiState state) {
+        Set<String> texts = new LinkedHashSet<>(state.selectedCanvasTextIds);
+        if (!state.selectedCanvasTextId.isBlank()) {
+            texts.add(state.selectedCanvasTextId);
+        }
+        return texts;
+    }
+
+    public static int totalCanvasSelectionCount(TabletUiState state) {
+        return CanvasSelectionSet.current(state).size();
+    }
+
+    public static void clearCanvasSelection(TabletUiState state) {
+        state.selectedQuestIds.clear();
+        state.selectedCanvasImageId = "";
+        state.selectedCanvasTextId = "";
+        state.selectedCanvasImageIds.clear();
+        state.selectedCanvasTextIds.clear();
+        CanvasTransformSessions.clearMainCanvasSession(state);
+    }
+
     public static boolean alignSelectedToCanvasCenter(Player player, TabletUiState state, boolean verticalCenterLine) {
-        if (state == null || CanvasRenderer.totalCanvasSelectionCount(state) <= 0) {
+        if (state == null || totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
@@ -56,26 +95,26 @@ public final class CanvasSelectionActions {
             }
         }
 
-        Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
+        Set<String> imageIds = selectedCanvasImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
             CanvasImageLayer aligned = movedImage(state, image, offset, verticalCenterLine);
             if (!aligned.equals(image)) {
-                CanvasRenderer.putCanvasImage(state, group, aligned);
+                CanvasLayerMutations.putCanvasImage(state, group, aligned);
                 changed = true;
             }
         }
 
-        Set<String> textIds = CanvasRenderer.selectedCanvasTextIds(state);
+        Set<String> textIds = selectedCanvasTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
             CanvasTextLayer aligned = movedText(state, text, offset, verticalCenterLine);
             if (!aligned.equals(text)) {
-                CanvasRenderer.putCanvasText(state, group, aligned);
+                CanvasLayerMutations.putCanvasText(state, group, aligned);
                 changed = true;
             }
         }
@@ -100,7 +139,7 @@ public final class CanvasSelectionActions {
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }
 
-        Set<String> imageIds = CanvasRenderer.selectedCanvasImageIds(state);
+        Set<String> imageIds = selectedCanvasImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
@@ -109,7 +148,7 @@ public final class CanvasSelectionActions {
             bounds.include(box[0], box[1], box[2], box[3]);
         }
 
-        Set<String> textIds = CanvasRenderer.selectedCanvasTextIds(state);
+        Set<String> textIds = selectedCanvasTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;

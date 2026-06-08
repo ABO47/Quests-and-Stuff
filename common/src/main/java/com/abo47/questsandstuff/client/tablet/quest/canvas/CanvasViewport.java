@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
@@ -12,13 +11,10 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -328,42 +324,12 @@ public final class CanvasViewport extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (EntityMotionEditor.isMainCanvasOpen(state) && super.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
-        }
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-        if (textEditor.handleKeyPressed(keyCode)) {
-            return true;
-        }
-        if (state.canEdit && isCtrlDown() && keyCode == GLFW.GLFW_KEY_C) {
-            if (CanvasClipboardController.copySelectionToClipboard(this, state)) {
-                refresher.run();
-            }
-            return true;
-        }
-        if (state.canEdit && isCtrlDown() && keyCode == GLFW.GLFW_KEY_V) {
-            if (CanvasClipboardController.pasteNearSelectionOrViewportCenter(player, state, this)) {
-                refresher.run();
-            }
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return CanvasViewportKeyboardController.keyPressed(this, state, refresher, textEditor, keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (EntityMotionEditor.isMainCanvasOpen(state) && super.charTyped(codePoint, modifiers)) {
-            return true;
-        }
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return super.charTyped(codePoint, modifiers);
-        }
-        if (textEditor.handleCharTyped(codePoint)) {
-            return true;
-        }
-        return super.charTyped(codePoint, modifiers);
+        return CanvasViewportKeyboardController.charTyped(this, state, textEditor, codePoint, modifiers);
     }
 
     @Override
@@ -395,6 +361,14 @@ public final class CanvasViewport extends WidgetGroup {
 
     boolean callSuperMouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
         return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+    }
+
+    boolean callSuperKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    boolean callSuperCharTyped(char codePoint, int modifiers) {
+        return super.charTyped(codePoint, modifiers);
     }
 
     boolean shiftDown() {

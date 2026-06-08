@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
@@ -111,7 +112,7 @@ record EntityVariantPickerModel(
     private static String currentAsset(TabletUiState state, String target) {
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
         if (parsed.hasAtLeast(3) && parsed.isCanvasImage()) {
-            CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, parsed.questId(), parsed.entryId());
+            CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, parsed.questId(), parsed.entryId());
             return image == null ? "" : image.asset();
         }
         if (parsed.hasAtLeast(3) && parsed.isQuestDetailsImage()) {

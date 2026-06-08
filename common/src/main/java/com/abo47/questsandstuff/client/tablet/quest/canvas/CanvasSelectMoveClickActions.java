@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
@@ -63,7 +65,7 @@ final class CanvasSelectMoveClickActions {
                     state.selectedQuestIds.remove(hit.questId());
                 }
             } else if (!state.selectedQuestIds.contains(hit.questId())) {
-                CanvasRenderer.clearCanvasSelection(state);
+                CanvasSelectionActions.clearCanvasSelection(state);
                 state.selectedQuestIds.add(hit.questId());
             }
             selectionTransforms.beginDrag(localX, localY, byQuestId);
@@ -92,7 +94,7 @@ final class CanvasSelectMoveClickActions {
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit
     ) {
-        int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+        int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
         if (selectionCount > 1) {
             if (CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
                 selectionTransforms.beginRotate(localX, localY, byQuestId);

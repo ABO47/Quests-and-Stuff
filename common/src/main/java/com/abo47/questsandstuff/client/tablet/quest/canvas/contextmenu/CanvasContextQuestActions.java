@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
@@ -301,7 +302,7 @@ final class CanvasContextQuestActions {
         String layerKey = CanvasLayerOrdering.questKey(state.contextQuestId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
-                CanvasRenderer.moveQuestLayer(state, selectedGroup, state.contextQuestId, true);
+                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, true);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextQuestId);
                 canvasViewport.refresh();
@@ -309,7 +310,7 @@ final class CanvasContextQuestActions {
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
-                CanvasRenderer.moveQuestLayer(state, selectedGroup, state.contextQuestId, false);
+                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextQuestId, false);
                 state.contextDeleteConfirmKey = "";
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextQuestId);
                 canvasViewport.refresh();

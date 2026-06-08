@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
@@ -70,7 +71,7 @@ final class CanvasContextCanvasActions {
             if (state.gridSnapLocked) {
                 text = CanvasGridFitController.fittedText(state, text);
             }
-            CanvasRenderer.putCanvasText(state, selectedGroup, text);
+            CanvasLayerMutations.putCanvasText(state, selectedGroup, text);
             state.selectedCanvasTextId = id;
             state.selectedCanvasImageId = "";
             state.selectedQuestIds.clear();

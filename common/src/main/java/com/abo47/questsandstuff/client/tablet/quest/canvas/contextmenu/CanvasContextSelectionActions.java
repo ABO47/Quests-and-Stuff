@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
@@ -37,16 +39,16 @@ final class CanvasContextSelectionActions {
         if (state.contextMenuTarget != ContextMenuTarget.SELECTION || selectedGroup.isBlank()) {
             return;
         }
-        if (CanvasRenderer.totalCanvasSelectionCount(state) > 0) {
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 0) {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ModColors.INTERACTIVE, () -> {
                 boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextLastClickX, state.contextLastClickY);
                 state.contextMenuOpen = false;
                 state.contextDeleteConfirmKey = "";
-                QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", CanvasRenderer.totalCanvasSelectionCount(state), saved);
+                QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", CanvasSelectionActions.totalCanvasSelectionCount(state), saved);
                 canvasViewport.refresh();
             }));
         }
-        if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             state.contextQuestCompletionSoundMenuOpen = false;
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
@@ -58,7 +60,7 @@ final class CanvasContextSelectionActions {
                 actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                     boolean changed = CanvasGridFitController.fitSelectionToGrid(player, state, selectedGroup, canvasViewport.cardLookup());
                     state.contextDeleteConfirmKey = "";
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
                     canvasViewport.refresh();
                 }));
             }
@@ -77,7 +79,7 @@ final class CanvasContextSelectionActions {
 
     private static boolean selectionSupportsGizmo(TabletUiState state, String selectedGroup) {
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(selectedGroup, List.of())) {
-            if (CanvasRenderer.isImageSelected(state, image.id()) && CanvasTransformGizmo.supports(image.asset())) {
+            if (CanvasSelectionActions.isImageSelected(state, image.id()) && CanvasTransformGizmo.supports(image.asset())) {
                 return true;
             }
         }
@@ -166,13 +168,13 @@ final class CanvasContextSelectionActions {
             return;
         }
         actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
-            CanvasRenderer.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), true);
+            CanvasLayerMutations.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), true);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=selection count={}", selection.size());
             canvasViewport.refresh();
         }));
         actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
-            CanvasRenderer.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), false);
+            CanvasLayerMutations.moveCanvasLayers(state, selectedGroup, selection.layerKeys(), false);
             state.contextDeleteConfirmKey = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=selection count={}", selection.size());
             canvasViewport.refresh();
@@ -184,13 +186,13 @@ final class CanvasContextSelectionActions {
                 ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
                     boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
                     state.contextDeleteConfirmKey = "";
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
                     canvasViewport.refresh();
                 }),
                 ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", ModColors.INTERACTIVE, () -> {
                     boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
                     state.contextDeleteConfirmKey = "";
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasRenderer.totalCanvasSelectionCount(state), changed);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
                     canvasViewport.refresh();
                 })
         )));

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -187,16 +189,16 @@ final class CanvasViewportInputController {
 
         if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasRenderer.commitTransientCanvasImage(state, group, state.selectedCanvasImageId);
-            CanvasRenderer.persistCanvasImage(state, group, state.selectedCanvasImageId);
+            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.selectedCanvasImageId);
+            CanvasLayerMutations.persistCanvasImage(state, group, state.selectedCanvasImageId);
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasRenderer.commitTransientCanvasText(state, group, state.selectedCanvasTextId);
-            CanvasRenderer.persistCanvasText(state, group, state.selectedCanvasTextId);
+            CanvasLayerMutations.commitTransientCanvasText(state, group, state.selectedCanvasTextId);
+            CanvasLayerMutations.persistCanvasText(state, group, state.selectedCanvasTextId);
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
@@ -214,12 +216,12 @@ final class CanvasViewportInputController {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasRenderer.commitSelectedTransientCanvasLayers(state, group);
-            for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
-                CanvasRenderer.persistCanvasImage(state, group, imageId);
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
+            for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+                CanvasLayerMutations.persistCanvasImage(state, group, imageId);
             }
-            for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
-                CanvasRenderer.persistCanvasText(state, group, textId);
+            for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+                CanvasLayerMutations.persistCanvasText(state, group, textId);
             }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} delta={},{}",
@@ -242,7 +244,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestScales.isEmpty()) {
                 EditorCommandClient.runCanvasScaleAction(player, state, state.transientQuestScales);
             }
-            CanvasRenderer.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -254,7 +256,7 @@ final class CanvasViewportInputController {
             if (!state.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.transientQuestPositions);
             }
-            CanvasRenderer.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -273,11 +275,11 @@ final class CanvasViewportInputController {
 
     private static void persistSelectedCanvasLayers(TabletUiState state) {
         String group = TabletStateQueries.selectedGroupName(state);
-        for (String imageId : CanvasRenderer.selectedCanvasImageIds(state)) {
-            CanvasRenderer.persistCanvasImage(state, group, imageId);
+        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+            CanvasLayerMutations.persistCanvasImage(state, group, imageId);
         }
-        for (String textId : CanvasRenderer.selectedCanvasTextIds(state)) {
-            CanvasRenderer.persistCanvasText(state, group, textId);
+        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+            CanvasLayerMutations.persistCanvasText(state, group, textId);
         }
     }
 

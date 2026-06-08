@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -141,7 +142,7 @@ public final class QuestDetailsDescriptionSelection {
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (CanvasTextLayer text : model.texts.values()) {
-            CanvasTextLayer drawText = CanvasRenderer.effectiveQuestDetailsText(state, text);
+            CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
             if (isSelectedText(drawText.id())) {
                 int[] box = bounds(drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 minX = Math.min(minX, box[0]);
@@ -151,7 +152,7 @@ public final class QuestDetailsDescriptionSelection {
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
-            CanvasImageLayer drawImage = CanvasRenderer.effectiveQuestDetailsImage(state, image);
+            CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
             if (isSelectedImage(drawImage.id())) {
                 int[] box = bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 minX = Math.min(minX, box[0]);

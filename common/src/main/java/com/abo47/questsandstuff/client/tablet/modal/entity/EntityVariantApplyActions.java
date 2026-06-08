@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
@@ -31,11 +32,11 @@ final class EntityVariantApplyActions {
             return;
         }
         if (parsed.isCanvasImage()) {
-            CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, parsed.questId(), parsed.entryId());
+            CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, parsed.questId(), parsed.entryId());
             if (image == null) {
                 return;
             }
-            CanvasRenderer.putCanvasImage(state, parsed.questId(), image.withAsset(EntityPreviewRenderer.withEntityVariant(image.asset(), variantKey)));
+            CanvasLayerMutations.putCanvasImage(state, parsed.questId(), image.withAsset(EntityPreviewRenderer.withEntityVariant(image.asset(), variantKey)));
             state.selectedCanvasImageId = image.id();
             state.selectedCanvasImageIds.clear();
             state.selectedCanvasImageIds.add(image.id());

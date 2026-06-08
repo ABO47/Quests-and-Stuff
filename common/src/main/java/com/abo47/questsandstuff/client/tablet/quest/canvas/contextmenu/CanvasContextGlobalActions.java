@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
@@ -28,7 +29,7 @@ final class CanvasContextGlobalActions {
                 canvasViewport.refresh();
             }
         }));
-        if (CanvasRenderer.totalCanvasSelectionCount(state) > 0) {
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 0) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_selection"), "focus", ModColors.INTERACTIVE, () -> {
                 if (CanvasCameraController.fitSelection(state, canvasViewport.cardCache(), true)) {
                     state.contextDeleteConfirmKey = "";

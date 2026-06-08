@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
@@ -307,7 +309,7 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasImageLayer drawImage = CanvasRenderer.effectiveCanvasImage(state, image);
+                CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
                 int originX = getPositionX();
                 int originY = getPositionY();
                 CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
@@ -316,8 +318,8 @@ final class CanvasSceneRenderer {
                 int pivotX = -box.left();
                 int pivotY = -box.top();
                 CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
-                if (state.canEdit && CanvasRenderer.isImageSelected(state, drawImage.id())) {
-                    if (CanvasRenderer.totalCanvasSelectionCount(state) > 1) {
+                if (state.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
+                    if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
                     if (CanvasTransformGizmo.supports(drawImage.asset())) {

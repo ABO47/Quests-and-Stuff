@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -37,7 +41,7 @@ public final class ColorPickerApplyActions {
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
-            var text = CanvasRenderer.findCanvasText(state, canvasText[0], canvasText[1]);
+            var text = CanvasLayerMutations.findCanvasText(state, canvasText[0], canvasText[1]);
             return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
@@ -60,7 +64,7 @@ public final class ColorPickerApplyActions {
     public static void apply(Player player, TabletUiState state, String target, int color) {
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
-            CanvasRenderer.setConnectionColor(state, connection[0], connection[1], connection[2], color);
+            ConnectionRenderer.setConnectionColor(state, connection[0], connection[1], connection[2], color);
             EditorCommandClient.runConnectionColorAction(player, connection[2], connection[1], color);
             state.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", connection[0], connection[1], connection[2], color);
@@ -70,7 +74,7 @@ public final class ColorPickerApplyActions {
         if (connectionSelection != null) {
             int applied = 0;
             for (var edge : CanvasOverlayController.selectedConnectedEdges(state, connectionSelection)) {
-                CanvasRenderer.setConnectionColor(state, connectionSelection, edge.prerequisiteId(), edge.questId(), color);
+                ConnectionRenderer.setConnectionColor(state, connectionSelection, edge.prerequisiteId(), edge.questId(), color);
                 EditorCommandClient.runConnectionColorAction(player, edge.questId(), edge.prerequisiteId(), color);
                 applied++;
             }
@@ -80,7 +84,7 @@ public final class ColorPickerApplyActions {
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
-            CanvasRenderer.updateCanvasText(state, canvasText[0], canvasText[1], text -> CanvasRenderer.applyTextColorSelection(state, text, color));
+            CanvasLayerMutations.updateCanvasText(state, canvasText[0], canvasText[1], text -> CanvasRenderer.applyTextColorSelection(state, text, color));
             state.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color picked group={} id={} color={}", canvasText[0], canvasText[1], color);
             return;

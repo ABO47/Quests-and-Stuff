@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -55,7 +54,7 @@ public final class CanvasBoxSelectionController {
         state.boxCurrentY = localY;
         captureBoxSelectionBase(state, additive);
         if (!additive) {
-            CanvasRenderer.clearCanvasSelection(state);
+            CanvasSelectionActions.clearCanvasSelection(state);
         }
     }
 
@@ -103,7 +102,7 @@ public final class CanvasBoxSelectionController {
     public static void finishBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
         updateBoxSelection(state, cards);
         clearBoxSelectionBase(state);
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas mixed box selection total={}", CanvasRenderer.totalCanvasSelectionCount(state));
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas mixed box selection total={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
     }
 
     private static void captureBoxSelectionBase(TabletUiState state, boolean additive) {
@@ -112,8 +111,8 @@ public final class CanvasBoxSelectionController {
             return;
         }
         state.boxSelectionBaseQuestIds.addAll(state.selectedQuestIds);
-        state.boxSelectionBaseCanvasImageIds.addAll(CanvasRenderer.selectedCanvasImageIds(state));
-        state.boxSelectionBaseCanvasTextIds.addAll(CanvasRenderer.selectedCanvasTextIds(state));
+        state.boxSelectionBaseCanvasImageIds.addAll(CanvasSelectionActions.selectedCanvasImageIds(state));
+        state.boxSelectionBaseCanvasTextIds.addAll(CanvasSelectionActions.selectedCanvasTextIds(state));
         state.boxSelectionBaseCanvasImageId = state.selectedCanvasImageId;
         state.boxSelectionBaseCanvasTextId = state.selectedCanvasTextId;
     }

@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.quest.tools;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
@@ -91,10 +90,10 @@ final class MainCanvasToolsMenu {
                 });
 
         CanvasToolRows.centerX(rows, state.centerSnapXEnabled, () -> {
-                    int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+                    int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
                     if (selectionCount > 0) {
                         CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-vertical-center count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-vertical-center count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
                         refresh.run();
                         return;
                     }
@@ -105,10 +104,10 @@ final class MainCanvasToolsMenu {
                 });
 
         CanvasToolRows.centerY(rows, state.centerSnapYEnabled, () -> {
-                    int selectionCount = CanvasRenderer.totalCanvasSelectionCount(state);
+                    int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
                     if (selectionCount > 0) {
                         CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-horizontal-center count={}", CanvasRenderer.totalCanvasSelectionCount(state));
+                        QuestsAndStuffMod.debugLog("[QnS:UI] tool align-selected-horizontal-center count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
                         refresh.run();
                         return;
                     }

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
@@ -338,14 +340,14 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if ("desc_text".equals(state.questDetailsTransformKind)) {
             CanvasTextLayer text = model.text(state.questDetailsTransformId);
             if (text != null) {
-                CanvasRenderer.putTransientQuestDetailsText(state, text);
+                CanvasLayerMutations.putTransientQuestDetailsText(state, text);
             }
             return;
         }
         if ("desc_image".equals(state.questDetailsTransformKind)) {
             CanvasImageLayer image = model.image(state.questDetailsTransformId);
             if (image != null) {
-                CanvasRenderer.putTransientQuestDetailsImage(state, image);
+                CanvasLayerMutations.putTransientQuestDetailsImage(state, image);
             }
             return;
         }
@@ -353,13 +355,13 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
                 CanvasTextLayer text = model.text(textId);
                 if (text != null) {
-                    CanvasRenderer.putTransientQuestDetailsText(state, text);
+                    CanvasLayerMutations.putTransientQuestDetailsText(state, text);
                 }
             }
             for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
                 CanvasImageLayer image = model.image(imageId);
                 if (image != null) {
-                    CanvasRenderer.putTransientQuestDetailsImage(state, image);
+                    CanvasLayerMutations.putTransientQuestDetailsImage(state, image);
                 }
             }
         }
