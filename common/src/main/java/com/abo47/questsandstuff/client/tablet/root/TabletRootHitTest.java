@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -75,7 +77,7 @@ public final class TabletRootHitTest {
     }
 
     public static boolean isAssetContextHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
-        if (!state.assetContextOpen || !state.assetPickerOpen) {
+        if (!state.assetContextOpen || !ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER)) {
             return false;
         }
         if (state.assetContextMenuW <= 0 || state.assetContextMenuH <= 0) {

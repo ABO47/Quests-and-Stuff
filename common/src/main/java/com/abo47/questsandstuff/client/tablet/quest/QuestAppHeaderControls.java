@@ -7,6 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBluep
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -229,7 +231,7 @@ final class QuestAppHeaderControls {
     }
 
     private static boolean settingsActive(TabletUiState state) {
-        return state.settingsPanelOpen && !state.modalWindowClosing;
+        return ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SETTINGS_PANEL) && !state.modalWindowClosing;
     }
 
     private static TabletIconTextButton headerButton(int x, int y, int width, int height, String icon, int accentColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {

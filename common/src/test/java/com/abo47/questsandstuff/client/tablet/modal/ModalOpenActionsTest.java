@@ -23,7 +23,7 @@ class ModalOpenActionsTest {
 
         ModalOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
 
-        assertTrue(state.assetPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
         assertEquals("reward_icon|quest|reward|icon", state.questDetailsAssetPickTarget);
         assertEquals("reward_icon|quest|reward|icon", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK));
@@ -50,7 +50,7 @@ class ModalOpenActionsTest {
 
         ModalOpenActions.openCanvasRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe", 12, 34);
 
-        assertTrue(state.recipePickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.RECIPE_PICKER));
         assertEquals(ModalWindowManager.ModalType.RECIPE_PICKER, state.modalSession.type());
         assertEquals("task_recipe|quest|task|questsandstuff:recipe", state.questDetailsPickTarget);
         assertEquals("task_recipe|quest|task|questsandstuff:recipe", state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
@@ -77,7 +77,7 @@ class ModalOpenActionsTest {
 
         ModalOpenActions.openQuestDetailsIconPicker(state, ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"));
 
-        assertTrue(state.iconPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertEquals(ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"), state.questDetailsPickTarget);
         assertEquals(ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"), state.modalSession.target(ModalSession.TargetSlot.QUEST_DETAILS_PICK));
@@ -96,13 +96,50 @@ class ModalOpenActionsTest {
 
         ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
 
-        assertTrue(state.iconPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modalCanvasEntityTarget);
         assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modalSession.target(ModalSession.TargetSlot.CANVAS_ENTITY));
         assertEquals(5, state.canvasImageLogicalX);
         assertEquals(9, state.canvasImageLogicalY);
         assertEquals(IconPickerMode.ENTITIES, state.iconMode);
+    }
+
+    @Test
+    void questBackgroundPickerClearsStaleTargetsAndCapturesSessionPayload() {
+        TabletUiState state = new TabletUiState();
+        state.questDetailsAssetPickTarget = "old_details";
+        state.modalCanvasImageTarget = "old_image";
+        state.modalQuestCompletionSoundTargets.add("old_sound");
+
+        ModalOpenActions.openQuestBackgroundPicker(state, "quest_a", "backgrounds/stone.png", true);
+
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
+        assertEquals("quest_a", state.modalQuestBackgroundTarget);
+        assertEquals("quest_a", state.modalSession.target(ModalSession.TargetSlot.QUEST_BACKGROUND));
+        assertEquals("backgrounds/stone.png", state.modalSession.selectedValue());
+        assertTrue(state.modalQuestBackgroundGrayscale);
+        assertEquals("", state.questDetailsAssetPickTarget);
+        assertEquals("", state.modalCanvasImageTarget);
+        assertTrue(state.modalQuestCompletionSoundTargets.isEmpty());
+    }
+
+    @Test
+    void gameSoundPickerClearsAssetTargetsAndCapturesSessionPayload() {
+        TabletUiState state = new TabletUiState();
+        state.questDetailsAssetPickTarget = "old_asset";
+        state.modalCanvasBackgroundTarget = "old_canvas";
+        state.assetSelected = "sounds/old.ogg";
+
+        ModalOpenActions.openQuestGameSoundPicker(state, "quest_a", "minecraft:block.note_block.pling");
+
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SOUND_PICKER));
+        assertEquals("quest_a", state.modalQuestCompletionSoundTarget);
+        assertEquals("quest_a", state.modalSession.target(ModalSession.TargetSlot.QUEST_COMPLETION_SOUND));
+        assertEquals("minecraft:block.note_block.pling", state.soundSelected);
+        assertEquals("minecraft:block.note_block.pling", state.modalSession.selectedValue());
+        assertEquals("", state.questDetailsAssetPickTarget);
+        assertEquals("", state.modalCanvasBackgroundTarget);
     }
 
     @Test
@@ -119,7 +156,7 @@ class ModalOpenActionsTest {
 
         ModalOpenActions.openColorPicker(state, "theme", 0xFF00AA);
 
-        assertTrue(state.colorPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.COLOR_PICKER));
         assertFalse(state.draggingCanvasImage);
         assertTrue(state.transientCanvasImages.isEmpty());
         assertTrue(state.transientQuestPositions.isEmpty());

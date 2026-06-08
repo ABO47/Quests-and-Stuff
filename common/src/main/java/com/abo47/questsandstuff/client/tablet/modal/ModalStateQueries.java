@@ -17,6 +17,11 @@ public final class ModalStateQueries {
         if (state.modalSession != null && state.modalSession.active()) {
             return state.modalSession.type();
         }
-        return ModalWindowManager.typeFromFlags(state);
+        return ModalWindowManager.ModalType.NONE;
+    }
+
+    public static boolean isOpen(TabletUiState state, ModalWindowManager.ModalType type) {
+        ModalWindowManager.ModalType safeType = type == null ? ModalWindowManager.ModalType.NONE : type;
+        return activeType(state) == safeType;
     }
 }

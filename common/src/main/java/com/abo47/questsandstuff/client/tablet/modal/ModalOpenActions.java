@@ -19,29 +19,25 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestDetailsIconPicker(TabletUiState state, String target) {
-        closeBeforeOpen(state);
-        state.modalQuestTarget = "";
-        state.modalChapterTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        resetIconPicker(state);
-        IconPickerMode.resetForTarget(state, state.questDetailsPickTarget);
-        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            state.questDetailsPickTarget = clean(target);
+            resetIconPicker(state);
+            IconPickerMode.resetForTarget(state, state.questDetailsPickTarget);
+        });
     }
 
     public static void openChapterIconPicker(TabletUiState state, String chapter) {
-        closeBeforeOpen(state);
-        state.modalChapterTarget = chapter == null ? "" : chapter;
-        state.modalQuestTarget = "";
-        resetIconPicker(state);
-        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            state.modalChapterTarget = clean(chapter);
+            resetIconPicker(state);
+        });
     }
 
     public static void openQuestIconPicker(TabletUiState state, String questId) {
-        closeBeforeOpen(state);
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = questId == null ? "" : questId;
-        resetIconPicker(state);
-        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            state.modalQuestTarget = clean(questId);
+            resetIconPicker(state);
+        });
     }
 
     public static void openBiomePicker(TabletUiState state, String target) {
@@ -81,45 +77,45 @@ public final class ModalOpenActions {
     }
 
     public static void openColorPicker(TabletUiState state, String target, int color) {
-        closeBeforeOpen(state);
-        state.colorPickerTarget = target == null ? "" : target;
-        state.colorDraft = color;
-        state.colorHexDraft = SearchFieldController.toHexColor(color);
-        state.colorPaletteContextOpen = false;
-        state.colorPaletteContextValue = Integer.MIN_VALUE;
-        state.colorPaletteScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
-        openModal(state, ModalWindowManager.ModalType.COLOR_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.COLOR_PICKER, () -> {
+            state.colorPickerTarget = clean(target);
+            state.colorDraft = color;
+            state.colorHexDraft = SearchFieldController.toHexColor(color);
+            state.colorPaletteContextOpen = false;
+            state.colorPaletteContextValue = Integer.MIN_VALUE;
+            state.colorPaletteScrollDragging = false;
+            state.contextDeleteConfirmKey = "";
+        });
     }
 
     public static void openThemePicker(TabletUiState state) {
-        closeBeforeOpen(state);
-        state.themeScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
-        openModal(state, ModalWindowManager.ModalType.THEME_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.THEME_PICKER, () -> {
+            state.themeScrollDragging = false;
+            state.contextDeleteConfirmKey = "";
+        });
     }
 
     public static void openSettingsPanel(TabletUiState state) {
-        closeBeforeOpen(state);
-        state.settingsTab = 0;
-        state.settingsScroll = 0;
-        state.settingsScrollDragging = false;
-        state.contextDeleteConfirmKey = "";
-        openModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL);
+        openPickerModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL, () -> {
+            state.settingsTab = 0;
+            state.settingsScroll = 0;
+            state.settingsScrollDragging = false;
+            state.contextDeleteConfirmKey = "";
+        });
     }
 
     public static void openPrerequisitesManager(TabletUiState state, String questId) {
-        closeBeforeOpen(state);
-        state.prerequisitesManagerQuestId = questId == null ? "" : questId.trim();
-        ModalPickerStates.prerequisitesManager(state).reset();
-        state.prerequisitesManagerExternalMode = false;
-        state.prerequisitesManagerContextOpen = false;
-        state.prerequisitesManagerContextPrerequisiteId = "";
-        state.prerequisitesManagerSelectedConnectionKey = "";
-        state.prerequisitesManagerHoveredConnectionKey = "";
-        state.contextDeleteConfirmKey = "";
-        state.contextMenuOpen = false;
-        openModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER);
+        openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
+            state.prerequisitesManagerQuestId = clean(questId).trim();
+            ModalPickerStates.prerequisitesManager(state).reset();
+            state.prerequisitesManagerExternalMode = false;
+            state.prerequisitesManagerContextOpen = false;
+            state.prerequisitesManagerContextPrerequisiteId = "";
+            state.prerequisitesManagerSelectedConnectionKey = "";
+            state.prerequisitesManagerHoveredConnectionKey = "";
+            state.contextDeleteConfirmKey = "";
+            state.contextMenuOpen = false;
+        });
     }
 
     public static void openAssetPicker(TabletUiState state, String target) {
@@ -127,27 +123,14 @@ public final class ModalOpenActions {
     }
 
     public static void openAssetPicker(TabletUiState state, String target, String selectedAsset) {
-        closeBeforeOpen(state);
-        state.questDetailsAssetPickTarget = target == null ? "" : target;
-        resetAssetPicker(state);
-        state.assetSelected = selectedAsset == null ? "" : selectedAsset;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, selectedAsset, () -> state.questDetailsAssetPickTarget = clean(target));
     }
 
     public static void openBlueprintPicker(TabletUiState state, String selectedBlueprint) {
-        closeBeforeOpen(state);
-        state.modalBlueprintTarget = "canvas";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetBrowseDir = "blueprints";
-        state.assetSelected = selectedBlueprint == null ? "" : selectedBlueprint;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, selectedBlueprint, () -> {
+            state.modalBlueprintTarget = "canvas";
+            state.assetBrowseDir = "blueprints";
+        });
     }
 
     public static void openQuestCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
@@ -155,273 +138,112 @@ public final class ModalOpenActions {
     }
 
     public static void openQuestGameSoundPicker(TabletUiState state, String questId, String currentSound) {
-        closeBeforeOpen(state);
-        state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
-        state.modalQuestCompletionSoundTargets.clear();
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        state.contextDeleteConfirmKey = "";
-        resetSoundPicker(state);
-        state.soundVolumeDraft = completionSoundVolume(questId);
-        state.soundVolumeDragging = false;
-        state.soundSelected = currentSound == null || currentSound.isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
-        openModal(state, ModalWindowManager.ModalType.SOUND_PICKER);
+        openSoundPickerSession(state, currentSound, questId, () -> state.modalQuestCompletionSoundTarget = clean(questId));
     }
 
     public static void openQuestCustomCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
-        closeBeforeOpen(state);
-        state.modalQuestCompletionSoundTarget = questId == null ? "" : questId;
-        state.modalQuestCompletionSoundTargets.clear();
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        state.contextDeleteConfirmKey = "";
-        resetAssetPicker(state);
-        state.soundVolumeDraft = completionSoundVolume(questId);
-        state.soundVolumeDragging = false;
-        state.assetBrowseDir = "sounds";
-        state.assetSelected = currentSound == null || currentSound.isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetSoundPickerSession(state, currentSound, questId, () -> state.modalQuestCompletionSoundTarget = clean(questId));
     }
 
     public static void openBatchQuestGameSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
-        closeBeforeOpen(state);
         Set<String> targets = normalizedTargets(questIds);
-        state.modalQuestCompletionSoundTarget = "";
-        state.modalQuestCompletionSoundTargets.clear();
-        state.modalQuestCompletionSoundTargets.addAll(targets);
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        state.contextDeleteConfirmKey = "";
-        resetSoundPicker(state);
-        state.soundVolumeDraft = completionSoundVolume(firstTarget(targets));
-        state.soundVolumeDragging = false;
-        state.soundSelected = currentSound == null || currentSound.isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
-        openModal(state, ModalWindowManager.ModalType.SOUND_PICKER);
+        openSoundPickerSession(state, currentSound, firstTarget(targets), () -> state.modalQuestCompletionSoundTargets.addAll(targets));
     }
 
     public static void openBatchQuestCustomCompletionSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
-        closeBeforeOpen(state);
         Set<String> targets = normalizedTargets(questIds);
-        state.modalQuestCompletionSoundTarget = "";
-        state.modalQuestCompletionSoundTargets.clear();
-        state.modalQuestCompletionSoundTargets.addAll(targets);
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        state.contextDeleteConfirmKey = "";
-        resetAssetPicker(state);
-        state.soundVolumeDraft = completionSoundVolume(firstTarget(targets));
-        state.soundVolumeDragging = false;
-        state.assetBrowseDir = "sounds";
-        state.assetSelected = currentSound == null || currentSound.isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetSoundPickerSession(state, currentSound, firstTarget(targets), () -> state.modalQuestCompletionSoundTargets.addAll(targets));
     }
 
     public static void openChapterBackgroundPicker(TabletUiState state, String chapter, String currentBackground) {
-        closeBeforeOpen(state);
-        state.modalChapterTarget = chapter == null ? "" : chapter;
-        state.modalQuestTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalQuestBackgroundTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, currentBackground, () -> state.modalChapterTarget = clean(chapter));
     }
 
     public static void openQuestBackgroundPicker(TabletUiState state, String questId, String currentBackground, boolean grayscale) {
-        closeBeforeOpen(state);
-        state.modalQuestBackgroundTarget = questId == null ? "" : questId;
-        state.modalQuestBackgroundTargets.clear();
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        state.modalQuestBackgroundGrayscale = grayscale;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, currentBackground, () -> {
+            state.modalQuestBackgroundTarget = clean(questId);
+            state.modalQuestBackgroundGrayscale = grayscale;
+        });
     }
 
     public static void openBatchQuestBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground, boolean grayscale) {
-        closeBeforeOpen(state);
-        state.modalQuestBackgroundTarget = "";
-        state.modalQuestBackgroundTargets.clear();
-        state.modalQuestBackgroundTargets.addAll(normalizedTargets(questIds));
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        state.modalQuestBackgroundGrayscale = grayscale;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        Set<String> targets = normalizedTargets(questIds);
+        openAssetPickerSession(state, currentBackground, () -> {
+            state.modalQuestBackgroundTargets.addAll(targets);
+            state.modalQuestBackgroundGrayscale = grayscale;
+        });
     }
 
     public static void openQuestCompletionHudBackgroundPicker(TabletUiState state, String questId, String currentBackground) {
-        closeBeforeOpen(state);
-        state.modalQuestCompletionHudBackgroundTarget = questId == null ? "" : questId;
-        state.modalQuestCompletionHudBackgroundTargets.clear();
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, currentBackground, () -> state.modalQuestCompletionHudBackgroundTarget = clean(questId));
     }
 
     public static void openBatchQuestCompletionHudBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground) {
-        closeBeforeOpen(state);
-        state.modalQuestCompletionHudBackgroundTarget = "";
-        state.modalQuestCompletionHudBackgroundTargets.clear();
-        state.modalQuestCompletionHudBackgroundTargets.addAll(normalizedTargets(questIds));
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        Set<String> targets = normalizedTargets(questIds);
+        openAssetPickerSession(state, currentBackground, () -> state.modalQuestCompletionHudBackgroundTargets.addAll(targets));
     }
 
     public static void openCanvasBackgroundPicker(TabletUiState state, String group, String currentBackground) {
-        closeBeforeOpen(state);
-        state.modalCanvasBackgroundTarget = group == null ? "" : group;
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalQuestBackgroundTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, currentBackground, () -> state.modalCanvasBackgroundTarget = clean(group));
     }
 
     public static void openHudBackgroundPicker(TabletUiState state, String target, String currentBackground, int currentOpacity) {
-        closeBeforeOpen(state);
-        state.modalHudBackgroundTarget = target == null ? "" : target.trim();
-        state.modalCanvasBackgroundTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.modalQuestBackgroundTarget = "";
-        state.modalQuestBackgroundTargets.clear();
-        state.questDetailsAssetPickTarget = "";
-        resetAssetPicker(state);
-        state.assetSelected = currentBackground == null ? "" : currentBackground;
-        state.modalHudBackgroundOpacityDraft = Math.max(0, Math.min(100, currentOpacity));
-        state.modalHudBackgroundOpacityDragging = false;
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, currentBackground, () -> {
+            state.modalHudBackgroundTarget = clean(target).trim();
+            state.modalHudBackgroundOpacityDraft = Math.max(0, Math.min(100, currentOpacity));
+            state.modalHudBackgroundOpacityDragging = false;
+        });
     }
 
     public static void openCanvasImagePicker(TabletUiState state, String group, int logicalX, int logicalY) {
-        closeBeforeOpen(state);
-        state.modalCanvasImageTarget = group == null ? "" : group;
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.canvasImageLogicalX = logicalX;
-        state.canvasImageLogicalY = logicalY;
-        resetAssetPicker(state);
-        state.assetSelected = "";
-        openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
+        openAssetPickerSession(state, "", () -> {
+            state.modalCanvasImageTarget = clean(group);
+            setCanvasPickPoint(state, logicalX, logicalY);
+        });
     }
 
     public static void openCanvasEntityPicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        closeBeforeOpen(state);
-        state.modalCanvasEntityTarget = target == null ? "" : target;
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasModelTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.canvasImageLogicalX = logicalX;
-        state.canvasImageLogicalY = logicalY;
-        resetIconPicker(state);
-        IconPickerMode.resetTo(state, IconPickerMode.ENTITIES);
-        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            state.modalCanvasEntityTarget = clean(target);
+            setCanvasPickPoint(state, logicalX, logicalY);
+            resetIconPicker(state);
+            IconPickerMode.resetTo(state, IconPickerMode.ENTITIES);
+        });
     }
 
     public static void openCanvasItemPicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        closeBeforeOpen(state);
-        state.modalCanvasModelTarget = target == null ? "" : target;
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.canvasImageLogicalX = logicalX;
-        state.canvasImageLogicalY = logicalY;
-        resetIconPicker(state);
-        IconPickerMode.resetTo(state, IconPickerMode.ITEMS);
-        openModal(state, ModalWindowManager.ModalType.ICON_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            state.modalCanvasModelTarget = clean(target);
+            setCanvasPickPoint(state, logicalX, logicalY);
+            resetIconPicker(state);
+            IconPickerMode.resetTo(state, IconPickerMode.ITEMS);
+        });
     }
 
     public static void openCanvasBlockPicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        closeBeforeOpen(state);
-        state.modalCanvasModelTarget = target == null ? "" : target;
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.canvasImageLogicalX = logicalX;
-        state.canvasImageLogicalY = logicalY;
-        resetBlockPicker(state);
-        openModal(state, ModalWindowManager.ModalType.BLOCK_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.BLOCK_PICKER, () -> {
+            state.modalCanvasModelTarget = clean(target);
+            setCanvasPickPoint(state, logicalX, logicalY);
+            resetBlockPicker(state);
+        });
     }
 
     public static void openCanvasRecipePicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        closeBeforeOpen(state);
-        state.modalCanvasModelTarget = "";
-        state.modalCanvasEntityTarget = "";
-        state.modalCanvasImageTarget = "";
-        state.modalCanvasBackgroundTarget = "";
-        state.modalChapterTarget = "";
-        state.modalQuestTarget = "";
-        state.questDetailsPickTarget = target == null ? "" : target;
-        state.canvasImageLogicalX = logicalX;
-        state.canvasImageLogicalY = logicalY;
-        resetRecipePicker(state);
-        openModal(state, ModalWindowManager.ModalType.RECIPE_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.RECIPE_PICKER, () -> {
+            state.questDetailsPickTarget = clean(target);
+            setCanvasPickPoint(state, logicalX, logicalY);
+            resetRecipePicker(state);
+        });
     }
 
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
-        closeBeforeOpen(state);
-        state.entityVariantTarget = target == null ? "" : target;
-        state.entityVariantSelected = EntityPreviewRenderer.entityVariant(icon == null ? "" : icon);
-        state.entityVariantFolder = "";
-        ModalPickerStates.entityVariant(state).reset();
-        state.contextDeleteConfirmKey = "";
-        openModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER);
+        openPickerModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, () -> {
+            state.entityVariantTarget = clean(target);
+            state.entityVariantSelected = EntityPreviewRenderer.entityVariant(clean(icon));
+            state.entityVariantFolder = "";
+            ModalPickerStates.entityVariant(state).reset();
+            state.contextDeleteConfirmKey = "";
+        });
     }
 
     private static void resetIconPicker(TabletUiState state) {
@@ -456,16 +278,77 @@ public final class ModalOpenActions {
     }
 
     private static void openQuestDetailsPicker(TabletUiState state, String target, ModalWindowManager.ModalType type, Runnable reset) {
+        openPickerModal(state, type, () -> {
+            state.questDetailsPickTarget = clean(target);
+            reset.run();
+        });
+    }
+
+    private static void openAssetPickerSession(TabletUiState state, String selectedAsset, Runnable configure) {
+        openPickerModal(state, ModalWindowManager.ModalType.ASSET_PICKER, () -> {
+            resetAssetPicker(state);
+            configure.run();
+            state.assetSelected = clean(selectedAsset);
+        });
+    }
+
+    private static void openSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
+        openPickerModal(state, ModalWindowManager.ModalType.SOUND_PICKER, () -> {
+            resetSoundPicker(state);
+            configureTargets.run();
+            state.contextDeleteConfirmKey = "";
+            state.soundVolumeDraft = completionSoundVolume(volumeQuestId);
+            state.soundVolumeDragging = false;
+            state.soundSelected = clean(currentSound).isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+        });
+    }
+
+    private static void openAssetSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
+        openAssetPickerSession(state, clean(currentSound).isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound, () -> {
+            configureTargets.run();
+            state.contextDeleteConfirmKey = "";
+            state.soundVolumeDraft = completionSoundVolume(volumeQuestId);
+            state.soundVolumeDragging = false;
+            state.assetBrowseDir = "sounds";
+        });
+    }
+
+    private static void openPickerModal(TabletUiState state, ModalWindowManager.ModalType type, Runnable configure) {
         closeBeforeOpen(state);
-        clearQuestAndChapterTargets(state);
-        state.questDetailsPickTarget = clean(target);
-        reset.run();
+        clearModalOpenTargets(state);
+        configure.run();
         openModal(state, type);
     }
 
-    private static void clearQuestAndChapterTargets(TabletUiState state) {
+    private static void clearModalOpenTargets(TabletUiState state) {
         state.modalQuestTarget = "";
         state.modalChapterTarget = "";
+        state.questDetailsPickTarget = "";
+        state.questDetailsAssetPickTarget = "";
+        state.modalCanvasBackgroundTarget = "";
+        state.modalCanvasImageTarget = "";
+        state.modalCanvasEntityTarget = "";
+        state.modalCanvasModelTarget = "";
+        state.modalBlueprintTarget = "";
+        state.modalQuestBackgroundTarget = "";
+        state.modalQuestBackgroundTargets.clear();
+        state.modalQuestBackgroundGrayscale = false;
+        state.modalQuestCompletionHudBackgroundTarget = "";
+        state.modalQuestCompletionHudBackgroundTargets.clear();
+        state.modalHudBackgroundTarget = "";
+        state.modalHudBackgroundOpacityDragging = false;
+        state.modalQuestCompletionSoundTarget = "";
+        state.modalQuestCompletionSoundTargets.clear();
+        state.entityVariantTarget = "";
+        state.entityVariantSelected = "";
+        state.entityVariantFolder = "";
+        state.colorPickerTarget = "";
+        state.prerequisitesManagerQuestId = "";
+    }
+
+    private static void setCanvasPickPoint(TabletUiState state, int logicalX, int logicalY) {
+        state.canvasImageLogicalX = logicalX;
+        state.canvasImageLogicalY = logicalY;
     }
 
     private static String clean(String value) {

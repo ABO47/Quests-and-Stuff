@@ -278,7 +278,7 @@ public final class TabletAssetPickerModal {
     }
 
     public static boolean handleKeyPressed(TabletUiState state, Runnable refresh, int keyCode) {
-        if (!state.assetPickerOpen || keyCode != GLFW.GLFW_KEY_F3 || state.assetSelected == null || state.assetSelected.isBlank()) {
+        if (!ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER) || keyCode != GLFW.GLFW_KEY_F3 || state.assetSelected == null || state.assetSelected.isBlank()) {
             return false;
         }
         beginInlineRename(state, state.assetSelected);

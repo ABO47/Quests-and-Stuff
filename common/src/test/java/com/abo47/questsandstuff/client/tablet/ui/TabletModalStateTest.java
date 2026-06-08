@@ -32,28 +32,27 @@ class TabletModalStateTest {
 
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, ModalStateQueries.activeType(state));
-        assertTrue(state.iconPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
 
         TabletModalState.applyModalType(state, ModalWindowManager.ModalType.SOUND_PICKER);
 
         assertEquals(ModalWindowManager.ModalType.SOUND_PICKER, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.SOUND_PICKER, ModalStateQueries.activeType(state));
-        assertFalse(state.iconPickerOpen);
-        assertTrue(state.soundPickerOpen);
+        assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SOUND_PICKER));
     }
 
     @Test
     void openModalReplacesPreviousOpenModalAndCancelsClosingState() {
         TabletUiState state = new TabletUiState();
         state.modalWindowClosing = true;
-        state.assetPickerOpen = true;
         state.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
 
         TabletModalState.openModal(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER);
 
         assertFalse(state.modalWindowClosing);
-        assertFalse(state.assetPickerOpen);
-        assertTrue(state.lootTablePickerOpen);
+        assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.LOOT_TABLE_PICKER));
         assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, ModalStateQueries.activeType(state));
     }
@@ -84,17 +83,17 @@ class TabletModalStateTest {
         TabletModalState.closeAllModals(state);
 
         assertTrue(state.modalWindowClosing);
-        assertTrue(state.iconPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modalSession.type());
         assertFalse(state.iconSearchFocused);
         assertFalse(TabletModalState.finishClosingIfDone(state));
-        assertTrue(state.iconPickerOpen);
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
 
         state.modalWindowAnimationStartMs = System.currentTimeMillis() - 1_000L;
 
         assertTrue(TabletModalState.finishClosingIfDone(state));
         assertFalse(state.modalWindowClosing);
-        assertFalse(state.iconPickerOpen);
+        assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.NONE, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.NONE, ModalStateQueries.activeType(state));
     }
@@ -110,17 +109,16 @@ class TabletModalStateTest {
         TabletModalState.openModal(state, ModalWindowManager.ModalType.ASSET_PICKER);
 
         assertFalse(state.modalWindowClosing);
-        assertFalse(state.iconPickerOpen);
-        assertTrue(state.assetPickerOpen);
+        assertFalse(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
+        assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modalSession.type());
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, ModalStateQueries.activeType(state));
         assertFalse(TabletModalState.finishClosingIfDone(state));
     }
 
     @Test
-    void activeTypeUsesSessionBeforeLegacyFlags() {
+    void activeTypeUsesTheModalSessionOnly() {
         TabletUiState state = new TabletUiState();
-        state.iconPickerOpen = true;
         state.modalSession = ModalSession.open(ModalWindowManager.ModalType.BLOCK_PICKER);
 
         assertEquals(ModalWindowManager.ModalType.BLOCK_PICKER, ModalStateQueries.activeType(state));
@@ -131,7 +129,6 @@ class TabletModalStateTest {
     void immediateCloseClearsTheActiveSession() {
         TabletUiState state = new TabletUiState();
         state.modalSession = ModalSession.open(ModalWindowManager.ModalType.RECIPE_PICKER);
-        state.recipePickerOpen = true;
 
         TabletModalState.closeAllModalsImmediately(state);
 
@@ -233,23 +230,7 @@ class TabletModalStateTest {
 
     private static TabletUiState dirtyModalState() {
         TabletUiState state = new TabletUiState();
-        state.iconPickerOpen = true;
-        state.assetPickerOpen = true;
-        state.biomePickerOpen = true;
-        state.advancementPickerOpen = true;
-        state.recipePickerOpen = true;
-        state.structurePickerOpen = true;
-        state.blockPickerOpen = true;
-        state.statPickerOpen = true;
-        state.dimensionPickerOpen = true;
-        state.lootTablePickerOpen = true;
-        state.itemInventoryPickerOpen = true;
-        state.soundPickerOpen = true;
-        state.colorPickerOpen = true;
-        state.themePickerOpen = true;
-        state.entityVariantPickerOpen = true;
-        state.prerequisitesManagerOpen = true;
-        state.settingsPanelOpen = true;
+        state.modalSession = ModalSession.open(ModalWindowManager.ModalType.ASSET_PICKER);
         state.modalWindowClosing = true;
         state.modalWindowAnimationHasSource = true;
         state.modalWindowAnimationStartMs = 123L;

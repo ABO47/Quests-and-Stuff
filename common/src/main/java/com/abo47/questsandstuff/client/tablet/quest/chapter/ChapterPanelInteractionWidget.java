@@ -72,7 +72,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return true;
         }
         if (button == 0 && isMouseOverElement(mouseX, mouseY)) {
-            if (!state.pendingChapterRename.isBlank() || state.iconPickerOpen || state.assetPickerOpen || state.biomePickerOpen || state.lootTablePickerOpen || state.chapterTextMenuOpen) {
+            if (!state.pendingChapterRename.isBlank() || ModalStateQueries.anyOpen(state) || state.chapterTextMenuOpen) {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
             if (openIconPickerAt(localX, localY)) {

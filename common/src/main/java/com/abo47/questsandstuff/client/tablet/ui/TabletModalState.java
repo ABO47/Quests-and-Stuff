@@ -19,9 +19,7 @@ public final class TabletModalState {
 
     static void applyModalType(TabletUiState state, ModalWindowManager.ModalType type) {
         ModalWindowManager.ModalType safeType = type == null ? ModalWindowManager.ModalType.NONE : type;
-        ModalSession session = ModalSession.capture(safeType, state);
-        ModalWindowManager.applyOpenFlags(state, safeType);
-        state.modalSession = session;
+        state.modalSession = ModalSession.capture(safeType, state);
     }
 
     public static void openModal(TabletUiState state, ModalWindowManager.ModalType type) {
