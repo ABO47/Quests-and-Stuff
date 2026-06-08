@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
 import com.abo47.questsandstuff.client.sync.mutation.ClientQuestLocalMutations;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
 import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
@@ -25,6 +26,7 @@ public final class ClientQuestCache {
         ClientDisplayState.reset();
         ClientRawSyncPayload.reset();
         ClientSyncInbox.reset();
+        ClientSyncUiBridge.resetForTests();
     }
 
     public static void applyFullSync(CompoundTag payload) {

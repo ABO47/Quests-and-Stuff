@@ -3,7 +3,6 @@ package com.abo47.questsandstuff.client.sync.packet;
 import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,7 +24,7 @@ public final class ClientSyncPayloadApplier {
         for (String questId : questsTag.getAllKeys()) {
             ClientQuestState.putQuest(questId, questsTag.getCompound(questId));
         }
-        TabletUiFactory.syncActiveCanvasStateFromCache();
+        ClientSyncUiBridge.requestActiveCanvasRefresh();
     }
 
     public static void applyDeltaSync(CompoundTag payload) {
@@ -44,7 +43,7 @@ public final class ClientSyncPayloadApplier {
         }
         ClientRawSyncPayload.merge(payload);
         if (chapterPayload) {
-            TabletUiFactory.syncActiveCanvasStateFromCache();
+            ClientSyncUiBridge.requestActiveCanvasRefresh();
         }
     }
 

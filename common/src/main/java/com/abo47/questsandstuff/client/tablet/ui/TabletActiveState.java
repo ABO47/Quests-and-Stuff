@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +24,11 @@ final class TabletActiveState {
 
     static void setActiveTabletState(TabletUiState state) {
         activeTabletState = state;
+        ClientSyncUiBridge.registerTabletCallbacks(
+                TabletActiveState::refreshActiveTablet,
+                TabletActiveState::syncActiveCanvasStateFromCache,
+                TabletActiveState::activeSelectedGroup,
+                TabletActiveState::selectPastedQuests);
     }
 
     static void refreshActiveTablet() {
