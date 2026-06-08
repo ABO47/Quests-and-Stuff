@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLay
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionLine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
@@ -147,10 +148,10 @@ final class CanvasSceneRenderer {
         for (QuestCardLayout card : visibleCards) {
             cardsById.put(card.questId(), card);
         }
-        List<ConnectionRenderer.ConnectionLine> connections = ConnectionRenderer.prerequisiteConnectionLines(state, visibleCards, cardsById, viewportW, viewportH);
-        Map<String, ConnectionRenderer.ConnectionLine> connectionsByKey = new HashMap<>();
+        List<ConnectionLine> connections = ConnectionRenderer.prerequisiteConnectionLines(state, visibleCards, cardsById, viewportW, viewportH);
+        Map<String, ConnectionLine> connectionsByKey = new HashMap<>();
         List<String> connectionKeys = new ArrayList<>();
-        for (ConnectionRenderer.ConnectionLine connection : connections) {
+        for (ConnectionLine connection : connections) {
             String key = CanvasLayerOrdering.connectionKey(connection.edgeId());
             connectionsByKey.put(key, connection);
             connectionKeys.add(key);
@@ -158,7 +159,7 @@ final class CanvasSceneRenderer {
         List<String> layerOrder = CanvasLayerOrdering.normalize(state, group, visibleCards, images, texts, connectionKeys);
         for (String key : layerOrder) {
             if (key.startsWith(CanvasLayerOrdering.CONNECTION_PREFIX)) {
-                ConnectionRenderer.ConnectionLine connection = connectionsByKey.get(key);
+                ConnectionLine connection = connectionsByKey.get(key);
                 if (connection != null) {
                     ConnectionRenderer.renderConnectionLayer(canvasViewport, state, connection);
                 }
