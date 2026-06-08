@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementS
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -113,8 +114,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
-        boolean inlineEditing = state.canvasTextEditOpen && drawText.id().equals(state.canvasTextEditTarget)
-                && drawText.id().equals(state.questDetailsTextEditTarget);
+        boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvasTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvasTextEditDraft) : drawText;
         withSelectionGeometry(state, contentW, contentH, () -> drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing));
         if (isSelectedText(state, drawText.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {

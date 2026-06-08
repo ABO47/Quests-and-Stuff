@@ -13,6 +13,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
@@ -117,14 +119,7 @@ final class CanvasContextElementActions {
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.edit_text"), "rename", ModColors.INTERACTIVE, () -> {
             CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, selectedGroup, state.contextCanvasTextId);
-            state.canvasTextEditOpen = true;
-            state.canvasTextEditTarget = state.contextCanvasTextId;
-            state.canvasTextEditDraft = text == null ? "" : text.text();
-            state.canvasTextEditCursor = state.canvasTextEditDraft.length();
-            state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
-            state.selectingCanvasTextRange = false;
-            state.canvasTextMenuOpen = true;
-            state.canvasTextMenuTarget = state.contextCanvasTextId;
+            TextEditSession.beginMainCanvas(state, state.contextCanvasTextId, text == null ? "" : text.text());
             state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
             canvasViewport.setFocus(true);
             ContextMenuState.clearDeleteConfirm(state);
@@ -132,8 +127,7 @@ final class CanvasContextElementActions {
             canvasViewport.refresh();
         }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, false, () -> {
-            state.canvasTextMenuOpen = true;
-            state.canvasTextMenuTarget = state.contextCanvasTextId;
+            TextStyleSession.openMainCanvas(state, state.contextCanvasTextId);
             state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=text_style id={}", state.contextCanvasTextId);

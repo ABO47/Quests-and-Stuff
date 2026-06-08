@@ -12,6 +12,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasTextSty
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
@@ -43,36 +45,30 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void keepTextStyleOpenForActiveEdit(TabletUiState state, QuestDetailsDescriptionModel model) {
-        if (!QuestDetailsEditState.canEdit(state) || !state.canvasTextEditOpen
-                || state.questDetailsTextEditTarget.isBlank()
-                || !state.questDetailsTextEditTarget.equals(state.canvasTextEditTarget)
+        if (!QuestDetailsEditState.canEdit(state)
+                || !TextEditSession.isQuestDetailsEditing(state)
                 || model.text(state.questDetailsTextEditTarget) == null) {
             return;
         }
-        state.questDetailsTextStyleOpen = true;
-        state.questDetailsTextStyleTarget = state.questDetailsTextEditTarget;
+        TextStyleSession.openQuestDetails(state, state.questDetailsTextEditTarget);
     }
 
     public static void renderStyleMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int w, int h) {
-        if ((!state.questDetailsTextStyleOpen && state.questDetailsTextFontSizeFieldTarget.isBlank()) || !QuestDetailsEditState.canEdit(state)) {
-            resetStyleMenuBounds(state);
+        if (!TextStyleSession.questDetailsOpenOrEditingFont(state) || !QuestDetailsEditState.canEdit(state)) {
+            TextStyleSession.resetQuestDetailsBounds(state);
             return;
         }
         String target = resolvedTextStyleTarget(state, model);
         CanvasTextLayer text = target.isBlank() ? null : model.text(target);
         if (text == null) {
-            state.questDetailsTextStyleOpen = false;
-            state.questDetailsTextStyleTarget = "";
-            resetStyleMenuBounds(state);
+            TextStyleSession.closeQuestDetails(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason=missing_text", target);
             return;
         }
-        state.questDetailsTextStyleOpen = true;
-        state.questDetailsTextStyleTarget = text.id();
+        TextStyleSession.openQuestDetails(state, text.id());
         CanvasTextStyleMenu.renderQuestDetails(modal, state, text, x, y, w, h, state.questDetailsDescScroll, next -> {
             updateText(player, state, questId, model, next, Math.max(1, w - 1));
-            state.questDetailsTextStyleOpen = true;
-            state.questDetailsTextStyleTarget = next.id();
+            TextStyleSession.openQuestDetails(state, next.id());
         }, () -> {
             state.questDetailsTextColorQuestId = questId;
             state.questDetailsTextColorTextId = text.id();
@@ -191,22 +187,17 @@ public final class QuestDetailsDescriptionMenus {
         actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT_TEXT), "rename", ModColors.INTERACTIVE, () -> {
             ContextMenuState.clearDeleteConfirm(state);
             CanvasTextLayer text = model.text(state.questDetailsContextId);
-            state.questDetailsTextEditTarget = text == null ? "" : text.id();
-            state.questDetailsTextEditDraft = text == null ? "" : text.text();
-            state.canvasTextEditOpen = text != null;
-            state.canvasTextEditTarget = text == null ? "" : text.id();
-            state.canvasTextEditDraft = text == null ? "" : text.text();
-            state.canvasTextEditCursor = state.canvasTextEditDraft.length();
-            state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
-            state.canvasTextMenuOpen = false;
-            state.canvasTextMenuTarget = "";
-            state.questDetailsTextStyleOpen = text != null;
-            state.questDetailsTextStyleTarget = text == null ? "" : text.id();
+            if (text == null) {
+                TextEditSession.closeQuestDetails(state, true);
+                TextStyleSession.closeQuestDetails(state);
+                return;
+            }
+            TextEditSession.beginQuestDetails(state, text.id(), text.text());
+            TextStyleSession.openQuestDetails(state, text.id());
         }));
         actions.add(new ContextAction(TabletVocabulary.text(QuestVocabulary.CONTEXT_TEXT_STYLE), "style", ModColors.INTERACTIVE, false, () -> {
             ContextMenuState.clearDeleteConfirm(state);
-            state.questDetailsTextStyleOpen = true;
-            state.questDetailsTextStyleTarget = state.questDetailsContextId;
+            TextStyleSession.openQuestDetails(state, state.questDetailsContextId);
         }));
         actions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_FIT_TO_GRID), "fit_grid", ModColors.INTERACTIVE, () -> {
             ContextMenuState.clearDeleteConfirm(state);
@@ -408,9 +399,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     private static String resolvedTextStyleTarget(TabletUiState state, QuestDetailsDescriptionModel model) {
-        String activeEdit = state.canvasTextEditOpen
-                && !state.questDetailsTextEditTarget.isBlank()
-                && state.questDetailsTextEditTarget.equals(state.canvasTextEditTarget)
+        String activeEdit = TextEditSession.isQuestDetailsEditing(state)
                 ? state.questDetailsTextEditTarget
                 : "";
         String[] candidates = {
@@ -430,13 +419,6 @@ public final class QuestDetailsDescriptionMenus {
             }
         }
         return "";
-    }
-
-    private static void resetStyleMenuBounds(TabletUiState state) {
-        state.questDetailsTextStyleMenuX = 0;
-        state.questDetailsTextStyleMenuY = 0;
-        state.questDetailsTextStyleMenuW = 0;
-        state.questDetailsTextStyleMenuH = 0;
     }
 
     private static int localContextCoordinate(int stored, int origin, int available) {

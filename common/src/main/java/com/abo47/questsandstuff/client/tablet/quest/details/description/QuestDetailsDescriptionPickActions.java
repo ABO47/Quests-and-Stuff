@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -274,8 +275,7 @@ final class QuestDetailsDescriptionPickActions {
         state.colorPickerTarget = "";
         state.questDetailsTextColorQuestId = "";
         state.questDetailsTextColorTextId = "";
-        state.questDetailsTextStyleOpen = true;
-        state.questDetailsTextStyleTarget = text.id();
+        TextStyleSession.openQuestDetails(state, text.id());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color quest={} text={} color={}", questId, textId, color);
     }
 

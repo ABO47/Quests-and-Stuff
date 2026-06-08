@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
@@ -105,17 +107,14 @@ public final class TabletRootWindowController {
                 || state.questDetailsCommandRewardEditorOpen
                 || state.questDetailsObjectiveRenameOpen
                 || isFontSizeFieldOpen(state)
-                || state.canvasTextEditOpen
-                || !state.questDetailsTextEditTarget.isBlank()
+                || TextEditSession.isAnyEditing(state)
                 || !state.pendingQuestTitleChangeId.isBlank()
                 || !state.pendingChapterRename.isBlank()
                 || root != null && hasFocusedTextField(root);
     }
 
     public static boolean isFontSizeFieldOpen(TabletUiState state) {
-        return !state.chapterTextFontSizeFieldTarget.isBlank()
-                || !state.canvasTextFontSizeFieldTarget.isBlank()
-                || !state.questDetailsTextFontSizeFieldTarget.isBlank();
+        return TextStyleSession.isAnyFontSizeFieldOpen(state);
     }
 
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
@@ -124,22 +123,12 @@ public final class TabletRootWindowController {
             EntityMotionEditor.close(state);
             changed = true;
         }
-        if (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeFieldTarget.isBlank()) {
-            state.questDetailsTextStyleOpen = false;
-            state.questDetailsTextStyleTarget = "";
-            state.questDetailsTextStyleMenuX = 0;
-            state.questDetailsTextStyleMenuY = 0;
-            state.questDetailsTextStyleMenuW = 0;
-            state.questDetailsTextStyleMenuH = 0;
-            state.questDetailsTextFontSizeFieldTarget = "";
+        if (TextStyleSession.questDetailsOpenOrEditingFont(state)) {
+            TextStyleSession.closeQuestDetails(state);
             changed = true;
         }
-        if (state.canvasTextEditOpen || !state.questDetailsTextEditTarget.isBlank()) {
-            state.canvasTextEditOpen = false;
-            state.canvasTextEditTarget = "";
-            state.canvasTextEditDraft = "";
-            state.questDetailsTextEditTarget = "";
-            state.questDetailsTextEditDraft = "";
+        if (TextEditSession.isAnyEditing(state)) {
+            TextEditSession.closeAny(state, true);
             changed = true;
         }
         if (state.questDetailsTitleFocused || state.questDetailsQuestId.equals(state.pendingQuestTitleChangeId)) {

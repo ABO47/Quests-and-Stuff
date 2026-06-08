@@ -7,6 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
@@ -123,13 +125,13 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "rotate");
-                state.questDetailsTextStyleOpen = false;
+                TextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
             if (selection.selectionResizeHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "resize");
-                state.questDetailsTextStyleOpen = false;
+                TextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
@@ -144,7 +146,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
                 textEdit.finish("transform-start");
             } else if (editingText != null && textEdit.hitTextEditor(editingText, lx, visibleY)) {
                 textEdit.updateCursor(model, editingText.id(), lx, visibleY, !Widget.isShiftDown());
-                state.selectingCanvasTextRange = true;
+                TextEditSession.startRangeSelection(state);
                 setFocus(true);
                 refresh.run();
                 return true;
@@ -178,7 +180,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         if (hit == null) {
             if (selection.selectionBoundsHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY);
-                state.questDetailsTextStyleOpen = false;
+                TextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
@@ -209,7 +211,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
         if (Widget.isShiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
             toggleSelection(hit);
-            state.questDetailsTextStyleOpen = false;
+            TextStyleSession.closeQuestDetails(state);
             refresh.run();
             return true;
         }
@@ -220,7 +222,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             return true;
         }
         select(hit);
-        if ("desc_text".equals(hit.kind()) && state.canvasTextEditOpen && hit.id().equals(state.canvasTextEditTarget)) {
+        if ("desc_text".equals(hit.kind()) && TextEditSession.isEditingTarget(state, hit.id())) {
             textEdit.updateCursor(model, hit.id(), lx, visibleY, true);
             setFocus(true);
             refresh.run();
@@ -310,7 +312,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
             return super.mouseReleased(mouseX, mouseY, button);
         }
         if (state.selectingCanvasTextRange && textEdit.isEditing()) {
-            state.selectingCanvasTextRange = false;
+            TextEditSession.finishRangeSelection(state);
             refresh.run();
             return true;
         }
@@ -424,7 +426,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
                 state.questDetailsDescriptionSelection.setPrimaryTextId("");
             }
             state.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
-            state.questDetailsTextStyleOpen = false;
+            TextStyleSession.closeQuestDetails(state);
         }
     }
 

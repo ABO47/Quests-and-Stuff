@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -102,40 +103,40 @@ public final class CanvasTextRenderer {
     }
 
     public static int textSelectionStart(TabletUiState state) {
-        return Math.max(0, Math.min(state.canvasTextEditCursor, state.canvasTextSelectionAnchor));
+        return TextEditSession.selectionStart(state);
     }
 
     public static int textSelectionEnd(TabletUiState state) {
-        return Math.max(0, Math.max(state.canvasTextEditCursor, state.canvasTextSelectionAnchor));
+        return TextEditSession.selectionEnd(state);
     }
 
     public static boolean hasTextSelection(TabletUiState state) {
-        return textSelectionStart(state) < textSelectionEnd(state);
+        return TextEditSession.hasSelection(state);
     }
 
     public static CanvasTextLayer applyTextStyleSelection(TabletUiState state, CanvasTextLayer text, String style) {
-        if (state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget) && hasTextSelection(state)) {
+        if (TextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.withStyleRange(textSelectionStart(state), textSelectionEnd(state), style);
         }
         return text.withStyle(style);
     }
 
     public static CanvasTextLayer toggleTextStyleSelection(TabletUiState state, CanvasTextLayer text, String flag) {
-        if (state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget) && hasTextSelection(state)) {
+        if (TextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.toggleStyleFlagRange(textSelectionStart(state), textSelectionEnd(state), flag);
         }
         return text.withStyle(CanvasTextLayer.toggleStyleFlag(text.style(), flag));
     }
 
     public static boolean isTextStyleFlagActive(TabletUiState state, CanvasTextLayer text, String flag) {
-        if (state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget) && hasTextSelection(state)) {
+        if (TextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.rangeHasStyleFlag(textSelectionStart(state), textSelectionEnd(state), flag);
         }
         return CanvasTextLayer.hasStyleFlag(activeTextStyle(state, text), flag);
     }
 
     public static int activeTextColor(TabletUiState state, CanvasTextLayer text) {
-        if (state == null || text == null || !state.canvasTextEditOpen || !text.id().equals(state.canvasTextEditTarget) || text.text().isEmpty()) {
+        if (state == null || text == null || !TextEditSession.isEditingTarget(state, text.id()) || text.text().isEmpty()) {
             return text == null ? ModColors.TEXT_PRIMARY : text.color();
         }
         int index = activeTextIndex(state, text);
@@ -143,7 +144,7 @@ public final class CanvasTextRenderer {
     }
 
     public static CanvasTextLayer applyTextColorSelection(TabletUiState state, CanvasTextLayer text, int color) {
-        if (state.canvasTextEditOpen && text.id().equals(state.canvasTextEditTarget) && hasTextSelection(state)) {
+        if (TextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.withColorRange(textSelectionStart(state), textSelectionEnd(state), color);
         }
         return text.withColor(color);
@@ -218,7 +219,7 @@ public final class CanvasTextRenderer {
         }
         var font = Minecraft.getInstance().font;
         String value = text.text() == null ? "" : text.text();
-        int cursor = Math.max(0, Math.min(state.canvasTextEditCursor, value.length()));
+        int cursor = Math.max(0, Math.min(TextEditSession.cursor(state), value.length()));
         float scale = fontScale(text);
         int layoutW = layoutSize(w, scale);
         int layoutH = layoutSize(h, scale);
@@ -237,9 +238,7 @@ public final class CanvasTextRenderer {
     }
 
     private static boolean isMainCanvasTextEditing(TabletUiState state, CanvasTextLayer text) {
-        return state.canvasTextEditOpen
-                && state.questDetailsTextEditTarget.isBlank()
-                && text.id().equals(state.canvasTextEditTarget);
+        return TextEditSession.isMainCanvasEditing(state) && text.id().equals(state.canvasTextEditTarget);
     }
 
     private static int layoutSize(int screenSize, float scale) {
@@ -247,14 +246,14 @@ public final class CanvasTextRenderer {
     }
 
     private static String activeTextStyle(TabletUiState state, CanvasTextLayer text) {
-        if (!state.canvasTextEditOpen || !text.id().equals(state.canvasTextEditTarget) || text.text().isEmpty()) {
+        if (!TextEditSession.isEditingTarget(state, text.id()) || text.text().isEmpty()) {
             return text.style();
         }
         return text.styleAt(activeTextIndex(state, text));
     }
 
     private static int activeTextIndex(TabletUiState state, CanvasTextLayer text) {
-        int cursor = Math.max(0, Math.min(state.canvasTextEditCursor, text.text().length()));
+        int cursor = Math.max(0, Math.min(TextEditSession.cursor(state), text.text().length()));
         return Math.max(0, Math.min(text.text().length() - 1, cursor == 0 ? 0 : cursor - 1));
     }
 

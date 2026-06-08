@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
@@ -44,7 +45,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         }
         boolean detailsContextWasOpen = state.questDetailsContextOpen;
         boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
-        boolean textStyleWasOpen = state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeFieldTarget.isBlank();
+        boolean textStyleWasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state);
         boolean textStyleHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
         boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
         boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
@@ -59,7 +60,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
                 && !motionEditorHit
                 && !QuestDetailsObjectivesPanel.isCardHit(state, mouseX, mouseY);
         if (textStyleHit) {
-            state.questDetailsTextStyleInteractionAtMs = System.currentTimeMillis();
+            TextStyleSession.markQuestDetailsInteraction(state);
         }
         super.mouseClicked(mouseX, mouseY, button);
         if (clearObjectiveSelection && objectiveInteractionStarted(
@@ -195,19 +196,15 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     private void closeTextStyle(String reason) {
-        boolean wasOpen = state.questDetailsTextStyleOpen || !state.questDetailsTextStyleTarget.isBlank()
-                || !state.questDetailsTextFontSizeFieldTarget.isBlank();
+        boolean wasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetailsTextStyleTarget.isBlank();
         String target = state.questDetailsTextStyleTarget == null ? "" : state.questDetailsTextStyleTarget;
-        state.questDetailsTextStyleOpen = false;
-        state.questDetailsTextStyleTarget = "";
-        state.questDetailsTextFontSizeFieldTarget = "";
+        TextStyleSession.closeQuestDetails(state);
         if (wasOpen) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason={}", target, reason);
         }
     }
 
     private boolean recentlyHandledTextStyleClick() {
-        long handledAt = state.questDetailsTextStyleInteractionAtMs;
-        return handledAt > 0L && System.currentTimeMillis() - handledAt < 350L;
+        return TextStyleSession.recentlyHandledQuestDetailsClick(state, System.currentTimeMillis(), 350L);
     }
 }

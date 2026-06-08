@@ -7,6 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
@@ -120,13 +122,11 @@ final class CanvasViewportClickController {
         boolean textEditorHit = state.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
         boolean textOwnerHit = state.canvasTextMenuOpen && textEditor.isOwnerHit(localX, localY);
         if (state.canvasTextMenuOpen && !textMenuHit && !textEditorHit && !textOwnerHit) {
-            state.canvasTextMenuOpen = false;
-            state.canvasTextMenuTarget = "";
-            state.canvasTextFontSizeFieldTarget = "";
+            TextStyleSession.closeMainCanvas(state);
             refresher.run();
         }
 
-        if (state.canvasTextEditOpen && state.questDetailsTextEditTarget.isBlank() && button == 0) {
+        if (TextEditSession.isMainCanvasEditing(state) && button == 0) {
             CanvasTextLayer editingText = textEditor.activeText();
             boolean transformHandleHit = editingText != null
                     && (CanvasRenderer.isCanvasTextResizeHandleHit(state, editingText, localX, localY)
@@ -136,11 +136,8 @@ final class CanvasViewportClickController {
             } else {
                 if (textEditorHit) {
                     int cursor = editingText == null ? state.canvasTextEditDraft.length() : CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
-                    state.canvasTextEditCursor = cursor;
-                    if (!canvasViewport.shiftDown()) {
-                        state.canvasTextSelectionAnchor = cursor;
-                    }
-                    state.selectingCanvasTextRange = true;
+                    TextEditSession.moveCursor(state, cursor, canvasViewport.shiftDown());
+                    TextEditSession.startRangeSelection(state);
                     canvasViewport.setFocus(true);
                     refresher.run();
                     return true;

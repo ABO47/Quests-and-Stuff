@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitControll
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -31,9 +32,7 @@ public final class CanvasTextStyleMenu {
         String group = selectedGroupName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasTextMenuTarget);
         if (text == null) {
-            state.canvasTextMenuOpen = false;
-            state.canvasTextMenuTarget = "";
-            state.canvasTextFontSizeFieldTarget = "";
+            TextStyleSession.closeMainCanvas(state);
             return;
         }
         int toolCount = 8;
@@ -69,10 +68,7 @@ public final class CanvasTextStyleMenu {
         int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetailsGridSnapLocked, toolCount);
         int x = viewportX + bounds[0];
         int y = viewportY + bounds[1];
-        state.questDetailsTextStyleMenuX = x;
-        state.questDetailsTextStyleMenuY = y;
-        state.questDetailsTextStyleMenuW = bounds[2];
-        state.questDetailsTextStyleMenuH = bounds[3];
+        TextStyleSession.setQuestDetailsBounds(state, x, y, bounds[2], bounds[3]);
         renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, openColorPicker);
     }
 
@@ -175,14 +171,13 @@ public final class CanvasTextStyleMenu {
 
     private static void markStyleInteraction(TabletUiState state, String logScope) {
         if (isQuestDetailsScope(logScope)) {
-            state.questDetailsTextStyleInteractionAtMs = System.currentTimeMillis();
+            TextStyleSession.markQuestDetailsInteraction(state);
         }
     }
 
     private static void keepQuestDetailsStyleMenuOpen(TabletUiState state, String logScope, String textId) {
         if (isQuestDetailsScope(logScope)) {
-            state.questDetailsTextStyleOpen = true;
-            state.questDetailsTextStyleTarget = textId == null ? "" : textId;
+            TextStyleSession.openQuestDetails(state, textId);
         }
     }
 
@@ -191,15 +186,15 @@ public final class CanvasTextStyleMenu {
     }
 
     private static String textFontSizeFieldTarget(TabletUiState state, String logScope) {
-        return isQuestDetailsScope(logScope) ? state.questDetailsTextFontSizeFieldTarget : state.canvasTextFontSizeFieldTarget;
+        return TextStyleSession.fontSizeTarget(state, surface(logScope));
     }
 
     private static void setTextFontSizeFieldTarget(TabletUiState state, String logScope, String target) {
-        if (isQuestDetailsScope(logScope)) {
-            state.questDetailsTextFontSizeFieldTarget = target == null ? "" : target;
-        } else {
-            state.canvasTextFontSizeFieldTarget = target == null ? "" : target;
-        }
+        TextStyleSession.setFontSizeTarget(state, surface(logScope), target);
+    }
+
+    private static TextStyleSession.Surface surface(String logScope) {
+        return isQuestDetailsScope(logScope) ? TextStyleSession.Surface.QUEST_DETAILS : TextStyleSession.Surface.MAIN_CANVAS;
     }
 
     private static int[] menuBoundsForGeometry(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {

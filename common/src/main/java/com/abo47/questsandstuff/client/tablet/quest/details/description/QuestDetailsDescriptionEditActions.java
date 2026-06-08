@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -32,17 +34,8 @@ final class QuestDetailsDescriptionEditActions {
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
         QuestDetailsDescriptionModel.save(player, questId, model);
         QuestDetailsDescriptionSelectionState.selectOnlyText(state, id);
-        state.questDetailsTextEditTarget = id;
-        state.questDetailsTextEditDraft = text.text();
-        state.canvasTextEditOpen = true;
-        state.canvasTextEditTarget = id;
-        state.canvasTextEditDraft = text.text();
-        state.canvasTextEditCursor = state.canvasTextEditDraft.length();
-        state.canvasTextSelectionAnchor = state.canvasTextEditCursor;
-        state.canvasTextMenuOpen = false;
-        state.canvasTextMenuTarget = "";
-        state.questDetailsTextStyleOpen = true;
-        state.questDetailsTextStyleTarget = id;
+        TextEditSession.beginQuestDetails(state, id, text.text());
+        TextStyleSession.openQuestDetails(state, id);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add text quest={} text={} pos={},{}", questId, id, x, y);
     }
 

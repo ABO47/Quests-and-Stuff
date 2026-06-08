@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.layer;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -121,9 +122,7 @@ public final class CanvasElementStore {
         }
         state.canvasSelection.textIds().remove(textId);
         if (textId.equals(state.canvasTextMenuTarget)) {
-            state.canvasTextMenuTarget = "";
-            state.canvasTextMenuOpen = false;
-            state.canvasTextFontSizeFieldTarget = "";
+            TextStyleSession.closeMainCanvas(state);
         }
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.textKey(textId));
         ClientQuestCache.removeCanvasTextLocal(group, textId);
