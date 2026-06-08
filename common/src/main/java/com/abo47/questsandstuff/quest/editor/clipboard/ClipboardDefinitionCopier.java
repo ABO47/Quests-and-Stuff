@@ -19,20 +19,7 @@ public final class ClipboardDefinitionCopier {
 
     public static QuestDefinition duplicateDefinition(QuestDefinition source, String newId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
         Set<String> prerequisites = copyPrerequisites(source.prerequisites(), copiedIds);
-        QuestDisplay display = new QuestDisplay(
-                source.display().title(),
-                source.display().subtitle(),
-                source.display().description(),
-                Map.of(group, new ChapterDefinition(true, x, y, scale)),
-                source.display().icon(),
-                source.display().iconBackground(),
-                source.display().completionSound(),
-                source.display().completionSoundVolume(),
-                source.display().completionHudBackground(),
-                source.display().visualHidden(),
-                source.display().questBackground(),
-                source.display().questBackgroundGrayscale()
-        );
+        QuestDisplay display = source.display().withGroups(Map.of(group, new ChapterDefinition(true, x, y, scale)));
         return new QuestDefinition(
                 source.schema(),
                 newId,

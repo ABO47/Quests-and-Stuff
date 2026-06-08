@@ -2,9 +2,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
@@ -157,8 +155,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        String normalized = icon == null || icon.isBlank() ? "minecraft:book" : icon.trim();
-        quest.putString("icon", normalized);
+        quest.putString("icon", QuestDisplay.normalizeIcon(icon));
     }
 
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
@@ -202,7 +199,7 @@ public final class ClientQuestLocalMutations {
         if (quest == null) {
             return;
         }
-        String normalizedSound = sound == null || sound.isBlank() ? "minecraft:ui.toast.challenge_complete" : sound.trim();
+        String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
         quest.putString("completion_sound", normalizedSound);
     }
 
@@ -326,37 +323,10 @@ public final class ClientQuestLocalMutations {
 
         String normalizedTitle = title == null ? "" : title.trim();
 
-        CompoundTag quest = new CompoundTag();
-        quest.putString("title", normalizedTitle);
-        quest.putString("subtitle", "");
-        quest.putString("icon", "minecraft:book");
-        quest.putString("icon_background", "minecraft:barrier");
-        quest.putString("completion_sound", "minecraft:ui.toast.challenge_complete");
-        quest.putInt("completion_sound_volume", QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
-        quest.putString("completion_hud_background", QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
-        quest.putBoolean("visual_hidden", false);
-        quest.putString("quest_background", QuestDisplay.DEFAULT_QUEST_BACKGROUND);
-        quest.putBoolean("quest_background_grayscale", false);
-        quest.putBoolean("completed", false);
-        quest.putBoolean("unlocked", true);
-        quest.putBoolean("claimed", false);
-        quest.putFloat("progress", 0.0f);
-        quest.putBoolean("repeatable", false);
-        quest.putString("hidden_mode", (ClientChapterState.groupLockUntilUnlocked(normalizedGroup) ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName());
-        quest.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, true);
-        quest.put(QuestDefinition.PREREQUISITES_FIELD, new ListTag());
-        quest.put("description", new ListTag());
-        quest.put("tasks", new CompoundTag());
-        quest.put("rewards", new CompoundTag());
-
-        CompoundTag groups = new CompoundTag();
-        CompoundTag groupTag = new CompoundTag();
-        groupTag.putBoolean("visible", true);
-        groupTag.putInt("x", x);
-        groupTag.putInt("y", y);
-        groupTag.putFloat("scale", 1.0f);
-        groups.put(normalizedGroup, groupTag);
-        quest.put("groups", groups);
+        QuestVisibilityMode hiddenMode = ClientChapterState.groupLockUntilUnlocked(normalizedGroup)
+                ? QuestVisibilityMode.LOCKED
+                : QuestVisibilityMode.PREREQUISITES_VISIBLE;
+        CompoundTag quest = ClientQuestSnapshotBuilder.newEditorQuest(normalizedTitle, normalizedGroup, x, y, hiddenMode);
 
         ClientQuestState.putQuest(normalizedQuest, quest);
     }

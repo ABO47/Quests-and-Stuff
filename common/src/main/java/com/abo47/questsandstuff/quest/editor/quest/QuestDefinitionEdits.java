@@ -175,20 +175,7 @@ public final class QuestDefinitionEdits {
 
     public static QuestDefinition withGroups(QuestDefinition definition, Map<String, ChapterDefinition> groups) {
         Set<String> prerequisites = definition.prerequisites();
-        QuestDisplay display = new QuestDisplay(
-                definition.display().title(),
-                definition.display().subtitle(),
-                definition.display().description(),
-                Map.copyOf(groups),
-                definition.display().icon(),
-                definition.display().iconBackground(),
-                definition.display().completionSound(),
-                definition.display().completionSoundVolume(),
-                definition.display().completionHudBackground(),
-                definition.display().visualHidden(),
-                definition.display().questBackground(),
-                definition.display().questBackgroundGrayscale()
-        );
+        QuestDisplay display = definition.display().withGroups(Map.copyOf(groups));
         return new QuestDefinition(
                 definition.schema(),
                 definition.id(),

@@ -65,17 +65,7 @@ public final class QuestLifecycleEditService {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                new QuestDisplay(
-                        title,
-                        "",
-                        List.of(),
-                        Map.of(group, new ChapterDefinition(true, finalX, finalY, 1.0f)),
-                        "minecraft:book",
-                        "minecraft:barrier",
-                        QuestDisplay.DEFAULT_COMPLETION_SOUND,
-                        QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME,
-                        false
-                ),
+                QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDefinition(true, finalX, finalY, 1.0f))),
                 settings,
                 Set.of(),
                 Map.of(),

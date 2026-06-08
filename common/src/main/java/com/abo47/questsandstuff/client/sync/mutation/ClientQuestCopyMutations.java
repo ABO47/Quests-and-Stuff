@@ -27,10 +27,6 @@ public final class ClientQuestCopyMutations {
         }
 
         CompoundTag quest = source.copy();
-        quest.putBoolean("completed", false);
-        quest.putBoolean("unlocked", false);
-        quest.putBoolean("claimed", false);
-        quest.putFloat("progress", 0.0f);
 
         ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
         ListTag remappedPrerequisites = new ListTag();
@@ -47,16 +43,7 @@ public final class ClientQuestCopyMutations {
         quest.put("connection_colors", remappedConnectionColors(quest.getCompound("connection_colors"), copiedIds, remappedPrerequisites));
         quest.put("connection_modes", remappedConnectionModes(quest.getCompound("connection_modes"), copiedIds, remappedPrerequisites));
         quest.put("hidden_connections", remappedHiddenConnections(quest.getList("hidden_connections", Tag.TAG_STRING), copiedIds, remappedPrerequisites));
-
-        CompoundTag groups = new CompoundTag();
-        CompoundTag groupTag = new CompoundTag();
-        groupTag.putBoolean("visible", true);
-        groupTag.putInt("x", x);
-        groupTag.putInt("y", y);
-        float normalizedScale = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
-        groupTag.putFloat("scale", Math.max(0.5f, normalizedScale));
-        groups.put(normalizedGroup, groupTag);
-        quest.put("groups", groups);
+        ClientQuestSnapshotBuilder.prepareCopiedQuest(quest, normalizedGroup, x, y, scale);
 
         ClientQuestState.putQuest(targetId, quest);
     }
@@ -68,10 +55,6 @@ public final class ClientQuestCopyMutations {
             return;
         }
         CompoundTag quest = sourceSnapshot == null ? new CompoundTag() : sourceSnapshot.copy();
-        quest.putBoolean("completed", false);
-        quest.putBoolean("unlocked", false);
-        quest.putBoolean("claimed", false);
-        quest.putFloat("progress", 0.0f);
 
         ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
         ListTag remappedPrerequisites = new ListTag();
@@ -88,16 +71,7 @@ public final class ClientQuestCopyMutations {
         quest.put("connection_colors", remappedConnectionColors(quest.getCompound("connection_colors"), copiedIds, remappedPrerequisites));
         quest.put("connection_modes", remappedConnectionModes(quest.getCompound("connection_modes"), copiedIds, remappedPrerequisites));
         quest.put("hidden_connections", remappedHiddenConnections(quest.getList("hidden_connections", Tag.TAG_STRING), copiedIds, remappedPrerequisites));
-
-        CompoundTag groups = new CompoundTag();
-        CompoundTag groupTag = new CompoundTag();
-        groupTag.putBoolean("visible", true);
-        groupTag.putInt("x", x);
-        groupTag.putInt("y", y);
-        float normalizedScale = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
-        groupTag.putFloat("scale", Math.max(0.5f, normalizedScale));
-        groups.put(normalizedGroup, groupTag);
-        quest.put("groups", groups);
+        ClientQuestSnapshotBuilder.prepareCopiedQuest(quest, normalizedGroup, x, y, scale);
 
         ClientQuestState.putQuest(targetId, quest);
     }
