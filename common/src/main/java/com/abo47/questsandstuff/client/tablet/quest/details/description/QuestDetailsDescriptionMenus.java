@@ -278,11 +278,11 @@ public final class QuestDetailsDescriptionMenus {
                 if (image != null) {
                     model.putImage(image.withCenteredPivot());
                     QuestDetailsDescriptionModel.save(player, questId, model);
-                    state.questDetailsSelectedImageId = image.id();
-                    state.questDetailsSelectedImageIds.clear();
-                    state.questDetailsSelectedImageIds.add(image.id());
-                    state.questDetailsSelectedTextId = "";
-                    state.questDetailsSelectedTextIds.clear();
+                    state.questDetailsDescriptionSelection.setPrimaryImageId(image.id());
+                    state.questDetailsDescriptionSelection.imageIds().clear();
+                    state.questDetailsDescriptionSelection.imageIds().add(image.id());
+                    state.questDetailsDescriptionSelection.setPrimaryTextId("");
+                    state.questDetailsDescriptionSelection.textIds().clear();
                 }
             }, refresh);
         }
@@ -417,14 +417,14 @@ public final class QuestDetailsDescriptionMenus {
                 state.questDetailsTextStyleTarget,
                 state.questDetailsTextFontSizeFieldTarget,
                 activeEdit,
-                state.questDetailsSelectedTextId
+                state.questDetailsDescriptionSelection.primaryTextId()
         };
         for (String candidate : candidates) {
             if (candidate != null && !candidate.isBlank() && model.text(candidate) != null) {
                 return candidate;
             }
         }
-        for (String selected : state.questDetailsSelectedTextIds) {
+        for (String selected : state.questDetailsDescriptionSelection.textIds()) {
             if (selected != null && !selected.isBlank() && model.text(selected) != null) {
                 return selected;
             }

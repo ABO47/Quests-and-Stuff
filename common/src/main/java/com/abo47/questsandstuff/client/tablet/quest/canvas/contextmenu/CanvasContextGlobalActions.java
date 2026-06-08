@@ -51,7 +51,7 @@ final class CanvasContextGlobalActions {
         if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.copy"), "copy", ModColors.INTERACTIVE, true, true, () -> {
                 CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=copy target={} selected={}", state.contextMenuTarget, state.selectedQuestIds.size());
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=copy target={} selected={}", state.contextMenuTarget, state.canvasSelection.questIds().size());
                 canvasViewport.refresh();
             }));
         }

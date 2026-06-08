@@ -96,8 +96,8 @@ final class TabletShortcutActions {
             EditorCommandClient.beginQuestTitleChange(state, selectedQuestId);
             return true;
         }
-        if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedCanvasImageIds(state).isEmpty()
-                && CanvasSelectionActions.selectedCanvasTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
+        if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
+                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && state.selectedGroup != null && !state.selectedGroup.isBlank()) {
             state.pendingChapterRename = state.selectedGroup;
             state.chapterDraftName = state.selectedGroup;
             return true;
@@ -111,14 +111,14 @@ final class TabletShortcutActions {
         }
         String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
-        for (String questId : TabletStateQueries.selectedQuestIdsSnapshot(state)) {
+        for (String questId : TabletStateQueries.selectedQuestIdSnapshot(state)) {
             EditorCommandClient.runRemoveQuestAction(player, questId);
             changed = true;
         }
-        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             changed |= CanvasLayerMutations.removeCanvasImage(state, group, imageId);
         }
-        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             changed |= CanvasLayerMutations.removeCanvasText(state, group, textId);
         }
         if (changed) {
@@ -136,20 +136,20 @@ final class TabletShortcutActions {
             return false;
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.addAll(canvasViewport.cardLookup().keySet());
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextIds.clear();
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.textIds().clear();
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
-            state.selectedCanvasImageIds.add(image.id());
-            state.selectedCanvasImageId = image.id();
+            state.canvasSelection.imageIds().add(image.id());
+            state.canvasSelection.setPrimaryImageId(image.id());
         }
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
-            state.selectedCanvasTextIds.add(text.id());
-            state.selectedCanvasTextId = text.id();
+            state.canvasSelection.textIds().add(text.id());
+            state.canvasSelection.setPrimaryTextId(text.id());
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas group={} quests={} images={} texts={}",
-                group, state.selectedQuestIds.size(), state.selectedCanvasImageIds.size(), state.selectedCanvasTextIds.size());
+                group, state.canvasSelection.questIds().size(), state.canvasSelection.imageIds().size(), state.canvasSelection.textIds().size());
         return true;
     }
 
@@ -177,7 +177,7 @@ final class TabletShortcutActions {
         String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
         Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = canvasViewport.cardLookup().get(questId);
             if (card != null) {
                 questMoves.put(questId, new CanvasPoint(Math.max(0, card.logicalX() + dx), Math.max(0, card.logicalY() + dy)));
@@ -187,7 +187,7 @@ final class TabletShortcutActions {
             EditorCommandClient.runCanvasMoveAction(player, state, questMoves);
             changed = true;
         }
-        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, group, imageId);
             if (image != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
@@ -195,7 +195,7 @@ final class TabletShortcutActions {
                 changed = true;
             }
         }
-        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
             if (text != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());

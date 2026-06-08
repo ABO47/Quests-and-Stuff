@@ -39,7 +39,7 @@ final class CanvasSelectionDragController {
         state.dragCurrentY = localY;
         state.dragSelectionDeltaX = 0;
         state.dragSelectionDeltaY = 0;
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card != null) {
                 state.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
@@ -152,7 +152,7 @@ final class CanvasSelectionDragController {
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),
                 cards,
                 group,
-                state.selectedQuestIds,
+                state.canvasSelection.questIds(),
                 state.dragStartImagePositions.keySet(),
                 state.dragStartTextPositions.keySet()
         );

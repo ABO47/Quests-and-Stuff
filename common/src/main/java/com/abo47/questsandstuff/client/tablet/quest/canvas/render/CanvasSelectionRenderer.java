@@ -83,7 +83,7 @@ public final class CanvasSelectionRenderer {
         int count = 0;
         String group = selectedGroupName(state);
         for (QuestCardLayout card : cards) {
-            if (!state.selectedQuestIds.contains(card.questId())) {
+            if (!state.canvasSelection.questIds().contains(card.questId())) {
                 continue;
             }
             count++;
@@ -218,7 +218,7 @@ public final class CanvasSelectionRenderer {
         int fill = withAlpha(ModColors.INTERACTIVE, 14);
         int border = withAlpha(ModColors.INTERACTIVE, 180);
         for (QuestCardLayout card : cards) {
-            if (!state.selectedQuestIds.contains(card.questId())) {
+            if (!state.canvasSelection.questIds().contains(card.questId())) {
                 continue;
             }
             int x = card.x();
@@ -338,7 +338,7 @@ public final class CanvasSelectionRenderer {
         if (state.boxSelecting) {
             return;
         }
-        if (state.selectedQuestIds.isEmpty() && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
+        if (state.canvasSelection.questIds().isEmpty() && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
             return;
         }
         if (state.rotatingSelection && CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {

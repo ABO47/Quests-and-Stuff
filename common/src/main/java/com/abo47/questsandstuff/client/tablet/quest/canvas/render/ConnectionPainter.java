@@ -149,7 +149,7 @@ final class ConnectionPainter {
     }
 
     private static int selectionDragOffsetX(TabletUiState state, String questId) {
-        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.selectedQuestIds.contains(questId)) {
+        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.canvasSelection.questIds().contains(questId)) {
             return 0;
         }
         return CanvasGeometry.screenX(state, state.dragStartBoundsLeft + state.dragSelectionDeltaX)
@@ -157,7 +157,7 @@ final class ConnectionPainter {
     }
 
     private static int selectionDragOffsetY(TabletUiState state, String questId) {
-        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.selectedQuestIds.contains(questId)) {
+        if (!state.draggingSelection || questId == null || questId.isBlank() || !state.canvasSelection.questIds().contains(questId)) {
             return 0;
         }
         return CanvasGeometry.screenY(state, state.dragStartBoundsTop + state.dragSelectionDeltaY)

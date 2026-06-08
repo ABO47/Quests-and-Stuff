@@ -34,16 +34,16 @@ public final class CanvasElementTransformController {
     public void beginImageTransform(CanvasImageLayer image, int localX, int localY) {
         CanvasTransformSessions.clearMainCanvasSession(state);
         boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
-        boolean selectedBeforeClick = image.id().equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(image.id());
+        boolean selectedBeforeClick = image.id().equals(state.canvasSelection.primaryImageId()) || state.canvasSelection.imageIds().contains(image.id());
         if (gizmoSupported && !selectedBeforeClick) {
             CanvasTransformGizmo.setMode(state, CanvasTransformMode.MOVE);
         }
         CanvasTransformMode gizmoMode = imageTransformMode(image, localX, localY);
-        state.selectedCanvasImageId = image.id();
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasImageIds.add(image.id());
-        state.selectedCanvasTextIds.clear();
+        state.canvasSelection.setPrimaryImageId(image.id());
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.imageIds().add(image.id());
+        state.canvasSelection.textIds().clear();
         state.canvasImageDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvasImageDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
         state.canvasImageStartX = image.x();
@@ -73,7 +73,7 @@ public final class CanvasElementTransformController {
             state.canvasImageRotateStartAngle = Math.atan2(logicalMouseY - state.canvasImageRotatePivotY, logicalMouseX - state.canvasImageRotatePivotX);
         }
         state.draggingCanvasImage = !(gizmoSupported && gizmoMode == null) && !state.resizingCanvasImage && !state.rotatingCanvasImage;
-        state.selectedQuestIds.clear();
+        state.canvasSelection.questIds().clear();
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas image transform start id={} drag={} resize={} rotate={}", image.id(), state.draggingCanvasImage, state.resizingCanvasImage, state.rotatingCanvasImage);
     }
 
@@ -100,7 +100,7 @@ public final class CanvasElementTransformController {
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasImageLayer image = findImage(group, state.selectedCanvasImageId);
+        CanvasImageLayer image = findImage(group, state.canvasSelection.primaryImageId());
         if (image == null) {
             return;
         }
@@ -177,11 +177,11 @@ public final class CanvasElementTransformController {
 
     public void beginTextTransform(CanvasTextLayer text, int localX, int localY) {
         CanvasTransformSessions.clearMainCanvasSession(state);
-        state.selectedCanvasTextId = text.id();
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasTextIds.add(text.id());
-        state.selectedCanvasImageIds.clear();
+        state.canvasSelection.setPrimaryTextId(text.id());
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.textIds().add(text.id());
+        state.canvasSelection.imageIds().clear();
         state.canvasTextMenuTarget = text.id();
         state.canvasTextDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvasTextDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
@@ -200,13 +200,13 @@ public final class CanvasElementTransformController {
             state.canvasTextRotateStartAngle = Math.atan2(logicalMouseY - state.canvasTextRotatePivotY, logicalMouseX - state.canvasTextRotatePivotX);
         }
         state.draggingCanvasText = !state.resizingCanvasText && !state.rotatingCanvasText;
-        state.selectedQuestIds.clear();
+        state.canvasSelection.questIds().clear();
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text transform start id={} drag={} resize={} rotate={}", text.id(), state.draggingCanvasText, state.resizingCanvasText, state.rotatingCanvasText);
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.selectedCanvasTextId);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvasSelection.primaryTextId());
         if (text == null) {
             return;
         }

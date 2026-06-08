@@ -191,7 +191,7 @@ final class CanvasMinimapOverlay {
     }
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
-        if (state.selectedQuestIds.contains(card.questId())) {
+        if (state.canvasSelection.questIds().contains(card.questId())) {
             return ModColors.WARNING;
         }
         CompoundTag tag = card.tag();

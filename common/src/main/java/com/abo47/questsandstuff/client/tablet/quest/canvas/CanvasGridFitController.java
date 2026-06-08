@@ -34,12 +34,12 @@ public final class CanvasGridFitController {
             return false;
         }
         CanvasLayerMutations.putCanvasImage(state, group, fitted);
-        state.selectedCanvasImageId = imageId;
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasImageIds.add(imageId);
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryImageId(imageId);
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.imageIds().add(imageId);
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.questIds().clear();
         return true;
     }
 
@@ -58,12 +58,12 @@ public final class CanvasGridFitController {
             return false;
         }
         CanvasLayerMutations.putCanvasText(state, group, fitted);
-        state.selectedCanvasTextId = textId;
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasTextIds.add(textId);
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryTextId(textId);
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.textIds().add(textId);
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.questIds().clear();
         return true;
     }
 
@@ -91,8 +91,8 @@ public final class CanvasGridFitController {
             scales.put(card.questId(), fitted.scale());
             EditorCommandClient.runCanvasScaleAction(player, state, scales);
         }
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.add(card.questId());
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().add(card.questId());
         return true;
     }
 
@@ -100,18 +100,18 @@ public final class CanvasGridFitController {
         if (state == null || group == null || group.isBlank()) {
             return false;
         }
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId == null ? null : byQuestId.get(questId);
             if (canFitQuestToGrid(state, card)) {
                 return true;
             }
         }
-        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             if (canFitImageToGrid(state, group, imageId)) {
                 return true;
             }
         }
-        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             if (canFitTextToGrid(state, group, textId)) {
                 return true;
             }
@@ -126,7 +126,7 @@ public final class CanvasGridFitController {
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new HashMap<>();
         Map<String, Float> questScales = new HashMap<>();
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId == null ? null : byQuestId.get(questId);
             if (card == null) {
                 continue;
@@ -142,7 +142,7 @@ public final class CanvasGridFitController {
             }
         }
 
-        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
@@ -154,7 +154,7 @@ public final class CanvasGridFitController {
             }
         }
 
-        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;

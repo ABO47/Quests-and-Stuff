@@ -209,8 +209,8 @@ final class EditorQuestCommandClient {
                     ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, targetX, targetY, normalizedTitle));
                 });
 
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.add(predictedId);
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().add(predictedId);
         state.lastJumpQuest = predictedId;
     }
 

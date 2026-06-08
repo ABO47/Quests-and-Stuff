@@ -208,14 +208,14 @@ final class QuestDetailsWindowLifecycle {
         state.questDetailsSelectedObjectiveKind = "";
         state.questDetailsSelectedObjectiveId = "";
         state.questDetailsSelectableRewardChoices.clear();
-        state.questDetailsSelectedTextId = "";
-        state.questDetailsSelectedImageId = "";
-        state.questDetailsSelectedTextIds.clear();
-        state.questDetailsSelectedImageIds.clear();
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasImageIds.clear();
+        state.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetailsDescriptionSelection.imageIds().clear();
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.imageIds().clear();
     }
 
     private static int nextOpenableQuestIndex(TabletUiState state, List<String> ids, int current, int direction) {

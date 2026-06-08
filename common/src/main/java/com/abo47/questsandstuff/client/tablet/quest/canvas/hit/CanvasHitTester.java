@@ -57,11 +57,11 @@ public final class CanvasHitTester {
     }
 
     public static CanvasImageLayer hitTestSelectedCanvasImageControls(TabletUiState state, int x, int y) {
-        if (state.selectedCanvasImageId.isBlank()) {
+        if (state.canvasSelection.primaryImageId().isBlank()) {
             return null;
         }
         CanvasImageLayer image = state.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
-                .filter(entry -> entry.id().equals(state.selectedCanvasImageId))
+                .filter(entry -> entry.id().equals(state.canvasSelection.primaryImageId()))
                 .findFirst()
                 .orElse(null);
         if (image == null) {
@@ -131,11 +131,11 @@ public final class CanvasHitTester {
     }
 
     public static CanvasTextLayer hitTestSelectedCanvasTextControls(TabletUiState state, int x, int y) {
-        if (state.selectedCanvasTextId.isBlank()) {
+        if (state.canvasSelection.primaryTextId().isBlank()) {
             return null;
         }
         CanvasTextLayer text = state.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
-                .filter(entry -> entry.id().equals(state.selectedCanvasTextId))
+                .filter(entry -> entry.id().equals(state.canvasSelection.primaryTextId()))
                 .findFirst()
                 .orElse(null);
         if (text == null) {

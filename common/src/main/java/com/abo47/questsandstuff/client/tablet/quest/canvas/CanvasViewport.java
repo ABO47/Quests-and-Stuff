@@ -152,11 +152,11 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     boolean selectionDragPreviewSupported() {
-        return !state.selectedQuestIds.isEmpty()
-                || !state.selectedCanvasImageId.isBlank()
-                || !state.selectedCanvasTextId.isBlank()
-                || !state.selectedCanvasImageIds.isEmpty()
-                || !state.selectedCanvasTextIds.isEmpty();
+        return !state.canvasSelection.questIds().isEmpty()
+                || !state.canvasSelection.primaryImageId().isBlank()
+                || !state.canvasSelection.primaryTextId().isBlank()
+                || !state.canvasSelection.imageIds().isEmpty()
+                || !state.canvasSelection.textIds().isEmpty();
     }
 
     boolean previewSelectionDrag() {
@@ -164,7 +164,7 @@ public final class CanvasViewport extends WidgetGroup {
             return false;
         }
         ensureSelectionLayerBases();
-        if (!state.selectedQuestIds.isEmpty() && selectionQuestLayerBases.isEmpty()) {
+        if (!state.canvasSelection.questIds().isEmpty() && selectionQuestLayerBases.isEmpty()) {
             return false;
         }
         int dx = selectionDragScreenX();
@@ -188,7 +188,7 @@ public final class CanvasViewport extends WidgetGroup {
         if (!selectionQuestLayerBases.isEmpty()) {
             return;
         }
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             WidgetGroup layer = questCardLayers.get(questId);
             if (layer != null) {
                 selectionQuestLayerBases.put(questId, new LayerPosition(layer.getSelfPositionX(), layer.getSelfPositionY()));

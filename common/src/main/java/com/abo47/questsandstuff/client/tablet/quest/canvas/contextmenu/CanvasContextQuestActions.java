@@ -49,11 +49,11 @@ final class CanvasContextQuestActions {
             actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ModColors.SUCCESS, () -> {
                 state.connectSourceQuestId = state.contextQuestId;
                 state.connectSourceQuestIds.clear();
-                if (state.selectedQuestIds.contains(state.contextQuestId) && state.selectedQuestIds.size() > 1) {
-                    state.connectSourceQuestIds.addAll(state.selectedQuestIds);
+                if (state.canvasSelection.questIds().contains(state.contextQuestId) && state.canvasSelection.questIds().size() > 1) {
+                    state.connectSourceQuestIds.addAll(state.canvasSelection.questIds());
                 } else {
-                    state.selectedQuestIds.clear();
-                    state.selectedQuestIds.add(state.contextQuestId);
+                    state.canvasSelection.questIds().clear();
+                    state.canvasSelection.questIds().add(state.contextQuestId);
                     state.connectSourceQuestIds.add(state.contextQuestId);
                 }
                 ContextMenuState.clearDeleteConfirm(state);

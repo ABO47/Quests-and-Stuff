@@ -74,9 +74,9 @@ final class CanvasContextCanvasActions {
                 text = CanvasGridFitController.fittedText(state, text);
             }
             CanvasLayerMutations.putCanvasText(state, selectedGroup, text);
-            state.selectedCanvasTextId = id;
-            state.selectedCanvasImageId = "";
-            state.selectedQuestIds.clear();
+            state.canvasSelection.setPrimaryTextId(id);
+            state.canvasSelection.setPrimaryImageId("");
+            state.canvasSelection.questIds().clear();
             state.canvasTextMenuOpen = true;
             state.canvasTextMenuTarget = id;
             state.canvasTextEditOpen = true;

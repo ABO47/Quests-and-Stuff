@@ -44,12 +44,12 @@ public final class CanvasEntityPickerActions {
             return false;
         }
         CanvasLayerMutations.putCanvasImage(state, parsed.group(), current.withAsset(EntityPreviewRenderer.entityAsset(entityId)));
-        state.selectedCanvasImageId = current.id();
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasImageIds.add(current.id());
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryImageId(current.id());
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.imageIds().add(current.id());
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.questIds().clear();
         ContextMenuState.close(state);
         ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed group={} image={} entity={}", parsed.group(), current.id(), entityId);
@@ -71,11 +71,11 @@ public final class CanvasEntityPickerActions {
             image = CanvasGridFitController.fittedImage(state, image);
         }
         CanvasLayerMutations.putCanvasImage(state, group, image);
-        state.selectedCanvasImageId = id;
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryImageId(id);
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.questIds().clear();
         state.draggingCanvasImage = false;
         state.resizingCanvasImage = false;
         state.rotatingCanvasImage = false;

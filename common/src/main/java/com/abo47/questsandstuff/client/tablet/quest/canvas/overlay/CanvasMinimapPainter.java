@@ -127,7 +127,7 @@ final class CanvasMinimapPainter {
         }
 
         boolean hiddenOverlay = state.canEdit && quest.tag().getBoolean("visual_hidden") && !quest.tag().getBoolean("completed");
-        boolean highlighted = quest.questId() != null && state.selectedQuestIds.contains(quest.questId());
+        boolean highlighted = quest.questId() != null && state.canvasSelection.questIds().contains(quest.questId());
         QuestMiniCardRenderer.drawTagCard(graphics, quest.tag(), x, y, quest.w(), quest.h(), mouseX, mouseY, partialTicks, quest.alpha(), hiddenOverlay, highlighted);
     }
 

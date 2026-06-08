@@ -12,17 +12,17 @@ final class QuestDetailsDescriptionSelectionState {
     }
 
     static Set<String> selectedTextIds(TabletUiState state) {
-        Set<String> ids = new LinkedHashSet<>(state.questDetailsSelectedTextIds);
-        if (!state.questDetailsSelectedTextId.isBlank()) {
-            ids.add(state.questDetailsSelectedTextId);
+        Set<String> ids = new LinkedHashSet<>(state.questDetailsDescriptionSelection.textIds());
+        if (!state.questDetailsDescriptionSelection.primaryTextId().isBlank()) {
+            ids.add(state.questDetailsDescriptionSelection.primaryTextId());
         }
         return ids;
     }
 
     static Set<String> selectedImageIds(TabletUiState state) {
-        Set<String> ids = new LinkedHashSet<>(state.questDetailsSelectedImageIds);
-        if (!state.questDetailsSelectedImageId.isBlank()) {
-            ids.add(state.questDetailsSelectedImageId);
+        Set<String> ids = new LinkedHashSet<>(state.questDetailsDescriptionSelection.imageIds());
+        if (!state.questDetailsDescriptionSelection.primaryImageId().isBlank()) {
+            ids.add(state.questDetailsDescriptionSelection.primaryImageId());
         }
         return ids;
     }
@@ -38,29 +38,29 @@ final class QuestDetailsDescriptionSelectionState {
     static void selectOnlyText(TabletUiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
-            state.questDetailsSelectedTextId = id;
-            state.questDetailsSelectedTextIds.add(id);
+            state.questDetailsDescriptionSelection.setPrimaryTextId(id);
+            state.questDetailsDescriptionSelection.textIds().add(id);
         }
     }
 
     static void selectOnlyImage(TabletUiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
-            state.questDetailsSelectedImageId = id;
-            state.questDetailsSelectedImageIds.add(id);
+            state.questDetailsDescriptionSelection.setPrimaryImageId(id);
+            state.questDetailsDescriptionSelection.imageIds().add(id);
         }
     }
 
     static void clear(TabletUiState state) {
-        state.questDetailsSelectedTextId = "";
-        state.questDetailsSelectedImageId = "";
-        state.questDetailsSelectedTextIds.clear();
-        state.questDetailsSelectedImageIds.clear();
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageId = "";
-        state.selectedQuestIds.clear();
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasImageIds.clear();
+        state.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetailsDescriptionSelection.imageIds().clear();
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.imageIds().clear();
         state.selectionBoundsVisible = false;
     }
 

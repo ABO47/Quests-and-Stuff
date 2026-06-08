@@ -21,8 +21,8 @@ class CanvasTransformSessionsTest {
     void mainCanvasSessionClearsFlagsPreviewsAndStartSnapshotsWithoutClearingSelection() {
         TabletUiState state = new TabletUiState();
         seedMainCanvasTransform(state);
-        state.selectedCanvasImageId = "image/a";
-        state.selectedCanvasImageIds.add("image/a");
+        state.canvasSelection.setPrimaryImageId("image/a");
+        state.canvasSelection.imageIds().add("image/a");
 
         CanvasTransformSessions.clearMainCanvasSession(state);
 
@@ -42,8 +42,8 @@ class CanvasTransformSessionsTest {
         assertTrue(state.transientCanvasTexts.isEmpty());
         assertSharedSnapshotsCleared(state);
         assertGuidesCleared(state);
-        assertEquals("image/a", state.selectedCanvasImageId);
-        assertTrue(state.selectedCanvasImageIds.contains("image/a"));
+        assertEquals("image/a", state.canvasSelection.primaryImageId());
+        assertTrue(state.canvasSelection.imageIds().contains("image/a"));
     }
 
     @Test
@@ -106,7 +106,7 @@ class CanvasTransformSessionsTest {
         assertTrue(state.resizeStartImageLayers.isEmpty());
         assertTrue(state.rotateStartImageLayers.isEmpty());
         assertFalse(state.transientCanvasImages.isEmpty());
-        assertEquals("image:a", state.selectedCanvasImageId);
+        assertEquals("image:a", state.canvasSelection.primaryImageId());
 
         CanvasTransformSessions.clearMainCanvasSession(state);
 

@@ -90,12 +90,12 @@ public final class CanvasModelPickerActions {
     }
 
     private static void selectOnlyImage(TabletUiState state, String id) {
-        state.selectedCanvasImageId = id;
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasImageIds.add(id);
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasTextIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryImageId(id);
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.imageIds().add(id);
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.questIds().clear();
         ContextMenuState.close(state);
         ContextMenuState.clearDeleteConfirm(state);
     }

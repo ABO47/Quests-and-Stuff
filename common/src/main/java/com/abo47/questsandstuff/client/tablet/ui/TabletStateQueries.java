@@ -33,19 +33,19 @@ public final class TabletStateQueries {
     }
 
     public static String singleSelectedQuestId(TabletUiState state) {
-        if (state == null || state.selectedQuestIds.size() != 1) {
+        if (state == null || state.canvasSelection.questIds().size() != 1) {
             return "";
         }
-        String questId = state.selectedQuestIds.iterator().next();
+        String questId = state.canvasSelection.questIds().iterator().next();
         return questId == null ? "" : questId;
     }
 
-    public static List<String> selectedQuestIdsSnapshot(TabletUiState state) {
-        return state == null ? List.of() : List.copyOf(state.selectedQuestIds);
+    public static List<String> selectedQuestIdSnapshot(TabletUiState state) {
+        return state == null ? List.of() : List.copyOf(state.canvasSelection.questIds());
     }
 
     public static boolean hasSelectedQuests(TabletUiState state) {
-        return state != null && !state.selectedQuestIds.isEmpty();
+        return state != null && !state.canvasSelection.questIds().isEmpty();
     }
 
     public static String sanitizeGroupName(String value) {

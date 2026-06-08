@@ -94,7 +94,7 @@ final class QuestDetailsDescriptionEditActions {
         CanvasTextLayer fitted = QuestDetailsDescriptionLayout.fittedText(state, text);
         model.putText(QuestDetailsDescriptionLayout.clampTextToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
-        state.questDetailsSelectedTextId = id;
+        state.questDetailsDescriptionSelection.setPrimaryTextId(id);
     }
 
     static void fitImageToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
@@ -105,7 +105,7 @@ final class QuestDetailsDescriptionEditActions {
         CanvasImageLayer fitted = QuestDetailsDescriptionLayout.fittedImage(state, image);
         model.putImage(QuestDetailsDescriptionLayout.clampImageToColumn(state, fitted, QuestDetailsWindow.descriptionContentWidth(state)));
         QuestDetailsDescriptionModel.save(player, questId, model);
-        state.questDetailsSelectedImageId = id;
+        state.questDetailsDescriptionSelection.setPrimaryImageId(id);
     }
 
     static void fitSelectionToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
@@ -225,12 +225,12 @@ final class QuestDetailsDescriptionEditActions {
         }
         QuestDetailsDescriptionSelectionState.clear(state);
         for (String textId : model.texts.keySet()) {
-            state.questDetailsSelectedTextIds.add(textId);
-            state.questDetailsSelectedTextId = textId;
+            state.questDetailsDescriptionSelection.textIds().add(textId);
+            state.questDetailsDescriptionSelection.setPrimaryTextId(textId);
         }
         for (String imageId : model.images.keySet()) {
-            state.questDetailsSelectedImageIds.add(imageId);
-            state.questDetailsSelectedImageId = imageId;
+            state.questDetailsDescriptionSelection.imageIds().add(imageId);
+            state.questDetailsDescriptionSelection.setPrimaryImageId(imageId);
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details select all description texts={} images={}", model.texts.size(), model.images.size());
         return true;

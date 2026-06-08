@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipb
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationState;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.SelectionModel;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -48,8 +48,7 @@ public class TabletUiState {
     public String canvasCameraGroup = "";
     public final Map<String, CanvasDoublePoint> canvasCameraCentersByGroup = new HashMap<>();
     public final Map<String, Float> canvasCameraZoomsByGroup = new HashMap<>();
-    public final SelectionModel<String> questSelection = new SelectionModel<>();
-    public final Set<String> selectedQuestIds = questSelection.values();
+    public final CanvasLayerSelectionState canvasSelection = new CanvasLayerSelectionState();
     public final Map<String, CanvasPoint> transientQuestPositions = new HashMap<>();
     public final Map<String, Float> transientQuestScales = new HashMap<>();
     public final Map<String, CanvasPoint> dragStartPositions = new HashMap<>();
@@ -411,10 +410,7 @@ public class TabletUiState {
     public int questDetailsObjectiveDragTargetIndex = -1;
     public int questDetailsObjectiveDragStartX;
     public int questDetailsObjectiveDragStartY;
-    public String questDetailsSelectedTextId = "";
-    public String questDetailsSelectedImageId = "";
-    public final Set<String> questDetailsSelectedTextIds = new java.util.LinkedHashSet<>();
-    public final Set<String> questDetailsSelectedImageIds = new java.util.LinkedHashSet<>();
+    public final CanvasLayerSelectionState questDetailsDescriptionSelection = new CanvasLayerSelectionState();
     public String questDetailsTextEditTarget = "";
     public String questDetailsTextEditDraft = "";
     public boolean questDetailsTextStyleOpen;
@@ -479,10 +475,6 @@ public class TabletUiState {
     public int canvasPointerY;
     public boolean canvasPointerKnown;
     public final CanvasMiniNotificationState canvasMiniNotification = new CanvasMiniNotificationState();
-    public String selectedCanvasImageId = "";
-    public String selectedCanvasTextId = "";
-    public final Set<String> selectedCanvasImageIds = new java.util.LinkedHashSet<>();
-    public final Set<String> selectedCanvasTextIds = new java.util.LinkedHashSet<>();
     public boolean canvasTextMenuOpen;
     public String canvasTextMenuTarget = "";
     public String canvasTextFontSizeDraftTarget = "";

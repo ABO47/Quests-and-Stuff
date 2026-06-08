@@ -53,27 +53,27 @@ final class CanvasViewportContextRouter {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextEdgeSource, state.contextEdgeTarget);
         } else if (textHit != null) {
             ContextMenuState.targetText(state, textHit.id());
-            state.selectedCanvasTextId = textHit.id();
-            state.selectedCanvasTextIds.clear();
-            state.selectedCanvasTextIds.add(textHit.id());
-            state.selectedCanvasImageId = "";
-            state.selectedCanvasImageIds.clear();
-            state.selectedQuestIds.clear();
+            state.canvasSelection.setPrimaryTextId(textHit.id());
+            state.canvasSelection.textIds().clear();
+            state.canvasSelection.textIds().add(textHit.id());
+            state.canvasSelection.setPrimaryImageId("");
+            state.canvasSelection.imageIds().clear();
+            state.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=text id={}", textHit.id());
         } else if (imageHit != null) {
             ContextMenuState.targetImage(state, imageHit.id());
-            state.selectedCanvasImageId = imageHit.id();
-            state.selectedCanvasImageIds.clear();
-            state.selectedCanvasImageIds.add(imageHit.id());
-            state.selectedCanvasTextId = "";
-            state.selectedCanvasTextIds.clear();
-            state.selectedQuestIds.clear();
+            state.canvasSelection.setPrimaryImageId(imageHit.id());
+            state.canvasSelection.imageIds().clear();
+            state.canvasSelection.imageIds().add(imageHit.id());
+            state.canvasSelection.setPrimaryTextId("");
+            state.canvasSelection.textIds().clear();
+            state.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=image id={}", imageHit.id());
         } else if (hit != null) {
             ContextMenuState.targetQuest(state, hit.questId());
-            if (!state.selectedQuestIds.contains(hit.questId())) {
-                state.selectedQuestIds.clear();
-                state.selectedQuestIds.add(hit.questId());
+            if (!state.canvasSelection.questIds().contains(hit.questId())) {
+                state.canvasSelection.questIds().clear();
+                state.canvasSelection.questIds().add(hit.questId());
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=quest quest={}", state.contextQuestId);
         } else if (edgeHit != null) {

@@ -93,11 +93,11 @@ final class CanvasContextElementActions {
                     return;
                 }
                 CanvasLayerMutations.putCanvasImage(state, selectedGroup, image.withCenteredPivot());
-                state.selectedCanvasImageId = image.id();
-                state.selectedCanvasImageIds.clear();
-                state.selectedCanvasImageIds.add(image.id());
-                state.selectedCanvasTextId = "";
-                state.selectedCanvasTextIds.clear();
+                state.canvasSelection.setPrimaryImageId(image.id());
+                state.canvasSelection.imageIds().clear();
+                state.canvasSelection.imageIds().add(image.id());
+                state.canvasSelection.setPrimaryTextId("");
+                state.canvasSelection.textIds().clear();
             }, canvasViewport::refresh);
         }
         if (CanvasGridFitController.canFitImageToGrid(state, selectedGroup, state.contextCanvasImageId)) {
@@ -125,7 +125,7 @@ final class CanvasContextElementActions {
             state.selectingCanvasTextRange = false;
             state.canvasTextMenuOpen = true;
             state.canvasTextMenuTarget = state.contextCanvasTextId;
-            state.selectedCanvasTextId = state.contextCanvasTextId;
+            state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
             canvasViewport.setFocus(true);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_text id={}", state.contextCanvasTextId);
@@ -134,7 +134,7 @@ final class CanvasContextElementActions {
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, false, () -> {
             state.canvasTextMenuOpen = true;
             state.canvasTextMenuTarget = state.contextCanvasTextId;
-            state.selectedCanvasTextId = state.contextCanvasTextId;
+            state.canvasSelection.setPrimaryTextId(state.contextCanvasTextId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=text_style id={}", state.contextCanvasTextId);
             canvasViewport.refresh();

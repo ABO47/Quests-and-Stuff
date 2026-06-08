@@ -77,12 +77,12 @@ public final class CanvasInlineTextEditor {
         state.selectingCanvasTextRange = false;
         state.canvasTextMenuOpen = true;
         state.canvasTextMenuTarget = text.id();
-        state.selectedCanvasTextId = text.id();
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasTextIds.add(text.id());
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryTextId(text.id());
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.textIds().add(text.id());
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.questIds().clear();
         state.draggingCanvasText = false;
         state.resizingCanvasText = false;
         state.rotatingCanvasText = false;

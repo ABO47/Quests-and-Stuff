@@ -38,7 +38,7 @@ final class CanvasSelectionResizeController {
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = byQuestId.get(questId);
             if (card == null) {
                 continue;

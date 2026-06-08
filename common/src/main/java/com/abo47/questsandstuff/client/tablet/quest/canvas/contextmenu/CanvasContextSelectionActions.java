@@ -89,7 +89,7 @@ final class CanvasContextSelectionActions {
     }
 
     private static void addBatchQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
-        Set<String> questIds = state.selectedQuestIds;
+        Set<String> questIds = state.canvasSelection.questIds();
         if (questIds.size() <= 1) {
             return;
         }

@@ -92,11 +92,11 @@ public final class CanvasBlueprintController {
             return false;
         }
         PlacementAnchor anchor = placementAnchor(state, blueprint, localX, localY);
-        state.selectedQuestIds.clear();
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextIds.clear();
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.textIds().clear();
         state.canvasClipboard.clearPendingPastedLayers();
         EditorCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
         state.blueprintPlacement.finish();

@@ -26,7 +26,7 @@ final class CanvasRenderStateController {
     }
 
     static void pruneStaleInteractiveState(TabletUiState state, Set<String> visibleQuestIds) {
-        state.selectedQuestIds.retainAll(visibleQuestIds);
+        state.canvasSelection.questIds().retainAll(visibleQuestIds);
         if (!state.connectSourceQuestId.isBlank() && !ClientQuestCache.containsQuest(state.connectSourceQuestId)) {
             state.connectSourceQuestId = "";
         }

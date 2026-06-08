@@ -42,12 +42,12 @@ class TabletStateQueriesTest {
         assertEquals("", TabletStateQueries.singleSelectedQuestId(state));
         assertFalse(TabletStateQueries.hasSelectedQuests(state));
 
-        state.selectedQuestIds.add("quest_a");
+        state.canvasSelection.questIds().add("quest_a");
         assertEquals("quest_a", TabletStateQueries.singleSelectedQuestId(state));
         assertTrue(TabletStateQueries.hasSelectedQuests(state));
 
-        List<String> snapshot = TabletStateQueries.selectedQuestIdsSnapshot(state);
-        state.selectedQuestIds.add("quest_b");
+        List<String> snapshot = TabletStateQueries.selectedQuestIdSnapshot(state);
+        state.canvasSelection.questIds().add("quest_b");
 
         assertEquals(List.of("quest_a"), snapshot);
         assertEquals("", TabletStateQueries.singleSelectedQuestId(state));

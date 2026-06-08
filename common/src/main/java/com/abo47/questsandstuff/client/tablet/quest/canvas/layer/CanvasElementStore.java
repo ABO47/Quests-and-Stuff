@@ -62,10 +62,10 @@ public final class CanvasElementStore {
         } else {
             state.canvasImagesByGroup.put(group, images);
         }
-        if (imageId.equals(state.selectedCanvasImageId)) {
-            state.selectedCanvasImageId = "";
+        if (imageId.equals(state.canvasSelection.primaryImageId())) {
+            state.canvasSelection.setPrimaryImageId("");
         }
-        state.selectedCanvasImageIds.remove(imageId);
+        state.canvasSelection.imageIds().remove(imageId);
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.imageKey(imageId));
         ClientQuestCache.removeCanvasImageLocal(group, imageId);
         persistLayerOrderLocal(state, group);
@@ -116,10 +116,10 @@ public final class CanvasElementStore {
         } else {
             state.canvasTextsByGroup.put(group, texts);
         }
-        if (textId.equals(state.selectedCanvasTextId)) {
-            state.selectedCanvasTextId = "";
+        if (textId.equals(state.canvasSelection.primaryTextId())) {
+            state.canvasSelection.setPrimaryTextId("");
         }
-        state.selectedCanvasTextIds.remove(textId);
+        state.canvasSelection.textIds().remove(textId);
         if (textId.equals(state.canvasTextMenuTarget)) {
             state.canvasTextMenuTarget = "";
             state.canvasTextMenuOpen = false;

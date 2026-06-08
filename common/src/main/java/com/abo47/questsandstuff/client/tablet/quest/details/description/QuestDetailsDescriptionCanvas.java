@@ -406,24 +406,24 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         state.questDetailsSelectedObjectiveId = "";
         if ("desc_text".equals(hit.kind())) {
             if (selection.count() > 1 && selection.isSelectedText(hit.id())) {
-                state.questDetailsSelectedTextId = hit.id();
+                state.questDetailsDescriptionSelection.setPrimaryTextId(hit.id());
             } else {
-                state.questDetailsSelectedTextIds.clear();
-                state.questDetailsSelectedImageIds.clear();
-                state.questDetailsSelectedTextIds.add(hit.id());
-                state.questDetailsSelectedImageId = "";
+                state.questDetailsDescriptionSelection.textIds().clear();
+                state.questDetailsDescriptionSelection.imageIds().clear();
+                state.questDetailsDescriptionSelection.textIds().add(hit.id());
+                state.questDetailsDescriptionSelection.setPrimaryImageId("");
             }
-            state.questDetailsSelectedTextId = hit.id();
+            state.questDetailsDescriptionSelection.setPrimaryTextId(hit.id());
         } else {
             if (selection.count() > 1 && selection.isSelectedImage(hit.id())) {
-                state.questDetailsSelectedImageId = hit.id();
+                state.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
             } else {
-                state.questDetailsSelectedTextIds.clear();
-                state.questDetailsSelectedImageIds.clear();
-                state.questDetailsSelectedImageIds.add(hit.id());
-                state.questDetailsSelectedTextId = "";
+                state.questDetailsDescriptionSelection.textIds().clear();
+                state.questDetailsDescriptionSelection.imageIds().clear();
+                state.questDetailsDescriptionSelection.imageIds().add(hit.id());
+                state.questDetailsDescriptionSelection.setPrimaryTextId("");
             }
-            state.questDetailsSelectedImageId = hit.id();
+            state.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
             state.questDetailsTextStyleOpen = false;
         }
     }
@@ -432,11 +432,11 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         state.questDetailsSelectedObjectiveKind = "";
         state.questDetailsSelectedObjectiveId = "";
         if ("desc_text".equals(hit.kind())) {
-            toggle(state.questDetailsSelectedTextIds, hit.id());
-            state.questDetailsSelectedTextId = state.questDetailsSelectedTextIds.contains(hit.id()) ? hit.id() : state.questDetailsSelectedTextIds.stream().findFirst().orElse("");
+            toggle(state.questDetailsDescriptionSelection.textIds(), hit.id());
+            state.questDetailsDescriptionSelection.setPrimaryTextId(state.questDetailsDescriptionSelection.textIds().contains(hit.id()) ? hit.id() : state.questDetailsDescriptionSelection.textIds().stream().findFirst().orElse(""));
         } else {
-            toggle(state.questDetailsSelectedImageIds, hit.id());
-            state.questDetailsSelectedImageId = state.questDetailsSelectedImageIds.contains(hit.id()) ? hit.id() : state.questDetailsSelectedImageIds.stream().findFirst().orElse("");
+            toggle(state.questDetailsDescriptionSelection.imageIds(), hit.id());
+            state.questDetailsDescriptionSelection.setPrimaryImageId(state.questDetailsDescriptionSelection.imageIds().contains(hit.id()) ? hit.id() : state.questDetailsDescriptionSelection.imageIds().stream().findFirst().orElse(""));
         }
     }
 

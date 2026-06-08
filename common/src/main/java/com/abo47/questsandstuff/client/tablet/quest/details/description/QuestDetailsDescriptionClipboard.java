@@ -80,8 +80,8 @@ public final class QuestDetailsDescriptionClipboard {
             pasted = QuestDetailsDescriptionLayout.fitAndClampText(state, pasted, contentW);
             model.putText(pasted);
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
-            state.questDetailsSelectedTextIds.add(id);
-            state.questDetailsSelectedTextId = id;
+            state.questDetailsDescriptionSelection.textIds().add(id);
+            state.questDetailsDescriptionSelection.setPrimaryTextId(id);
         }
         for (CanvasImageLayer image : state.canvasClipboard.imageLayers()) {
             String id = StableIdAllocator.nextId(imageIdPrefix(image), model.images.keySet());
@@ -89,8 +89,8 @@ public final class QuestDetailsDescriptionClipboard {
             pasted = QuestDetailsDescriptionLayout.fitAndClampImage(state, pasted, contentW);
             model.putImage(pasted);
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
-            state.questDetailsSelectedImageIds.add(id);
-            state.questDetailsSelectedImageId = id;
+            state.questDetailsDescriptionSelection.imageIds().add(id);
+            state.questDetailsDescriptionSelection.setPrimaryImageId(id);
         }
         QuestDetailsDescriptionModel.save(player, questId, model);
     }

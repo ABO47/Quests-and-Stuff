@@ -37,9 +37,9 @@ final class EntityVariantApplyActions {
                 return;
             }
             CanvasLayerMutations.putCanvasImage(state, parsed.questId(), image.withAsset(EntityPreviewRenderer.withEntityVariant(image.asset(), variantKey)));
-            state.selectedCanvasImageId = image.id();
-            state.selectedCanvasImageIds.clear();
-            state.selectedCanvasImageIds.add(image.id());
+            state.canvasSelection.setPrimaryImageId(image.id());
+            state.canvasSelection.imageIds().clear();
+            state.canvasSelection.imageIds().add(image.id());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity variant picked group={} image={} variant={}", parsed.questId(), image.id(), variantKey);
             return;
         }

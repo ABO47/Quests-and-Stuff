@@ -165,10 +165,10 @@ public final class CanvasLayerMutations {
     }
 
     public static void commitSelectedTransientCanvasLayers(TabletUiState state, String group) {
-        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             commitTransientCanvasImage(state, group, imageId);
         }
-        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             commitTransientCanvasText(state, group, textId);
         }
     }

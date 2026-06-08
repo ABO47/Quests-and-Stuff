@@ -34,10 +34,10 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     void clear() {
-        state.questDetailsSelectedTextId = "";
-        state.questDetailsSelectedImageId = "";
-        state.questDetailsSelectedTextIds.clear();
-        state.questDetailsSelectedImageIds.clear();
+        state.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetailsDescriptionSelection.imageIds().clear();
         state.questDetailsSelectedObjectiveKind = "";
         state.questDetailsSelectedObjectiveId = "";
         state.selectionBoundsVisible = false;
@@ -48,11 +48,11 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     boolean isSelectedText(String id) {
-        return id.equals(state.questDetailsSelectedTextId) || state.questDetailsSelectedTextIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryTextId()) || state.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
     boolean isSelectedImage(String id) {
-        return id.equals(state.questDetailsSelectedImageId) || state.questDetailsSelectedImageIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryImageId()) || state.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
     void finishBoxSelection(QuestDetailsDescriptionModel model) {
@@ -62,14 +62,14 @@ public final class QuestDetailsDescriptionSelection {
         int maxY = Math.max(state.questDetailsBoxStartY, state.questDetailsBoxCurrentY) + state.questDetailsDescScroll;
         for (CanvasTextLayer text : model.texts.values()) {
             if (intersects(bounds(text.x(), text.y(), text.w(), text.h(), text.rotation()), minX, minY, maxX, maxY)) {
-                state.questDetailsSelectedTextIds.add(text.id());
-                state.questDetailsSelectedTextId = text.id();
+                state.questDetailsDescriptionSelection.textIds().add(text.id());
+                state.questDetailsDescriptionSelection.setPrimaryTextId(text.id());
             }
         }
         for (CanvasImageLayer image : model.images.values()) {
             if (intersects(bounds(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation()), minX, minY, maxX, maxY)) {
-                state.questDetailsSelectedImageIds.add(image.id());
-                state.questDetailsSelectedImageId = image.id();
+                state.questDetailsDescriptionSelection.imageIds().add(image.id());
+                state.questDetailsDescriptionSelection.setPrimaryImageId(image.id());
             }
         }
     }

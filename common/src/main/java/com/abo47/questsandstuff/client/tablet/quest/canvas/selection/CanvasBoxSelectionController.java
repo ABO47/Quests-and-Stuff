@@ -21,28 +21,28 @@ public final class CanvasBoxSelectionController {
         if (imageId == null || imageId.isBlank()) {
             return;
         }
-        if (!state.selectedCanvasImageIds.add(imageId)) {
-            state.selectedCanvasImageIds.remove(imageId);
-            if (imageId.equals(state.selectedCanvasImageId)) {
-                state.selectedCanvasImageId = state.selectedCanvasImageIds.stream().findFirst().orElse("");
+        if (!state.canvasSelection.imageIds().add(imageId)) {
+            state.canvasSelection.imageIds().remove(imageId);
+            if (imageId.equals(state.canvasSelection.primaryImageId())) {
+                state.canvasSelection.setPrimaryImageId(state.canvasSelection.imageIds().stream().findFirst().orElse(""));
             }
             return;
         }
-        state.selectedCanvasImageId = imageId;
+        state.canvasSelection.setPrimaryImageId(imageId);
     }
 
     public static void toggleCanvasTextSelection(TabletUiState state, String textId) {
         if (textId == null || textId.isBlank()) {
             return;
         }
-        if (!state.selectedCanvasTextIds.add(textId)) {
-            state.selectedCanvasTextIds.remove(textId);
-            if (textId.equals(state.selectedCanvasTextId)) {
-                state.selectedCanvasTextId = state.selectedCanvasTextIds.stream().findFirst().orElse("");
+        if (!state.canvasSelection.textIds().add(textId)) {
+            state.canvasSelection.textIds().remove(textId);
+            if (textId.equals(state.canvasSelection.primaryTextId())) {
+                state.canvasSelection.setPrimaryTextId(state.canvasSelection.textIds().stream().findFirst().orElse(""));
             }
             return;
         }
-        state.selectedCanvasTextId = textId;
+        state.canvasSelection.setPrimaryTextId(textId);
     }
 
     public static void beginBoxSelection(TabletUiState state, boolean additive, int localX, int localY) {
@@ -63,40 +63,40 @@ public final class CanvasBoxSelectionController {
         int minY = Math.min(state.boxStartY, state.boxCurrentY);
         int maxX = Math.max(state.boxStartX, state.boxCurrentX);
         int maxY = Math.max(state.boxStartY, state.boxCurrentY);
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.addAll(state.boxSelectionBaseQuestIds);
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().addAll(state.boxSelectionBaseQuestIds);
         for (QuestCardLayout card : cards) {
             boolean intersects = card.x() < maxX && card.x() + card.width() > minX
                     && card.y() < maxY && card.y() + card.height() > minY;
             if (intersects) {
-                state.selectedQuestIds.add(card.questId());
+                state.canvasSelection.questIds().add(card.questId());
             }
         }
         String group = selectedGroupName(state);
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasImageIds.addAll(state.boxSelectionBaseCanvasImageIds);
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.imageIds().addAll(state.boxSelectionBaseCanvasImageIds);
         String lastImageId = "";
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
-                state.selectedCanvasImageIds.add(image.id());
+                state.canvasSelection.imageIds().add(image.id());
                 lastImageId = image.id();
             }
         }
-        state.selectedCanvasImageId = primarySelection(lastImageId, state.boxSelectionBaseCanvasImageId, state.selectedCanvasImageIds);
-        state.selectedCanvasTextIds.clear();
-        state.selectedCanvasTextIds.addAll(state.boxSelectionBaseCanvasTextIds);
+        state.canvasSelection.setPrimaryImageId(primarySelection(lastImageId, state.boxSelectionBaseCanvasImageId, state.canvasSelection.imageIds()));
+        state.canvasSelection.textIds().clear();
+        state.canvasSelection.textIds().addAll(state.boxSelectionBaseCanvasTextIds);
         String lastTextId = "";
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
-                state.selectedCanvasTextIds.add(text.id());
+                state.canvasSelection.textIds().add(text.id());
                 lastTextId = text.id();
             }
         }
-        state.selectedCanvasTextId = primarySelection(lastTextId, state.boxSelectionBaseCanvasTextId, state.selectedCanvasTextIds);
+        state.canvasSelection.setPrimaryTextId(primarySelection(lastTextId, state.boxSelectionBaseCanvasTextId, state.canvasSelection.textIds()));
     }
 
     public static void finishBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
@@ -110,11 +110,11 @@ public final class CanvasBoxSelectionController {
         if (!additive) {
             return;
         }
-        state.boxSelectionBaseQuestIds.addAll(state.selectedQuestIds);
-        state.boxSelectionBaseCanvasImageIds.addAll(CanvasSelectionActions.selectedCanvasImageIds(state));
-        state.boxSelectionBaseCanvasTextIds.addAll(CanvasSelectionActions.selectedCanvasTextIds(state));
-        state.boxSelectionBaseCanvasImageId = state.selectedCanvasImageId;
-        state.boxSelectionBaseCanvasTextId = state.selectedCanvasTextId;
+        state.boxSelectionBaseQuestIds.addAll(state.canvasSelection.questIds());
+        state.boxSelectionBaseCanvasImageIds.addAll(CanvasSelectionActions.selectedImageIds(state));
+        state.boxSelectionBaseCanvasTextIds.addAll(CanvasSelectionActions.selectedTextIds(state));
+        state.boxSelectionBaseCanvasImageId = state.canvasSelection.primaryImageId();
+        state.boxSelectionBaseCanvasTextId = state.canvasSelection.primaryTextId();
     }
 
     private static void clearBoxSelectionBase(TabletUiState state) {

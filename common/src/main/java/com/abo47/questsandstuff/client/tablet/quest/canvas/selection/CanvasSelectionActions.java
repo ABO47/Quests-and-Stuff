@@ -28,25 +28,25 @@ public final class CanvasSelectionActions {
     }
 
     public static boolean isImageSelected(TabletUiState state, String imageId) {
-        return imageId != null && (imageId.equals(state.selectedCanvasImageId) || state.selectedCanvasImageIds.contains(imageId));
+        return imageId != null && (imageId.equals(state.canvasSelection.primaryImageId()) || state.canvasSelection.imageIds().contains(imageId));
     }
 
     public static boolean isTextSelected(TabletUiState state, String textId) {
-        return textId != null && (textId.equals(state.selectedCanvasTextId) || state.selectedCanvasTextIds.contains(textId));
+        return textId != null && (textId.equals(state.canvasSelection.primaryTextId()) || state.canvasSelection.textIds().contains(textId));
     }
 
-    public static Set<String> selectedCanvasImageIds(TabletUiState state) {
-        Set<String> images = new LinkedHashSet<>(state.selectedCanvasImageIds);
-        if (!state.selectedCanvasImageId.isBlank()) {
-            images.add(state.selectedCanvasImageId);
+    public static Set<String> selectedImageIds(TabletUiState state) {
+        Set<String> images = new LinkedHashSet<>(state.canvasSelection.imageIds());
+        if (!state.canvasSelection.primaryImageId().isBlank()) {
+            images.add(state.canvasSelection.primaryImageId());
         }
         return images;
     }
 
-    public static Set<String> selectedCanvasTextIds(TabletUiState state) {
-        Set<String> texts = new LinkedHashSet<>(state.selectedCanvasTextIds);
-        if (!state.selectedCanvasTextId.isBlank()) {
-            texts.add(state.selectedCanvasTextId);
+    public static Set<String> selectedTextIds(TabletUiState state) {
+        Set<String> texts = new LinkedHashSet<>(state.canvasSelection.textIds());
+        if (!state.canvasSelection.primaryTextId().isBlank()) {
+            texts.add(state.canvasSelection.primaryTextId());
         }
         return texts;
     }
@@ -56,11 +56,11 @@ public final class CanvasSelectionActions {
     }
 
     public static void clearCanvasSelection(TabletUiState state) {
-        state.selectedQuestIds.clear();
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextIds.clear();
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.textIds().clear();
         CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
@@ -84,7 +84,7 @@ public final class CanvasSelectionActions {
 
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new LinkedHashMap<>();
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
@@ -97,7 +97,7 @@ public final class CanvasSelectionActions {
             }
         }
 
-        Set<String> imageIds = selectedCanvasImageIds(state);
+        Set<String> imageIds = selectedImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
@@ -109,7 +109,7 @@ public final class CanvasSelectionActions {
             }
         }
 
-        Set<String> textIds = selectedCanvasTextIds(state);
+        Set<String> textIds = selectedTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
@@ -132,7 +132,7 @@ public final class CanvasSelectionActions {
 
     private static SelectionBounds selectedBounds(TabletUiState state, String group) {
         SelectionBounds bounds = new SelectionBounds();
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             if (!ClientQuestCache.containsQuest(questId)) {
                 continue;
             }
@@ -141,7 +141,7 @@ public final class CanvasSelectionActions {
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }
 
-        Set<String> imageIds = selectedCanvasImageIds(state);
+        Set<String> imageIds = selectedImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
@@ -150,7 +150,7 @@ public final class CanvasSelectionActions {
             bounds.include(box[0], box[1], box[2], box[3]);
         }
 
-        Set<String> textIds = selectedCanvasTextIds(state);
+        Set<String> textIds = selectedTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;

@@ -197,8 +197,8 @@ final class CanvasViewportClickController {
 
         if (!state.canEdit) {
             if (hit != null) {
-                state.selectedQuestIds.clear();
-                state.selectedQuestIds.add(hit.questId());
+                state.canvasSelection.questIds().clear();
+                state.canvasSelection.questIds().add(hit.questId());
                 state.lastJumpQuest = hit.questId();
                 if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag()) && !ClientQuestCache.questHiddenPreview(hit.tag())) {
                     int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvasPanelX + state.canvasViewportX);

@@ -190,16 +190,16 @@ final class CanvasViewportInputController {
 
         if (state.draggingCanvasImage || state.resizingCanvasImage || state.rotatingCanvasImage) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.selectedCanvasImageId);
-            CanvasLayerMutations.persistCanvasImage(state, group, state.selectedCanvasImageId);
+            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvasSelection.primaryImageId());
+            CanvasLayerMutations.persistCanvasImage(state, group, state.canvasSelection.primaryImageId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
         if (state.draggingCanvasText || state.resizingCanvasText || state.rotatingCanvasText) {
             String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasText(state, group, state.selectedCanvasTextId);
-            CanvasLayerMutations.persistCanvasText(state, group, state.selectedCanvasTextId);
+            CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvasSelection.primaryTextId());
+            CanvasLayerMutations.persistCanvasText(state, group, state.canvasSelection.primaryTextId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
@@ -218,10 +218,10 @@ final class CanvasViewportInputController {
             }
             String group = TabletStateQueries.selectedGroupName(state);
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
-            for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+            for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
                 CanvasLayerMutations.persistCanvasImage(state, group, imageId);
             }
-            for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+            for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
                 CanvasLayerMutations.persistCanvasText(state, group, textId);
             }
             QuestsAndStuffMod.debugLog(
@@ -276,10 +276,10 @@ final class CanvasViewportInputController {
 
     private static void persistSelectedCanvasLayers(TabletUiState state) {
         String group = TabletStateQueries.selectedGroupName(state);
-        for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             CanvasLayerMutations.persistCanvasImage(state, group, imageId);
         }
-        for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             CanvasLayerMutations.persistCanvasText(state, group, textId);
         }
     }

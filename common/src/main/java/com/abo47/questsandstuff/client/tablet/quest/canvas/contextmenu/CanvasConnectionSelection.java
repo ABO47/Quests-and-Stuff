@@ -16,10 +16,10 @@ public final class CanvasConnectionSelection {
     }
 
     public static List<CanvasContextMenuController.EdgeRef> selectedConnectedEdges(TabletUiState state, String group) {
-        if (state == null || group == null || group.isBlank() || state.selectedQuestIds.isEmpty()) {
+        if (state == null || group == null || group.isBlank() || state.canvasSelection.questIds().isEmpty()) {
             return List.of();
         }
-        java.util.Set<String> selected = new java.util.LinkedHashSet<>(state.selectedQuestIds);
+        java.util.Set<String> selected = new java.util.LinkedHashSet<>(state.canvasSelection.questIds());
         List<CanvasContextMenuController.EdgeRef> edges = new ArrayList<>();
         for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.questEntries()) {
             String questId = entry.getKey();

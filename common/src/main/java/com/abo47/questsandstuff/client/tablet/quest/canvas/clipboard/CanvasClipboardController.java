@@ -120,9 +120,9 @@ public final class CanvasClipboardController {
 
     private static ClipboardSelection currentSelection(TabletUiState state) {
         return new ClipboardSelection(
-                new LinkedHashSet<>(state.selectedQuestIds),
-                CanvasSelectionActions.selectedCanvasImageIds(state),
-                CanvasSelectionActions.selectedCanvasTextIds(state)
+                new LinkedHashSet<>(state.canvasSelection.questIds()),
+                CanvasSelectionActions.selectedImageIds(state),
+                CanvasSelectionActions.selectedTextIds(state)
         );
     }
 
@@ -231,11 +231,11 @@ public final class CanvasClipboardController {
             return false;
         }
 
-        state.selectedQuestIds.clear();
-        state.selectedCanvasImageId = "";
-        state.selectedCanvasImageIds.clear();
-        state.selectedCanvasTextId = "";
-        state.selectedCanvasTextIds.clear();
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.setPrimaryImageId("");
+        state.canvasSelection.imageIds().clear();
+        state.canvasSelection.setPrimaryTextId("");
+        state.canvasSelection.textIds().clear();
         state.canvasClipboard.clearPendingPastedLayers();
 
         boolean pastedElements = pasteCanvasElements(state, group, anchorX, anchorY);
@@ -263,8 +263,8 @@ public final class CanvasClipboardController {
                 duplicate = CanvasGridFitController.fittedImage(state, duplicate);
             }
             CanvasLayerMutations.putCanvasImage(state, group, duplicate);
-            state.selectedCanvasImageIds.add(id);
-            state.selectedCanvasImageId = id;
+            state.canvasSelection.imageIds().add(id);
+            state.canvasSelection.setPrimaryImageId(id);
             state.canvasClipboard.recordPastedImage(id);
             pasted = true;
             index++;
@@ -279,8 +279,8 @@ public final class CanvasClipboardController {
                 duplicate = CanvasGridFitController.fittedText(state, duplicate);
             }
             CanvasLayerMutations.putCanvasText(state, group, duplicate);
-            state.selectedCanvasTextIds.add(id);
-            state.selectedCanvasTextId = id;
+            state.canvasSelection.textIds().add(id);
+            state.canvasSelection.setPrimaryTextId(id);
             state.canvasClipboard.recordPastedText(id);
             pasted = true;
             index++;
@@ -331,7 +331,7 @@ public final class CanvasClipboardController {
     private static CanvasPoint selectedCanvasAnchor(TabletUiState state, CanvasViewport canvasViewport, int step) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
-        for (String questId : state.selectedQuestIds) {
+        for (String questId : state.canvasSelection.questIds()) {
             QuestCardLayout card = canvasViewport.cardLookup().get(questId);
             if (card == null) {
                 continue;
@@ -340,14 +340,14 @@ public final class CanvasClipboardController {
             minY = Math.min(minY, card.logicalY());
         }
         String group = TabletStateQueries.selectedGroupName(state);
-        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 minX = Math.min(minX, image.x());
                 minY = Math.min(minY, image.y());
             }
         }
-        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
         for (CanvasTextLayer text : state.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 minX = Math.min(minX, text.x());

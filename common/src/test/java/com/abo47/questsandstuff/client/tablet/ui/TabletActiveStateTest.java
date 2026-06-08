@@ -49,9 +49,9 @@ class TabletActiveStateTest {
         state.selectedGroup = "old_group";
         state.groupDraft = "old_group";
         state.chapterDraftName = "old_group";
-        state.selectedQuestIds.add("old_quest");
-        state.selectedCanvasImageIds.add("old_image");
-        state.selectedCanvasTextIds.add("old_text");
+        state.canvasSelection.questIds().add("old_quest");
+        state.canvasSelection.imageIds().add("old_image");
+        state.canvasSelection.textIds().add("old_text");
         state.canvasClipboard.recordPastedImage(" local_image ");
         state.canvasClipboard.recordPastedText(" local_text ");
 
@@ -65,13 +65,13 @@ class TabletActiveStateTest {
         assertEquals("pasted_group", state.groupDraft);
         assertEquals("pasted_group", state.chapterDraftName);
         assertEquals("quest:new", state.lastJumpQuest);
-        assertTrue(state.selectedQuestIds.contains("quest:new"));
-        assertTrue(state.selectedCanvasImageIds.contains("remote_image"));
-        assertTrue(state.selectedCanvasImageIds.contains("local_image"));
-        assertTrue(state.selectedCanvasTextIds.contains("remote_text"));
-        assertTrue(state.selectedCanvasTextIds.contains("local_text"));
-        assertEquals("local_image", state.selectedCanvasImageId);
-        assertEquals("local_text", state.selectedCanvasTextId);
+        assertTrue(state.canvasSelection.questIds().contains("quest:new"));
+        assertTrue(state.canvasSelection.imageIds().contains("remote_image"));
+        assertTrue(state.canvasSelection.imageIds().contains("local_image"));
+        assertTrue(state.canvasSelection.textIds().contains("remote_text"));
+        assertTrue(state.canvasSelection.textIds().contains("local_text"));
+        assertEquals("local_image", state.canvasSelection.primaryImageId());
+        assertEquals("local_text", state.canvasSelection.primaryTextId());
         assertTrue(state.canvasClipboard.pendingPastedImageIds().isEmpty());
         assertTrue(state.canvasClipboard.pendingPastedTextIds().isEmpty());
         assertTrue(ClientQuestCache.groupOrder().contains("pasted_group"));

@@ -507,11 +507,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private boolean isSelectedText(String id) {
-        return id.equals(state.questDetailsSelectedTextId) || state.questDetailsSelectedTextIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryTextId()) || state.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
     private boolean isSelectedImage(String id) {
-        return id.equals(state.questDetailsSelectedImageId) || state.questDetailsSelectedImageIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryImageId()) || state.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
     record ElementRect(int x, int y, int w, int h, int rotation) {

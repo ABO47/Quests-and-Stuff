@@ -47,10 +47,10 @@ final class QuestObjectiveListInteractions {
 
     static void selectAndBeginDrag(TabletUiState state, String kind, String id, double mouseX, double mouseY) {
         select(state, kind, id);
-        state.questDetailsSelectedTextId = "";
-        state.questDetailsSelectedImageId = "";
-        state.questDetailsSelectedTextIds.clear();
-        state.questDetailsSelectedImageIds.clear();
+        state.questDetailsDescriptionSelection.setPrimaryTextId("");
+        state.questDetailsDescriptionSelection.setPrimaryImageId("");
+        state.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetailsDescriptionSelection.imageIds().clear();
         state.questDetailsObjectiveDragPending = true;
         state.questDetailsObjectiveDragActive = false;
         state.questDetailsObjectiveDragKind = ("requirement".equals(kind) || "requirements".equals(kind)) ? "requirements" : "rewards";

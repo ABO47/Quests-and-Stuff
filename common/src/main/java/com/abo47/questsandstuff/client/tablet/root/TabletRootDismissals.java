@@ -85,8 +85,8 @@ final class TabletRootDismissals {
         boolean insideChapterPanel = TabletRootHitTest.isInsideChapterPanel(state, rootX, rootY, mouseX, mouseY);
         if (!insideCanvasViewport
                 && !TabletRootHitTest.isToolsMenuHit(state, rootX, rootY, mouseX, mouseY)
-                && !state.selectedQuestIds.isEmpty()) {
-            state.selectedQuestIds.clear();
+                && !state.canvasSelection.questIds().isEmpty()) {
+            state.canvasSelection.questIds().clear();
             if (!insideChapterPanel) {
                 state.connectSourceQuestId = "";
                 state.connectSourceQuestIds.clear();

@@ -202,12 +202,12 @@ public final class CanvasCameraController {
         String group = TabletStateQueries.selectedGroupName(state);
         LogicalBounds bounds = new LogicalBounds();
         for (QuestCardLayout card : cards) {
-            if (state.selectedQuestIds.contains(card.questId())) {
+            if (state.canvasSelection.questIds().contains(card.questId())) {
                 addCard(bounds, card);
             }
         }
-        Set<String> imageIds = CanvasSelectionActions.selectedCanvasImageIds(state);
-        Set<String> textIds = CanvasSelectionActions.selectedCanvasTextIds(state);
+        Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
+        Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
         for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 addImage(bounds, image);

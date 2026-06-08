@@ -123,8 +123,8 @@ public final class AssetPickerApplyActions {
             image = CanvasGridFitController.fittedImage(state, image);
         }
         CanvasLayerMutations.putCanvasImage(state, group, image);
-        state.selectedCanvasImageId = id;
-        state.selectedQuestIds.clear();
+        state.canvasSelection.setPrimaryImageId(id);
+        state.canvasSelection.questIds().clear();
         state.draggingCanvasImage = false;
         state.resizingCanvasImage = false;
         state.rotatingCanvasImage = false;

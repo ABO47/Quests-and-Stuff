@@ -27,8 +27,8 @@ final class CanvasConnectionClickActions {
         }
         if (state.quickConnectSourceQuestId.isBlank() || state.quickConnectSourceQuestId.equals(hit.questId())) {
             state.quickConnectSourceQuestId = hit.questId();
-            state.selectedQuestIds.clear();
-            state.selectedQuestIds.add(hit.questId());
+            state.canvasSelection.questIds().clear();
+            state.canvasSelection.questIds().add(hit.questId());
             state.lastJumpQuest = hit.questId();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas quick-connect source quest={}", hit.questId());
             refresher.run();
@@ -38,8 +38,8 @@ final class CanvasConnectionClickActions {
         CanvasConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
         TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
         state.quickConnectSourceQuestId = hit.questId();
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.add(hit.questId());
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().add(hit.questId());
         state.lastJumpQuest = hit.questId();
         state.connectSourceQuestId = "";
         state.connectSourceQuestIds.clear();
@@ -76,8 +76,8 @@ final class CanvasConnectionClickActions {
         state.connectSourceQuestId = "";
         state.connectSourceQuestIds.clear();
         if (connected > 0) {
-            state.selectedQuestIds.clear();
-            state.selectedQuestIds.add(hit.questId());
+            state.canvasSelection.questIds().clear();
+            state.canvasSelection.questIds().add(hit.questId());
             state.lastJumpQuest = hit.questId();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect completed sources={} target={}", attemptedSources, hit.questId());
             refresher.run();
@@ -96,8 +96,8 @@ final class CanvasConnectionClickActions {
             state.connectSourceQuestId = hit.questId();
             state.connectSourceQuestIds.clear();
             state.connectSourceQuestIds.add(hit.questId());
-            state.selectedQuestIds.clear();
-            state.selectedQuestIds.add(hit.questId());
+            state.canvasSelection.questIds().clear();
+            state.canvasSelection.questIds().add(hit.questId());
             refresher.run();
             return true;
         }
@@ -113,8 +113,8 @@ final class CanvasConnectionClickActions {
                 TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, addPrerequisite);
             }
         }
-        state.selectedQuestIds.clear();
-        state.selectedQuestIds.add(hit.questId());
+        state.canvasSelection.questIds().clear();
+        state.canvasSelection.questIds().add(hit.questId());
         state.connectSourceQuestId = "";
         state.connectSourceQuestIds.clear();
         refresher.run();

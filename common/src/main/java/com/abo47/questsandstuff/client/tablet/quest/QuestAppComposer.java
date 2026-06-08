@@ -143,7 +143,7 @@ public final class QuestAppComposer {
                 state.toolsGridOpacityMenuOpen = false;
                 state.chapterMenuOpen = false;
                 ContextMenuState.close(state);
-                state.selectedQuestIds.clear();
+                state.canvasSelection.questIds().clear();
             }
             TabletShellBootstrap.keepSelectedGroupValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;

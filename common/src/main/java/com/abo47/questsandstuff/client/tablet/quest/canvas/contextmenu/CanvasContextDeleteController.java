@@ -49,19 +49,19 @@ public final class CanvasContextDeleteController {
                 + "|" + state.contextEdgeTarget
                 + "|" + state.contextCanvasImageId
                 + "|" + state.contextCanvasTextId
-                + "|" + String.join(",", state.selectedQuestIds)
-                + "|" + String.join(",", CanvasSelectionActions.selectedCanvasImageIds(state))
-                + "|" + String.join(",", CanvasSelectionActions.selectedCanvasTextIds(state));
+                + "|" + String.join(",", state.canvasSelection.questIds())
+                + "|" + String.join(",", CanvasSelectionActions.selectedImageIds(state))
+                + "|" + String.join(",", CanvasSelectionActions.selectedTextIds(state));
     }
 
     public static void runDeleteAction(Player player, TabletUiState state) {
         String group = selectedGroupName(state);
         if (state.contextMenuTarget == ContextMenuTarget.SELECTION) {
-            for (String imageId : CanvasSelectionActions.selectedCanvasImageIds(state)) {
+            for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
                 boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, imageId);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, imageId, removed);
             }
-            for (String textId : CanvasSelectionActions.selectedCanvasTextIds(state)) {
+            for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
                 boolean removed = CanvasLayerMutations.removeCanvasText(state, group, textId);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, textId, removed);
             }
@@ -91,7 +91,7 @@ public final class CanvasContextDeleteController {
         if (state.contextMenuTarget == ContextMenuTarget.QUEST && !state.contextQuestId.isBlank()) {
             questIds.add(state.contextQuestId);
         } else {
-            questIds.addAll(state.selectedQuestIds);
+            questIds.addAll(state.canvasSelection.questIds());
         }
         if (questIds.isEmpty()) {
             return;
@@ -99,7 +99,7 @@ public final class CanvasContextDeleteController {
         for (String questId : questIds) {
             runRemoveQuestAction(player, questId);
         }
-        state.selectedQuestIds.removeAll(questIds);
+        state.canvasSelection.questIds().removeAll(questIds);
         if (!state.connectSourceQuestId.isBlank() && questIds.contains(state.connectSourceQuestId)) {
             state.connectSourceQuestId = "";
         }

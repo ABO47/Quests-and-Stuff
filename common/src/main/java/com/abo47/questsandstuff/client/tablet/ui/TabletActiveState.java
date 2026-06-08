@@ -82,46 +82,46 @@ final class TabletActiveState {
             activeTabletState.recentlyCreatedGroups.remove(group);
             TabletPersistence.persistUiState(activeTabletState);
         }
-        activeTabletState.selectedQuestIds.clear();
-        activeTabletState.selectedCanvasImageId = "";
-        activeTabletState.selectedCanvasTextId = "";
-        activeTabletState.selectedCanvasImageIds.clear();
-        activeTabletState.selectedCanvasTextIds.clear();
+        activeTabletState.canvasSelection.questIds().clear();
+        activeTabletState.canvasSelection.setPrimaryImageId("");
+        activeTabletState.canvasSelection.setPrimaryTextId("");
+        activeTabletState.canvasSelection.imageIds().clear();
+        activeTabletState.canvasSelection.textIds().clear();
         for (int i = 0; i < ids.size(); i++) {
             String questId = ids.getString(i);
             if (questId != null && !questId.isBlank()) {
-                activeTabletState.selectedQuestIds.add(questId);
+                activeTabletState.canvasSelection.questIds().add(questId);
                 activeTabletState.lastJumpQuest = questId;
             }
         }
         for (int i = 0; i < images.size(); i++) {
             String imageId = images.getString(i);
             if (imageId != null && !imageId.isBlank()) {
-                activeTabletState.selectedCanvasImageIds.add(imageId);
-                activeTabletState.selectedCanvasImageId = imageId;
+                activeTabletState.canvasSelection.imageIds().add(imageId);
+                activeTabletState.canvasSelection.setPrimaryImageId(imageId);
             }
         }
         for (int i = 0; i < texts.size(); i++) {
             String textId = texts.getString(i);
             if (textId != null && !textId.isBlank()) {
-                activeTabletState.selectedCanvasTextIds.add(textId);
-                activeTabletState.selectedCanvasTextId = textId;
+                activeTabletState.canvasSelection.textIds().add(textId);
+                activeTabletState.canvasSelection.setPrimaryTextId(textId);
             }
         }
-        activeTabletState.selectedCanvasImageIds.addAll(activeTabletState.canvasClipboard.pendingPastedImageIds());
-        activeTabletState.selectedCanvasTextIds.addAll(activeTabletState.canvasClipboard.pendingPastedTextIds());
+        activeTabletState.canvasSelection.imageIds().addAll(activeTabletState.canvasClipboard.pendingPastedImageIds());
+        activeTabletState.canvasSelection.textIds().addAll(activeTabletState.canvasClipboard.pendingPastedTextIds());
         String pendingImage = activeTabletState.canvasClipboard.lastPendingPastedImageId();
         String pendingText = activeTabletState.canvasClipboard.lastPendingPastedTextId();
         if (!pendingImage.isBlank()) {
-            activeTabletState.selectedCanvasImageId = pendingImage;
+            activeTabletState.canvasSelection.setPrimaryImageId(pendingImage);
         }
         if (!pendingText.isBlank()) {
-            activeTabletState.selectedCanvasTextId = pendingText;
+            activeTabletState.canvasSelection.setPrimaryTextId(pendingText);
         }
         activeTabletState.canvasClipboard.clearPendingPastedLayers();
         activeTabletState.recentlyCreatedGroups.remove(EditorCommandClient.selectedGroupName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={}",
-                EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.selectedQuestIds.size(), activeTabletState.selectedCanvasImageIds.size(), activeTabletState.selectedCanvasTextIds.size());
+                EditorCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvasSelection.questIds().size(), activeTabletState.canvasSelection.imageIds().size(), activeTabletState.canvasSelection.textIds().size());
         refreshActiveTablet();
     }
 }

@@ -61,12 +61,12 @@ final class CanvasSelectMoveClickActions {
                 return;
             }
             if (canvasViewport.shiftDown()) {
-                if (!state.selectedQuestIds.add(hit.questId())) {
-                    state.selectedQuestIds.remove(hit.questId());
+                if (!state.canvasSelection.questIds().add(hit.questId())) {
+                    state.canvasSelection.questIds().remove(hit.questId());
                 }
-            } else if (!state.selectedQuestIds.contains(hit.questId())) {
+            } else if (!state.canvasSelection.questIds().contains(hit.questId())) {
                 CanvasSelectionActions.clearCanvasSelection(state);
-                state.selectedQuestIds.add(hit.questId());
+                state.canvasSelection.questIds().add(hit.questId());
             }
             selectionTransforms.beginDrag(localX, localY, byQuestId);
             canvasViewport.beginSelectionDragPreview();
@@ -128,7 +128,7 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        boolean questResizeTransform = !state.selectedQuestIds.isEmpty();
+        boolean questResizeTransform = !state.canvasSelection.questIds().isEmpty();
         boolean questRotateTransform = selectionCount > 1;
         if (questRotateTransform && CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
             selectionTransforms.beginRotate(localX, localY, byQuestId);

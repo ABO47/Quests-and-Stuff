@@ -190,11 +190,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static boolean isSelectedText(TabletUiState state, String id) {
-        return id.equals(state.questDetailsSelectedTextId) || state.questDetailsSelectedTextIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryTextId()) || state.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
     private static boolean isSelectedImage(TabletUiState state, String id) {
-        return id.equals(state.questDetailsSelectedImageId) || state.questDetailsSelectedImageIds.contains(id);
+        return id.equals(state.questDetailsDescriptionSelection.primaryImageId()) || state.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
     private static int selectedCount(TabletUiState state) {
