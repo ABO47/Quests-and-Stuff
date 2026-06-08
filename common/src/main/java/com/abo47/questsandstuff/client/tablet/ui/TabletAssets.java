@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -77,16 +78,7 @@ final class TabletAssets {
 
     static void prewarmClientUiAssets() {
         TabletUiPerfProfiler.profile("ui.prewarm.assetsDirs", TabletAssets::ensureAssetsDirs);
-        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(
-                "tools", "grid", "editor", "scroll", "align-center-horizontal", "align-center-vertical", "objects", "entity", "close", "search", "add", "rename", "delete",
-                "copy", "paste", "connect", "settings-2", "stat", "recipe", "item_use", "item_interact",
-                "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open", "focus", "context_focus", "backpack", "context_backpack", "selectable", "context_selectable", "file-up", "file-down", "manual_check",
-                "size", "opacity", "magnet", "lock", "unlock", "lock_canvas", "unlock_canvas", "lock_separator", "unlock_separator",
-                "lock_quest", "unlock_quest", "lock_chapter", "unlock_chapter",
-                "background_opacity", "reset_zoom", "reset_quest", "repeat", "repeat-off", "variant", "motion", "properties", "minimap",
-                "style_align_left", "style_align_center", "style_align_right",
-                "style_bold", "style_italic", "style_color", "themes", "auto_claim", "claim_all", "xp", "send-horizontal", "eye", "eye-off", "audio-lines", "completion_hud_background", "play", "pause", "reset", "window_pin", "hud_layout"
-        ));
+        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(UiIconRegistry.preloadKeys()));
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();
             for (String group : ClientQuestCache.groupOrder()) {
