@@ -21,6 +21,13 @@ final class AssetPathResolver {
             Files.createDirectories(assetsRoot.resolve("blueprints"));
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed creating assets dirs {}", assetsRoot, e);
+            AssetDiagnostics.debugOnce(
+                    "asset.root.failed",
+                    String.valueOf(assetsRoot),
+                    "[QnS:UI] asset root prepare failed root={} error={}",
+                    assetsRoot,
+                    e.toString()
+            );
         }
     }
 
