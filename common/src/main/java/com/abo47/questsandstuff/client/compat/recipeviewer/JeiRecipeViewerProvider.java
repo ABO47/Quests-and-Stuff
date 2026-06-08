@@ -21,8 +21,20 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String INTERNAL = "mezz.jei.common.Internal";
     private static final String RECIPE_ROLE = "mezz.jei.api.recipe.RecipeIngredientRole";
     private static final String VANILLA_TYPES = "mezz.jei.api.constants.VanillaTypes";
+    private static final String RECIPES_GUI = "mezz.jei.gui.recipes.RecipesGui";
     private static final String[] RECIPE_KEYS = {"key.jei.showRecipe", "key.jei.showRecipe2"};
     private static final String[] USES_KEYS = {"key.jei.showUses", "key.jei.showUses2"};
+    private static final RecipeViewerCapabilityProbe CAPABILITIES = RecipeViewerCapabilityProbe.provider("JEI")
+            .requires(RecipeViewerCapability.AVAILABLE, INTERNAL, RECIPE_ROLE, VANILLA_TYPES)
+            .requires(RecipeViewerCapability.SHOW_RECIPES, INTERNAL, RECIPE_ROLE, VANILLA_TYPES)
+            .requires(RecipeViewerCapability.SHOW_USES, INTERNAL, RECIPE_ROLE, VANILLA_TYPES)
+            .requires(RecipeViewerCapability.NATIVE_SELECTION, INTERNAL, RECIPE_ROLE, VANILLA_TYPES)
+            .requires(RecipeViewerCapability.RECIPE_KEYBIND, INTERNAL)
+            .requires(RecipeViewerCapability.USES_KEYBIND, INTERNAL)
+            .requires(RecipeViewerCapability.SNAPSHOT_RENDERING, INTERNAL, RECIPE_ROLE)
+            .requires(RecipeViewerCapability.VISIBLE_RECIPE_PICK, RECIPES_GUI)
+            .requires(RecipeViewerCapability.FLUID_ENTRIES, INTERNAL)
+            .build();
 
     @Override
     public String name() {
@@ -30,10 +42,8 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
-    public boolean isAvailable() {
-        return RecipeViewerReflection.classPresent(INTERNAL)
-                && RecipeViewerReflection.classPresent(RECIPE_ROLE)
-                && RecipeViewerReflection.classPresent(VANILLA_TYPES);
+    public RecipeViewerProviderCapabilities capabilities() {
+        return CAPABILITIES.evaluate();
     }
 
     @Override
@@ -54,11 +64,6 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     @Override
     public boolean showUses(String target) {
         return show(target, "INPUT");
-    }
-
-    @Override
-    public boolean supportsNativeRecipeSelection() {
-        return true;
     }
 
     @Override

@@ -24,12 +24,36 @@ public final class RecipeViewerIntegrations {
         return activeProvider() != null;
     }
 
+    public static List<RecipeViewerProviderCapabilities> capabilityMatrix() {
+        return PROVIDERS.stream()
+                .map(RecipeViewerProvider::capabilities)
+                .toList();
+    }
+
+    public static List<String> debugProbe() {
+        return capabilityMatrix().stream()
+                .map(RecipeViewerProviderCapabilities::debugLine)
+                .toList();
+    }
+
+    public static boolean providerSupports(String providerName, RecipeViewerCapability capability) {
+        if (providerName == null || providerName.isBlank() || capability == null) {
+            return false;
+        }
+        for (RecipeViewerProvider provider : PROVIDERS) {
+            if (providerName.equalsIgnoreCase(provider.name())) {
+                return provider.supports(capability);
+            }
+        }
+        return false;
+    }
+
     public static boolean showRecipesForSelection(ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
             return false;
         }
         for (RecipeViewerProvider provider : PROVIDERS) {
-            if (provider.isAvailable() && provider.supportsNativeRecipeSelection()) {
+            if (provider.supportsNativeRecipeSelection()) {
                 return showWithProvider(provider, stack, true);
             }
         }
@@ -41,7 +65,7 @@ public final class RecipeViewerIntegrations {
             return false;
         }
         for (RecipeViewerProvider provider : PROVIDERS) {
-            if (provider.isAvailable() && provider.supportsNativeRecipeSelection()) {
+            if (provider.supportsNativeRecipeSelection()) {
                 return showWithProvider(provider, target, true);
             }
         }
@@ -53,7 +77,7 @@ public final class RecipeViewerIntegrations {
             return false;
         }
         RecipeViewerProvider provider = PROVIDERS.get(keybind.providerIndex());
-        if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+        if (!provider.supportsNativeRecipeSelection()) {
             return false;
         }
         return showWithProvider(provider, stack, keybind.recipes());
@@ -64,7 +88,7 @@ public final class RecipeViewerIntegrations {
             return false;
         }
         RecipeViewerProvider provider = PROVIDERS.get(keybind.providerIndex());
-        if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+        if (!provider.supportsNativeRecipeSelection()) {
             return false;
         }
         return showWithProvider(provider, target, keybind.recipes());
@@ -73,13 +97,13 @@ public final class RecipeViewerIntegrations {
     public static SelectionKeybind selectionKeybind(int keyCode, int scanCode) {
         for (int i = 0; i < PROVIDERS.size(); i++) {
             RecipeViewerProvider provider = PROVIDERS.get(i);
-            if (!provider.isAvailable() || !provider.supportsNativeRecipeSelection()) {
+            if (!provider.supportsNativeRecipeSelection()) {
                 continue;
             }
-            if (provider.matchesRecipeKey(keyCode, scanCode)) {
+            if (provider.supports(RecipeViewerCapability.RECIPE_KEYBIND) && provider.matchesRecipeKey(keyCode, scanCode)) {
                 return new SelectionKeybind(true, i, provider.name());
             }
-            if (provider.matchesUsesKey(keyCode, scanCode)) {
+            if (provider.supports(RecipeViewerCapability.USES_KEYBIND) && provider.matchesUsesKey(keyCode, scanCode)) {
                 return new SelectionKeybind(false, i, provider.name());
             }
         }
@@ -94,10 +118,10 @@ public final class RecipeViewerIntegrations {
             if (!provider.isAvailable()) {
                 continue;
             }
-            if (provider.matchesRecipeKey(keyCode, scanCode)) {
+            if (provider.supports(RecipeViewerCapability.RECIPE_KEYBIND) && provider.matchesRecipeKey(keyCode, scanCode)) {
                 return showWithProvider(provider, stack, true);
             }
-            if (provider.matchesUsesKey(keyCode, scanCode)) {
+            if (provider.supports(RecipeViewerCapability.USES_KEYBIND) && provider.matchesUsesKey(keyCode, scanCode)) {
                 return showWithProvider(provider, stack, false);
             }
         }
@@ -109,14 +133,17 @@ public final class RecipeViewerIntegrations {
             return false;
         }
         RecipeViewerProvider first = activeProvider();
-        if (first != null && first.renderRecipeSnapshot(graphics, recipe, width, height, pivotX, pivotY)) {
+        if (first != null
+                && first.supports(RecipeViewerCapability.SNAPSHOT_RENDERING)
+                && first.renderRecipeSnapshot(graphics, recipe, width, height, pivotX, pivotY)) {
             return true;
         }
         for (RecipeViewerProvider provider : PROVIDERS) {
             if (provider == first || !provider.isAvailable()) {
                 continue;
             }
-            if (provider.renderRecipeSnapshot(graphics, recipe, width, height, pivotX, pivotY)) {
+            if (provider.supports(RecipeViewerCapability.SNAPSHOT_RENDERING)
+                    && provider.renderRecipeSnapshot(graphics, recipe, width, height, pivotX, pivotY)) {
                 return true;
             }
         }
@@ -126,7 +153,7 @@ public final class RecipeViewerIntegrations {
     public static List<String> fluidEntries() {
         Set<String> entries = new LinkedHashSet<>();
         for (RecipeViewerProvider provider : PROVIDERS) {
-            if (!provider.isAvailable()) {
+            if (!provider.supports(RecipeViewerCapability.FLUID_ENTRIES)) {
                 continue;
             }
             entries.addAll(provider.fluidEntries());
@@ -135,6 +162,11 @@ public final class RecipeViewerIntegrations {
     }
 
     private static boolean showWithProvider(RecipeViewerProvider provider, ItemStack stack, boolean recipes) {
+        RecipeViewerCapability capability = recipes ? RecipeViewerCapability.SHOW_RECIPES : RecipeViewerCapability.SHOW_USES;
+        if (!provider.supports(capability)) {
+            logCapabilitySkip(provider, capability);
+            return false;
+        }
         boolean opened = recipes ? provider.showRecipes(stack.copy()) : provider.showUses(stack.copy());
         if (opened) {
             QuestsAndStuffMod.debugLog("[QnS:Compat] opened {} in {}", recipes ? "recipes" : "uses", provider.name());
@@ -143,11 +175,25 @@ public final class RecipeViewerIntegrations {
     }
 
     private static boolean showWithProvider(RecipeViewerProvider provider, String target, boolean recipes) {
+        RecipeViewerCapability capability = recipes ? RecipeViewerCapability.SHOW_RECIPES : RecipeViewerCapability.SHOW_USES;
+        if (!provider.supports(capability)) {
+            logCapabilitySkip(provider, capability);
+            return false;
+        }
         boolean opened = recipes ? provider.showRecipes(target) : provider.showUses(target);
         if (opened) {
             QuestsAndStuffMod.debugLog("[QnS:Compat] opened {} target={} in {}", recipes ? "recipes" : "uses", target, provider.name());
         }
         return opened;
+    }
+
+    private static void logCapabilitySkip(RecipeViewerProvider provider, RecipeViewerCapability capability) {
+        QuestsAndStuffMod.debugLog(
+                "[QnS:Compat] skipped {} provider={} reason={}",
+                capability.id(),
+                provider.name(),
+                provider.capabilities().reason(capability)
+        );
     }
 
     private static RecipeViewerProvider activeProvider() {

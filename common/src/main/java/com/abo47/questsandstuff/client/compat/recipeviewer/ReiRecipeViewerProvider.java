@@ -28,6 +28,19 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String ENTRY_REGISTRY = "me.shedaniel.rei.api.client.registry.entry.EntryRegistry";
     private static final String RECTANGLE = "me.shedaniel.math.Rectangle";
     private static final String VIEW_SEARCH_BUILDER = "me.shedaniel.rei.api.client.view.ViewSearchBuilder";
+    private static final String DEFAULT_SCREEN = "me.shedaniel.rei.impl.client.gui.screen.DefaultDisplayViewingScreen";
+    private static final String COMPOSITE_SCREEN = "me.shedaniel.rei.impl.client.gui.screen.CompositeDisplayViewingScreen";
+    private static final RecipeViewerCapabilityProbe CAPABILITIES = RecipeViewerCapabilityProbe.provider("REI")
+            .requires(RecipeViewerCapability.AVAILABLE, ENTRY_STACK, ENTRY_STACKS, VIEW_SEARCH_BUILDER)
+            .requires(RecipeViewerCapability.SHOW_RECIPES, ENTRY_STACK, ENTRY_STACKS, VIEW_SEARCH_BUILDER)
+            .requires(RecipeViewerCapability.SHOW_USES, ENTRY_STACK, ENTRY_STACKS, VIEW_SEARCH_BUILDER)
+            .requires(RecipeViewerCapability.NATIVE_SELECTION, ENTRY_STACK, ENTRY_STACKS, VIEW_SEARCH_BUILDER)
+            .requires(RecipeViewerCapability.RECIPE_KEYBIND, CONFIG_OBJECT)
+            .requires(RecipeViewerCapability.USES_KEYBIND, CONFIG_OBJECT)
+            .requires(RecipeViewerCapability.SNAPSHOT_RENDERING, CATEGORY_REGISTRY, DISPLAY_REGISTRY, DISPLAY_SPEC, RECTANGLE)
+            .requiresAny(RecipeViewerCapability.VISIBLE_RECIPE_PICK, DEFAULT_SCREEN, COMPOSITE_SCREEN)
+            .requires(RecipeViewerCapability.FLUID_ENTRIES, ENTRY_REGISTRY)
+            .build();
 
     @Override
     public String name() {
@@ -35,10 +48,8 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
-    public boolean isAvailable() {
-        return RecipeViewerReflection.classPresent(ENTRY_STACK)
-                && RecipeViewerReflection.classPresent(ENTRY_STACKS)
-                && RecipeViewerReflection.classPresent(VIEW_SEARCH_BUILDER);
+    public RecipeViewerProviderCapabilities capabilities() {
+        return CAPABILITIES.evaluate();
     }
 
     @Override
@@ -59,11 +70,6 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     @Override
     public boolean showUses(String target) {
         return show(target, "addUsagesFor");
-    }
-
-    @Override
-    public boolean supportsNativeRecipeSelection() {
-        return true;
     }
 
     @Override

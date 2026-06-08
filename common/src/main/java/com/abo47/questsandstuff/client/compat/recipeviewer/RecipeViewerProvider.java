@@ -10,7 +10,15 @@ import java.util.List;
 interface RecipeViewerProvider {
     String name();
 
-    boolean isAvailable();
+    RecipeViewerProviderCapabilities capabilities();
+
+    default boolean isAvailable() {
+        return supports(RecipeViewerCapability.AVAILABLE);
+    }
+
+    default boolean supports(RecipeViewerCapability capability) {
+        return capabilities().supports(capability);
+    }
 
     boolean showRecipes(ItemStack stack);
 
@@ -25,7 +33,7 @@ interface RecipeViewerProvider {
     }
 
     default boolean supportsNativeRecipeSelection() {
-        return false;
+        return supports(RecipeViewerCapability.NATIVE_SELECTION);
     }
 
     default boolean renderRecipeSnapshot(GuiGraphics graphics, RecipeView recipe, int width, int height, int pivotX, int pivotY) {
