@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
@@ -34,9 +36,7 @@ public final class TabletSoundPickerModal {
     private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
     private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
 
-    private static List<SoundChoice> cachedChoices;
-    private static String cachedQuery = null;
-    private static List<SoundChoice> cachedValues = List.of();
+    private static final PickerCache<SoundOwner, List<SoundChoice>, String, List<SoundChoice>> CACHE = new PickerCache<>();
 
     private TabletSoundPickerModal() {
     }
@@ -134,27 +134,15 @@ public final class TabletSoundPickerModal {
 
     private static List<SoundChoice> sounds(String query) {
         String normalizedQuery = SearchFilter.normalize(query);
-        synchronized (TabletSoundPickerModal.class) {
-            if (normalizedQuery.equals(cachedQuery)) {
-                return cachedValues;
-            }
-            List<SoundChoice> choices = choices();
-            List<SoundChoice> values = normalizedQuery.isBlank()
-                    ? choices
-                    : choices.stream()
-                    .filter(choice -> choice.matches(normalizedQuery))
-                    .toList();
-            cachedQuery = normalizedQuery;
-            cachedValues = values;
-            return values;
-        }
+        return CACHE.query(owner(), normalizedQuery, TabletSoundPickerModal::buildChoices, choices -> normalizedQuery.isBlank()
+                ? choices
+                : choices.stream()
+                .filter(choice -> choice.matches(normalizedQuery))
+                .toList());
     }
 
-    private static List<SoundChoice> choices() {
-        if (cachedChoices != null) {
-            return cachedChoices;
-        }
-        cachedChoices = BuiltInRegistries.SOUND_EVENT.stream()
+    private static List<SoundChoice> buildChoices() {
+        return BuiltInRegistries.SOUND_EVENT.stream()
                 .map(BuiltInRegistries.SOUND_EVENT::getKey)
                 .filter(id -> id != null)
                 .map(ResourceLocation::toString)
@@ -162,7 +150,19 @@ public final class TabletSoundPickerModal {
                 .map(SoundChoice::of)
                 .sorted(Comparator.comparing(SoundChoice::name, String.CASE_INSENSITIVE_ORDER).thenComparing(SoundChoice::id))
                 .toList();
-        return cachedChoices;
+    }
+
+    private static SoundOwner owner() {
+        return new SoundOwner(RegistryFingerprint.of(BuiltInRegistries.SOUND_EVENT.keySet()));
+    }
+
+    private record SoundOwner(RegistryFingerprint sounds) {
+    }
+
+    private record RegistryFingerprint(int size, int keyHash) {
+        static RegistryFingerprint of(Set<ResourceLocation> keys) {
+            return new RegistryFingerprint(keys.size(), keys.hashCode());
+        }
     }
 
     private record SoundChoice(String id, String name, String normalizedId, String normalizedName) {

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -25,9 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 public final class TabletStatPickerModal {
-    private static StatChoices cachedChoices;
-    private static String cachedQuery = null;
-    private static List<String> cachedValues = List.of();
+    private static final PickerCache<StatOwner, StatChoices, String, List<String>> CACHE = new PickerCache<>();
 
     private TabletStatPickerModal() {
     }
@@ -53,31 +52,23 @@ public final class TabletStatPickerModal {
 
     private static List<String> stats(String query) {
         String normalizedQuery = SearchFilter.normalize(query);
-        synchronized (TabletStatPickerModal.class) {
-            StatChoices choices = choices();
-            if (normalizedQuery.equals(cachedQuery)) {
-                return cachedValues;
-            }
-            List<String> values;
+        return CACHE.query(owner(), normalizedQuery, TabletStatPickerModal::buildChoices, choices -> {
             if (normalizedQuery.isBlank()) {
-                values = choices.values();
-            } else {
-                String compactQuery = SearchFilter.normalizeKey(normalizedQuery);
-                values = choices.rows().stream()
-                        .filter(choice -> choice.matches(normalizedQuery, compactQuery))
-                        .map(StatChoice::value)
-                        .toList();
+                return choices.values();
             }
-            cachedQuery = normalizedQuery;
-            cachedValues = values;
-            return values;
-        }
+            String compactQuery = SearchFilter.normalizeKey(normalizedQuery);
+            return choices.rows().stream()
+                    .filter(choice -> choice.matches(normalizedQuery, compactQuery))
+                    .map(StatChoice::value)
+                    .toList();
+        });
     }
 
     private static StatChoices choices() {
-        if (cachedChoices != null) {
-            return cachedChoices;
-        }
+        return CACHE.source(owner(), TabletStatPickerModal::buildChoices);
+    }
+
+    private static StatChoices buildChoices() {
         Set<String> found = new LinkedHashSet<>();
         BuiltInRegistries.CUSTOM_STAT.stream()
                 .map(ResourceLocation::toString)
@@ -113,8 +104,16 @@ public final class TabletStatPickerModal {
         for (StatChoice row : rows) {
             displayNames.put(row.value(), row.displayName());
         }
-        cachedChoices = new StatChoices(rows, values, displayNames);
-        return cachedChoices;
+        return new StatChoices(rows, values, displayNames);
+    }
+
+    private static StatOwner owner() {
+        return new StatOwner(
+                RegistryFingerprint.of(BuiltInRegistries.CUSTOM_STAT.keySet()),
+                RegistryFingerprint.of(BuiltInRegistries.BLOCK.keySet()),
+                RegistryFingerprint.of(BuiltInRegistries.ITEM.keySet()),
+                RegistryFingerprint.of(BuiltInRegistries.ENTITY_TYPE.keySet())
+        );
     }
 
     private static void addBlockStats(Set<String> found) {
@@ -151,16 +150,25 @@ public final class TabletStatPickerModal {
     }
 
     private static String displayName(String stat) {
-        synchronized (TabletStatPickerModal.class) {
-            StatChoices choices = cachedChoices;
-            if (choices != null) {
-                String displayName = choices.displayNames().get(stat);
-                if (displayName != null) {
-                    return displayName;
-                }
-            }
+        String displayName = choices().displayNames().get(stat);
+        if (displayName != null) {
+            return displayName;
         }
         return StatTargetFormatter.displayName(stat);
+    }
+
+    private record StatOwner(
+            RegistryFingerprint customStats,
+            RegistryFingerprint blocks,
+            RegistryFingerprint items,
+            RegistryFingerprint entities
+    ) {
+    }
+
+    private record RegistryFingerprint(int size, int keyHash) {
+        static RegistryFingerprint of(Set<ResourceLocation> keys) {
+            return new RegistryFingerprint(keys.size(), keys.hashCode());
+        }
     }
 
     private record StatChoices(List<StatChoice> rows, List<String> values, Map<String, String> displayNames) {
@@ -175,7 +183,7 @@ public final class TabletStatPickerModal {
             String compactDisplayName
     ) {
         static StatChoice of(String value) {
-            String displayName = TabletStatPickerModal.displayName(value);
+            String displayName = StatTargetFormatter.displayName(value);
             String normalizedValue = SearchFilter.normalize(value);
             String normalizedDisplayName = SearchFilter.normalize(displayName);
             return new StatChoice(

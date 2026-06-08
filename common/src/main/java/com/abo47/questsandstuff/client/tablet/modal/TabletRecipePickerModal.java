@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrati
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -51,12 +52,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlph
 
 public final class TabletRecipePickerModal {
     private static final int TILE = 18;
-    private static RecipeManager cachedManager;
-    private static RegistryAccess cachedRegistryAccess;
-    private static RecipeChoices cachedChoices;
-    private static String cachedQuery = null;
-    private static boolean cachedTagMode;
-    private static List<RecipeChoice> cachedValues = List.of();
+    private static final PickerCache<RecipeOwner, RecipeChoices, RecipeQuery, List<RecipeChoice>> CACHE = new PickerCache<>();
 
     private TabletRecipePickerModal() {
     }
@@ -375,42 +371,25 @@ public final class TabletRecipePickerModal {
     private static List<RecipeChoice> recipes(String query, boolean tagMode) {
         String normalizedQuery = SearchFilter.normalize(query);
         boolean showingTags = tagMode || (query != null && query.trim().startsWith("#"));
-        synchronized (TabletRecipePickerModal.class) {
-            RecipeChoices choices = choices();
-            if (normalizedQuery.equals(cachedQuery) && showingTags == cachedTagMode) {
-                return cachedValues;
-            }
+        RecipeOwner owner = owner();
+        return CACHE.query(owner, new RecipeQuery(normalizedQuery, showingTags),
+                () -> buildChoices(owner.manager(), owner.registryAccess()), choices -> {
             List<RecipeChoice> source = showingTags ? choices.tags() : choices.outputs();
-            List<RecipeChoice> values;
             if (normalizedQuery.isBlank()) {
-                values = source;
-            } else {
-                String compactQuery = SearchFilter.normalizeKey(normalizedQuery);
-                values = source.stream()
-                        .filter(choice -> choice.matches(normalizedQuery, compactQuery))
-                        .toList();
+                return source;
             }
-            cachedQuery = normalizedQuery;
-            cachedTagMode = showingTags;
-            cachedValues = values;
-            return values;
-        }
+            String compactQuery = SearchFilter.normalizeKey(normalizedQuery);
+            return source.stream()
+                    .filter(choice -> choice.matches(normalizedQuery, compactQuery))
+                    .toList();
+        });
     }
 
-    private static RecipeChoices choices() {
+    private static RecipeOwner owner() {
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         RecipeManager manager = connection == null ? null : connection.getRecipeManager();
         RegistryAccess registryAccess = connection == null ? null : connection.registryAccess();
-        if (cachedChoices != null && manager == cachedManager && registryAccess == cachedRegistryAccess) {
-            return cachedChoices;
-        }
-        RecipeChoices choices = buildChoices(manager, registryAccess);
-        cachedManager = manager;
-        cachedRegistryAccess = registryAccess;
-        cachedChoices = choices;
-        cachedQuery = null;
-        cachedValues = List.of();
-        return choices;
+        return new RecipeOwner(manager, registryAccess);
     }
 
     private static RecipeChoices buildChoices(RecipeManager manager, RegistryAccess registryAccess) {
@@ -486,6 +465,12 @@ public final class TabletRecipePickerModal {
             }
         }
         return stacks.toArray(ItemStack[]::new);
+    }
+
+    private record RecipeOwner(RecipeManager manager, RegistryAccess registryAccess) {
+    }
+
+    private record RecipeQuery(String query, boolean tags) {
     }
 
     private record RecipeChoices(List<RecipeChoice> outputs, List<RecipeChoice> tags) {
