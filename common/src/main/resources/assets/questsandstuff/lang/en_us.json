@@ -308,8 +308,6 @@
   "ui.questsandstuff.context.edit_motion": "Edit Motion",
   "ui.questsandstuff.context.edit_text": "Edit Text",
   "ui.questsandstuff.context.entity_types": "Entities",
-  "ui.questsandstuff.context.fit_all": "Fit All",
-  "ui.questsandstuff.context.fit_selection": "Fit Selection",
   "ui.questsandstuff.context.fit_to_grid": "Fit To Grid",
   "ui.questsandstuff.context.gizmo_move": "Gizmo: Move",
   "ui.questsandstuff.context.gizmo_resize": "Gizmo: Resize",

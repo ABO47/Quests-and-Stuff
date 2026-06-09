@@ -2,8 +2,6 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
@@ -24,22 +22,6 @@ final class CanvasContextGlobalActions {
     }
 
     static void addGlobalActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
-        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_all"), "focus", ModColors.INTERACTIVE, () -> {
-            if (CanvasCameraController.fitAll(state, canvasViewport.cardCache(), true)) {
-                ContextMenuState.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_all");
-                canvasViewport.refresh();
-            }
-        }));
-        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 0) {
-            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_selection"), "focus", ModColors.INTERACTIVE, () -> {
-                if (CanvasCameraController.fitSelection(state, canvasViewport.cardCache(), true)) {
-                    ContextMenuState.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_selection");
-                    canvasViewport.refresh();
-                }
-            }));
-        }
         if (state.canvas.canvasZoom != 1.0f) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_zoom"), "reset_zoom", ModColors.INTERACTIVE, () -> {
                 CanvasCameraController.resetZoom(state, true);
