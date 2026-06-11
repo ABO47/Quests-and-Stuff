@@ -10,4 +10,12 @@ public final class TabletModifierKeys {
     public static boolean shiftDown() {
         return Minecraft.getInstance() != null && Widget.isShiftDown();
     }
+
+    public static boolean ctrlDown() {
+        return Minecraft.getInstance() != null && Widget.isCtrlDown();
+    }
+
+    public static boolean shiftOrCtrlDown() {
+        return shiftDown() || ctrlDown();
+    }
 }

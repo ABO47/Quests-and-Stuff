@@ -137,7 +137,7 @@ final class QuestDetailsDescriptionEventRouter {
         boolean resizeHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.RESIZE || hitTest.inResizeHandle(hitRect, lx, visibleY));
         boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
         boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
-        if (TabletModifierKeys.shiftDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
+        if (TabletModifierKeys.shiftOrCtrlDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
             toggleSelection(hit);
             TextStyleSession.closeQuestDetails(state);
             refresh.run();
@@ -310,7 +310,7 @@ final class QuestDetailsDescriptionEventRouter {
             return true;
         }
         textEdit.finish("canvas-click");
-        QuestDetailsDescriptionInteractionState.beginBoxSelection(state, lx, visibleY, TabletModifierKeys.shiftDown(), selection::clear);
+        QuestDetailsDescriptionInteractionState.beginBoxSelection(state, lx, visibleY, TabletModifierKeys.shiftOrCtrlDown(), selection::clear);
         refresh.run();
         return true;
     }

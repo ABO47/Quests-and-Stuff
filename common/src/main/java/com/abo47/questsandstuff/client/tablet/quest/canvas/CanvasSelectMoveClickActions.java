@@ -21,6 +21,10 @@ final class CanvasSelectMoveClickActions {
     private CanvasSelectMoveClickActions() {
     }
 
+    private static boolean isAdditiveModifier(CanvasViewport cv) {
+        return cv.shiftDown() || cv.ctrlDown();
+    }
+
     static void handleSelectMove(
             CanvasViewport canvasViewport,
             TabletUiState state,
@@ -60,7 +64,7 @@ final class CanvasSelectMoveClickActions {
                 refresher.run();
                 return;
             }
-            if (canvasViewport.shiftDown()) {
+            if (isAdditiveModifier(canvasViewport)) {
                 if (!state.canvas.canvasSelection.questIds().add(hit.questId())) {
                     state.canvas.canvasSelection.questIds().remove(hit.questId());
                 }
@@ -76,7 +80,7 @@ final class CanvasSelectMoveClickActions {
             state.canvas.rotatingSelection = false;
             state.canvas.transientQuestPositions.clear();
             state.canvas.transientQuestScales.clear();
-            CanvasBoxSelectionController.beginBoxSelection(state, canvasViewport.shiftDown(), localX, localY);
+            CanvasBoxSelectionController.beginBoxSelection(state, isAdditiveModifier(canvasViewport), localX, localY);
         }
         refresher.run();
     }
@@ -106,7 +110,7 @@ final class CanvasSelectMoveClickActions {
                 refresher.run();
                 return true;
             }
-            if (!canvasViewport.shiftDown() && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+            if (!isAdditiveModifier(canvasViewport) && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
                 selectionTransforms.beginDrag(localX, localY, byQuestId);
                 canvasViewport.beginSelectionDragPreview();
                 refresher.run();
@@ -140,14 +144,14 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        if (!canvasViewport.shiftDown() && selectionCount > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+        if (!isAdditiveModifier(canvasViewport) && selectionCount > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             selectionTransforms.beginDrag(localX, localY, byQuestId);
             canvasViewport.beginSelectionDragPreview();
             refresher.run();
             return true;
         }
         if (textHit != null) {
-            if (canvasViewport.shiftDown()) {
+            if (isAdditiveModifier(canvasViewport)) {
                 CanvasBoxSelectionController.toggleCanvasTextSelection(state, textHit.id());
                 refresher.run();
                 return true;
@@ -166,7 +170,7 @@ final class CanvasSelectMoveClickActions {
             return true;
         }
         if (imageHit != null) {
-            if (canvasViewport.shiftDown()) {
+            if (isAdditiveModifier(canvasViewport)) {
                 CanvasBoxSelectionController.toggleCanvasImageSelection(state, imageHit.id());
                 refresher.run();
                 return true;
