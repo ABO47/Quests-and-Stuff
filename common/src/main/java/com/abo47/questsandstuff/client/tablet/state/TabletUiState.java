@@ -254,6 +254,8 @@ public class TabletUiState {
         public final Map<String, CanvasDoublePoint> canvasCameraCentersByGroup = new HashMap<>();
         public final Map<String, Float> canvasCameraZoomsByGroup = new HashMap<>();
         public final CanvasLayerSelectionState canvasSelection = new CanvasLayerSelectionState();
+        public String canvasSelectionRangeAnchorKind = "";
+        public String canvasSelectionRangeAnchorId = "";
         public final Map<String, CanvasPoint> transientQuestPositions = new HashMap<>();
         public final Map<String, Float> transientQuestScales = new HashMap<>();
         public final Map<String, CanvasPoint> dragStartPositions = new HashMap<>();
@@ -562,6 +564,8 @@ public class TabletUiState {
         public int questDetailsObjectiveDragStartX;
         public int questDetailsObjectiveDragStartY;
         public final CanvasLayerSelectionState questDetailsDescriptionSelection = new CanvasLayerSelectionState();
+        public String questDetailsDescRangeAnchorKind = "";
+        public String questDetailsDescRangeAnchorId = "";
         public String questDetailsTextEditTarget = "";
         public String questDetailsTextEditDraft = "";
         public boolean questDetailsTextStyleOpen;

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
@@ -12,17 +13,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelect
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
+import java.util.List;
 import java.util.Map;
 
 final class CanvasSelectMoveClickActions {
     private CanvasSelectMoveClickActions() {
-    }
-
-    private static boolean isAdditiveModifier(CanvasViewport cv) {
-        return cv.shiftDown() || cv.ctrlDown();
     }
 
     static void handleSelectMove(
@@ -64,13 +63,17 @@ final class CanvasSelectMoveClickActions {
                 refresher.run();
                 return;
             }
-            if (isAdditiveModifier(canvasViewport)) {
+            if (canvasViewport.ctrlDown()) {
                 if (!state.canvas.canvasSelection.questIds().add(hit.questId())) {
                     state.canvas.canvasSelection.questIds().remove(hit.questId());
                 }
+            } else if (canvasViewport.shiftDown()) {
+                rangeSelect(state, byQuestId, state.canvas.canvasSelectionRangeAnchorKind, state.canvas.canvasSelectionRangeAnchorId, CanvasLayerKind.QUEST, hit.questId());
             } else if (!state.canvas.canvasSelection.questIds().contains(hit.questId())) {
                 CanvasSelectionActions.clearCanvasSelection(state);
                 state.canvas.canvasSelection.questIds().add(hit.questId());
+                state.canvas.canvasSelectionRangeAnchorKind = CanvasLayerKind.QUEST.name();
+                state.canvas.canvasSelectionRangeAnchorId = hit.questId();
             }
             selectionTransforms.beginDrag(localX, localY, byQuestId);
             canvasViewport.beginSelectionDragPreview();
@@ -80,7 +83,10 @@ final class CanvasSelectMoveClickActions {
             state.canvas.rotatingSelection = false;
             state.canvas.transientQuestPositions.clear();
             state.canvas.transientQuestScales.clear();
-            CanvasBoxSelectionController.beginBoxSelection(state, isAdditiveModifier(canvasViewport), localX, localY);
+            CanvasSelectionActions.clearCanvasSelection(state);
+            state.canvas.canvasSelectionRangeAnchorKind = "";
+            state.canvas.canvasSelectionRangeAnchorId = "";
+            CanvasBoxSelectionController.beginBoxSelection(state, false, localX, localY);
         }
         refresher.run();
     }
@@ -110,7 +116,7 @@ final class CanvasSelectMoveClickActions {
                 refresher.run();
                 return true;
             }
-            if (!isAdditiveModifier(canvasViewport) && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
+            if (!canvasViewport.shiftDown() && !canvasViewport.ctrlDown() && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
                 selectionTransforms.beginDrag(localX, localY, byQuestId);
                 canvasViewport.beginSelectionDragPreview();
                 refresher.run();
@@ -133,26 +139,19 @@ final class CanvasSelectMoveClickActions {
             return true;
         }
         boolean questResizeTransform = !state.canvas.canvasSelection.questIds().isEmpty();
-        boolean questRotateTransform = selectionCount > 1;
-        if (questRotateTransform && CanvasRenderer.isSelectionRotateHandleHit(state, localX, localY)) {
-            selectionTransforms.beginRotate(localX, localY, byQuestId);
-            refresher.run();
-            return true;
-        }
         if (questResizeTransform && CanvasRenderer.isSelectionResizeHandleHit(state, localX, localY)) {
             selectionTransforms.beginResize(localX, localY, byQuestId);
             refresher.run();
             return true;
         }
-        if (!isAdditiveModifier(canvasViewport) && selectionCount > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
-            selectionTransforms.beginDrag(localX, localY, byQuestId);
-            canvasViewport.beginSelectionDragPreview();
-            refresher.run();
-            return true;
-        }
         if (textHit != null) {
-            if (isAdditiveModifier(canvasViewport)) {
+            if (canvasViewport.ctrlDown()) {
                 CanvasBoxSelectionController.toggleCanvasTextSelection(state, textHit.id());
+                refresher.run();
+                return true;
+            }
+            if (canvasViewport.shiftDown()) {
+                rangeSelect(state, byQuestId, state.canvas.canvasSelectionRangeAnchorKind, state.canvas.canvasSelectionRangeAnchorId, CanvasLayerKind.TEXT, textHit.id());
                 refresher.run();
                 return true;
             }
@@ -170,8 +169,13 @@ final class CanvasSelectMoveClickActions {
             return true;
         }
         if (imageHit != null) {
-            if (isAdditiveModifier(canvasViewport)) {
+            if (canvasViewport.ctrlDown()) {
                 CanvasBoxSelectionController.toggleCanvasImageSelection(state, imageHit.id());
+                refresher.run();
+                return true;
+            }
+            if (canvasViewport.shiftDown()) {
+                rangeSelect(state, byQuestId, state.canvas.canvasSelectionRangeAnchorKind, state.canvas.canvasSelectionRangeAnchorId, CanvasLayerKind.IMAGE, imageHit.id());
                 refresher.run();
                 return true;
             }
@@ -197,5 +201,109 @@ final class CanvasSelectMoveClickActions {
                 || (canvasViewport.shiftDown()
                 && CanvasTransformGizmo.activeMode(state) == CanvasTransformMode.MOVE
                 && CanvasTransformGizmo.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), localX, localY));
+    }
+
+    private static void rangeSelect(
+            TabletUiState state,
+            Map<String, QuestCardLayout> byQuestId,
+            String anchorKind,
+            String anchorId,
+            CanvasLayerKind clickedKind,
+            String clickedId
+    ) {
+        if (anchorId.isBlank()) {
+            CanvasSelectionActions.clearCanvasSelection(state);
+            selectSingle(state, clickedKind, clickedId);
+            state.canvas.canvasSelectionRangeAnchorKind = clickedKind.name();
+            state.canvas.canvasSelectionRangeAnchorId = clickedId;
+            return;
+        }
+        CanvasLayerKind anchorEnumKind = null;
+        if (!anchorKind.isBlank()) {
+            try {
+                anchorEnumKind = CanvasLayerKind.valueOf(anchorKind.toUpperCase(java.util.Locale.ROOT));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (anchorEnumKind == null) {
+            return;
+        }
+        String group = TabletStateQueries.selectedGroupName(state);
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
+        int[] anchorBounds = elementBounds(byQuestId, images, texts, anchorEnumKind, anchorId);
+        int[] clickBounds = elementBounds(byQuestId, images, texts, clickedKind, clickedId);
+        if (anchorBounds == null || clickBounds == null) {
+            return;
+        }
+        int minX = Math.min(anchorBounds[0], clickBounds[0]);
+        int minY = Math.min(anchorBounds[1], clickBounds[1]);
+        int maxX = Math.max(anchorBounds[2], clickBounds[2]);
+        int maxY = Math.max(anchorBounds[3], clickBounds[3]);
+        CanvasSelectionActions.clearCanvasSelection(state);
+        for (QuestCardLayout card : byQuestId.values()) {
+            if (card.x() < maxX && card.x() + card.width() > minX
+                    && card.y() < maxY && card.y() + card.height() > minY) {
+                state.canvas.canvasSelection.questIds().add(card.questId());
+            }
+        }
+        for (CanvasImageLayer img : images) {
+            if (img.x() < maxX && img.x() + img.w() > minX && img.y() < maxY && img.y() + img.h() > minY) {
+                state.canvas.canvasSelection.imageIds().add(img.id());
+                state.canvas.canvasSelection.setPrimaryImageId(img.id());
+            }
+        }
+        for (CanvasTextLayer txt : texts) {
+            if (txt.x() < maxX && txt.x() + txt.w() > minX && txt.y() < maxY && txt.y() + txt.h() > minY) {
+                state.canvas.canvasSelection.textIds().add(txt.id());
+                state.canvas.canvasSelection.setPrimaryTextId(txt.id());
+            }
+        }
+    }
+
+    private static void selectSingle(TabletUiState state, CanvasLayerKind kind, String id) {
+        switch (kind) {
+            case QUEST -> state.canvas.canvasSelection.questIds().add(id);
+            case IMAGE -> {
+                state.canvas.canvasSelection.imageIds().add(id);
+                state.canvas.canvasSelection.setPrimaryImageId(id);
+            }
+            case TEXT -> {
+                state.canvas.canvasSelection.textIds().add(id);
+                state.canvas.canvasSelection.setPrimaryTextId(id);
+            }
+        }
+    }
+
+    private static int[] elementBounds(
+            Map<String, QuestCardLayout> byQuestId,
+            List<CanvasImageLayer> images,
+            List<CanvasTextLayer> texts,
+            CanvasLayerKind kind,
+            String id
+    ) {
+        switch (kind) {
+            case QUEST -> {
+                QuestCardLayout card = byQuestId.get(id);
+                if (card != null) {
+                    return new int[]{card.x(), card.y(), card.x() + card.width(), card.y() + card.height()};
+                }
+            }
+            case IMAGE -> {
+                for (CanvasImageLayer img : images) {
+                    if (img.id().equals(id)) {
+                        return new int[]{img.x(), img.y(), img.x() + img.w(), img.y() + img.h()};
+                    }
+                }
+            }
+            case TEXT -> {
+                for (CanvasTextLayer txt : texts) {
+                    if (txt.id().equals(id)) {
+                        return new int[]{txt.x(), txt.y(), txt.x() + txt.w(), txt.y() + txt.h()};
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

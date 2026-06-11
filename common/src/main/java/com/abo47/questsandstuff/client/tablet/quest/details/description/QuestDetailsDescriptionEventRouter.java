@@ -137,11 +137,19 @@ final class QuestDetailsDescriptionEventRouter {
         boolean resizeHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.RESIZE || hitTest.inResizeHandle(hitRect, lx, visibleY));
         boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
         boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
-        if (TabletModifierKeys.shiftOrCtrlDown() && !resizeHit && !rotateHit && !shiftMoveHit) {
-            toggleSelection(hit);
-            TextStyleSession.closeQuestDetails(state);
-            refresh.run();
-            return true;
+        if (!resizeHit && !rotateHit && !shiftMoveHit) {
+            if (TabletModifierKeys.ctrlDown()) {
+                toggleSelection(hit);
+                TextStyleSession.closeQuestDetails(state);
+                refresh.run();
+                return true;
+            }
+            if (TabletModifierKeys.shiftDown()) {
+                rangeSelect(model, hit);
+                TextStyleSession.closeQuestDetails(state);
+                refresh.run();
+                return true;
+            }
         }
         if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit && handleTextDoubleClick(hit)) {
             select(hit);
@@ -310,7 +318,10 @@ final class QuestDetailsDescriptionEventRouter {
             return true;
         }
         textEdit.finish("canvas-click");
-        QuestDetailsDescriptionInteractionState.beginBoxSelection(state, lx, visibleY, TabletModifierKeys.shiftOrCtrlDown(), selection::clear);
+        state.questDetails.questDetailsDescRangeAnchorKind = "";
+        state.questDetails.questDetailsDescRangeAnchorId = "";
+        selection.clear();
+        QuestDetailsDescriptionInteractionState.beginBoxSelection(state, lx, visibleY, false, selection::clear);
         refresh.run();
         return true;
     }
@@ -352,6 +363,8 @@ final class QuestDetailsDescriptionEventRouter {
     private void select(QuestDetailsDescriptionHitTest.Hit hit) {
         state.questDetails.questDetailsSelectedObjectiveKind = "";
         state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsDescRangeAnchorKind = hit.kind();
+        state.questDetails.questDetailsDescRangeAnchorId = hit.id();
         if ("desc_text".equals(hit.kind())) {
             if (selection.count() > 1 && selection.isSelectedText(hit.id())) {
                 state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(hit.id());
@@ -386,6 +399,59 @@ final class QuestDetailsDescriptionEventRouter {
             toggle(state.questDetails.questDetailsDescriptionSelection.imageIds(), hit.id());
             state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(state.questDetails.questDetailsDescriptionSelection.imageIds().contains(hit.id()) ? hit.id() : state.questDetails.questDetailsDescriptionSelection.imageIds().stream().findFirst().orElse(""));
         }
+    }
+
+    private void rangeSelect(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
+        String anchorKind = state.questDetails.questDetailsDescRangeAnchorKind;
+        String anchorId = state.questDetails.questDetailsDescRangeAnchorId;
+        if (anchorId.isBlank()) {
+            select(hit);
+            return;
+        }
+        int[] anchorBounds = elementBounds(model, anchorKind, anchorId);
+        int[] clickBounds = elementBounds(model, hit.kind(), hit.id());
+        if (anchorBounds == null || clickBounds == null) {
+            select(hit);
+            return;
+        }
+        int rangeMinX = Math.min(anchorBounds[0], clickBounds[0]);
+        int rangeMinY = Math.min(anchorBounds[1], clickBounds[1]);
+        int rangeMaxX = Math.max(anchorBounds[2], clickBounds[2]);
+        int rangeMaxY = Math.max(anchorBounds[3], clickBounds[3]);
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        for (CanvasTextLayer text : model.texts.values()) {
+            int[] b = elementBounds(model, "desc_text", text.id());
+            if (b != null && intersectsRange(b, rangeMinX, rangeMinY, rangeMaxX, rangeMaxY)) {
+                state.questDetails.questDetailsDescriptionSelection.textIds().add(text.id());
+                state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(text.id());
+            }
+        }
+        for (CanvasImageLayer image : model.images.values()) {
+            int[] b = elementBounds(model, "desc_image", image.id());
+            if (b != null && intersectsRange(b, rangeMinX, rangeMinY, rangeMaxX, rangeMaxY)) {
+                state.questDetails.questDetailsDescriptionSelection.imageIds().add(image.id());
+                state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(image.id());
+            }
+        }
+    }
+
+    private int[] elementBounds(QuestDetailsDescriptionModel model, String kind, String id) {
+        if ("desc_text".equals(kind)) {
+            CanvasTextLayer text = model.text(id);
+            if (text == null) return null;
+            return new int[]{text.x(), text.y(), text.x() + text.w(), text.y() + text.h()};
+        }
+        if ("desc_image".equals(kind)) {
+            CanvasImageLayer image = model.image(id);
+            if (image == null) return null;
+            return new int[]{image.x(), image.y(), image.x() + image.w(), image.y() + image.h()};
+        }
+        return null;
+    }
+
+    private static boolean intersectsRange(int[] bounds, int minX, int minY, int maxX, int maxY) {
+        return bounds[0] < maxX && bounds[2] > minX && bounds[1] < maxY && bounds[3] > minY;
     }
 
     private boolean handleTextDoubleClick(QuestDetailsDescriptionHitTest.Hit hit) {
