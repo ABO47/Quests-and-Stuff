@@ -155,6 +155,7 @@ final class EditorChapterCommandClient {
                 }
             }
         };
+        optimisticApply.run();
         IntegratedServerActions.run(
                 player,
                 integratedServerGroupAction(state, op, from, to, offset),
