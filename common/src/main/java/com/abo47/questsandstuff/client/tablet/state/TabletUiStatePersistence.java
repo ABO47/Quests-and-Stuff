@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -64,6 +65,7 @@ public final class TabletUiStatePersistence {
             state.questDetails.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
             state.questDetails.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
             state.questDetails.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            readColorPalette(root, state);
         } catch (Exception exception) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading UI state from {}, keeping defaults", UI_STATE_FILE, exception);
         }
@@ -114,6 +116,7 @@ public final class TabletUiStatePersistence {
             root.addProperty("quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
             root.addProperty("quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
             root.addProperty("quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            writeColorPalette(root, state);
             Files.writeString(UI_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed persisting UI state", e);
@@ -239,6 +242,32 @@ public final class TabletUiStatePersistence {
             cameras.add(group, camera);
         }
         return cameras;
+    }
+
+    private static void readColorPalette(JsonObject root, TabletUiState state) {
+        if (root == null || state == null || !root.has("color_palette") || !root.get("color_palette").isJsonArray()) {
+            return;
+        }
+        JsonArray palette = root.getAsJsonArray("color_palette");
+        if (palette.isEmpty()) {
+            return;
+        }
+        state.pickers.textColorPalette.clear();
+        for (int i = 0; i < palette.size(); i++) {
+            try {
+                state.pickers.textColorPalette.add(palette.get(i).getAsInt());
+            } catch (RuntimeException exception) {
+                QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Invalid color palette entry index={}", i, exception);
+            }
+        }
+    }
+
+    private static void writeColorPalette(JsonObject root, TabletUiState state) {
+        JsonArray palette = new JsonArray();
+        for (int color : state.pickers.textColorPalette) {
+            palette.add(color);
+        }
+        root.add("color_palette", palette);
     }
 
     private static int clampQuestDetailsLeftWidth(int width) {
