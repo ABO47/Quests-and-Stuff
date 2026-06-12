@@ -97,7 +97,6 @@ public final class ChapterContextMenuActions {
             return;
         }
         if (!EntityIconControls.confirmRemoveIcon(state, ChapterContextMenuLayout.removeIconKey(target))) {
-            refresh.run();
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_icon", target, "", 0);
@@ -119,7 +118,6 @@ public final class ChapterContextMenuActions {
             return;
         }
         if (!TabletUiFactory.confirmDeleteClick(state, ChapterContextMenuLayout.removeBackgroundKey(target))) {
-            refresh.run();
             return;
         }
         EditorCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
