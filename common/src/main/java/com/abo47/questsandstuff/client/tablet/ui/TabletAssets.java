@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
@@ -10,7 +11,12 @@ import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
 
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,5 +100,19 @@ final class TabletAssets {
                 chapterBackgroundTexture(background);
             }
         });
+        TabletUiPerfProfiler.profile("ui.prewarm.modLogo", TabletAssets::prewarmModLogo);
+    }
+
+    private static void prewarmModLogo() {
+        try (InputStream is = TabletAssets.class.getClassLoader().getResourceAsStream("questsandstuff.png")) {
+            if (is != null) {
+                NativeImage image = NativeImage.read(is);
+                DynamicTexture texture = new DynamicTexture(image);
+                ResourceLocation id = new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png");
+                Minecraft.getInstance().getTextureManager().register(id, texture);
+            }
+        } catch (Exception e) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] failed to prewarm mod logo texture");
+        }
     }
 }

@@ -14,12 +14,14 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiPerfProfiler;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,6 +32,8 @@ import javax.annotation.Nonnull;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelChrome;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
@@ -42,6 +46,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_G
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_INSET;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_PAD_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.applyRootSize;
@@ -52,7 +58,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.canvasVi
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.rootHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.rootWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.setActiveTabletRefresh;
@@ -85,10 +90,16 @@ public final class QuestAppComposer {
         WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, initialRootW, 0);
         rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         int initialChapterW = chapterPanelWidth(state);
-        boolean initialChapterCollapsed = isChapterPanelCollapsed(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = panel(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, initialChapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE);
+        WidgetGroup chapterPanel = new WidgetGroup(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                drawPanelChrome(graphics, this);
+                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+                drawPanelOutline(graphics, this);
+            }
+        };
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH) {
             @Override
@@ -112,7 +123,7 @@ public final class QuestAppComposer {
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));
-        chapterList.setBackground(initialChapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        chapterList.setBackground(isChapterPanelCollapsed(state) ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, initialRootW, initialRootH);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
@@ -129,6 +140,16 @@ public final class QuestAppComposer {
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
         WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
+
+        int HOME_BTN_SIZE = 10;
+        ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
+                Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
+                cd -> TabletClientHooks.openTabletUiFromItem(player));
+        questHomeBtn.setClientSideWidget();
+        questHomeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
+        questHomeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
+        root.addWidget(questHomeBtn);
+        root.setHomeButton(questHomeBtn);
 
         refresh[0] = () -> {
             refreshRootBackground(root, state);
@@ -164,7 +185,6 @@ public final class QuestAppComposer {
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
             int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - chapterBottomInset);
 
-            chapterPanelRef[0].setBackground(Surfaces.bordered(chapterCollapsed ? ModColors.SURFACE_BASE : ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
             chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);
@@ -211,6 +231,9 @@ public final class QuestAppComposer {
             state.canvas.canvasViewportY = viewportY;
             state.canvas.canvasViewportW = viewportW;
             state.canvas.canvasViewportH = viewportH;
+            int homeBtnX = ROOT_W - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
+            int homeBtnY = ROOT_PAD_Y + ((currentRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
+            questHomeBtn.setSelfPosition(homeBtnX, homeBtnY);
             int holeX = canvasX + viewportX;
             int holeY = CANVAS_Y + viewportY;
             int holeW = viewportW;

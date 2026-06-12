@@ -8,9 +8,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_INSET;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_W;
 
@@ -50,17 +47,5 @@ final class TabletHomeComposer {
         root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
         root.addWidget(new TabletHomeOverviewPanel(0, 0, safeRootW, safeRootH));
         return root;
-    }
-
-    static int contentInset(int windowWidth) {
-        return PANEL_INSET;
-    }
-
-    static int statusBarHeight(int windowHeight) {
-        return HEADER_H;
-    }
-
-    static int contentGap() {
-        return PANEL_GAP;
     }
 }

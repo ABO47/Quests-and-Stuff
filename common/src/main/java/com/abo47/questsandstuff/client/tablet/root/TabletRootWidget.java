@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,6 +22,7 @@ public final class TabletRootWidget extends WidgetGroup {
     };
     private Runnable redoAction = () -> {
     };
+    private ButtonWidget homeBtn;
 
     public TabletRootWidget(int x, int y, int width, int height, TabletUiState state) {
         super(x, y, width, height);
@@ -51,17 +53,27 @@ public final class TabletRootWidget extends WidgetGroup {
         this.canvasViewport = canvasViewport;
     }
 
+    public void setHomeButton(ButtonWidget btn) {
+        this.homeBtn = btn;
+    }
+
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         drawFullscreenBackdrop(graphics);
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
+        if (homeBtn != null) {
+            homeBtn.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     @Override
     public void drawInForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.FOREGROUND, (g, x, y, t) -> super.drawInForeground(g, x, y, t));
+        if (homeBtn != null) {
+            homeBtn.drawInForeground(graphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     @Override
@@ -72,6 +84,9 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (homeBtn != null && homeBtn.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
         return TabletRootPointerRouter.mouseClicked(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseClicked(x, y, b), mouseX, mouseY, button);
     }
 
