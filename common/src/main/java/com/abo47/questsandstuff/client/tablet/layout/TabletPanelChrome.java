@@ -72,7 +72,6 @@ public final class TabletPanelChrome {
             fillPanelRect(graphics, innerLeft, holeTop, holeLeft, holeBottom);
             fillPanelRect(graphics, holeRight, holeTop, innerRight, holeBottom);
         }
-        drawPanelLighting(graphics, x, y, w, h);
     }
 
     public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
@@ -112,7 +111,6 @@ public final class TabletPanelChrome {
         int w = panel.getSize().width;
         int h = panel.getSize().height;
         fillRootRect(graphics, x, y, x + Math.max(1, w), y + Math.max(1, h));
-        drawRootLighting(graphics, x, y, w, h);
     }
 
     public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
@@ -123,7 +121,6 @@ public final class TabletPanelChrome {
         int right = x + Math.max(1, w - 1);
         int bottom = y + Math.max(1, h - 1);
         fillPanelRect(graphics, x + 1, y + 1, right, bottom);
-        drawPanelLighting(graphics, x, y, w, h);
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
