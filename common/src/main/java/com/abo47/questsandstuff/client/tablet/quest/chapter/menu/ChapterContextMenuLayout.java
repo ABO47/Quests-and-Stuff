@@ -47,9 +47,15 @@ public record ChapterContextMenuLayout(
         labels.add(tr("ui.questsandstuff.menu.new_chapter"));
         if (hasTarget) {
             labels.add(tr(QuestVocabulary.CONTEXT_VISIBILITY));
-            labels.add(tr(QuestVocabulary.CONTEXT_VISUALS));
+            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_ICON));
+            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND));
             labels.add(tr(QuestVocabulary.CONTEXT_MOVE_UP));
             labels.add(tr(QuestVocabulary.CONTEXT_MOVE_DOWN));
+            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_VARIANT));
+            labels.add(tr(QuestVocabulary.CONTEXT_EDIT_MOTION));
+            labels.add(tr("ui.questsandstuff.menu.text_style"));
+            labels.add(tr("ui.questsandstuff.menu.remove_icon"));
+            labels.add(tr("ui.questsandstuff.menu.remove_card_bg"));
         }
         return ContextMenuSystem.preferredMenuWidth(labels, 82, Math.max(82, Math.min(136, maxAvailableWidth - 8)));
     }
@@ -70,7 +76,14 @@ public record ChapterContextMenuLayout(
         if (!hasTarget) {
             return 1;
         }
-        return 7;
+        int count = 11;
+        if (entityVariants) {
+            count++;
+        }
+        if (entityIcon) {
+            count++;
+        }
+        return count;
     }
 
     public static String deleteKey(String target) {

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.context.ActionTone;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
@@ -25,6 +26,8 @@ public final class ChapterContextMenuRows {
         String target = layout.target();
         if (layout.hasTarget()) {
             actions.add(ContextActions.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
+            actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
+            actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
         }
         actions.add(ContextActions.add(tr("ui.questsandstuff.menu.new_chapter"), () -> ChapterContextMenuActions.addChapter(state, refresh)));
         if (!layout.hasTarget()) {
@@ -50,18 +53,13 @@ public final class ChapterContextMenuRows {
                 )
         )));
 
-        List<ContextAction> visualActions = new ArrayList<>();
-        visualActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
         if (layout.entityVariants()) {
-            visualActions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
+            actions.add(ContextActions.changeVariant(() -> ChapterContextMenuActions.changeVariant(state, target, refresh)));
         }
         if (layout.entityIcon()) {
-            visualActions.add(ContextActions.editMotion(() -> ChapterContextMenuActions.editMotion(state, target, refresh)));
+            actions.add(ContextActions.editMotion(() -> ChapterContextMenuActions.editMotion(state, target, refresh)));
         }
-
-        visualActions.add(ContextActions.action(tr("ui.questsandstuff.menu.change_card_bg"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
-        visualActions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
-        actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_VISUALS), "style", ModColors.INTERACTIVE, visualActions));
+        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
         String removeIconLabel = TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon"));
         actions.add(new ContextAction(removeIconLabel, "delete", ModColors.WARNING, false, false, () -> ChapterContextMenuActions.removeIcon(player, state, target, refresh)));
         String removeCardBgLabel = TabletUiFactory.pendingDeleteLabel(state, ChapterContextMenuLayout.removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg"));
