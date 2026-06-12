@@ -6,9 +6,13 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.BODY_W;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 
 final class QuestDetailsWindowGeometry {
+    private static final int MIN_DETAILS_LEFT_W = 120;
+
     private QuestDetailsWindowGeometry() {
     }
 
@@ -16,8 +20,12 @@ final class QuestDetailsWindowGeometry {
         if (state == null) {
             return TabletUiFactory.CHAPTER_W;
         }
-        state.questDetails.questDetailsLeftPanelWidth = QuestDetailsSplitterWidget.clampDetailsLeftWidth(state.questDetails.questDetailsLeftPanelWidth);
+        state.questDetails.questDetailsLeftPanelWidth = clampDetailsLeftWidth(state.questDetails.questDetailsLeftPanelWidth);
         return state.questDetails.questDetailsLeftPanelWidth;
+    }
+
+    static int clampDetailsLeftWidth(int width) {
+        return Math.max(MIN_DETAILS_LEFT_W, Math.min(CHAPTER_W_MAX, Math.max(CHAPTER_W_MIN, width)));
     }
 
     static int canvasPanelWidth(int leftW) {
