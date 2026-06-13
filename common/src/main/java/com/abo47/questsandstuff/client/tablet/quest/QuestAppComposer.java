@@ -24,23 +24,16 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiPerfProfiler;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
-
+import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_SIZES;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_H;
@@ -92,23 +85,9 @@ public final class QuestAppComposer {
         int initialChapterW = chapterPanelWidth(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = new WidgetGroup(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawPanelChrome(graphics, this);
-                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawPanelOutline(graphics, this);
-            }
-        };
+        WidgetGroup chapterPanel = SplitPanelLayout.leftPanel(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH);
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
-        WidgetGroup canvasPanel = new WidgetGroup(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawCanvasPanelChrome(graphics, this, state);
-                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, state);
-            }
-        };
+        WidgetGroup canvasPanel = SplitPanelLayout.rightPanel(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH, state);
 
         final int contentInset = PANEL_INSET;
         final int topY = contentInset;
@@ -201,8 +180,7 @@ public final class QuestAppComposer {
             questDetailsLayer.setSize(currentRootW, currentRootH);
             modalLayer.setSize(currentRootW, currentRootH);
             if (splitterRef[0] != null) {
-                int splitterX = CHAPTER_X + chapterW + Math.max(0, (GAP - SPLITTER_W) / 2);
-                splitterRef[0].setSelfPosition(splitterX, CHAPTER_Y);
+                splitterRef[0].setSelfPosition(SplitPanelLayout.splitterX(CHAPTER_X, chapterW), CHAPTER_Y);
                 splitterRef[0].setSize(SPLITTER_W, chapterH);
             }
 

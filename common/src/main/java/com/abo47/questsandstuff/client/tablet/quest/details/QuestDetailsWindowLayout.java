@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
@@ -17,10 +18,7 @@ import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
+
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
@@ -28,8 +26,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestDetailsWindowLayout {
@@ -64,8 +60,8 @@ final class QuestDetailsWindowLayout {
         }
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
-        int splitterX = CHAPTER_X + leftW + Math.max(0, (GAP - SPLITTER_W) / 2);
-        int canvasX = CHAPTER_X + leftW + GAP;
+        int splitterX = SplitPanelLayout.splitterX(CHAPTER_X, leftW);
+        int canvasX = SplitPanelLayout.rightPanelX(CHAPTER_X, leftW);
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
         WidgetGroup modal = addModal(layer, state, frame, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3], fillsLayer);
@@ -185,14 +181,7 @@ final class QuestDetailsWindowLayout {
     }
 
     private static void addObjectivePanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW) {
-        WidgetGroup objectivePanel = new WidgetGroup(CHAPTER_X, CHAPTER_Y, leftW, CHAPTER_H) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawPanelChrome(graphics, this);
-                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawPanelOutline(graphics, this);
-            }
-        };
+        WidgetGroup objectivePanel = SplitPanelLayout.leftPanel(CHAPTER_X, CHAPTER_Y, leftW, CHAPTER_H);
         modal.addWidget(objectivePanel);
         int contentX = CHAPTER_PANEL_GUTTER_X;
         int contentY = QuestDetailsWindow.CONTENT_INSET;
@@ -213,14 +202,11 @@ final class QuestDetailsWindowLayout {
     }
 
     private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasW, int[] viewport) {
-        return new WidgetGroup(canvasX, CANVAS_Y, canvasW, CANVAS_H) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawCanvasPanelChrome(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3]);
-                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, viewport[0], viewport[1], viewport[2], viewport[3], QuestDetailsEditState.canEdit(state), false, state.questDetails.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
-            }
-        };
+        return SplitPanelLayout.rightPanel(canvasX, CANVAS_Y, canvasW, CANVAS_H,
+                viewport[0], viewport[1], viewport[2], viewport[3],
+                QuestDetailsEditState.canEdit(state), false,
+                state.questDetails.questDetailsGridOpacityPercent,
+                TabletGridControls.defaultGridColor(state));
     }
 
     private record QuestDetailsWindowFrame(int x, int y, int w, int h) {
