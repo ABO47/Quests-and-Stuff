@@ -48,6 +48,7 @@ public final class TabletUiFactory {
     public static final int CHAPTER_W_MAX = TabletLayout.CHAPTER_W_MAX;
     public static final int CHAPTER_W_ICON_SNAP = TabletLayout.CHAPTER_W_ICON_SNAP;
     public static final int SPLITTER_W = TabletLayout.SPLITTER_W;
+    public static final int PANEL_W_MIN = TabletLayout.PANEL_W_MIN;
     public static final int CANVAS_W = TabletLayout.CANVAS_W;
     public static final int CHAPTER_CARD_H = TabletLayout.CHAPTER_CARD_H;
     public static final int CHAPTER_CARD_GAP = TabletLayout.CHAPTER_CARD_GAP;

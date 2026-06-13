@@ -34,11 +34,12 @@ final class TabletLayout {
     static final int BODY_H = ROOT_H - BODY_Y - PAD_Y;
 
     static final int CHAPTER_W = 168;
-    static final int CHAPTER_W_MIN = 44;
+    static final int CHAPTER_W_MIN = 72;
     static final int CHAPTER_W_ICON = 24;
     static final int CHAPTER_W_MAX = 248;
     static final int CHAPTER_W_ICON_SNAP = 56;
     static final int SPLITTER_W = GAP;
+    static final int PANEL_W_MIN = 120;
     static final int CANVAS_W = BODY_W - CHAPTER_W - GAP;
     static final int CHAPTER_CARD_H = 32;
     static final int CHAPTER_CARD_GAP = PANEL_GAP;
@@ -125,7 +126,7 @@ final class TabletLayout {
     }
 
     static int canvasPanelWidth(TabletUiState state) {
-        return Math.max(120, bodyWidth(state) - chapterPanelWidth(state) - GAP);
+        return Math.max(PANEL_W_MIN, bodyWidth(state) - chapterPanelWidth(state) - GAP);
     }
 
     static int[] canvasViewportBounds(int panelW, int panelH, int topH) {

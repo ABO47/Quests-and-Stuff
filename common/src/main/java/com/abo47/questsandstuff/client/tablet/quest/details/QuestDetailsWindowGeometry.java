@@ -9,10 +9,9 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_T
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_W_MIN;
 
 final class QuestDetailsWindowGeometry {
-    private static final int MIN_DETAILS_LEFT_W = 120;
-
     private QuestDetailsWindowGeometry() {
     }
 
@@ -25,11 +24,11 @@ final class QuestDetailsWindowGeometry {
     }
 
     static int clampDetailsLeftWidth(int width) {
-        return Math.max(MIN_DETAILS_LEFT_W, Math.min(CHAPTER_W_MAX, Math.max(CHAPTER_W_MIN, width)));
+        return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, width));
     }
 
     static int canvasPanelWidth(int leftW) {
-        return Math.max(120, BODY_W - leftW - GAP);
+        return Math.max(PANEL_W_MIN, BODY_W - leftW - GAP);
     }
 
     static int[] mainCanvasViewport(TabletUiState state, int canvasW) {
