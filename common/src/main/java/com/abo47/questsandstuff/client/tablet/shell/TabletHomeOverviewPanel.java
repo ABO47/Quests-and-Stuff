@@ -49,16 +49,28 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
-        ResourceTexture questTexture = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png"));
-        int iconX = innerX + (innerW - APP_ICON_SIZE) / 2;
+        int iconPairW = APP_ICON_SIZE * 2 + 16;
+        int iconsStartX = innerX + (innerW - iconPairW) / 2;
         int iconY = innerY + (innerH - APP_ICON_SIZE) / 2;
-        ButtonWidget questApp = new ButtonWidget(iconX, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
+
+        ResourceTexture questTexture = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png"));
+        ResourceTexture teamsTexture = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/teams.png"));
+
+        ButtonWidget questApp = new ButtonWidget(iconsStartX, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
                 questTexture,
                 cd -> TabletClientHooks.openQuestsUiFromCurrentScreen());
         questApp.setClientSideWidget();
         questApp.setHoverTexture(Surfaces.group(questTexture, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
         questApp.setClickedTexture(Surfaces.group(questTexture, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
         addWidget(questApp);
+
+        ButtonWidget teamsApp = new ButtonWidget(iconsStartX + APP_ICON_SIZE + 16, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
+                teamsTexture,
+                cd -> TabletClientHooks.openTeamsUiFromCurrentScreen());
+        teamsApp.setClientSideWidget();
+        teamsApp.setHoverTexture(Surfaces.group(teamsTexture, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
+        teamsApp.setClickedTexture(Surfaces.group(teamsTexture, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
+        addWidget(teamsApp);
     }
 
     @Override

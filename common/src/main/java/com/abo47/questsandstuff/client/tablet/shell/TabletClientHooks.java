@@ -218,6 +218,13 @@ public final class TabletClientHooks {
         }
     }
 
+    static void openTeamsUiFromCurrentScreen() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            openTeamsUi(minecraft, minecraft.player);
+        }
+    }
+
     public static void applyTabletLayoutMode(TabletUiState state) {
         if (state == null) {
             return;
@@ -269,6 +276,21 @@ public final class TabletClientHooks {
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
         QuestsAndStuffMod.debugLog("[QnS:UI] keybind open quests ui direct");
+    }
+
+    private static void openTeamsUi(Minecraft minecraft, LocalPlayer player) {
+        if (player == null) {
+            return;
+        }
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        ModularUI uiTemplate = new ModularUI(TabletShellComposer.createTeams(player, rootW, rootH, fullScreen), IUIHolder.EMPTY, player);
+        uiTemplate.initWidgets();
+        TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
+        minecraft.setScreen(modularUiGui);
+        player.containerMenu = modularUiGui.getMenu();
+        QuestsAndStuffMod.debugLog("[QnS:UI] open teams ui from home");
     }
 
     private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {

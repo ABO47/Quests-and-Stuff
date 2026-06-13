@@ -5,5 +5,6 @@ package com.abo47.questsandstuff.client.tablet.shell;
  * contract exists under {@code com.abo47.questsandstuff.api.client.tablet}.
  */
 public enum TabletAppId {
-    QUESTS
+    QUESTS,
+    TEAMS
 }

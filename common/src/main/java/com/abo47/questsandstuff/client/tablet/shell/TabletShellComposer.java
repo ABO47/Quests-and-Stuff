@@ -18,4 +18,8 @@ public final class TabletShellComposer {
     public static WidgetGroup createQuests(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
         return TabletAppRouter.create(TabletAppId.QUESTS, player, rootWidth, rootHeight, fullScreenMode);
     }
+
+    public static WidgetGroup createTeams(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
+        return TabletAppRouter.create(TabletAppId.TEAMS, player, rootWidth, rootHeight, fullScreenMode);
+    }
 }
