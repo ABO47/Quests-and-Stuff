@@ -209,7 +209,7 @@ public final class QuestAppComposer {
             state.canvas.canvasViewportY = viewportY;
             state.canvas.canvasViewportW = viewportW;
             state.canvas.canvasViewportH = viewportH;
-            int homeBtnX = ROOT_W - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
+            int homeBtnX = currentRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
             int homeBtnY = ROOT_PAD_Y + ((currentRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
             questHomeBtn.setSelfPosition(homeBtnX, homeBtnY);
             int holeX = canvasX + viewportX;
