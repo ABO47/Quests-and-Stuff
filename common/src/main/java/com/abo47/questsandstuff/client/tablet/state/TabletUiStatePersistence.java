@@ -57,7 +57,6 @@ public final class TabletUiStatePersistence {
             state.chapterPanel.chapterPanelLastExpandedWidth = readInt(root, "chapter_panel_last_expanded_width", state.chapterPanel.chapterPanelLastExpandedWidth);
             state.questDetails.questDetailsLeftPanelWidth = clampQuestDetailsLeftWidth(readInt(root, "quest_details_left_panel_width", state.questDetails.questDetailsLeftPanelWidth));
             state.questDetails.questDetailsSplitterLocked = readBoolean(root, "quest_details_splitter_locked", state.questDetails.questDetailsSplitterLocked);
-            state.teams.leftPanelWidth = clampTeamsLeftWidth(readInt(root, "teams_left_panel_width", state.teams.leftPanelWidth));
             state.questDetails.questDetailsGridEnabled = readBoolean(root, "quest_details_grid_enabled", state.questDetails.questDetailsGridEnabled);
             state.questDetails.questDetailsGridSnapLocked = readBoolean(root, "quest_details_grid_snap_locked", state.questDetails.questDetailsGridSnapLocked);
             state.questDetails.questDetailsCenterSnapXEnabled = readBoolean(root, "quest_details_center_snap_x_enabled", state.questDetails.questDetailsCenterSnapXEnabled);
@@ -109,7 +108,6 @@ public final class TabletUiStatePersistence {
             root.addProperty("chapter_panel_last_expanded_width", Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelLastExpandedWidth)));
             root.addProperty("quest_details_left_panel_width", clampQuestDetailsLeftWidth(state.questDetails.questDetailsLeftPanelWidth));
             root.addProperty("quest_details_splitter_locked", state.questDetails.questDetailsSplitterLocked);
-            root.addProperty("teams_left_panel_width", clampTeamsLeftWidth(state.teams.leftPanelWidth));
             root.addProperty("quest_details_grid_enabled", state.questDetails.questDetailsGridEnabled);
             root.addProperty("quest_details_grid_snap_locked", state.questDetails.questDetailsGridSnapLocked);
             root.addProperty("quest_details_center_snap_x_enabled", state.questDetails.questDetailsCenterSnapXEnabled);
@@ -276,7 +274,4 @@ public final class TabletUiStatePersistence {
         return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, width));
     }
 
-    private static int clampTeamsLeftWidth(int width) {
-        return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, width));
-    }
 }

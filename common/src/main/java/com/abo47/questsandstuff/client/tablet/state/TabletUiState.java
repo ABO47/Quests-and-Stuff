@@ -645,12 +645,4 @@ public class TabletUiState {
         public final CanvasClipboardState canvasClipboard = new CanvasClipboardState();
     }
 
-    public final TeamsState teams = new TeamsState();
-
-    public static final class TeamsState {
-        public int leftPanelWidth = 168;
-        public boolean teamsSplitterDragging;
-        public int teamsSplitterDragStartX;
-        public int teamsSplitterStartWidth;
-    }
 }
