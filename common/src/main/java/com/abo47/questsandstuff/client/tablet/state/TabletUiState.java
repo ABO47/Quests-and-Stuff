@@ -31,6 +31,7 @@ public class TabletUiState {
     public final QuestDetailsState questDetails = new QuestDetailsState();
     public final TabletContextMenuState contextMenu = new TabletContextMenuState();
     public final ClipboardState clipboard = new ClipboardState();
+    public final TeamsState teams = new TeamsState();
 
     public static final class RootState {
         public boolean fullScreenMode;
@@ -643,6 +644,22 @@ public class TabletUiState {
 
     public static final class ClipboardState {
         public final CanvasClipboardState canvasClipboard = new CanvasClipboardState();
+    }
+
+    public static final class TeamsState {
+        public String search = "";
+        public boolean inviteCodeModalOpen;
+        public boolean inviteCodeImportMode;
+        public long inviteCodeAnimationStartMs;
+        public String inviteCodeDraft = "";
+        public String inviteCodeMessage = "";
+        public boolean inviteCodeMessageSuccess;
+        public boolean confirmModalOpen;
+        public String confirmTitleKey = "";
+        public String confirmMessageKey = "";
+        public String confirmAction = "";
+        public String confirmTargetUuid = "";
+        public long confirmAnimationStartMs;
     }
 
 }

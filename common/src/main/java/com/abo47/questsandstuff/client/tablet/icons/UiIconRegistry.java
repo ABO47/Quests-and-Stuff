@@ -166,7 +166,12 @@ public final class UiIconRegistry {
         preloadedRole("reset", UiThemeManager.ROLE_ICON_WARNING, "reset_quest");
         preloadedRole("window_pin", UiThemeManager.ROLE_ICON_INTERACTIVE);
         preloadedRole("hud_layout", UiThemeManager.ROLE_ICON_INTERACTIVE);
-
+        preloadedRole("mail", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        preloadedRole("mail-open", UiThemeManager.ROLE_ICON_SUCCESS);
+        preloadedRole("door-open", UiThemeManager.ROLE_ICON_WARNING);
+        preloadedRole("user-round-x", UiThemeManager.ROLE_ICON_ERROR);
+        preloadedRole("crown", UiThemeManager.ROLE_ICON_INTERACTIVE);
+ 
         registeredDefault("biome");
         registeredDefault("orbit");
         registeredDefault("scissors");

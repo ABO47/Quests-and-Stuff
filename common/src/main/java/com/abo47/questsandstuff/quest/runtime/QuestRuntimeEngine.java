@@ -299,8 +299,12 @@ public final class QuestRuntimeEngine {
         return completableQuests.shouldBeUnlocked(state, definition, progress);
     }
 
-    private void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
         QuestTeamProgressReconciler.onTeamMembershipChanged(level, changedPlayer, definitionStore, progressData, syncService);
+    }
+
+    public void triggerTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+        onTeamMembershipChanged(level, changedPlayer);
     }
 
     public boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition) {

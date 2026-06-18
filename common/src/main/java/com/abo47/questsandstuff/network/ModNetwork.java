@@ -23,6 +23,12 @@ import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
+import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
+import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
+import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
+import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
+import com.abo47.questsandstuff.network.team.S2CTeamJoinResultPacket;
 import com.abo47.questsandstuff.platform.Services;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -115,6 +121,13 @@ public final class ModNetwork {
         packets.add(type(id++, C2SManualXpSubmitPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SManualXpSubmitPacket::encode, C2SManualXpSubmitPacket::decode, C2SManualXpSubmitPacket::handle));
         packets.add(type(id++, C2SResetQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SResetQuestPacket::encode, C2SResetQuestPacket::decode, C2SResetQuestPacket::handle));
         packets.add(type(id, C2STogglePinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
+        id++;
+        packets.add(type(id++, S2CTeamSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamSyncPacket::encode, S2CTeamSyncPacket::decode, S2CTeamSyncPacket::handle));
+        packets.add(type(id++, C2STeamCreatePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamCreatePacket::encode, C2STeamCreatePacket::decode, C2STeamCreatePacket::handle));
+        packets.add(type(id++, C2STeamJoinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamJoinPacket::encode, C2STeamJoinPacket::decode, C2STeamJoinPacket::handle));
+        packets.add(type(id++, C2STeamActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamActionPacket::encode, C2STeamActionPacket::decode, C2STeamActionPacket::handle));
+        packets.add(type(id++, C2STeamInviteCodePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamInviteCodePacket::encode, C2STeamInviteCodePacket::decode, C2STeamInviteCodePacket::handle));
+        packets.add(type(id, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
         return List.copyOf(packets);
     }
 

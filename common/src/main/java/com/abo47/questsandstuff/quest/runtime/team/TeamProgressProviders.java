@@ -22,6 +22,7 @@ public final class TeamProgressProviders {
             return;
         }
         register(SoloTeamProgressProvider.INSTANCE);
+        register(MultiTeamProgressProvider.INSTANCE);
     }
 
     public static void register(TeamProgressProvider provider) {

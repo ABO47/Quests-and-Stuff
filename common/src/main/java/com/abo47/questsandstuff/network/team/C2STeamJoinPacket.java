@@ -1,0 +1,49 @@
+package com.abo47.questsandstuff.network.team;
+
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.model.team.TeamData;
+import com.abo47.questsandstuff.quest.team.TeamManager;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+
+
+public record C2STeamJoinPacket(String inviteCode) {
+    public static C2STeamJoinPacket decode(FriendlyByteBuf buf) {
+        return new C2STeamJoinPacket(buf.readUtf());
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(inviteCode == null ? "" : inviteCode);
+    }
+
+    public void handle(ModPacketContext context) {
+        ServerPlayer player = context.sender();
+        if (player == null || inviteCode == null || inviteCode.isBlank()) {
+            return;
+        }
+        context.enqueueWork(() -> {
+            ServerLevel level = player.serverLevel();
+            TeamManager manager = new TeamManager(level, QuestServices.engine(player.server));
+            String code = inviteCode.trim().toUpperCase();
+            String error = manager.getJoinError(player, code);
+            if (error != null) {
+                TeamData existing = manager.getTeamByPlayer(player.getUUID());
+                if (existing != null) {
+                    S2CTeamSyncPacket.send(player, existing);
+                }
+                S2CTeamJoinResultPacket.send(player, "ui.questsandstuff.teams.join_error." + error, false);
+                return;
+            }
+            TeamData team = manager.joinTeam(player, code);
+            if (team == null) {
+                S2CTeamJoinResultPacket.send(player, "ui.questsandstuff.teams.invite_invalid", false);
+                return;
+            }
+            S2CTeamSyncPacket.broadcastToMembers(level, team);
+            S2CTeamJoinResultPacket.send(player, "", true);
+        });
+    }
+}

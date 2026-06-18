@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 
 public final class TabletVocabulary {
     public static final String COMMON_CANCEL = "ui.questsandstuff.common.cancel";
+    public static final String COMMON_CONFIRM = "ui.questsandstuff.common.confirm";
     public static final String COMMON_DELETE = "ui.questsandstuff.common.delete";
     public static final String COMMON_DISABLED = "ui.questsandstuff.common.disabled";
     public static final String COMMON_ENABLED = "ui.questsandstuff.common.enabled";
