@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class ClientCanvasLayerState {
+    private static final Map<String, List<CanvasExclusiveChoice>> GROUP_CANVAS_EXCLUSIVE_CHOICES = new HashMap<>();
     private static final Map<String, List<CanvasImageLayer>> GROUP_CANVAS_IMAGES = new HashMap<>();
     private static final Map<String, List<CanvasTextLayer>> GROUP_CANVAS_TEXTS = new HashMap<>();
     private static final Map<String, List<String>> GROUP_CANVAS_LAYER_ORDER = new HashMap<>();
@@ -21,6 +23,7 @@ public final class ClientCanvasLayerState {
     }
 
     public static void reset() {
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.clear();
         GROUP_CANVAS_IMAGES.clear();
         GROUP_CANVAS_TEXTS.clear();
         GROUP_CANVAS_LAYER_ORDER.clear();
@@ -37,6 +40,7 @@ public final class ClientCanvasLayerState {
         }
         if (payload.contains(QuestSyncKeys.GROUPS, Tag.TAG_LIST)) {
             List<String> groups = ClientChapterState.groupOrderSnapshot();
+            GROUP_CANVAS_EXCLUSIVE_CHOICES.keySet().removeIf(group -> !groups.contains(group));
             GROUP_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
             GROUP_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
             GROUP_CANVAS_LAYER_ORDER.keySet().removeIf(group -> !groups.contains(group));
@@ -51,10 +55,15 @@ public final class ClientCanvasLayerState {
             if (normalized.isBlank()) {
                 continue;
             }
+            GROUP_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(CanvasLayerNbt.exclusiveChoicesFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND))));
             GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbt.imagesFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_IMAGES, Tag.TAG_COMPOUND))));
             GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbt.textsFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_TEXTS, Tag.TAG_COMPOUND))));
             GROUP_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbt.stringsFromListTag(props.getList(QuestSyncKeys.GroupProps.CANVAS_LAYER_ORDER, Tag.TAG_STRING))));
         }
+    }
+
+    public static Map<String, List<CanvasExclusiveChoice>> exclusiveChoicesByGroup() {
+        return copyLayerMap(GROUP_CANVAS_EXCLUSIVE_CHOICES);
     }
 
     public static Map<String, List<CanvasImageLayer>> imagesByGroup() {
@@ -67,6 +76,10 @@ public final class ClientCanvasLayerState {
 
     public static Map<String, List<String>> layerOrderByGroup() {
         return copyLayerMap(GROUP_CANVAS_LAYER_ORDER);
+    }
+
+    public static List<CanvasExclusiveChoice> exclusiveChoices(String group) {
+        return List.copyOf(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(ClientChapterState.normalizeGroup(group), List.of()));
     }
 
     public static List<CanvasImageLayer> images(String group) {
@@ -86,6 +99,7 @@ public final class ClientCanvasLayerState {
         if (normalized.isBlank()) {
             return;
         }
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.putIfAbsent(normalized, List.of());
         GROUP_CANVAS_IMAGES.putIfAbsent(normalized, List.of());
         GROUP_CANVAS_TEXTS.putIfAbsent(normalized, List.of());
         GROUP_CANVAS_LAYER_ORDER.putIfAbsent(normalized, List.of());
@@ -97,6 +111,8 @@ public final class ClientCanvasLayerState {
         if (source.isBlank() || target.isBlank() || source.equals(target)) {
             return;
         }
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.put(target, GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(source, List.of()));
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.remove(source);
         GROUP_CANVAS_IMAGES.put(target, GROUP_CANVAS_IMAGES.getOrDefault(source, List.of()));
         GROUP_CANVAS_IMAGES.remove(source);
         GROUP_CANVAS_TEXTS.put(target, GROUP_CANVAS_TEXTS.getOrDefault(source, List.of()));
@@ -110,9 +126,45 @@ public final class ClientCanvasLayerState {
         if (normalized.isBlank()) {
             return;
         }
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.remove(normalized);
         GROUP_CANVAS_IMAGES.remove(normalized);
         GROUP_CANVAS_TEXTS.remove(normalized);
         GROUP_CANVAS_LAYER_ORDER.remove(normalized);
+    }
+
+    public static void putExclusiveChoice(String group, CanvasExclusiveChoice ec) {
+        String normalized = ClientChapterState.normalizeGroup(group);
+        if (normalized.isBlank() || ec == null || ec.id().isBlank()) {
+            return;
+        }
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
+        boolean replaced = false;
+        for (int i = 0; i < choices.size(); i++) {
+            if (choices.get(i).id().equals(ec.id())) {
+                choices.set(i, ec);
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            choices.add(ec);
+        }
+        GROUP_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(choices));
+        ensureLayerOrder(normalized, "exclusive_choice:" + ec.id());
+    }
+
+    public static boolean removeExclusiveChoice(String group, String ecId) {
+        String normalized = ClientChapterState.normalizeGroup(group);
+        if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
+            return false;
+        }
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
+        if (!choices.removeIf(ec -> ec.id().equals(ecId))) {
+            return false;
+        }
+        putOrRemove(GROUP_CANVAS_EXCLUSIVE_CHOICES, normalized, choices);
+        removeLayerOrder(normalized, "exclusive_choice:" + ecId);
+        return true;
     }
 
     public static void putImage(String group, CanvasImageLayer image) {

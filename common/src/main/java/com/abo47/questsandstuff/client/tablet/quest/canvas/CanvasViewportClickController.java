@@ -21,6 +21,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.world.entity.player.Player;
@@ -172,9 +173,14 @@ final class CanvasViewportClickController {
         if (textHit == null && state.root.canEdit) {
             textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
         }
+        CanvasExclusiveChoice ecHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasExclusiveChoice(state, localX, localY) : null;
+        if (ecHit == null && state.root.canEdit) {
+            ecHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
+        }
         String selectedGroup = TabletStateQueries.selectedGroupName(state);
         List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
         List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroup, List.of());
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(
                 state,
                 cards,
@@ -182,13 +188,14 @@ final class CanvasViewportClickController {
                 canvasViewport.getSize().width,
                 canvasViewport.getSize().height
         );
-        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedGroup, cards, canvasImages, canvasTexts, connectionKeys)
-                .resolveElementHit(hit, imageHit, textHit);
+        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedGroup, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
+                .resolveElementHit(hit, imageHit, textHit, ecHit);
         hit = layerHit.quest();
         imageHit = layerHit.image();
         textHit = layerHit.text();
+        ecHit = layerHit.exclusiveChoice();
         if (state.root.canEdit && button == 1) {
-            CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit);
+            CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit, ecHit);
             return true;
         }
 
@@ -215,11 +222,11 @@ final class CanvasViewportClickController {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
         }
 
-        if (CanvasConnectionClickActions.handleQuickConnect(state, player, refresher, hit, button)) {
+        if (CanvasConnectionClickActions.handleQuickConnect(state, player, refresher, hit, ecHit, button)) {
             return true;
         }
 
-        if (CanvasConnectionClickActions.handlePendingConnect(state, player, refresher, hit, button)) {
+        if (CanvasConnectionClickActions.handlePendingConnect(state, player, refresher, hit, ecHit, button)) {
             return true;
         }
 
@@ -254,7 +261,7 @@ final class CanvasViewportClickController {
         }
 
         if (state.canvas.mouseMode == CanvasMouseMode.SELECT_MOVE) {
-            CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit);
+            CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit, ecHit);
             return true;
         }
 

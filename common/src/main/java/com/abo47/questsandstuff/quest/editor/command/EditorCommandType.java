@@ -33,6 +33,8 @@ public enum EditorCommandType {
     REWARD_PUT("reward_put"),
     REWARD_REMOVE("reward_remove"),
     REWARD_MOVE("reward_move"),
+    CANVAS_EXCLUSIVE_CHOICE_PUT("canvas_exclusive_choice_put"),
+    CANVAS_EXCLUSIVE_CHOICE_REMOVE("canvas_exclusive_choice_remove"),
     CANVAS_IMAGE_PUT("canvas_image_put"),
     CANVAS_IMAGE_REMOVE("canvas_image_remove"),
     CANVAS_TEXT_PUT("canvas_text_put"),

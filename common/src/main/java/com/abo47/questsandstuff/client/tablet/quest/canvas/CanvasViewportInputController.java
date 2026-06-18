@@ -103,6 +103,11 @@ final class CanvasViewportInputController {
             return true;
         }
 
+        if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
+            elementTransforms.updateExclusiveChoiceTransform(localX, localY, cards);
+            return true;
+        }
+
         if (state.canvas.draggingSelection) {
             boolean liveQuestPreview = viewport.selectionDragPreviewSupported();
             selectionTransforms.updateDrag(localX, localY, cards, byQuestId, liveQuestPreview);
@@ -205,6 +210,15 @@ final class CanvasViewportInputController {
             return true;
         }
 
+        if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
+            String group = TabletStateQueries.selectedGroupName(state);
+            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+            CanvasTransformSessions.clearMainCanvasSession(state);
+            refresher.run();
+            return true;
+        }
+
         if (state.canvas.draggingSelection) {
             state.canvas.draggingSelection = false;
             viewport.endSelectionDragPreview();
@@ -225,10 +239,11 @@ final class CanvasViewportInputController {
                 CanvasLayerMutations.persistCanvasText(state, group, textId);
             }
             QuestsAndStuffMod.debugLog(
-                    "[QnS:UI] canvas selection drag commit quests={} images={} texts={} delta={},{}",
+                    "[QnS:UI] canvas selection drag commit quests={} images={} texts={} ecs={} delta={},{}",
                     state.canvas.transientQuestPositions.size(),
                     movedImages,
                     movedTexts,
+                    state.canvas.transientCanvasExclusiveChoices.size(),
                     state.canvas.dragSelectionDeltaX,
                     state.canvas.dragSelectionDeltaY
             );
@@ -281,6 +296,9 @@ final class CanvasViewportInputController {
         }
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             CanvasLayerMutations.persistCanvasText(state, group, textId);
+        }
+        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
         }
     }
 

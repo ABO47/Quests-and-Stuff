@@ -9,6 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -110,6 +111,18 @@ public final class CanvasSelectionRenderer {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+            count++;
+            minX = Math.min(minX, bounds[0]);
+            minY = Math.min(minY, bounds[1]);
+            maxX = Math.max(maxX, bounds[2]);
+            maxY = Math.max(maxY, bounds[3]);
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+                continue;
+            }
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -268,6 +281,26 @@ public final class CanvasSelectionRenderer {
                 continue;
             }
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+            drawClippedRect(
+                    graphics,
+                    originX,
+                    originY,
+                    maxW,
+                    maxH,
+                    bounds[0] - SINGLE_SELECTION_PAD,
+                    bounds[1] - SINGLE_SELECTION_PAD,
+                    bounds[2] - bounds[0] + SINGLE_SELECTION_PAD * 2,
+                    bounds[3] - bounds[1] + SINGLE_SELECTION_PAD * 2,
+                    fill,
+                    border
+            );
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+                continue;
+            }
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
             drawClippedRect(
                     graphics,
                     originX,

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.google.gson.JsonObject;
@@ -64,6 +65,10 @@ final class ChapterMetadataReader {
     }
 
     private static void readCanvasLayers(JsonObject json, ChapterMetadataState state, String name) {
+        List<CanvasExclusiveChoice> exclusiveChoices = ChapterMetadataJsonCodec.readCanvasExclusiveChoices(json.get("canvas_exclusive_choices"));
+        if (!exclusiveChoices.isEmpty()) {
+            state.canvasExclusiveChoicesByGroup.put(name, List.copyOf(exclusiveChoices));
+        }
         List<CanvasImageLayer> images = ChapterMetadataJsonCodec.readCanvasImages(json.get("canvas_images"));
         if (!images.isEmpty()) {
             state.canvasImagesByGroup.put(name, List.copyOf(images));

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -14,15 +15,17 @@ public final class CanvasClipboardState {
     private int originY;
     private final List<CanvasImageLayer> imageLayers = new ArrayList<>();
     private final List<CanvasTextLayer> textLayers = new ArrayList<>();
+    private final List<CanvasExclusiveChoice> exclusiveChoiceLayers = new ArrayList<>();
     private final Set<String> pendingPastedImageIds = new LinkedHashSet<>();
     private final Set<String> pendingPastedTextIds = new LinkedHashSet<>();
+    private final Set<String> pendingPastedEcIds = new LinkedHashSet<>();
 
     public boolean hasQuestClipboard() {
         return questClipboardAvailable;
     }
 
     public boolean hasCanvasLayers() {
-        return !imageLayers.isEmpty() || !textLayers.isEmpty();
+        return !imageLayers.isEmpty() || !textLayers.isEmpty() || !exclusiveChoiceLayers.isEmpty();
     }
 
     public boolean hasContent() {
@@ -45,6 +48,10 @@ public final class CanvasClipboardState {
         return List.copyOf(textLayers);
     }
 
+    public List<CanvasExclusiveChoice> exclusiveChoiceLayers() {
+        return List.copyOf(exclusiveChoiceLayers);
+    }
+
     public int imageCount() {
         return imageLayers.size();
     }
@@ -53,7 +60,15 @@ public final class CanvasClipboardState {
         return textLayers.size();
     }
 
+    public int exclusiveChoiceCount() {
+        return exclusiveChoiceLayers.size();
+    }
+
     public void store(boolean questClipboardAvailable, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, int originX, int originY) {
+        store(questClipboardAvailable, images, texts, List.of(), originX, originY);
+    }
+
+    public void store(boolean questClipboardAvailable, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasExclusiveChoice> ecs, int originX, int originY) {
         this.questClipboardAvailable = questClipboardAvailable;
         this.originX = originX;
         this.originY = originY;
@@ -65,6 +80,10 @@ public final class CanvasClipboardState {
         if (texts != null) {
             textLayers.addAll(texts);
         }
+        exclusiveChoiceLayers.clear();
+        if (ecs != null) {
+            exclusiveChoiceLayers.addAll(ecs);
+        }
         clearPendingPastedLayers();
     }
 
@@ -75,6 +94,7 @@ public final class CanvasClipboardState {
     public void clearPendingPastedLayers() {
         pendingPastedImageIds.clear();
         pendingPastedTextIds.clear();
+        pendingPastedEcIds.clear();
     }
 
     public void recordPastedImage(String id) {
@@ -91,6 +111,13 @@ public final class CanvasClipboardState {
         }
     }
 
+    public void recordPastedExclusiveChoice(String id) {
+        String clean = clean(id);
+        if (!clean.isBlank()) {
+            pendingPastedEcIds.add(clean);
+        }
+    }
+
     public Set<String> pendingPastedImageIds() {
         return Set.copyOf(pendingPastedImageIds);
     }
@@ -99,12 +126,20 @@ public final class CanvasClipboardState {
         return Set.copyOf(pendingPastedTextIds);
     }
 
+    public Set<String> pendingPastedEcIds() {
+        return Set.copyOf(pendingPastedEcIds);
+    }
+
     public String lastPendingPastedImageId() {
         return pendingPastedImageIds.stream().reduce((first, second) -> second).orElse("");
     }
 
     public String lastPendingPastedTextId() {
         return pendingPastedTextIds.stream().reduce((first, second) -> second).orElse("");
+    }
+
+    public String lastPendingPastedEcId() {
+        return pendingPastedEcIds.stream().reduce((first, second) -> second).orElse("");
     }
 
     private static String clean(String value) {

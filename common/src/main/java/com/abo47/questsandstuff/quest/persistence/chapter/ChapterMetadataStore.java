@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.google.gson.Gson;
@@ -39,6 +40,7 @@ public final class ChapterMetadataStore {
                 Map.copyOf(state.groupTextSize),
                 Map.copyOf(state.groupLockUntilUnlocked),
                 Map.copyOf(state.groupHideUntilUnlocked),
+                ChapterMetadataState.copyLayerMap(state.canvasExclusiveChoicesByGroup),
                 ChapterMetadataState.copyLayerMap(state.canvasImagesByGroup),
                 ChapterMetadataState.copyLayerMap(state.canvasTextsByGroup),
                 ChapterMetadataState.copyLayerMap(state.canvasLayerOrderByGroup)
@@ -61,6 +63,7 @@ public final class ChapterMetadataStore {
         state.groupTextSize.putAll(snapshot.groupTextSize());
         state.groupLockUntilUnlocked.putAll(snapshot.groupLockUntilUnlocked());
         state.groupHideUntilUnlocked.putAll(snapshot.groupHideUntilUnlocked());
+        state.canvasExclusiveChoicesByGroup.putAll(mutableLayerMap(snapshot.canvasExclusiveChoicesByGroup()));
         state.canvasImagesByGroup.putAll(mutableLayerMap(snapshot.canvasImagesByGroup()));
         state.canvasTextsByGroup.putAll(mutableLayerMap(snapshot.canvasTextsByGroup()));
         state.canvasLayerOrderByGroup.putAll(mutableLayerMap(snapshot.canvasLayerOrderByGroup()));
@@ -136,6 +139,10 @@ public final class ChapterMetadataStore {
 
     public List<String> canvasLayerOrder(String group) {
         return List.copyOf(state.canvasLayerOrderByGroup.getOrDefault(ChapterMetadataState.normalizeGroupName(group), List.of()));
+    }
+
+    public List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
+        return List.copyOf(state.canvasExclusiveChoicesByGroup.getOrDefault(ChapterMetadataState.normalizeGroupName(group), List.of()));
     }
 
     public void setGroupIcon(String group, String icon) {
@@ -232,6 +239,22 @@ public final class ChapterMetadataStore {
         state.groupHideUntilUnlocked.put(normalized, hideUntilUnlocked);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter hide_until_unlocked {} -> {}", normalized, hideUntilUnlocked);
         save();
+    }
+
+    public void putCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (ec != null && ChapterCanvasLayerMutations.put(state, normalized, ec, ec.id(), "exclusive_choice:" + ec.id(), state.canvasExclusiveChoicesByGroup, CanvasExclusiveChoice::id)) {
+            saveGroup(normalized);
+        }
+    }
+
+    public boolean removeCanvasExclusiveChoice(String group, String ecId) {
+        String normalized = ChapterMetadataState.normalizeGroupName(group);
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, ecId, "exclusive_choice:" + ecId, state.canvasExclusiveChoicesByGroup, CanvasExclusiveChoice::id)) {
+            return false;
+        }
+        saveGroup(normalized);
+        return true;
     }
 
     public void putCanvasImage(String group, CanvasImageLayer image) {

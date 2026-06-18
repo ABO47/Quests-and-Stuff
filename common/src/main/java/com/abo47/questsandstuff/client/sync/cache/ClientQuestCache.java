@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.sync.mutation.ClientQuestLocalMutations;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
 import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
@@ -216,6 +217,10 @@ public final class ClientQuestCache {
         return ClientCanvasLayerState.textsByGroup();
     }
 
+    public static Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup() {
+        return ClientCanvasLayerState.exclusiveChoicesByGroup();
+    }
+
     public static Map<String, List<String>> canvasLayerOrderByGroup() {
         return ClientCanvasLayerState.layerOrderByGroup();
     }
@@ -226,6 +231,10 @@ public final class ClientQuestCache {
 
     public static List<CanvasTextLayer> canvasTexts(String group) {
         return ClientCanvasLayerState.texts(group);
+    }
+
+    public static List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
+        return ClientCanvasLayerState.exclusiveChoices(group);
     }
 
     public static List<String> canvasLayerOrder(String group) {
@@ -286,6 +295,14 @@ public final class ClientQuestCache {
 
     public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
         ClientQuestLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    }
+
+    public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
+        ClientQuestLocalMutations.putCanvasExclusiveChoiceLocal(group, ec);
+    }
+
+    public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
+        ClientQuestLocalMutations.removeCanvasExclusiveChoiceLocal(group, ecId);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {

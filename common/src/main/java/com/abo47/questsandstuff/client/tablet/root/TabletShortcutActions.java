@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +60,8 @@ final class TabletShortcutActions {
         boolean changed = false;
         if (state.canvas.boxSelecting || state.canvas.draggingSelection || state.canvas.resizingSelection || state.canvas.rotatingSelection
                 || state.canvas.draggingCanvas || state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage
-                || state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
+                || state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText
+                || state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
             state.canvas.boxSelecting = false;
             state.canvas.draggingCanvas = false;
             CanvasTransformSessions.clearMainCanvasSession(state);
@@ -97,7 +99,8 @@ final class TabletShortcutActions {
             return true;
         }
         if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
-                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && state.root.selectedGroup != null && !state.root.selectedGroup.isBlank()) {
+                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && CanvasSelectionActions.selectedEcIds(state).isEmpty()
+                && state.root.selectedGroup != null && !state.root.selectedGroup.isBlank()) {
             state.canvas.pendingChapterRename = state.root.selectedGroup;
             state.chapterPanel.chapterDraftName = state.root.selectedGroup;
             return true;
@@ -120,6 +123,9 @@ final class TabletShortcutActions {
         }
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             changed |= CanvasLayerMutations.removeCanvasText(state, group, textId);
+        }
+        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasExclusiveChoice(state, group, ecId);
         }
         if (changed) {
             CanvasSelectionActions.clearCanvasSelection(state);
@@ -148,8 +154,13 @@ final class TabletShortcutActions {
             state.canvas.canvasSelection.textIds().add(text.id());
             state.canvas.canvasSelection.setPrimaryTextId(text.id());
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas group={} quests={} images={} texts={}",
-                group, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size());
+        state.canvas.canvasSelection.ecIds().clear();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            state.canvas.canvasSelection.ecIds().add(ec.id());
+            state.canvas.canvasSelection.setPrimaryEcId(ec.id());
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas group={} quests={} images={} texts={} ecs={}",
+                group, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size(), state.canvas.canvasSelection.ecIds().size());
         return true;
     }
 
@@ -200,6 +211,14 @@ final class TabletShortcutActions {
             if (text != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
                 CanvasLayerMutations.putCanvasText(state, group, text.moveTo(point.x, point.y));
+                changed = true;
+            }
+        }
+        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+            if (ec != null) {
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, ec.x() + dx, ec.y() + dy, ec.w(), ec.h(), 0, 0, ec.rotation());
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.moveTo(point.x, point.y));
                 changed = true;
             }
         }

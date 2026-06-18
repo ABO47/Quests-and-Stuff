@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.quest.editor.session.actions.EditorChapterSessio
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorQuestSessionActions;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorUndoRedoActions;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -212,6 +213,14 @@ public final class EditorSessionService {
 
     public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
         chapterActions.setGroupHideUntilUnlocked(player, groupName, hideUntilUnlocked);
+    }
+
+    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
+        canvasActions.putCanvasExclusiveChoice(player, groupName, ec);
+    }
+
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
+        canvasActions.removeCanvasExclusiveChoice(player, groupName, ecId);
     }
 
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {

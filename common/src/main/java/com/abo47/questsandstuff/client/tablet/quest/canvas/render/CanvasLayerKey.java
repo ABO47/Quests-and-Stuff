@@ -5,6 +5,10 @@ public record CanvasLayerKey(CanvasLayerKind kind, String id) {
         id = id == null ? "" : id.trim();
     }
 
+    public static CanvasLayerKey exclusiveChoice(String ecId) {
+        return new CanvasLayerKey(CanvasLayerKind.EXCLUSIVE_CHOICE, ecId);
+    }
+
     public static CanvasLayerKey quest(String questId) {
         return new CanvasLayerKey(CanvasLayerKind.QUEST, questId);
     }
@@ -24,6 +28,9 @@ public record CanvasLayerKey(CanvasLayerKind kind, String id) {
     public static CanvasLayerKey parse(String key) {
         if (key == null || key.isBlank()) {
             return null;
+        }
+        if (key.startsWith(CanvasLayerOrdering.EXCLUSIVE_CHOICE_PREFIX)) {
+            return exclusiveChoice(key.substring(CanvasLayerOrdering.EXCLUSIVE_CHOICE_PREFIX.length()));
         }
         if (key.startsWith(CanvasLayerOrdering.QUEST_PREFIX)) {
             return quest(key.substring(CanvasLayerOrdering.QUEST_PREFIX.length()));
@@ -45,6 +52,7 @@ public record CanvasLayerKey(CanvasLayerKind kind, String id) {
             return "";
         }
         return switch (kind) {
+            case EXCLUSIVE_CHOICE -> CanvasLayerOrdering.EXCLUSIVE_CHOICE_PREFIX + id;
             case QUEST -> CanvasLayerOrdering.QUEST_PREFIX + id;
             case IMAGE -> CanvasLayerOrdering.IMAGE_PREFIX + id;
             case TEXT -> CanvasLayerOrdering.TEXT_PREFIX + id;

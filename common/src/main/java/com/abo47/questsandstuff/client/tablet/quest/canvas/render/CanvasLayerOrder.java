@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -83,10 +84,15 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
     }
 
     public CanvasLayerHit resolveElementHit(QuestCardLayout quest, CanvasImageLayer image, CanvasTextLayer text) {
+        return resolveElementHit(quest, image, text, null);
+    }
+
+    public CanvasLayerHit resolveElementHit(QuestCardLayout quest, CanvasImageLayer image, CanvasTextLayer text, CanvasExclusiveChoice exclusiveChoice) {
         List<CanvasLayerKey> candidates = new ArrayList<>();
-        CanvasLayerKey questKey = quest == null ? null : CanvasLayerKey.quest(quest.questId());
+        CanvasLayerKey questKey = quest == null ? null : CanvasLayerKey.quest(quest != null ? quest.questId() : "");
         CanvasLayerKey imageKey = image == null ? null : CanvasLayerKey.image(image.id());
         CanvasLayerKey textKey = text == null ? null : CanvasLayerKey.text(text.id());
+        CanvasLayerKey ecKey = exclusiveChoice == null ? null : CanvasLayerKey.exclusiveChoice(exclusiveChoice.id());
         if (questKey != null) {
             candidates.add(questKey);
         }
@@ -96,6 +102,9 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
         if (textKey != null) {
             candidates.add(textKey);
         }
+        if (ecKey != null) {
+            candidates.add(ecKey);
+        }
         CanvasLayerKey top = topMost(candidates);
         if (top == null) {
             return CanvasLayerHit.EMPTY;
@@ -103,7 +112,8 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
         return new CanvasLayerHit(
                 top.equals(questKey) ? quest : null,
                 top.equals(imageKey) ? image : null,
-                top.equals(textKey) ? text : null
+                top.equals(textKey) ? text : null,
+                top.equals(ecKey) ? exclusiveChoice : null
         );
     }
 
@@ -130,9 +140,10 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
     private static int defaultHitRank(CanvasLayerKind kind) {
         return switch (kind) {
             case CONNECTION -> 0;
-            case IMAGE -> 1;
-            case TEXT -> 2;
-            case QUEST -> 3;
+            case EXCLUSIVE_CHOICE -> 1;
+            case IMAGE -> 2;
+            case TEXT -> 3;
+            case QUEST -> 4;
         };
     }
 }

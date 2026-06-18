@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.world.entity.player.Player;
@@ -100,6 +101,23 @@ public final class AssetPickerApplyActions {
         String imageTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_IMAGE, state.modal.modalCanvasImageTarget);
         if (!imageTarget.isBlank()) {
             addCanvasImage(state, imageTarget, background);
+            return;
+        }
+        String ecTarget = state.modal.modalEcBackgroundTarget;
+        if (!ecTarget.isBlank()) {
+            String[] parts = ecTarget.split(":", 2);
+            if (parts.length == 2) {
+                String group = parts[0];
+                String ecId = parts[1];
+                CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+                if (ec != null) {
+                    CanvasExclusiveChoice updated = ec.withBackground(background);
+                    CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
+                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] exclusive choice background picked group={} ec={} background={}", group, ecId, background);
+                }
+            }
+            state.modal.modalEcBackgroundTarget = "";
             return;
         }
         String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);

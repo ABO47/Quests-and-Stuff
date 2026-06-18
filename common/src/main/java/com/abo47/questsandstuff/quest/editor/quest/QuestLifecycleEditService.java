@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.util.QuestNaming;
@@ -106,6 +107,23 @@ public final class QuestLifecycleEditService {
             }
             service.definitionStore().upsert(next);
             removedReferences++;
+        }
+        for (String group : service.definitionStore().groupOrder()) {
+            for (CanvasExclusiveChoice ec : new ArrayList<>(service.definitionStore().canvasExclusiveChoices(group))) {
+                boolean changed = false;
+                if (ec.connectionQuestIds().contains(removedQuestId)) {
+                    ec = ec.removeConnection(removedQuestId);
+                    changed = true;
+                }
+                if (ec.prerequisiteQuestIds().contains(removedQuestId)) {
+                    ec = ec.removePrerequisite(removedQuestId);
+                    changed = true;
+                }
+                if (changed) {
+                    service.definitionStore().putCanvasExclusiveChoice(group, ec);
+                    removedReferences++;
+                }
+            }
         }
         return removedReferences;
     }

@@ -20,11 +20,17 @@ public final class CanvasTransformSessions {
         state.canvas.draggingCanvasText = false;
         state.canvas.resizingCanvasText = false;
         state.canvas.rotatingCanvasText = false;
+        state.canvas.draggingCanvasExclusiveChoice = false;
+        state.canvas.resizingCanvasExclusiveChoice = false;
+        state.canvas.rotatingCanvasExclusiveChoice = false;
+        state.canvas.connectEcId = "";
+        state.canvas.quickConnectEcId = "";
 
         state.canvas.transientQuestPositions.clear();
         state.canvas.transientQuestScales.clear();
         state.canvas.transientCanvasImages.clear();
         state.canvas.transientCanvasTexts.clear();
+        state.canvas.transientCanvasExclusiveChoices.clear();
         clearSharedLayerTransformSnapshots(state);
 
         state.canvas.canvasImageDragStartX = 0;
@@ -52,6 +58,17 @@ public final class CanvasTransformSessions {
         state.canvas.canvasTextRotatePivotX = 0.0;
         state.canvas.canvasTextRotatePivotY = 0.0;
         state.canvas.canvasTextRotateStartAngle = 0.0;
+
+        state.canvas.canvasEcDragStartX = 0;
+        state.canvas.canvasEcDragStartY = 0;
+        state.canvas.canvasEcStartX = 0;
+        state.canvas.canvasEcStartY = 0;
+        state.canvas.canvasEcStartW = 0;
+        state.canvas.canvasEcStartH = 0;
+        state.canvas.canvasEcStartRotation = 0;
+        state.canvas.canvasEcRotatePivotX = 0.0;
+        state.canvas.canvasEcRotatePivotY = 0.0;
+        state.canvas.canvasEcRotateStartAngle = 0.0;
         clearSnapGuides(state);
     }
 
@@ -89,6 +106,7 @@ public final class CanvasTransformSessions {
         }
         state.canvas.transientCanvasImages.clear();
         state.canvas.transientCanvasTexts.clear();
+        state.canvas.transientCanvasExclusiveChoices.clear();
     }
 
     public static void clearQuestDetailsPreviews(TabletUiState state) {
@@ -121,6 +139,9 @@ public final class CanvasTransformSessions {
         state.canvas.rotateStartCenters.clear();
         state.canvas.rotateStartImageLayers.clear();
         state.canvas.rotateStartTextLayers.clear();
+        state.canvas.dragStartEcLayers.clear();
+        state.canvas.resizeStartEcLayers.clear();
+        state.canvas.rotateStartEcLayers.clear();
         state.canvas.resizeStartLeft = 0;
         state.canvas.resizeStartTop = 0;
         state.canvas.resizeStartRight = 0;

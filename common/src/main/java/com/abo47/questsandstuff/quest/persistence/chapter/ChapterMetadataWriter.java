@@ -69,6 +69,7 @@ final class ChapterMetadataWriter {
         json.addProperty("text_size", state.groupTextSize(group));
         json.addProperty("lock_until_unlocked", state.groupLockUntilUnlocked(group));
         json.addProperty("hide_until_unlocked", state.groupHideUntilUnlocked(group));
+        json.add("canvas_exclusive_choices", ChapterMetadataJsonCodec.writeCanvasExclusiveChoices(state.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())));
         json.add("canvas_images", ChapterMetadataJsonCodec.writeCanvasImages(state.canvasImagesByGroup.getOrDefault(group, List.of())));
         json.add("canvas_texts", ChapterMetadataJsonCodec.writeCanvasTexts(state.canvasTextsByGroup.getOrDefault(group, List.of())));
         json.add("canvas_layer_order", ChapterMetadataJsonCodec.writeStringArray(state.canvasLayerOrderByGroup.getOrDefault(group, List.of())));

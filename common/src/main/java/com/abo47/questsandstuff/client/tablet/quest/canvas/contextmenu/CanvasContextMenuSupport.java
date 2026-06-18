@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
@@ -169,6 +170,7 @@ public final class CanvasContextMenuSupport {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return false;
         }
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
         List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
         List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
         List<QuestCardLayout> cards = canvasViewport.cardCache();
@@ -177,7 +179,7 @@ public final class CanvasContextMenuSupport {
             byQuestId.put(card.questId(), card);
         }
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, cards, byQuestId, canvasViewport.getSize().width, canvasViewport.getSize().height);
-        List<String> order = CanvasLayerOrdering.normalize(state, group, cards, images, texts, connectionKeys);
+        List<String> order = CanvasLayerOrdering.normalize(state, group, cards, images, texts, connectionKeys, ecs);
         int index = order.indexOf(key);
         if (index < 0 || order.size() <= 1) {
             return false;

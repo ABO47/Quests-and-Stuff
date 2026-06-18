@@ -26,10 +26,15 @@ public record CanvasLayerSelection(Set<CanvasLayerKey> keys) {
     }
 
     public static CanvasLayerSelection fromIds(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds) {
+        return fromIds(questIds, imageIds, textIds, List.of());
+    }
+
+    public static CanvasLayerSelection fromIds(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, Collection<String> ecIds) {
         LinkedHashSet<CanvasLayerKey> keys = new LinkedHashSet<>();
         addAll(keys, CanvasLayerKind.QUEST, questIds);
         addAll(keys, CanvasLayerKind.IMAGE, imageIds);
         addAll(keys, CanvasLayerKind.TEXT, textIds);
+        addAll(keys, CanvasLayerKind.EXCLUSIVE_CHOICE, ecIds);
         return new CanvasLayerSelection(keys);
     }
 
@@ -91,6 +96,7 @@ public record CanvasLayerSelection(Set<CanvasLayerKey> keys) {
                 case QUEST -> CanvasLayerKey.quest(id);
                 case IMAGE -> CanvasLayerKey.image(id);
                 case TEXT -> CanvasLayerKey.text(id);
+                case EXCLUSIVE_CHOICE -> CanvasLayerKey.exclusiveChoice(id);
                 case CONNECTION -> CanvasLayerKey.connection(id);
             };
             if (key.selectable()) {

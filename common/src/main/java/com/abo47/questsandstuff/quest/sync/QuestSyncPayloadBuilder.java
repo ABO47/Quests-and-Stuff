@@ -80,6 +80,7 @@ final class QuestSyncPayloadBuilder {
         entry.putInt(QuestSyncKeys.GroupProps.TEXT_SIZE, definitionStore.groupTextSize(group));
         entry.putBoolean(QuestSyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED, definitionStore.groupLockUntilUnlocked(group));
         entry.putBoolean(QuestSyncKeys.GroupProps.HIDE_UNTIL_UNLOCKED, definitionStore.groupHideUntilUnlocked(group));
+        entry.put(QuestSyncKeys.GroupProps.CANVAS_EXCLUSIVE_CHOICES, CanvasLayerNbt.exclusiveChoicesToListTag(definitionStore.canvasExclusiveChoices(group)));
         entry.put(QuestSyncKeys.GroupProps.CANVAS_IMAGES, CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
         entry.put(QuestSyncKeys.GroupProps.CANVAS_TEXTS, CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
         entry.put(QuestSyncKeys.GroupProps.CANVAS_LAYER_ORDER, CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));

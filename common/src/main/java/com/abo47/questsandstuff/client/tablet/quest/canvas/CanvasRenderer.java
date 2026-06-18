@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -170,6 +171,26 @@ public final class CanvasRenderer {
 
     public static CanvasTextLayer hitTestSelectedCanvasTextControls(TabletUiState state, int x, int y) {
         return CanvasHitTester.hitTestSelectedCanvasTextControls(state, x, y);
+    }
+
+    public static CanvasExclusiveChoice hitTestCanvasExclusiveChoice(TabletUiState state, int x, int y) {
+        return CanvasHitTester.hitTestCanvasExclusiveChoice(state, x, y);
+    }
+
+    public static CanvasExclusiveChoice hitTestSelectedCanvasExclusiveChoiceControls(TabletUiState state, int x, int y) {
+        return CanvasHitTester.hitTestSelectedCanvasExclusiveChoiceControls(state, x, y);
+    }
+
+    public static double[] canvasExclusiveChoiceLocalScreenPoint(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        return CanvasHitTester.canvasExclusiveChoiceLocalScreenPoint(state, ec, x, y);
+    }
+
+    public static boolean isCanvasExclusiveChoiceResizeHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        return CanvasHitTester.isCanvasExclusiveChoiceResizeHandleHit(state, ec, x, y);
+    }
+
+    public static boolean isCanvasExclusiveChoiceRotateHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        return CanvasHitTester.isCanvasExclusiveChoiceRotateHandleHit(state, ec, x, y);
     }
 
     public static boolean isCanvasTextResizeHandleHit(TabletUiState state, CanvasTextLayer text, int x, int y) {

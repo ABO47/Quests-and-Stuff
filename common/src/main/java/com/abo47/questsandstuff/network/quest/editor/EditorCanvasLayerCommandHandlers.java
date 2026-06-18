@@ -6,8 +6,11 @@ import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,11 +20,29 @@ final class EditorCanvasLayerCommandHandlers {
     }
 
     static void register(EditorCommandRegistrar registrar) {
+        registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicePut);
+        registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoiceRemove);
         registrar.register(EditorCommandType.CANVAS_IMAGE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImagePut);
         registrar.register(EditorCommandType.CANVAS_IMAGE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImageRemove);
         registrar.register(EditorCommandType.CANVAS_TEXT_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextPut);
         registrar.register(EditorCommandType.CANVAS_TEXT_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextRemove);
         registrar.register(EditorCommandType.CANVAS_LAYER_ORDER, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasLayerOrder);
+    }
+
+    private static void canvasExclusiveChoicePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
+        editor.putCanvasExclusiveChoice(
+                player,
+                EditorCommandPayloads.group(payload),
+                CanvasLayerNbt.exclusiveChoiceFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.EXCLUSIVE_CHOICE))
+        );
+    }
+
+    private static void canvasExclusiveChoiceRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
+        editor.removeCanvasExclusiveChoice(
+                player,
+                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID)
+        );
     }
 
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {

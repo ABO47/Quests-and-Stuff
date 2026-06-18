@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
@@ -143,6 +144,10 @@ public final class QuestDefinitionStore {
         return chapters.canvasTexts(group);
     }
 
+    public List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
+        return chapters.canvasExclusiveChoices(group);
+    }
+
     public List<String> canvasLayerOrder(String group) {
         return chapters.canvasLayerOrder(group);
     }
@@ -193,6 +198,14 @@ public final class QuestDefinitionStore {
 
     public boolean removeCanvasText(String group, String textId) {
         return chapters.removeCanvasText(group, textId);
+    }
+
+    public void putCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
+        chapters.putCanvasExclusiveChoice(group, ec);
+    }
+
+    public boolean removeCanvasExclusiveChoice(String group, String ecId) {
+        return chapters.removeCanvasExclusiveChoice(group, ecId);
     }
 
     public void setCanvasLayerOrder(String group, List<String> order) {

@@ -10,13 +10,16 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
@@ -53,6 +56,16 @@ final class CanvasSelectionRotateController {
         CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
         state.canvas.rotateStartImageLayers.putAll(snapshot.images());
         state.canvas.rotateStartTextLayers.putAll(snapshot.texts());
+        String group = TabletStateQueries.selectedGroupName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
+                state.canvas.rotateStartEcLayers.put(ec.id(), ec);
+                minX = Math.min(minX, ec.x());
+                minY = Math.min(minY, ec.y());
+                maxX = Math.max(maxX, ec.x() + ec.w());
+                maxY = Math.max(maxY, ec.y() + ec.h());
+            }
+        }
         if (snapshot.hasBounds()) {
             minX = Math.min(minX, snapshot.left());
             minY = Math.min(minY, snapshot.top());
@@ -139,6 +152,20 @@ final class CanvasSelectionRotateController {
         }
         for (CanvasTextLayer text : result.texts().values()) {
             CanvasLayerMutations.putTransientCanvasText(state, clampRotationPreviewText(text));
+        }
+        int deltaDegrees = (int) Math.round(Math.toDegrees(delta));
+        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.rotateStartEcLayers.entrySet()) {
+            CanvasExclusiveChoice ec = entry.getValue();
+            double ecCenterX = ec.x() + ec.w() / 2.0D;
+            double ecCenterY = ec.y() + ec.h() / 2.0D;
+            double relX = ecCenterX - state.canvas.rotatePivotX;
+            double relY = ecCenterY - state.canvas.rotatePivotY;
+            double rotatedCenterX = state.canvas.rotatePivotX + relX * cos - relY * sin;
+            double rotatedCenterY = state.canvas.rotatePivotY + relX * sin + relY * cos;
+            int targetX = (int) Math.round(rotatedCenterX - ec.w() / 2.0D);
+            int targetY = (int) Math.round(rotatedCenterY - ec.h() / 2.0D);
+            int targetRotation = ec.rotation() + deltaDegrees;
+            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ec.moveTo(targetX, targetY).rotateTo(targetRotation));
         }
     }
 

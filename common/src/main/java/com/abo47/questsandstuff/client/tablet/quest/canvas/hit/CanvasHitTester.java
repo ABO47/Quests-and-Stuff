@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
@@ -113,6 +114,51 @@ public final class CanvasHitTester {
                 }
             }
         }
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        for (CanvasExclusiveChoice ec : ecs) {
+            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
+            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
+            for (String connectedQuestId : drawEc.connectionQuestIds()) {
+                QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
+                if (connectedQuest == null) {
+                    continue;
+                }
+                List<CanvasPoint> path = ConnectionRenderer.connectionPath(
+                        state,
+                        0,
+                        0,
+                        ecCenterX,
+                        ecCenterY,
+                        connectedQuest.centerX(),
+                        connectedQuest.centerY(),
+                        true
+                );
+                if (nearPath(x, y, path, tolerance)) {
+                    return new EdgeHit(ec.id(), connectedQuest.questId());
+                }
+            }
+            for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
+                QuestCardLayout prerequisiteQuest = byQuestId.get(prerequisiteQuestId);
+                if (prerequisiteQuest == null) {
+                    continue;
+                }
+                List<CanvasPoint> path = ConnectionRenderer.connectionPath(
+                        state,
+                        0,
+                        0,
+                        prerequisiteQuest.centerX(),
+                        prerequisiteQuest.centerY(),
+                        ecCenterX,
+                        ecCenterY,
+                        true
+                );
+                if (nearPath(x, y, path, tolerance)) {
+                    return new EdgeHit(prerequisiteQuest.questId(), ec.id());
+                }
+            }
+        }
         return null;
     }
 
@@ -128,6 +174,57 @@ public final class CanvasHitTester {
             }
         }
         return null;
+    }
+
+    public static CanvasExclusiveChoice hitTestCanvasExclusiveChoice(TabletUiState state, int x, int y) {
+        String group = selectedGroupName(state);
+        List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, group);
+        for (int i = ecs.size() - 1; i >= 0; i--) {
+            CanvasExclusiveChoice ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ecs.get(i));
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+            double[] local = canvasExclusiveChoiceLocalScreenPoint(state, ec, x, y);
+            if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
+                return ec;
+            }
+        }
+        return null;
+    }
+
+    public static CanvasExclusiveChoice hitTestSelectedCanvasExclusiveChoiceControls(TabletUiState state, int x, int y) {
+        if (state.canvas.canvasSelection.primaryEcId().isBlank()) {
+            return null;
+        }
+        CanvasExclusiveChoice ec = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+                .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryEcId()))
+                .findFirst()
+                .orElse(null);
+        if (ec == null) {
+            return null;
+        }
+        ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+        double[] local = canvasExclusiveChoiceLocalScreenPoint(state, ec, x, y);
+        return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? ec : null;
+    }
+
+    public static boolean isCanvasExclusiveChoiceResizeHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation(), x, y);
+    }
+
+    public static boolean isCanvasExclusiveChoiceRotateHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation(), x, y);
+    }
+
+    public static double[] canvasExclusiveChoiceLocalScreenPoint(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+        double dx = x - box.centerX();
+        double dy = y - box.centerY();
+        double radians = Math.toRadians(-ec.rotation());
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+        double localX = dx * cos - dy * sin - box.left();
+        double localY = dx * sin + dy * cos - box.top();
+        return new double[]{localX, localY};
     }
 
     public static CanvasTextLayer hitTestSelectedCanvasTextControls(TabletUiState state, int x, int y) {
@@ -219,6 +316,14 @@ public final class CanvasHitTester {
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
         return images;
+    }
+
+    private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String group) {
+        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
+        ecs.sort(Comparator.comparingInt(ec -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()))));
+        return ecs;
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String group) {

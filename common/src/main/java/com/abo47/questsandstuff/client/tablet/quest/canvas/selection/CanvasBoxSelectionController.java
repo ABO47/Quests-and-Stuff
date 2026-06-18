@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -43,6 +44,20 @@ public final class CanvasBoxSelectionController {
             return;
         }
         state.canvas.canvasSelection.setPrimaryTextId(textId);
+    }
+
+    public static void toggleCanvasExclusiveChoiceSelection(TabletUiState state, String ecId) {
+        if (ecId == null || ecId.isBlank()) {
+            return;
+        }
+        if (!state.canvas.canvasSelection.ecIds().add(ecId)) {
+            state.canvas.canvasSelection.ecIds().remove(ecId);
+            if (ecId.equals(state.canvas.canvasSelection.primaryEcId())) {
+                state.canvas.canvasSelection.setPrimaryEcId(state.canvas.canvasSelection.ecIds().stream().findFirst().orElse(""));
+            }
+            return;
+        }
+        state.canvas.canvasSelection.setPrimaryEcId(ecId);
     }
 
     public static void beginBoxSelection(TabletUiState state, boolean additive, int localX, int localY) {
@@ -97,6 +112,18 @@ public final class CanvasBoxSelectionController {
             }
         }
         state.canvas.canvasSelection.setPrimaryTextId(primarySelection(lastTextId, state.canvas.boxSelectionBaseCanvasTextId, state.canvas.canvasSelection.textIds()));
+        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.ecIds().addAll(state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds);
+        String lastEcId = "";
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+            boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
+            if (intersects) {
+                state.canvas.canvasSelection.ecIds().add(ec.id());
+                lastEcId = ec.id();
+            }
+        }
+        state.canvas.canvasSelection.setPrimaryEcId(primarySelection(lastEcId, state.canvas.boxSelectionBaseCanvasExclusiveChoiceId, state.canvas.canvasSelection.ecIds()));
     }
 
     public static void finishBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
@@ -113,16 +140,20 @@ public final class CanvasBoxSelectionController {
         state.canvas.boxSelectionBaseQuestIds.addAll(state.canvas.canvasSelection.questIds());
         state.canvas.boxSelectionBaseCanvasImageIds.addAll(CanvasSelectionActions.selectedImageIds(state));
         state.canvas.boxSelectionBaseCanvasTextIds.addAll(CanvasSelectionActions.selectedTextIds(state));
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds.addAll(CanvasSelectionActions.selectedEcIds(state));
         state.canvas.boxSelectionBaseCanvasImageId = state.canvas.canvasSelection.primaryImageId();
         state.canvas.boxSelectionBaseCanvasTextId = state.canvas.canvasSelection.primaryTextId();
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceId = state.canvas.canvasSelection.primaryEcId();
     }
 
     private static void clearBoxSelectionBase(TabletUiState state) {
         state.canvas.boxSelectionBaseQuestIds.clear();
         state.canvas.boxSelectionBaseCanvasImageIds.clear();
         state.canvas.boxSelectionBaseCanvasTextIds.clear();
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds.clear();
         state.canvas.boxSelectionBaseCanvasImageId = "";
         state.canvas.boxSelectionBaseCanvasTextId = "";
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceId = "";
     }
 
     private static String primarySelection(String boxId, String baseId, Set<String> allIds) {

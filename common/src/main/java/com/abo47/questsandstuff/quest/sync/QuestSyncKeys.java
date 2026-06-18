@@ -25,6 +25,7 @@ public final class QuestSyncKeys {
         public static final String TEXT_SIZE = "text_size";
         public static final String LOCK_UNTIL_UNLOCKED = "lock_until_unlocked";
         public static final String HIDE_UNTIL_UNLOCKED = "hide_until_unlocked";
+        public static final String CANVAS_EXCLUSIVE_CHOICES = "canvas_exclusive_choices";
         public static final String CANVAS_IMAGES = "canvas_images";
         public static final String CANVAS_TEXTS = "canvas_texts";
         public static final String CANVAS_LAYER_ORDER = "canvas_layer_order";

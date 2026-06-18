@@ -26,9 +26,12 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 final class CanvasContextElementActions {
@@ -144,13 +147,57 @@ final class CanvasContextElementActions {
         addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.textKey(state.contextMenu.contextCanvasTextId), "text", state.contextMenu.contextCanvasTextId);
     }
 
+    static void addExclusiveChoiceActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.EXCLUSIVE_CHOICE || state.contextMenu.contextCanvasExclusiveChoiceId.isBlank()) {
+            return;
+        }
+        if (CanvasGridFitController.canFitExclusiveChoiceToGrid(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId)) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
+                boolean changed = CanvasGridFitController.fitExclusiveChoiceToGrid(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
+                ContextMenuState.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=exclusive_choice id={} changed={}", state.contextMenu.contextCanvasExclusiveChoiceId, changed);
+                canvasViewport.refresh();
+            }));
+        }
+        addExclusiveChoiceConnectedQuestActions(actions, canvasViewport, state, selectedGroup);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
+        if (ec != null) {
+            actions.add(ContextActions.action(
+                    CanvasContextMenuController.tr("ui.questsandstuff.context.change_background"),
+                    "background", ModColors.INTERACTIVE, () -> {
+                        ModalOpenActions.openEcBackgroundPicker(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId, ec.background());
+                        ContextMenuState.close(state);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
+                        canvasViewport.refresh();
+                    }
+            ));
+        }
+        addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.exclusiveChoiceKey(state.contextMenu.contextCanvasExclusiveChoiceId), "exclusive_choice", state.contextMenu.contextCanvasExclusiveChoiceId);
+    }
+
+    private static void addExclusiveChoiceConnectedQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
+        if (ec == null) {
+            return;
+        }
+        actions.add(ContextActions.promoted(
+                CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"),
+                "connect", ModColors.SUCCESS, () -> {
+                    state.canvas.connectEcId = state.contextMenu.contextCanvasExclusiveChoiceId;
+                    ContextMenuState.close(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice connect_to id={}", state.contextMenu.contextCanvasExclusiveChoiceId);
+                    canvasViewport.refresh();
+                }
+        ));
+    }
+
     private static void addLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup, String layerKey, String targetName, String targetId) {
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
-                if ("image".equals(targetName)) {
-                    CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, true);
-                } else {
-                    CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, true);
+                switch (targetName) {
+                    case "image" -> CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, true);
+                    case "text" -> CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, true);
+                    case "exclusive_choice" -> CanvasLayerMutations.moveExclusiveChoiceLayer(state, selectedGroup, targetId, true);
                 }
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target={} id={}", targetName, targetId);
@@ -159,10 +206,10 @@ final class CanvasContextElementActions {
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
-                if ("image".equals(targetName)) {
-                    CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, false);
-                } else {
-                    CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, false);
+                switch (targetName) {
+                    case "image" -> CanvasLayerMutations.moveImageLayer(state, selectedGroup, targetId, false);
+                    case "text" -> CanvasLayerMutations.moveTextLayer(state, selectedGroup, targetId, false);
+                    case "exclusive_choice" -> CanvasLayerMutations.moveExclusiveChoiceLayer(state, selectedGroup, targetId, false);
                 }
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target={} id={}", targetName, targetId);

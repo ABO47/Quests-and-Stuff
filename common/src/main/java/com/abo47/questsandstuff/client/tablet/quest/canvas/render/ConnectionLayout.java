@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayoutService;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -69,6 +71,57 @@ final class ConnectionLayout {
                 lines.add(lineFromStyle(style, prerequisite, quest, false));
             }
         }
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        for (CanvasExclusiveChoice ec : ecs) {
+            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
+            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
+            for (String connectedQuestId : drawEc.connectionQuestIds()) {
+                QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
+                if (connectedQuest == null) {
+                    continue;
+                }
+                String edgeId = "ec:" + ec.id() + ":" + connectedQuestId;
+                if (!rendered.add(edgeId)) {
+                    continue;
+                }
+                if (!intersectsViewport(ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(), viewportW, viewportH)
+                        && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
+                    continue;
+                }
+                lines.add(new ConnectionLine(
+                        edgeId, ec.id(), connectedQuestId,
+                        ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
+                        connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
+                        ecCenterX, ecCenterY,
+                        connectedQuest.centerX(), connectedQuest.centerY(),
+                        true, false, ModColors.TEXT_SECONDARY, false, 245
+                ));
+            }
+            for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
+                QuestCardLayout prerequisiteQuest = byQuestId.get(prerequisiteQuestId);
+                if (prerequisiteQuest == null) {
+                    continue;
+                }
+                String edgeId = "ep:" + prerequisiteQuestId + ":" + ec.id();
+                if (!rendered.add(edgeId)) {
+                    continue;
+                }
+                if (!intersectsViewport(ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(), viewportW, viewportH)
+                        && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
+                    continue;
+                }
+                lines.add(new ConnectionLine(
+                        edgeId, prerequisiteQuestId, ec.id(),
+                        prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
+                        ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
+                        prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
+                        ecCenterX, ecCenterY,
+                        true, false, ModColors.TEXT_SECONDARY, false, 245
+                ));
+            }
+        }
         return lines;
     }
 
@@ -129,6 +182,12 @@ final class ConnectionLayout {
             }
         }
         return lines;
+    }
+
+    private static boolean intersectsViewport(int x, int y, int w, int h, int viewportW, int viewportH) {
+        int marginX = CanvasLayoutService.panRenderOverscanX(viewportW);
+        int marginY = CanvasLayoutService.panRenderOverscanY(viewportH);
+        return x + w >= -marginX && y + h >= -marginY && x <= viewportW + marginX && y <= viewportH + marginY;
     }
 
     private static ConnectionLine lineFromStyle(ConnectionRenderStyle style, QuestCardLayout source, QuestCardLayout target, boolean pending) {

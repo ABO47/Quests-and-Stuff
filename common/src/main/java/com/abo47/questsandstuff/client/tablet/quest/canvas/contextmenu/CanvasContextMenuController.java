@@ -26,6 +26,7 @@ public final class CanvasContextMenuController {
         CanvasContextSelectionActions.addSelectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
         CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedGroup);
+        CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextEdgeActions.addEdgeActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
         if (!exclusiveSubmenuOpen(state)) {
             CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);

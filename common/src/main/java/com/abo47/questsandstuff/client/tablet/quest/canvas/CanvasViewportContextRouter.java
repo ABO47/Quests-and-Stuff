@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -35,7 +36,8 @@ final class CanvasViewportContextRouter {
             int localY,
             QuestCardLayout hit,
             CanvasImageLayer imageHit,
-            CanvasTextLayer textHit
+            CanvasTextLayer textHit,
+            CanvasExclusiveChoice ecHit
     ) {
         EdgeHit edgeHit = TabletUiFactory.hitTestEdge(state, cards, byQuestId, localX, localY);
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
@@ -48,9 +50,20 @@ final class CanvasViewportContextRouter {
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             ContextMenuState.targetSelection(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
-        } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit)) {
+        } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit, ecHit)) {
             ContextMenuState.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+        } else if (ecHit != null) {
+            ContextMenuState.targetExclusiveChoice(state, ecHit.id());
+            state.canvas.canvasSelection.setPrimaryEcId(ecHit.id());
+            state.canvas.canvasSelection.ecIds().clear();
+            state.canvas.canvasSelection.ecIds().add(ecHit.id());
+            state.canvas.canvasSelection.setPrimaryImageId("");
+            state.canvas.canvasSelection.imageIds().clear();
+            state.canvas.canvasSelection.setPrimaryTextId("");
+            state.canvas.canvasSelection.textIds().clear();
+            state.canvas.canvasSelection.questIds().clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=exclusive_choice id={}", ecHit.id());
         } else if (textHit != null) {
             ContextMenuState.targetText(state, textHit.id());
             state.canvas.canvasSelection.setPrimaryTextId(textHit.id());
@@ -90,6 +103,10 @@ final class CanvasViewportContextRouter {
     }
 
     private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit) {
+        return edgeAboveHits(state, edgeHit, questHit, imageHit, textHit, null);
+    }
+
+    private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice ecHit) {
         if (state == null || edgeHit == null) {
             return false;
         }
@@ -102,7 +119,8 @@ final class CanvasViewportContextRouter {
         }
         return above(order, edgeIndex, questHit == null ? "" : CanvasLayerOrdering.questKey(questHit.questId()))
                 && above(order, edgeIndex, imageHit == null ? "" : CanvasLayerOrdering.imageKey(imageHit.id()))
-                && above(order, edgeIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()));
+                && above(order, edgeIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()))
+                && above(order, edgeIndex, ecHit == null ? "" : CanvasLayerOrdering.exclusiveChoiceKey(ecHit.id()));
     }
 
     private static boolean above(List<String> order, int edgeIndex, String otherKey) {

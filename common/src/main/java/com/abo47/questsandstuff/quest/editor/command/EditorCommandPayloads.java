@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.command;
 
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -198,6 +199,16 @@ public final class EditorCommandPayloads {
         CompoundTag payload = rewardRemove(questId, rewardId);
         payload.putInt(EditorCommandPayloadKeys.OFFSET, offset);
         return payload;
+    }
+
+    public static CompoundTag canvasExclusiveChoicePut(String group, CanvasExclusiveChoice ec) {
+        CompoundTag payload = group(group);
+        payload.put(EditorCommandPayloadKeys.EXCLUSIVE_CHOICE, CanvasLayerNbt.exclusiveChoiceToTag(ec));
+        return payload;
+    }
+
+    public static CompoundTag canvasExclusiveChoiceRemove(String group, String ecId) {
+        return groupId(group, ecId);
     }
 
     public static CompoundTag canvasImagePut(String group, CanvasImageLayer image) {

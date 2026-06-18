@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
@@ -89,6 +90,11 @@ public final class CanvasClipboardController {
                 return true;
             }
         }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (selection.ecIds().contains(ec.id())) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -114,6 +120,12 @@ public final class CanvasClipboardController {
                 }
                 yield ClipboardSelection.ofText(state.contextMenu.contextCanvasTextId);
             }
+            case EXCLUSIVE_CHOICE -> {
+                if (current.ecIds().contains(state.contextMenu.contextCanvasExclusiveChoiceId) && !current.isEmpty()) {
+                    yield current;
+                }
+                yield ClipboardSelection.ofExclusiveChoice(state.contextMenu.contextCanvasExclusiveChoiceId);
+            }
             default -> ClipboardSelection.empty();
         };
     }
@@ -122,7 +134,8 @@ public final class CanvasClipboardController {
         return new ClipboardSelection(
                 new LinkedHashSet<>(state.canvas.canvasSelection.questIds()),
                 CanvasSelectionActions.selectedImageIds(state),
-                CanvasSelectionActions.selectedTextIds(state)
+                CanvasSelectionActions.selectedTextIds(state),
+                CanvasSelectionActions.selectedEcIds(state)
         );
     }
 
@@ -134,20 +147,21 @@ public final class CanvasClipboardController {
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, group, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, group, selection.textIds());
-        if (copiedQuestIds.isEmpty() && copiedImages.isEmpty() && copiedTexts.isEmpty()) {
+        List<CanvasExclusiveChoice> copiedEcs = copiedExclusiveChoices(state, group, selection.ecIds());
+        if (copiedQuestIds.isEmpty() && copiedImages.isEmpty() && copiedTexts.isEmpty() && copiedEcs.isEmpty()) {
             QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy skipped source={} group={} reason=no_canvas_selection", source, group);
             return false;
         }
 
-        CanvasPoint origin = clipboardOrigin(state, canvasViewport, copiedQuestIds, copiedImages, copiedTexts);
-        state.clipboard.canvasClipboard.store(!copiedQuestIds.isEmpty(), copiedImages, copiedTexts, origin.x, origin.y);
+        CanvasPoint origin = clipboardOrigin(state, canvasViewport, copiedQuestIds, copiedImages, copiedTexts, copiedEcs);
+        state.clipboard.canvasClipboard.store(!copiedQuestIds.isEmpty(), copiedImages, copiedTexts, copiedEcs, origin.x, origin.y);
         ContextMenuState.clearDeleteConfirm(state);
 
         if (!copiedQuestIds.isEmpty()) {
             EditorCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy stored source={} group={} quests={} images={} texts={} origin={},{}",
-                source, group, copiedQuestIds.size(), copiedImages.size(), copiedTexts.size(), origin.x, origin.y);
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy stored source={} group={} quests={} images={} texts={} ecs={} origin={},{}",
+                source, group, copiedQuestIds.size(), copiedImages.size(), copiedTexts.size(), copiedEcs.size(), origin.x, origin.y);
         return true;
     }
 
@@ -192,12 +206,26 @@ public final class CanvasClipboardController {
         return copied;
     }
 
+    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String group, Set<String> ecIds) {
+        if (ecIds.isEmpty()) {
+            return List.of();
+        }
+        List<CanvasExclusiveChoice> copied = new ArrayList<>();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (ecIds.contains(ec.id())) {
+                copied.add(ec);
+            }
+        }
+        return copied;
+    }
+
     private static CanvasPoint clipboardOrigin(
             TabletUiState state,
             CanvasViewport canvasViewport,
             Set<String> questIds,
             List<CanvasImageLayer> images,
-            List<CanvasTextLayer> texts
+            List<CanvasTextLayer> texts,
+            List<CanvasExclusiveChoice> ecs
     ) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
@@ -218,6 +246,10 @@ public final class CanvasClipboardController {
                 minX = Math.min(minX, text.x());
                 minY = Math.min(minY, text.y());
             }
+            for (CanvasExclusiveChoice ec : ecs) {
+                minX = Math.min(minX, ec.x());
+                minY = Math.min(minY, ec.y());
+            }
         }
         if (minX == Integer.MAX_VALUE) {
             return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
@@ -236,6 +268,8 @@ public final class CanvasClipboardController {
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.setPrimaryTextId("");
         state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.setPrimaryEcId("");
+        state.canvas.canvasSelection.ecIds().clear();
         state.clipboard.canvasClipboard.clearPendingPastedLayers();
 
         boolean pastedElements = pasteCanvasElements(state, group, anchorX, anchorY);
@@ -252,6 +286,7 @@ public final class CanvasClipboardController {
         boolean pasted = false;
         Set<String> existingImageIds = existingImageIds(state, group);
         Set<String> existingTextIds = existingTextIds(state, group);
+        Set<String> existingEcIds = existingExclusiveChoiceIds(state, group);
         int index = 0;
         for (CanvasImageLayer image : state.clipboard.canvasClipboard.imageLayers()) {
             String id = uniqueLayerId("img", existingImageIds);
@@ -285,6 +320,22 @@ public final class CanvasClipboardController {
             pasted = true;
             index++;
         }
+        for (CanvasExclusiveChoice ec : state.clipboard.canvasClipboard.exclusiveChoiceLayers()) {
+            String id = uniqueLayerId("ec", existingEcIds);
+            int x = TabletUiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
+            int y = TabletUiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
+            CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, ec.w(), ec.h(), 0, 0, ec.rotation());
+            CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
+            if (state.canvas.gridSnapLocked) {
+                duplicate = CanvasGridFitController.fittedExclusiveChoice(state, duplicate);
+            }
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, duplicate);
+            state.canvas.canvasSelection.ecIds().add(id);
+            state.canvas.canvasSelection.setPrimaryEcId(id);
+            state.clipboard.canvasClipboard.recordPastedExclusiveChoice(id);
+            pasted = true;
+            index++;
+        }
         return pasted || index > 0;
     }
 
@@ -300,6 +351,14 @@ public final class CanvasClipboardController {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             ids.add(text.id());
+        }
+        return ids;
+    }
+
+    private static Set<String> existingExclusiveChoiceIds(TabletUiState state, String group) {
+        Set<String> ids = new LinkedHashSet<>();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            ids.add(ec.id());
         }
         return ids;
     }
@@ -354,6 +413,13 @@ public final class CanvasClipboardController {
                 minY = Math.min(minY, text.y());
             }
         }
+        Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (ecIds.contains(ec.id())) {
+                minX = Math.min(minX, ec.x());
+                minY = Math.min(minY, ec.y());
+            }
+        }
         if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE) {
             return null;
         }
@@ -363,25 +429,29 @@ public final class CanvasClipboardController {
         );
     }
 
-    private record ClipboardSelection(Set<String> questIds, Set<String> imageIds, Set<String> textIds) {
+    private record ClipboardSelection(Set<String> questIds, Set<String> imageIds, Set<String> textIds, Set<String> ecIds) {
         private static ClipboardSelection empty() {
-            return new ClipboardSelection(Set.of(), Set.of(), Set.of());
+            return new ClipboardSelection(Set.of(), Set.of(), Set.of(), Set.of());
         }
 
         private static ClipboardSelection ofQuest(String questId) {
-            return new ClipboardSelection(single(questId), Set.of(), Set.of());
+            return new ClipboardSelection(single(questId), Set.of(), Set.of(), Set.of());
         }
 
         private static ClipboardSelection ofImage(String imageId) {
-            return new ClipboardSelection(Set.of(), single(imageId), Set.of());
+            return new ClipboardSelection(Set.of(), single(imageId), Set.of(), Set.of());
         }
 
         private static ClipboardSelection ofText(String textId) {
-            return new ClipboardSelection(Set.of(), Set.of(), single(textId));
+            return new ClipboardSelection(Set.of(), Set.of(), single(textId), Set.of());
+        }
+
+        private static ClipboardSelection ofExclusiveChoice(String ecId) {
+            return new ClipboardSelection(Set.of(), Set.of(), Set.of(), single(ecId));
         }
 
         private boolean isEmpty() {
-            return questIds.isEmpty() && imageIds.isEmpty() && textIds.isEmpty();
+            return questIds.isEmpty() && imageIds.isEmpty() && textIds.isEmpty() && ecIds.isEmpty();
         }
 
         private static Set<String> single(String value) {

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.quest.editor.session.actions;
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +19,14 @@ public final class EditorCanvasSessionActions {
     public EditorCanvasSessionActions(CanvasEditService canvasEdits, ClipboardEditService clipboardEdits) {
         this.canvasEdits = canvasEdits;
         this.clipboardEdits = clipboardEdits;
+    }
+
+    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
+        canvasEdits.putCanvasExclusiveChoice(player, groupName, ec);
+    }
+
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
+        canvasEdits.removeCanvasExclusiveChoice(player, groupName, ecId);
     }
 
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {

@@ -144,6 +144,78 @@ public final class CanvasLayerNbt {
         return list;
     }
 
+    public static CompoundTag exclusiveChoiceToTag(CanvasExclusiveChoice ec) {
+        CompoundTag tag = new CompoundTag();
+        if (ec == null) {
+            return tag;
+        }
+        tag.putString("id", ec.id());
+        tag.putInt("x", ec.x());
+        tag.putInt("y", ec.y());
+        tag.putInt("w", ec.w());
+        tag.putInt("h", ec.h());
+        tag.putInt("rotation", ec.rotation());
+        tag.put("connections", stringsToListTag(ec.connectionQuestIds()));
+        if (!ec.prerequisiteQuestIds().isEmpty()) {
+            tag.put("prerequisites", stringsToListTag(ec.prerequisiteQuestIds()));
+        }
+        if (!ec.background().isBlank()) {
+            tag.putString("background", ec.background());
+        }
+        return tag;
+    }
+
+    public static CanvasExclusiveChoice exclusiveChoiceFromTag(CompoundTag tag) {
+        if (tag == null) {
+            return null;
+        }
+        String id = tag.getString("id");
+        if (id.isBlank()) {
+            return null;
+        }
+        int width = tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : CanvasExclusiveChoice.DEFAULT_WIDTH;
+        int height = tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : CanvasExclusiveChoice.DEFAULT_HEIGHT;
+        List<String> connections = stringsFromListTag(tag.getList("connections", Tag.TAG_STRING));
+        List<String> prerequisites = stringsFromListTag(tag.getList("prerequisites", Tag.TAG_STRING));
+        String background = tag.contains("background", Tag.TAG_STRING) ? tag.getString("background") : "";
+        return new CanvasExclusiveChoice(
+                id,
+                tag.getInt("x"),
+                tag.getInt("y"),
+                width,
+                height,
+                tag.getInt("rotation"),
+                connections,
+                prerequisites,
+                background
+        );
+    }
+
+    public static ListTag exclusiveChoicesToListTag(List<CanvasExclusiveChoice> choices) {
+        ListTag list = new ListTag();
+        if (choices == null) {
+            return list;
+        }
+        for (CanvasExclusiveChoice ec : choices) {
+            list.add(exclusiveChoiceToTag(ec));
+        }
+        return list;
+    }
+
+    public static List<CanvasExclusiveChoice> exclusiveChoicesFromListTag(ListTag list) {
+        List<CanvasExclusiveChoice> choices = new ArrayList<>();
+        if (list == null) {
+            return choices;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CanvasExclusiveChoice ec = exclusiveChoiceFromTag(list.getCompound(i));
+            if (ec != null) {
+                choices.add(ec);
+            }
+        }
+        return choices;
+    }
+
     public static ListTag stringsToListTag(List<String> values) {
         ListTag list = new ListTag();
         if (values == null) {

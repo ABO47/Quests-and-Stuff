@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -31,6 +32,19 @@ public final class CanvasElementGridFit {
         CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(image.x(), image.y(), image.w(), image.h(), safeGrid, 8, 8);
         CanvasPoint clamped = clamp(clamp, box.x(), box.y(), box.width(), box.height(), image.pivotX(), image.pivotY(), rotation);
         return image.withBounds(clamped.x, clamped.y, box.width(), box.height());
+    }
+
+    public static CanvasExclusiveChoice fittedExclusiveChoice(CanvasExclusiveChoice ec, int grid, BoundsClamp clamp) {
+        int safeGrid = Math.max(1, grid);
+        int rotation = CanvasGeometry.normalizeDegrees(ec.rotation());
+        if (rotation == 0) {
+            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(ec.x(), ec.y(), ec.w(), ec.h(), safeGrid, 8, 8);
+            CanvasPoint clamped = clamp(clamp, box.x(), box.y(), box.width(), box.height(), 0, 0, rotation);
+            return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
+        }
+        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, rotation, safeGrid, 8, 8);
+        CanvasPoint clamped = clamp(clamp, fit.x(), fit.y(), fit.width(), fit.height(), 0, 0, rotation);
+        return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, fit.width(), fit.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
     }
 
     public static CanvasTextLayer fittedText(CanvasTextLayer text, int grid, BoundsClamp clamp) {

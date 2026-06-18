@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 public final class CanvasLayerOrdering {
+    public static final String EXCLUSIVE_CHOICE_PREFIX = "exclusive_choice:";
     public static final String QUEST_PREFIX = "quest:";
     public static final String IMAGE_PREFIX = "image:";
     public static final String TEXT_PREFIX = "text:";
@@ -80,7 +82,7 @@ public final class CanvasLayerOrdering {
             List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts
     ) {
-        return normalize(state, group, cards, images, texts, List.of());
+        return normalize(state, group, cards, images, texts, List.of(), List.of());
     }
 
     public static List<String> normalize(
@@ -91,6 +93,18 @@ public final class CanvasLayerOrdering {
             List<CanvasTextLayer> texts,
             List<String> connectionKeys
     ) {
+        return normalize(state, group, cards, images, texts, connectionKeys, List.of());
+    }
+
+    public static List<String> normalize(
+            TabletUiState state,
+            String group,
+            List<QuestCardLayout> cards,
+            List<CanvasImageLayer> images,
+            List<CanvasTextLayer> texts,
+            List<String> connectionKeys,
+            List<CanvasExclusiveChoice> exclusiveChoices
+    ) {
         if (group == null || group.isBlank()) {
             return List.of();
         }
@@ -98,6 +112,12 @@ public final class CanvasLayerOrdering {
         List<String> defaults = new ArrayList<>();
         for (String key : connectionKeys) {
             if (key != null && key.startsWith(CONNECTION_PREFIX) && valid.add(key)) {
+                defaults.add(key);
+            }
+        }
+        for (CanvasExclusiveChoice ec : exclusiveChoices) {
+            String key = exclusiveChoiceKey(ec.id());
+            if (valid.add(key)) {
                 defaults.add(key);
             }
         }
@@ -150,7 +170,19 @@ public final class CanvasLayerOrdering {
             List<CanvasTextLayer> texts,
             List<String> connectionKeys
     ) {
-        return order(normalize(state, group, cards, images, texts, connectionKeys));
+        return normalizedOrder(state, group, cards, images, texts, connectionKeys, List.of());
+    }
+
+    public static CanvasLayerOrder normalizedOrder(
+            TabletUiState state,
+            String group,
+            List<QuestCardLayout> cards,
+            List<CanvasImageLayer> images,
+            List<CanvasTextLayer> texts,
+            List<String> connectionKeys,
+            List<CanvasExclusiveChoice> exclusiveChoices
+    ) {
+        return order(normalize(state, group, cards, images, texts, connectionKeys, exclusiveChoices));
     }
 
     public static CanvasLayerOrder order(List<String> orderKeys) {
@@ -158,7 +190,15 @@ public final class CanvasLayerOrdering {
     }
 
     public static CanvasLayerHit resolveElementHit(List<String> orderKeys, QuestCardLayout quest, CanvasImageLayer image, CanvasTextLayer text) {
-        return order(orderKeys).resolveElementHit(quest, image, text);
+        return order(orderKeys).resolveElementHit(quest, image, text, null);
+    }
+
+    public static CanvasLayerHit resolveElementHit(List<String> orderKeys, QuestCardLayout quest, CanvasImageLayer image, CanvasTextLayer text, CanvasExclusiveChoice exclusiveChoice) {
+        return order(orderKeys).resolveElementHit(quest, image, text, exclusiveChoice);
+    }
+
+    public static void moveExclusiveChoiceLayer(TabletUiState state, String group, String ecId, boolean front) {
+        moveLayer(state, group, exclusiveChoiceKey(ecId), front);
     }
 
     public static void ensurePresent(TabletUiState state, String group, String key) {
@@ -217,6 +257,10 @@ public final class CanvasLayerOrdering {
 
     public static String textKey(String textId) {
         return CanvasLayerKey.text(textId).orderKey();
+    }
+
+    public static String exclusiveChoiceKey(String ecId) {
+        return CanvasLayerKey.exclusiveChoice(ecId).orderKey();
     }
 
     public static String connectionKey(String edgeId) {

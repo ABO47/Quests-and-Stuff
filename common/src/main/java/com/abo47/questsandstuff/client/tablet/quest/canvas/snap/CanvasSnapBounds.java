@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.snap;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -24,6 +25,10 @@ public final class CanvasSnapBounds {
 
     public static CanvasSnapEngine.Bounds forText(CanvasTextLayer text) {
         return atCenterPivot(text.x(), text.y(), text.w(), text.h(), text.rotation());
+    }
+
+    public static CanvasSnapEngine.Bounds forExclusiveChoice(CanvasExclusiveChoice ec) {
+        return atPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
     }
 
     public static CanvasSnapEngine.Bounds atCenterPivot(int x, int y, int width, int height, int rotationDegrees) {

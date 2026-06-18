@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -192,6 +193,72 @@ public final class CanvasElementTransformController {
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text transform start id={} drag={} resize={} rotate={}", text.id(), state.canvas.draggingCanvasText, state.canvas.resizingCanvasText, state.canvas.rotatingCanvasText);
     }
 
+    public void beginExclusiveChoiceTransform(CanvasExclusiveChoice ec, int localX, int localY) {
+        CanvasTransformSessions.clearMainCanvasSession(state);
+        state.canvas.canvasSelection.setPrimaryEcId(ec.id());
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.ecIds().add(ec.id());
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasEcDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        state.canvas.canvasEcDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        CanvasExclusiveChoice effective = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+        state.canvas.canvasEcStartX = effective.x();
+        state.canvas.canvasEcStartY = effective.y();
+        state.canvas.canvasEcStartW = effective.w();
+        state.canvas.canvasEcStartH = effective.h();
+        state.canvas.canvasEcStartRotation = effective.rotation();
+        state.canvas.resizingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceResizeHandleHit(state, ec, localX, localY);
+        state.canvas.rotatingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceRotateHandleHit(state, ec, localX, localY);
+        if (state.canvas.rotatingCanvasExclusiveChoice) {
+            state.canvas.canvasEcRotatePivotX = CanvasElementGeometry.logicalPivotX(ec.x(), ec.w(), 0);
+            state.canvas.canvasEcRotatePivotY = CanvasElementGeometry.logicalPivotY(ec.y(), ec.h(), 0);
+            double logicalMouseX = CanvasGeometry.screenToLogicalX(state, localX);
+            double logicalMouseY = CanvasGeometry.screenToLogicalY(state, localY);
+            state.canvas.canvasEcRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasEcRotatePivotY, logicalMouseX - state.canvas.canvasEcRotatePivotX);
+        }
+        state.canvas.draggingCanvasExclusiveChoice = !state.canvas.resizingCanvasExclusiveChoice && !state.canvas.rotatingCanvasExclusiveChoice;
+        state.canvas.canvasSelection.questIds().clear();
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice transform start id={} drag={} resize={} rotate={}", ec.id(), state.canvas.draggingCanvasExclusiveChoice, state.canvas.resizingCanvasExclusiveChoice, state.canvas.rotatingCanvasExclusiveChoice);
+    }
+
+    public void updateExclusiveChoiceTransform(int localX, int localY, List<QuestCardLayout> cards) {
+        String group = TabletStateQueries.selectedGroupName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+        if (ec == null) {
+            return;
+        }
+        int logicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        int logicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        int dx = logicalX - state.canvas.canvasEcDragStartX;
+        int dy = logicalY - state.canvas.canvasEcDragStartY;
+        CanvasExclusiveChoice next = ec;
+        if (state.canvas.draggingCanvasExclusiveChoice) {
+            CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, 0, 0, state.canvas.canvasEcStartRotation, dx, dy);
+            next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
+            next = fittedExclusiveChoiceIfGridLocked(next);
+            next = applySmartSnapToExclusiveChoice(next, cards, group);
+        } else if (state.canvas.resizingCanvasExclusiveChoice) {
+            clearSnapGuides();
+            next = resizeExclusiveChoiceFromHandle(ec, localX, localY);
+        } else if (state.canvas.rotatingCanvasExclusiveChoice) {
+            clearSnapGuides();
+            int angle = LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
+                    state.canvas.canvasEcStartRotation,
+                    state.canvas.canvasEcRotatePivotX,
+                    state.canvas.canvasEcRotatePivotY,
+                    state.canvas.canvasEcRotateStartAngle,
+                    logicalX,
+                    logicalY,
+                    TabletModifierKeys.shiftDown()
+            ));
+            next = clampRotationPreviewExclusiveChoice(ec.rotateTo(angle));
+        }
+        CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, next);
+    }
+
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String group = TabletStateQueries.selectedGroupName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
@@ -253,6 +320,29 @@ public final class CanvasElementTransformController {
             clearSnapGuides();
         }
         return image.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasExclusiveChoice applySmartSnapToExclusiveChoice(CanvasExclusiveChoice ec, List<QuestCardLayout> cards, String group) {
+        CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
+                state,
+                CanvasSmartSnapper.boundsForExclusiveChoice(state, ec),
+                cards,
+                group,
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of(ec.id())
+        );
+        if (!snap.hasOffset()) {
+            return ec;
+        }
+        int requestedX = ec.x() + snap.offsetX();
+        int requestedY = ec.y() + snap.offsetY();
+        var clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, requestedX, requestedY, ec.w(), ec.h(), 0, 0, ec.rotation());
+        if (clamped.x != requestedX || clamped.y != requestedY) {
+            clearSnapGuides();
+        }
+        return ec.moveTo(clamped.x, clamped.y);
     }
 
     private CanvasTextLayer applySmartSnapToText(CanvasTextLayer text, List<QuestCardLayout> cards, String group) {
@@ -350,6 +440,26 @@ public final class CanvasElementTransformController {
         return fitAndClampText(new CanvasTextLayer(text.id(), text.text(), box.x(), box.y(), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans()));
     }
 
+    private CanvasExclusiveChoice resizeExclusiveChoiceFromHandle(CanvasExclusiveChoice ec, int localX, int localY) {
+        ResizedBox box = resizeFromSelectionBox(
+                localX,
+                localY,
+                state.canvas.canvasEcStartX,
+                state.canvas.canvasEcStartY,
+                state.canvas.canvasEcStartW,
+                state.canvas.canvasEcStartH,
+                state.canvas.canvasEcStartRotation,
+                8,
+                8,
+                0,
+                0,
+                1,
+                1,
+                TabletModifierKeys.shiftDown()
+        );
+        return fitAndClampExclusiveChoice(new CanvasExclusiveChoice(ec.id(), box.x(), box.y(), box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background()));
+    }
+
     private ResizedBox resizeFromSelectionBox(int localX, int localY, int startX, int startY, int startW, int startH, int rotation, int minW, int minH, int pivotX, int pivotY, int cornerX, int cornerY, boolean preserveAspect) {
         CanvasGeometry.ResizedBox resized = LayerTransformEngine.resizeFromCorner(new LayerTransformEngine.ResizeRequest(
                 layerRect(startX, startY, startW, startH, pivotX, pivotY, rotation),
@@ -381,6 +491,10 @@ public final class CanvasElementTransformController {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
+    private CanvasExclusiveChoice fittedExclusiveChoiceIfGridLocked(CanvasExclusiveChoice ec) {
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedExclusiveChoice(state, ec) : ec;
+    }
+
     private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {
         CanvasImageLayer fitted = fittedImageIfGridLocked(image);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.pivotX(), fitted.pivotY(), fitted.rotation());
@@ -390,6 +504,12 @@ public final class CanvasElementTransformController {
     private CanvasTextLayer fitAndClampText(CanvasTextLayer text) {
         CanvasTextLayer fitted = fittedTextIfGridLocked(text);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), CanvasElementGeometry.defaultPivot(fitted.w()), CanvasElementGeometry.defaultPivot(fitted.h()), fitted.rotation());
+        return fitted.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasExclusiveChoice fitAndClampExclusiveChoice(CanvasExclusiveChoice ec) {
+        CanvasExclusiveChoice fitted = fittedExclusiveChoiceIfGridLocked(ec);
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), 0, 0, fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 
@@ -406,6 +526,14 @@ public final class CanvasElementTransformController {
                 ? fittedTextIfGridLocked(text)
                 : text;
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), CanvasElementGeometry.defaultPivot(preview.w()), CanvasElementGeometry.defaultPivot(preview.h()), preview.rotation());
+        return preview.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasExclusiveChoice clampRotationPreviewExclusiveChoice(CanvasExclusiveChoice ec) {
+        CanvasExclusiveChoice preview = shouldFitRotatedPreview(ec.rotation())
+                ? fittedExclusiveChoiceIfGridLocked(ec)
+                : ec;
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), 0, 0, preview.rotation());
         return preview.moveTo(clamped.x, clamped.y);
     }
 

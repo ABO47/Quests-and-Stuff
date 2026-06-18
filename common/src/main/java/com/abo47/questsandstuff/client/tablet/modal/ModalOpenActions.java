@@ -168,6 +168,12 @@ public final class ModalOpenActions {
         });
     }
 
+    public static void openEcBackgroundPicker(TabletUiState state, String group, String ecId, String currentBackground) {
+        openAssetPickerSession(state, currentBackground, () -> {
+            state.modal.modalEcBackgroundTarget = group + ":" + ecId;
+        });
+    }
+
     public static void openBatchQuestBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground, boolean grayscale) {
         Set<String> targets = normalizedTargets(questIds);
         openAssetPickerSession(state, currentBackground, () -> {
@@ -337,6 +343,7 @@ public final class ModalOpenActions {
         state.modal.modalQuestBackgroundGrayscale = false;
         state.modal.modalQuestCompletionHudBackgroundTarget = "";
         state.modal.modalQuestCompletionHudBackgroundTargets.clear();
+        state.modal.modalEcBackgroundTarget = "";
         state.modal.modalHudBackgroundTarget = "";
         state.modal.modalHudBackgroundOpacityDragging = false;
         state.modal.modalQuestCompletionSoundTarget = "";

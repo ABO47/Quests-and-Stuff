@@ -6,6 +6,7 @@ public final class EditorCommandPayloadKeys {
     public static final String COLOR = "color";
     public static final String DESCRIPTION = "description";
     public static final String ENABLED = "enabled";
+    public static final String EXCLUSIVE_CHOICE = "exclusive_choice";
     public static final String GRAYSCALE = "grayscale";
     public static final String GRID = "grid";
     public static final String GROUP = "group";

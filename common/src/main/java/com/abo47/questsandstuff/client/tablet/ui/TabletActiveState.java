@@ -47,6 +47,8 @@ final class TabletActiveState {
         state.canvas.canvasImagesByGroup.putAll(ClientQuestCache.canvasImagesByGroup());
         state.canvas.canvasTextsByGroup.clear();
         state.canvas.canvasTextsByGroup.putAll(ClientQuestCache.canvasTextsByGroup());
+        state.canvas.canvasExclusiveChoicesByGroup.clear();
+        state.canvas.canvasExclusiveChoicesByGroup.putAll(ClientQuestCache.canvasExclusiveChoicesByGroup());
         state.canvas.canvasLayerOrderByGroup.clear();
         state.canvas.canvasLayerOrderByGroup.putAll(ClientQuestCache.canvasLayerOrderByGroup());
     }

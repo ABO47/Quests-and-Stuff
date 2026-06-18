@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -57,6 +58,11 @@ final class CanvasSelectionDragController {
                 state.canvas.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
+                state.canvas.dragStartEcLayers.put(ec.id(), ec);
+            }
+        }
         CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
         CanvasSnapEngine.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
         state.canvas.dragStartBoundsLeft = bounds.left();
@@ -68,10 +74,11 @@ final class CanvasSelectionDragController {
         state.canvas.dragStartSelectionRight = state.canvas.selectionBoundsRight;
         state.canvas.dragStartSelectionBottom = state.canvas.selectionBoundsBottom;
         QuestsAndStuffMod.debugLog(
-                "[QnS:UI] canvas selection drag start quests={} images={} texts={} bounds={}x{}",
+                "[QnS:UI] canvas selection drag start quests={} images={} texts={} ecs={} bounds={}x{}",
                 state.canvas.dragStartPositions.size(),
                 state.canvas.dragStartImagePositions.size(),
                 state.canvas.dragStartTextPositions.size(),
+                state.canvas.dragStartEcLayers.size(),
                 Math.max(0, state.canvas.dragStartBoundsRight - state.canvas.dragStartBoundsLeft),
                 Math.max(0, state.canvas.dragStartBoundsBottom - state.canvas.dragStartBoundsTop)
         );
@@ -121,6 +128,10 @@ final class CanvasSelectionDragController {
             if (text != null) {
                 CanvasLayerMutations.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
+        }
+        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.dragStartEcLayers.entrySet()) {
+            CanvasExclusiveChoice ec = entry.getValue();
+            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ec.moveTo(ec.x() + dx, ec.y() + dy));
         }
     }
 

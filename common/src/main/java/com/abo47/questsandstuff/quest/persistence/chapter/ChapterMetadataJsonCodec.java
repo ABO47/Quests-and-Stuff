@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
 import com.abo47.questsandstuff.util.SafeNames;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
@@ -115,6 +116,62 @@ final class ChapterMetadataJsonCodec {
                 spans.add(spanJson);
             }
             json.add("spans", spans);
+            array.add(json);
+        }
+        return array;
+    }
+
+    static List<CanvasExclusiveChoice> readCanvasExclusiveChoices(JsonElement element) {
+        List<CanvasExclusiveChoice> choices = new ArrayList<>();
+        if (element == null || !element.isJsonArray()) {
+            return choices;
+        }
+        for (JsonElement child : element.getAsJsonArray()) {
+            if (!child.isJsonObject()) {
+                continue;
+            }
+            JsonObject json = child.getAsJsonObject();
+            String id = stringOr(json, "id", "");
+            if (id.isBlank()) {
+                continue;
+            }
+            int width = intOr(json, "w", CanvasExclusiveChoice.DEFAULT_WIDTH);
+            int height = intOr(json, "h", CanvasExclusiveChoice.DEFAULT_HEIGHT);
+            List<String> connections = readStringArray(json.get("connections"));
+            List<String> prerequisites = readStringArray(json.get("prerequisites"));
+            String background = stringOr(json, "background", "");
+            choices.add(new CanvasExclusiveChoice(
+                    id,
+                    intOr(json, "x", 0),
+                    intOr(json, "y", 0),
+                    width,
+                    height,
+                    intOr(json, "rotation", 0),
+                    connections,
+                    prerequisites,
+                    background
+            ));
+        }
+        return choices;
+    }
+
+    static JsonArray writeCanvasExclusiveChoices(List<CanvasExclusiveChoice> choices) {
+        JsonArray array = new JsonArray();
+        for (CanvasExclusiveChoice ec : choices) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", ec.id());
+            json.addProperty("x", ec.x());
+            json.addProperty("y", ec.y());
+            json.addProperty("w", ec.w());
+            json.addProperty("h", ec.h());
+            json.addProperty("rotation", ec.rotation());
+            json.add("connections", writeStringArray(ec.connectionQuestIds()));
+            if (!ec.prerequisiteQuestIds().isEmpty()) {
+                json.add("prerequisites", writeStringArray(ec.prerequisiteQuestIds()));
+            }
+            if (!ec.background().isBlank()) {
+                json.addProperty("background", ec.background());
+            }
             array.add(json);
         }
         return array;

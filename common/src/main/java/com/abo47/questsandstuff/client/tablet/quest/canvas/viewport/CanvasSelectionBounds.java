@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -58,6 +59,12 @@ final class CanvasSelectionBounds {
             minY = Math.min(minY, bounds.top());
             maxX = Math.max(maxX, bounds.right());
             maxY = Math.max(maxY, bounds.bottom());
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.dragStartEcLayers.values()) {
+            minX = Math.min(minX, ec.x());
+            minY = Math.min(minY, ec.y());
+            maxX = Math.max(maxX, ec.x() + ec.w());
+            maxY = Math.max(maxY, ec.y() + ec.h());
         }
         if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE || maxY == Integer.MIN_VALUE) {
             return new CanvasSnapEngine.Bounds(0, 0, 0, 0);

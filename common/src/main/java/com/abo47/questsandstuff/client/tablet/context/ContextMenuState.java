@@ -93,6 +93,15 @@ public final class ContextMenuState {
         state.contextMenu.contextCanvasTextId = clean(textId);
     }
 
+    public static void targetExclusiveChoice(TabletUiState state, String ecId) {
+        if (state == null) {
+            return;
+        }
+        clearTarget(state);
+        state.contextMenu.contextMenuTarget = ContextMenuTarget.EXCLUSIVE_CHOICE;
+        state.contextMenu.contextCanvasExclusiveChoiceId = clean(ecId);
+    }
+
     public static void close(TabletUiState state) {
         if (state == null) {
             return;
@@ -208,6 +217,7 @@ public final class ContextMenuState {
         state.contextMenu.contextEdgeTarget = "";
         state.contextMenu.contextCanvasImageId = "";
         state.contextMenu.contextCanvasTextId = "";
+        state.contextMenu.contextCanvasExclusiveChoiceId = "";
     }
 
     private static void resetMenuMetrics(TabletUiState state) {

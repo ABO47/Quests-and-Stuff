@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
@@ -102,6 +104,14 @@ public final class ClientQuestLocalMutations {
 
     public static void removeCanvasTextLocal(String group, String textId) {
         ClientCanvasLocalMutations.removeCanvasTextLocal(group, textId);
+    }
+
+    public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
+        ClientCanvasLocalMutations.putCanvasExclusiveChoiceLocal(group, ec);
+    }
+
+    public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
+        ClientCanvasLocalMutations.removeCanvasExclusiveChoiceLocal(group, ecId);
     }
 
     public static void setCanvasLayerOrderLocal(String group, List<String> order) {
@@ -327,6 +337,23 @@ public final class ClientQuestLocalMutations {
         }
         ClientQuestState.removePinned(normalized);
         ClientQuestConnectionMutations.removeQuestReferences(normalized);
+        for (Map.Entry<String, List<CanvasExclusiveChoice>> entry : ClientCanvasLayerState.exclusiveChoicesByGroup().entrySet()) {
+            String group = entry.getKey();
+            for (CanvasExclusiveChoice ec : entry.getValue()) {
+                boolean changed = false;
+                if (ec.connectionQuestIds().contains(normalized)) {
+                    ec = ec.removeConnection(normalized);
+                    changed = true;
+                }
+                if (ec.prerequisiteQuestIds().contains(normalized)) {
+                    ec = ec.removePrerequisite(normalized);
+                    changed = true;
+                }
+                if (changed) {
+                    ClientCanvasLayerState.putExclusiveChoice(group, ec);
+                }
+            }
+        }
     }
 
     private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {

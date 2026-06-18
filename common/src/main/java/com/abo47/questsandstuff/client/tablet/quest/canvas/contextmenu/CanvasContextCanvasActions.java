@@ -19,9 +19,11 @@ import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.world.entity.player.Player;
@@ -90,6 +92,26 @@ final class CanvasContextCanvasActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_entity group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
             canvasViewport.refresh();
         }));
+        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_exclusive_choice"), "split", ModColors.SUCCESS, () -> {
+            String id = StableIdAllocator.nextId("ec", canvasExclusiveChoiceIds(state, selectedGroup));
+            int defaultW = TabletUiFactory.CARD_W;
+            int defaultH = TabletUiFactory.CARD_H;
+            int x = snapToGrid(state, state.contextMenu.contextPointerLogicalX - defaultW / 2);
+            int y = snapToGrid(state, state.contextMenu.contextPointerLogicalY - defaultH / 2);
+            CanvasExclusiveChoice ec = new CanvasExclusiveChoice(id, x, y, defaultW, defaultH, 0, List.of());
+            if (state.canvas.gridSnapLocked) {
+                ec = CanvasGridFitController.fittedExclusiveChoice(state, ec);
+            }
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedGroup, ec);
+            state.canvas.canvasSelection.setPrimaryEcId(id);
+            state.canvas.canvasSelection.setPrimaryImageId("");
+            state.canvas.canvasSelection.setPrimaryTextId("");
+            state.canvas.canvasSelection.questIds().clear();
+            ContextMenuState.close(state);
+            canvasViewport.setFocus(true);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_exclusive_choice group={} id={} logical={},{}", selectedGroup, id, x, y);
+            canvasViewport.refresh();
+        }));
         addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_item"), "icon", ModColors.SUCCESS, () -> {
             ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemNew(selectedGroup), state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
             ContextMenuState.close(state);
@@ -131,6 +153,14 @@ final class CanvasContextCanvasActions {
                 canvasViewport.refresh();
             }));
         }
+    }
+
+    private static List<String> canvasExclusiveChoiceIds(TabletUiState state, String group) {
+        List<String> ids = new ArrayList<>();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            ids.add(ec.id());
+        }
+        return ids;
     }
 
     private static List<String> canvasTextIds(TabletUiState state, String group) {

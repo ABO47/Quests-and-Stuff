@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -25,6 +26,10 @@ final class CanvasSmartSnapper {
         return CanvasSnapBounds.forText(text);
     }
 
+    static CanvasSnapEngine.Bounds boundsForExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+        return CanvasSnapBounds.forExclusiveChoice(ec);
+    }
+
     static CanvasSnapEngine.SnapResult snap(
             TabletUiState state,
             CanvasSnapEngine.Bounds moving,
@@ -34,6 +39,19 @@ final class CanvasSmartSnapper {
             Set<String> movingImageIds,
             Set<String> movingTextIds
     ) {
+        return snap(state, moving, cards, group, movingQuestIds, movingImageIds, movingTextIds, Set.of());
+    }
+
+    static CanvasSnapEngine.SnapResult snap(
+            TabletUiState state,
+            CanvasSnapEngine.Bounds moving,
+            List<QuestCardLayout> cards,
+            String group,
+            Set<String> movingQuestIds,
+            Set<String> movingImageIds,
+            Set<String> movingTextIds,
+            Set<String> movingEcIds
+    ) {
         state.canvas.snapGuideXVisible = false;
         state.canvas.snapGuideYVisible = false;
         if (!moving.valid() || (!state.canvas.centerSnapXEnabled && !state.canvas.centerSnapYEnabled && !state.canvas.objectSnapEnabled)) {
@@ -42,7 +60,7 @@ final class CanvasSmartSnapper {
 
         CanvasSnapEngine.SnapResult result = CanvasSnapEngine.snap(new CanvasSnapEngine.SnapContext(
                 moving,
-                snapTargets(state, cards, group, movingQuestIds, movingImageIds, movingTextIds),
+                snapTargets(state, cards, group, movingQuestIds, movingImageIds, movingTextIds, movingEcIds),
                 new CanvasSnapEngine.SnapSettings(
                         state.canvas.centerSnapXEnabled,
                         state.canvas.centerSnapYEnabled,
@@ -62,7 +80,8 @@ final class CanvasSmartSnapper {
             String group,
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
-            Set<String> movingTextIds
+            Set<String> movingTextIds,
+            Set<String> movingEcIds
     ) {
         if (!state.canvas.objectSnapEnabled) {
             return List.of();
@@ -81,6 +100,11 @@ final class CanvasSmartSnapper {
         for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
             if (!movingTextIds.contains(text.id())) {
                 targets.add(CanvasSnapBounds.forText(text));
+            }
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (!movingEcIds.contains(ec.id())) {
+                targets.add(CanvasSnapBounds.forExclusiveChoice(ec));
             }
         }
         return targets;

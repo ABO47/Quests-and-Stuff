@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.world.entity.player.Player;
@@ -116,6 +117,11 @@ public final class CanvasGridFitController {
                 return true;
             }
         }
+        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
+            if (canFitExclusiveChoiceToGrid(state, group, ecId)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -166,6 +172,18 @@ public final class CanvasGridFitController {
             }
         }
 
+        Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (!ecIds.contains(ec.id())) {
+                continue;
+            }
+            CanvasExclusiveChoice fitted = fittedExclusiveChoice(state, ec);
+            if (!ec.equals(fitted)) {
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, fitted);
+                changed = true;
+            }
+        }
+
         if (!questPositions.isEmpty()) {
             EditorCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
@@ -175,12 +193,42 @@ public final class CanvasGridFitController {
         return changed;
     }
 
+    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
+        return ec != null && !ec.equals(fittedExclusiveChoice(state, ec));
+    }
+
+    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            return false;
+        }
+        CanvasExclusiveChoice fitted = fittedExclusiveChoice(state, ec);
+        if (ec.equals(fitted)) {
+            return false;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, fitted);
+        state.canvas.canvasSelection.setPrimaryEcId(ecId);
+        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.ecIds().add(ecId);
+        state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.questIds().clear();
+        return true;
+    }
+
     public static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
         return CanvasElementGridFit.fittedImage(image, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
     public static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
         return CanvasElementGridFit.fittedText(text, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
+    }
+
+    public static CanvasExclusiveChoice fittedExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+        return CanvasElementGridFit.fittedExclusiveChoice(ec, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
     private static FittedQuest fittedQuest(TabletUiState state, QuestCardLayout card) {
@@ -203,6 +251,16 @@ public final class CanvasGridFitController {
                 CanvasGeometry.slotLogicalHeight(state, scale)
         );
         return new FittedQuest(clamped.x, clamped.y, scale);
+    }
+
+    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String group, String ecId) {
+        if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
+            return null;
+        }
+        return state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()).stream()
+                .filter(ec -> ec.id().equals(ecId))
+                .findFirst()
+                .orElse(null);
     }
 
     private static CanvasImageLayer findImage(TabletUiState state, String group, String imageId) {

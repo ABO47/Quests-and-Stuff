@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -17,9 +19,12 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
 final class ConnectionPainter {
@@ -44,8 +49,9 @@ final class ConnectionPainter {
                 int clipMaxX = clipMinX + getSizeWidth();
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
+                Map<String, CanvasPoint> ecCenters = computeECCenters(state);
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
+                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY, ecCenters);
                 }
             }
         });
@@ -91,7 +97,8 @@ final class ConnectionPainter {
             int clipMinX,
             int clipMinY,
             int clipMaxX,
-            int clipMaxY
+            int clipMaxY,
+            Map<String, CanvasPoint> ecCenters
     ) {
         int sourceOffsetX = selectionDragOffsetX(state, line.sourceQuestId());
         int sourceOffsetY = selectionDragOffsetY(state, line.sourceQuestId());
@@ -101,6 +108,16 @@ final class ConnectionPainter {
         int startY = originY + line.startY() + sourceOffsetY;
         int endX = originX + line.endX() + targetOffsetX;
         int endY = originY + line.endY() + targetOffsetY;
+        CanvasPoint ecSource = ecCenters.get(line.sourceQuestId());
+        if (ecSource != null) {
+            startX = originX + ecSource.x;
+            startY = originY + ecSource.y;
+        }
+        CanvasPoint ecTarget = ecCenters.get(line.targetQuestId());
+        if (ecTarget != null) {
+            endX = originX + ecTarget.x;
+            endY = originY + ecTarget.y;
+        }
 
         if (line.pending()) {
             graphics.fill(startX - 5, startY - 5, startX + 6, startY + 6, withAlpha(ModColors.SUCCESS, 72));
@@ -385,6 +402,21 @@ final class ConnectionPainter {
         float x = (float) (glyph.x() + glyph.dirX() * localX - glyph.dirY() * localY);
         float y = (float) (glyph.y() + glyph.dirY() * localX + glyph.dirX() * localY);
         buffer.vertex(matrix, x, y, 0.0f).uv(u, v).color(glyph.color()).endVertex();
+    }
+
+    private static Map<String, CanvasPoint> computeECCenters(TabletUiState state) {
+        String group = selectedGroupName(state);
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        if (ecs.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, CanvasPoint> centers = new HashMap<>();
+        for (CanvasExclusiveChoice ec : ecs) {
+            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            centers.put(ec.id(), new CanvasPoint((int) Math.round(box.centerX() + box.width() / 2.0), (int) Math.round(box.centerY() + box.height() / 2.0)));
+        }
+        return centers;
     }
 
     private record ChevronGlyph(double x, double y, double dirX, double dirY, int color) {
