@@ -98,7 +98,7 @@ public final class QuestAppComposer {
         final int chapterSideInset = CHAPTER_PANEL_GUTTER_X;
         final int chapterBottomInset = CHAPTER_PANEL_GUTTER_BOTTOM;
         final int chapterHeaderH = headerH;
-        final int chapterListGap = contentInset;
+        final int chapterListGap = contentInset - 1;
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));

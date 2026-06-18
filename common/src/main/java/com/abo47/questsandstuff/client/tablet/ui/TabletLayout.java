@@ -19,8 +19,8 @@ final class TabletLayout {
     static final int PANEL_GAP = 8;
     static final int PANEL_INSET = 6;
     static final int CANVAS_VIEWPORT_GUTTER_X = 9;
-    static final int CANVAS_VIEWPORT_GUTTER_TOP = 6;
-    static final int CANVAS_VIEWPORT_GUTTER_BOTTOM = 5;
+    static final int CANVAS_VIEWPORT_GUTTER_TOP = 5;
+    static final int CANVAS_VIEWPORT_GUTTER_BOTTOM = 6;
     static final int CHAPTER_PANEL_GUTTER_X = CANVAS_VIEWPORT_GUTTER_X;
     static final int CHAPTER_PANEL_GUTTER_BOTTOM = CANVAS_VIEWPORT_GUTTER_BOTTOM;
     static final int HEADER_H = 14;

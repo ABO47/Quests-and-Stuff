@@ -17,7 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public final class QuestDetailsObjectivesPanel {
-    static final int SECTION_GAP = TabletUiFactory.PANEL_INSET;
+    static final int HEADER_SECTION_GAP = TabletUiFactory.PANEL_INSET - 1;
+    static final int SECTION_GAP = TabletUiFactory.PANEL_INSET + 1;
     static final int TITLE_H = 18;
     static final int CARD_H = TabletUiFactory.CHAPTER_CARD_H;
     static final int CARD_GAP = TabletUiFactory.CHAPTER_CARD_GAP;
@@ -30,8 +31,8 @@ public final class QuestDetailsObjectivesPanel {
 
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         QuestObjectiveActionWidgets.renderProgress(modal, state, player, refresh, questId, quest, x, y, w, HEADER_H);
-        int sectionsY = y + HEADER_H + SECTION_GAP;
-        int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
+        int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
+        int sectionsH = Math.max(1, h - HEADER_H - HEADER_SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
         QuestObjectiveSectionWidget.renderRequirements(modal, state, player, refresh, questId, quest, x, sectionsY, w, sectionH);
         QuestObjectiveSectionWidget.renderRewards(modal, state, player, refresh, questId, quest, x, sectionsY + sectionH + SECTION_GAP, w, sectionsH - sectionH - SECTION_GAP);
@@ -55,8 +56,8 @@ public final class QuestDetailsObjectivesPanel {
         int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
         int w = leftPanelContentW(leftW);
         int h = leftPanelContentH();
-        int sectionsY = y + HEADER_H + SECTION_GAP;
-        int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
+        int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
+        int sectionsH = Math.max(1, h - HEADER_H - HEADER_SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
 
         List<QuestDetailsObjectiveEntry> tasks = QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
@@ -84,8 +85,8 @@ public final class QuestDetailsObjectivesPanel {
         int x = state.questDetails.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
         int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
         int h = leftPanelContentH();
-        int sectionsY = y + HEADER_H + SECTION_GAP;
-        int sectionsH = Math.max(1, h - HEADER_H - SECTION_GAP);
+        int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
+        int sectionsH = Math.max(1, h - HEADER_H - HEADER_SECTION_GAP);
         int sectionH = (sectionsH - SECTION_GAP) / 2;
 
         List<QuestDetailsObjectiveEntry> tasks = QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
