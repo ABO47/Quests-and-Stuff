@@ -175,16 +175,9 @@ public final class TeamManager {
         }
         data().removeInviteCodesForPlayer(player.getUUID(), team.teamId());
 
-        String uuidStr = player.getUUID().toString().replace("-", "").toUpperCase();
         StringBuilder code = new StringBuilder(INVITE_CODE_LENGTH);
-        int uuidIdx = 0;
         for (int i = 0; i < INVITE_CODE_LENGTH; i++) {
-            if (uuidIdx < uuidStr.length()) {
-                code.append(CODE_CHARS.charAt(uuidStr.charAt(uuidIdx) % CODE_CHARS.length()));
-                uuidIdx++;
-            } else {
-                code.append(CODE_CHARS.charAt(RANDOM.nextInt(CODE_CHARS.length())));
-            }
+            code.append(CODE_CHARS.charAt(RANDOM.nextInt(CODE_CHARS.length())));
         }
         String codeStr = code.toString();
         long expiry = System.currentTimeMillis() + INVITE_CODE_DURATION_MS;
