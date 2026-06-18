@@ -123,7 +123,7 @@ public final class QuestAppComposer {
         int HOME_BTN_SIZE = 10;
         ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
-                cd -> TabletClientHooks.openTabletUiFromItem(player));
+                cd -> TabletClientHooks.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
         questHomeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
         questHomeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));

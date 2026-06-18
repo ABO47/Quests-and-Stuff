@@ -43,6 +43,7 @@ public class TabletUiState {
         public boolean canEdit;
         public boolean editorAvailable;
         public boolean editMode = true;
+        public String lastApp = "";
     }
 
     public static final class ChapterPanelState {

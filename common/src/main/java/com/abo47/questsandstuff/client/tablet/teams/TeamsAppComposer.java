@@ -64,7 +64,7 @@ public final class TeamsAppComposer {
         int homeBtnY = ROOT_PAD_Y + ((initialRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
-                cd -> TabletClientHooks.openTabletUiFromItem(player));
+                cd -> TabletClientHooks.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
         homeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
         homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));

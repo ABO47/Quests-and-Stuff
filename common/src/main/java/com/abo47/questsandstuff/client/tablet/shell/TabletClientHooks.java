@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.screen.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -211,6 +212,12 @@ public final class TabletClientHooks {
         }
     }
 
+    public static void openTabletUiHome(Player player) {
+        if (player instanceof LocalPlayer localPlayer) {
+            openTabletUiHome(Minecraft.getInstance(), localPlayer);
+        }
+    }
+
     static void openQuestsUiFromCurrentScreen() {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player != null) {
@@ -253,6 +260,23 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
+        String lastApp = readLastApp();
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = targetRootWidth(minecraft, fullScreen);
+        int rootH = targetRootHeight(minecraft, fullScreen);
+        if ("TEAMS".equals(lastApp)) {
+            openTeamsUi(minecraft, player);
+        } else if ("QUESTS".equals(lastApp)) {
+            openQuestsUi(minecraft, player);
+        } else {
+            openTabletUiHome(minecraft, player);
+        }
+    }
+
+    private static void openTabletUiHome(Minecraft minecraft, LocalPlayer player) {
+        if (player == null) {
+            return;
+        }
         int rootW = TabletUiFactory.ROOT_W;
         int rootH = TabletUiFactory.ROOT_H;
         ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, false), IUIHolder.EMPTY, player);
@@ -260,13 +284,20 @@ public final class TabletClientHooks {
         TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
-        QuestsAndStuffMod.debugLog("[QnS:UI] keybind open tablet home");
+        QuestsAndStuffMod.debugLog("[QnS:UI] open tablet home");
+    }
+
+    private static String readLastApp() {
+        TabletUiState temp = new TabletUiState();
+        TabletUiStatePersistence.read(temp);
+        return temp.root.lastApp;
     }
 
     private static void openQuestsUi(Minecraft minecraft, LocalPlayer player) {
         if (player == null) {
             return;
         }
+        saveLastApp("QUESTS");
         boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
         int rootW = targetRootWidth(minecraft, fullScreen);
         int rootH = targetRootHeight(minecraft, fullScreen);
@@ -275,13 +306,14 @@ public final class TabletClientHooks {
         TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
-        QuestsAndStuffMod.debugLog("[QnS:UI] keybind open quests ui direct");
+        QuestsAndStuffMod.debugLog("[QnS:UI] open quests ui");
     }
 
     private static void openTeamsUi(Minecraft minecraft, LocalPlayer player) {
         if (player == null) {
             return;
         }
+        saveLastApp("TEAMS");
         boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
         int rootW = targetRootWidth(minecraft, fullScreen);
         int rootH = targetRootHeight(minecraft, fullScreen);
@@ -290,7 +322,14 @@ public final class TabletClientHooks {
         TabletGuiContainer modularUiGui = new TabletGuiContainer(uiTemplate, player.containerMenu.containerId);
         minecraft.setScreen(modularUiGui);
         player.containerMenu = modularUiGui.getMenu();
-        QuestsAndStuffMod.debugLog("[QnS:UI] open teams ui from home");
+        QuestsAndStuffMod.debugLog("[QnS:UI] open teams ui");
+    }
+
+    private static void saveLastApp(String appId) {
+        TabletUiState temp = new TabletUiState();
+        TabletUiStatePersistence.read(temp);
+        temp.root.lastApp = appId;
+        TabletUiStatePersistence.write(temp);
     }
 
     private static int targetRootWidth(Minecraft minecraft, boolean fullScreen) {
