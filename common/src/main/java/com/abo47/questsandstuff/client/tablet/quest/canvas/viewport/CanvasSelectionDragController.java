@@ -160,7 +160,8 @@ final class CanvasSelectionDragController {
                 group,
                 state.canvas.canvasSelection.questIds(),
                 state.canvas.dragStartImagePositions.keySet(),
-                state.canvas.dragStartTextPositions.keySet()
+                state.canvas.dragStartTextPositions.keySet(),
+                state.canvas.dragStartEcLayers.keySet()
         );
     }
 

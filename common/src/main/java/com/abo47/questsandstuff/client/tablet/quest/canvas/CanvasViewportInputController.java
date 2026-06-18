@@ -238,12 +238,16 @@ final class CanvasViewportInputController {
             for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
                 CanvasLayerMutations.persistCanvasText(state, group, textId);
             }
+            int movedEcs = state.canvas.transientCanvasExclusiveChoices.size();
+            for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+            }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} ecs={} delta={},{}",
                     state.canvas.transientQuestPositions.size(),
                     movedImages,
                     movedTexts,
-                    state.canvas.transientCanvasExclusiveChoices.size(),
+                    movedEcs,
                     state.canvas.dragSelectionDeltaX,
                     state.canvas.dragSelectionDeltaY
             );

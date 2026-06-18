@@ -61,10 +61,11 @@ final class CanvasSelectionBounds {
             maxY = Math.max(maxY, bounds.bottom());
         }
         for (CanvasExclusiveChoice ec : state.canvas.dragStartEcLayers.values()) {
-            minX = Math.min(minX, ec.x());
-            minY = Math.min(minY, ec.y());
-            maxX = Math.max(maxX, ec.x() + ec.w());
-            maxY = Math.max(maxY, ec.y() + ec.h());
+            CanvasSnapEngine.Bounds ecBounds = CanvasSmartSnapper.boundsForExclusiveChoice(state, ec);
+            minX = Math.min(minX, ecBounds.left());
+            minY = Math.min(minY, ecBounds.top());
+            maxX = Math.max(maxX, ecBounds.right());
+            maxY = Math.max(maxY, ecBounds.bottom());
         }
         if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE || maxY == Integer.MIN_VALUE) {
             return new CanvasSnapEngine.Bounds(0, 0, 0, 0);

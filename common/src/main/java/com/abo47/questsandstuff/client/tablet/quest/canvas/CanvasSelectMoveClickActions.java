@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
@@ -305,7 +306,8 @@ final class CanvasSelectMoveClickActions {
             }
         }
         for (CanvasExclusiveChoice ec : ecs) {
-            if (ec.x() < maxX && ec.x() + ec.w() > minX && ec.y() < maxY && ec.y() + ec.h() > minY) {
+            int[] ecBounds = CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+            if (ecBounds[0] < maxX && ecBounds[2] > minX && ecBounds[1] < maxY && ecBounds[3] > minY) {
                 state.canvas.canvasSelection.ecIds().add(ec.id());
                 state.canvas.canvasSelection.setPrimaryEcId(ec.id());
             }
@@ -362,7 +364,7 @@ final class CanvasSelectMoveClickActions {
             case EXCLUSIVE_CHOICE -> {
                 for (CanvasExclusiveChoice ec : ecs) {
                     if (ec.id().equals(id)) {
-                        return new int[]{ec.x(), ec.y(), ec.x() + ec.w(), ec.y() + ec.h()};
+                        return CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
                     }
                 }
             }

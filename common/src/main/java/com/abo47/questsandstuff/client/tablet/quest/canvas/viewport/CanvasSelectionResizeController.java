@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -60,10 +62,11 @@ final class CanvasSelectionResizeController {
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.resizeStartEcLayers.put(ec.id(), ec);
-                minX = Math.min(minX, ec.x());
-                minY = Math.min(minY, ec.y());
-                maxX = Math.max(maxX, ec.x() + ec.w());
-                maxY = Math.max(maxY, ec.y() + ec.h());
+                CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);
+                minX = Math.min(minX, ecBounds.left());
+                minY = Math.min(minY, ecBounds.top());
+                maxX = Math.max(maxX, ecBounds.right());
+                maxY = Math.max(maxY, ecBounds.bottom());
             }
         }
         if (snapshot.hasBounds()) {
@@ -137,7 +140,7 @@ final class CanvasSelectionResizeController {
             int targetH = Math.max(8, (int) Math.round(ec.h() * resize.uniformScale()));
             int targetX = (int) Math.round(centerX - targetW / 2.0D);
             int targetY = (int) Math.round(centerY - targetH / 2.0D);
-            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ec.moveTo(targetX, targetY).resizeTo(targetW, targetH));
+            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, fitAndClampExclusiveChoice(ec.moveTo(targetX, targetY).resizeTo(targetW, targetH)));
         }
     }
 
@@ -174,6 +177,10 @@ final class CanvasSelectionResizeController {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
+    private CanvasExclusiveChoice fittedExclusiveChoiceIfGridLocked(CanvasExclusiveChoice ec) {
+        return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedExclusiveChoice(state, ec) : ec;
+    }
+
     private CanvasImageLayer fitAndClampImage(CanvasImageLayer image) {
         CanvasImageLayer fitted = fittedImageIfGridLocked(image);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.pivotX(), fitted.pivotY(), fitted.rotation());
@@ -183,6 +190,12 @@ final class CanvasSelectionResizeController {
     private CanvasTextLayer fitAndClampText(CanvasTextLayer text) {
         CanvasTextLayer fitted = fittedTextIfGridLocked(text);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.w() / 2, fitted.h() / 2, fitted.rotation());
+        return fitted.moveTo(clamped.x, clamped.y);
+    }
+
+    private CanvasExclusiveChoice fitAndClampExclusiveChoice(CanvasExclusiveChoice ec) {
+        CanvasExclusiveChoice fitted = fittedExclusiveChoiceIfGridLocked(ec);
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), 0, 0, fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 }

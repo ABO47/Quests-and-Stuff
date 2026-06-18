@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
@@ -60,10 +62,11 @@ final class CanvasSelectionRotateController {
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.rotateStartEcLayers.put(ec.id(), ec);
-                minX = Math.min(minX, ec.x());
-                minY = Math.min(minY, ec.y());
-                maxX = Math.max(maxX, ec.x() + ec.w());
-                maxY = Math.max(maxY, ec.y() + ec.h());
+                CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);
+                minX = Math.min(minX, ecBounds.left());
+                minY = Math.min(minY, ecBounds.top());
+                maxX = Math.max(maxX, ecBounds.right());
+                maxY = Math.max(maxY, ecBounds.bottom());
             }
         }
         if (snapshot.hasBounds()) {
@@ -164,8 +167,14 @@ final class CanvasSelectionRotateController {
             double rotatedCenterY = state.canvas.rotatePivotY + relX * sin + relY * cos;
             int targetX = (int) Math.round(rotatedCenterX - ec.w() / 2.0D);
             int targetY = (int) Math.round(rotatedCenterY - ec.h() / 2.0D);
-            int targetRotation = ec.rotation() + deltaDegrees;
-            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ec.moveTo(targetX, targetY).rotateTo(targetRotation));
+            CanvasExclusiveChoice ecResult = ec.moveTo(targetX, targetY);
+            if (state.canvas.gridSnapLocked) {
+                ecResult = CanvasGridFitController.fittedExclusiveChoice(state, ecResult);
+            } else {
+                CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, ecResult.x(), ecResult.y(), ecResult.w(), ecResult.h());
+                ecResult = ecResult.moveTo(clamped.x, clamped.y);
+            }
+            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ecResult);
         }
     }
 

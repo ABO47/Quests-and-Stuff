@@ -118,8 +118,13 @@ public final class CanvasHitTester {
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
-            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
-            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
+            double ecAngle = Math.toRadians(drawEc.rotation());
+            double ecCos = Math.cos(ecAngle);
+            double ecSin = Math.sin(ecAngle);
+            double ecOffsetX = ecBox.left() + ecBox.width() / 2.0;
+            double ecOffsetY = ecBox.top() + ecBox.height() / 2.0;
+            int ecCenterX = (int) Math.round(ecBox.centerX() + ecOffsetX * ecCos - ecOffsetY * ecSin);
+            int ecCenterY = (int) Math.round(ecBox.centerY() + ecOffsetX * ecSin + ecOffsetY * ecCos);
             for (String connectedQuestId : drawEc.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {

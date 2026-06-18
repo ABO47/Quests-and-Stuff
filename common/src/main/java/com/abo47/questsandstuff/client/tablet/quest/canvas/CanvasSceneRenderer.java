@@ -391,6 +391,9 @@ final class CanvasSceneRenderer {
                 }
                 graphics.pose().popPose();
                 if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+                    if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
+                        return;
+                    }
                     CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                 }
             }
