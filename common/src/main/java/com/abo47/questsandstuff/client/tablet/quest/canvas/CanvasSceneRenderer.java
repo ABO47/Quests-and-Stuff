@@ -313,6 +313,9 @@ final class CanvasSceneRenderer {
     }
 
     private static void renderECConnectionLockedPreview(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
+        if (state.root.canEdit) {
+            return;
+        }
         String group = selectedGroupName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
