@@ -28,7 +28,7 @@ public final class CanvasSnapBounds {
     }
 
     public static CanvasSnapEngine.Bounds forExclusiveChoice(CanvasExclusiveChoice ec) {
-        return atPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+        return atPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
     }
 
     public static CanvasSnapEngine.Bounds atCenterPivot(int x, int y, int width, int height, int rotationDegrees) {

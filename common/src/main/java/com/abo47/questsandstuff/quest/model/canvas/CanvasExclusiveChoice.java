@@ -42,6 +42,14 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
         return new CanvasExclusiveChoice(id, x, y, w, h, nextRotation, connectionQuestIds, prerequisiteQuestIds, background);
     }
 
+    public int pivotX() {
+        return Math.max(1, w) / 2;
+    }
+
+    public int pivotY() {
+        return Math.max(1, h) / 2;
+    }
+
     public CanvasExclusiveChoice withConnections(List<String> nextConnections) {
         return new CanvasExclusiveChoice(id, x, y, w, h, rotation, nextConnections, prerequisiteQuestIds, background);
     }

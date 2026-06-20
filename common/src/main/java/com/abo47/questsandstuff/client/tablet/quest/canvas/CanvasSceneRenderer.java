@@ -375,7 +375,7 @@ final class CanvasSceneRenderer {
                 CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
                 int w = box.width();
                 int h = box.height();
                 int pivotX = -box.left();
@@ -397,7 +397,7 @@ final class CanvasSceneRenderer {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
                 }
             }
         });

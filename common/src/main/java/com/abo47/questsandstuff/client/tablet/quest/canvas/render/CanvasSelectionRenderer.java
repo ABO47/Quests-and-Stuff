@@ -122,7 +122,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -300,7 +300,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
             drawClippedRect(
                     graphics,
                     originX,

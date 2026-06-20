@@ -116,7 +116,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.ecIds().addAll(state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds);
         String lastEcId = "";
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
                 state.canvas.canvasSelection.ecIds().add(ec.id());

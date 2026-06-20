@@ -39,11 +39,11 @@ public final class CanvasElementGridFit {
         int rotation = CanvasGeometry.normalizeDegrees(ec.rotation());
         if (rotation == 0) {
             CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(ec.x(), ec.y(), ec.w(), ec.h(), safeGrid, 8, 8);
-            CanvasPoint clamped = clamp(clamp, box.x(), box.y(), box.width(), box.height(), 0, 0, rotation);
+            CanvasPoint clamped = clamp(clamp, box.x(), box.y(), box.width(), box.height(), box.width() / 2, box.height() / 2, rotation);
             return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
         }
-        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, rotation, safeGrid, 8, 8);
-        CanvasPoint clamped = clamp(clamp, fit.x(), fit.y(), fit.width(), fit.height(), 0, 0, rotation);
+        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), rotation, safeGrid, 8, 8);
+        CanvasPoint clamped = clamp(clamp, fit.x(), fit.y(), fit.width(), fit.height(), fit.width() / 2, fit.height() / 2, rotation);
         return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, fit.width(), fit.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
     }
 

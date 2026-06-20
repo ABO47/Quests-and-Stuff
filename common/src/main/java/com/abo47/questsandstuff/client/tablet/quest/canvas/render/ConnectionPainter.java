@@ -413,15 +413,10 @@ final class ConnectionPainter {
         Map<String, CanvasPoint> centers = new HashMap<>();
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
-            double ecAngle = Math.toRadians(drawEc.rotation());
-            double ecCos = Math.cos(ecAngle);
-            double ecSin = Math.sin(ecAngle);
-            double ecOffsetX = ecBox.left() + ecBox.width() / 2.0;
-            double ecOffsetY = ecBox.top() + ecBox.height() / 2.0;
+            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
             centers.put(ec.id(), new CanvasPoint(
-                    (int) Math.round(ecBox.centerX() + ecOffsetX * ecCos - ecOffsetY * ecSin),
-                    (int) Math.round(ecBox.centerY() + ecOffsetX * ecSin + ecOffsetY * ecCos)
+                    (int) Math.round(ecBox.centerX()),
+                    (int) Math.round(ecBox.centerY())
             ));
         }
         return centers;

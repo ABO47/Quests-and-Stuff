@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
@@ -195,7 +196,7 @@ final class CanvasSelectionResizeController {
 
     private CanvasExclusiveChoice fitAndClampExclusiveChoice(CanvasExclusiveChoice ec) {
         CanvasExclusiveChoice fitted = fittedExclusiveChoiceIfGridLocked(ec);
-        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), 0, 0, fitted.rotation());
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), CanvasElementGeometry.defaultPivot(fitted.w()), CanvasElementGeometry.defaultPivot(fitted.h()), fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 }

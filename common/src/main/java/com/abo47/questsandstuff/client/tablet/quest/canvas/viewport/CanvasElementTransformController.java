@@ -213,8 +213,8 @@ public final class CanvasElementTransformController {
         state.canvas.resizingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceResizeHandleHit(state, ec, localX, localY);
         state.canvas.rotatingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceRotateHandleHit(state, ec, localX, localY);
         if (state.canvas.rotatingCanvasExclusiveChoice) {
-            state.canvas.canvasEcRotatePivotX = CanvasElementGeometry.logicalPivotX(ec.x(), ec.w(), 0);
-            state.canvas.canvasEcRotatePivotY = CanvasElementGeometry.logicalPivotY(ec.y(), ec.h(), 0);
+            state.canvas.canvasEcRotatePivotX = CanvasElementGeometry.logicalPivotX(ec.x(), ec.w(), ec.pivotX());
+            state.canvas.canvasEcRotatePivotY = CanvasElementGeometry.logicalPivotY(ec.y(), ec.h(), ec.pivotY());
             double logicalMouseX = CanvasGeometry.screenToLogicalX(state, localX);
             double logicalMouseY = CanvasGeometry.screenToLogicalY(state, localY);
             state.canvas.canvasEcRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasEcRotatePivotY, logicalMouseX - state.canvas.canvasEcRotatePivotX);
@@ -236,7 +236,7 @@ public final class CanvasElementTransformController {
         int dy = logicalY - state.canvas.canvasEcDragStartY;
         CanvasExclusiveChoice next = ec;
         if (state.canvas.draggingCanvasExclusiveChoice) {
-            CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, 0, 0, state.canvas.canvasEcStartRotation, dx, dy);
+            CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH), state.canvas.canvasEcStartRotation, dx, dy);
             next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
             next = fittedExclusiveChoiceIfGridLocked(next);
             next = applySmartSnapToExclusiveChoice(next, cards, group);
@@ -451,8 +451,8 @@ public final class CanvasElementTransformController {
                 state.canvas.canvasEcStartRotation,
                 8,
                 8,
-                0,
-                0,
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW),
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH),
                 1,
                 1,
                 TabletModifierKeys.shiftDown()
@@ -509,7 +509,7 @@ public final class CanvasElementTransformController {
 
     private CanvasExclusiveChoice fitAndClampExclusiveChoice(CanvasExclusiveChoice ec) {
         CanvasExclusiveChoice fitted = fittedExclusiveChoiceIfGridLocked(ec);
-        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), 0, 0, fitted.rotation());
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), CanvasElementGeometry.defaultPivot(fitted.w()), CanvasElementGeometry.defaultPivot(fitted.h()), fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 
@@ -533,7 +533,7 @@ public final class CanvasElementTransformController {
         CanvasExclusiveChoice preview = shouldFitRotatedPreview(ec.rotation())
                 ? fittedExclusiveChoiceIfGridLocked(ec)
                 : ec;
-        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), 0, 0, preview.rotation());
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, preview.x(), preview.y(), preview.w(), preview.h(), CanvasElementGeometry.defaultPivot(preview.w()), CanvasElementGeometry.defaultPivot(preview.h()), preview.rotation());
         return preview.moveTo(clamped.x, clamped.y);
     }
 

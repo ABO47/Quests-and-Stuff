@@ -217,7 +217,7 @@ final class TabletShortcutActions {
         for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
             if (ec != null) {
-                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, ec.x() + dx, ec.y() + dy, ec.w(), ec.h(), 0, 0, ec.rotation());
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, ec.x() + dx, ec.y() + dy, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.moveTo(point.x, point.y));
                 changed = true;
             }

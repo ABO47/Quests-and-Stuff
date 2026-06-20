@@ -306,7 +306,7 @@ final class CanvasSelectMoveClickActions {
             }
         }
         for (CanvasExclusiveChoice ec : ecs) {
-            int[] ecBounds = CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+            int[] ecBounds = CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
             if (ecBounds[0] < maxX && ecBounds[2] > minX && ecBounds[1] < maxY && ecBounds[3] > minY) {
                 state.canvas.canvasSelection.ecIds().add(ec.id());
                 state.canvas.canvasSelection.setPrimaryEcId(ec.id());
@@ -364,7 +364,7 @@ final class CanvasSelectMoveClickActions {
             case EXCLUSIVE_CHOICE -> {
                 for (CanvasExclusiveChoice ec : ecs) {
                     if (ec.id().equals(id)) {
-                        return CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
+                        return CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
                     }
                 }
             }
