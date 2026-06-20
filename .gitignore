@@ -34,8 +34,6 @@ local.properties
 .env.*
 .DS_Store
 Thumbs.db
-TODO.md
-TODO-UI.md
 temp/
 designs/
 plans/
