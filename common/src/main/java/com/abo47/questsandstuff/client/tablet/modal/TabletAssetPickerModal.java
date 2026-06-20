@@ -66,12 +66,19 @@ public final class TabletAssetPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        boolean soundPicker = (!ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget).isBlank()
-                || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets).isEmpty())
-                && state.pickers.assetBrowseDir != null && state.pickers.assetBrowseDir.startsWith("sounds");
+        boolean soundPicker = !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget).isBlank()
+                || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets).isEmpty();
         boolean blueprintPicker = isBlueprintPicker(state);
         boolean hudPicker = isHudBackgroundPicker(state);
         boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker;
+        boolean imagePicker = !state.modal.modalEcBackgroundTarget.isBlank()
+                || !state.modal.modalCanvasBackgroundTarget.isBlank()
+                || !state.modal.modalQuestCompletionHudBackgroundTarget.isBlank()
+                || !state.modal.modalCanvasImageTarget.isBlank()
+                || !state.questDetails.questDetailsAssetPickTarget.isBlank()
+                || !state.modal.modalChapterTarget.isBlank()
+                || isQuestBackgroundPicker(state)
+                || isHudBackgroundPicker(state);
         String title = blueprintPicker
                 ? "ui.questsandstuff.modal.blueprints"
                 : soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library";
@@ -81,10 +88,12 @@ public final class TabletAssetPickerModal {
         }
         String dir = state.pickers.assetBrowseDir == null ? "" : state.pickers.assetBrowseDir;
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.pickers.assetSearch));
-        if (!blueprintPicker) {
-            assets = assets.stream()
-                    .filter(entry -> !"blueprints".equals(entry.relativePath()) && !entry.relativePath().startsWith("blueprints/"))
-                    .toList();
+        if (soundPicker) {
+            assets = filterByKind(assets, AssetLibrary.AssetKind.SOUND);
+        } else if (blueprintPicker) {
+            assets = filterByKind(assets, AssetLibrary.AssetKind.BLUEPRINT);
+        } else if (imagePicker) {
+            assets = filterByKind(assets, AssetLibrary.AssetKind.IMAGE, AssetLibrary.AssetKind.GIF);
         }
 
         ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
@@ -429,6 +438,18 @@ public final class TabletAssetPickerModal {
 
     private static boolean isHudBackgroundPicker(TabletUiState state) {
         return hudElement(state) != null;
+    }
+
+    private static List<AssetLibrary.AssetEntry> filterByKind(List<AssetLibrary.AssetEntry> entries, AssetLibrary.AssetKind first, AssetLibrary.AssetKind second) {
+        return entries.stream()
+                .filter(e -> e.directory() || e.kind() == first || e.kind() == second)
+                .toList();
+    }
+
+    private static List<AssetLibrary.AssetEntry> filterByKind(List<AssetLibrary.AssetEntry> entries, AssetLibrary.AssetKind kind) {
+        return entries.stream()
+                .filter(e -> e.directory() || e.kind() == kind)
+                .toList();
     }
 
     private static QuestHudLayout.Element hudElement(TabletUiState state) {
