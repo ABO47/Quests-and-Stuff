@@ -83,7 +83,7 @@ final class ConnectionLayout {
                 if (connectedQuest == null) {
                     continue;
                 }
-                String edgeId = "ec:" + ec.id() + ":" + connectedQuestId;
+                String edgeId = CanvasConnectionAnimation.edgeKey(ec.id(), connectedQuestId);
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
@@ -105,7 +105,7 @@ final class ConnectionLayout {
                 if (prerequisiteQuest == null) {
                     continue;
                 }
-                String edgeId = "ep:" + prerequisiteQuestId + ":" + ec.id();
+                String edgeId = CanvasConnectionAnimation.edgeKey(prerequisiteQuestId, ec.id());
                 if (!rendered.add(edgeId)) {
                     continue;
                 }

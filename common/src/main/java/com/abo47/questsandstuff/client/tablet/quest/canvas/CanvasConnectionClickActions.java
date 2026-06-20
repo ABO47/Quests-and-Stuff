@@ -53,7 +53,7 @@ final class CanvasConnectionClickActions {
                         CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.quickConnectSourceQuestId);
                         CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                         CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                        CanvasConnectionAnimation.startIfNew(state, state.canvas.quickConnectSourceQuestId, ecHit.id());
+                        CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.quickConnectSourceQuestId);
                     }
                     state.canvas.quickConnectSourceQuestId = ecHit.id();
                     state.canvas.canvasSelection.selectOnlyEc(ecHit.id());
@@ -125,7 +125,7 @@ final class CanvasConnectionClickActions {
                 CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.connectSourceQuestId);
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                 CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                CanvasConnectionAnimation.startIfNew(state, state.canvas.connectSourceQuestId, ecHit.id());
+                CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.connectSourceQuestId);
             }
             state.canvas.connectSourceQuestId = "";
             state.canvas.connectSourceQuestIds.clear();
