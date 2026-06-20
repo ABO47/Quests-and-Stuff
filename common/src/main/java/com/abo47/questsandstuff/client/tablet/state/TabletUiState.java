@@ -233,6 +233,11 @@ public class TabletUiState {
         public int assetContextMenuH;
         public boolean assetRenameOpen;
         public String assetRenameDraft = "";
+        public String assetBrowseDirImage = "";
+        public String assetBrowseDirSound = "";
+        public String assetBrowseDirBlueprint = "";
+        public String assetPickerMode = "";
+        public boolean assetPickerSessionFresh = true;
         public String colorPickerTarget = "";
         public int colorDraft;
         public String colorHexDraft = "";
@@ -248,6 +253,17 @@ public class TabletUiState {
                 0xFFE8F4FF, 0xFFB7CFDF, 0xFF8EA5B7, 0xFF63D187,
                 0xFFE7B84B, 0xFFE06D6D, 0xFF53A6E8, 0xFF1D2730
         ));
+
+        public void saveBrowseDirForMode() {
+            String dir = assetBrowseDir;
+            if ("sound".equals(assetPickerMode)) {
+                assetBrowseDirSound = dir;
+            } else if ("blueprint".equals(assetPickerMode)) {
+                assetBrowseDirBlueprint = dir;
+            } else {
+                assetBrowseDirImage = dir;
+            }
+        }
     }
 
     public static final class CanvasState {

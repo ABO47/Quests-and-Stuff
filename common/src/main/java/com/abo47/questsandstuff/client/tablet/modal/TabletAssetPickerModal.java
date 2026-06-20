@@ -86,6 +86,19 @@ public final class TabletAssetPickerModal {
         if (blueprintPicker) {
             addBlueprintHeaderActions(modal, state, refresh, w);
         }
+        String currentMode = soundPicker ? "sound" : blueprintPicker ? "blueprint" : "image";
+        if (state.pickers.assetPickerSessionFresh) {
+            String saved = switch (currentMode) {
+                case "sound" -> state.pickers.assetBrowseDirSound;
+                case "blueprint" -> state.pickers.assetBrowseDirBlueprint;
+                default -> state.pickers.assetBrowseDirImage;
+            };
+            if (!saved.isEmpty()) {
+                state.pickers.assetBrowseDir = saved;
+            }
+            state.pickers.assetPickerSessionFresh = false;
+        }
+        state.pickers.assetPickerMode = currentMode;
         String dir = state.pickers.assetBrowseDir == null ? "" : state.pickers.assetBrowseDir;
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.pickers.assetSearch));
         if (soundPicker) {
@@ -164,6 +177,7 @@ public final class TabletAssetPickerModal {
         if (canGoBack) {
             modal.addWidget(WindowChrome.iconButton(backX, backY, backSize, backSize, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.pickers.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
+                state.pickers.saveBrowseDirForMode();
                 state.pickers.assetGridScroll = 0;
                 state.pickers.assetContextOpen = false;
                 refresh.run();
@@ -267,6 +281,7 @@ public final class TabletAssetPickerModal {
                 boolean doubleClick = click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("asset", relative));
                 if (entry.directory()) {
                     state.pickers.assetBrowseDir = relative;
+                    state.pickers.saveBrowseDirForMode();
                     state.pickers.assetGridScroll = 0;
                     state.pickers.assetContextOpen = false;
                 } else {
@@ -498,6 +513,7 @@ public final class TabletAssetPickerModal {
         actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", ModColors.INTERACTIVE, () -> {
             if (isDir) {
                 state.pickers.assetBrowseDir = state.pickers.assetContextFile;
+                state.pickers.saveBrowseDirForMode();
                 state.pickers.assetGridScroll = 0;
             } else {
                 state.pickers.assetSelected = state.pickers.assetContextFile;

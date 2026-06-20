@@ -30,6 +30,7 @@ public final class AssetPickerApplyActions {
     }
 
     public static void run(Player player, TabletUiState state, String background) {
+        state.pickers.saveBrowseDirForMode();
         String blueprintTarget = ModalTargetState.target(state, ModalSession.TargetSlot.BLUEPRINT, state.modal.modalBlueprintTarget);
         if (!blueprintTarget.isBlank()) {
             CanvasBlueprintController.beginPlacement(state, background);

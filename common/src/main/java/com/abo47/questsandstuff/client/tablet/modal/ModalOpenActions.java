@@ -268,6 +268,7 @@ public final class ModalOpenActions {
         state.modal.blueprintCodeDraft = "";
         state.modal.blueprintCodeMessage = "";
         state.pickers.assetBrowseDir = "";
+        state.pickers.assetPickerSessionFresh = true;
         ModalPickerStates.asset(state).reset();
     }
 

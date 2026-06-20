@@ -149,6 +149,7 @@ public final class TabletModalState {
         state.pickers.entityVariantScrollDragging = false;
         state.modal.modalQuestCompletionSoundTarget = "";
         state.modal.modalQuestCompletionSoundTargets.clear();
+        state.pickers.saveBrowseDirForMode();
         if (closingSoundPicker) {
             state.pickers.assetBrowseDir = "";
             state.pickers.assetSelected = "";
