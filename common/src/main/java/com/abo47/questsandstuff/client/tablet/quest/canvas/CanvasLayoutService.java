@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
@@ -94,7 +95,8 @@ public final class CanvasLayoutService {
             byQuestId.put(card.questId(), card);
         }
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, visibleCards, byQuestId, 1_000_000, 1_000_000);
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts, connectionKeys);
+        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroup, List.of());
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts, connectionKeys, exclusiveChoices);
         Map<String, Integer> layerIndexes = CanvasLayerOrdering.indexMap(layerOrder);
         visibleCards.sort(Comparator.comparingInt(card -> CanvasLayerOrdering.layerIndex(layerIndexes, CanvasLayerOrdering.questKey(card.questId()))));
         return visibleCards;
