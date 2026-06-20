@@ -17,9 +17,12 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 final class TabletAssets {
     private TabletAssets() {
@@ -100,7 +103,26 @@ final class TabletAssets {
                 chapterBackgroundTexture(background);
             }
         });
+        TabletUiPerfProfiler.profile("ui.prewarm.assetThumbnails", TabletAssets::prewarmAssetThumbnails);
         TabletUiPerfProfiler.profile("ui.prewarm.modLogo", TabletAssets::prewarmModLogo);
+    }
+
+    private static void prewarmAssetThumbnails() {
+        Path root = TabletLayout.ASSETS_ROOT_DIR;
+        if (!Files.exists(root)) {
+            return;
+        }
+        try (Stream<Path> walk = Files.walk(root)) {
+            walk.filter(Files::isRegularFile).forEach(path -> {
+                Path relative = root.relativize(path);
+                String rel = relative.toString().replace('\\', '/');
+                if (AssetLibrary.assetKind(rel).hasImageThumbnail()) {
+                    assetThumbnailTexture(rel);
+                }
+            });
+        } catch (Exception e) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] failed to prewarm asset thumbnails");
+        }
     }
 
     private static void prewarmModLogo() {
