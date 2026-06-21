@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
@@ -34,7 +35,7 @@ final class QuestObjectiveContextMenu {
         if (actions.isEmpty()) {
             return;
         }
-        int menuW = 140;
+        int menuW = ContextMenuSystem.CONTEXT_MENU_WIDTH;
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         int maxMenuH = Math.max(ContextMenuPanel.heightForRows(1), state.questDetails.questDetailsH - 8);

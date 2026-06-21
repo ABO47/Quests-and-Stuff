@@ -453,7 +453,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
 
     private int contextMenuW() {
         List<String> labels = contextActions().stream().map(ContextAction::label).toList();
-        return ContextMenuSystem.preferredMenuWidth(labels, 132, 172);
+        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
     }
 
     private static int contextMenuH(List<ContextAction> actions) {

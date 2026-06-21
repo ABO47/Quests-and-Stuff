@@ -10,9 +10,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRend
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -33,18 +33,11 @@ public final class CanvasContextMenuSupport {
     }
 
     public static int contextMenuWidth(List<ContextAction> actions, int maxAvailableWidth) {
-        List<String> labels = new ArrayList<>();
-        for (ContextAction action : ContextMenuPanel.rowActions(actions)) {
-            labels.add(action.label());
-        }
-        int maxWidth = Math.max(82, Math.min(156, maxAvailableWidth - 8));
-        int rowWidth = ContextMenuSystem.preferredMenuWidth(labels, 82, maxWidth);
-        int promotedWidth = ContextMenuPanel.promotedActions(actions).size() * ContextMenuPanel.PROMOTED_BUTTON + 8;
-        return Math.min(maxWidth, Math.max(rowWidth, promotedWidth));
+        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuWidth(TabletUiState state) {
-        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : 118;
+        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuSystem.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuHeight(int visibleRows) {

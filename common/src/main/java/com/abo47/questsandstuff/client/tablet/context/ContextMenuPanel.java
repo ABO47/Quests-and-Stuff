@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import static com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem.CONTEXT_MENU_WIDTH;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -314,7 +315,7 @@ public final class ContextMenuPanel {
             return;
         }
         int childVisibleRows = safeVisibleRows(childRows, childRows);
-        int childW = Math.min(preferredWidth(children, Math.min(112, parentMenuW), 168), Math.max(48, maxW - 8));
+        int childW = Math.min(CONTEXT_MENU_WIDTH, Math.max(48, maxW - 8));
         int childH = heightFor(children, childVisibleRows);
         int childX = submenuX(parentAbsoluteX, parentMenuW, childW, maxW);
         int desiredY = rowY - OUTER_PAD;

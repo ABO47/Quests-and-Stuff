@@ -6,12 +6,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import net.minecraft.client.resources.language.I18n;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public record ChapterContextMenuLayout(
         String target,
@@ -41,23 +36,7 @@ public record ChapterContextMenuLayout(
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
-        String target = resolveTarget(state);
-        boolean hasTarget = target != null && !target.isBlank();
-        List<String> labels = new ArrayList<>();
-        labels.add(tr("ui.questsandstuff.menu.new_chapter"));
-        if (hasTarget) {
-            labels.add(tr(QuestVocabulary.CONTEXT_VISIBILITY));
-            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_ICON));
-            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND));
-            labels.add(tr(QuestVocabulary.CONTEXT_MOVE_UP));
-            labels.add(tr(QuestVocabulary.CONTEXT_MOVE_DOWN));
-            labels.add(tr(QuestVocabulary.CONTEXT_CHANGE_VARIANT));
-            labels.add(tr(QuestVocabulary.CONTEXT_EDIT_MOTION));
-            labels.add(tr("ui.questsandstuff.menu.text_style"));
-            labels.add(tr("ui.questsandstuff.menu.remove_icon"));
-            labels.add(tr("ui.questsandstuff.menu.remove_card_bg"));
-        }
-        return ContextMenuSystem.preferredMenuWidth(labels, 82, Math.max(82, Math.min(136, maxAvailableWidth - 8)));
+        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
     }
 
     public boolean contains(int x, int y) {
@@ -121,7 +100,4 @@ public record ChapterContextMenuLayout(
         return ContextMenuPanel.heightForCounts(promotedCount, rowActionCount, rowActionCount);
     }
 
-    private static String tr(String key, Object... args) {
-        return I18n.get(key, args);
-    }
 }

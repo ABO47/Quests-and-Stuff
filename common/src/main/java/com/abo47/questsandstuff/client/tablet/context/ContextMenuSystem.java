@@ -26,7 +26,8 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 public final class ContextMenuSystem {
-    private static final int OUTER_PAD = 4;
+    public static final int CONTEXT_MENU_WIDTH = 108;
+    static final int OUTER_PAD = 4;
     private static final int ICON_X = 8;
     private static final int TEXT_X = 22;
     private static final int SUBMENU_PAD = 5;
