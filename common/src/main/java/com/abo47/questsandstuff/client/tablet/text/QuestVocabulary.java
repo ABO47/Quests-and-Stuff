@@ -77,6 +77,7 @@ public final class QuestVocabulary {
     public static final String XP_POINTS_CONSUME = "ui.questsandstuff.quest.xp.points_consume";
     public static final String XP_POINTS_MANUAL = "ui.questsandstuff.quest.xp.points_manual";
 
+    public static final String CONTEXT_BEHAVIOR = "ui.questsandstuff.context.behavior";
     public static final String CONTEXT_ADD_ENTITY = "ui.questsandstuff.context.add_entity";
     public static final String CONTEXT_ADD_ITEM = "ui.questsandstuff.context.add_item";
     public static final String CONTEXT_ADD_BLOCK = "ui.questsandstuff.context.add_block";

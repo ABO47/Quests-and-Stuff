@@ -172,7 +172,9 @@ public final class UiIconRegistry {
         preloadedRole("door-open", UiThemeManager.ROLE_ICON_WARNING);
         preloadedRole("user-round-x", UiThemeManager.ROLE_ICON_ERROR);
         preloadedRole("crown", UiThemeManager.ROLE_ICON_INTERACTIVE);
- 
+        preloadedRole("arrow-up-down", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        preloadedRole("wrench", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        
         registeredDefault("biome");
         registeredDefault("orbit");
         registeredDefault("scissors");
