@@ -105,6 +105,7 @@ final class CanvasViewportInputController {
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
             elementTransforms.updateExclusiveChoiceTransform(localX, localY, cards);
+            viewport.refreshCanvas();
             return true;
         }
 

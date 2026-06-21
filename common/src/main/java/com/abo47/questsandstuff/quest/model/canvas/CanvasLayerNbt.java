@@ -6,7 +6,9 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CanvasLayerNbt {
     private CanvasLayerNbt() {
@@ -162,6 +164,20 @@ public final class CanvasLayerNbt {
         if (!ec.background().isBlank()) {
             tag.putString("background", ec.background());
         }
+        if (!ec.connectionColors().isEmpty()) {
+            CompoundTag colors = new CompoundTag();
+            for (Map.Entry<String, Integer> entry : ec.connectionColors().entrySet()) {
+                colors.putInt(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_colors", colors);
+        }
+        if (!ec.connectionModes().isEmpty()) {
+            CompoundTag modes = new CompoundTag();
+            for (Map.Entry<String, String> entry : ec.connectionModes().entrySet()) {
+                modes.putString(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_modes", modes);
+        }
         return tag;
     }
 
@@ -178,6 +194,24 @@ public final class CanvasLayerNbt {
         List<String> connections = stringsFromListTag(tag.getList("connections", Tag.TAG_STRING));
         List<String> prerequisites = stringsFromListTag(tag.getList("prerequisites", Tag.TAG_STRING));
         String background = tag.contains("background", Tag.TAG_STRING) ? tag.getString("background") : "";
+        Map<String, Integer> connectionColors = new HashMap<>();
+        if (tag.contains("connection_colors", Tag.TAG_COMPOUND)) {
+            CompoundTag colors = tag.getCompound("connection_colors");
+            for (String key : colors.getAllKeys()) {
+                if (colors.contains(key, Tag.TAG_INT)) {
+                    connectionColors.put(key, colors.getInt(key));
+                }
+            }
+        }
+        Map<String, String> connectionModes = new HashMap<>();
+        if (tag.contains("connection_modes", Tag.TAG_COMPOUND)) {
+            CompoundTag modes = tag.getCompound("connection_modes");
+            for (String key : modes.getAllKeys()) {
+                if (modes.contains(key, Tag.TAG_STRING)) {
+                    connectionModes.put(key, modes.getString(key));
+                }
+            }
+        }
         return new CanvasExclusiveChoice(
                 id,
                 tag.getInt("x"),
@@ -187,7 +221,9 @@ public final class CanvasLayerNbt {
                 tag.getInt("rotation"),
                 connections,
                 prerequisites,
-                background
+                background,
+                connectionColors,
+                connectionModes
         );
     }
 

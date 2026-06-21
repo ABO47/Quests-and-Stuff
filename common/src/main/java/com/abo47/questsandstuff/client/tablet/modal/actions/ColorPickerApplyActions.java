@@ -70,10 +70,19 @@ public final class ColorPickerApplyActions {
     public static void apply(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
-            ConnectionRenderer.setConnectionColor(state, connection[0], connection[1], connection[2], color);
-            EditorCommandClient.runConnectionColorAction(player, connection[2], connection[1], color);
+            String group = connection[0];
+            String sourceId = connection[1];
+            String targetId = connection[2];
+            boolean isEc = ConnectionRenderer.isEcId(state, group, sourceId)
+                    || ConnectionRenderer.isEcId(state, group, targetId);
+            if (isEc) {
+                EditorCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
+            } else {
+                ConnectionRenderer.setConnectionColor(state, group, sourceId, targetId, color);
+                EditorCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
+            }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", connection[0], connection[1], connection[2], color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", group, sourceId, targetId, color);
             return;
         }
         String connectionSelection = connectionSelectionColorTarget(target);

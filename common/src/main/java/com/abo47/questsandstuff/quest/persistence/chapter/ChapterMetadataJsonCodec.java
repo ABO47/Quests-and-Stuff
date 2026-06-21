@@ -10,8 +10,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class ChapterMetadataJsonCodec {
     private ChapterMetadataJsonCodec() {
@@ -140,6 +142,8 @@ final class ChapterMetadataJsonCodec {
             List<String> connections = readStringArray(json.get("connections"));
             List<String> prerequisites = readStringArray(json.get("prerequisites"));
             String background = stringOr(json, "background", "");
+            Map<String, Integer> connectionColors = readIntMap(json.get("connection_colors"));
+            Map<String, String> connectionModes = readStringMap(json.get("connection_modes"));
             choices.add(new CanvasExclusiveChoice(
                     id,
                     intOr(json, "x", 0),
@@ -149,7 +153,9 @@ final class ChapterMetadataJsonCodec {
                     intOr(json, "rotation", 0),
                     connections,
                     prerequisites,
-                    background
+                    background,
+                    connectionColors,
+                    connectionModes
             ));
         }
         return choices;
@@ -171,6 +177,12 @@ final class ChapterMetadataJsonCodec {
             }
             if (!ec.background().isBlank()) {
                 json.addProperty("background", ec.background());
+            }
+            if (!ec.connectionColors().isEmpty()) {
+                json.add("connection_colors", writeIntMap(ec.connectionColors()));
+            }
+            if (!ec.connectionModes().isEmpty()) {
+                json.add("connection_modes", writeStringMap(ec.connectionModes()));
             }
             array.add(json);
         }
@@ -199,6 +211,53 @@ final class ChapterMetadataJsonCodec {
             }
         }
         return array;
+    }
+
+    static Map<String, Integer> readIntMap(JsonElement element) {
+        Map<String, Integer> map = new HashMap<>();
+        if (element == null || !element.isJsonObject()) {
+            return map;
+        }
+        JsonObject json = element.getAsJsonObject();
+        for (String key : json.keySet()) {
+            if (json.get(key).isJsonPrimitive() && json.get(key).getAsJsonPrimitive().isNumber()) {
+                map.put(key, json.get(key).getAsInt());
+            }
+        }
+        return map;
+    }
+
+    static JsonObject writeIntMap(Map<String, Integer> map) {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            json.addProperty(entry.getKey(), entry.getValue());
+        }
+        return json;
+    }
+
+    static Map<String, String> readStringMap(JsonElement element) {
+        Map<String, String> map = new HashMap<>();
+        if (element == null || !element.isJsonObject()) {
+            return map;
+        }
+        JsonObject json = element.getAsJsonObject();
+        for (String key : json.keySet()) {
+            if (json.get(key).isJsonPrimitive() && json.get(key).getAsJsonPrimitive().isString()) {
+                String value = json.get(key).getAsString();
+                if (!value.isBlank()) {
+                    map.put(key, value);
+                }
+            }
+        }
+        return map;
+    }
+
+    static JsonObject writeStringMap(Map<String, String> map) {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            json.addProperty(entry.getKey(), entry.getValue());
+        }
+        return json;
     }
 
     static String stripJsonExtension(String name) {

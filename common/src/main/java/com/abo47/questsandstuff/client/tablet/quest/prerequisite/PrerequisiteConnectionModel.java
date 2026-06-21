@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,13 +17,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice.DEFAULT_HEIGHT;
+import static com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice.DEFAULT_WIDTH;
+
 record PrerequisiteConnectionModel(
         String questId,
         CompoundTag questTag,
         String targetTitle,
         List<PrerequisiteConnectionRow> allRows,
         List<PrerequisiteConnectionRow> modeRows,
-        List<PrerequisiteConnectionRow> rows
+        List<PrerequisiteConnectionRow> rows,
+        boolean isExclusiveChoice,
+        int ecX,
+        int ecY,
+        int ecW,
+        int ecH
 ) {
     static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String group, String query, boolean externalMode) {
         String safeQuestId = safe(questId);
@@ -37,8 +46,32 @@ record PrerequisiteConnectionModel(
                 title,
                 List.copyOf(all),
                 List.copyOf(mode),
-                List.copyOf(visible)
+                List.copyOf(visible),
+                false,
+                0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT
         );
+    }
+
+    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String group, String query) {
+        if (ec == null) {
+            return new PrerequisiteConnectionModel("", new CompoundTag(), "", List.of(), List.of(), List.of(), false, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        }
+        String safeId = safe(ec.id());
+        CompoundTag tag = new CompoundTag();
+        tag.putString("quest_background", ec.background());
+        List<PrerequisiteConnectionRow> all = new ArrayList<>();
+        for (String questId : ec.prerequisiteQuestIds()) {
+            CompoundTag questTag = ClientQuestCache.quest(questId);
+            String title = questTitle(questId, questTag);
+            all.add(new PrerequisiteConnectionRow(questId, safeId, title, safeId, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.INCOMING));
+        }
+        for (String questId : ec.connectionQuestIds()) {
+            CompoundTag questTag = ClientQuestCache.quest(questId);
+            String title = questTitle(questId, questTag);
+            all.add(new PrerequisiteConnectionRow(safeId, questId, safeId, title, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.OUTGOING));
+        }
+        List<PrerequisiteConnectionRow> visible = filteredRows(all, query);
+        return new PrerequisiteConnectionModel(safeId, tag, safeId, List.copyOf(all), List.copyOf(all), List.copyOf(visible), true, ec.x(), ec.y(), ec.w(), ec.h());
     }
 
     PrerequisiteConnectionRow selectedRow(String key) {

@@ -3,17 +3,17 @@ package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -21,8 +21,10 @@ import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -53,14 +55,20 @@ public final class QuestPrerequisitesManagerModal {
         addHeader(modal, state, refresh, w);
         ModalLibraryLayout.Metrics layout = ModalLibraryLayout.calculate(w, h);
 
-        String questId = safe(state.modal.prerequisitesManagerQuestId);
-        CompoundTag questTag = ClientQuestCache.quest(questId);
         String group = TabletStateQueries.selectedGroupName(state);
-        PrerequisiteConnectionModel model = PrerequisiteConnectionModel.build(questId, questTag, group, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
+        PrerequisiteConnectionModel model;
+        if (state.modal.prerequisitesManagerEcMode) {
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
+            model = PrerequisiteConnectionModel.buildForEc(ec, group, state.modal.prerequisitesManagerSearch);
+        } else {
+            String questId = safe(state.modal.prerequisitesManagerQuestId);
+            CompoundTag questTag = ClientQuestCache.quest(questId);
+            model = PrerequisiteConnectionModel.build(questId, questTag, group, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
+        }
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
 
         PrerequisiteRowsPanel.add(modal, state, refresh, layout, w, h, model.questId(), model.rows());
-        addPreview(modal, state, model, layout, group, state.modal.prerequisitesManagerExternalMode);
+        addPreview(modal, state, model, layout, group, state.modal.prerequisitesManagerEcMode ? false : state.modal.prerequisitesManagerExternalMode);
 
         if (state.modal.prerequisitesManagerContextOpen && !state.modal.prerequisitesManagerContextPrerequisiteId.isBlank()) {
             addContextDismissLayer(modal, state, refresh, w, h);
@@ -72,21 +80,23 @@ public final class QuestPrerequisitesManagerModal {
     private static void addHeader(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
         modal.addWidget(label(8, 6, TabletVocabulary.text(QuestVocabulary.MODAL_CONNECTIONS_MANAGER), ModColors.TEXT_PRIMARY));
         int closeAnchorX = w - HEADER_CLOSE_ANCHOR_RIGHT_PAD;
-        int modeX = headerModeButtonX(w);
-        String labelKey = state.modal.prerequisitesManagerExternalMode ? QuestVocabulary.CONNECTIONS_MODE_EXTERNAL : QuestVocabulary.CONNECTIONS_MODE_LOCAL;
-        ButtonWidget mode = WindowChrome.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
-            state.modal.prerequisitesManagerExternalMode = !state.modal.prerequisitesManagerExternalMode;
-            state.modal.prerequisitesManagerScroll = 0;
-            state.modal.prerequisitesManagerContextOpen = false;
-            state.modal.prerequisitesManagerContextPrerequisiteId = "";
-            state.modal.prerequisitesManagerSelectedConnectionKey = "";
-            state.modal.prerequisitesManagerHoveredConnectionKey = "";
-            ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.modal.prerequisitesManagerExternalMode);
-            refresh.run();
-        });
-        mode.setHoverTooltips(new Component[]{Component.translatable(labelKey)});
-        modal.addWidget(mode);
+        if (!state.modal.prerequisitesManagerEcMode) {
+            int modeX = headerModeButtonX(w);
+            String labelKey = state.modal.prerequisitesManagerExternalMode ? QuestVocabulary.CONNECTIONS_MODE_EXTERNAL : QuestVocabulary.CONNECTIONS_MODE_LOCAL;
+            ButtonWidget mode = WindowChrome.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+                state.modal.prerequisitesManagerExternalMode = !state.modal.prerequisitesManagerExternalMode;
+                state.modal.prerequisitesManagerScroll = 0;
+                state.modal.prerequisitesManagerContextOpen = false;
+                state.modal.prerequisitesManagerContextPrerequisiteId = "";
+                state.modal.prerequisitesManagerSelectedConnectionKey = "";
+                state.modal.prerequisitesManagerHoveredConnectionKey = "";
+                ContextMenuState.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.modal.prerequisitesManagerExternalMode);
+                refresh.run();
+            });
+            mode.setHoverTooltips(new Component[]{Component.translatable(labelKey)});
+            modal.addWidget(mode);
+        }
         TabletModalPanel.addModalClose(modal, closeAnchorX, HEADER_CLOSE_ANCHOR_Y, HEADER_BUTTON_SIZE, state, refresh);
     }
 
@@ -177,9 +187,30 @@ public final class QuestPrerequisitesManagerModal {
         if (!PrerequisiteConnectionActions.canRemove(row)) {
             return;
         }
-        EditorCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
+        if (state.modal.prerequisitesManagerEcMode) {
+            removeEcConnection(player, state, row);
+        } else {
+            EditorCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
+        }
         PrerequisiteConnectionActions.clearAfterRemove(state, row);
         QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager action=remove_connection source={} target={}", row.sourceId(), row.targetId());
+    }
+
+    private static void removeEcConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
+        String group = TabletStateQueries.selectedGroupName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
+        if (ec == null) {
+            return;
+        }
+        CanvasExclusiveChoice updated;
+        if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
+            updated = ec.removePrerequisite(row.sourceId());
+        } else {
+            updated = ec.removeConnection(row.targetId());
+        }
+        if (updated != null && !updated.equals(ec)) {
+            CanvasElementStore.putCanvasExclusiveChoice(state, group, updated, true);
+        }
     }
 
     private static String safe(String value) {

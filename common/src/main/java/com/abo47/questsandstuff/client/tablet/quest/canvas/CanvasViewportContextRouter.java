@@ -71,6 +71,8 @@ final class CanvasViewportContextRouter {
             state.canvas.canvasSelection.textIds().add(textHit.id());
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.imageIds().clear();
+            state.canvas.canvasSelection.setPrimaryEcId("");
+            state.canvas.canvasSelection.ecIds().clear();
             state.canvas.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=text id={}", textHit.id());
         } else if (imageHit != null) {
@@ -80,6 +82,8 @@ final class CanvasViewportContextRouter {
             state.canvas.canvasSelection.imageIds().add(imageHit.id());
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.textIds().clear();
+            state.canvas.canvasSelection.setPrimaryEcId("");
+            state.canvas.canvasSelection.ecIds().clear();
             state.canvas.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=image id={}", imageHit.id());
         } else if (hit != null) {
@@ -88,6 +92,12 @@ final class CanvasViewportContextRouter {
                 state.canvas.canvasSelection.questIds().clear();
                 state.canvas.canvasSelection.questIds().add(hit.questId());
             }
+            state.canvas.canvasSelection.setPrimaryEcId("");
+            state.canvas.canvasSelection.ecIds().clear();
+            state.canvas.canvasSelection.setPrimaryImageId("");
+            state.canvas.canvasSelection.imageIds().clear();
+            state.canvas.canvasSelection.setPrimaryTextId("");
+            state.canvas.canvasSelection.textIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=quest quest={}", state.contextMenu.contextQuestId);
         } else if (edgeHit != null) {
             ContextMenuState.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());

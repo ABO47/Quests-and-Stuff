@@ -30,10 +30,12 @@ final class PrerequisitePreviewBuilder {
             return CanvasBlueprint.empty();
         }
 
+        boolean ecMode = model.isExclusiveChoice();
         Map<String, QuestDefinition> definitions = definitionsForPreview(model.questId(), focus, model.rows());
         Map<String, QuestPlacement> placements = placementsForPreview(group, model.questId(), definitions, model.rows(), externalMode);
         Map<String, Set<String>> prerequisitesByTarget = prerequisitesByTarget(model.rows());
         List<CanvasBlueprint.QuestEntry> entries = new ArrayList<>();
+        List<CanvasBlueprint.ExclusiveChoiceEntry> ecEntries = new ArrayList<>();
         List<String> order = new ArrayList<>();
         for (Map.Entry<String, QuestDefinition> entry : definitions.entrySet()) {
             String id = entry.getKey();
@@ -47,13 +49,18 @@ final class PrerequisitePreviewBuilder {
             entries.add(new CanvasBlueprint.QuestEntry(id, placement.group(), placement.x(), placement.y(), placement.scale(), withPrerequisites(entry.getValue(), prerequisitesByTarget.getOrDefault(id, Set.of()))));
             order.add(CanvasLayerOrdering.questKey(id));
         }
-        QuestPlacement focusPlacement = placements.get(model.questId());
-        if (focusPlacement != null) {
-            entries.add(new CanvasBlueprint.QuestEntry(model.questId(), focusPlacement.group(), focusPlacement.x(), focusPlacement.y(), focusPlacement.scale(), withPrerequisites(focus, prerequisitesByTarget.getOrDefault(model.questId(), Set.of()))));
-            order.add(CanvasLayerOrdering.questKey(model.questId()));
+        if (ecMode) {
+            ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(model.questId(), group, model.ecX(), model.ecY(), model.ecW(), model.ecH(), focus.display().questBackground(), prerequisitesByTarget.getOrDefault(model.questId(), Set.of())));
+            order.add(CanvasLayerOrdering.exclusiveChoiceKey(model.questId()));
+        } else {
+            QuestPlacement focusPlacement = placements.get(model.questId());
+            if (focusPlacement != null) {
+                entries.add(new CanvasBlueprint.QuestEntry(model.questId(), focusPlacement.group(), focusPlacement.x(), focusPlacement.y(), focusPlacement.scale(), withPrerequisites(focus, prerequisitesByTarget.getOrDefault(model.questId(), Set.of()))));
+                order.add(CanvasLayerOrdering.questKey(model.questId()));
+            }
         }
-        Origin origin = origin(entries);
-        return new CanvasBlueprint(focus.display().title(), origin.x(), origin.y(), entries, List.of(), List.of(), order);
+        Origin origin = origin(entries, ecEntries);
+        return new CanvasBlueprint(CanvasBlueprint.CURRENT_SCHEMA, focus.display().title(), origin.x(), origin.y(), entries, List.of(), List.of(), order, ecEntries);
     }
 
     private static Map<String, QuestDefinition> definitionsForPreview(String questId, QuestDefinition focus, List<PrerequisiteConnectionRow> rows) {
@@ -156,10 +163,14 @@ final class PrerequisitePreviewBuilder {
         );
     }
 
-    private static Origin origin(List<CanvasBlueprint.QuestEntry> entries) {
+    private static Origin origin(List<CanvasBlueprint.QuestEntry> entries, List<CanvasBlueprint.ExclusiveChoiceEntry> ecEntries) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (CanvasBlueprint.QuestEntry entry : entries) {
+            minX = Math.min(minX, entry.sourceX());
+            minY = Math.min(minY, entry.sourceY());
+        }
+        for (CanvasBlueprint.ExclusiveChoiceEntry entry : ecEntries) {
             minX = Math.min(minX, entry.sourceX());
             minY = Math.min(minY, entry.sourceY());
         }

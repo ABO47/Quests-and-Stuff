@@ -80,27 +80,6 @@ public final class CanvasLayerOrdering {
             String group,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
-            List<CanvasTextLayer> texts
-    ) {
-        return normalize(state, group, cards, images, texts, List.of(), List.of());
-    }
-
-    public static List<String> normalize(
-            TabletUiState state,
-            String group,
-            List<QuestCardLayout> cards,
-            List<CanvasImageLayer> images,
-            List<CanvasTextLayer> texts,
-            List<String> connectionKeys
-    ) {
-        return normalize(state, group, cards, images, texts, connectionKeys, List.of());
-    }
-
-    public static List<String> normalize(
-            TabletUiState state,
-            String group,
-            List<QuestCardLayout> cards,
-            List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts,
             List<String> connectionKeys,
             List<CanvasExclusiveChoice> exclusiveChoices
@@ -292,31 +271,23 @@ public final class CanvasLayerOrdering {
         if (order == null || order.isEmpty()) {
             return List.of();
         }
-        int firstQuestIndex = -1;
         List<String> result = new ArrayList<>();
-        List<String> delayedConnections = new ArrayList<>();
+        List<String> connections = new ArrayList<>();
         for (String key : order) {
             if (key == null || key.isBlank()) {
                 continue;
             }
-            if (firstQuestIndex >= 0 && key.startsWith(CONNECTION_PREFIX)) {
-                delayedConnections.add(key);
-                continue;
+            if (key.startsWith(CONNECTION_PREFIX)) {
+                connections.add(key);
+            } else {
+                result.add(key);
             }
-            if (firstQuestIndex < 0 && key.startsWith(QUEST_PREFIX)) {
-                firstQuestIndex = result.size();
-            }
-            result.add(key);
         }
-        if (delayedConnections.isEmpty()) {
+        if (connections.isEmpty()) {
             return order;
         }
-        if (firstQuestIndex < 0) {
-            result.addAll(delayedConnections);
-        } else {
-            result.addAll(firstQuestIndex, delayedConnections);
-        }
-        return result;
+        connections.addAll(result);
+        return connections;
     }
 
     private static int firstQuestIndex(List<String> order) {

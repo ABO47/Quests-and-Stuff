@@ -237,7 +237,7 @@ public final class CanvasSelectionActions {
 
     private static CanvasExclusiveChoice movedExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec, int offset, boolean verticalCenterLine) {
         CanvasPoint clamped = movedElementPosition(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), offset, verticalCenterLine);
-        return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background());
+        return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes());
     }
 
     private static CanvasPoint movedElementPosition(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotation, int offset, boolean verticalCenterLine) {

@@ -148,6 +148,7 @@ public class TabletUiState {
         public String prerequisitesManagerContextPrerequisiteId = "";
         public String prerequisitesManagerSelectedConnectionKey = "";
         public String prerequisitesManagerHoveredConnectionKey = "";
+        public boolean prerequisitesManagerEcMode;
         public int prerequisitesManagerContextX;
         public int prerequisitesManagerContextY;
         public int prerequisitesManagerContextMenuX;

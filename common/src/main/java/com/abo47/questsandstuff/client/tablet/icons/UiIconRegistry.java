@@ -110,6 +110,7 @@ public final class UiIconRegistry {
         preloaded("copy");
         preloadedRole("paste", UiThemeManager.ROLE_ICON_SUCCESS);
         preloadedRole("connect", UiThemeManager.ROLE_ICON_SUCCESS);
+        preloadedRole("share-2", UiThemeManager.ROLE_ICON_INTERACTIVE);
         preloaded("settings-2");
         preloaded("stat");
         preloaded("recipe");

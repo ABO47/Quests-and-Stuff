@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -123,5 +124,29 @@ public final class ConnectionRenderer {
 
     public static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
         ConnectionPainter.drawStaticChevrons(graphics, path, color, alpha, scale, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
+    public static CanvasExclusiveChoice findEc(TabletUiState state, String group, String id) {
+        return ConnectionStyleResolver.findEc(state, group, id);
+    }
+
+    public static boolean isEcId(TabletUiState state, String group, String id) {
+        return ConnectionStyleResolver.isEcId(state, group, id);
+    }
+
+    public static int ecConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.ecConnectionColor(state, group, sourceQuestId, targetQuestId);
+    }
+
+    public static boolean ecIsConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.ecIsConnectionDirect(state, group, sourceQuestId, targetQuestId);
+    }
+
+    public static void setEcConnectionColor(TabletUiState state, String group, String ecId, String questId, int color) {
+        ConnectionStateMutations.setEcConnectionColor(state, group, ecId, questId, color);
+    }
+
+    public static void setEcConnectionMode(TabletUiState state, String group, String ecId, String questId, boolean direct) {
+        ConnectionStateMutations.setEcConnectionMode(state, group, ecId, questId, direct);
     }
 }

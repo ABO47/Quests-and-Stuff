@@ -15,7 +15,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionLine
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
@@ -32,12 +31,10 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Quaternionf;
 
@@ -53,7 +50,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selec
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasSceneRenderer {
-    private static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/other/exclusive_choice.png"));
+    private static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE;
 
     private CanvasSceneRenderer() {
     }
@@ -368,22 +365,32 @@ final class CanvasSceneRenderer {
         });
     }
 
-    private static void renderCanvasExclusiveChoice(WidgetGroup canvasViewport, TabletUiState state, CanvasExclusiveChoice ec) {
-        canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+    private static void renderCanvasExclusiveChoice(
+            WidgetGroup canvasViewport,
+            TabletUiState state,
+            CanvasExclusiveChoice ec
+    ) {
+        CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+        int screenX = CanvasGeometry.screenX(state, drawEc.x());
+        int screenY = CanvasGeometry.screenY(state, drawEc.y());
+        int screenW = CanvasGeometry.screenX(state, drawEc.x() + drawEc.w()) - screenX;
+        int screenH = CanvasGeometry.screenY(state, drawEc.y() + drawEc.h()) - screenY;
+        WidgetGroup ecLayer = new WidgetGroup(screenX, screenY, screenW, screenH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-                int originX = getPositionX();
-                int originY = getPositionY();
-                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+                CanvasExclusiveChoice currentEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, currentEc.x(), currentEc.y(), currentEc.w(), currentEc.h(), currentEc.pivotX(), currentEc.pivotY(), currentEc.rotation());
                 int w = box.width();
                 int h = box.height();
                 int pivotX = -box.left();
                 int pivotY = -box.top();
+                double centerX = box.centerX() + getPositionX() - screenX;
+                double centerY = box.centerY() + getPositionY() - screenY;
                 graphics.pose().pushPose();
-                graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
-                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawEc.rotation())));
-                String bg = QuestDisplay.normalizeQuestBackground(drawEc.background());
+                graphics.pose().translate(centerX, centerY, 0.0f);
+                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(currentEc.rotation())));
+                String bg = QuestDisplay.normalizeQuestBackground(currentEc.background());
                 if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(bg)) {
                     IGuiTexture bgTexture = chapterBackgroundTexture(bg, false);
                     if (bgTexture != null) {
@@ -393,14 +400,15 @@ final class CanvasSceneRenderer {
                     EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, -pivotX, -pivotY, w, h);
                 }
                 graphics.pose().popPose();
-                if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+                if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, currentEc.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
+                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, getPositionX() - screenX, getPositionY() - screenY, currentEc.x(), currentEc.y(), currentEc.w(), currentEc.h(), currentEc.pivotX(), currentEc.pivotY(), currentEc.rotation());
                 }
             }
-        });
+        };
+        canvasViewport.addWidget(ecLayer);
     }
 
     private static void addSolidRect(WidgetGroup parent, int x, int y, int width, int height, int color) {

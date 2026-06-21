@@ -93,6 +93,14 @@ public final class EditorCommandClient {
         EditorCanvasCommandClient.runConnectionHiddenAction(player, questId, prerequisiteId, hidden);
     }
 
+    public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
+        EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
+    }
+
+    public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
+        EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, direct);
+    }
+
     public static void runQuestIconAction(Player player, String questId, String icon) {
         EditorQuestCommandClient.runQuestIconAction(player, questId, icon);
     }

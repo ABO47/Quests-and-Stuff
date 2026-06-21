@@ -18,7 +18,9 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public record CanvasBlueprint(
         int schema,
@@ -28,7 +30,8 @@ public record CanvasBlueprint(
         List<QuestEntry> quests,
         List<CanvasImageLayer> images,
         List<CanvasTextLayer> texts,
-        List<String> layerOrder
+        List<String> layerOrder,
+        List<ExclusiveChoiceEntry> exclusiveChoices
 ) {
     public static final int CURRENT_SCHEMA = 1;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -40,18 +43,19 @@ public record CanvasBlueprint(
         images = images == null ? List.of() : List.copyOf(images);
         texts = texts == null ? List.of() : List.copyOf(texts);
         layerOrder = layerOrder == null ? List.of() : List.copyOf(layerOrder);
+        exclusiveChoices = exclusiveChoices == null ? List.of() : List.copyOf(exclusiveChoices);
     }
 
     public CanvasBlueprint(String name, int originX, int originY, List<QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> layerOrder) {
-        this(CURRENT_SCHEMA, name, originX, originY, quests, images, texts, layerOrder);
+        this(CURRENT_SCHEMA, name, originX, originY, quests, images, texts, layerOrder, List.of());
     }
 
     public boolean isEmpty() {
-        return quests.isEmpty() && images.isEmpty() && texts.isEmpty();
+        return quests.isEmpty() && images.isEmpty() && texts.isEmpty() && exclusiveChoices.isEmpty();
     }
 
     public int contentCount() {
-        return quests.size() + images.size() + texts.size();
+        return quests.size() + images.size() + texts.size() + exclusiveChoices.size();
     }
 
     public CompoundTag toPacketTag() {
@@ -83,8 +87,44 @@ public record CanvasBlueprint(
         tag.put("quests", questTags);
         tag.put("images", CanvasLayerNbt.imagesToListTag(images));
         tag.put("texts", CanvasLayerNbt.textsToListTag(texts));
+        tag.put("exclusive_choices", exclusiveChoicesToListTag(exclusiveChoices));
         tag.put("layer_order", CanvasLayerNbt.stringsToListTag(layerOrder));
         return tag;
+    }
+
+    private static ListTag exclusiveChoicesToListTag(List<ExclusiveChoiceEntry> entries) {
+        ListTag list = new ListTag();
+        for (ExclusiveChoiceEntry entry : entries) {
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putString("source_id", entry.sourceId());
+            entryTag.putString("source_group", entry.sourceGroup());
+            entryTag.putInt("source_x", entry.sourceX());
+            entryTag.putInt("source_y", entry.sourceY());
+            entryTag.putInt("source_w", entry.sourceW());
+            entryTag.putInt("source_h", entry.sourceH());
+            entryTag.putString("background", entry.background());
+            entryTag.put("prerequisites", CanvasLayerNbt.stringsToListTag(List.copyOf(entry.prerequisites())));
+            list.add(entryTag);
+        }
+        return list;
+    }
+
+    private static List<ExclusiveChoiceEntry> exclusiveChoicesFromListTag(ListTag list) {
+        List<ExclusiveChoiceEntry> entries = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag entryTag = list.getCompound(i);
+            entries.add(new ExclusiveChoiceEntry(
+                    entryTag.getString("source_id"),
+                    entryTag.getString("source_group"),
+                    entryTag.getInt("source_x"),
+                    entryTag.getInt("source_y"),
+                    entryTag.getInt("source_w"),
+                    entryTag.getInt("source_h"),
+                    entryTag.getString("background"),
+                    Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING)))
+            ));
+        }
+        return entries;
     }
 
     public static CanvasBlueprint fromPacketTag(CompoundTag tag) {
@@ -116,7 +156,8 @@ public record CanvasBlueprint(
                 quests,
                 CanvasLayerNbt.imagesFromListTag(tag.getList("images", Tag.TAG_COMPOUND)),
                 CanvasLayerNbt.textsFromListTag(tag.getList("texts", Tag.TAG_COMPOUND)),
-                CanvasLayerNbt.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING))
+                CanvasLayerNbt.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING)),
+                exclusiveChoicesFromListTag(tag.getList("exclusive_choices", Tag.TAG_COMPOUND))
         );
     }
 
@@ -146,6 +187,7 @@ public record CanvasBlueprint(
         root.add("quests", questArray);
         root.add("images", imagesToJson(images));
         root.add("texts", textsToJson(texts));
+        root.add("exclusive_choices", exclusiveChoicesToJson(exclusiveChoices));
         JsonArray order = new JsonArray();
         for (String key : layerOrder) {
             if (key != null && !key.isBlank()) {
@@ -154,6 +196,27 @@ public record CanvasBlueprint(
         }
         root.add("layer_order", order);
         return GSON.toJson(root);
+    }
+
+    private static JsonArray exclusiveChoicesToJson(List<ExclusiveChoiceEntry> entries) {
+        JsonArray array = new JsonArray();
+        for (ExclusiveChoiceEntry entry : entries) {
+            JsonObject obj = new JsonObject();
+            obj.addProperty("source_id", entry.sourceId());
+            obj.addProperty("source_group", entry.sourceGroup());
+            obj.addProperty("source_x", entry.sourceX());
+            obj.addProperty("source_y", entry.sourceY());
+            obj.addProperty("source_w", entry.sourceW());
+            obj.addProperty("source_h", entry.sourceH());
+            obj.addProperty("background", entry.background());
+            JsonArray prereqs = new JsonArray();
+            for (String p : entry.prerequisites()) {
+                prereqs.add(p);
+            }
+            obj.add("prerequisites", prereqs);
+            array.add(obj);
+        }
+        return array;
     }
 
     public static CanvasBlueprint fromJson(String raw) {
@@ -206,7 +269,8 @@ public record CanvasBlueprint(
                     quests,
                     imagesFromJson(array(root, "images")),
                     textsFromJson(array(root, "texts")),
-                    order
+                    order,
+                    exclusiveChoicesFromJson(array(root, "exclusive_choices"))
             );
         } catch (RuntimeException exception) {
             QuestsAndStuffMod.LOGGER.warn(
@@ -219,7 +283,36 @@ public record CanvasBlueprint(
     }
 
     public static CanvasBlueprint empty() {
-        return new CanvasBlueprint(CURRENT_SCHEMA, "", 0, 0, List.of(), List.of(), List.of(), List.of());
+        return new CanvasBlueprint(CURRENT_SCHEMA, "", 0, 0, List.of(), List.of(), List.of(), List.of(), List.of());
+    }
+
+    private static List<ExclusiveChoiceEntry> exclusiveChoicesFromJson(JsonArray array) {
+        List<ExclusiveChoiceEntry> entries = new ArrayList<>();
+        for (JsonElement element : array) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject obj = element.getAsJsonObject();
+            JsonArray prereqs = array(obj, "prerequisites");
+            Set<String> prerequisiteSet = new LinkedHashSet<>();
+            for (JsonElement p : prereqs) {
+                String value = stringValue(p, "prerequisites");
+                if (!value.isBlank()) {
+                    prerequisiteSet.add(value);
+                }
+            }
+            entries.add(new ExclusiveChoiceEntry(
+                    string(obj, "source_id"),
+                    string(obj, "source_group"),
+                    integer(obj, "source_x", 0, "ec:" + string(obj, "source_id")),
+                    integer(obj, "source_y", 0, "ec:" + string(obj, "source_id")),
+                    integer(obj, "source_w", 79, "ec:" + string(obj, "source_id")),
+                    integer(obj, "source_h", 79, "ec:" + string(obj, "source_id")),
+                    string(obj, "background"),
+                    prerequisiteSet
+            ));
+        }
+        return entries;
     }
 
     private static QuestDefinition definitionFromNbt(Tag tag) {
@@ -434,6 +527,25 @@ public record CanvasBlueprint(
                 scale = 1.0f;
             }
             scale = Math.max(0.5f, scale);
+        }
+    }
+
+    public record ExclusiveChoiceEntry(
+            String sourceId,
+            String sourceGroup,
+            int sourceX,
+            int sourceY,
+            int sourceW,
+            int sourceH,
+            String background,
+            Set<String> prerequisites
+    ) {
+        public ExclusiveChoiceEntry {
+            sourceId = sourceId == null ? "" : sourceId.trim();
+            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceW = Math.max(1, sourceW);
+            sourceH = Math.max(1, sourceH);
+            prerequisites = prerequisites == null ? Set.of() : Set.copyOf(prerequisites);
         }
     }
 }

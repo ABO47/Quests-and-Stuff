@@ -24,12 +24,9 @@ import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -200,14 +197,10 @@ final class CanvasContextQuestActions {
     }
 
     private static void addQuestPrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
-        int connectionCount = prerequisiteCount(questTag) + outgoingConnectionCount(state.contextMenu.contextQuestId);
-        if (connectionCount <= 0) {
-            return;
-        }
-        actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "share-2", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openPrerequisitesManager(state, state.contextMenu.contextQuestId);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={} connections={}", state.contextMenu.contextQuestId, connectionCount);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={}", state.contextMenu.contextQuestId);
             canvasViewport.refresh();
         }));
     }
@@ -219,40 +212,6 @@ final class CanvasContextQuestActions {
         if (!visibilityActions.isEmpty()) {
             actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_VISIBILITY), "eye", ModColors.INTERACTIVE, visibilityActions));
         }
-    }
-
-    private static int prerequisiteCount(CompoundTag questTag) {
-        if (questTag == null) {
-            return 0;
-        }
-        return questTag.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING).size();
-    }
-
-    private static int outgoingConnectionCount(String questId) {
-        if (questId == null || questId.isBlank()) {
-            return 0;
-        }
-        int count = 0;
-        for (var entry : ClientQuestCache.questEntries()) {
-            if (questId.equals(entry.getKey()) || !hasPrerequisite(entry.getValue(), questId)) {
-                continue;
-            }
-            count++;
-        }
-        return count;
-    }
-
-    private static boolean hasPrerequisite(CompoundTag questTag, String prerequisiteId) {
-        if (questTag == null || prerequisiteId == null || prerequisiteId.isBlank()) {
-            return false;
-        }
-        ListTag prerequisites = questTag.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
-        for (int i = 0; i < prerequisites.size(); i++) {
-            if (prerequisiteId.equals(prerequisites.getString(i))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
@@ -28,27 +29,55 @@ final class CanvasContextEdgeActions {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.EDGE || state.contextMenu.contextEdgeSource.isBlank() || state.contextMenu.contextEdgeTarget.isBlank()) {
             return;
         }
-        boolean direct = CanvasRenderer.isConnectionDirect(state, selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+        String sourceId = state.contextMenu.contextEdgeSource;
+        String targetId = state.contextMenu.contextEdgeTarget;
+        boolean isEcEdge = ConnectionRenderer.isEcId(state, selectedGroup, sourceId)
+                || ConnectionRenderer.isEcId(state, selectedGroup, targetId);
+        if (isEcEdge) {
+            addEcEdgeActions(actions, canvasViewport, state, player, selectedGroup, sourceId, targetId);
+        } else {
+            addQuestEdgeActions(actions, canvasViewport, state, player, selectedGroup, sourceId, targetId);
+        }
+        addConnectionLayerActions(actions, canvasViewport, state, selectedGroup);
+    }
+
+    private static void addQuestEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup, String sourceId, String targetId) {
+        boolean direct = CanvasRenderer.isConnectionDirect(state, selectedGroup, sourceId, targetId);
         actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ModColors.INTERACTIVE, () -> {
-            EditorCommandClient.runConnectionModeAction(player, state.contextMenu.contextEdgeTarget, state.contextMenu.contextEdgeSource, direct);
+            EditorCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_connection_mode source={} target={} direct={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, !direct);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
             canvasViewport.refresh();
         }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
-            int color = CanvasRenderer.connectionColor(state, selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
-            ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget), color);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+            int color = CanvasRenderer.connectionColor(state, selectedGroup, sourceId, targetId);
+            ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, sourceId, targetId), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
-        boolean hidden = CanvasRenderer.isConnectionHidden(state, selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+        boolean hidden = CanvasRenderer.isConnectionHidden(state, selectedGroup, sourceId, targetId);
         actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ModColors.INTERACTIVE : ModColors.WARNING, () -> {
-            EditorCommandClient.runConnectionHiddenAction(player, state.contextMenu.contextEdgeTarget, state.contextMenu.contextEdgeSource, !hidden);
+            EditorCommandClient.runConnectionHiddenAction(player, targetId, sourceId, !hidden);
             ContextMenuState.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, !hidden);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
             canvasViewport.refresh();
         }));
-        addConnectionLayerActions(actions, canvasViewport, state, selectedGroup);
+    }
+
+    private static void addEcEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup, String sourceId, String targetId) {
+        boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, selectedGroup, sourceId, targetId);
+        actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ModColors.INTERACTIVE, () -> {
+            EditorCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
+            ContextMenuState.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_ec_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
+            canvasViewport.refresh();
+        }));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
+            int color = ConnectionRenderer.ecConnectionColor(state, selectedGroup, sourceId, targetId);
+            ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, sourceId, targetId), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
+            canvasViewport.refresh();
+        }));
     }
 
     private static void addConnectionLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {

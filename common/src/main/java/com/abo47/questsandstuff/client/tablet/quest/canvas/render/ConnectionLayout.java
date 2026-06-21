@@ -91,13 +91,15 @@ final class ConnectionLayout {
                         && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
                     continue;
                 }
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, ec.id(), connectedQuestId);
+                int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
                 lines.add(new ConnectionLine(
                         edgeId, ec.id(), connectedQuestId,
                         ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
                         connectedQuest.centerX(), connectedQuest.centerY(),
-                        true, false, ModColors.TEXT_SECONDARY, false, 245
+                        direct, false, color, false, 245
                 ));
             }
             for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
@@ -113,13 +115,15 @@ final class ConnectionLayout {
                         && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
                     continue;
                 }
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, prerequisiteQuestId, ec.id());
+                int color = ConnectionStyleResolver.ecConnectionColor(state, group, prerequisiteQuestId, ec.id());
                 lines.add(new ConnectionLine(
                         edgeId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
                         ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
                         ecCenterX, ecCenterY,
-                        true, false, ModColors.TEXT_SECONDARY, false, 245
+                        direct, false, color, false, 245
                 ));
             }
         }

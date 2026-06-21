@@ -22,6 +22,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterB
 
 public final class QuestCardBackgroundRenderer {
     public static final ResourceLocation DEFAULT_QUEST_BACKGROUND_TEXTURE = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
+    public static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/other/exclusive_choice.png"));
 
     private QuestCardBackgroundRenderer() {
     }

@@ -153,10 +153,12 @@ public final class CanvasViewport extends WidgetGroup {
 
     boolean selectionDragPreviewSupported() {
         return !state.canvas.canvasSelection.questIds().isEmpty()
+                || !state.canvas.canvasSelection.primaryEcId().isBlank()
                 || !state.canvas.canvasSelection.primaryImageId().isBlank()
                 || !state.canvas.canvasSelection.primaryTextId().isBlank()
                 || !state.canvas.canvasSelection.imageIds().isEmpty()
-                || !state.canvas.canvasSelection.textIds().isEmpty();
+                || !state.canvas.canvasSelection.textIds().isEmpty()
+                || !state.canvas.canvasSelection.ecIds().isEmpty();
     }
 
     boolean previewSelectionDrag() {

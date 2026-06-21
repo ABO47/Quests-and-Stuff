@@ -109,6 +109,22 @@ public final class ModalOpenActions {
     public static void openPrerequisitesManager(TabletUiState state, String questId) {
         openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
             state.modal.prerequisitesManagerQuestId = clean(questId).trim();
+            state.modal.prerequisitesManagerEcMode = false;
+            ModalPickerStates.prerequisitesManager(state).reset();
+            state.modal.prerequisitesManagerExternalMode = false;
+            state.modal.prerequisitesManagerContextOpen = false;
+            state.modal.prerequisitesManagerContextPrerequisiteId = "";
+            state.modal.prerequisitesManagerSelectedConnectionKey = "";
+            state.modal.prerequisitesManagerHoveredConnectionKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuState.close(state);
+        });
+    }
+
+    public static void openPrerequisitesManagerForEc(TabletUiState state, String ecId) {
+        openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
+            state.modal.prerequisitesManagerQuestId = clean(ecId).trim();
+            state.modal.prerequisitesManagerEcMode = true;
             ModalPickerStates.prerequisitesManager(state).reset();
             state.modal.prerequisitesManagerExternalMode = false;
             state.modal.prerequisitesManagerContextOpen = false;

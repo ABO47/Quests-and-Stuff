@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -31,7 +32,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 final class CanvasContextElementActions {
@@ -160,6 +160,7 @@ final class CanvasContextElementActions {
             }));
         }
         addExclusiveChoiceConnectedQuestActions(actions, canvasViewport, state, selectedGroup);
+        addExclusiveChoicePrerequisiteActions(actions, canvasViewport, state, selectedGroup);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
         if (ec != null) {
             actions.add(ContextActions.action(
@@ -189,6 +190,23 @@ final class CanvasContextElementActions {
                     canvasViewport.refresh();
                 }
         ));
+    }
+
+    private static void addExclusiveChoicePrerequisiteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
+        if (ec == null) {
+            return;
+        }
+        int connectionCount = ec.connectionQuestIds().size() + ec.prerequisiteQuestIds().size();
+        if (connectionCount <= 0) {
+            return;
+        }
+        actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_PREREQUISITES_MANAGER), "share-2", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openPrerequisitesManagerForEc(state, ec.id());
+            ContextMenuState.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager ec={} connections={}", state.contextMenu.contextCanvasExclusiveChoiceId, connectionCount);
+            canvasViewport.refresh();
+        }));
     }
 
     private static void addLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup, String layerKey, String targetName, String targetId) {

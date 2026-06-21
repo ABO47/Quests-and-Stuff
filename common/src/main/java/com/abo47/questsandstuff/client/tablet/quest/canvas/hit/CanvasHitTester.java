@@ -133,7 +133,7 @@ public final class CanvasHitTester {
                         ecCenterY,
                         connectedQuest.centerX(),
                         connectedQuest.centerY(),
-                        true
+                        ConnectionRenderer.ecIsConnectionDirect(state, group, ec.id(), connectedQuest.questId())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new EdgeHit(ec.id(), connectedQuest.questId());
@@ -152,7 +152,7 @@ public final class CanvasHitTester {
                         prerequisiteQuest.centerY(),
                         ecCenterX,
                         ecCenterY,
-                        true
+                        ConnectionRenderer.ecIsConnectionDirect(state, group, prerequisiteQuest.questId(), ec.id())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new EdgeHit(prerequisiteQuest.questId(), ec.id());

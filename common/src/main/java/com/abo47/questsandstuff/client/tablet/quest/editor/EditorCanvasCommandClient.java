@@ -3,7 +3,9 @@ package com.abo47.questsandstuff.client.tablet.quest.editor;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -187,5 +189,33 @@ final class EditorCanvasCommandClient {
                     CompoundTag payload = EditorCommandPayloads.connectionHidden(questId, prerequisiteId, hidden);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_HIDDEN, payload);
                 });
+    }
+
+    private static String resolveEcId(TabletUiState state, String group, String idA, String idB) {
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idA) != null) return idA;
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idB) != null) return idB;
+        return "";
+    }
+
+    private static String resolveQuestId(String ecId, String idA, String idB) {
+        return idA.equals(ecId) ? idB : idA;
+    }
+
+    static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank()) return;
+        String ecId = resolveEcId(state, group, sourceId, targetId);
+        if (ecId.isBlank()) return;
+        String questId = resolveQuestId(ecId, sourceId, targetId);
+        ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color);
+    }
+
+    static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank()) return;
+        String ecId = resolveEcId(state, group, sourceId, targetId);
+        if (ecId.isBlank()) return;
+        String questId = resolveQuestId(ecId, sourceId, targetId);
+        ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct);
     }
 }
