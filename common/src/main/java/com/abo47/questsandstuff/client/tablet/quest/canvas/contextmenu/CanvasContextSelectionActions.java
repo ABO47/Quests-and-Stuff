@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -26,6 +27,7 @@ import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
@@ -52,9 +54,6 @@ final class CanvasContextSelectionActions {
         }
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             ContextMenuState.closeExclusiveSubmenus(state);
-            if (selectionSupportsGizmo(state, selectedGroup)) {
-                CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
-            }
             addBatchQuestActions(actions, canvasViewport, state, player);
             addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
@@ -65,6 +64,9 @@ final class CanvasContextSelectionActions {
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
                     canvasViewport.refresh();
                 }));
+            }
+            if (selectionSupportsGizmo(state, selectedGroup)) {
+                CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
         }
         List<CanvasContextMenuController.EdgeRef> connectedEdges = CanvasContextMenuController.selectedConnectedEdges(state, selectedGroup);
@@ -77,6 +79,7 @@ final class CanvasContextSelectionActions {
                 canvasViewport.refresh();
             }));
         }
+        addSelectionCopyAndDeleteActions(actions, canvasViewport, state, player);
     }
 
     private static boolean selectionSupportsGizmo(TabletUiState state, String selectedGroup) {
@@ -142,6 +145,82 @@ final class CanvasContextSelectionActions {
                 canvasViewport.refresh();
             }));
         }
+        addBatchMiscActions(actions, canvasViewport, state, player, targets, first);
+    }
+
+    private static void addBatchMiscActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, List<String> targets, CompoundTag first) {
+        boolean repeatable = first.getBoolean("repeatable");
+        String hiddenMode = first.getString("hidden_mode");
+        String locked = QuestVisibilityMode.LOCKED.serializedName();
+        String prerequisitesVisible = QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName();
+        boolean lockUntilUnlocked = locked.equals(hiddenMode);
+        boolean hidden = first.getBoolean("visual_hidden");
+        List<ContextAction> behaviorActions = new ArrayList<>();
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(repeatable ? QuestVocabulary.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestVocabulary.CONTEXT_MAKE_QUEST_REPEATABLE),
+                repeatable ? "repeat-off" : "repeat",
+                repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                () -> {
+                    ContextMenuState.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorCommandClient.setQuestRepeatable(player, questId, !repeatable);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_repeatable quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(lockUntilUnlocked ? QuestVocabulary.CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED : QuestVocabulary.CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED),
+                lockUntilUnlocked ? "unlock_quest" : "lock_quest",
+                lockUntilUnlocked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
+                () -> {
+                    ContextMenuState.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorCommandClient.setQuestHiddenMode(player, questId, lockUntilUnlocked ? prerequisitesVisible : locked);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_lock quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(hidden ? QuestVocabulary.CONTEXT_REVEAL_QUEST : QuestVocabulary.CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED),
+                hidden ? "eye" : "eye-off",
+                hidden ? ModColors.SUCCESS : ModColors.WARNING,
+                () -> {
+                    ContextMenuState.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorCommandClient.setQuestVisualHidden(player, questId, !hidden);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_hide quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_BEHAVIOR), "wrench", ModColors.INTERACTIVE, behaviorActions));
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
+            ContextMenuState.clearDeleteConfirm(state);
+            for (String questId : targets) {
+                EditorCommandClient.resetQuestProgress(player, questId);
+            }
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_reset_quest quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+        if (selectionHasQuestBackground(targets)) {
+            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_background"), "delete", ModColors.WARNING, () -> {
+                ContextMenuState.clearDeleteConfirm(state);
+                for (String questId : targets) {
+                    EditorCommandClient.setQuestBackground(player, questId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                }
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_quest_background quests={}", targets.size());
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static boolean selectionHasQuestBackground(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestCache.quest(questId);
+            if (quest != null && !QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(quest.getString("quest_background")))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static CompoundTag firstQuest(List<String> questIds) {
@@ -181,6 +260,23 @@ final class CanvasContextSelectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=selection count={}", selection.size());
             canvasViewport.refresh();
         }));
+    }
+
+    private static void addSelectionCopyAndDeleteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+        if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
+            actions.add(ContextActions.copy(() -> {
+                CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
+                ContextMenuState.clearDeleteConfirm(state);
+                canvasViewport.refresh();
+            }));
+        }
+        if (CanvasContextDeleteController.canDeleteContext(state)) {
+            String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
+            actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
+                CanvasContextDeleteController.runDeleteAction(player, state);
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void addSelectionAlignmentActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player) {
