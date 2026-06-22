@@ -13,7 +13,13 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import net.minecraft.client.resources.language.I18n;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -158,7 +164,41 @@ public final class QuestPrerequisitesManagerModal {
             state.modal.prerequisitesManagerContextOpen = false;
             return;
         }
-        List<ContextAction> actions = List.of(ContextActions.warningDelete(
+        List<ContextAction> actions = new java.util.ArrayList<>();
+        String group = TabletStateQueries.selectedGroupName(state);
+        String sourceId = row.sourceId();
+        String targetId = row.targetId();
+        if (!row.exclusiveChoice()) {
+            boolean direct = CanvasRenderer.isConnectionDirect(state, group, sourceId, targetId);
+            actions.add(new ContextAction(
+                    direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
+                    "connect", ModColors.INTERACTIVE, () -> {
+                EditorCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
+                ContextMenuState.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_connection_mode source={} target={}", sourceId, targetId);
+                refresh.run();
+            }));
+        } else {
+            boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, group, sourceId, targetId);
+            actions.add(new ContextAction(
+                    direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
+                    "connect", ModColors.INTERACTIVE, () -> {
+                EditorCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
+                ContextMenuState.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_ec_connection_mode source={} target={}", sourceId, targetId);
+                refresh.run();
+            }));
+        }
+        int connectionColor = CanvasRenderer.connectionColor(state, group, sourceId, targetId);
+        actions.add(new ContextAction(
+                I18n.get("ui.questsandstuff.context.connection_color"),
+                "style_color", ModColors.INTERACTIVE, () -> {
+            ModalOpenActions.openColorPicker(state, ModalTargets.connection(group, sourceId, targetId), connectionColor);
+            ContextMenuState.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
+            refresh.run();
+        }));
+        actions.add(ContextActions.warningDelete(
                 state,
                 "connection:remove:" + row.key(),
                 TabletVocabulary.text(QuestVocabulary.PREREQUISITES_REMOVE_CONNECTION),
