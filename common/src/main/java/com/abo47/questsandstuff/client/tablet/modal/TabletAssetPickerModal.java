@@ -526,15 +526,15 @@ public final class TabletAssetPickerModal {
                     TabletBlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
+            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
+        }
+        if (!isDir) {
             String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
             actions.add(ContextActions.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
                 deleteAssetFile(state.pickers.assetContextFile);
                 state.pickers.assetContextOpen = false;
                 state.pickers.assetRenameOpen = false;
             }));
-        }
-        if (!isDir) {
-            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
         }
         return actions;
     }
