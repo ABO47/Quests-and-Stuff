@@ -174,6 +174,7 @@ public final class UiIconRegistry {
         preloadedRole("crown", UiThemeManager.ROLE_ICON_INTERACTIVE);
         preloadedRole("arrow-up-down", UiThemeManager.ROLE_ICON_INTERACTIVE);
         preloadedRole("wrench", UiThemeManager.ROLE_ICON_INTERACTIVE);
+        preloadedRole("mouse-pointer-click", UiThemeManager.ROLE_ICON_SUCCESS);
         
         registeredDefault("biome");
         registeredDefault("orbit");
