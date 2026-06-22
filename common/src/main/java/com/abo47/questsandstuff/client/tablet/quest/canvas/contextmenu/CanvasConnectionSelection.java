@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -32,6 +33,18 @@ public final class CanvasConnectionSelection {
                 String prerequisiteId = prerequisites.getString(i);
                 if (selected.contains(questId) || selected.contains(prerequisiteId)) {
                     edges.add(new CanvasContextMenuController.EdgeRef(prerequisiteId, questId));
+                }
+            }
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            for (String connectedQuestId : ec.connectionQuestIds()) {
+                if (selected.contains(connectedQuestId)) {
+                    edges.add(new CanvasContextMenuController.EdgeRef(ec.id(), connectedQuestId));
+                }
+            }
+            for (String prerequisiteQuestId : ec.prerequisiteQuestIds()) {
+                if (selected.contains(prerequisiteQuestId)) {
+                    edges.add(new CanvasContextMenuController.EdgeRef(prerequisiteQuestId, ec.id()));
                 }
             }
         }

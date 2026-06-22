@@ -87,14 +87,26 @@ public final class ColorPickerApplyActions {
         }
         String connectionSelection = connectionSelectionColorTarget(target);
         if (connectionSelection != null) {
+            String group = connectionSelection;
             int applied = 0;
-            for (var edge : CanvasOverlayController.selectedConnectedEdges(state, connectionSelection)) {
-                ConnectionRenderer.setConnectionColor(state, connectionSelection, edge.prerequisiteId(), edge.questId(), color);
-                EditorCommandClient.runConnectionColorAction(player, edge.questId(), edge.prerequisiteId(), color);
+            for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
+                String prereq = edge.prerequisiteId();
+                String quest = edge.questId();
+                boolean isEc = ConnectionRenderer.isEcId(state, group, prereq)
+                        || ConnectionRenderer.isEcId(state, group, quest);
+                if (isEc) {
+                    String ecId = ConnectionRenderer.isEcId(state, group, prereq) ? prereq : quest;
+                    String questId = ConnectionRenderer.isEcId(state, group, prereq) ? quest : prereq;
+                    ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color);
+                    EditorCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
+                } else {
+                    ConnectionRenderer.setConnectionColor(state, group, prereq, quest, color);
+                    EditorCommandClient.runConnectionColorAction(player, quest, prereq, color);
+                }
                 applied++;
             }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked group={} edges={} color={}", connectionSelection, applied, color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked group={} edges={} color={}", group, applied, color);
             return;
         }
         String[] canvasText = canvasTextColorTarget(target);
