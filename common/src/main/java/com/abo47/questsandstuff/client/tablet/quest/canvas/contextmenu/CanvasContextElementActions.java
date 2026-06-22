@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -114,6 +115,7 @@ final class CanvasContextElementActions {
             }));
         }
         addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.imageKey(state.contextMenu.contextCanvasImageId), "image", state.contextMenu.contextCanvasImageId);
+        addCopyAndDeleteActions(actions, canvasViewport, state);
     }
 
     static void addTextActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
@@ -145,6 +147,7 @@ final class CanvasContextElementActions {
             }));
         }
         addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.textKey(state.contextMenu.contextCanvasTextId), "text", state.contextMenu.contextCanvasTextId);
+        addCopyAndDeleteActions(actions, canvasViewport, state);
     }
 
     static void addExclusiveChoiceActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
@@ -174,6 +177,7 @@ final class CanvasContextElementActions {
             ));
         }
         addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.exclusiveChoiceKey(state.contextMenu.contextCanvasExclusiveChoiceId), "exclusive_choice", state.contextMenu.contextCanvasExclusiveChoiceId);
+        addCopyAndDeleteActions(actions, canvasViewport, state);
     }
 
     private static void addExclusiveChoiceConnectedQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
@@ -207,6 +211,23 @@ final class CanvasContextElementActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager ec={} connections={}", state.contextMenu.contextCanvasExclusiveChoiceId, connectionCount);
             canvasViewport.refresh();
         }));
+    }
+
+    private static void addCopyAndDeleteActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state) {
+        if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
+            actions.add(ContextActions.copy(() -> {
+                CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
+                ContextMenuState.clearDeleteConfirm(state);
+                canvasViewport.refresh();
+            }));
+        }
+        if (CanvasContextDeleteController.canDeleteContext(state)) {
+            String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
+            actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
+                CanvasContextDeleteController.runDeleteAction(canvasViewport.player(), state);
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void addLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup, String layerKey, String targetName, String targetId) {

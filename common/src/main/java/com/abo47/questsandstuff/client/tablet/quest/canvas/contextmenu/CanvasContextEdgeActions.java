@@ -11,11 +11,13 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrd
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import net.minecraft.world.entity.player.Player;
 
@@ -39,6 +41,13 @@ final class CanvasContextEdgeActions {
             addQuestEdgeActions(actions, canvasViewport, state, player, selectedGroup, sourceId, targetId);
         }
         addConnectionLayerActions(actions, canvasViewport, state, selectedGroup);
+        if (CanvasContextDeleteController.canDeleteContext(state)) {
+            String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
+            actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
+                CanvasContextDeleteController.runDeleteAction(player, state);
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void addQuestEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup, String sourceId, String targetId) {
