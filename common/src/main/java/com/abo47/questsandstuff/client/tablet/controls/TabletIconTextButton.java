@@ -66,6 +66,15 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+        if (handled) {
+            isClicked = false;
+        }
+        return handled;
+    }
+
+    @Override
     protected void onSizeUpdate() {
         super.onSizeUpdate();
         if (visuals != null) {
