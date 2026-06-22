@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
@@ -12,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -30,15 +32,16 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selec
 
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
+    private static final int MIN_EC_SIZE = 2;
+    private static final int EC_ALPHA = 200;
+    private static final int LOGICAL_GRID_STEP = 16;
 
     private CanvasMinimapOverlay() {
     }
 
     static void render(
             CanvasViewport canvasViewport,
-            TabletUiState state,
-            List<QuestCardLayout> visibleCards,
-            Map<String, QuestCardLayout> byQuestId
+            TabletUiState state
     ) {
         clearState(state);
         if (!QuestsAndStuffConfig.minimapEnabled()) {
@@ -53,7 +56,7 @@ final class CanvasMinimapOverlay {
         boolean animationsEnabled = QuestsAndStuffConfig.minimapAnimationsEnabled();
         boolean closing = CanvasMinimapController.isClosingAnimationRunning(state);
         if (hitLayout.collapsed() && !closing) {
-            canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false), hitLayout, null));
+            canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, null, hitLayout, hitLayout));
             return;
         }
 
@@ -61,26 +64,27 @@ final class CanvasMinimapOverlay {
                 ? CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false)
                 : hitLayout;
         String group = selectedGroupName(state);
-        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, visibleCards);
+        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, canvasViewport.cardCache());
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
         if (!state.canvas.minimapCollapsed) {
             applyProjection(state, projection);
         }
 
-        CanvasMinimapSnapshot snapshot = snapshot(state, group, visibleCards, byQuestId, projection);
         CanvasMinimapGeometry.Layout collapsedLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), true);
-        canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, layout, collapsedLayout, snapshot));
+        canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, group, layout, collapsedLayout));
     }
 
     private static WidgetGroup minimapWidget(
             CanvasViewport canvasViewport,
             TabletUiState state,
             boolean animationsEnabled,
+            String group,
             CanvasMinimapGeometry.Layout layout,
-            CanvasMinimapGeometry.Layout collapsedLayout,
-            CanvasMinimapSnapshot snapshot
+            CanvasMinimapGeometry.Layout collapsedLayout
     ) {
         return new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+            private CanvasMinimapSnapshot lastSnapshot;
+
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int originX = getPositionX();
@@ -89,17 +93,24 @@ final class CanvasMinimapOverlay {
                 float holderProgress = CanvasMinimapPainter.stagedProgress(openProgress, 0.0f, CanvasMinimapPainter.BODY_REVEAL_START);
                 float bodyProgress = CanvasMinimapPainter.stagedProgress(openProgress, CanvasMinimapPainter.BODY_REVEAL_START, 1.0f);
                 CanvasMinimapPainter.drawPanel(graphics, originX, originY, layout, collapsedLayout, holderProgress, bodyProgress, mouseX, mouseY);
-                if (snapshot != null && bodyProgress > 0.02f) {
-                    int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * bodyProgress));
-                    int clipX = layout.toggleX() - clipW;
-                    CanvasViewportScissor.draw(
-                            graphics,
-                            originX + clipX,
-                            originY + layout.panelY(),
-                            clipW,
-                            layout.panelH(),
-                            () -> CanvasMinimapPainter.drawSnapshot(graphics, state, snapshot, originX, originY, mouseX, mouseY, partialTicks)
-                    );
+                if (bodyProgress > 0.02f) {
+                    if (group != null && layout != null) {
+                        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, canvasViewport.cardCache());
+                        CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
+                        lastSnapshot = snapshot(state, group, canvasViewport.cardCache(), canvasViewport.cardLookup(), projection);
+                    }
+                    if (lastSnapshot != null) {
+                        int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * bodyProgress));
+                        int clipX = layout.toggleX() - clipW;
+                        CanvasViewportScissor.draw(
+                                graphics,
+                                originX + clipX,
+                                originY + layout.panelY(),
+                                clipW,
+                                layout.panelH(),
+                                () -> CanvasMinimapPainter.drawSnapshot(graphics, state, lastSnapshot, originX, originY, mouseX, mouseY, partialTicks)
+                        );
+                    }
                 }
             }
         };
@@ -126,6 +137,7 @@ final class CanvasMinimapOverlay {
     ) {
         Map<String, CanvasMinimapRect> questBoxes = new HashMap<>();
         List<CanvasMinimapRect> questRects = new ArrayList<>();
+        Map<String, double[]> logicalCenters = new HashMap<>();
         boolean visualMode = QuestsAndStuffConfig.visualMinimapEnabled();
         for (QuestCardLayout card : cards) {
             CanvasMinimapRect box = projectRect(
@@ -140,12 +152,14 @@ final class CanvasMinimapOverlay {
                     card.questId(),
                     card.tag()
             );
+            logicalCenters.put(card.questId(), new double[]{card.visualLogicalX() + card.logicalWidth() / 2.0, card.visualLogicalY() + card.logicalHeight() / 2.0});
             questBoxes.put(card.questId(), box);
             questRects.add(box);
         }
 
         List<CanvasMinimapConnection> connections = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
+
         for (QuestCardLayout target : cards) {
             CompoundTag targetTag = target.tag();
             if (!targetTag.getBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD)) {
@@ -166,15 +180,16 @@ final class CanvasMinimapOverlay {
                 if (hidden && !state.root.canEdit) {
                     continue;
                 }
-                CanvasMinimapRect sourceBox = questBoxes.get(sourceId);
-                CanvasMinimapRect targetBox = questBoxes.get(target.questId());
-                if (sourceBox == null || targetBox == null) {
-                    continue;
-                }
-                float sourceCenterX = sourceBox.x() + sourceBox.w() / 2.0f;
-                float sourceCenterY = sourceBox.y() + sourceBox.h() / 2.0f;
-                float targetCenterX = targetBox.x() + targetBox.w() / 2.0f;
-                float targetCenterY = targetBox.y() + targetBox.h() / 2.0f;
+                boolean direct = ConnectionRenderer.isConnectionDirect(state, group, sourceId, target.questId());
+                double[] srcCenter = logicalCenters.get(sourceId);
+                double[] tgtCenter = logicalCenters.get(target.questId());
+                if (srcCenter == null || tgtCenter == null) continue;
+                CanvasMinimapRect srcBox = questBoxes.get(sourceId);
+                CanvasMinimapRect tgtBox = questBoxes.get(target.questId());
+                float sourceCenterX = srcBox.x() + srcBox.w() / 2.0f;
+                float sourceCenterY = srcBox.y() + srcBox.h() / 2.0f;
+                float targetCenterX = tgtBox.x() + tgtBox.w() / 2.0f;
+                float targetCenterY = tgtBox.y() + tgtBox.h() / 2.0f;
                 connections.add(new CanvasMinimapConnection(
                         sourceCenterX,
                         sourceCenterY,
@@ -182,12 +197,89 @@ final class CanvasMinimapOverlay {
                         targetCenterY,
                         ConnectionRenderer.connectionColor(state, group, sourceId, target.questId()),
                         hidden ? 70 : 190,
-                        ConnectionRenderer.isConnectionDirect(state, group, sourceId, target.questId())
+                        direct,
+                        direct ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1])
+                ));
+            }
+        }
+
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        for (CanvasExclusiveChoice ec : ecs) {
+            CanvasMinimapRect ecBox = projectRect(
+                    projection,
+                    ec.x(),
+                    ec.y(),
+                    ec.w(),
+                    ec.h(),
+                    MIN_EC_SIZE,
+                    ModColors.WARNING,
+                    EC_ALPHA,
+                    ec.id(),
+                    null
+            );
+            logicalCenters.put(ec.id(), new double[]{ec.x() + ec.w() / 2.0, ec.y() + ec.h() / 2.0});
+            questBoxes.put(ec.id(), ecBox);
+            questRects.add(ecBox);
+
+            float ecCenterX = ecBox.x() + ecBox.w() / 2.0f;
+            float ecCenterY = ecBox.y() + ecBox.h() / 2.0f;
+            double[] ecLogicalCenter = logicalCenters.get(ec.id());
+
+            for (String connectedId : ec.connectionQuestIds()) {
+                CanvasMinimapRect targetBox = questBoxes.get(connectedId);
+                if (targetBox == null) continue;
+                String edgeKey = "ec:" + ec.id() + "->" + connectedId;
+                if (!rendered.add(edgeKey)) continue;
+                int color = ec.connectionColors().getOrDefault(connectedId, ModColors.TEXT_SECONDARY);
+                boolean direct = isEcDirect(ec, connectedId);
+                double[] tgtCenter = logicalCenters.get(connectedId);
+                connections.add(new CanvasMinimapConnection(
+                        ecCenterX, ecCenterY,
+                        targetBox.x() + targetBox.w() / 2.0f, targetBox.y() + targetBox.h() / 2.0f,
+                        color, EC_ALPHA, direct,
+                        direct || tgtCenter == null ? null : computeGridPath(projection, ecLogicalCenter[0], ecLogicalCenter[1], tgtCenter[0], tgtCenter[1])
+                ));
+            }
+            for (String prerequisiteId : ec.prerequisiteQuestIds()) {
+                CanvasMinimapRect sourceBox = questBoxes.get(prerequisiteId);
+                if (sourceBox == null) continue;
+                String edgeKey = "ec:" + prerequisiteId + "->" + ec.id();
+                if (!rendered.add(edgeKey)) continue;
+                int color = ec.connectionColors().getOrDefault(prerequisiteId, ModColors.TEXT_SECONDARY);
+                boolean direct = isEcDirect(ec, prerequisiteId);
+                double[] srcCenter = logicalCenters.get(prerequisiteId);
+                connections.add(new CanvasMinimapConnection(
+                        sourceBox.x() + sourceBox.w() / 2.0f, sourceBox.y() + sourceBox.h() / 2.0f,
+                        ecCenterX, ecCenterY,
+                        color, EC_ALPHA, direct,
+                        direct || srcCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], ecLogicalCenter[0], ecLogicalCenter[1])
                 ));
             }
         }
 
         return new CanvasMinimapSnapshot(List.copyOf(questRects), List.copyOf(connections), projection);
+    }
+
+    private static List<CanvasPoint> computeGridPath(CanvasMinimapGeometry.Projection projection, double sx, double sy, double tx, double ty) {
+        int midX = snapToStep((int) ((sx + tx) / 2), LOGICAL_GRID_STEP);
+        if (Math.abs(midX - sx) < LOGICAL_GRID_STEP / 2.0) {
+            midX += tx >= sx ? LOGICAL_GRID_STEP : -LOGICAL_GRID_STEP;
+        }
+        return List.of(
+                new CanvasPoint(CanvasMinimapGeometry.mapX(projection, sx), CanvasMinimapGeometry.mapY(projection, sy)),
+                new CanvasPoint(CanvasMinimapGeometry.mapX(projection, midX), CanvasMinimapGeometry.mapY(projection, sy)),
+                new CanvasPoint(CanvasMinimapGeometry.mapX(projection, midX), CanvasMinimapGeometry.mapY(projection, ty)),
+                new CanvasPoint(CanvasMinimapGeometry.mapX(projection, tx), CanvasMinimapGeometry.mapY(projection, ty))
+        );
+    }
+
+    private static int snapToStep(int value, int step) {
+        return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
+    }
+
+    private static boolean isEcDirect(CanvasExclusiveChoice ec, String targetId) {
+        String mode = ec.connectionModes().get(targetId);
+        return mode == null || !"grid".equals(mode);
     }
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
@@ -229,7 +321,7 @@ final class CanvasMinimapOverlay {
             int minSize,
             int color,
             int alpha,
-            String questId,
+            String id,
             CompoundTag tag
     ) {
         int x = clamp(CanvasMinimapGeometry.mapX(projection, logicalX), projection.drawX(), projection.drawX() + projection.drawW() - 1);
@@ -238,7 +330,7 @@ final class CanvasMinimapOverlay {
         int h = Math.max(minSize, Math.round(Math.max(1, logicalH) * projection.scale()));
         w = Math.max(1, Math.min(w, projection.drawX() + projection.drawW() - x));
         h = Math.max(1, Math.min(h, projection.drawY() + projection.drawH() - y));
-        return new CanvasMinimapRect(x, y, w, h, color, alpha, questId, tag);
+        return new CanvasMinimapRect(x, y, w, h, color, alpha, id, tag);
     }
 
     private static void clearState(TabletUiState state) {

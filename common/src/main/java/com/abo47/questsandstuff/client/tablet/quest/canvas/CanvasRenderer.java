@@ -109,7 +109,7 @@ public final class CanvasRenderer {
         if (blueprintGhost != null) {
             canvasViewport.addWidget(blueprintGhost);
         }
-        renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
+        renderCanvasMetaPanels(canvasViewport, state, contentX, contentY, contentW, contentH);
         WidgetGroup miniNotification = CanvasMiniNotificationController.render(canvasViewport, state);
         if (miniNotification != null) {
             canvasViewport.addWidget(miniNotification);
@@ -274,14 +274,12 @@ public final class CanvasRenderer {
     private static void renderCanvasMetaPanels(
             CanvasViewport canvasViewport,
             TabletUiState state,
-            List<QuestCardLayout> visibleCards,
-            Map<String, QuestCardLayout> byQuestId,
             int contentX,
             int contentY,
             int contentW,
             int contentH
     ) {
-        CanvasOverlayController.renderCanvasMetaPanels(canvasViewport, state, visibleCards, byQuestId, contentX, contentY, contentW, contentH);
+        CanvasOverlayController.renderCanvasMetaPanels(canvasViewport, state, contentX, contentY, contentW, contentH);
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {

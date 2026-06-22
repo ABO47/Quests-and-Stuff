@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
@@ -83,19 +85,14 @@ final class CanvasMinimapPainter {
             if (visualMode) {
                 drawMiniChevrons(graphics, connection, originX, originY);
             } else {
-                drawMiniLine(
-                        graphics,
-                        originX + connection.x1(),
-                        originY + connection.y1(),
-                        originX + connection.x2(),
-                        originY + connection.y2(),
-                        withAlpha(connection.color(), connection.alpha())
-                );
+                drawMiniLineRouted(graphics, connection, originX, originY);
             }
         }
         for (CanvasMinimapRect quest : snapshot.quests()) {
             if (visualMode) {
                 drawQuestPreview(graphics, state, quest, originX, originY, mouseX, mouseY, partialTicks);
+            } else if (quest.tag() == null) {
+                drawEcBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
             } else {
                 drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
             }
@@ -122,7 +119,7 @@ final class CanvasMinimapPainter {
         int x = originX + quest.x();
         int y = originY + quest.y();
         if (quest.tag() == null) {
-            drawQuestBox(graphics, x, y, quest.w(), quest.h(), quest.color(), quest.alpha());
+            QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
             return;
         }
 
@@ -140,15 +137,33 @@ final class CanvasMinimapPainter {
         graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
     }
 
+    private static void drawEcBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
+        if (w < 3 || h < 3) {
+            graphics.fill(x, y, x + w, y + h, withAlpha(color, alpha));
+            return;
+        }
+        drawBorder(graphics, x, y, w, h, withAlpha(color, alpha));
+    }
+
     private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
-        List<CanvasPoint> path = visualConnectionPath(
-                Math.round(originX + connection.x1()),
-                Math.round(originY + connection.y1()),
-                Math.round(originX + connection.x2()),
-                Math.round(originY + connection.y2()),
-                connection.direct()
-        );
+        List<CanvasPoint> path = connection.projectedPath() != null
+                ? offsetPath(connection.projectedPath(), originX, originY)
+                : visualConnectionPath(
+                        Math.round(originX + connection.x1()),
+                        Math.round(originY + connection.y1()),
+                        Math.round(originX + connection.x2()),
+                        Math.round(originY + connection.y2()),
+                        connection.direct()
+                );
         ConnectionRenderer.drawStaticChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, -4096, -4096, 8192, 8192);
+    }
+
+    private static List<CanvasPoint> offsetPath(List<CanvasPoint> path, int dx, int dy) {
+        List<CanvasPoint> result = new ArrayList<>(path.size());
+        for (CanvasPoint p : path) {
+            result.add(new CanvasPoint(p.x + dx, p.y + dy));
+        }
+        return result;
     }
 
     private static List<CanvasPoint> visualConnectionPath(int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
@@ -179,12 +194,27 @@ final class CanvasMinimapPainter {
         drawBorder(graphics, x, y, w, h, border);
     }
 
-    private static void drawMiniLine(GuiGraphics graphics, float x1, float y1, float x2, float y2, int color) {
+    private static void drawMiniLineRouted(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
+        float x1 = originX + connection.x1();
+        float y1 = originY + connection.y1();
+        float x2 = originX + connection.x2();
+        float y2 = originY + connection.y2();
+        int color = withAlpha(connection.color(), connection.alpha());
         if (x1 == x2 && y1 == y2) {
             int x = Math.round(x1);
             int y = Math.round(y1);
             graphics.fill(x, y, x + 1, y + 1, color);
             return;
+        }
+        List<Vec2> points;
+        if (connection.projectedPath() != null) {
+            List<CanvasPoint> path = connection.projectedPath();
+            points = new ArrayList<>(path.size());
+            for (CanvasPoint p : path) {
+                points.add(new Vec2(originX + p.x, originY + p.y));
+            }
+        } else {
+            points = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
         }
         Tesselator tessellator = Tesselator.getInstance();
         RenderSystem.enableBlend();
@@ -195,7 +225,7 @@ final class CanvasMinimapPainter {
         RenderBufferUtils.drawColorLines(
                 graphics.pose(),
                 buffer,
-                List.of(new Vec2(x1, y1), new Vec2(x2, y2)),
+                points,
                 color,
                 color,
                 0.55f

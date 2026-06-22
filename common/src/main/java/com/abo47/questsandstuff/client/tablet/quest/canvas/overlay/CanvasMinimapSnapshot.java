@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import net.minecraft.nbt.CompoundTag;
 
@@ -31,6 +32,7 @@ record CanvasMinimapConnection(
         float y2,
         int color,
         int alpha,
-        boolean direct
+        boolean direct,
+        List<CanvasPoint> projectedPath
 ) {
 }
