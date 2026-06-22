@@ -138,10 +138,19 @@ public final class TabletRootWidget extends WidgetGroup {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
-        int width = minecraft.getWindow().getGuiScaledWidth();
-        int height = minecraft.getWindow().getGuiScaledHeight();
-        if (width > 0 && height > 0) {
-            graphics.fill(0, 0, width, height, ModColors.SURFACE_BASE);
+        int screenW = minecraft.getWindow().getGuiScaledWidth();
+        int screenH = minecraft.getWindow().getGuiScaledHeight();
+        if (screenW <= 0 || screenH <= 0) {
+            return;
         }
+        int rootX = getPosition().x;
+        int rootY = getPosition().y;
+        int rootW = getSize().width;
+        int rootH = getSize().height;
+        int fill = ModColors.SURFACE_BASE;
+        graphics.fill(0, 0, rootX, screenH, fill);
+        graphics.fill(rootX + rootW, 0, screenW, screenH, fill);
+        graphics.fill(rootX, 0, rootX + rootW, rootY, fill);
+        graphics.fill(rootX, rootY + rootH, rootX + rootW, screenH, fill);
     }
 }

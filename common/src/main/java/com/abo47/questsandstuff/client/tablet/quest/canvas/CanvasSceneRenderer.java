@@ -33,6 +33,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
@@ -110,21 +111,34 @@ final class CanvasSceneRenderer {
     }
 
     static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
-        int opacityPercent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
-        int canvasFill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, opacityPercent);
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        addSolidRect(canvasViewport, 0, 0, viewportW, contentY, canvasFill);
-        addSolidRect(canvasViewport, 0, contentY + paintH, viewportW, viewportH - contentY - paintH, canvasFill);
-        addSolidRect(canvasViewport, 0, contentY, contentX, paintH, canvasFill);
-        addSolidRect(canvasViewport, contentX + paintW, contentY, viewportW - contentX - paintW, paintH, canvasFill);
-
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
-        if (canvasBackground == null) {
-            addSolidRect(canvasViewport, contentX, contentY, paintW, paintH, canvasFill);
-        } else if (CanvasBackgroundOpacity.alpha(opacityPercent) > 0) {
-            canvasViewport.addWidget(alphaTexture(contentX, contentY, paintW, paintH, canvasBackground, opacityPercent));
-        }
+        canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int percent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
+                if (percent == 0) {
+                    return;
+                }
+                int fill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, percent);
+                if ((fill >>> 24) == 0) {
+                    return;
+                }
+                int originX = getPositionX();
+                int originY = getPositionY();
+                graphics.fill(originX, originY, originX + viewportW, originY + contentY, fill);
+                graphics.fill(originX, originY + contentY + paintH, originX + viewportW, originY + viewportH, fill);
+                graphics.fill(originX, originY + contentY, originX + contentX, originY + contentY + paintH, fill);
+                graphics.fill(originX + contentX + paintW, originY + contentY, originX + viewportW, originY + contentY + paintH, fill);
+                if (canvasBackground == null) {
+                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
+                } else {
+                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
+                    CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
+                }
+            }
+        });
     }
 
     static void renderCanvasElements(
@@ -412,15 +426,6 @@ final class CanvasSceneRenderer {
         WidgetGroup rect = new WidgetGroup(x, y, width, height);
         rect.setBackground(Surfaces.fill(color));
         parent.addWidget(rect);
-    }
-
-    private static WidgetGroup alphaTexture(int x, int y, int width, int height, IGuiTexture texture, int opacityPercent) {
-        return new WidgetGroup(x, y, width, height) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                CanvasBackgroundOpacity.drawTexture(graphics, texture, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), opacityPercent);
-            }
-        };
     }
 
     private static void renderQuestIcon(WidgetGroup canvasViewport, QuestCardLayout card) {
