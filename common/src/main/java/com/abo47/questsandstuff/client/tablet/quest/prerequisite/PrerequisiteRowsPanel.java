@@ -90,11 +90,25 @@ final class PrerequisiteRowsPanel {
                 selected || hovered ? withAlpha(ModColors.INTERACTIVE, selected ? 64 : 44) : withAlpha(ModColors.SURFACE_PANEL_ALT, 106),
                 selected || hovered ? ModColors.BORDER_ACCENT : withAlpha(ModColors.BORDER_BASE, 120)
         ));
-        card.addWidget(new DisplayIconWidget(5, 7, 16, 16, row.icon()));
+        if (row.exclusiveChoice()) {
+            card.addWidget(new DisplayIconWidget(5, 7, 16, 16, "minecraft:ender_pearl"));
+        } else {
+            card.addWidget(new DisplayIconWidget(5, 7, 16, 16, row.icon()));
+        }
         int textW = Math.max(10, cellW - 34);
         String role = TabletVocabulary.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestVocabulary.PREREQUISITES_INCOMING : QuestVocabulary.PREREQUISITES_OUTGOING);
-        card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
-        card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+        String ecLabel = TabletVocabulary.text(QuestVocabulary.PREREQUISITES_EXCLUSIVE_CHOICE);
+        if (row.exclusiveChoice()) {
+            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
+            if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
+                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+            } else {
+                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+            }
+        } else {
+            card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+        }
         surface.addWidget(card);
 
         ButtonWidget hit = flatHitButton(x, y, cellW, cellH, click -> {

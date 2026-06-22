@@ -9,7 +9,8 @@ record PrerequisiteConnectionRow(
         String targetTitle,
         String otherTitle,
         String icon,
-        PrerequisiteConnectionKind kind
+        PrerequisiteConnectionKind kind,
+        boolean exclusiveChoice
 ) {
     String key() {
         return QuestConnectionMetadata.edgeKey(sourceId, targetId);

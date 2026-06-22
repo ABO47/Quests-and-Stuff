@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int rotation, List<String> connectionQuestIds, List<String> prerequisiteQuestIds, String background, Map<String, Integer> connectionColors, Map<String, String> connectionModes) {
-    public static final int DEFAULT_WIDTH = 79;
-    public static final int DEFAULT_HEIGHT = 79;
+    public static final int DEFAULT_WIDTH = 15;
+    public static final int DEFAULT_HEIGHT = 15;
     public static final String DEFAULT_BACKGROUND = "";
 
     public CanvasExclusiveChoice(String id, int x, int y, int w, int h, int rotation) {
@@ -28,8 +28,9 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
 
     public CanvasExclusiveChoice {
         id = id == null ? "" : id.trim();
-        w = Math.max(8, w);
-        h = Math.max(8, h);
+        int size = Math.max(8, Math.max(w, h));
+        w = size;
+        h = size;
         rotation = normalizeDegrees(rotation);
         connectionQuestIds = connectionQuestIds == null ? List.of() : List.copyOf(connectionQuestIds);
         prerequisiteQuestIds = prerequisiteQuestIds == null ? List.of() : List.copyOf(prerequisiteQuestIds);
@@ -43,7 +44,8 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
     }
 
     public CanvasExclusiveChoice resizeTo(int nextW, int nextH) {
-        return new CanvasExclusiveChoice(id, x, y, Math.max(8, nextW), Math.max(8, nextH), rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes);
+        int size = Math.max(8, Math.max(nextW, nextH));
+        return new CanvasExclusiveChoice(id, x, y, size, size, rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes);
     }
 
     public CanvasExclusiveChoice rotateTo(int nextRotation) {

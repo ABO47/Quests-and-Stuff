@@ -86,7 +86,7 @@ public final class QuestMiniCardRenderer {
         graphics.fill(x, y, x + width, y + height, hiddenOverlayColor(alpha, maxAlpha));
     }
 
-    private static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int width, int height, int alpha) {
+    public static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int width, int height, int alpha) {
         int color = highlightColor(alpha);
         graphics.fill(x - 2, y - 2, x + width + 2, y, color);
         graphics.fill(x - 2, y + height, x + width + 2, y + height + 2, color);

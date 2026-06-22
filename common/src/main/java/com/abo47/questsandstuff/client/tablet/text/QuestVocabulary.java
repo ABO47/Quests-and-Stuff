@@ -16,6 +16,7 @@ public final class QuestVocabulary {
     public static final String PREREQUISITES_NO_CONNECTIONS = "ui.questsandstuff.prerequisites.no_connections";
     public static final String PREREQUISITES_OUTGOING = "ui.questsandstuff.prerequisites.outgoing";
     public static final String PREREQUISITES_REMOVE_CONNECTION = "ui.questsandstuff.prerequisites.remove_connection";
+    public static final String PREREQUISITES_EXCLUSIVE_CHOICE = "ui.questsandstuff.prerequisites.exclusive_choice";
 
     public static final String ADD_REQUIREMENT = "ui.questsandstuff.quest.add_requirement";
     public static final String ADD_REWARD = "ui.questsandstuff.quest.add_reward";

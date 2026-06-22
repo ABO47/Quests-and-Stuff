@@ -134,7 +134,8 @@ class PrerequisiteConnectionModelTest {
                 "Focus",
                 "Parent",
                 "",
-                PrerequisiteConnectionKind.INCOMING
+                PrerequisiteConnectionKind.INCOMING,
+                false
         );
         state.modal.prerequisitesManagerSelectedConnectionKey = row.key();
         state.modal.prerequisitesManagerHoveredConnectionKey = row.key();
@@ -143,7 +144,7 @@ class PrerequisiteConnectionModelTest {
         ContextMenuState.confirmDeleteClick(state, "connection:remove:" + row.key());
 
         assertTrue(PrerequisiteConnectionActions.canRemove(row));
-        assertFalse(PrerequisiteConnectionActions.canRemove(new PrerequisiteConnectionRow("", "quest/focus", "", "", "", "", PrerequisiteConnectionKind.INCOMING)));
+        assertFalse(PrerequisiteConnectionActions.canRemove(new PrerequisiteConnectionRow("", "quest/focus", "", "", "", "", PrerequisiteConnectionKind.INCOMING, false)));
 
         PrerequisiteConnectionActions.clearAfterRemove(state, row);
 

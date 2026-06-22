@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -117,9 +116,9 @@ public final class CanvasHitTester {
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
-            int ecCenterX = (int) Math.round(ecBox.centerX());
-            int ecCenterY = (int) Math.round(ecBox.centerY());
+            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
+            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
             for (String connectedQuestId : drawEc.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
@@ -181,7 +180,7 @@ public final class CanvasHitTester {
         List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, group);
         for (int i = ecs.size() - 1; i >= 0; i--) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ecs.get(i));
-            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+            CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
             double[] local = canvasExclusiveChoiceLocalScreenPoint(state, ec, x, y);
             if (local[0] >= 0 && local[0] <= box.width() && local[1] >= 0 && local[1] <= box.height()) {
                 return ec;
@@ -202,7 +201,7 @@ public final class CanvasHitTester {
             return null;
         }
         ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
         double[] local = canvasExclusiveChoiceLocalScreenPoint(state, ec, x, y);
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? ec : null;
     }
@@ -216,7 +215,7 @@ public final class CanvasHitTester {
     }
 
     public static double[] canvasExclusiveChoiceLocalScreenPoint(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
-        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
         double dx = x - box.centerX();
         double dy = y - box.centerY();
         double radians = Math.toRadians(-ec.rotation());

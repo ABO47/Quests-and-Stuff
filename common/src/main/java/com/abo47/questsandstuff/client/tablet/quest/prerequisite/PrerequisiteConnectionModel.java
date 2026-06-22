@@ -63,12 +63,12 @@ record PrerequisiteConnectionModel(
         for (String questId : ec.prerequisiteQuestIds()) {
             CompoundTag questTag = ClientQuestCache.quest(questId);
             String title = questTitle(questId, questTag);
-            all.add(new PrerequisiteConnectionRow(questId, safeId, title, safeId, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.INCOMING));
+            all.add(new PrerequisiteConnectionRow(questId, safeId, title, safeId, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.INCOMING, true));
         }
         for (String questId : ec.connectionQuestIds()) {
             CompoundTag questTag = ClientQuestCache.quest(questId);
             String title = questTitle(questId, questTag);
-            all.add(new PrerequisiteConnectionRow(safeId, questId, safeId, title, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.OUTGOING));
+            all.add(new PrerequisiteConnectionRow(safeId, questId, safeId, title, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.OUTGOING, true));
         }
         List<PrerequisiteConnectionRow> visible = filteredRows(all, query);
         return new PrerequisiteConnectionModel(safeId, tag, safeId, List.copyOf(all), List.copyOf(all), List.copyOf(visible), true, ec.x(), ec.y(), ec.w(), ec.h());
@@ -112,7 +112,25 @@ record PrerequisiteConnectionModel(
         Map<String, PrerequisiteConnectionRow> rows = new LinkedHashMap<>();
         addIncomingRows(rows, questId, questTag, targetTitle);
         addOutgoingRows(rows, questId, targetTitle);
+        addEcConnectionRows(rows, questId, targetTitle);
         return List.copyOf(rows.values());
+    }
+
+    private static void addEcConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
+        for (List<CanvasExclusiveChoice> ecs : ClientQuestCache.canvasExclusiveChoicesByGroup().values()) {
+            for (CanvasExclusiveChoice ec : ecs) {
+                String ecId = safe(ec.id());
+                if (ecId.isBlank()) continue;
+                if (ec.connectionQuestIds().contains(questId)) {
+                    String key = QuestConnectionMetadata.edgeKey(ecId, questId);
+                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(ecId, questId, ecId, targetTitle, ecId, "", PrerequisiteConnectionKind.INCOMING, true));
+                }
+                if (ec.prerequisiteQuestIds().contains(questId)) {
+                    String key = QuestConnectionMetadata.edgeKey(questId, ecId);
+                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(questId, ecId, targetTitle, ecId, ecId, "", PrerequisiteConnectionKind.OUTGOING, true));
+                }
+            }
+        }
     }
 
     private static void addIncomingRows(Map<String, PrerequisiteConnectionRow> rows, String questId, CompoundTag questTag, String targetTitle) {
@@ -130,7 +148,8 @@ record PrerequisiteConnectionModel(
                     targetTitle,
                     questTitle(sourceId, sourceTag),
                     sourceTag == null ? "" : sourceTag.getString("icon"),
-                    PrerequisiteConnectionKind.INCOMING
+                    PrerequisiteConnectionKind.INCOMING,
+                    false
             );
             rows.putIfAbsent(row.key(), row);
         }
@@ -153,7 +172,8 @@ record PrerequisiteConnectionModel(
                     questTitle(targetId, targetTag),
                     questTitle(targetId, targetTag),
                     targetTag == null ? "" : targetTag.getString("icon"),
-                    PrerequisiteConnectionKind.OUTGOING
+                    PrerequisiteConnectionKind.OUTGOING,
+                    false
             );
             rows.putIfAbsent(row.key(), row);
         }
@@ -189,6 +209,10 @@ record PrerequisiteConnectionModel(
     private static List<PrerequisiteConnectionRow> rowsForMode(List<PrerequisiteConnectionRow> rows, String group, boolean externalMode) {
         List<PrerequisiteConnectionRow> filtered = new ArrayList<>();
         for (PrerequisiteConnectionRow row : rows) {
+            if (row.exclusiveChoice()) {
+                filtered.add(row);
+                continue;
+            }
             boolean local = isLocalConnection(row, group);
             if ((externalMode && !local) || (!externalMode && local)) {
                 filtered.add(row);

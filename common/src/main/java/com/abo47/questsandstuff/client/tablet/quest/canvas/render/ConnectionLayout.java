@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayoutService;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -75,9 +74,15 @@ final class ConnectionLayout {
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
-            int ecCenterX = (int) Math.round(ecBox.centerX());
-            int ecCenterY = (int) Math.round(ecBox.centerY());
+            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+            int ecBoxLeft = (int) Math.floor(ecBox.centerX() + ecBox.left());
+            int ecBoxTop = (int) Math.floor(ecBox.centerY() + ecBox.top());
+            int ecBoxRight = (int) Math.ceil(ecBox.centerX() + ecBox.right());
+            int ecBoxBottom = (int) Math.ceil(ecBox.centerY() + ecBox.bottom());
+            int ecScreenW = Math.max(1, ecBoxRight - ecBoxLeft);
+            int ecScreenH = Math.max(1, ecBoxBottom - ecBoxTop);
+            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
+            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
             for (String connectedQuestId : drawEc.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
@@ -87,7 +92,7 @@ final class ConnectionLayout {
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
-                if (!intersectsViewport(ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(), viewportW, viewportH)
+                if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
                         && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
                     continue;
                 }
@@ -95,7 +100,7 @@ final class ConnectionLayout {
                 int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
                 lines.add(new ConnectionLine(
                         edgeId, ec.id(), connectedQuestId,
-                        ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
+                        ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
                         connectedQuest.centerX(), connectedQuest.centerY(),
@@ -111,7 +116,7 @@ final class ConnectionLayout {
                 if (!rendered.add(edgeId)) {
                     continue;
                 }
-                if (!intersectsViewport(ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(), viewportW, viewportH)
+                if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
                         && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
                     continue;
                 }
@@ -120,7 +125,7 @@ final class ConnectionLayout {
                 lines.add(new ConnectionLine(
                         edgeId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
-                        ecBox.left(), ecBox.top(), ecBox.width(), ecBox.height(),
+                        ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
                         ecCenterX, ecCenterY,
                         direct, false, color, false, 245

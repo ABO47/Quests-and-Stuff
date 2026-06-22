@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrd
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -53,6 +54,18 @@ final class PrerequisitePreviewBuilder {
             ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(model.questId(), group, model.ecX(), model.ecY(), model.ecW(), model.ecH(), focus.display().questBackground(), prerequisitesByTarget.getOrDefault(model.questId(), Set.of())));
             order.add(CanvasLayerOrdering.exclusiveChoiceKey(model.questId()));
         } else {
+            Set<String> ecIds = ecIdsFromRows(model.rows(), model.questId());
+            for (String ecId : ecIds) {
+                CanvasExclusiveChoice ec = findEcById(ecId);
+                if (ec == null) {
+                    continue;
+                }
+                QuestPlacement ecPlacement = placements.get(ecId);
+                int ecX = ecPlacement != null ? ecPlacement.x() : ec.x();
+                int ecY = ecPlacement != null ? ecPlacement.y() : ec.y();
+                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(ecId, group, ecX, ecY, ec.w(), ec.h(), ec.background(), prerequisitesByTarget.getOrDefault(ecId, Set.of())));
+                order.add(CanvasLayerOrdering.exclusiveChoiceKey(ecId));
+            }
             QuestPlacement focusPlacement = placements.get(model.questId());
             if (focusPlacement != null) {
                 entries.add(new CanvasBlueprint.QuestEntry(model.questId(), focusPlacement.group(), focusPlacement.x(), focusPlacement.y(), focusPlacement.scale(), withPrerequisites(focus, prerequisitesByTarget.getOrDefault(model.questId(), Set.of()))));
@@ -175,6 +188,32 @@ final class PrerequisitePreviewBuilder {
             minY = Math.min(minY, entry.sourceY());
         }
         return minX == Integer.MAX_VALUE ? new Origin(0, 0) : new Origin(minX, minY);
+    }
+
+    private static Set<String> ecIdsFromRows(List<PrerequisiteConnectionRow> rows, String focusId) {
+        Set<String> ecIds = new LinkedHashSet<>();
+        for (PrerequisiteConnectionRow row : rows) {
+            if (row.exclusiveChoice()) {
+                if (!row.sourceId().equals(focusId)) {
+                    ecIds.add(row.sourceId());
+                }
+                if (!row.targetId().equals(focusId)) {
+                    ecIds.add(row.targetId());
+                }
+            }
+        }
+        return ecIds;
+    }
+
+    private static CanvasExclusiveChoice findEcById(String id) {
+        for (List<CanvasExclusiveChoice> ecs : ClientQuestCache.canvasExclusiveChoicesByGroup().values()) {
+            for (CanvasExclusiveChoice ec : ecs) {
+                if (ec.id().equals(id)) {
+                    return ec;
+                }
+            }
+        }
+        return null;
     }
 
     private record QuestPlacement(String group, int x, int y, float scale) {
