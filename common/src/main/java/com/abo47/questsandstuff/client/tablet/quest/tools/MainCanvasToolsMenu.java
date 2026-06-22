@@ -82,10 +82,25 @@ final class MainCanvasToolsMenu {
                     refresh.run();
                 });
 
+        CanvasToolRows.gridOpacity(rows, state.canvas.gridOpacityPercent, rightClick -> {
+                    int next = cyclePercent(state.canvas.gridOpacityPercent, toolPercentStep(), rightClick);
+                    applyGridOpacityPercent(state, next);
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid-opacity percent={}", state.canvas.gridOpacityPercent);
+                    refresh.run();
+                });
+
         CanvasToolRows.snap(rows, state.canvas.gridSnapLocked, () -> {
                     state.canvas.gridSnapLocked = !state.canvas.gridSnapLocked;
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] tool snap-to-grid enabled={}", state.canvas.gridSnapLocked);
+                    refresh.run();
+                });
+
+        CanvasToolRows.objectSnap(rows, state.canvas.objectSnapEnabled, () -> {
+                    state.canvas.objectSnapEnabled = !state.canvas.objectSnapEnabled;
+                    persistUiState(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] tool element-guides enabled={}", state.canvas.objectSnapEnabled);
                     refresh.run();
                 });
 
@@ -114,21 +129,6 @@ final class MainCanvasToolsMenu {
                     state.canvas.centerSnapYEnabled = !state.canvas.centerSnapYEnabled;
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-horizontal-center-guide enabled={}", state.canvas.centerSnapYEnabled);
-                    refresh.run();
-                });
-
-        CanvasToolRows.objectSnap(rows, state.canvas.objectSnapEnabled, () -> {
-                    state.canvas.objectSnapEnabled = !state.canvas.objectSnapEnabled;
-                    persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool element-guides enabled={}", state.canvas.objectSnapEnabled);
-                    refresh.run();
-                });
-
-        CanvasToolRows.gridOpacity(rows, state.canvas.gridOpacityPercent, rightClick -> {
-                    int next = cyclePercent(state.canvas.gridOpacityPercent, toolPercentStep(), rightClick);
-                    applyGridOpacityPercent(state, next);
-                    persistUiState(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] tool grid-opacity percent={}", state.canvas.gridOpacityPercent);
                     refresh.run();
                 });
 
