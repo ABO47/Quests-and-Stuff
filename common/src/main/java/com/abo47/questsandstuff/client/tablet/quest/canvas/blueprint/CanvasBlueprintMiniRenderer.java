@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackg
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -264,14 +264,7 @@ public final class CanvasBlueprintMiniRenderer {
     }
 
     private static BlueprintRect ecRect(String id, int sourceX, int sourceY, int w, int h, int originX, int originY) {
-        float ecScale = Math.max(0.5f, (float) w / TabletUiFactory.CARD_W);
-        int visualW = CanvasGeometry.visualLogicalWidth(ecScale);
-        int visualH = CanvasGeometry.visualLogicalHeight(ecScale);
-        int slotW = CanvasGeometry.slotSpanForVisualSize(visualW);
-        int slotH = CanvasGeometry.slotSpanForVisualSize(visualH);
-        int x = sourceX - originX + CanvasGeometry.visualInsetForSlot(slotW, visualW);
-        int y = sourceY - originY + CanvasGeometry.visualInsetForSlot(slotH, visualH);
-        return new BlueprintRect(x, y, visualW, visualH);
+        return new BlueprintRect(sourceX - originX, sourceY - originY, w, h);
     }
 
     private static void drawConnections(GuiGraphics graphics, CanvasBlueprint blueprint, Map<String, BlueprintRect> questBoxes, Set<String> highlightedConnectionKeys, int alpha) {

@@ -56,7 +56,7 @@ final class PrerequisitePreviewBuilder {
         } else {
             Set<String> ecIds = ecIdsFromRows(model.rows(), model.questId());
             for (String ecId : ecIds) {
-                CanvasExclusiveChoice ec = findEcById(ecId);
+                CanvasExclusiveChoice ec = findEcById(ecId, group);
                 if (ec == null) {
                     continue;
                 }
@@ -205,12 +205,17 @@ final class PrerequisitePreviewBuilder {
         return ecIds;
     }
 
-    private static CanvasExclusiveChoice findEcById(String id) {
-        for (List<CanvasExclusiveChoice> ecs : ClientQuestCache.canvasExclusiveChoicesByGroup().values()) {
-            for (CanvasExclusiveChoice ec : ecs) {
-                if (ec.id().equals(id)) {
-                    return ec;
-                }
+    private static CanvasExclusiveChoice findEcById(String id, String group) {
+        if (group == null || group.isBlank()) {
+            return null;
+        }
+        List<CanvasExclusiveChoice> ecs = ClientQuestCache.canvasExclusiveChoicesByGroup().get(group);
+        if (ecs == null) {
+            return null;
+        }
+        for (CanvasExclusiveChoice ec : ecs) {
+            if (ec.id().equals(id)) {
+                return ec;
             }
         }
         return null;
