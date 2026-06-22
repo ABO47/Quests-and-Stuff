@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,6 +88,20 @@ public final class ClientQuestCache {
 
     public static Set<String> questIds() {
         return ClientQuestState.questIdsSnapshot();
+    }
+
+    public static List<String> questIdsInGroup(String group) {
+        if (group == null || group.isBlank()) {
+            return List.of();
+        }
+        List<String> result = new ArrayList<>();
+        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
+            CompoundTag groups = entry.getValue().getCompound(QuestSyncKeys.Quest.GROUPS);
+            if (groups.contains(group)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
     }
 
     public static boolean containsQuest(String questId) {

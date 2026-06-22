@@ -10,7 +10,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
 
 public final class ChapterContextMenuActions {
     private ChapterContextMenuActions() {
@@ -125,6 +128,64 @@ public final class ChapterContextMenuActions {
         EditorCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
+    }
+
+    public static void changeCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentBackground = firstQuestCompletionHud(questIds);
+        ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(state, questIds, currentBackground);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeCompletionSoundGame(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentSound = firstQuestCompletionSound(questIds);
+        ModalOpenActions.openBatchQuestGameSoundPicker(state, questIds, currentSound);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeCompletionSoundCustom(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentSound = firstQuestCompletionSound(questIds);
+        ModalOpenActions.openBatchQuestCustomCompletionSoundPicker(state, questIds, currentSound);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    private static String firstQuestCompletionHud(List<String> questIds) {
+        return firstQuestField(questIds, "completion_hud_background");
+    }
+
+    private static String firstQuestCompletionSound(List<String> questIds) {
+        return firstQuestField(questIds, "completion_sound");
+    }
+
+    private static String firstQuestField(List<String> questIds, String field) {
+        if (questIds == null || questIds.isEmpty()) {
+            return "";
+        }
+        CompoundTag quest = ClientQuestCache.quest(questIds.get(0));
+        return quest == null ? "" : quest.getString(field);
     }
 
     public static void setLockUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
