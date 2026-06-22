@@ -6,6 +6,9 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -14,9 +17,11 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.COLOR_PICKER;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.addWindowsContextRow;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.confirmDeleteClick;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
@@ -129,7 +134,6 @@ public final class TabletColorPickerModal {
             hit.setHoverTexture(Surfaces.transparentBorder(ModColors.BORDER_ACCENT));
             surface.addWidget(hit);
                 });
-        addPaletteContext(right, state, player, refresh, target, rightW, panelH);
         right.addWidget(button(8, panelH - 34, rightW - 16, 12, TabletModalPanel.tr("ui.questsandstuff.color.save_to_palette"), ModColors.SURFACE_PANEL, ModColors.INTERACTIVE, click -> {
             int chosen = TabletModalPanel.currentColorPickerValue(state, target);
             if (!state.pickers.textColorPalette.contains(chosen)) {
@@ -150,34 +154,37 @@ public final class TabletColorPickerModal {
         }));
         modal.addWidget(left);
         modal.addWidget(right);
+        addPaletteContext(modal, state, player, refresh, target, leftW);
     }
 
-    private static void addPaletteContext(WidgetGroup right, TabletUiState state, Player player, Runnable refresh, String target, int rightW, int panelH) {
+    private static void addPaletteContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String target, int leftW) {
         if (!state.pickers.colorPaletteContextOpen || state.pickers.colorPaletteContextValue == Integer.MIN_VALUE) {
             return;
         }
         int ctxW = 96;
-        int ctxH = 36;
-        int ctxX = Math.max(4, Math.min(state.pickers.colorPaletteContextX, rightW - ctxW - 4));
-        int ctxY = Math.max(4, Math.min(state.pickers.colorPaletteContextY, panelH - ctxH - 4));
-        WidgetGroup ctx = panel(ctxX, ctxY, ctxW, ctxH, withAlpha(ModColors.SURFACE_BASE, 236), ModColors.BORDER_ACCENT);
-        addWindowsContextRow(ctx, 4, ctxW - 8, TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", click -> {
+        int ctxX = 8 + leftW + 4 + state.pickers.colorPaletteContextX;
+        int ctxY = 22 + state.pickers.colorPaletteContextY;
+        List<ContextAction> actions = new ArrayList<>();
+        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", ModColors.INTERACTIVE, () -> {
             TabletModalPanel.applyColorPickerValue(player, state, target, state.pickers.colorPaletteContextValue);
             closeColorPicker(state);
             refresh.run();
-        });
+        }));
         String key = "palette:delete:" + state.pickers.colorPaletteContextValue;
-        addWindowsContextRow(ctx, 18, ctxW - 8, pendingDeleteLabel(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete")), "delete", click -> {
-            int chosen = state.pickers.colorPaletteContextValue;
-            if (!confirmDeleteClick(state, key)) {
-                refresh.run();
-                return;
-            }
-            state.pickers.textColorPalette.removeIf(value -> value == chosen);
+        actions.add(ContextActions.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+            state.pickers.textColorPalette.removeIf(value -> value == state.pickers.colorPaletteContextValue);
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             refresh.run();
-        });
-        right.addWidget(ctx);
+        }));
+        int rowCount = ContextMenuPanel.rowActionCount(actions);
+        int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
+        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, ModColors.BORDER_ACCENT, state, action -> {
+            if (action.closeAfterClick()) {
+                state.pickers.colorPaletteContextOpen = false;
+                state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
+            }
+            refresh.run();
+        }, "color_palette"));
     }
 }
