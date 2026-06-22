@@ -25,10 +25,30 @@ public final class CanvasRecipeCardRecipes {
     private static final Map<String, List<RecipeView>> CACHED_BY_TARGET = new HashMap<>();
     private static final Map<String, List<RecipeView>> CACHED_USES_BY_TARGET = new HashMap<>();
     private static final Map<String, RecipeView> CACHED_BY_ID = new HashMap<>();
+    private static List<RecipeView> ALL_RECIPE_VIEWS;
     private static RecipeManager cachedManager;
     private static RegistryAccess cachedRegistryAccess;
 
     private CanvasRecipeCardRecipes() {
+    }
+
+    public static void prewarm() {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        RecipeManager manager = connection == null ? null : connection.getRecipeManager();
+        RegistryAccess registryAccess = connection == null ? null : connection.registryAccess();
+        if (manager == null || registryAccess == null) {
+            return;
+        }
+        synchronized (CanvasRecipeCardRecipes.class) {
+            resetIfNeeded(manager, registryAccess);
+            if (ALL_RECIPE_VIEWS != null) {
+                return;
+            }
+            ALL_RECIPE_VIEWS = new ArrayList<>();
+            for (Recipe<?> recipe : manager.getRecipes()) {
+                ALL_RECIPE_VIEWS.add(of(recipe, resultItem(recipe, registryAccess)));
+            }
+        }
     }
 
     public static List<RecipeView> recipesForAsset(String asset) {
@@ -180,9 +200,20 @@ public final class CanvasRecipeCardRecipes {
         CACHED_BY_TARGET.clear();
         CACHED_USES_BY_TARGET.clear();
         CACHED_BY_ID.clear();
+        ALL_RECIPE_VIEWS = null;
     }
 
     private static List<RecipeView> buildRecipes(String target, RecipeManager manager, RegistryAccess registryAccess) {
+        List<RecipeView> source = ALL_RECIPE_VIEWS;
+        if (source != null) {
+            List<RecipeView> found = source.stream()
+                    .filter(view -> CanvasRecipeCardAsset.matchesOutput(target, view.output()))
+                    .sorted(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
+                            .thenComparing(RecipeView::id))
+                    .toList();
+            CACHED_BY_TARGET.put(target, found);
+            return found;
+        }
         List<RecipeView> found = new ArrayList<>();
         for (Recipe<?> recipe : manager.getRecipes()) {
             ItemStack output = resultItem(recipe, registryAccess);
@@ -197,6 +228,16 @@ public final class CanvasRecipeCardRecipes {
     }
 
     private static List<RecipeView> buildUses(String target, RecipeManager manager, RegistryAccess registryAccess) {
+        List<RecipeView> source = ALL_RECIPE_VIEWS;
+        if (source != null) {
+            List<RecipeView> found = source.stream()
+                    .filter(view -> recipeUsesTarget(target, view))
+                    .sorted(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
+                            .thenComparing(RecipeView::id))
+                    .toList();
+            CACHED_USES_BY_TARGET.put(target, found);
+            return found;
+        }
         List<RecipeView> found = new ArrayList<>();
         for (Recipe<?> recipe : manager.getRecipes()) {
             RecipeView view = of(recipe, resultItem(recipe, registryAccess));

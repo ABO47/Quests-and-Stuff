@@ -41,8 +41,26 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletBlockPickerModal {
     private static final int TILE = 18;
+    private static List<BlockChoice> ALL_BLOCKS;
+    private static List<BlockChoice> ALL_TAGS;
 
     private TabletBlockPickerModal() {
+    }
+
+    public static void prewarm() {
+        if (ALL_BLOCKS != null) {
+            return;
+        }
+        ALL_BLOCKS = BuiltInRegistries.ITEM.stream()
+                .filter(item -> item instanceof BlockItem)
+                .map(TabletBlockPickerModal::choice)
+                .filter(choice -> choice != null)
+                .sorted(Comparator.comparing(BlockChoice::value))
+                .toList();
+        ALL_TAGS = BuiltInRegistries.BLOCK.getTagNames()
+                .map(TabletBlockPickerModal::tagChoice)
+                .sorted(Comparator.comparing(BlockChoice::value))
+                .toList();
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
@@ -144,6 +162,15 @@ public final class TabletBlockPickerModal {
 
     private static List<BlockChoice> blocks(String query) {
         String rawQuery = SearchFilter.normalizeUserInput(query);
+        if (ALL_BLOCKS != null) {
+            if (rawQuery.isBlank()) {
+                return ALL_BLOCKS;
+            }
+            return ALL_BLOCKS.stream()
+                    .filter(choice -> SearchFilter.matches(rawQuery, choice.previewId(), choice.displayName())
+                            || SearchFilter.matches(rawQuery, choice.value(), choice.displayName()))
+                    .toList();
+        }
         return BuiltInRegistries.ITEM.stream()
                 .filter(item -> item instanceof BlockItem)
                 .map(TabletBlockPickerModal::choice)
@@ -162,12 +189,17 @@ public final class TabletBlockPickerModal {
         }
         String tagQuery = SearchFilter.normalizeKey(rawQuery);
         String filter = rawQuery;
-        return BuiltInRegistries.BLOCK.getTagNames()
-                .map(TabletBlockPickerModal::tagChoice)
+        List<BlockChoice> source = ALL_TAGS;
+        if (source == null) {
+            source = BuiltInRegistries.BLOCK.getTagNames()
+                    .map(TabletBlockPickerModal::tagChoice)
+                    .sorted(Comparator.comparing(BlockChoice::value))
+                    .toList();
+        }
+        return source.stream()
                 .filter(choice -> filter.isBlank()
                         || SearchFilter.matches(filter, choice.value().substring(1), choice.displayName())
                         || SearchFilter.normalizeKey(choice.value()).contains(tagQuery))
-                .sorted(Comparator.comparing(BlockChoice::value))
                 .toList();
     }
 

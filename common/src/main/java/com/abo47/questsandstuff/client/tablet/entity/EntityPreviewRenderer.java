@@ -45,6 +45,28 @@ public final class EntityPreviewRenderer {
     private EntityPreviewRenderer() {
     }
 
+    public static void prewarmEntityCache() {
+        if (Minecraft.getInstance().level == null) {
+            return;
+        }
+        for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+            if (type == null) {
+                continue;
+            }
+            ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+            if (id == null) {
+                continue;
+            }
+            String entityId = id.toString();
+            if (!ENTITY_CACHE.containsKey(entityId)) {
+                Entity entity = type.create(Minecraft.getInstance().level);
+                if (entity != null) {
+                    ENTITY_CACHE.put(entityId, entity);
+                }
+            }
+        }
+    }
+
     public static boolean isEntityAsset(String asset) {
         return !entityId(asset).isBlank();
     }

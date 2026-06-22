@@ -31,6 +31,10 @@ public final class TabletStatPickerModal {
     private TabletStatPickerModal() {
     }
 
+    public static void prewarm() {
+        CACHE.source(owner(), TabletStatPickerModal::buildChoices);
+    }
+
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(

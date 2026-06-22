@@ -13,6 +13,7 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public final class ForgeClientEvents {
     private ForgeClientEvents() {
@@ -26,6 +27,11 @@ public final class ForgeClientEvents {
         @SubscribeEvent
         public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
             TabletClientHooks.registerKeyMappings(event::register);
+        }
+
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            event.enqueueWork(TabletClientHooks::prewarmClientAtGameLaunch);
         }
     }
 

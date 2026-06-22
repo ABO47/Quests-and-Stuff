@@ -23,10 +23,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-final class RecipeChoiceIndex {
+public final class RecipeChoiceIndex {
     private static final PickerCache<RecipeOwner, RecipeChoices, RecipeQuery, List<RecipeChoice>> CACHE = new PickerCache<>();
 
     private RecipeChoiceIndex() {
+    }
+
+    public static void prewarm() {
+        RecipeOwner owner = owner();
+        CACHE.source(owner, () -> buildChoices(owner.manager(), owner.registryAccess()));
     }
 
     static List<RecipeChoice> recipes(String query, boolean tagMode) {

@@ -5,9 +5,12 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
+import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -105,6 +108,10 @@ final class TabletAssets {
         });
         TabletUiPerfProfiler.profile("ui.prewarm.assetThumbnails", TabletAssets::prewarmAssetThumbnails);
         TabletUiPerfProfiler.profile("ui.prewarm.modLogo", TabletAssets::prewarmModLogo);
+        TabletUiPerfProfiler.profile("ui.prewarm.fluidEntries", () -> DisplayIconProvider.prewarmFluidEntries());
+        TabletUiPerfProfiler.profile("ui.prewarm.entityPreviews", () -> EntityPreviewRenderer.prewarmEntityCache());
+        TabletUiPerfProfiler.profile("ui.prewarm.recipeIndex", () -> RecipeChoiceIndex.prewarm());
+        TabletUiPerfProfiler.profile("ui.prewarm.recipeCards", () -> CanvasRecipeCardRecipes.prewarm());
     }
 
     private static void prewarmAssetThumbnails() {

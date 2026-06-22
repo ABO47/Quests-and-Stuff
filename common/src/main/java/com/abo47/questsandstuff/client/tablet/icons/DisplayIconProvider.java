@@ -24,8 +24,55 @@ import java.util.function.Predicate;
 
 public final class DisplayIconProvider {
     private static final Map<String, ItemStackTexture> ICON_TEXTURE_CACHE = new HashMap<>();
+    private static List<String> ALL_ITEM_IDS;
+    private static List<String> ALL_TAG_IDS;
+    private static List<String> ALL_FLUID_ICONS;
 
     private DisplayIconProvider() {
+    }
+
+    public static void prewarm() {
+        if (ALL_ITEM_IDS != null) {
+            return;
+        }
+        ALL_ITEM_IDS = BuiltInRegistries.ITEM.stream()
+                .map(BuiltInRegistries.ITEM::getKey)
+                .filter(id -> id != null)
+                .map(ResourceLocation::toString)
+                .sorted()
+                .toList();
+        ALL_TAG_IDS = BuiltInRegistries.ITEM.getTagNames()
+                .map(tag -> "#" + tag.location())
+                .sorted()
+                .toList();
+    }
+
+    public static void prewarmFluidEntries() {
+        if (ALL_FLUID_ICONS != null) {
+            return;
+        }
+        ALL_FLUID_ICONS = new ArrayList<>();
+        for (Fluid fluid : BuiltInRegistries.FLUID) {
+            if (fluid == null || fluid == Fluids.EMPTY) {
+                continue;
+            }
+            ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
+            if (id == null || isFlowingFluidId(id)) {
+                continue;
+            }
+            String icon = FluidIconCodec.iconFromFluid(fluid);
+            if (!icon.isBlank()) {
+                ALL_FLUID_ICONS.add(icon);
+            }
+        }
+        ALL_FLUID_ICONS.addAll(RecipeViewerIntegrations.fluidEntries());
+        ALL_FLUID_ICONS.sort(String::compareTo);
+    }
+
+    static void invalidateCaches() {
+        ALL_ITEM_IDS = null;
+        ALL_TAG_IDS = null;
+        ALL_FLUID_ICONS = null;
     }
 
     public static ItemStackTexture iconTexture(String iconId) {
@@ -111,22 +158,26 @@ public final class DisplayIconProvider {
         String rawQuery = SearchFilter.normalizeUserInput(filter);
         String query = SearchFilter.normalizeKey(rawQuery);
         List<String> entries = new ArrayList<>();
-        Set<String> candidates = new LinkedHashSet<>();
-        for (Fluid fluid : BuiltInRegistries.FLUID) {
-            if (fluid == null || fluid == Fluids.EMPTY) {
-                continue;
+        List<String> source = ALL_FLUID_ICONS;
+        if (source == null) {
+            Set<String> candidates = new LinkedHashSet<>();
+            for (Fluid fluid : BuiltInRegistries.FLUID) {
+                if (fluid == null || fluid == Fluids.EMPTY) {
+                    continue;
+                }
+                ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
+                if (id == null || isFlowingFluidId(id)) {
+                    continue;
+                }
+                candidates.add(FluidIconCodec.iconFromFluid(fluid));
             }
-            ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid);
-            if (id == null || isFlowingFluidId(id)) {
-                continue;
-            }
-            candidates.add(FluidIconCodec.iconFromFluid(fluid));
+            candidates.addAll(RecipeViewerIntegrations.fluidEntries());
+            source = candidates.stream()
+                    .filter(icon -> FluidIconCodec.isFluidIcon(icon) && !FluidIconCodec.fluidId(icon).isBlank())
+                    .sorted()
+                    .toList();
         }
-        candidates.addAll(RecipeViewerIntegrations.fluidEntries());
-        for (String icon : candidates) {
-            if (!FluidIconCodec.isFluidIcon(icon) || FluidIconCodec.fluidId(icon).isBlank()) {
-                continue;
-            }
+        for (String icon : source) {
             String key = FluidIconCodec.fluidId(icon);
             String display = FluidIconCodec.displayName(icon);
             String descKey = SearchFilter.normalizeKey(key);
@@ -137,41 +188,49 @@ public final class DisplayIconProvider {
                 entries.add(icon);
             }
         }
-        entries.sort(String::compareTo);
         return entries;
     }
 
     public static void clearCaches() {
         ICON_TEXTURE_CACHE.clear();
+        invalidateCaches();
     }
 
     private static List<String> searchableTagEntries(String rawQuery, String query, boolean tagMode) {
         List<String> entries = new ArrayList<>();
         String tagRawQuery = tagMode ? rawQuery : rawQuery.substring(1);
         String tagQuery = tagMode ? query : SearchFilter.normalizeKey(tagRawQuery);
-        List<String> tags = BuiltInRegistries.ITEM.getTagNames()
-                .map(TagKey::location)
-                .map(ResourceLocation::toString)
-                .filter(id -> tagRawQuery.isBlank() || SearchFilter.matches(tagRawQuery, id, id) || SearchFilter.normalizeKey(id).contains(tagQuery))
+        List<String> source = ALL_TAG_IDS != null ? ALL_TAG_IDS : BuiltInRegistries.ITEM.getTagNames()
+                .map(tag -> "#" + tag.location())
                 .sorted()
                 .toList();
-        for (String tag : tags) {
-            entries.add("#" + tag);
+        for (String tag : source) {
+            String stripped = tag.startsWith("#") ? tag.substring(1) : tag;
+            if (tagRawQuery.isBlank() || SearchFilter.matches(tagRawQuery, stripped, stripped) || SearchFilter.normalizeKey(stripped).contains(tagQuery)) {
+                entries.add(tag);
+            }
         }
         return entries;
     }
 
     private static List<String> searchableItemEntries(String rawQuery, String query, Predicate<Item> itemFilter) {
         List<String> entries = new ArrayList<>();
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (!itemFilter.test(item)) {
+        List<String> source = ALL_ITEM_IDS;
+        if (source == null) {
+            source = BuiltInRegistries.ITEM.stream()
+                    .map(BuiltInRegistries.ITEM::getKey)
+                    .filter(id -> id != null)
+                    .map(ResourceLocation::toString)
+                    .sorted()
+                    .toList();
+        }
+        for (String key : source) {
+            ResourceLocation id = ResourceLocation.tryParse(key);
+            if (id == null) continue;
+            Item item = BuiltInRegistries.ITEM.get(id);
+            if (item == null || item == Items.AIR || !itemFilter.test(item)) {
                 continue;
             }
-            ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
-            if (id == null) {
-                continue;
-            }
-            String key = id.toString();
             String display = item.getDescription().getString();
             String descKey = SearchFilter.normalizeKey(item.getDescriptionId());
             boolean include;
@@ -184,7 +243,6 @@ public final class DisplayIconProvider {
                 entries.add(key);
             }
         }
-        entries.sort(String::compareTo);
         return entries;
     }
 

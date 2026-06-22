@@ -43,6 +43,10 @@ public final class TabletSoundPickerModal {
     private TabletSoundPickerModal() {
     }
 
+    public static void prewarm() {
+        CACHE.source(owner(), TabletSoundPickerModal::buildChoices);
+    }
+
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_SOUND), w, state, refresh);
         ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);

@@ -4,6 +4,10 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
+import com.abo47.questsandstuff.client.tablet.modal.TabletBlockPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.screen.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -80,6 +84,13 @@ public final class TabletClientHooks {
     private static String rememberedQuestDetailsQuestId = "";
 
     private TabletClientHooks() {
+    }
+
+    public static void prewarmClientAtGameLaunch() {
+        DisplayIconProvider.prewarm();
+        TabletStatPickerModal.prewarm();
+        TabletSoundPickerModal.prewarm();
+        TabletBlockPickerModal.prewarm();
     }
 
     public static void registerKeyMappings(Consumer<KeyMapping> registrar) {
