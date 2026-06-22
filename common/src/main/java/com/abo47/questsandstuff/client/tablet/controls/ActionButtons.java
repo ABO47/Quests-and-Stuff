@@ -31,8 +31,9 @@ public final class ActionButtons {
         int textGap = textWidth > 0 ? 4 : 0;
         int contentWidth = iconSize + textGap + textWidth;
         int contentX = x + Math.max(3, (width - contentWidth) / 2);
-        int iconY = y + Math.max(0, (height - iconSize) / 2);
-        int textY = y + Math.max(1, (height - textHeight) / 2);
+        int centerY = y + height / 2;
+        int iconY = centerY - iconSize / 2;
+        int textY = centerY - textHeight / 2;
         parent.addWidget(IconOnlyButton.icon(contentX, iconY, iconSize, icon, color));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
