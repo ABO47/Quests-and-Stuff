@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -52,6 +50,21 @@ final class CanvasContextSelectionActions {
                 canvasViewport.refresh();
             }));
         }
+        List<CanvasContextMenuController.EdgeRef> connectedEdges = CanvasContextMenuController.selectedConnectedEdges(state, selectedGroup);
+        if (!connectedEdges.isEmpty()) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.selection_connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
+                CanvasContextMenuController.EdgeRef first = connectedEdges.get(0);
+                int color = CanvasRenderer.connectionColor(state, selectedGroup, first.prerequisiteId(), first.questId());
+                ModalOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedGroup), color);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors group={} edges={}", selectedGroup, connectedEdges.size());
+                canvasViewport.refresh();
+            }));
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.selection_connection_texture"), "background", ModColors.INTERACTIVE, () -> {
+                ModalOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedGroup));
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures group={} edges={}", selectedGroup, connectedEdges.size());
+                canvasViewport.refresh();
+            }));
+        }
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             ContextMenuState.closeExclusiveSubmenus(state);
             addBatchQuestActions(actions, canvasViewport, state, player);
@@ -68,16 +81,6 @@ final class CanvasContextSelectionActions {
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
-        }
-        List<CanvasContextMenuController.EdgeRef> connectedEdges = CanvasContextMenuController.selectedConnectedEdges(state, selectedGroup);
-        if (!connectedEdges.isEmpty()) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.selection_connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
-                CanvasContextMenuController.EdgeRef first = connectedEdges.get(0);
-                int color = CanvasRenderer.connectionColor(state, selectedGroup, first.prerequisiteId(), first.questId());
-                ModalOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedGroup), color);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors group={} edges={}", selectedGroup, connectedEdges.size());
-                canvasViewport.refresh();
-            }));
         }
         addSelectionCopyAndDeleteActions(actions, canvasViewport, state, player);
     }

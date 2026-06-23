@@ -42,6 +42,8 @@ final class ClientQuestSnapshotBuilder {
         quest.put(QuestSyncKeys.Quest.CONNECTION_COLORS, new CompoundTag());
         quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, new CompoundTag());
         quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, new ListTag());
+        quest.put(QuestSyncKeys.Quest.CONNECTION_TEXTURES, new CompoundTag());
+        quest.put(QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, new CompoundTag());
         quest.put(QuestSyncKeys.Quest.TASKS, new CompoundTag());
         quest.put(QuestSyncKeys.Quest.TASKS_ORDER, new ListTag());
         quest.put(QuestSyncKeys.Quest.REWARDS, new CompoundTag());
@@ -130,6 +132,12 @@ final class ClientQuestSnapshotBuilder {
         }
         if (!quest.contains(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
             quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, new ListTag());
+        }
+        if (!quest.contains(QuestSyncKeys.Quest.CONNECTION_TEXTURES, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.CONNECTION_TEXTURES, new CompoundTag());
+        }
+        if (!quest.contains(QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, Tag.TAG_COMPOUND)) {
+            quest.put(QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, new CompoundTag());
         }
         if (!quest.contains(QuestSyncKeys.Quest.TASKS, Tag.TAG_COMPOUND)) {
             quest.put(QuestSyncKeys.Quest.TASKS, new CompoundTag());

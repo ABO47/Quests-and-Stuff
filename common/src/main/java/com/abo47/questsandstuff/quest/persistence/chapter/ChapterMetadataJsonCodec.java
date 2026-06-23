@@ -144,6 +144,8 @@ final class ChapterMetadataJsonCodec {
             String background = stringOr(json, "background", "");
             Map<String, Integer> connectionColors = readIntMap(json.get("connection_colors"));
             Map<String, String> connectionModes = readStringMap(json.get("connection_modes"));
+            Map<String, String> connectionTextures = readStringMap(json.get("connection_textures"));
+            Map<String, Integer> connectionTextureSpacings = readIntMap(json.get("connection_texture_spacings"));
             choices.add(new CanvasExclusiveChoice(
                     id,
                     intOr(json, "x", 0),
@@ -155,7 +157,9 @@ final class ChapterMetadataJsonCodec {
                     prerequisites,
                     background,
                     connectionColors,
-                    connectionModes
+                    connectionModes,
+                    connectionTextures,
+                    connectionTextureSpacings
             ));
         }
         return choices;
@@ -183,6 +187,12 @@ final class ChapterMetadataJsonCodec {
             }
             if (!ec.connectionModes().isEmpty()) {
                 json.add("connection_modes", writeStringMap(ec.connectionModes()));
+            }
+            if (!ec.connectionTextures().isEmpty()) {
+                json.add("connection_textures", writeStringMap(ec.connectionTextures()));
+            }
+            if (!ec.connectionTextureSpacings().isEmpty()) {
+                json.add("connection_texture_spacings", writeIntMap(ec.connectionTextureSpacings()));
             }
             array.add(json);
         }

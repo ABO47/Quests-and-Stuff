@@ -33,6 +33,7 @@ record CanvasMinimapConnection(
         int color,
         int alpha,
         boolean direct,
-        List<CanvasPoint> projectedPath
+        List<CanvasPoint> projectedPath,
+        String texture
 ) {
 }

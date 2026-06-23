@@ -90,6 +90,8 @@ class QuestSyncPayloadBuilderTest {
                 Map.of("quest/parent", 0x112233),
                 Map.of("quest/parent", "grid"),
                 Set.of("quest/parent"),
+                Map.of(),
+                Map.of(),
                 List.of("task/check"),
                 List.of("reward/xp"),
                 Map.of("task/check", new CheckQuestTaskDefinition("task/check", QuestTasks.id("check"), "")),

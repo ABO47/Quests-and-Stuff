@@ -102,6 +102,38 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
+    public static CompoundTag connectionTexture(String questId, String prerequisiteId, String texture) {
+        CompoundTag payload = prerequisite(questId, prerequisiteId);
+        payload.putString(EditorCommandPayloadKeys.TEXTURE, clean(texture));
+        return payload;
+    }
+
+    public static CompoundTag connectionTextures(Map<String, Map<String, String>> questTextures) {
+        CompoundTag payload = new CompoundTag();
+        ListTag list = new ListTag();
+        for (Map.Entry<String, Map<String, String>> questEntry : questTextures.entrySet()) {
+            String questId = clean(questEntry.getKey());
+            if (questId.isBlank()) continue;
+            for (Map.Entry<String, String> prereqEntry : questEntry.getValue().entrySet()) {
+                String prereqId = clean(prereqEntry.getKey());
+                if (prereqId.isBlank()) continue;
+                CompoundTag entry = new CompoundTag();
+                entry.putString(EditorCommandPayloadKeys.QUEST, questId);
+                entry.putString(EditorCommandPayloadKeys.PREREQUISITE, prereqId);
+                entry.putString(EditorCommandPayloadKeys.TEXTURE, clean(prereqEntry.getValue()));
+                list.add(entry);
+            }
+        }
+        payload.put(EditorCommandPayloadKeys.TEXTURES, list);
+        return payload;
+    }
+
+    public static CompoundTag connectionTextureSpacing(String questId, String prerequisiteId, int spacing) {
+        CompoundTag payload = prerequisite(questId, prerequisiteId);
+        payload.putInt(EditorCommandPayloadKeys.SPACING, Math.max(0, spacing));
+        return payload;
+    }
+
     public static CompoundTag questIcon(String questId, String icon) {
         return questString(questId, EditorCommandPayloadKeys.ICON, icon);
     }
@@ -204,6 +236,12 @@ public final class EditorCommandPayloads {
     public static CompoundTag canvasExclusiveChoicePut(String group, CanvasExclusiveChoice ec) {
         CompoundTag payload = group(group);
         payload.put(EditorCommandPayloadKeys.EXCLUSIVE_CHOICE, CanvasLayerNbt.exclusiveChoiceToTag(ec));
+        return payload;
+    }
+
+    public static CompoundTag canvasExclusiveChoicesPut(String group, List<CanvasExclusiveChoice> ecs) {
+        CompoundTag payload = group(group);
+        payload.put(EditorCommandPayloadKeys.EXCLUSIVE_CHOICES, CanvasLayerNbt.exclusiveChoicesToListTag(ecs));
         return payload;
     }
 

@@ -157,6 +157,8 @@ public class TabletUiState {
         public int prerequisitesManagerContextMenuH;
         public String modalQuestCompletionSoundTarget = "";
         public final Set<String> modalQuestCompletionSoundTargets = new java.util.LinkedHashSet<>();
+        public String modalConnectionTextureTarget = "";
+        public final java.util.Set<String> modalConnectionTextureChapterTargets = new java.util.LinkedHashSet<>();
     }
 
     public static final class PickerState {
@@ -218,6 +220,8 @@ public class TabletUiState {
         public String soundSelected = "";
         public int soundVolumeDraft = 100;
         public boolean soundVolumeDragging;
+        public int connectionTextureSpacingDraft;
+        public boolean connectionTextureSpacingDragging;
         public String assetSelected = "";
         public String assetBrowseDir = "";
         public String assetSearch = "";
@@ -345,9 +349,10 @@ public class TabletUiState {
         public String canvasLastClickedQuestId = "";
         public long canvasLastQuestClickAtMs;
         public final Map<String, Set<String>> hiddenConnectionsByGroup = new HashMap<>();
-        public final Map<String, Set<String>> directConnectionsByGroup = new HashMap<>();
         public final Map<String, Set<String>> gridConnectionsByGroup = new HashMap<>();
         public final Map<String, Map<String, Integer>> connectionColorsByGroup = new HashMap<>();
+        public final Map<String, Map<String, String>> connectionTexturesByGroup = new HashMap<>();
+        public final Map<String, Map<String, Integer>> connectionTextureSpacingsByGroup = new HashMap<>();
         public String hoveredQuestId = "";
         public final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup = new HashMap<>();
         public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();

@@ -9,6 +9,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
+import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURES;
+import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;
+
 final class ClientQuestConnectionMutations {
     private ClientQuestConnectionMutations() {
     }
@@ -129,15 +132,43 @@ final class ClientQuestConnectionMutations {
 
     private static ConnectionTarget targetForConnection(String questId, String prerequisiteId) {
         String normalizedQuest = QuestConnectionMetadata.normalizeQuestId(questId);
-        String normalizedPrerequisite = QuestConnectionMetadata.metadataKey(prerequisiteId);
+        String normalizedPrerequisite = QuestConnectionMetadata.normalizeQuestId(prerequisiteId);
         if (normalizedQuest.isBlank() || normalizedPrerequisite.isBlank()) {
             return null;
         }
         CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
-        return quest == null ? null : new ConnectionTarget(quest, QuestConnectionMetadata.metadataKey(normalizedPrerequisite));
+        return quest == null ? null : new ConnectionTarget(quest, normalizedPrerequisite);
     }
 
-    private static void removeConnectionMetadata(CompoundTag quest, String prerequisiteId) {
+    public static void setConnectionTextureLocal(String questId, String prerequisiteId, String texture) {
+        ConnectionTarget target = targetForConnection(questId, prerequisiteId);
+        if (target == null) {
+            return;
+        }
+        CompoundTag textures = target.quest().getCompound(CONNECTION_TEXTURES).copy();
+        if (texture == null || texture.isBlank()) {
+            textures.remove(target.metadataKey());
+        } else {
+            textures.putString(target.metadataKey(), texture);
+        }
+        target.quest().put(CONNECTION_TEXTURES, textures);
+    }
+
+    public static void setConnectionTextureSpacingLocal(String questId, String prerequisiteId, int spacing) {
+        ConnectionTarget target = targetForConnection(questId, prerequisiteId);
+        if (target == null) {
+            return;
+        }
+        CompoundTag spacings = target.quest().getCompound(CONNECTION_TEXTURE_SPACINGS).copy();
+        if (spacing <= 0) {
+            spacings.remove(target.metadataKey());
+        } else {
+            spacings.putInt(target.metadataKey(), spacing);
+        }
+        target.quest().put(CONNECTION_TEXTURE_SPACINGS, spacings);
+    }
+
+    static void removeConnectionMetadata(CompoundTag quest, String prerequisiteId) {
         String key = QuestConnectionMetadata.metadataKey(prerequisiteId);
         CompoundTag colors = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS).copy();
         colors.remove(key);
@@ -145,6 +176,12 @@ final class ClientQuestConnectionMutations {
         CompoundTag modes = quest.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES).copy();
         modes.remove(key);
         quest.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        CompoundTag textures = quest.getCompound(CONNECTION_TEXTURES).copy();
+        textures.remove(key);
+        quest.put(CONNECTION_TEXTURES, textures);
+        CompoundTag spacings = quest.getCompound(CONNECTION_TEXTURE_SPACINGS).copy();
+        spacings.remove(key);
+        quest.put(CONNECTION_TEXTURE_SPACINGS, spacings);
         quest.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, removeString(quest.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING), key));
     }
 

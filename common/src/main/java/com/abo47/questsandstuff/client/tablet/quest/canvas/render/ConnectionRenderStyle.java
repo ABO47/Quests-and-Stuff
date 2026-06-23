@@ -10,7 +10,9 @@ record ConnectionRenderStyle(
         int color,
         QuestConnectionMode mode,
         boolean hidden,
-        int alpha
+        int alpha,
+        String texture,
+        int textureSpacing
 ) {
     private static final int VISIBLE_ALPHA = 245;
     private static final int HIDDEN_ALPHA = 64;
@@ -23,7 +25,9 @@ record ConnectionRenderStyle(
                 metadata.color(),
                 metadata.mode(),
                 metadata.hidden(),
-                metadata.hidden() ? HIDDEN_ALPHA : VISIBLE_ALPHA
+                metadata.hidden() ? HIDDEN_ALPHA : VISIBLE_ALPHA,
+                metadata.texture(),
+                metadata.textureSpacing()
         );
     }
 

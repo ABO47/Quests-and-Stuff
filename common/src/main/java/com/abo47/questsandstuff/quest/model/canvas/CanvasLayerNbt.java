@@ -178,6 +178,20 @@ public final class CanvasLayerNbt {
             }
             tag.put("connection_modes", modes);
         }
+        if (!ec.connectionTextures().isEmpty()) {
+            CompoundTag textures = new CompoundTag();
+            for (Map.Entry<String, String> entry : ec.connectionTextures().entrySet()) {
+                textures.putString(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_textures", textures);
+        }
+        if (!ec.connectionTextureSpacings().isEmpty()) {
+            CompoundTag spacings = new CompoundTag();
+            for (Map.Entry<String, Integer> entry : ec.connectionTextureSpacings().entrySet()) {
+                spacings.putInt(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_texture_spacings", spacings);
+        }
         return tag;
     }
 
@@ -212,6 +226,24 @@ public final class CanvasLayerNbt {
                 }
             }
         }
+        Map<String, String> connectionTextures = new HashMap<>();
+        if (tag.contains("connection_textures", Tag.TAG_COMPOUND)) {
+            CompoundTag textures = tag.getCompound("connection_textures");
+            for (String key : textures.getAllKeys()) {
+                if (textures.contains(key, Tag.TAG_STRING)) {
+                    connectionTextures.put(key, textures.getString(key));
+                }
+            }
+        }
+        Map<String, Integer> connectionTextureSpacings = new HashMap<>();
+        if (tag.contains("connection_texture_spacings", Tag.TAG_COMPOUND)) {
+            CompoundTag spacings = tag.getCompound("connection_texture_spacings");
+            for (String key : spacings.getAllKeys()) {
+                if (spacings.contains(key, Tag.TAG_INT)) {
+                    connectionTextureSpacings.put(key, spacings.getInt(key));
+                }
+            }
+        }
         return new CanvasExclusiveChoice(
                 id,
                 tag.getInt("x"),
@@ -223,7 +255,9 @@ public final class CanvasLayerNbt {
                 prerequisites,
                 background,
                 connectionColors,
-                connectionModes
+                connectionModes,
+                connectionTextures,
+                connectionTextureSpacings
         );
     }
 

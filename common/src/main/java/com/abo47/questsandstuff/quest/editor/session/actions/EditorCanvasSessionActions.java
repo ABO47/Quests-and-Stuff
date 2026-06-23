@@ -25,6 +25,10 @@ public final class EditorCanvasSessionActions {
         canvasEdits.putCanvasExclusiveChoice(player, groupName, ec);
     }
 
+    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
+        canvasEdits.putCanvasExclusiveChoices(player, groupName, ecs);
+    }
+
     public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
         canvasEdits.removeCanvasExclusiveChoice(player, groupName, ecId);
     }

@@ -40,6 +40,7 @@ public final class ChapterContextMenuRows {
                 ContextActions.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
                 ContextActions.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
         )));
+        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_connection_texture"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
         boolean locked = ClientQuestCache.groupLockUntilUnlocked(target);
         boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_VISIBILITY), "eye", ModColors.INTERACTIVE, List.of(

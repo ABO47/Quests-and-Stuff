@@ -120,6 +120,19 @@ final class CanvasMinimapPainter {
             QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
             return;
         }
+        if (quest.tag().contains("ec_background")) {
+            String bg = quest.tag().getString("ec_background");
+            if (!bg.isBlank()) {
+                com.lowdragmc.lowdraglib.gui.texture.IGuiTexture tex = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(
+                        com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR, bg);
+                if (tex != null) {
+                    tex.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
+                } else {
+                    QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
+                }
+            }
+            return;
+        }
 
         boolean hiddenOverlay = state.root.canEdit && quest.tag().getBoolean("visual_hidden") && !quest.tag().getBoolean("completed");
         boolean highlighted = quest.questId() != null && state.canvas.canvasSelection.questIds().contains(quest.questId());
@@ -145,7 +158,11 @@ final class CanvasMinimapPainter {
                         Math.round(originY + connection.y2()),
                         connection.direct()
                 );
-        ConnectionRenderer.drawStaticChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, -4096, -4096, 8192, 8192);
+        if (connection.texture() != null) {
+            ConnectionRenderer.drawTexturedChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, connection.texture(), -4096, -4096, 8192, 8192);
+        } else {
+            ConnectionRenderer.drawStaticChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, -4096, -4096, 8192, 8192);
+        }
     }
 
     private static List<CanvasPoint> offsetPath(List<CanvasPoint> path, int dx, int dy) {

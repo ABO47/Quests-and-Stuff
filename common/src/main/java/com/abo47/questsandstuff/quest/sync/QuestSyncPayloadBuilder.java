@@ -143,6 +143,9 @@ final class QuestSyncPayloadBuilder {
         questTag.put(QuestSyncKeys.Quest.CONNECTION_COLORS, connectionColorsTag(definition));
         questTag.put(QuestSyncKeys.Quest.CONNECTION_MODES, connectionModesTag(definition));
         questTag.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hiddenConnectionsTag(definition));
+        CompoundTag ctTag = connectionTexturesTag(definition);
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_TEXTURES, ctTag);
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, connectionTextureSpacingsTag(definition));
         questTag.put(QuestSyncKeys.Quest.GROUPS, chapterViewsTag(definition));
         return questTag;
     }
@@ -325,5 +328,28 @@ final class QuestSyncPayloadBuilder {
             }
         }
         return hidden;
+    }
+
+    private static CompoundTag connectionTexturesTag(QuestDefinition definition) {
+        CompoundTag textures = new CompoundTag();
+        Map<String, String> connTextures = definition.connectionTextures();
+        for (Map.Entry<String, String> entry : connTextures.entrySet()) {
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null && !entry.getValue().isBlank()) {
+                textures.putString(key, entry.getValue());
+            }
+        }
+        return textures;
+    }
+
+    private static CompoundTag connectionTextureSpacingsTag(QuestDefinition definition) {
+        CompoundTag spacings = new CompoundTag();
+        for (Map.Entry<String, Integer> entry : definition.connectionTextureSpacings().entrySet()) {
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null && entry.getValue() > 0) {
+                spacings.putInt(key, entry.getValue());
+            }
+        }
+        return spacings;
     }
 }

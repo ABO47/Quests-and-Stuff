@@ -47,6 +47,8 @@ public final class EditorCommandPayloadLimits {
             case CANVAS_TEXT_PUT -> !exceedsLimit(payload.getCompound(EditorCommandPayloadKeys.TEXT).getList(EditorCommandPayloadKeys.SPANS, Tag.TAG_COMPOUND), MAX_TEXT_SPANS);
             case CANVAS_LAYER_ORDER -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.ORDER, Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
             case CANVAS_EXCLUSIVE_CHOICE_PUT -> !exceedsLength(payload.getCompound(EditorCommandPayloadKeys.EXCLUSIVE_CHOICE).getString(EditorCommandPayloadKeys.JSON), MAX_EDITOR_JSON_LENGTH);
+            case CANVAS_EXCLUSIVE_CHOICE_PUT_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
+            case CONNECTION_TEXTURE_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.TEXTURES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
             default -> true;
         };
     }

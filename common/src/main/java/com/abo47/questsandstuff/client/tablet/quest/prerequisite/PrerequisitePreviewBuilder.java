@@ -169,6 +169,8 @@ final class PrerequisitePreviewBuilder {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                Map.of(),
+                Map.of(),
                 definition.tasksOrder(),
                 definition.rewardsOrder(),
                 definition.tasks(),

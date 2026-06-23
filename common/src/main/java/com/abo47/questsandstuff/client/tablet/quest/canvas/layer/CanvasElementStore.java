@@ -133,6 +133,37 @@ public final class CanvasElementStore {
         }
     }
 
+    public static void putCanvasExclusiveChoices(TabletUiState state, String group, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
+        if (group == null || group.isBlank() || ecs == null || ecs.isEmpty()) {
+            return;
+        }
+        List<CanvasExclusiveChoice> existing = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
+        for (CanvasExclusiveChoice ec : ecs) {
+            if (ec == null) continue;
+            boolean replaced = false;
+            for (int i = 0; i < existing.size(); i++) {
+                if (existing.get(i).id().equals(ec.id())) {
+                    existing.set(i, ec);
+                    replaced = true;
+                    break;
+                }
+            }
+            if (!replaced) {
+                existing.add(ec);
+            }
+            CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()));
+        }
+        state.canvas.canvasExclusiveChoicesByGroup.put(group, existing);
+        for (CanvasExclusiveChoice ec : ecs) {
+            if (ec == null) continue;
+            ClientQuestCache.putCanvasExclusiveChoiceLocal(group, ec);
+        }
+        persistLayerOrderLocal(state, group);
+        if (syncServer) {
+            sendCanvasExclusiveChoices(group, ecs);
+        }
+    }
+
     public static boolean removeCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return false;
@@ -266,6 +297,11 @@ public final class CanvasElementStore {
     private static void sendCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
         CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoicePut(group, ec);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, payload));
+    }
+
+    private static void sendCanvasExclusiveChoices(String group, List<CanvasExclusiveChoice> ecs) {
+        CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoicesPut(group, ecs);
+        ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, payload));
     }
 
     private static void sendCanvasExclusiveChoiceRemove(String group, String ecId) {

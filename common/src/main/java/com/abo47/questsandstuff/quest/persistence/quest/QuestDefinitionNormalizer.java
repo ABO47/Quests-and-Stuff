@@ -47,6 +47,10 @@ final class QuestDefinitionNormalizer {
                 new HashMap<>(definition.connectionColors()),
                 new HashMap<>(definition.connectionModes()),
                 Set.copyOf(definition.hiddenConnections()),
+                new HashMap<>(definition.connectionTextures()),
+                new HashMap<>(definition.connectionTextureSpacings()),
+                new ArrayList<>(definition.tasksOrder()),
+                new ArrayList<>(definition.rewardsOrder()),
                 orderedCopy(definition.tasks()),
                 orderedCopy(definition.rewards())
         );
@@ -62,6 +66,10 @@ final class QuestDefinitionNormalizer {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -99,11 +107,15 @@ final class QuestDefinitionNormalizer {
                 continue;
             }
             String normalizedPrerequisite = normalizeQuestId(prerequisite);
-            if (normalizedPrerequisite.equals(definition.id()) || !knownIds.contains(normalizedPrerequisite)) {
+            if (normalizedPrerequisite.equals(definition.id())) {
+                continue;
+            }
+            if (!knownIds.contains(normalizedPrerequisite)) {
                 continue;
             }
             prerequisites.add(normalizedPrerequisite);
         }
+        Map<String, String> filteredTextures = filterConnectionTextures(definition.connectionTextures(), prerequisites);
 
         return new QuestDefinition(
                 definition.schema(),
@@ -114,6 +126,10 @@ final class QuestDefinitionNormalizer {
                 filterConnectionColors(definition.connectionColors(), prerequisites),
                 filterConnectionModes(definition.connectionModes(), prerequisites),
                 filterHiddenConnections(definition.hiddenConnections(), prerequisites),
+                filteredTextures,
+                filterConnectionTextureSpacings(definition.connectionTextureSpacings(), prerequisites),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -173,6 +189,32 @@ final class QuestDefinitionNormalizer {
         Map<String, Integer> filtered = new HashMap<>();
         for (Map.Entry<String, Integer> entry : colors.entrySet()) {
             if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null) {
+                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
+            }
+        }
+        return Map.copyOf(filtered);
+    }
+
+    private static Map<String, String> filterConnectionTextures(Map<String, String> textures, Set<String> prerequisites) {
+        if (textures == null || textures.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> filtered = new HashMap<>();
+        for (Map.Entry<String, String> entry : textures.entrySet()) {
+            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && !entry.getValue().isBlank()) {
+                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
+            }
+        }
+        return Map.copyOf(filtered);
+    }
+
+    private static Map<String, Integer> filterConnectionTextureSpacings(Map<String, Integer> spacings, Set<String> prerequisites) {
+        if (spacings == null || spacings.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> filtered = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : spacings.entrySet()) {
+            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && entry.getValue() > 0) {
                 filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
             }
         }

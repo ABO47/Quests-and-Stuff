@@ -20,6 +20,8 @@ public record ConnectionLine(
         boolean pending,
         int color,
         boolean hidden,
-        int alpha
+        int alpha,
+        String texture,
+        int textureSpacing
 ) {
 }

@@ -19,12 +19,12 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -68,9 +68,11 @@ public final class TabletAssetPickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         boolean soundPicker = !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget).isBlank()
                 || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets).isEmpty();
+        boolean connectionTexturePicker = !state.modal.modalConnectionTextureTarget.isBlank()
+                || !state.modal.modalConnectionTextureChapterTargets.isEmpty();
         boolean blueprintPicker = isBlueprintPicker(state);
         boolean hudPicker = isHudBackgroundPicker(state);
-        boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker;
+        boolean bottomPreviewControls = isQuestBackgroundPicker(state) || hudPicker || connectionTexturePicker;
         boolean imagePicker = !state.modal.modalEcBackgroundTarget.isBlank()
                 || !state.modal.modalCanvasBackgroundTarget.isBlank()
                 || !state.modal.modalQuestCompletionHudBackgroundTarget.isBlank()
@@ -78,7 +80,8 @@ public final class TabletAssetPickerModal {
                 || !state.questDetails.questDetailsAssetPickTarget.isBlank()
                 || !state.modal.modalChapterTarget.isBlank()
                 || isQuestBackgroundPicker(state)
-                || isHudBackgroundPicker(state);
+                || isHudBackgroundPicker(state)
+                || connectionTexturePicker;
         String title = blueprintPicker
                 ? "ui.questsandstuff.modal.blueprints"
                 : soundPicker ? "ui.questsandstuff.modal.custom_sounds" : "ui.questsandstuff.modal.assets_library";
@@ -143,6 +146,7 @@ public final class TabletAssetPickerModal {
             preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ModColors.TEXT_MUTED));
             addQuestBackgroundOptions(preview, state, refresh, leftW, previewH);
             addHudBackgroundOptions(preview, state, refresh, leftW, previewH);
+            addConnectionTextureControls(preview, state, player, refresh, leftW, previewH);
         }
         if (!selected.isBlank() && dims != null) {
             boolean grayscale = isQuestBackgroundPicker(state) && state.modal.modalQuestBackgroundGrayscale;
@@ -453,6 +457,85 @@ public final class TabletAssetPickerModal {
 
     private static boolean isHudBackgroundPicker(TabletUiState state) {
         return hudElement(state) != null;
+    }
+
+    private static boolean isConnectionTexturePicker(TabletUiState state) {
+        return !state.modal.modalConnectionTextureTarget.isBlank()
+                || !state.modal.modalConnectionTextureChapterTargets.isEmpty();
+    }
+
+    private static void addConnectionTextureControls(WidgetGroup preview, TabletUiState state, Player player, Runnable refresh, int leftW, int previewH) {
+        if (!isConnectionTexturePicker(state)) {
+            return;
+        }
+        int rowY = Math.max(58, previewH - 56);
+        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), ModColors.TEXT_SECONDARY));
+        PercentSliderControls.add(
+                preview,
+                8,
+                rowY + 12,
+                leftW - 16,
+                state.pickers.connectionTextureSpacingDraft,
+                next -> {
+                    state.pickers.connectionTextureSpacingDraft = Math.max(0, Math.min(100, next));
+                    refresh.run();
+                },
+                () -> commitConnectionTextureSpacing(player, state, refresh),
+                () -> state.pickers.connectionTextureSpacingDragging,
+                dragging -> state.pickers.connectionTextureSpacingDragging = dragging,
+                new Component[]{Component.translatable("ui.questsandstuff.context.connection_texture_spacing")}
+        );
+    }
+
+    private static void commitConnectionTextureSpacing(Player player, TabletUiState state, Runnable refresh) {
+        int spacing = state.pickers.connectionTextureSpacingDraft;
+        String target = state.modal.modalConnectionTextureTarget;
+        java.util.Set<String> chapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        if (!chapterTargets.isEmpty()) {
+            String[] parts = target.split("\\|");
+            String group = parts.length >= 2 ? parts[1] : "";
+            for (String questId : chapterTargets) {
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(questId);
+                if (questTag == null) continue;
+                net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
+                for (int i = 0; i < prereqs.size(); i++) {
+                    String prerequisiteId = prereqs.getString(i);
+                    EditorCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
+                }
+            }
+            if (!group.isBlank()) {
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+                    for (String connectedId : ec.connectionQuestIds()) {
+                        if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
+                            EditorCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
+                        }
+                    }
+                    for (String prerequisiteId : ec.prerequisiteQuestIds()) {
+                        if (chapterTargets.contains(prerequisiteId) || chapterTargets.contains(ec.id())) {
+                            EditorCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, ec.id(), spacing);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        if (!target.isBlank()) {
+            String[] parts = target.split("\\|");
+            if (parts.length >= 4) {
+                String group = parts[1];
+                String prerequisiteId = parts[2];
+                String questId = parts[3];
+                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
+                if (isEc) {
+                    EditorCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
+                } else {
+                    EditorCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
+                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, group, prerequisiteId, questId, spacing);
+                }
+            }
+        }
+        refresh.run();
     }
 
     private static List<AssetLibrary.AssetEntry> filterByKind(List<AssetLibrary.AssetEntry> entries, AssetLibrary.AssetKind first, AssetLibrary.AssetKind second) {

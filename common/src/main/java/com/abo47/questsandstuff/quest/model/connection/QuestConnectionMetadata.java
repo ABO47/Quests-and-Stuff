@@ -7,7 +7,9 @@ public record QuestConnectionMetadata(
         String targetQuestId,
         int color,
         QuestConnectionMode mode,
-        boolean hidden
+        boolean hidden,
+        String texture,
+        int textureSpacing
 ) {
     private static final String EDGE_SEPARATOR = "->";
 
@@ -15,14 +17,16 @@ public record QuestConnectionMetadata(
         sourceQuestId = normalizeQuestId(sourceQuestId);
         targetQuestId = normalizeQuestId(targetQuestId);
         mode = mode == null ? QuestConnectionMode.DIRECT : mode;
+        texture = texture == null ? "" : texture;
+        textureSpacing = Math.max(0, textureSpacing);
     }
 
     public static QuestConnectionMetadata direct(String sourceQuestId, String targetQuestId, int color, boolean hidden) {
-        return new QuestConnectionMetadata(sourceQuestId, targetQuestId, color, QuestConnectionMode.DIRECT, hidden);
+        return new QuestConnectionMetadata(sourceQuestId, targetQuestId, color, QuestConnectionMode.DIRECT, hidden, "", 0);
     }
 
     public static QuestConnectionMetadata grid(String sourceQuestId, String targetQuestId, int color, boolean hidden) {
-        return new QuestConnectionMetadata(sourceQuestId, targetQuestId, color, QuestConnectionMode.GRID, hidden);
+        return new QuestConnectionMetadata(sourceQuestId, targetQuestId, color, QuestConnectionMode.GRID, hidden, "", 0);
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {

@@ -219,6 +219,10 @@ public final class EditorSessionService {
         canvasActions.putCanvasExclusiveChoice(player, groupName, ec);
     }
 
+    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
+        canvasActions.putCanvasExclusiveChoices(player, groupName, ecs);
+    }
+
     public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
         canvasActions.removeCanvasExclusiveChoice(player, groupName, ecId);
     }
@@ -286,6 +290,18 @@ public final class EditorSessionService {
 
     public void setConnectionColor(ServerPlayer player, String questId, String prerequisiteId, int color) {
         questActions.setConnectionColor(player, questId, prerequisiteId, color);
+    }
+
+    public void setConnectionTexture(ServerPlayer player, String questId, String prerequisiteId, String texture) {
+        questActions.setConnectionTexture(player, questId, prerequisiteId, texture);
+    }
+
+    public void setConnectionTextures(ServerPlayer player, Map<String, Map<String, String>> questTextures) {
+        questActions.setConnectionTextures(player, questTextures);
+    }
+
+    public void setConnectionTextureSpacing(ServerPlayer player, String questId, String prerequisiteId, int spacing) {
+        questActions.setConnectionTextureSpacing(player, questId, prerequisiteId, spacing);
     }
 
     public void connectToNext(ServerPlayer player) {

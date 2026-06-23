@@ -61,6 +61,8 @@ public final class QuestSyncKeys {
         public static final String CONNECTION_COLORS = "connection_colors";
         public static final String CONNECTION_MODES = "connection_modes";
         public static final String HIDDEN_CONNECTIONS = "hidden_connections";
+        public static final String CONNECTION_TEXTURES = "connection_textures";
+        public static final String CONNECTION_TEXTURE_SPACINGS = "connection_texture_spacings";
         public static final String GROUPS = QuestSyncKeys.GROUPS;
 
         private Quest() {

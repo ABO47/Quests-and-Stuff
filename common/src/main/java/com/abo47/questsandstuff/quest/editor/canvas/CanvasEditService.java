@@ -34,6 +34,28 @@ public final class CanvasEditService {
         owner.postMutation(player);
     }
 
+    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
+        String group = EditorSessionService.normalizeGroup(groupName);
+        if (group.isBlank() || ecs == null || ecs.isEmpty()) {
+            return;
+        }
+        EditorSessionService.EditorSession session = owner.session(player);
+        boolean changed = false;
+        for (CanvasExclusiveChoice ec : ecs) {
+            if (ec == null || ec.id().isBlank()) {
+                continue;
+            }
+            if (!changed) {
+                owner.captureUndo(session);
+                changed = true;
+            }
+            owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+        }
+        if (changed) {
+            owner.postMutation(player);
+        }
+    }
+
     public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
         String group = EditorSessionService.normalizeGroup(groupName);
         if (group.isBlank() || ecId == null || ecId.isBlank()) {

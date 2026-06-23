@@ -98,13 +98,15 @@ final class ConnectionLayout {
                 }
                 boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, ec.id(), connectedQuestId);
                 int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, ec.id(), connectedQuestId);
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, ec.id(), connectedQuestId);
                 lines.add(new ConnectionLine(
                         edgeId, ec.id(), connectedQuestId,
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
                         connectedQuest.centerX(), connectedQuest.centerY(),
-                        direct, false, color, false, 245
+                        direct, false, color, false, 245, texture, textureSpacing
                 ));
             }
             for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
@@ -122,13 +124,15 @@ final class ConnectionLayout {
                 }
                 boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, prerequisiteQuestId, ec.id());
                 int color = ConnectionStyleResolver.ecConnectionColor(state, group, prerequisiteQuestId, ec.id());
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, prerequisiteQuestId, ec.id());
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, prerequisiteQuestId, ec.id());
                 lines.add(new ConnectionLine(
                         edgeId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
                         ecCenterX, ecCenterY,
-                        direct, false, color, false, 245
+                        direct, false, color, false, 245, texture, textureSpacing
                 ));
             }
         }
@@ -187,7 +191,7 @@ final class ConnectionLayout {
                         true,
                         ModColors.TEXT_SECONDARY,
                         false,
-                        245
+                        245, "", 0
                 ));
             }
         }
@@ -221,7 +225,9 @@ final class ConnectionLayout {
                 pending,
                 style.color(),
                 style.hidden(),
-                style.alpha()
+                style.alpha(),
+                style.texture(),
+                style.textureSpacing()
         );
     }
 }

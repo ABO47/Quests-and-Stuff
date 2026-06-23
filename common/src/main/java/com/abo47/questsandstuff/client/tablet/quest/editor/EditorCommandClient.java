@@ -93,12 +93,28 @@ public final class EditorCommandClient {
         EditorCanvasCommandClient.runConnectionHiddenAction(player, questId, prerequisiteId, hidden);
     }
 
+    public static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
+        EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, texture);
+    }
+
+    public static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
+        EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
+    }
+
     public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
         EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
     }
 
     public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
         EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, direct);
+    }
+
+    public static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
+        EditorCanvasCommandClient.runEcConnectionTextureAction(state, sourceId, targetId, texture);
+    }
+
+    public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
+        EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, sourceId, targetId, spacing);
     }
 
     public static void runQuestIconAction(Player player, String questId, String icon) {

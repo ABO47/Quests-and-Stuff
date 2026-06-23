@@ -7,6 +7,7 @@ public final class EditorCommandPayloadKeys {
     public static final String DESCRIPTION = "description";
     public static final String ENABLED = "enabled";
     public static final String EXCLUSIVE_CHOICE = "exclusive_choice";
+    public static final String EXCLUSIVE_CHOICES = "exclusive_choices";
     public static final String GRAYSCALE = "grayscale";
     public static final String GRID = "grid";
     public static final String GROUP = "group";
@@ -28,7 +29,10 @@ public final class EditorCommandPayloadKeys {
     public static final String SCALE = "scale";
     public static final String SCALES = "scales";
     public static final String SOUND = "sound";
+    public static final String SPACING = "spacing";
     public static final String SPANS = "spans";
+    public static final String TEXTURE = "texture";
+    public static final String TEXTURES = "textures";
     public static final String TASK = "task";
     public static final String TEXT = "text";
     public static final String TEXTS = "texts";

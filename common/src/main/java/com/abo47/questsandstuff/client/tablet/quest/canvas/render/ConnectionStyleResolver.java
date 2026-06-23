@@ -15,6 +15,9 @@ import net.minecraft.nbt.Tag;
 import java.util.Map;
 import java.util.Set;
 
+import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURES;
+import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;
+
 final class ConnectionStyleResolver {
     private ConnectionStyleResolver() {
     }
@@ -81,6 +84,44 @@ final class ConnectionStyleResolver {
         return grid == null || !grid.contains(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId));
     }
 
+    static String connectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return connectionTexture(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    static String connectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
+        String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
+        if (target != null && target.contains(CONNECTION_TEXTURES, Tag.TAG_COMPOUND)) {
+            CompoundTag textures = target.getCompound(CONNECTION_TEXTURES);
+            if (textures.contains(metadataKey, Tag.TAG_STRING)) {
+                return textures.getString(metadataKey);
+            }
+        }
+        Map<String, String> textures = state.canvas.connectionTexturesByGroup.get(group);
+        if (textures == null) {
+            return "";
+        }
+        return textures.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), "");
+    }
+
+    static int connectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return connectionTextureSpacing(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+    }
+
+    static int connectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
+        String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
+        if (target != null && target.contains(CONNECTION_TEXTURE_SPACINGS, Tag.TAG_COMPOUND)) {
+            CompoundTag spacings = target.getCompound(CONNECTION_TEXTURE_SPACINGS);
+            if (spacings.contains(metadataKey, Tag.TAG_INT)) {
+                return Math.max(0, spacings.getInt(metadataKey));
+            }
+        }
+        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.get(group);
+        if (spacings == null) {
+            return 5;
+        }
+        return spacings.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), 5);
+    }
+
     static QuestConnectionMetadata metadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return metadata(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
@@ -92,7 +133,9 @@ final class ConnectionStyleResolver {
                 targetQuestId,
                 connectionColor(state, group, sourceQuestId, targetQuestId, target),
                 direct ? QuestConnectionMode.DIRECT : QuestConnectionMode.GRID,
-                isConnectionHidden(state, group, sourceQuestId, targetQuestId, target)
+                isConnectionHidden(state, group, sourceQuestId, targetQuestId, target),
+                connectionTexture(state, group, sourceQuestId, targetQuestId, target),
+                connectionTextureSpacing(state, group, sourceQuestId, targetQuestId, target)
         );
     }
 
@@ -136,5 +179,29 @@ final class ConnectionStyleResolver {
 
     static boolean ecIsConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return false;
+    }
+
+    static String ecConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        CanvasExclusiveChoice ec = findEc(state, group, sourceQuestId);
+        if (ec != null) {
+            return ec.connectionTextures().getOrDefault(targetQuestId, "");
+        }
+        ec = findEc(state, group, targetQuestId);
+        if (ec != null) {
+            return ec.connectionTextures().getOrDefault(sourceQuestId, "");
+        }
+        return "";
+    }
+
+    static int ecConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        CanvasExclusiveChoice ec = findEc(state, group, sourceQuestId);
+        if (ec != null) {
+            return ec.connectionTextureSpacings().getOrDefault(targetQuestId, 5);
+        }
+        ec = findEc(state, group, targetQuestId);
+        if (ec != null) {
+            return ec.connectionTextureSpacings().getOrDefault(sourceQuestId, 5);
+        }
+        return 5;
     }
 }

@@ -237,7 +237,7 @@ public final class CanvasElementTransformController {
         CanvasExclusiveChoice next = ec;
         if (state.canvas.draggingCanvasExclusiveChoice) {
             CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH), state.canvas.canvasEcStartRotation, dx, dy);
-            next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes());
+            next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings());
             next = fittedExclusiveChoiceIfGridLocked(next);
             next = applySmartSnapToExclusiveChoice(next, cards, group);
         } else if (state.canvas.resizingCanvasExclusiveChoice) {
@@ -457,7 +457,7 @@ public final class CanvasElementTransformController {
                 1,
                 TabletModifierKeys.shiftDown()
         );
-        return fitAndClampExclusiveChoice(new CanvasExclusiveChoice(ec.id(), box.x(), box.y(), box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes()));
+        return fitAndClampExclusiveChoice(new CanvasExclusiveChoice(ec.id(), box.x(), box.y(), box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings()));
     }
 
     private ResizedBox resizeFromSelectionBox(int localX, int localY, int startX, int startY, int startW, int startH, int rotation, int minW, int minH, int pivotX, int pivotY, int cornerX, int cornerY, boolean preserveAspect) {

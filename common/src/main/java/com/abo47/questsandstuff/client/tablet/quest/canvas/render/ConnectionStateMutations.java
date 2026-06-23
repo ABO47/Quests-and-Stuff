@@ -95,4 +95,68 @@ final class ConnectionStateMutations {
         }
         CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionMode(questId));
     }
+
+    static void setEcConnectionTexture(TabletUiState state, String group, String ecId, String questId, String texture) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionTexture(ecId, texture));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionTexture(questId, texture));
+    }
+
+    static void removeEcConnectionTexture(TabletUiState state, String group, String ecId, String questId) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionTexture(ecId));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionTexture(questId));
+    }
+
+    static void setEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId, int spacing) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionTextureSpacing(ecId, spacing));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionTextureSpacing(questId, spacing));
+    }
+
+    static void removeEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionTextureSpacing(ecId));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionTextureSpacing(questId));
+    }
+
+    static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
+        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
+        Map<String, String> textures = state.canvas.connectionTexturesByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+        if (texture == null || texture.isBlank()) {
+            textures.remove(key);
+        } else {
+            textures.put(key, texture);
+        }
+    }
+
+    static void setConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int spacing) {
+        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
+        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+        if (spacing <= 0) {
+            spacings.remove(key);
+        } else {
+            spacings.put(key, spacing);
+        }
+    }
 }

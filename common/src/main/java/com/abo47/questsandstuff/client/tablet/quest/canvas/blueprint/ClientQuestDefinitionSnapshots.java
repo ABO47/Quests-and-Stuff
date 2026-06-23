@@ -37,6 +37,8 @@ public final class ClientQuestDefinitionSnapshots {
                 intMap(tag.getCompound("connection_colors")),
                 stringMap(tag.getCompound("connection_modes")),
                 strings(tag.getList("hidden_connections", Tag.TAG_STRING)),
+                Map.of(),
+                Map.of(),
                 stringList(tag.getList("tasks_order", Tag.TAG_STRING)),
                 stringList(tag.getList("rewards_order", Tag.TAG_STRING)),
                 tasks(tag.getCompound("tasks")),

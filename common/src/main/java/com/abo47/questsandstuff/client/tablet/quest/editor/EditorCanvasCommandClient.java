@@ -191,6 +191,35 @@ final class EditorCanvasCommandClient {
                 });
     }
 
+    static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
+        if (questId == null || questId.isBlank() || prerequisiteId == null || prerequisiteId.isBlank() || questId.equals(prerequisiteId)) {
+            return;
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof net.minecraft.server.level.ServerPlayer);
+        ClientQuestCache.setConnectionTextureLocal(questId, prerequisiteId, texture);
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
+                () -> {
+                    CompoundTag payload = EditorCommandPayloads.connectionTexture(questId, prerequisiteId, texture);
+                    EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE, payload);
+                });
+    }
+
+    static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
+        if (questId == null || questId.isBlank() || prerequisiteId == null || prerequisiteId.isBlank() || questId.equals(prerequisiteId)) {
+            return;
+        }
+        ClientQuestCache.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+        IntegratedServerActions.run(
+                player,
+                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),
+                () -> {
+                    CompoundTag payload = EditorCommandPayloads.connectionTextureSpacing(questId, prerequisiteId, spacing);
+                    EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE_SPACING, payload);
+                });
+    }
+
     private static String resolveEcId(TabletUiState state, String group, String idA, String idB) {
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idA) != null) return idA;
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idB) != null) return idB;
@@ -217,5 +246,23 @@ final class EditorCanvasCommandClient {
         if (ecId.isBlank()) return;
         String questId = resolveQuestId(ecId, sourceId, targetId);
         ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct);
+    }
+
+    static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank()) return;
+        String ecId = resolveEcId(state, group, sourceId, targetId);
+        if (ecId.isBlank()) return;
+        String questId = resolveQuestId(ecId, sourceId, targetId);
+        ConnectionRenderer.setEcConnectionTexture(state, group, ecId, questId, texture);
+    }
+
+    static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank()) return;
+        String ecId = resolveEcId(state, group, sourceId, targetId);
+        if (ecId.isBlank()) return;
+        String questId = resolveQuestId(ecId, sourceId, targetId);
+        ConnectionRenderer.setEcConnectionTextureSpacing(state, group, ecId, questId, spacing);
     }
 }

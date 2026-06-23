@@ -22,8 +22,8 @@ public final class CanvasContextMenuController {
         List<ContextAction> actions = new ArrayList<>();
         String selectedGroup = selectedGroupName(state);
         CanvasContextCanvasActions.addCanvasEmptyActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
-        CanvasContextQuestActions.addQuestActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
         CanvasContextSelectionActions.addSelectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
+        CanvasContextQuestActions.addQuestActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
         CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedGroup);
         CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedGroup);

@@ -260,6 +260,25 @@ public final class ModalOpenActions {
         });
     }
 
+    public static void openConnectionTexturePicker(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        openAssetPickerSession(state, "", () -> {
+            state.modal.modalConnectionTextureTarget = ModalTargets.connection(group, sourceQuestId, targetQuestId);
+        });
+    }
+
+    public static void openConnectionTexturePicker(TabletUiState state, String target) {
+        openAssetPickerSession(state, "", () -> {
+            state.modal.modalConnectionTextureTarget = target;
+        });
+    }
+
+    public static void openChapterConnectionTexturePicker(TabletUiState state, String group, java.util.Collection<String> questIds) {
+        openAssetPickerSession(state, "", () -> {
+            state.modal.modalConnectionTextureTarget = ModalTargets.of(ModalTargets.CONNECTION, group, "", "");
+            state.modal.modalConnectionTextureChapterTargets.addAll(questIds);
+        });
+    }
+
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
         openPickerModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, () -> {
             state.pickers.entityVariantTarget = clean(target);
@@ -365,6 +384,8 @@ public final class ModalOpenActions {
         state.modal.modalHudBackgroundOpacityDragging = false;
         state.modal.modalQuestCompletionSoundTarget = "";
         state.modal.modalQuestCompletionSoundTargets.clear();
+        state.modal.modalConnectionTextureTarget = "";
+        state.modal.modalConnectionTextureChapterTargets.clear();
         state.pickers.entityVariantTarget = "";
         state.pickers.entityVariantSelected = "";
         state.pickers.entityVariantFolder = "";

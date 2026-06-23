@@ -420,6 +420,14 @@ public final class ClientQuestCache {
         ClientQuestLocalMutations.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
     }
 
+    public static void setConnectionTextureLocal(String questId, String prerequisiteId, String texture) {
+        ClientQuestLocalMutations.setConnectionTextureLocal(questId, prerequisiteId, texture);
+    }
+
+    public static void setConnectionTextureSpacingLocal(String questId, String prerequisiteId, int spacing) {
+        ClientQuestLocalMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+    }
+
     public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
         ClientQuestLocalMutations.setQuestPositionInGroupLocal(questId, group, x, y);
     }

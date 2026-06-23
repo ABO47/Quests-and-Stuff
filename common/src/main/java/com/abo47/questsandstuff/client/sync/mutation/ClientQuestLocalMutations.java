@@ -283,6 +283,14 @@ public final class ClientQuestLocalMutations {
         ClientQuestConnectionMutations.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
     }
 
+    public static void setConnectionTextureLocal(String questId, String prerequisiteId, String texture) {
+        ClientQuestConnectionMutations.setConnectionTextureLocal(questId, prerequisiteId, texture);
+    }
+
+    public static void setConnectionTextureSpacingLocal(String questId, String prerequisiteId, int spacing) {
+        ClientQuestConnectionMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+    }
+
     public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
         CompoundTag groupTag = mutableGroupView(questId, group);
         if (groupTag == null) {

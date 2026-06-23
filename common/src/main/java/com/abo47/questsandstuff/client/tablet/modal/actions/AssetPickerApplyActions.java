@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -9,13 +10,18 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
@@ -23,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class AssetPickerApplyActions {
@@ -125,6 +132,105 @@ public final class AssetPickerApplyActions {
         if (!canvasTarget.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas background picked group={} background={}", canvasTarget, background);
             TabletUiFactory.runGroupAction(player, state, "set_canvas_background", canvasTarget, background, 0);
+            return;
+        }
+        String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
+        java.util.Set<String> connectionTextureChapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        if (!connectionTextureChapterTargets.isEmpty()) {
+            String group = !connectionTextureTarget.isBlank() && connectionTextureTarget.startsWith("connection|")
+                    ? connectionTextureTarget.split("\\|")[1] : "";
+            java.util.Map<String, java.util.Map<String, String>> questTextures = new java.util.HashMap<>();
+            for (String chapterQuestId : connectionTextureChapterTargets) {
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(chapterQuestId);
+                if (questTag == null) continue;
+                java.util.Map<String, String> prereqTextures = new java.util.HashMap<>();
+                net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
+                for (int i = 0; i < prereqs.size(); i++) {
+                    String prerequisiteId = prereqs.getString(i);
+                    prereqTextures.put(prerequisiteId, background);
+                    com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
+                    if (!group.isBlank()) {
+                        ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, chapterQuestId, background);
+                    }
+                }
+                if (!prereqTextures.isEmpty()) {
+                    questTextures.put(chapterQuestId, prereqTextures);
+                }
+            }
+            if (!questTextures.isEmpty()) {
+                QuestsAndStuffMod.debugLog("[QnS:UI] chapter batch connection texture quests={} group={} bg={}", questTextures.size(), group, background);
+                net.minecraft.nbt.CompoundTag batchPayload = EditorCommandPayloads.connectionTextures(questTextures);
+                IntegratedServerActions.run(
+                        player,
+                        serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextures(serverPlayer, questTextures),
+                        () -> com.abo47.questsandstuff.network.ModNetwork.sendToServer(new com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket(EditorCommandType.CONNECTION_TEXTURE_MANY, batchPayload)));
+            }
+            if (!group.isBlank()) {
+                java.util.List<com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice> changedEcs = new java.util.ArrayList<>();
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+                    java.util.Map<String, String> textures = new java.util.HashMap<>(ec.connectionTextures());
+                    boolean changed = false;
+                    for (String connectedId : ec.connectionQuestIds()) {
+                        if (connectionTextureChapterTargets.contains(connectedId) || connectionTextureChapterTargets.contains(ec.id())) {
+                            textures.put(connectedId, background);
+                            changed = true;
+                        }
+                    }
+                    for (String prerequisiteId : ec.prerequisiteQuestIds()) {
+                        if (connectionTextureChapterTargets.contains(prerequisiteId) || connectionTextureChapterTargets.contains(ec.id())) {
+                            textures.put(prerequisiteId, background);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        changedEcs.add(ec.withConnectionTextures(textures));
+                    }
+                }
+                if (!changedEcs.isEmpty()) {
+                    com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations.putCanvasExclusiveChoices(state, group, changedEcs, true);
+                }
+            }
+            state.modal.modalConnectionTextureChapterTargets.clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture chapter batch applied count={} asset={}", connectionTextureChapterTargets.size(), background);
+            return;
+        }
+        if (connectionTextureTarget.startsWith("connection_selection|")) {
+            String[] parts = connectionTextureTarget.split("\\|");
+            if (parts.length >= 2) {
+                String group = parts[1];
+                for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
+                    String prereq = edge.prerequisiteId();
+                    String quest = edge.questId();
+                    boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
+                    if (isEc) {
+                        EditorCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);
+                    } else {
+                        EditorCommandClient.runConnectionTextureAction(player, quest, prereq, background);
+                        ConnectionRenderer.setConnectionTexture(state, group, prereq, quest, background);
+                    }
+                }
+            }
+            state.modal.modalConnectionTextureTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture selection applied target={} asset={}", connectionTextureTarget, background);
+            return;
+        }
+        if (!connectionTextureTarget.isBlank()) {
+            String[] parts = connectionTextureTarget.split("\\|");
+            if (parts.length >= 4) {
+                String group = parts[1];
+                String prerequisiteId = parts[2];
+                String questId = parts[3];
+                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
+                if (isEc) {
+                    EditorCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, background);
+                } else {
+                    EditorCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, background);
+                    ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, questId, background);
+                }
+            }
+            state.modal.modalConnectionTextureTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture applied target={} asset={}", connectionTextureTarget, background);
             return;
         }
         TabletUiFactory.runGroupAction(player, state, "set_background", ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modal.modalChapterTarget), background, 0);

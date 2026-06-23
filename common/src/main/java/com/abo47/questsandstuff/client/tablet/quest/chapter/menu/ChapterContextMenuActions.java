@@ -172,6 +172,24 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
+    public static void changeConnectionTexture(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> targets = new java.util.ArrayList<>();
+        targets.addAll(questIds);
+        for (var ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(target, java.util.List.of())) {
+            targets.add(ec.id());
+        }
+        if (targets.isEmpty()) {
+            return;
+        }
+        ModalOpenActions.openChapterConnectionTexturePicker(state, target, targets);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
     private static String firstQuestCompletionHud(List<String> questIds) {
         return firstQuestField(questIds, "completion_hud_background");
     }

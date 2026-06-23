@@ -49,7 +49,7 @@ class EditorCommandDispatcherTest {
 
         assertEquals(2, counts.get(EditorCommandFamily.CANVAS));
         assertEquals(3, counts.get(EditorCommandFamily.CLIPBOARD));
-        assertEquals(5, counts.get(EditorCommandFamily.PREREQUISITE));
+        assertEquals(7, counts.get(EditorCommandFamily.PREREQUISITE));
         assertEquals(12, counts.get(EditorCommandFamily.QUEST));
         assertEquals(1, counts.get(EditorCommandFamily.DESCRIPTION));
         assertEquals(6, counts.get(EditorCommandFamily.OBJECTIVE));

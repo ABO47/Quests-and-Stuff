@@ -54,6 +54,10 @@ public final class CanvasLayerMutations {
         CanvasElementStore.putCanvasExclusiveChoice(state, group, ec, syncServer);
     }
 
+    public static void putCanvasExclusiveChoices(TabletUiState state, String group, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
+        CanvasElementStore.putCanvasExclusiveChoices(state, group, ecs, syncServer);
+    }
+
     public static boolean removeCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
         return CanvasElementStore.removeCanvasExclusiveChoice(state, group, ecId);
     }

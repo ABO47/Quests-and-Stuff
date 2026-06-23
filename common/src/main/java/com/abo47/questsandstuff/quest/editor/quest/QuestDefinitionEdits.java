@@ -62,6 +62,10 @@ public final class QuestDefinitionEdits {
                     Map.copyOf(source.connectionColors()),
                     Map.copyOf(source.connectionModes()),
                     Set.copyOf(source.hiddenConnections()),
+                    Map.copyOf(source.connectionTextures()),
+                    Map.copyOf(source.connectionTextureSpacings()),
+                    List.of(),
+                    List.of(),
                     orderedCopy(source.tasks()),
                     orderedCopy(source.rewards())
             );
@@ -79,6 +83,10 @@ public final class QuestDefinitionEdits {
                 pruneConnectionColors(definition.connectionColors(), copiedPrerequisites),
                 pruneConnectionModes(definition.connectionModes(), copiedPrerequisites),
                 pruneHiddenConnections(definition.hiddenConnections(), copiedPrerequisites),
+                pruneConnectionTextures(definition.connectionTextures(), copiedPrerequisites),
+                pruneConnectionTextureSpacings(definition.connectionTextureSpacings(), copiedPrerequisites),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -105,6 +113,10 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -120,6 +132,8 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
                 definition.tasksOrder(),
                 definition.rewardsOrder(),
                 definition.tasks(),
@@ -138,6 +152,10 @@ public final class QuestDefinitionEdits {
                 pruneConnectionColors(colors, prerequisites),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -154,6 +172,10 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 pruneConnectionModes(modes, prerequisites),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -170,6 +192,50 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 pruneHiddenConnections(hiddenConnections, prerequisites),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
+                definition.tasks(),
+                definition.rewards()
+        );
+    }
+
+    public static QuestDefinition withConnectionTextures(QuestDefinition definition, Map<String, String> textures) {
+        Set<String> prerequisites = definition.prerequisites();
+        return new QuestDefinition(
+                definition.schema(),
+                definition.id(),
+                definition.display(),
+                definition.settings(),
+                prerequisites,
+                definition.connectionColors(),
+                definition.connectionModes(),
+                definition.hiddenConnections(),
+                pruneConnectionTextures(textures, prerequisites),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
+                definition.tasks(),
+                definition.rewards()
+        );
+    }
+
+    public static QuestDefinition withConnectionTextureSpacings(QuestDefinition definition, Map<String, Integer> spacings) {
+        Set<String> prerequisites = definition.prerequisites();
+        return new QuestDefinition(
+                definition.schema(),
+                definition.id(),
+                definition.display(),
+                definition.settings(),
+                prerequisites,
+                definition.connectionColors(),
+                definition.connectionModes(),
+                definition.hiddenConnections(),
+                definition.connectionTextures(),
+                pruneConnectionTextureSpacings(spacings, prerequisites),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -187,6 +253,10 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -203,6 +273,10 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 orderedCopy(tasks),
                 definition.rewards()
         );
@@ -219,6 +293,10 @@ public final class QuestDefinitionEdits {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 orderedCopy(rewards)
         );
@@ -269,6 +347,34 @@ public final class QuestDefinitionEdits {
             }
         }
         return Set.copyOf(out);
+    }
+
+    private static Map<String, String> pruneConnectionTextures(Map<String, String> textures, Set<String> prerequisites) {
+        if (textures == null || textures.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> out = new HashMap<>();
+        for (Map.Entry<String, String> entry : textures.entrySet()) {
+            String key = normalizeQuestId(entry.getKey());
+            if (!key.isBlank() && prerequisites.contains(key) && entry.getValue() != null && !entry.getValue().isBlank()) {
+                out.put(key, entry.getValue());
+            }
+        }
+        return Map.copyOf(out);
+    }
+
+    private static Map<String, Integer> pruneConnectionTextureSpacings(Map<String, Integer> spacings, Set<String> prerequisites) {
+        if (spacings == null || spacings.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> out = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : spacings.entrySet()) {
+            String key = normalizeQuestId(entry.getKey());
+            if (!key.isBlank() && prerequisites.contains(key) && entry.getValue() != null && entry.getValue() > 0) {
+                out.put(key, entry.getValue());
+            }
+        }
+        return Map.copyOf(out);
     }
 
     private static String normalizeQuestId(String questId) {

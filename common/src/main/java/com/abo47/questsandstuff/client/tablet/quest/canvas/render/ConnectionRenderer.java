@@ -126,6 +126,10 @@ public final class ConnectionRenderer {
         ConnectionPainter.drawStaticChevrons(graphics, path, color, alpha, scale, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
+    public static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, String textureStr, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
+        ConnectionPainter.drawTexturedChevrons(graphics, path, color, alpha, scale, textureStr, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
     public static CanvasExclusiveChoice findEc(TabletUiState state, String group, String id) {
         return ConnectionStyleResolver.findEc(state, group, id);
     }
@@ -146,7 +150,35 @@ public final class ConnectionRenderer {
         ConnectionStateMutations.setEcConnectionColor(state, group, ecId, questId, color);
     }
 
+    public static void setEcConnectionTexture(TabletUiState state, String group, String ecId, String questId, String texture) {
+        ConnectionStateMutations.setEcConnectionTexture(state, group, ecId, questId, texture);
+    }
+
+    public static void setEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId, int spacing) {
+        ConnectionStateMutations.setEcConnectionTextureSpacing(state, group, ecId, questId, spacing);
+    }
+
     public static void setEcConnectionMode(TabletUiState state, String group, String ecId, String questId, boolean direct) {
         ConnectionStateMutations.setEcConnectionMode(state, group, ecId, questId, direct);
+    }
+
+    public static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
+        ConnectionStateMutations.setConnectionTexture(state, group, sourceQuestId, targetQuestId, texture);
+    }
+
+    public static void setConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int spacing) {
+        ConnectionStateMutations.setConnectionTextureSpacing(state, group, sourceQuestId, targetQuestId, spacing);
+    }
+
+    public static String connectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.connectionTexture(state, group, sourceQuestId, targetQuestId);
+    }
+
+    public static String ecConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.ecConnectionTexture(state, group, sourceQuestId, targetQuestId);
+    }
+
+    public static int ecConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, sourceQuestId, targetQuestId);
     }
 }

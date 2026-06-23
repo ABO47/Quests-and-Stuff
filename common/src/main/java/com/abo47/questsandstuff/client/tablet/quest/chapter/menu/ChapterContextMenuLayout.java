@@ -55,7 +55,7 @@ public record ChapterContextMenuLayout(
         if (!hasTarget) {
             return 1;
         }
-        int count = 13;
+        int count = 14;
         if (entityVariants) {
             count++;
         }
