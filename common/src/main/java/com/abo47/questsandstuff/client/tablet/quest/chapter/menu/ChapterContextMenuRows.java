@@ -35,8 +35,8 @@ public final class ChapterContextMenuRows {
         }
 
         actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.context.batch_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
-        actions.add(ContextActions.submenu(tr("ui.questsandstuff.context.batch_completion_sound"), "audio-lines", ModColors.INTERACTIVE, List.of(
+        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
+        actions.add(ContextActions.submenu(tr("ui.questsandstuff.context.change_completion_sound"), "audio-lines", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
                 ContextActions.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
         )));
