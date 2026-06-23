@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgrou
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasGlowEffect;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -258,6 +259,7 @@ final class CanvasSceneRenderer {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
+        canvasViewport.addWidget(CanvasGlowEffect.overlay(card.x(), card.y(), card.width(), card.height()));
         addQuestTooltipHit(cardLayer, localCard);
     }
 
