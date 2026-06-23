@@ -349,8 +349,6 @@
   "ui.questsandstuff.context.reveal_chapter": "Reveal Chapter",
   "ui.questsandstuff.context.reveal_quest": "Reveal Quest",
   "ui.questsandstuff.context.save_as_blueprint": "Save As Blueprint",
-  "ui.questsandstuff.context.selection_connection_color": "Change Connection Color",
-  "ui.questsandstuff.context.selection_connection_texture": "Change Connection Texture",
   "ui.questsandstuff.context.show_chapter_before_unlocked": "Unlock Chapter",
   "ui.questsandstuff.context.show_connection": "Show Connection",
   "ui.questsandstuff.context.show_inspector": "Show Inspector",

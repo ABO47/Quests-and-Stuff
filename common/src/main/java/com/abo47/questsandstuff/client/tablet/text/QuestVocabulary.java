@@ -140,7 +140,6 @@ public final class QuestVocabulary {
     public static final String CONTEXT_MAKE_QUEST_REPEATABLE = "ui.questsandstuff.context.make_quest_repeatable";
     public static final String CONTEXT_MAKE_QUEST_NOT_REPEATABLE = "ui.questsandstuff.context.make_quest_not_repeatable";
     public static final String CONTEXT_REVEAL_QUEST = "ui.questsandstuff.context.reveal_quest";
-    public static final String CONTEXT_SELECTION_CONNECTION_COLOR = "ui.questsandstuff.context.selection_connection_color";
     public static final String CONTEXT_SEND_TO_BACK = "ui.questsandstuff.context.send_to_back";
     public static final String CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED = "ui.questsandstuff.context.show_chapter_before_unlocked";
     public static final String CONTEXT_REVEAL_CHAPTER = "ui.questsandstuff.context.reveal_chapter";
