@@ -91,8 +91,6 @@ final class CanvasMinimapPainter {
         for (CanvasMinimapRect quest : snapshot.quests()) {
             if (visualMode) {
                 drawQuestPreview(graphics, state, quest, originX, originY, mouseX, mouseY, partialTicks);
-            } else if (quest.tag() == null) {
-                drawEcBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
             } else {
                 drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
             }
@@ -135,14 +133,6 @@ final class CanvasMinimapPainter {
         }
         graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 255));
         graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
-    }
-
-    private static void drawEcBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
-        if (w < 3 || h < 3) {
-            graphics.fill(x, y, x + w, y + h, withAlpha(color, alpha));
-            return;
-        }
-        drawBorder(graphics, x, y, w, h, withAlpha(color, alpha));
     }
 
     private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
@@ -206,33 +196,48 @@ final class CanvasMinimapPainter {
             graphics.fill(x, y, x + 1, y + 1, color);
             return;
         }
-        List<Vec2> points;
         if (connection.projectedPath() != null) {
             List<CanvasPoint> path = connection.projectedPath();
-            points = new ArrayList<>(path.size());
-            for (CanvasPoint p : path) {
-                points.add(new Vec2(originX + p.x, originY + p.y));
+            for (int i = 0; i + 1 < path.size(); i++) {
+                CanvasPoint a = path.get(i);
+                CanvasPoint b = path.get(i + 1);
+                drawLineSegment(graphics, originX + a.x, originY + a.y, originX + b.x, originY + b.y, color);
             }
         } else {
-            points = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
+            drawLineSegment(graphics, x1, y1, x2, y2, color);
         }
-        Tesselator tessellator = Tesselator.getInstance();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        RenderBufferUtils.drawColorLines(
-                graphics.pose(),
-                buffer,
-                points,
-                color,
-                color,
-                0.55f
-        );
-        tessellator.end();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
+    }
+
+    private static void drawLineSegment(GuiGraphics graphics, float x1f, float y1f, float x2f, float y2f, int color) {
+        int x1 = Math.round(x1f);
+        int y1 = Math.round(y1f);
+        int x2 = Math.round(x2f);
+        int y2 = Math.round(y2f);
+        if (x1 == x2 && y1 == y2) {
+            graphics.fill(x1, y1, x1 + 1, y1 + 1, color);
+            return;
+        }
+        if (x1 == x2) {
+            int minY = Math.min(y1, y2);
+            int maxY = Math.max(y1, y2);
+            graphics.fill(x1, minY, x1 + 1, maxY + 1, color);
+        } else if (y1 == y2) {
+            int minX = Math.min(x1, x2);
+            int maxX = Math.max(x1, x2);
+            graphics.fill(minX, y1, maxX + 1, y1 + 1, color);
+        } else {
+            List<Vec2> pts = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
+            Tesselator tessellator = Tesselator.getInstance();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            var buffer = tessellator.getBuilder();
+            buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+            RenderBufferUtils.drawColorLines(graphics.pose(), buffer, pts, color, color, 0.55f);
+            tessellator.end();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableBlend();
+        }
     }
 
     private static void drawBorder(GuiGraphics graphics, int x, int y, int w, int h, int color) {
