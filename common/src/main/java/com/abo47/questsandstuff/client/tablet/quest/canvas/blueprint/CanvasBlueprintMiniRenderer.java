@@ -294,8 +294,13 @@ public final class CanvasBlueprintMiniRenderer {
             boolean highlighted = highlightedConnectionKeys.contains(connectionKey(prerequisiteId, sourceId));
             int color = highlighted ? ModColors.BORDER_ACCENT : definition.connectionColors().getOrDefault(prerequisiteId, ModColors.TEXT_SECONDARY);
             int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
+            String texture = definition.connectionTextures().getOrDefault(prerequisiteId, "");
             List<CanvasPoint> path = connectionPath(sourceBox, targetBox, direct);
-            ConnectionRenderer.drawStaticChevrons(graphics, path, color, drawAlpha, -4096, -4096, 8192, 8192);
+            if (texture.isBlank()) {
+                ConnectionRenderer.drawStaticChevrons(graphics, path, color, drawAlpha, -4096, -4096, 8192, 8192);
+            } else {
+                ConnectionRenderer.drawTexturedChevrons(graphics, path, color, drawAlpha, 1.0f, texture, -4096, -4096, 8192, 8192);
+            }
         }
     }
 
@@ -309,11 +314,30 @@ public final class CanvasBlueprintMiniRenderer {
             if (sourceBox == null) {
                 continue;
             }
-            boolean highlighted = highlightedConnectionKeys.contains(connectionKey(prerequisiteId, target.sourceId()));
-            int color = highlighted ? ModColors.BORDER_ACCENT : ModColors.TEXT_SECONDARY;
-            int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
-            List<CanvasPoint> path = connectionPath(sourceBox, targetBox, true);
+            drawOneEcConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
+                    prerequisiteId, sourceBox, targetBox, connectionKey(prerequisiteId, target.sourceId()), alpha);
+        }
+        for (String connectedId : target.connections()) {
+            BlueprintRect connectedBox = questBoxes.get(connectedId);
+            if (connectedBox == null) {
+                continue;
+            }
+            drawOneEcConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
+                    connectedId, targetBox, connectedBox, connectionKey(target.sourceId(), connectedId), alpha);
+        }
+    }
+
+    private static void drawOneEcConnection(GuiGraphics graphics, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, String otherId, BlueprintRect sourceBox, BlueprintRect targetBox, String key, int alpha) {
+        boolean highlighted = highlightedConnectionKeys.contains(key);
+        int color = highlighted ? ModColors.BORDER_ACCENT : target.connectionColors().getOrDefault(otherId, ModColors.TEXT_SECONDARY);
+        int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
+        boolean direct = !"grid".equals(target.connectionModes().get(otherId));
+        String texture = target.connectionTextures().getOrDefault(otherId, "");
+        List<CanvasPoint> path = connectionPath(sourceBox, targetBox, direct);
+        if (texture.isBlank()) {
             ConnectionRenderer.drawStaticChevrons(graphics, path, color, drawAlpha, -4096, -4096, 8192, 8192);
+        } else {
+            ConnectionRenderer.drawTexturedChevrons(graphics, path, color, drawAlpha, 1.0f, texture, -4096, -4096, 8192, 8192);
         }
     }
 

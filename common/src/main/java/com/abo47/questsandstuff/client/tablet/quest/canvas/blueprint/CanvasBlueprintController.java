@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -137,12 +138,13 @@ public final class CanvasBlueprintController {
         List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), group);
         List<CanvasImageLayer> images = selectedImages(state, group, selection.imageIds());
         List<CanvasTextLayer> texts = selectedTexts(state, group, selection.textIds());
-        if (quests.isEmpty() && images.isEmpty() && texts.isEmpty()) {
+        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, group, selection.ecIds());
+        if (quests.isEmpty() && images.isEmpty() && texts.isEmpty() && ecs.isEmpty()) {
             return CanvasBlueprint.empty();
         }
-        CanvasPoint origin = origin(state, quests, images, texts);
+        CanvasPoint origin = origin(state, quests, images, texts, ecs);
         String name = preferredName(group, quests, images, texts);
-        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, group, selection));
+        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, group, selection), ecs);
     }
 
     private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String group) {
@@ -191,7 +193,24 @@ public final class CanvasBlueprintController {
         return texts;
     }
 
-    private static CanvasPoint origin(TabletUiState state, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts) {
+    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String group, Set<String> ecIds) {
+        if (ecIds.isEmpty()) {
+            return List.of();
+        }
+        List<CanvasBlueprint.ExclusiveChoiceEntry> entries = new ArrayList<>();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            if (ecIds.contains(ec.id())) {
+                entries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        ec.id(), group, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
+                        ec.background(), ec.connectionQuestIds(), Set.copyOf(ec.prerequisiteQuestIds()),
+                        ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(),
+                        ec.connectionTextureSpacings()));
+            }
+        }
+        return entries;
+    }
+
+    private static CanvasPoint origin(TabletUiState state, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasBlueprint.ExclusiveChoiceEntry> ecs) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (CanvasBlueprint.QuestEntry quest : quests) {
@@ -205,6 +224,10 @@ public final class CanvasBlueprintController {
         for (CanvasTextLayer text : texts) {
             minX = Math.min(minX, text.x());
             minY = Math.min(minY, text.y());
+        }
+        for (CanvasBlueprint.ExclusiveChoiceEntry ec : ecs) {
+            minX = Math.min(minX, ec.sourceX());
+            minY = Math.min(minY, ec.sourceY());
         }
         if (minX == Integer.MAX_VALUE) {
             return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));

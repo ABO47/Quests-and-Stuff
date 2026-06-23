@@ -114,6 +114,10 @@ public final class QuestSyncKeys {
     public static final class EditorSelection {
         public static final String GROUP = "group";
         public static final String QUESTS = QuestSyncKeys.QUESTS;
+        public static final String ALLOCATED_IDS = "allocated_ids";
+        public static final String IMAGES = "images";
+        public static final String TEXTS = "texts";
+        public static final String ECS = "ecs";
 
         private EditorSelection() {
         }

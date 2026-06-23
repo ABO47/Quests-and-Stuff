@@ -320,15 +320,12 @@ public final class CanvasClipboardController {
             pasted = true;
             index++;
         }
-        boolean ecConnectionsStale = state.clipboard.canvasClipboard.hasQuestClipboard();
         for (CanvasExclusiveChoice ec : state.clipboard.canvasClipboard.exclusiveChoiceLayers()) {
             String id = uniqueLayerId("ec", existingEcIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
             int y = TabletUiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
-            List<String> connections = ecConnectionsStale ? List.of() : ec.connectionQuestIds();
-            List<String> prerequisites = ecConnectionsStale ? List.of() : ec.prerequisiteQuestIds();
-            CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), connections, prerequisites, ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings());
+            CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings());
             if (state.canvas.gridSnapLocked) {
                 duplicate = CanvasGridFitController.fittedExclusiveChoice(state, duplicate);
             }

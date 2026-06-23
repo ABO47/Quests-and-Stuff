@@ -51,7 +51,23 @@ final class PrerequisitePreviewBuilder {
             order.add(CanvasLayerOrdering.questKey(id));
         }
         if (ecMode) {
-            ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(model.questId(), group, model.ecX(), model.ecY(), model.ecW(), model.ecH(), focus.display().questBackground(), prerequisitesByTarget.getOrDefault(model.questId(), Set.of())));
+            CanvasExclusiveChoice focusEc = findEcById(model.questId(), group);
+            if (focusEc != null) {
+                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        model.questId(), group, model.ecX(), model.ecY(),
+                        model.ecW(), model.ecH(), focusEc.rotation(),
+                        focusEc.background(), focusEc.connectionQuestIds(),
+                        prerequisitesByTarget.getOrDefault(model.questId(), Set.of()),
+                        focusEc.connectionColors(), focusEc.connectionModes(),
+                        focusEc.connectionTextures(), focusEc.connectionTextureSpacings()));
+            } else {
+                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        model.questId(), group, model.ecX(), model.ecY(),
+                        model.ecW(), model.ecH(), 0,
+                        focus.display().questBackground(), List.of(),
+                        prerequisitesByTarget.getOrDefault(model.questId(), Set.of()),
+                        Map.of(), Map.of(), Map.of(), Map.of()));
+            }
             order.add(CanvasLayerOrdering.exclusiveChoiceKey(model.questId()));
         } else {
             Set<String> ecIds = ecIdsFromRows(model.rows(), model.questId());
@@ -63,7 +79,12 @@ final class PrerequisitePreviewBuilder {
                 QuestPlacement ecPlacement = placements.get(ecId);
                 int ecX = ecPlacement != null ? ecPlacement.x() : ec.x();
                 int ecY = ecPlacement != null ? ecPlacement.y() : ec.y();
-                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(ecId, group, ecX, ecY, ec.w(), ec.h(), ec.background(), prerequisitesByTarget.getOrDefault(ecId, Set.of())));
+                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        ecId, group, ecX, ecY, ec.w(), ec.h(), ec.rotation(),
+                        ec.background(), ec.connectionQuestIds(),
+                        prerequisitesByTarget.getOrDefault(ecId, Set.of()),
+                        ec.connectionColors(), ec.connectionModes(),
+                        ec.connectionTextures(), ec.connectionTextureSpacings()));
                 order.add(CanvasLayerOrdering.exclusiveChoiceKey(ecId));
             }
             QuestPlacement focusPlacement = placements.get(model.questId());
@@ -169,8 +190,8 @@ final class PrerequisitePreviewBuilder {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
-                Map.of(),
-                Map.of(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
                 definition.tasksOrder(),
                 definition.rewardsOrder(),
                 definition.tasks(),

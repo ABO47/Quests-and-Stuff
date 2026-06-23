@@ -18,8 +18,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public record CanvasBlueprint(
@@ -48,6 +50,10 @@ public record CanvasBlueprint(
 
     public CanvasBlueprint(String name, int originX, int originY, List<QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> layerOrder) {
         this(CURRENT_SCHEMA, name, originX, originY, quests, images, texts, layerOrder, List.of());
+    }
+
+    public CanvasBlueprint(String name, int originX, int originY, List<QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> layerOrder, List<ExclusiveChoiceEntry> exclusiveChoices) {
+        this(CURRENT_SCHEMA, name, originX, originY, quests, images, texts, layerOrder, exclusiveChoices);
     }
 
     public boolean isEmpty() {
@@ -102,8 +108,38 @@ public record CanvasBlueprint(
             entryTag.putInt("source_y", entry.sourceY());
             entryTag.putInt("source_w", entry.sourceW());
             entryTag.putInt("source_h", entry.sourceH());
+            entryTag.putInt("rotation", entry.rotation());
             entryTag.putString("background", entry.background());
+            entryTag.put("connections", CanvasLayerNbt.stringsToListTag(entry.connections()));
             entryTag.put("prerequisites", CanvasLayerNbt.stringsToListTag(List.copyOf(entry.prerequisites())));
+            if (!entry.connectionColors().isEmpty()) {
+                CompoundTag colors = new CompoundTag();
+                for (Map.Entry<String, Integer> e : entry.connectionColors().entrySet()) {
+                    colors.putInt(e.getKey(), e.getValue());
+                }
+                entryTag.put("connection_colors", colors);
+            }
+            if (!entry.connectionModes().isEmpty()) {
+                CompoundTag modes = new CompoundTag();
+                for (Map.Entry<String, String> e : entry.connectionModes().entrySet()) {
+                    modes.putString(e.getKey(), e.getValue());
+                }
+                entryTag.put("connection_modes", modes);
+            }
+            if (!entry.connectionTextures().isEmpty()) {
+                CompoundTag textures = new CompoundTag();
+                for (Map.Entry<String, String> e : entry.connectionTextures().entrySet()) {
+                    textures.putString(e.getKey(), e.getValue());
+                }
+                entryTag.put("connection_textures", textures);
+            }
+            if (!entry.connectionTextureSpacings().isEmpty()) {
+                CompoundTag spacings = new CompoundTag();
+                for (Map.Entry<String, Integer> e : entry.connectionTextureSpacings().entrySet()) {
+                    spacings.putInt(e.getKey(), e.getValue());
+                }
+                entryTag.put("connection_texture_spacings", spacings);
+            }
             list.add(entryTag);
         }
         return list;
@@ -113,6 +149,42 @@ public record CanvasBlueprint(
         List<ExclusiveChoiceEntry> entries = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag entryTag = list.getCompound(i);
+            Map<String, Integer> connectionColors = new HashMap<>();
+            if (entryTag.contains("connection_colors", Tag.TAG_COMPOUND)) {
+                CompoundTag colors = entryTag.getCompound("connection_colors");
+                for (String key : colors.getAllKeys()) {
+                    if (colors.contains(key, Tag.TAG_INT)) {
+                        connectionColors.put(key, colors.getInt(key));
+                    }
+                }
+            }
+            Map<String, String> connectionModes = new HashMap<>();
+            if (entryTag.contains("connection_modes", Tag.TAG_COMPOUND)) {
+                CompoundTag modes = entryTag.getCompound("connection_modes");
+                for (String key : modes.getAllKeys()) {
+                    if (modes.contains(key, Tag.TAG_STRING)) {
+                        connectionModes.put(key, modes.getString(key));
+                    }
+                }
+            }
+            Map<String, String> connectionTextures = new HashMap<>();
+            if (entryTag.contains("connection_textures", Tag.TAG_COMPOUND)) {
+                CompoundTag textures = entryTag.getCompound("connection_textures");
+                for (String key : textures.getAllKeys()) {
+                    if (textures.contains(key, Tag.TAG_STRING)) {
+                        connectionTextures.put(key, textures.getString(key));
+                    }
+                }
+            }
+            Map<String, Integer> connectionTextureSpacings = new HashMap<>();
+            if (entryTag.contains("connection_texture_spacings", Tag.TAG_COMPOUND)) {
+                CompoundTag spacings = entryTag.getCompound("connection_texture_spacings");
+                for (String key : spacings.getAllKeys()) {
+                    if (spacings.contains(key, Tag.TAG_INT)) {
+                        connectionTextureSpacings.put(key, spacings.getInt(key));
+                    }
+                }
+            }
             entries.add(new ExclusiveChoiceEntry(
                     entryTag.getString("source_id"),
                     entryTag.getString("source_group"),
@@ -120,8 +192,14 @@ public record CanvasBlueprint(
                     entryTag.getInt("source_y"),
                     entryTag.getInt("source_w"),
                     entryTag.getInt("source_h"),
+                    entryTag.contains("rotation", Tag.TAG_INT) ? entryTag.getInt("rotation") : 0,
                     entryTag.getString("background"),
-                    Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING)))
+                    CanvasLayerNbt.stringsFromListTag(entryTag.getList("connections", Tag.TAG_STRING)),
+                    Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING))),
+                    connectionColors,
+                    connectionModes,
+                    connectionTextures,
+                    connectionTextureSpacings
             ));
         }
         return entries;
@@ -208,12 +286,46 @@ public record CanvasBlueprint(
             obj.addProperty("source_y", entry.sourceY());
             obj.addProperty("source_w", entry.sourceW());
             obj.addProperty("source_h", entry.sourceH());
+            obj.addProperty("rotation", entry.rotation());
             obj.addProperty("background", entry.background());
+            JsonArray conns = new JsonArray();
+            for (String c : entry.connections()) {
+                conns.add(c);
+            }
+            obj.add("connections", conns);
             JsonArray prereqs = new JsonArray();
             for (String p : entry.prerequisites()) {
                 prereqs.add(p);
             }
             obj.add("prerequisites", prereqs);
+            if (!entry.connectionColors().isEmpty()) {
+                JsonObject colors = new JsonObject();
+                for (Map.Entry<String, Integer> e : entry.connectionColors().entrySet()) {
+                    colors.addProperty(e.getKey(), e.getValue());
+                }
+                obj.add("connection_colors", colors);
+            }
+            if (!entry.connectionModes().isEmpty()) {
+                JsonObject modes = new JsonObject();
+                for (Map.Entry<String, String> e : entry.connectionModes().entrySet()) {
+                    modes.addProperty(e.getKey(), e.getValue());
+                }
+                obj.add("connection_modes", modes);
+            }
+            if (!entry.connectionTextures().isEmpty()) {
+                JsonObject textures = new JsonObject();
+                for (Map.Entry<String, String> e : entry.connectionTextures().entrySet()) {
+                    textures.addProperty(e.getKey(), e.getValue());
+                }
+                obj.add("connection_textures", textures);
+            }
+            if (!entry.connectionTextureSpacings().isEmpty()) {
+                JsonObject spacings = new JsonObject();
+                for (Map.Entry<String, Integer> e : entry.connectionTextureSpacings().entrySet()) {
+                    spacings.addProperty(e.getKey(), e.getValue());
+                }
+                obj.add("connection_texture_spacings", spacings);
+            }
             array.add(obj);
         }
         return array;
@@ -293,14 +405,65 @@ public record CanvasBlueprint(
                 continue;
             }
             JsonObject obj = element.getAsJsonObject();
-            JsonArray prereqs = array(obj, "prerequisites");
+
+            JsonArray connArray = array(obj, "connections");
+            List<String> connections = new ArrayList<>();
+            for (JsonElement c : connArray) {
+                String value = stringValue(c, "connections");
+                if (!value.isBlank()) {
+                    connections.add(value);
+                }
+            }
+
+            JsonArray prereqArray = array(obj, "prerequisites");
             Set<String> prerequisiteSet = new LinkedHashSet<>();
-            for (JsonElement p : prereqs) {
+            for (JsonElement p : prereqArray) {
                 String value = stringValue(p, "prerequisites");
                 if (!value.isBlank()) {
                     prerequisiteSet.add(value);
                 }
             }
+
+            Map<String, Integer> connectionColors = new HashMap<>();
+            JsonObject colorsObj = obj.getAsJsonObject("connection_colors");
+            if (colorsObj != null) {
+                for (var e : colorsObj.entrySet()) {
+                    if (e.getValue().isJsonPrimitive() && e.getValue().getAsJsonPrimitive().isNumber()) {
+                        connectionColors.put(e.getKey(), e.getValue().getAsInt());
+                    }
+                }
+            }
+
+            Map<String, String> connectionModes = new HashMap<>();
+            JsonObject modesObj = obj.getAsJsonObject("connection_modes");
+            if (modesObj != null) {
+                for (var e : modesObj.entrySet()) {
+                    if (e.getValue().isJsonPrimitive() && e.getValue().getAsJsonPrimitive().isString()) {
+                        connectionModes.put(e.getKey(), e.getValue().getAsString());
+                    }
+                }
+            }
+
+            Map<String, String> connectionTextures = new HashMap<>();
+            JsonObject texturesObj = obj.getAsJsonObject("connection_textures");
+            if (texturesObj != null) {
+                for (var e : texturesObj.entrySet()) {
+                    if (e.getValue().isJsonPrimitive() && e.getValue().getAsJsonPrimitive().isString()) {
+                        connectionTextures.put(e.getKey(), e.getValue().getAsString());
+                    }
+                }
+            }
+
+            Map<String, Integer> connectionTextureSpacings = new HashMap<>();
+            JsonObject spacingsObj = obj.getAsJsonObject("connection_texture_spacings");
+            if (spacingsObj != null) {
+                for (var e : spacingsObj.entrySet()) {
+                    if (e.getValue().isJsonPrimitive() && e.getValue().getAsJsonPrimitive().isNumber()) {
+                        connectionTextureSpacings.put(e.getKey(), e.getValue().getAsInt());
+                    }
+                }
+            }
+
             entries.add(new ExclusiveChoiceEntry(
                     string(obj, "source_id"),
                     string(obj, "source_group"),
@@ -308,8 +471,14 @@ public record CanvasBlueprint(
                     integer(obj, "source_y", 0, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_w", 79, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_h", 79, "ec:" + string(obj, "source_id")),
+                    integer(obj, "rotation", 0, "ec:" + string(obj, "source_id")),
                     string(obj, "background"),
-                    prerequisiteSet
+                    connections,
+                    prerequisiteSet,
+                    connectionColors,
+                    connectionModes,
+                    connectionTextures,
+                    connectionTextureSpacings
             ));
         }
         return entries;
@@ -537,15 +706,26 @@ public record CanvasBlueprint(
             int sourceY,
             int sourceW,
             int sourceH,
+            int rotation,
             String background,
-            Set<String> prerequisites
+            List<String> connections,
+            Set<String> prerequisites,
+            Map<String, Integer> connectionColors,
+            Map<String, String> connectionModes,
+            Map<String, String> connectionTextures,
+            Map<String, Integer> connectionTextureSpacings
     ) {
         public ExclusiveChoiceEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
             sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
             sourceW = Math.max(1, sourceW);
             sourceH = Math.max(1, sourceH);
+            connections = connections == null ? List.of() : List.copyOf(connections);
             prerequisites = prerequisites == null ? Set.of() : Set.copyOf(prerequisites);
+            connectionColors = connectionColors == null ? Map.of() : Map.copyOf(connectionColors);
+            connectionModes = connectionModes == null ? Map.of() : Map.copyOf(connectionModes);
+            connectionTextures = connectionTextures == null ? Map.of() : Map.copyOf(connectionTextures);
+            connectionTextureSpacings = connectionTextureSpacings == null ? Map.of() : Map.copyOf(connectionTextureSpacings);
         }
     }
 }
