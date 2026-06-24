@@ -19,8 +19,8 @@ import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -125,12 +125,12 @@ final class CanvasContextSelectionActions {
                     canvasViewport.refresh();
                 }));
             }
+            addBatchElementActions(actions, canvasViewport, state, selectedGroup);
             if (selectionSupportsGizmo(state, selectedGroup)) {
                 CanvasTransformGizmoMenus.addModeActions(actions, state, canvasViewport::refresh);
             }
             addBatchRemainingVisualActions(actions, canvasViewport, state, player);
             addBatchBehaviorActions(actions, canvasViewport, state, player);
-            addSelectionAlignmentActions(actions, canvasViewport, state, player);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedGroup, canvasViewport.cardLookup())) {
                 actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                     boolean changed = CanvasGridFitController.fitSelectionToGrid(player, state, selectedGroup, canvasViewport.cardLookup());
@@ -139,9 +139,9 @@ final class CanvasContextSelectionActions {
                     canvasViewport.refresh();
                 }));
             }
+            addSelectionAlignmentActions(actions, canvasViewport, state, player);
             addSelectionLayerActions(actions, canvasViewport, state, selectedGroup);
             addBatchResetQuest(actions, canvasViewport, state, player);
-            addBatchElementActions(actions, canvasViewport, state, selectedGroup);
         }
         addSelectionCopyAndDeleteActions(actions, canvasViewport, state, player);
     }
@@ -416,13 +416,22 @@ final class CanvasContextSelectionActions {
             Set<String> batchEntityIds = selectedEntityImageIds(state, selectedGroup);
             batchEntityIds.remove(finalPrimaryId);
             state.questDetails.entityMotionEditorBatchImageIds = String.join(",", batchEntityIds);
-            EntityIconControls.addEntityVariantAndMotionActions(
-                    actions, state, primary.asset(),
-                    ModalTargets.canvasImage(selectedGroup, finalPrimaryId),
-                    () -> ContextMenuState.clearDeleteConfirm(state),
-                    () -> EntityMotionEditor.openMainCanvas(state, selectedGroup, finalPrimaryId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY),
-                    canvasViewport::refresh
-            );
+            String entityId = EntityPreviewRenderer.entityId(primary.asset());
+            String variantTarget = ModalTargets.canvasImage(selectedGroup, finalPrimaryId);
+            if (EntityVariantCatalog.hasVariants(entityId)) {
+                actions.add(ContextActions.changeVariant(() -> {
+                    ModalOpenActions.openEntityVariantPicker(state, variantTarget, primary.asset());
+                    ContextMenuState.clearDeleteConfirm(state);
+                    canvasViewport.refresh();
+                }));
+            }
+            actions.add(ContextActions.promoted(
+                    TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT_MOTION),
+                    "motion", ModColors.INTERACTIVE, () -> {
+                        ContextMenuState.clearDeleteConfirm(state);
+                        EntityMotionEditor.openMainCanvas(state, selectedGroup, finalPrimaryId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
+                        canvasViewport.refresh();
+                    }));
         } else if (isItem) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, finalPrimaryId), primary.x(), primary.y());
