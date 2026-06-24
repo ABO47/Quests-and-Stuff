@@ -526,6 +526,7 @@ public class TabletUiState {
         public int entityMotionEditorY;
         public int entityMotionEditorW;
         public int entityMotionEditorH;
+        public String entityMotionEditorBatchImageIds = "";
         public String entityMotionYawDraft = "";
         public String entityMotionSpinDraft = "";
         public String entityMotionFocusedField = "";

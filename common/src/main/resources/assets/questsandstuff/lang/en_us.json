@@ -358,6 +358,8 @@
   "ui.questsandstuff.context.world_types": "World",
   "ui.questsandstuff.context.use_custom_sound": "Use Custom Sound",
   "ui.questsandstuff.context.use_game_sound": "Use Sound from Game",
+  "ui.questsandstuff.context.debug": "Debug",
+  "ui.questsandstuff.context.debug_spawn_all_entities": "Spawn All Entities",
   "ui.questsandstuff.modal.assets_library": "Assets Library",
   "ui.questsandstuff.modal.blueprints": "Blueprints",
   "ui.questsandstuff.modal.choose_item_icon": "Choose Item Icon",

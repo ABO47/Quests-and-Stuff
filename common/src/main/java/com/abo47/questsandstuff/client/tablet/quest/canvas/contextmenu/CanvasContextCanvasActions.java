@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -24,6 +25,7 @@ import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.world.entity.player.Player;
@@ -153,6 +155,48 @@ final class CanvasContextCanvasActions {
                 canvasViewport.refresh();
             }));
         }
+
+        List<ContextAction> debugActions = new ArrayList<>();
+        debugActions.add(ContextActions.action(
+                CanvasContextMenuController.tr("ui.questsandstuff.context.debug_spawn_all_entities"),
+                "entity", ModColors.INTERACTIVE, () -> spawnAllEntities(state, selectedGroup, canvasViewport)));
+        actions.add(ContextActions.submenu(
+                CanvasContextMenuController.tr("ui.questsandstuff.context.debug"),
+                "debug", ModColors.INTERACTIVE, debugActions));
+    }
+
+    private static void spawnAllEntities(TabletUiState state, String group, CanvasViewport canvasViewport) {
+        List<String> eggs = EntityPreviewRenderer.searchableSpawnEggEntries("");
+        if (eggs.isEmpty()) return;
+        int size = Math.max(48, CanvasGeometry.gridSize(state) * 4);
+        int gap = 8;
+        int perRow = 8;
+        int startCenterX = state.canvas.canvasImageLogicalX;
+        int startCenterY = state.canvas.canvasImageLogicalY;
+        List<String> existingIds = new ArrayList<>();
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+            existingIds.add(image.id());
+        }
+        for (int i = 0; i < eggs.size(); i++) {
+            String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(eggs.get(i));
+            if (entityId.isBlank()) continue;
+            String id = StableIdAllocator.nextId("ent", existingIds);
+            existingIds.add(id);
+            int col = i % perRow;
+            int row = i / perRow;
+            int x = startCenterX + col * (size + gap) - size / 2;
+            int y = startCenterY + row * (size + gap) - size / 2;
+            String asset = EntityPreviewRenderer.entityAsset(entityId);
+            CanvasImageLayer image = new CanvasImageLayer(id, asset, x, y, size, size, 0, 205, 1);
+            if (state.canvas.gridSnapLocked) {
+                image = CanvasGridFitController.fittedImage(state, image);
+            }
+            CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, image.x(), image.y(), image.w(), image.h());
+            image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, image.w(), image.h(), 0, 205, 1);
+            CanvasLayerMutations.putCanvasImage(state, group, image);
+        }
+        canvasViewport.refresh();
+        QuestsAndStuffMod.debugLog("[QnS:UI] debug spawned {} entities group={}", eggs.size(), group);
     }
 
     private static List<String> canvasExclusiveChoiceIds(TabletUiState state, String group) {
