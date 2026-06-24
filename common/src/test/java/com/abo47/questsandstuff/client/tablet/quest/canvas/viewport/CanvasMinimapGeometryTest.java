@@ -48,7 +48,7 @@ class CanvasMinimapGeometryTest {
         state.canvas.canvasOffsetY = -10;
         QuestCardLayout card = new QuestCardLayout("quest", new CompoundTag(), 0, 0, 10, 10, 16, 16, 80, 70, 1.0f, 0, 0, 10, 10);
 
-        CanvasMinimapGeometry.WorldBounds bounds = CanvasMinimapGeometry.worldBounds(state, List.of(card));
+        CanvasMinimapGeometry.WorldBounds bounds = CanvasMinimapGeometry.worldBounds(state, null, List.of(card));
 
         assertEquals(-14, bounds.minX());
         assertEquals(-19, bounds.minY());

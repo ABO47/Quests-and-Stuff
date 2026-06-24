@@ -14,9 +14,12 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 
 - Forge and Fabric support
 - In-game visual editor
+- Teams app letting players group up to share quest progress
 - Quest canvas blueprints for saving selected layouts and placing them later
+- Import and export blueprints through shareable codes, like blueprints in Factorio
+- Exclusive Choice canvas element for branching quest lines where a player can only pick and complete one of several connected quest branches
 - Straight or grid-style connection lines
-- Custom connection colors
+- Custom connection colors and textures
 - Cross-chapter quest connections
 - Searchable Connections Manager for quest prerequisites
 - Item, XP, advancement, recipe, stat, biome, dimension visit, structure visit, manual check , Block interaction, entity interaction, item interaction, item use, and entity kill requirements
@@ -33,7 +36,7 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 - Add text, images, items, blocks, and entity previews on the main canvas and quest details canvas
 - Fluid picker mode for icons, item Requirement/Reward cards, and recipe cards
 - Add recipe cards to the canvas from item, tag, fluid, or inventory-stack picks
-- Move, resize, rotate, and multi-select canvas elements
+- Move, resize, rotate, and multi-select canvas elements, with shift+click range selection and ctrl+click toggle selection
 - Move, resize, and rotate gizmos for entity and block models
 - Copy, paste, undo, and redo for quest and canvas edits
 - Grid, snapping, center guides, and other editor tools
@@ -54,7 +57,6 @@ Quests and Stuff is a questing mod that I originally created for private use, bu
 ## WIP
 
 - Full coordinate/radius UI for location requirements
-- Import and export for quest packs
 
 ## TODO
 
