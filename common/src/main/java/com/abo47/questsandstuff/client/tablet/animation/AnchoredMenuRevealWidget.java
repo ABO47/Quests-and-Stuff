@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
@@ -109,10 +110,10 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = frame.visibleHeight();
         if (softAlpha > 0) {
-            graphics.fill(x + 3, y + 4, x + w + 3, y + h + 4, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, softAlpha));
+            graphics.fill(x + 3, y + 4, x + w + 3, y + h + 4, withAlpha(ModColors.SURFACE_BASE, softAlpha));
         }
         if (hardAlpha > 0) {
-            graphics.fill(x + 1, y + 2, x + w + 1, y + h + 2, UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, hardAlpha));
+            graphics.fill(x + 1, y + 2, x + w + 1, y + h + 2, withAlpha(ModColors.SURFACE_BASE, hardAlpha));
         }
     }
 
@@ -123,7 +124,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), UiThemeTokens.withAlpha(ModColors.SURFACE_BASE, alpha));
+        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
     }
 
     private boolean enableClip(GuiGraphics graphics, int left, int top, int right, int bottom) {

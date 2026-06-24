@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.canvas.model.EdgeHit;
-import com.abo47.questsandstuff.client.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.screen.TabletScreenComposer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.shell.TabletShellComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -23,6 +24,17 @@ import java.util.Map;
 public final class TabletUiFactory {
     public static final int ROOT_W = TabletLayout.ROOT_W;
     public static final int ROOT_H = TabletLayout.ROOT_H;
+    public static final int ROOT_PAD_X = TabletLayout.ROOT_PAD_X;
+    public static final int ROOT_PAD_Y = TabletLayout.ROOT_PAD_Y;
+    public static final int PANEL_GAP = TabletLayout.PANEL_GAP;
+    public static final int PANEL_INSET = TabletLayout.PANEL_INSET;
+    public static final int CANVAS_VIEWPORT_GUTTER_X = TabletLayout.CANVAS_VIEWPORT_GUTTER_X;
+    public static final int CANVAS_VIEWPORT_GUTTER_TOP = TabletLayout.CANVAS_VIEWPORT_GUTTER_TOP;
+    public static final int CANVAS_VIEWPORT_GUTTER_BOTTOM = TabletLayout.CANVAS_VIEWPORT_GUTTER_BOTTOM;
+    public static final int CHAPTER_PANEL_GUTTER_X = TabletLayout.CHAPTER_PANEL_GUTTER_X;
+    public static final int CHAPTER_PANEL_GUTTER_BOTTOM = TabletLayout.CHAPTER_PANEL_GUTTER_BOTTOM;
+    public static final int HEADER_H = TabletLayout.HEADER_H;
+    public static final int HEADER_GAP = TabletLayout.HEADER_GAP;
     public static final int PAD = TabletLayout.PAD;
     public static final int PAD_Y = TabletLayout.PAD_Y;
     public static final int GAP = TabletLayout.GAP;
@@ -36,6 +48,7 @@ public final class TabletUiFactory {
     public static final int CHAPTER_W_MAX = TabletLayout.CHAPTER_W_MAX;
     public static final int CHAPTER_W_ICON_SNAP = TabletLayout.CHAPTER_W_ICON_SNAP;
     public static final int SPLITTER_W = TabletLayout.SPLITTER_W;
+    public static final int PANEL_W_MIN = TabletLayout.PANEL_W_MIN;
     public static final int CANVAS_W = TabletLayout.CANVAS_W;
     public static final int CHAPTER_CARD_H = TabletLayout.CHAPTER_CARD_H;
     public static final int CHAPTER_CARD_GAP = TabletLayout.CHAPTER_CARD_GAP;
@@ -63,9 +76,6 @@ public final class TabletUiFactory {
     public static final String[] CANVAS_LIMIT_LABELS = TabletLayout.CANVAS_LIMIT_LABELS;
     public static final int CHAPTER_SCROLL_W = TabletLayout.CHAPTER_SCROLL_W;
     public static final int SHARED_MENU_W = TabletLayout.SHARED_MENU_W;
-    public static final int CHAPTER_TEXT_MENU_H = TabletLayout.CHAPTER_TEXT_MENU_H;
-    public static final int FONT_SIZE_SLIDER_POPOVER_H = TabletLayout.FONT_SIZE_SLIDER_POPOVER_H;
-    public static final int FONT_SIZE_SLIDER_POPOVER_GAP = TabletLayout.FONT_SIZE_SLIDER_POPOVER_GAP;
     public static final int CONTENT_ICON_SIZE = 16;
     public static final int ACTION_ICON_SIZE = 12;
 
@@ -105,23 +115,15 @@ public final class TabletUiFactory {
     }
 
     public static WidgetGroup create(Player player) {
-        return TabletScreenComposer.create(player);
+        return TabletShellComposer.create(player);
     }
 
     public static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
-        return TabletScreenComposer.create(player, rootWidth, rootHeight, fullScreenMode);
+        return TabletShellComposer.create(player, rootWidth, rootHeight, fullScreenMode);
     }
 
     public static void applyRootSize(TabletUiState state, int width, int height, boolean fullScreenMode) {
         TabletLayout.applyRootSize(state, width, height, fullScreenMode);
-    }
-
-    public static int rootWidth(TabletUiState state) {
-        return TabletLayout.rootWidth(state);
-    }
-
-    public static int rootHeight(TabletUiState state) {
-        return TabletLayout.rootHeight(state);
     }
 
     public static int chapterHeight(TabletUiState state) {
@@ -130,10 +132,6 @@ public final class TabletUiFactory {
 
     public static int canvasHeight(TabletUiState state) {
         return TabletLayout.canvasHeight(state);
-    }
-
-    public static String selectedGroupName(TabletUiState state) {
-        return TabletEditorActions.selectedGroupName(state);
     }
 
     public static int chapterPanelWidth(TabletUiState state) {
@@ -152,60 +150,56 @@ public final class TabletUiFactory {
         return TabletLayout.canvasPanelWidth(state);
     }
 
+    public static int[] canvasViewportBounds(int panelW, int panelH, int topH) {
+        return TabletLayout.canvasViewportBounds(panelW, panelH, topH);
+    }
+
     public static String uniqueGroupName(String preferred, String excludeCurrent) {
-        return TabletEditorActions.uniqueGroupName(preferred, excludeCurrent);
+        return EditorCommandClient.uniqueGroupName(preferred, excludeCurrent);
     }
 
     public static String sanitizeGroupName(String value) {
-        return TabletEditorActions.sanitizeGroupName(value);
+        return EditorCommandClient.sanitizeGroupName(value);
     }
 
     public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
-        TabletEditorActions.runGroupAction(player, state, action, group, value, offset);
+        EditorCommandClient.runGroupAction(player, state, action, group, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
-        TabletEditorActions.runCanvasMoveAction(player, state, positions);
+        EditorCommandClient.runCanvasMoveAction(player, state, positions);
     }
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
-        TabletEditorActions.runPrerequisiteAction(player, questId, prerequisiteId, add);
+        EditorCommandClient.runPrerequisiteAction(player, questId, prerequisiteId, add);
     }
 
     public static void runQuestIconAction(Player player, String questId, String icon) {
-        TabletEditorActions.runQuestIconAction(player, questId, icon);
+        EditorCommandClient.runQuestIconAction(player, questId, icon);
     }
 
     public static void runRemoveQuestAction(Player player, String questId) {
-        TabletEditorActions.runRemoveQuestAction(player, questId);
+        EditorCommandClient.runRemoveQuestAction(player, questId);
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        TabletEditorActions.addQuestAt(player, state, logicalX, logicalY, title);
+        EditorCommandClient.addQuestAt(player, state, logicalX, logicalY, title);
     }
 
     public static int snapToGrid(TabletUiState state, int value) {
-        return TabletEditorActions.snapToGrid(state, value);
+        return CanvasRenderer.snapToGrid(state, value);
     }
 
     public static QuestCardLayout hitTestCard(List<QuestCardLayout> cards, int x, int y) {
-        return TabletEditorActions.hitTestCard(cards, x, y);
+        return CanvasRenderer.hitTestCard(cards, x, y);
     }
 
     public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        return TabletEditorActions.hitTestEdge(state, cards, byQuestId, x, y);
+        return CanvasRenderer.hitTestEdge(state, cards, byQuestId, x, y);
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
-        return TabletEditorActions.isContextMenuHit(state, x, y);
-    }
-
-    public static int withAlpha(int color, int alpha) {
-        return TabletWidgets.withAlpha(color, alpha);
-    }
-
-    public static void applyModalFlags(TabletUiState state, ModalWindowManager.ModalFlags flags) {
-        TabletModalState.applyModalFlags(state, flags);
+        return CanvasRenderer.isContextMenuHit(state, x, y);
     }
 
     public static int chapterBackgroundFill(String background, int fallback) {
@@ -296,14 +290,6 @@ public final class TabletUiFactory {
         return TabletLayout.chapterTextMenuHeight(state);
     }
 
-    public static boolean isChapterFontSizeSliderOpen(TabletUiState state) {
-        return TabletLayout.isChapterFontSizeSliderOpen(state);
-    }
-
-    public static int[] chapterTextFontSizeSliderBounds(TabletUiState state) {
-        return TabletLayout.chapterTextFontSizeSliderBounds(state);
-    }
-
     public static void deleteAssetFile(String relativePath) {
         TabletAssets.deleteAssetFile(relativePath);
     }
@@ -334,6 +320,14 @@ public final class TabletUiFactory {
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, callback);
+    }
+
+    public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
+    }
+
+    public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        TabletWidgets.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
     }
 
     public static String contextIconForLabel(String label) {

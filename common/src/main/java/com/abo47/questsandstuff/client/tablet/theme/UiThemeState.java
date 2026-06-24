@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
+import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
+
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -61,96 +63,7 @@ final class UiThemeState {
     }
 
     private static Map<String, String> defaultIconRoles() {
-        Map<String, String> iconRoles = new LinkedHashMap<>();
-        iconRoles.put("close", UiThemeManager.ROLE_ICON_ERROR);
-        iconRoles.put("editor", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("entity", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("align-center-horizontal", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("align-center-vertical", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("objects", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_add", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_rename", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_delete", UiThemeManager.ROLE_ICON_ERROR);
-        iconRoles.put("context_icon", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_entity", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("manual_check", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("recipe", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("stat", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("xp", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("send-horizontal", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("biome", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("orbit", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("scissors", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_orbit", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_scissors", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_background", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_image", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_reset_zoom", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_reset_quest", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("reset_quest", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_repeat", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_repeat-off", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("repeat", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("repeat-off", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_variant", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_motion", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_style", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_move_up", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_move_down", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_open", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_eye", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_eye-off", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_lock_quest", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_unlock_quest", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_lock_chapter", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_unlock_chapter", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("lock_canvas", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("unlock_canvas", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("lock_separator", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("unlock_separator", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("lock_quest", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("unlock_quest", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("lock_chapter", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("unlock_chapter", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("chapter_notice", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_audio-lines", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("context_connect", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_disconnect", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_center", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_grid", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_snap", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_inspector", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_minimap", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_select", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_drag", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_copy", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("context_paste", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("context_cut", UiThemeManager.ROLE_ICON_WARNING);
-        iconRoles.put("context_properties", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("mode_items", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("mode_tags", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("mode_inventory", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("mode_fluids", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("picker_search", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("picker_scroll_track", UiThemeManager.ROLE_ICON_SCROLL_TRACK);
-        iconRoles.put("picker_scroll_thumb", UiThemeManager.ROLE_ICON_SCROLL_THUMB);
-        iconRoles.put("style_align_left", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("style_align_center", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("style_align_right", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("style_bold", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("style_italic", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("style_color", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("palette_add", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("palette_remove", UiThemeManager.ROLE_ICON_ERROR);
-        iconRoles.put("context_separator", UiThemeManager.ROLE_ICON_MUTED);
-        iconRoles.put("context_more", UiThemeManager.ROLE_ICON_DEFAULT);
-        iconRoles.put("window_drag_handle", UiThemeManager.ROLE_ICON_MUTED);
-        iconRoles.put("window_pin", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("themes", UiThemeManager.ROLE_ICON_INTERACTIVE);
-        iconRoles.put("auto_claim", UiThemeManager.ROLE_ICON_SUCCESS);
-        iconRoles.put("claim_all", UiThemeManager.ROLE_ICON_SUCCESS);
-        return iconRoles;
+        return new LinkedHashMap<>(UiIconRegistry.defaultIconRoles());
     }
 
     private static String normalizeRole(String role) {

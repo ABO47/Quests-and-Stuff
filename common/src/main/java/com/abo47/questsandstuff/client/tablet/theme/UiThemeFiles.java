@@ -104,7 +104,12 @@ final class UiThemeFiles {
     static long safeMtime(Path file) {
         try {
             return Files.exists(file) ? Files.getLastModifiedTime(file).toMillis() : Long.MIN_VALUE;
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:UI] Failed reading theme mtime file={} diagnostic={}",
+                    file,
+                    exception.toString()
+            );
             return Long.MIN_VALUE;
         }
     }

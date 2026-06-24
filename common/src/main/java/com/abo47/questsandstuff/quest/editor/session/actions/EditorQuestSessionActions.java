@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class EditorQuestSessionActions {
@@ -249,6 +250,18 @@ public final class EditorQuestSessionActions {
 
     public void setConnectionColor(ServerPlayer player, String questId, String prerequisiteId, int color) {
         prerequisiteEdits.setConnectionColor(player, questId, prerequisiteId, color);
+    }
+
+    public void setConnectionTexture(ServerPlayer player, String questId, String prerequisiteId, String texture) {
+        prerequisiteEdits.setConnectionTexture(player, questId, prerequisiteId, texture);
+    }
+
+    public void setConnectionTextures(ServerPlayer player, Map<String, Map<String, String>> questTextures) {
+        prerequisiteEdits.setConnectionTextures(player, questTextures);
+    }
+
+    public void setConnectionTextureSpacing(ServerPlayer player, String questId, String prerequisiteId, int spacing) {
+        prerequisiteEdits.setConnectionTextureSpacing(player, questId, prerequisiteId, spacing);
     }
 
     public void connectToNext(ServerPlayer player) {

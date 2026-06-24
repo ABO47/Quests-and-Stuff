@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ final class ChapterMetadataState {
     final Map<String, Integer> groupTextSize = new HashMap<>();
     final Map<String, Boolean> groupLockUntilUnlocked = new HashMap<>();
     final Map<String, Boolean> groupHideUntilUnlocked = new HashMap<>();
+    final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup = new HashMap<>();
     final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
     final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
     final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
@@ -35,6 +38,7 @@ final class ChapterMetadataState {
         groupTextSize.clear();
         groupLockUntilUnlocked.clear();
         groupHideUntilUnlocked.clear();
+        canvasExclusiveChoicesByGroup.clear();
         canvasImagesByGroup.clear();
         canvasTextsByGroup.clear();
         canvasLayerOrderByGroup.clear();
@@ -44,11 +48,12 @@ final class ChapterMetadataState {
         groupOrder.clear();
         if (groups != null) {
             for (String group : groups) {
-                if (group == null || group.isBlank()) {
+                String normalized = normalizeGroupName(group);
+                if (normalized.isBlank()) {
                     continue;
                 }
-                if (!groupOrder.contains(group)) {
-                    groupOrder.add(group);
+                if (!groupOrder.contains(normalized)) {
+                    groupOrder.add(normalized);
                 }
             }
         }
@@ -76,6 +81,7 @@ final class ChapterMetadataState {
         moveValue(groupTextSize, from, to);
         moveValue(groupLockUntilUnlocked, from, to);
         moveValue(groupHideUntilUnlocked, from, to);
+        moveValue(canvasExclusiveChoicesByGroup, from, to);
         moveValue(canvasImagesByGroup, from, to);
         moveValue(canvasTextsByGroup, from, to);
         moveValue(canvasLayerOrderByGroup, from, to);
@@ -134,6 +140,7 @@ final class ChapterMetadataState {
         groupTextSize.keySet().removeIf(group -> !groupOrder.contains(group));
         groupLockUntilUnlocked.keySet().removeIf(group -> !groupOrder.contains(group));
         groupHideUntilUnlocked.keySet().removeIf(group -> !groupOrder.contains(group));
+        canvasExclusiveChoicesByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasImagesByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasTextsByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
         canvasLayerOrderByGroup.keySet().removeIf(group -> !groupOrder.contains(group));
@@ -147,6 +154,7 @@ final class ChapterMetadataState {
             groupTextSize.putIfAbsent(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
             groupLockUntilUnlocked.putIfAbsent(group, false);
             groupHideUntilUnlocked.putIfAbsent(group, false);
+            canvasExclusiveChoicesByGroup.putIfAbsent(group, List.of());
             canvasImagesByGroup.putIfAbsent(group, List.of());
             canvasTextsByGroup.putIfAbsent(group, List.of());
             canvasLayerOrderByGroup.putIfAbsent(group, List.of());
@@ -189,6 +197,6 @@ final class ChapterMetadataState {
     }
 
     static String normalizeGroupName(String name) {
-        return name == null ? "" : name.trim();
+        return QuestIdentity.groupName(name);
     }
 }

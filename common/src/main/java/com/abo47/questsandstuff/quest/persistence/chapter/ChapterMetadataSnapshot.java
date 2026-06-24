@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -17,6 +18,7 @@ public record ChapterMetadataSnapshot(
         Map<String, Integer> groupTextSize,
         Map<String, Boolean> groupLockUntilUnlocked,
         Map<String, Boolean> groupHideUntilUnlocked,
+        Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup,
         Map<String, List<CanvasImageLayer>> canvasImagesByGroup,
         Map<String, List<CanvasTextLayer>> canvasTextsByGroup,
         Map<String, List<String>> canvasLayerOrderByGroup

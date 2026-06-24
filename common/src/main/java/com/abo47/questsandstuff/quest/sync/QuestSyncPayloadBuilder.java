@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -69,18 +71,19 @@ final class QuestSyncPayloadBuilder {
 
     private CompoundTag groupPropsEntry(String group) {
         CompoundTag entry = new CompoundTag();
-        entry.putString("icon", definitionStore.groupIcon(group));
-        entry.putString("background", definitionStore.groupBackground(group));
-        entry.putString("canvas_background", definitionStore.groupCanvasBackground(group));
-        entry.putString("text_align", definitionStore.groupTextAlign(group));
-        entry.putInt("text_color", definitionStore.groupTextColor(group));
-        entry.putString("text_style", definitionStore.groupTextStyle(group));
-        entry.putInt("text_size", definitionStore.groupTextSize(group));
-        entry.putBoolean("lock_until_unlocked", definitionStore.groupLockUntilUnlocked(group));
-        entry.putBoolean("hide_until_unlocked", definitionStore.groupHideUntilUnlocked(group));
-        entry.put("canvas_images", CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
-        entry.put("canvas_texts", CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
-        entry.put("canvas_layer_order", CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));
+        entry.putString(QuestSyncKeys.GroupProps.ICON, definitionStore.groupIcon(group));
+        entry.putString(QuestSyncKeys.GroupProps.BACKGROUND, definitionStore.groupBackground(group));
+        entry.putString(QuestSyncKeys.GroupProps.CANVAS_BACKGROUND, definitionStore.groupCanvasBackground(group));
+        entry.putString(QuestSyncKeys.GroupProps.TEXT_ALIGN, definitionStore.groupTextAlign(group));
+        entry.putInt(QuestSyncKeys.GroupProps.TEXT_COLOR, definitionStore.groupTextColor(group));
+        entry.putString(QuestSyncKeys.GroupProps.TEXT_STYLE, definitionStore.groupTextStyle(group));
+        entry.putInt(QuestSyncKeys.GroupProps.TEXT_SIZE, definitionStore.groupTextSize(group));
+        entry.putBoolean(QuestSyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED, definitionStore.groupLockUntilUnlocked(group));
+        entry.putBoolean(QuestSyncKeys.GroupProps.HIDE_UNTIL_UNLOCKED, definitionStore.groupHideUntilUnlocked(group));
+        entry.put(QuestSyncKeys.GroupProps.CANVAS_EXCLUSIVE_CHOICES, CanvasLayerNbt.exclusiveChoicesToListTag(definitionStore.canvasExclusiveChoices(group)));
+        entry.put(QuestSyncKeys.GroupProps.CANVAS_IMAGES, CanvasLayerNbt.imagesToListTag(definitionStore.canvasImages(group)));
+        entry.put(QuestSyncKeys.GroupProps.CANVAS_TEXTS, CanvasLayerNbt.textsToListTag(definitionStore.canvasTexts(group)));
+        entry.put(QuestSyncKeys.GroupProps.CANVAS_LAYER_ORDER, CanvasLayerNbt.stringsToListTag(definitionStore.canvasLayerOrder(group)));
         return entry;
     }
 
@@ -103,39 +106,47 @@ final class QuestSyncPayloadBuilder {
         return questTag(definition, null, true);
     }
 
+    CompoundTag editorQuestPayload(QuestDefinition definition, PlayerQuestState playerState) {
+        QuestProgressState progress = playerState == null ? null : playerState.quest(definition.id());
+        return questTag(definition, progress, true);
+    }
+
     private static CompoundTag questTag(QuestDefinition definition, QuestProgressState progress, boolean includeDescription) {
         CompoundTag questTag = new CompoundTag();
-        questTag.putString("title", definition.display().title());
-        questTag.putString("subtitle", definition.display().subtitle());
+        questTag.putString(QuestSyncKeys.Quest.TITLE, definition.display().title());
+        questTag.putString(QuestSyncKeys.Quest.SUBTITLE, definition.display().subtitle());
         if (includeDescription) {
-            questTag.put("description", descriptionTag(definition));
+            questTag.put(QuestSyncKeys.Quest.DESCRIPTION, descriptionTag(definition));
         }
-        questTag.putString("icon", definition.display().icon());
-        questTag.putString("icon_background", definition.display().iconBackground());
-        questTag.putString("completion_sound", definition.display().completionSound());
-        questTag.putInt("completion_sound_volume", definition.display().completionSoundVolume());
-        questTag.putString("completion_hud_background", definition.display().completionHudBackground());
-        questTag.putBoolean("visual_hidden", definition.display().visualHidden());
-        questTag.putString("quest_background", definition.display().questBackground());
-        questTag.putBoolean("quest_background_grayscale", definition.display().questBackgroundGrayscale());
+        questTag.putString(QuestSyncKeys.Quest.ICON, definition.display().icon());
+        questTag.putString(QuestSyncKeys.Quest.ICON_BACKGROUND, definition.display().iconBackground());
+        questTag.putString(QuestSyncKeys.Quest.COMPLETION_SOUND, definition.display().completionSound());
+        questTag.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, definition.display().completionSoundVolume());
+        questTag.putString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND, definition.display().completionHudBackground());
+        questTag.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, definition.display().visualHidden());
+        questTag.putString(QuestSyncKeys.Quest.QUEST_BACKGROUND, definition.display().questBackground());
+        questTag.putBoolean(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, definition.display().questBackgroundGrayscale());
         if (progress != null) {
-            questTag.putBoolean("completed", progress.completed());
-            questTag.putBoolean("unlocked", progress.unlocked());
-            questTag.putBoolean("claimed", allRewardsClaimed(definition, progress));
-            questTag.putFloat("progress", progressPercent(definition, progress));
+            questTag.putBoolean(QuestSyncKeys.Quest.COMPLETED, progress.completed());
+            questTag.putBoolean(QuestSyncKeys.Quest.UNLOCKED, progress.unlocked());
+            questTag.putBoolean(QuestSyncKeys.Quest.CLAIMED, allRewardsClaimed(definition, progress));
+            questTag.putFloat(QuestSyncKeys.Quest.PROGRESS, progressPercent(definition, progress));
         }
-        questTag.putBoolean("repeatable", definition.settings().repeatable());
-        questTag.putString("hidden_mode", definition.settings().hiddenMode().serializedName());
-        questTag.putBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD, definition.settings().showPrerequisiteArrow());
-        questTag.put("tasks", taskDefinitionsTag(definition, progress));
-        questTag.put("tasks_order", stringOrderTag(definition.tasksOrder()));
-        questTag.put("rewards", rewardDefinitionsTag(definition));
-        questTag.put("rewards_order", stringOrderTag(definition.rewardsOrder()));
-        questTag.put(QuestDefinition.PREREQUISITES_FIELD, prerequisitesTag(definition));
-        questTag.put("connection_colors", connectionColorsTag(definition));
-        questTag.put("connection_modes", connectionModesTag(definition));
-        questTag.put("hidden_connections", hiddenConnectionsTag(definition));
-        questTag.put("groups", chapterViewsTag(definition));
+        questTag.putBoolean(QuestSyncKeys.Quest.REPEATABLE, definition.settings().repeatable());
+        questTag.putString(QuestSyncKeys.Quest.HIDDEN_MODE, definition.settings().hiddenMode().serializedName());
+        questTag.putBoolean(QuestSyncKeys.Quest.SHOW_PREREQUISITE_ARROW, definition.settings().showPrerequisiteArrow());
+        questTag.put(QuestSyncKeys.Quest.TASKS, taskDefinitionsTag(definition, progress));
+        questTag.put(QuestSyncKeys.Quest.TASKS_ORDER, stringOrderTag(definition.tasksOrder()));
+        questTag.put(QuestSyncKeys.Quest.REWARDS, rewardDefinitionsTag(definition));
+        questTag.put(QuestSyncKeys.Quest.REWARDS_ORDER, stringOrderTag(definition.rewardsOrder()));
+        questTag.put(QuestSyncKeys.Quest.PREREQUISITES, prerequisitesTag(definition));
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_COLORS, connectionColorsTag(definition));
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_MODES, connectionModesTag(definition));
+        questTag.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hiddenConnectionsTag(definition));
+        CompoundTag ctTag = connectionTexturesTag(definition);
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_TEXTURES, ctTag);
+        questTag.put(QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, connectionTextureSpacingsTag(definition));
+        questTag.put(QuestSyncKeys.Quest.GROUPS, chapterViewsTag(definition));
         return questTag;
     }
 
@@ -162,10 +173,10 @@ final class QuestSyncPayloadBuilder {
         for (Map.Entry<String, ChapterDefinition> groupEntry : definition.display().groups().entrySet()) {
             ChapterDefinition view = groupEntry.getValue();
             CompoundTag groupTag = new CompoundTag();
-            groupTag.putBoolean("visible", view.visible());
-            groupTag.putInt("x", view.x());
-            groupTag.putInt("y", view.y());
-            groupTag.putFloat("scale", view.scale());
+            groupTag.putBoolean(QuestSyncKeys.ChapterView.VISIBLE, view.visible());
+            groupTag.putInt(QuestSyncKeys.ChapterView.X, view.x());
+            groupTag.putInt(QuestSyncKeys.ChapterView.Y, view.y());
+            groupTag.putFloat(QuestSyncKeys.ChapterView.SCALE, view.scale());
             groups.put(groupEntry.getKey(), groupTag);
         }
         return groups;
@@ -198,13 +209,13 @@ final class QuestSyncPayloadBuilder {
         for (Map.Entry<String, QuestTaskDefinition> entry : definition.tasks().entrySet()) {
             QuestTaskDefinition task = entry.getValue();
             CompoundTag taskTag = new CompoundTag();
-            taskTag.putString("type", task.type().toString());
-            taskTag.putString("json", encodeTask(task));
+            taskTag.putString(QuestSyncKeys.Objective.TYPE, task.type().toString());
+            taskTag.putString(QuestSyncKeys.Objective.JSON, encodeTask(definition.id(), entry.getKey(), task));
             if (progress != null) {
                 var taskProgress = progress.getTaskProgress(entry.getKey(), task);
-                taskTag.putFloat("progress", task.getProgress(taskProgress));
-                taskTag.putBoolean("complete", task.isComplete(taskProgress));
-                taskTag.putInt("count", progress.getTaskCount(entry.getKey()));
+                taskTag.putFloat(QuestSyncKeys.Objective.PROGRESS, task.getProgress(taskProgress));
+                taskTag.putBoolean(QuestSyncKeys.Objective.COMPLETE, task.isComplete(taskProgress));
+                taskTag.putInt(QuestSyncKeys.Objective.COUNT, progress.getTaskCount(entry.getKey()));
             }
             tasksTag.put(entry.getKey(), taskTag);
         }
@@ -216,31 +227,59 @@ final class QuestSyncPayloadBuilder {
         for (Map.Entry<String, QuestRewardDefinition> entry : definition.rewards().entrySet()) {
             QuestRewardDefinition reward = entry.getValue();
             CompoundTag rewardTag = new CompoundTag();
-            rewardTag.putString("type", reward.type().toString());
-            rewardTag.putString("json", encodeReward(reward));
-            rewardTag.putBoolean("selectable", reward.selectable());
-            rewardTag.putBoolean("mass_claimable", reward.canBeMassClaimed());
+            rewardTag.putString(QuestSyncKeys.Objective.TYPE, reward.type().toString());
+            rewardTag.putString(QuestSyncKeys.Objective.JSON, encodeReward(definition.id(), entry.getKey(), reward));
+            rewardTag.putBoolean(QuestSyncKeys.Objective.SELECTABLE, reward.selectable());
+            rewardTag.putBoolean(QuestSyncKeys.Objective.MASS_CLAIMABLE, reward.canBeMassClaimed());
             rewardsTag.put(entry.getKey(), rewardTag);
         }
         return rewardsTag;
     }
 
-    private static String encodeTask(QuestTaskDefinition task) {
+    private static String encodeTask(String questId, String taskId, QuestTaskDefinition task) {
         try {
-            JsonElement encoded = QuestTaskDefinition.CODEC.encodeStart(JsonOps.INSTANCE, task)
-                    .getOrThrow(false, ignored -> {});
-            return encoded.toString();
-        } catch (Exception ignored) {
+            return QuestTaskDefinition.CODEC.encodeStart(JsonOps.INSTANCE, task)
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Sync] Failed encoding task JSON quest={} task={} type={} diagnostic={}",
+                            questId,
+                            taskId,
+                            task == null ? "" : task.type(),
+                            diagnostic
+                    ))
+                    .map(JsonElement::toString)
+                    .orElse("{}");
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed encoding task JSON quest={} task={} type={}",
+                    questId,
+                    taskId,
+                    task == null ? "" : task.type(),
+                    exception
+            );
             return "{}";
         }
     }
 
-    private static String encodeReward(QuestRewardDefinition reward) {
+    private static String encodeReward(String questId, String rewardId, QuestRewardDefinition reward) {
         try {
-            JsonElement encoded = QuestRewardDefinition.CODEC.encodeStart(JsonOps.INSTANCE, reward)
-                    .getOrThrow(false, ignored -> {});
-            return encoded.toString();
-        } catch (Exception ignored) {
+            return QuestRewardDefinition.CODEC.encodeStart(JsonOps.INSTANCE, reward)
+                    .resultOrPartial(diagnostic -> QuestsAndStuffMod.LOGGER.warn(
+                            "[QnS:Sync] Failed encoding reward JSON quest={} reward={} type={} diagnostic={}",
+                            questId,
+                            rewardId,
+                            reward == null ? "" : reward.type(),
+                            diagnostic
+                    ))
+                    .map(JsonElement::toString)
+                    .orElse("{}");
+        } catch (RuntimeException exception) {
+            QuestsAndStuffMod.LOGGER.warn(
+                    "[QnS:Sync] Failed encoding reward JSON quest={} reward={} type={}",
+                    questId,
+                    rewardId,
+                    reward == null ? "" : reward.type(),
+                    exception
+            );
             return "{}";
         }
     }
@@ -258,8 +297,9 @@ final class QuestSyncPayloadBuilder {
     private static CompoundTag connectionColorsTag(QuestDefinition definition) {
         CompoundTag colors = new CompoundTag();
         for (Map.Entry<String, Integer> entry : definition.connectionColors().entrySet()) {
-            if (entry.getKey() != null && entry.getValue() != null) {
-                colors.putInt(entry.getKey(), entry.getValue());
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null) {
+                colors.putInt(key, entry.getValue());
             }
         }
         return colors;
@@ -268,8 +308,10 @@ final class QuestSyncPayloadBuilder {
     private static CompoundTag connectionModesTag(QuestDefinition definition) {
         CompoundTag modes = new CompoundTag();
         for (Map.Entry<String, String> entry : definition.connectionModes().entrySet()) {
-            if (entry.getKey() != null && "grid".equals(entry.getValue())) {
-                modes.putString(entry.getKey(), entry.getValue());
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            QuestConnectionMode mode = QuestConnectionMode.fromSerializedName(entry.getValue());
+            if (!key.isBlank() && mode.storedInQuestMetadata()) {
+                modes.putString(key, mode.serializedName());
             }
         }
         return modes;
@@ -280,8 +322,34 @@ final class QuestSyncPayloadBuilder {
         List<String> hiddenConnectionIds = new ArrayList<>(definition.hiddenConnections());
         hiddenConnectionIds.sort(String::compareTo);
         for (String hiddenConnectionId : hiddenConnectionIds) {
-            hidden.add(StringTag.valueOf(hiddenConnectionId));
+            String key = QuestConnectionMetadata.metadataKey(hiddenConnectionId);
+            if (!key.isBlank()) {
+                hidden.add(StringTag.valueOf(key));
+            }
         }
         return hidden;
+    }
+
+    private static CompoundTag connectionTexturesTag(QuestDefinition definition) {
+        CompoundTag textures = new CompoundTag();
+        Map<String, String> connTextures = definition.connectionTextures();
+        for (Map.Entry<String, String> entry : connTextures.entrySet()) {
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null && !entry.getValue().isBlank()) {
+                textures.putString(key, entry.getValue());
+            }
+        }
+        return textures;
+    }
+
+    private static CompoundTag connectionTextureSpacingsTag(QuestDefinition definition) {
+        CompoundTag spacings = new CompoundTag();
+        for (Map.Entry<String, Integer> entry : definition.connectionTextureSpacings().entrySet()) {
+            String key = QuestConnectionMetadata.metadataKey(entry.getKey());
+            if (!key.isBlank() && entry.getValue() != null && entry.getValue() > 0) {
+                spacings.putInt(key, entry.getValue());
+            }
+        }
+        return spacings;
     }
 }

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff;
 
-import com.abo47.questsandstuff.network.QuestNetwork;
+import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import com.mojang.logging.LogUtils;
@@ -19,18 +19,18 @@ public final class QuestsAndStuffMod {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static MinecraftServer SERVER_REF;
 
-    private static Supplier<Item> questTablet = unregistered("quest_tablet");
+    private static Supplier<Item> tablet = unregistered("quest_tablet");
     private static Supplier<LootItemConditionType> completedQuestLootCondition = unregistered("completed_quest");
     private static boolean bootstrapped;
 
-    public static final Supplier<Item> QUEST_TABLET = () -> questTablet.get();
+    public static final Supplier<Item> TABLET = () -> tablet.get();
     public static final Supplier<LootItemConditionType> COMPLETED_QUEST_LOOT_CONDITION = () -> completedQuestLootCondition.get();
 
     private QuestsAndStuffMod() {
     }
 
-    public static void registerContent(Supplier<Item> questTabletSupplier, Supplier<LootItemConditionType> completedQuestLootConditionSupplier) {
-        questTablet = Objects.requireNonNull(questTabletSupplier, "questTabletSupplier");
+    public static void registerContent(Supplier<Item> tabletSupplier, Supplier<LootItemConditionType> completedQuestLootConditionSupplier) {
+        tablet = Objects.requireNonNull(tabletSupplier, "tabletSupplier");
         completedQuestLootCondition = Objects.requireNonNull(completedQuestLootConditionSupplier, "completedQuestLootConditionSupplier");
     }
 
@@ -40,7 +40,7 @@ public final class QuestsAndStuffMod {
         }
         bootstrapped = true;
         QuestsAndStuffConfig.load();
-        QuestNetwork.register();
+        ModNetwork.register();
         TeamProgressProviders.bootstrapDefaults();
     }
 

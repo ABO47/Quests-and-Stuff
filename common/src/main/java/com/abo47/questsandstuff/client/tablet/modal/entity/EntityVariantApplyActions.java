@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.details.objective.QuestObjectiveEditActions;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -17,7 +18,10 @@ final class EntityVariantApplyActions {
     }
 
     static void apply(Player player, TabletUiState state, String target, String variantKey) {
-        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        apply(player, state, ModalTargetParser.parse(target), variantKey);
+    }
+
+    static void apply(Player player, TabletUiState state, ModalTargetParser.Target parsed, String variantKey) {
         if (applyQuestIcon(player, parsed, variantKey)) {
             return;
         }
@@ -31,14 +35,14 @@ final class EntityVariantApplyActions {
             return;
         }
         if (parsed.isCanvasImage()) {
-            CanvasImageLayer image = CanvasRenderer.findCanvasImage(state, parsed.questId(), parsed.entryId());
+            CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, parsed.questId(), parsed.entryId());
             if (image == null) {
                 return;
             }
-            CanvasRenderer.putCanvasImage(state, parsed.questId(), image.withAsset(EntityPreviewRenderer.withEntityVariant(image.asset(), variantKey)));
-            state.selectedCanvasImageId = image.id();
-            state.selectedCanvasImageIds.clear();
-            state.selectedCanvasImageIds.add(image.id());
+            CanvasLayerMutations.putCanvasImage(state, parsed.questId(), image.withAsset(EntityPreviewRenderer.withEntityVariant(image.asset(), variantKey)));
+            state.canvas.canvasSelection.setPrimaryImageId(image.id());
+            state.canvas.canvasSelection.imageIds().clear();
+            state.canvas.canvasSelection.imageIds().add(image.id());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity variant picked group={} image={} variant={}", parsed.questId(), image.id(), variantKey);
             return;
         }

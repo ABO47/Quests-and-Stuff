@@ -1,8 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
@@ -14,75 +17,80 @@ final class TabletRootDismissals {
     static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY) {
         int rootX = TabletWidgetCoordinates.rootX(root);
         int rootY = TabletWidgetCoordinates.rootY(root);
-        boolean chapterMenuWasOpen = state.chapterMenuOpen;
-        boolean contextMenuWasOpen = state.contextMenuOpen;
+        boolean chapterMenuWasOpen = state.chapterPanel.chapterMenuOpen;
+        boolean contextMenuWasOpen = state.contextMenu.contextMenuOpen;
+        boolean questDetailsWasOpen = state.questDetails.questDetailsOpen;
+        boolean chapterTextMenuWasOpen = state.chapterPanel.chapterTextMenuOpen;
+        boolean canvasTextMenuWasOpen = state.canvas.canvasTextMenuOpen;
         boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, rootX, rootY, mouseX, mouseY);
-        boolean chapterTextMenuHit = state.chapterTextMenuOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
-        boolean assetContextHit = state.assetContextOpen && TabletRootHitTest.isAssetContextHit(state, rootX, rootY, mouseX, mouseY);
-        return new ClickDismissState(chapterMenuWasOpen, contextMenuWasOpen, chapterMenuHit, contextMenuHit, chapterTextMenuHit, assetContextHit);
+        boolean chapterTextMenuHit = chapterTextMenuWasOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean canvasTextMenuHit = canvasTextMenuWasOpen && TabletRootHitTest.isCanvasTextMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean assetContextHit = state.pickers.assetContextOpen && TabletRootHitTest.isAssetContextHit(state, rootX, rootY, mouseX, mouseY);
+        return new ClickDismissState(chapterMenuWasOpen, contextMenuWasOpen, questDetailsWasOpen, chapterTextMenuWasOpen, canvasTextMenuWasOpen, chapterMenuHit, contextMenuHit, chapterTextMenuHit, canvasTextMenuHit, assetContextHit);
     }
 
     static boolean handleAfterClick(TabletRootWidget root, TabletUiState state, Runnable refresher, ClickDismissState clickState, double mouseX, double mouseY, int button, boolean handled) {
         int rootX = TabletWidgetCoordinates.rootX(root);
         int rootY = TabletWidgetCoordinates.rootY(root);
-        if (state.questDetailsOpen) {
+        if (clickState.questDetailsWasOpen()) {
             return true;
         }
-        boolean chapterMenuOpenedByThisClick = state.chapterMenuOpenedByClick;
-        state.chapterSelectionJustChanged = false;
-        state.chapterMenuOpenedByClick = false;
+        boolean chapterMenuOpenedByThisClick = state.chapterPanel.chapterMenuOpenedByClick;
+        state.chapterPanel.chapterSelectionJustChanged = false;
+        state.chapterPanel.chapterMenuOpenedByClick = false;
 
         if (button != 0 && button != 1) {
             return handled;
         }
         boolean changed = false;
-        if (TabletUiFactory.DRAFT_CHAPTER.equals(state.pendingChapterRename)
+        if (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)
                 && !TabletRootHitTest.isInsideChapterPanel(state, rootX, rootY, mouseX, mouseY)) {
-            state.pendingChapterRename = "";
+            state.canvas.pendingChapterRename = "";
             changed = true;
         }
-        if (!state.pendingQuestTitleChangeId.isBlank()
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank()
                 && !QuestDetailsWindow.isInside(state, mouseX, mouseY)
                 && !TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY)) {
             EditorCommandClient.cancelQuestTitleChange(state);
             changed = true;
         }
-        if (clickState.chapterMenuWasOpen() && state.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
-            state.chapterMenuOpen = false;
-            state.contextDeleteConfirmKey = "";
+        if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
+            state.chapterPanel.chapterMenuOpen = false;
+            ContextMenuState.clearDeleteConfirm(state);
             changed = true;
         }
-        if (clickState.contextMenuWasOpen() && state.contextMenuOpen && !clickState.contextMenuHit()) {
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextDeleteConfirmKey = "";
-            state.contextQuestCompletionSoundMenuOpen = false;
+        if (clickState.contextMenuWasOpen() && state.contextMenu.contextMenuOpen && !clickState.contextMenuHit()) {
+            ContextMenuState.close(state);
             changed = true;
         }
-        if (state.chapterTextMenuOpen && !clickState.chapterTextMenuHit() && !handled) {
-            state.chapterTextMenuOpen = false;
-            state.chapterTextMenuTarget = "";
-            state.chapterTextFontSizeSliderTarget = "";
+        if (clickState.chapterTextMenuWasOpen() && state.chapterPanel.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
+            state.chapterPanel.chapterTextMenuOpen = false;
+            state.chapterPanel.chapterTextMenuTarget = "";
+            state.chapterPanel.chapterTextFontSizeFieldTarget = "";
             changed = true;
         }
-        if (state.assetContextOpen && !clickState.assetContextHit()) {
-            state.assetContextOpen = false;
-            state.assetRenameOpen = false;
-            state.contextDeleteConfirmKey = "";
+        if (clickState.canvasTextMenuWasOpen() && state.canvas.canvasTextMenuOpen && !clickState.canvasTextMenuHit()) {
+            TextStyleSession.closeMainCanvas(state);
+            changed = true;
+        }
+        if (state.pickers.assetContextOpen && !clickState.assetContextHit()) {
+            state.pickers.assetContextOpen = false;
+            state.pickers.assetRenameOpen = false;
+            ContextMenuState.clearDeleteConfirm(state);
             changed = true;
         }
         boolean insideCanvasViewport = TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY);
         boolean insideChapterPanel = TabletRootHitTest.isInsideChapterPanel(state, rootX, rootY, mouseX, mouseY);
         if (!insideCanvasViewport
                 && !TabletRootHitTest.isToolsMenuHit(state, rootX, rootY, mouseX, mouseY)
-                && !state.selectedQuestIds.isEmpty()) {
-            state.selectedQuestIds.clear();
+                && !state.canvas.canvasSelection.questIds().isEmpty()) {
+            state.canvas.canvasSelection.questIds().clear();
             if (!insideChapterPanel) {
-                state.connectSourceQuestId = "";
-                state.connectSourceQuestIds.clear();
+                state.canvas.connectSourceQuestId = "";
+                state.canvas.connectSourceQuestIds.clear();
             }
-            state.selectionBoundsVisible = false;
+            state.canvas.selectionBoundsVisible = false;
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas selection cleared reason=outside_canvas x={} y={}", Math.round(mouseX - rootX), Math.round(mouseY - rootY));
             changed = true;
         }
@@ -96,9 +104,13 @@ final class TabletRootDismissals {
     record ClickDismissState(
             boolean chapterMenuWasOpen,
             boolean contextMenuWasOpen,
+            boolean questDetailsWasOpen,
+            boolean chapterTextMenuWasOpen,
+            boolean canvasTextMenuWasOpen,
             boolean chapterMenuHit,
             boolean contextMenuHit,
             boolean chapterTextMenuHit,
+            boolean canvasTextMenuHit,
             boolean assetContextHit
     ) {
     }

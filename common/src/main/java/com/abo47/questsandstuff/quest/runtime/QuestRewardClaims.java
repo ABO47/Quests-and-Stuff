@@ -183,10 +183,6 @@ final class QuestRewardClaims {
     }
 
     private void syncChanged(ServerPlayer player, Set<String> changedQuestIds) {
-        if (changedQuestIds.isEmpty()) {
-            return;
-        }
-        progressData.setDirty();
-        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, changedQuestIds));
+        QuestRuntimeSyncs.syncChangedToAll(player, progressData, syncService, changedQuestIds);
     }
 }

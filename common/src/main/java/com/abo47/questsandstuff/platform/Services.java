@@ -55,7 +55,7 @@ public final class Services {
         }
 
         @Override
-        public void openQuestTabletUi(Player player) {
+        public void openTabletUi(Player player) {
         }
     }
 }

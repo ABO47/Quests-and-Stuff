@@ -4,6 +4,8 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -17,7 +19,7 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletThemePickerModal {
     private static final int PAD = 8;
@@ -58,10 +60,10 @@ public final class TabletThemePickerModal {
                 themes,
                 emptyText,
                 ScrollState.bind(
-                        () -> state.themeScroll,
-                        value -> state.themeScroll = value,
-                        () -> state.themeScrollDragging,
-                        dragging -> state.themeScrollDragging = dragging
+                        () -> state.modal.themeScroll,
+                        value -> state.modal.themeScroll = value,
+                        () -> state.modal.themeScrollDragging,
+                        dragging -> state.modal.themeScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -82,10 +84,10 @@ public final class TabletThemePickerModal {
                 themes,
                 emptyText,
                 ScrollState.bind(
-                        () -> state.themeScroll,
-                        value -> state.themeScroll = value,
-                        () -> state.themeScrollDragging,
-                        dragging -> state.themeScrollDragging = dragging
+                        () -> state.modal.themeScroll,
+                        value -> state.modal.themeScroll = value,
+                        () -> state.modal.themeScrollDragging,
+                        dragging -> state.modal.themeScrollDragging = dragging
                 ),
                 2,
                 refresh,

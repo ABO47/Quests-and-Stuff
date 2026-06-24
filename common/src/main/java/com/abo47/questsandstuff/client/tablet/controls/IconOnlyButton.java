@@ -23,30 +23,24 @@ public final class IconOnlyButton extends ButtonWidget {
     private boolean drawingHover;
 
     private IconOnlyButton(int x, int y, int size, ResourceLocation icon, int normalColor, int hoverColor, Consumer<ClickData> callback) {
-        super(x, y, size, size, Surfaces.fill(0x00000000), callback);
+        super(x, y, size, size, Surfaces.transparentFill(), callback);
         this.iconSize = Math.max(8, size - 2);
         this.normalColor = normalColor;
         this.hoverColor = hoverColor;
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> drawingHover ? this.hoverColor : this.normalColor);
         setClientSideWidget();
-        setHoverTexture(Surfaces.fill(0x00000000));
-        setClickedTexture(Surfaces.fill(0x00000000));
+        setHoverTexture(Surfaces.transparentFill());
+        setClickedTexture(Surfaces.transparentFill());
     }
 
     public static IconOnlyButton create(int x, int y, int size, String icon, int color, Consumer<ClickData> callback) {
-        ResourceLocation iconLocation = UiIconAtlas.icon(icon);
-        if (iconLocation == null) {
-            iconLocation = UiIconAtlas.icon("style");
-        }
+        ResourceLocation iconLocation = resolveIcon(icon);
         int hoverColor = brighten(color);
         return new IconOnlyButton(x, y, size, iconLocation, color, hoverColor, callback);
     }
 
     public static ImageWidget icon(int x, int y, int size, String icon, int color) {
-        ResourceLocation iconLocation = UiIconAtlas.icon(icon);
-        if (iconLocation == null) {
-            iconLocation = UiIconAtlas.icon("style");
-        }
+        ResourceLocation iconLocation = resolveIcon(icon);
         return new ImageWidget(x, y, size, size, new SmoothResourceTexture(iconLocation).setDynamicColor(() -> color));
     }
 
@@ -74,5 +68,19 @@ public final class IconOnlyButton extends ButtonWidget {
         int g = Math.min(255, ((color >> 8) & 0xFF) + 42);
         int b = Math.min(255, (color & 0xFF) + 42);
         return alpha | (r << 16) | (g << 8) | b;
+    }
+
+    private static ResourceLocation resolveIcon(String icon) {
+        ResourceLocation iconLocation = UiIconAtlas.icon(icon);
+        if (iconLocation == null && icon != null && !icon.isBlank()) {
+            iconLocation = UiIconAtlas.icon("context_" + icon);
+        }
+        if (iconLocation == null) {
+            iconLocation = UiIconAtlas.icon("text");
+        }
+        if (iconLocation == null) {
+            iconLocation = UiIconAtlas.icon("add");
+        }
+        return iconLocation;
     }
 }

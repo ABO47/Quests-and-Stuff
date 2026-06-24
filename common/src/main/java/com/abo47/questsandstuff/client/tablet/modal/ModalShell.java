@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -37,6 +39,6 @@ public final class ModalShell {
     }
 
     public static WidgetGroup bodyPanel(int x, int y, int w, int h) {
-        return Surfaces.panel(x, y, w, h, com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder());
+        return Surfaces.panel(x, y, w, h, withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder());
     }
 }

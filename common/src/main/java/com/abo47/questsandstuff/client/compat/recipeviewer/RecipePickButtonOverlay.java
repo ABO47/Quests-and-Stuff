@@ -35,7 +35,7 @@ public final class RecipePickButtonOverlay {
         int fill = UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 218);
         int hoverOverlay = UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 16);
         graphics.pose().pushPose();
-        graphics.pose().translate(0.0F, 0.0F, 900.0F);
+        graphics.pose().translate(0.0F, 0.0F, 350.0F);
         try {
             graphics.fill(button.getX(), button.getY(), button.getX() + button.getWidth(), button.getY() + button.getHeight(), border);
             graphics.fill(button.getX() + 1, button.getY() + 1, button.getX() + button.getWidth() - 1, button.getY() + button.getHeight() - 1, fill);

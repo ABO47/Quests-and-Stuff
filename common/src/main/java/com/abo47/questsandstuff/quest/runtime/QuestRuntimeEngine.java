@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.runtime;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
 import com.abo47.questsandstuff.quest.model.task.QuestTasks;
@@ -220,6 +221,7 @@ public final class QuestRuntimeEngine {
         boolean justCompleted = complete && !progress.completed();
         if (justCompleted) {
             progress.setCompleted(true, serverTick);
+            applyExclusiveChoiceDisable(actor, ownerId, state, questId);
             if (announce) {
                 ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                 if (owner != null) {
@@ -228,6 +230,70 @@ public final class QuestRuntimeEngine {
             }
         }
         return justCompleted;
+    }
+
+    public void clearExclusiveChoiceDisabled(Set<String> questIds) {
+        if (questIds == null || questIds.isEmpty() || progressData == null) {
+            return;
+        }
+        boolean changed = false;
+        for (PlayerQuestState state : progressData.states().values()) {
+            changed |= clearExclusiveChoiceDisabledForState(state, questIds);
+        }
+        if (changed) {
+            progressData.setDirty();
+        }
+    }
+
+    public void clearExclusiveChoiceDisabledForPlayer(UUID playerId, Set<String> questIds) {
+        if (questIds == null || questIds.isEmpty() || progressData == null || playerId == null) {
+            return;
+        }
+        PlayerQuestState state = progressData.state(playerId);
+        if (clearExclusiveChoiceDisabledForState(state, questIds)) {
+            progressData.setDirty();
+        }
+    }
+
+    public Set<String> exclusiveChoiceSiblings(String questId) {
+        Set<String> siblings = new HashSet<>();
+        for (String group : definitionStore.groupOrder()) {
+            for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
+                if (ec.connectionQuestIds().contains(questId)) {
+                    for (String sibling : ec.connectionQuestIds()) {
+                        if (!sibling.equals(questId)) {
+                            siblings.add(sibling);
+                        }
+                    }
+                }
+            }
+        }
+        return siblings;
+    }
+
+    private boolean clearExclusiveChoiceDisabledForState(PlayerQuestState state, Set<String> questIds) {
+        boolean changed = false;
+        for (String questId : questIds) {
+            QuestProgressState progress = state.quests().get(questId);
+            if (progress != null && progress.disabledByExclusiveChoice().remove(questId)) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    void applyExclusiveChoiceDisable(ServerPlayer actor, UUID ownerId, PlayerQuestState state, String completedQuestId) {
+        for (String group : definitionStore.groupOrder()) {
+            for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
+                if (ec.connectionQuestIds().contains(completedQuestId)) {
+                    for (String siblingId : ec.connectionQuestIds()) {
+                        if (!siblingId.equals(completedQuestId)) {
+                            state.quest(siblingId).setDisabledByExclusiveChoice(siblingId, true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void ensureUnlocks(ServerPlayer actor, UUID ownerId, PlayerQuestState state, Set<String> changedQuestIds, long tick) {
@@ -296,11 +362,29 @@ public final class QuestRuntimeEngine {
     }
 
     private boolean shouldBeUnlocked(PlayerQuestState state, QuestDefinition definition, QuestProgressState progress) {
-        return completableQuests.shouldBeUnlocked(state, definition, progress);
+        if (!completableQuests.shouldBeUnlocked(state, definition, progress)) {
+            return false;
+        }
+        for (String group : definitionStore.groupOrder()) {
+            for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
+                if (ec.connectionQuestIds().contains(definition.id())) {
+                    for (String prerequisiteId : ec.prerequisiteQuestIds()) {
+                        if (!state.quest(prerequisiteId).completed()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
-    private void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
         QuestTeamProgressReconciler.onTeamMembershipChanged(level, changedPlayer, definitionStore, progressData, syncService);
+    }
+
+    public void triggerTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+        onTeamMembershipChanged(level, changedPlayer);
     }
 
     public boolean isVisibleFor(PlayerQuestState state, QuestDefinition definition) {

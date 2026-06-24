@@ -23,6 +23,9 @@ public final class CompletableQuestService {
     }
 
     public boolean shouldBeUnlocked(PlayerQuestState state, QuestDefinition definition, QuestProgressState progress) {
+        if (progress.disabledByExclusiveChoice().contains(definition.id())) {
+            return false;
+        }
         if (progress.completed() || definition.prerequisites().isEmpty()) {
             return true;
         }

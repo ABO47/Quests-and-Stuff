@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
 import com.abo47.questsandstuff.util.SafeNames;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
@@ -9,8 +10,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 final class ChapterMetadataJsonCodec {
     private ChapterMetadataJsonCodec() {
@@ -120,6 +123,82 @@ final class ChapterMetadataJsonCodec {
         return array;
     }
 
+    static List<CanvasExclusiveChoice> readCanvasExclusiveChoices(JsonElement element) {
+        List<CanvasExclusiveChoice> choices = new ArrayList<>();
+        if (element == null || !element.isJsonArray()) {
+            return choices;
+        }
+        for (JsonElement child : element.getAsJsonArray()) {
+            if (!child.isJsonObject()) {
+                continue;
+            }
+            JsonObject json = child.getAsJsonObject();
+            String id = stringOr(json, "id", "");
+            if (id.isBlank()) {
+                continue;
+            }
+            int width = intOr(json, "w", CanvasExclusiveChoice.DEFAULT_WIDTH);
+            int height = intOr(json, "h", CanvasExclusiveChoice.DEFAULT_HEIGHT);
+            List<String> connections = readStringArray(json.get("connections"));
+            List<String> prerequisites = readStringArray(json.get("prerequisites"));
+            String background = stringOr(json, "background", "");
+            Map<String, Integer> connectionColors = readIntMap(json.get("connection_colors"));
+            Map<String, String> connectionModes = readStringMap(json.get("connection_modes"));
+            Map<String, String> connectionTextures = readStringMap(json.get("connection_textures"));
+            Map<String, Integer> connectionTextureSpacings = readIntMap(json.get("connection_texture_spacings"));
+            choices.add(new CanvasExclusiveChoice(
+                    id,
+                    intOr(json, "x", 0),
+                    intOr(json, "y", 0),
+                    width,
+                    height,
+                    intOr(json, "rotation", 0),
+                    connections,
+                    prerequisites,
+                    background,
+                    connectionColors,
+                    connectionModes,
+                    connectionTextures,
+                    connectionTextureSpacings
+            ));
+        }
+        return choices;
+    }
+
+    static JsonArray writeCanvasExclusiveChoices(List<CanvasExclusiveChoice> choices) {
+        JsonArray array = new JsonArray();
+        for (CanvasExclusiveChoice ec : choices) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", ec.id());
+            json.addProperty("x", ec.x());
+            json.addProperty("y", ec.y());
+            json.addProperty("w", ec.w());
+            json.addProperty("h", ec.h());
+            json.addProperty("rotation", ec.rotation());
+            json.add("connections", writeStringArray(ec.connectionQuestIds()));
+            if (!ec.prerequisiteQuestIds().isEmpty()) {
+                json.add("prerequisites", writeStringArray(ec.prerequisiteQuestIds()));
+            }
+            if (!ec.background().isBlank()) {
+                json.addProperty("background", ec.background());
+            }
+            if (!ec.connectionColors().isEmpty()) {
+                json.add("connection_colors", writeIntMap(ec.connectionColors()));
+            }
+            if (!ec.connectionModes().isEmpty()) {
+                json.add("connection_modes", writeStringMap(ec.connectionModes()));
+            }
+            if (!ec.connectionTextures().isEmpty()) {
+                json.add("connection_textures", writeStringMap(ec.connectionTextures()));
+            }
+            if (!ec.connectionTextureSpacings().isEmpty()) {
+                json.add("connection_texture_spacings", writeIntMap(ec.connectionTextureSpacings()));
+            }
+            array.add(json);
+        }
+        return array;
+    }
+
     static List<String> readStringArray(JsonElement element) {
         List<String> values = new ArrayList<>();
         if (element == null || !element.isJsonArray()) {
@@ -142,6 +221,53 @@ final class ChapterMetadataJsonCodec {
             }
         }
         return array;
+    }
+
+    static Map<String, Integer> readIntMap(JsonElement element) {
+        Map<String, Integer> map = new HashMap<>();
+        if (element == null || !element.isJsonObject()) {
+            return map;
+        }
+        JsonObject json = element.getAsJsonObject();
+        for (String key : json.keySet()) {
+            if (json.get(key).isJsonPrimitive() && json.get(key).getAsJsonPrimitive().isNumber()) {
+                map.put(key, json.get(key).getAsInt());
+            }
+        }
+        return map;
+    }
+
+    static JsonObject writeIntMap(Map<String, Integer> map) {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            json.addProperty(entry.getKey(), entry.getValue());
+        }
+        return json;
+    }
+
+    static Map<String, String> readStringMap(JsonElement element) {
+        Map<String, String> map = new HashMap<>();
+        if (element == null || !element.isJsonObject()) {
+            return map;
+        }
+        JsonObject json = element.getAsJsonObject();
+        for (String key : json.keySet()) {
+            if (json.get(key).isJsonPrimitive() && json.get(key).getAsJsonPrimitive().isString()) {
+                String value = json.get(key).getAsString();
+                if (!value.isBlank()) {
+                    map.put(key, value);
+                }
+            }
+        }
+        return map;
+    }
+
+    static JsonObject writeStringMap(Map<String, String> map) {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            json.addProperty(entry.getKey(), entry.getValue());
+        }
+        return json;
     }
 
     static String stripJsonExtension(String name) {

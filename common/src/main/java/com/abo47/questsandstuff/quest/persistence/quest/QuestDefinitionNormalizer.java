@@ -1,16 +1,15 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.util.SafeNames;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.util.QuestIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +47,10 @@ final class QuestDefinitionNormalizer {
                 new HashMap<>(definition.connectionColors()),
                 new HashMap<>(definition.connectionModes()),
                 Set.copyOf(definition.hiddenConnections()),
+                new HashMap<>(definition.connectionTextures()),
+                new HashMap<>(definition.connectionTextureSpacings()),
+                new ArrayList<>(definition.tasksOrder()),
+                new ArrayList<>(definition.rewardsOrder()),
                 orderedCopy(definition.tasks()),
                 orderedCopy(definition.rewards())
         );
@@ -63,23 +66,17 @@ final class QuestDefinitionNormalizer {
                 definition.connectionColors(),
                 definition.connectionModes(),
                 definition.hiddenConnections(),
+                definition.connectionTextures(),
+                definition.connectionTextureSpacings(),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
     }
 
     static String normalizeQuestId(String questId) {
-        String normalized = questId == null ? "" : questId.trim().replace('\\', '/');
-        while (normalized.startsWith("/")) {
-            normalized = normalized.substring(1);
-        }
-        while (normalized.contains("//")) {
-            normalized = normalized.replace("//", "/");
-        }
-        if (normalized.isBlank()) {
-            return "main/untitled";
-        }
-        return normalized;
+        return QuestIdentity.questIdOrDefault(questId);
     }
 
     private static <T> Map<String, T> orderedCopy(Map<String, T> source) {
@@ -110,11 +107,15 @@ final class QuestDefinitionNormalizer {
                 continue;
             }
             String normalizedPrerequisite = normalizeQuestId(prerequisite);
-            if (normalizedPrerequisite.equals(definition.id()) || !knownIds.contains(normalizedPrerequisite)) {
+            if (normalizedPrerequisite.equals(definition.id())) {
+                continue;
+            }
+            if (!knownIds.contains(normalizedPrerequisite)) {
                 continue;
             }
             prerequisites.add(normalizedPrerequisite);
         }
+        Map<String, String> filteredTextures = filterConnectionTextures(definition.connectionTextures(), prerequisites);
 
         return new QuestDefinition(
                 definition.schema(),
@@ -125,6 +126,10 @@ final class QuestDefinitionNormalizer {
                 filterConnectionColors(definition.connectionColors(), prerequisites),
                 filterConnectionModes(definition.connectionModes(), prerequisites),
                 filterHiddenConnections(definition.hiddenConnections(), prerequisites),
+                filteredTextures,
+                filterConnectionTextureSpacings(definition.connectionTextureSpacings(), prerequisites),
+                definition.tasksOrder(),
+                definition.rewardsOrder(),
                 definition.tasks(),
                 definition.rewards()
         );
@@ -138,7 +143,7 @@ final class QuestDefinitionNormalizer {
     }
 
     static String groupFolderName(String group) {
-        return SafeNames.identifier(normalizeGroupName(group), "ungrouped");
+        return QuestIdentity.groupFolderName(group);
     }
 
     static String primaryGroup(QuestDefinition definition) {
@@ -190,7 +195,30 @@ final class QuestDefinitionNormalizer {
         return Map.copyOf(filtered);
     }
 
-    private static String normalizeGroupName(String name) {
-        return name == null ? "" : name.trim();
+    private static Map<String, String> filterConnectionTextures(Map<String, String> textures, Set<String> prerequisites) {
+        if (textures == null || textures.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> filtered = new HashMap<>();
+        for (Map.Entry<String, String> entry : textures.entrySet()) {
+            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && !entry.getValue().isBlank()) {
+                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
+            }
+        }
+        return Map.copyOf(filtered);
     }
+
+    private static Map<String, Integer> filterConnectionTextureSpacings(Map<String, Integer> spacings, Set<String> prerequisites) {
+        if (spacings == null || spacings.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> filtered = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : spacings.entrySet()) {
+            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && entry.getValue() > 0) {
+                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
+            }
+        }
+        return Map.copyOf(filtered);
+    }
+
 }

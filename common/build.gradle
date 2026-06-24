@@ -13,6 +13,26 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 }
 
+sourceSets {
+    test {
+        java.srcDir 'src/test/java'
+        resources.srcDir 'src/test/resources'
+    }
+}
+
+tasks.named('compileTestJava').configure {
+    enabled = true
+}
+
+tasks.named('processTestResources').configure {
+    enabled = true
+}
+
+tasks.named('testClasses').configure {
+    enabled = true
+}
+
 tasks.named('test', Test).configure {
+    enabled = true
     useJUnitPlatform()
 }

@@ -1,19 +1,19 @@
 package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.network.QuestPacketContext;
-import com.abo47.questsandstuff.network.editor.C2SEditorAddQuestPacket;
-import com.abo47.questsandstuff.network.editor.C2SEditorCommandPacket;
-import com.abo47.questsandstuff.network.runtime.C2SClaimSelectableRewardPacket;
-import com.abo47.questsandstuff.network.runtime.C2STogglePinPacket;
-import com.abo47.questsandstuff.network.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CDescriptionSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CDisplayCacheSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CEditorMutationPacket;
-import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CPinnedSyncPacket;
-import com.abo47.questsandstuff.network.sync.S2CQuestEventPacket;
-import com.abo47.questsandstuff.network.sync.SyncPacketPayloadLimits;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
+import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -242,7 +242,7 @@ public final class QuestPacketRoundtripGameTests {
     @GameTest(template = "questschemagametests.empty")
     public static void editorPacketsDoNotEnqueueForNonEditorPlayers(GameTestHelper helper) {
         ServerPlayer player = detachedPlayer(helper);
-        QuestPacketContext context = rejectingContext(player);
+        ModPacketContext context = rejectingContext(player);
 
         new C2SEditorAddQuestPacket("Main", "quest/security", 0, 0, "Blocked").handle(context);
 
@@ -322,8 +322,8 @@ public final class QuestPacketRoundtripGameTests {
         );
     }
 
-    private static QuestPacketContext rejectingContext(ServerPlayer player) {
-        return new QuestPacketContext() {
+    private static ModPacketContext rejectingContext(ServerPlayer player) {
+        return new ModPacketContext() {
             @Override
             public ServerPlayer sender() {
                 return player;

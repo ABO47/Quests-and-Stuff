@@ -32,20 +32,23 @@ public final class EditorCommandPayloadLimits {
             return true;
         }
         return switch (type) {
-            case MOVE_MANY -> !exceedsLimit(payload.getList("moves", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
-            case SCALE_MANY -> !exceedsLimit(payload.getList("scales", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
-            case COPY_MANY -> !exceedsLimit(payload.getList("quests", Tag.TAG_STRING), MAX_BULK_EDIT_ENTRIES);
+            case MOVE_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.MOVES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
+            case SCALE_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.SCALES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
+            case COPY_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.QUESTS, Tag.TAG_STRING), MAX_BULK_EDIT_ENTRIES);
             case PASTE_BLUEPRINT -> {
-                CompoundTag blueprint = payload.getCompound("blueprint");
-                yield !exceedsLimit(blueprint.getList("quests", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
-                        && !exceedsLimit(blueprint.getList("images", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
-                        && !exceedsLimit(blueprint.getList("texts", Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
-                        && !exceedsLimit(blueprint.getList("layer_order", Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
+                CompoundTag blueprint = payload.getCompound(EditorCommandPayloadKeys.BLUEPRINT);
+                yield !exceedsLimit(blueprint.getList(EditorCommandPayloadKeys.QUESTS, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList(EditorCommandPayloadKeys.IMAGES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList(EditorCommandPayloadKeys.TEXTS, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES)
+                        && !exceedsLimit(blueprint.getList(EditorCommandPayloadKeys.LAYER_ORDER, Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
             }
-            case DESCRIPTION_PUT -> !exceedsLimit(payload.getList("description", Tag.TAG_STRING), MAX_DESCRIPTION_LINES);
-            case TASK_PUT, REWARD_PUT -> !exceedsLength(payload.getString("json"), MAX_EDITOR_JSON_LENGTH);
-            case CANVAS_TEXT_PUT -> !exceedsLimit(payload.getCompound("text").getList("spans", Tag.TAG_COMPOUND), MAX_TEXT_SPANS);
-            case CANVAS_LAYER_ORDER -> !exceedsLimit(payload.getList("order", Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
+            case DESCRIPTION_PUT -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.DESCRIPTION, Tag.TAG_STRING), MAX_DESCRIPTION_LINES);
+            case TASK_PUT, REWARD_PUT -> !exceedsLength(payload.getString(EditorCommandPayloadKeys.JSON), MAX_EDITOR_JSON_LENGTH);
+            case CANVAS_TEXT_PUT -> !exceedsLimit(payload.getCompound(EditorCommandPayloadKeys.TEXT).getList(EditorCommandPayloadKeys.SPANS, Tag.TAG_COMPOUND), MAX_TEXT_SPANS);
+            case CANVAS_LAYER_ORDER -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.ORDER, Tag.TAG_STRING), MAX_LAYER_ORDER_ENTRIES);
+            case CANVAS_EXCLUSIVE_CHOICE_PUT -> !exceedsLength(payload.getCompound(EditorCommandPayloadKeys.EXCLUSIVE_CHOICE).getString(EditorCommandPayloadKeys.JSON), MAX_EDITOR_JSON_LENGTH);
+            case CANVAS_EXCLUSIVE_CHOICE_PUT_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
+            case CONNECTION_TEXTURE_MANY -> !exceedsLimit(payload.getList(EditorCommandPayloadKeys.TEXTURES, Tag.TAG_COMPOUND), MAX_BULK_EDIT_ENTRIES);
             default -> true;
         };
     }

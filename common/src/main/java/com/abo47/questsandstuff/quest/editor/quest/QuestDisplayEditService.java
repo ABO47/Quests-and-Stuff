@@ -84,7 +84,7 @@ public final class QuestDisplayEditService {
             return;
         }
 
-        String normalizedIcon = icon == null || icon.isBlank() ? "minecraft:book" : icon.trim();
+        String normalizedIcon = QuestDisplay.normalizeIcon(icon);
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
         QuestDisplay display = new QuestDisplay(

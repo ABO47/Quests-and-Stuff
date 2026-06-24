@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.sound.QuestSoundPreview;
+import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;

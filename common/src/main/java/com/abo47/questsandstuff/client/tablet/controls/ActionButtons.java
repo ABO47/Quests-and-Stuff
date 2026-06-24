@@ -1,10 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -14,7 +12,7 @@ import java.util.function.Consumer;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ActionButtons {
     private ActionButtons() {
@@ -33,9 +31,10 @@ public final class ActionButtons {
         int textGap = textWidth > 0 ? 4 : 0;
         int contentWidth = iconSize + textGap + textWidth;
         int contentX = x + Math.max(3, (width - contentWidth) / 2);
-        int iconY = y + Math.max(0, (height - iconSize) / 2);
-        int textY = y + Math.max(1, (height - textHeight) / 2);
-        parent.addWidget(new ImageWidget(contentX, iconY, iconSize, iconSize, UiIconAtlas.iconTexture(icon)));
+        int centerY = y + height / 2;
+        int iconY = centerY - iconSize / 2;
+        int textY = centerY - textHeight / 2;
+        parent.addWidget(IconOnlyButton.icon(contentX, iconY, iconSize, icon, color));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
         hit.setHoverTexture(Surfaces.controlHover(color));

@@ -1,16 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.tools.ToolMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -24,10 +29,10 @@ public final class TabletRootWindowController {
             ModalCloseActions.closeAll(state);
             return true;
         }
-        if (state.questDetailsClosing) {
+        if (state.questDetails.questDetailsClosing) {
             return true;
         }
-        if (state.questDetailsOpen) {
+        if (state.questDetails.questDetailsOpen) {
             if (closeQuestDetailsFrontState(state)) {
                 return true;
             }
@@ -36,85 +41,80 @@ public final class TabletRootWindowController {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details close via escape");
             return true;
         }
-        if (state.createQuestModalOpen) {
-            state.createQuestModalOpen = false;
-            state.createQuestTitle = "";
+        if (state.pickers.assetContextOpen || state.pickers.assetRenameOpen) {
+            state.pickers.assetContextOpen = false;
+            state.pickers.assetRenameOpen = false;
+            ContextMenuState.clearDeleteConfirm(state);
             return true;
         }
-        if (state.assetContextOpen || state.assetRenameOpen) {
-            state.assetContextOpen = false;
-            state.assetRenameOpen = false;
-            state.contextDeleteConfirmKey = "";
+        if (state.pickers.colorPaletteContextOpen) {
+            state.pickers.colorPaletteContextOpen = false;
+            state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             return true;
         }
-        if (state.colorPaletteContextOpen) {
-            state.colorPaletteContextOpen = false;
-            state.colorPaletteContextValue = Integer.MIN_VALUE;
+        if (state.chapterPanel.chapterTextMenuOpen) {
+            state.chapterPanel.chapterTextMenuOpen = false;
+            state.chapterPanel.chapterTextMenuTarget = "";
+            state.chapterPanel.chapterTextFontSizeDraftTarget = "";
+            state.chapterPanel.chapterTextFontSizeFieldTarget = "";
             return true;
         }
-        if (state.chapterTextMenuOpen) {
-            state.chapterTextMenuOpen = false;
-            state.chapterTextMenuTarget = "";
-            state.chapterTextFontSizeDraftTarget = "";
-            state.chapterTextFontSizeSliderTarget = "";
-            return true;
-        }
-        if (state.contextMenuOpen) {
-            state.contextMenuOpen = false;
-            state.contextMenuRows = 0;
-            state.contextDeleteConfirmKey = "";
-            state.contextQuestCompletionSoundMenuOpen = false;
+        if (state.contextMenu.contextMenuOpen) {
+            ContextMenuState.close(state);
             return true;
         }
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
             EntityMotionEditor.close(state);
             return true;
         }
-        if (state.chapterMenuOpen) {
-            state.chapterMenuOpen = false;
-            state.chapterMenuTarget = "";
-            state.contextDeleteConfirmKey = "";
+        if (state.chapterPanel.chapterMenuOpen) {
+            state.chapterPanel.chapterMenuOpen = false;
+            state.chapterPanel.chapterMenuTarget = "";
+            ContextMenuState.clearDeleteConfirm(state);
             return true;
         }
-        if (state.toolsMenuOpen || state.toolsMenuClosing || state.toolsGridSizeMenuOpen || state.toolsGridOpacityMenuOpen) {
+        if (state.canvas.toolsMenuOpen || state.canvas.toolsMenuClosing || state.canvas.toolsGridSizeMenuOpen || state.canvas.toolsGridOpacityMenuOpen) {
             ToolMenuAnimation.closeMain(state);
             return true;
         }
-        if (!state.pendingQuestTitleChangeId.isBlank()) {
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             EditorCommandClient.cancelQuestTitleChange(state);
             return true;
         }
-        if (!state.pendingChapterRename.isBlank()) {
-            state.pendingChapterRename = "";
-            state.chapterDraftName = state.selectedGroup;
+        if (!state.canvas.pendingChapterRename.isBlank()) {
+            state.canvas.pendingChapterRename = "";
+            state.chapterPanel.chapterDraftName = state.root.selectedGroup;
             return true;
         }
         return false;
     }
 
     public static boolean isTextInputActive(TabletUiState state, WidgetGroup root) {
-        return state.searchFocused
-                || state.chapterSearchFocused
-                || state.iconSearchFocused
-                || state.assetSearchFocused
-                || state.biomeSearchFocused
-                || state.advancementSearchFocused
-                || state.structureSearchFocused
-                || state.blockSearchFocused
-                || state.dimensionSearchFocused
-                || state.lootTableSearchFocused
-                || state.soundSearchFocused
-                || state.toolsSearchFocused
-                || state.questDetailsTitleFocused
-                || state.assetRenameOpen
-                || state.questDetailsCommandRewardEditorOpen
-                || state.questDetailsObjectiveRenameOpen
-                || state.canvasTextEditOpen
-                || !state.questDetailsTextEditTarget.isBlank()
-                || !state.pendingQuestTitleChangeId.isBlank()
-                || !state.pendingChapterRename.isBlank()
-                || state.createQuestModalOpen
+        return state.root.searchFocused
+                || state.chapterPanel.chapterSearchFocused
+                || state.pickers.iconSearchFocused
+                || state.pickers.assetSearchFocused
+                || state.pickers.biomeSearchFocused
+                || state.pickers.advancementSearchFocused
+                || state.pickers.structureSearchFocused
+                || state.pickers.blockSearchFocused
+                || state.pickers.dimensionSearchFocused
+                || state.pickers.lootTableSearchFocused
+                || state.pickers.soundSearchFocused
+                || state.canvas.toolsSearchFocused
+                || state.questDetails.questDetailsTitleFocused
+                || state.pickers.assetRenameOpen
+                || state.questDetails.questDetailsCommandRewardEditorOpen
+                || state.questDetails.questDetailsObjectiveRenameOpen
+                || isFontSizeFieldOpen(state)
+                || TextEditSession.isAnyEditing(state)
+                || !state.questDetails.pendingQuestTitleChangeId.isBlank()
+                || !state.canvas.pendingChapterRename.isBlank()
                 || root != null && hasFocusedTextField(root);
+    }
+
+    public static boolean isFontSizeFieldOpen(TabletUiState state) {
+        return TextStyleSession.isAnyFontSizeFieldOpen(state);
     }
 
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
@@ -123,42 +123,28 @@ public final class TabletRootWindowController {
             EntityMotionEditor.close(state);
             changed = true;
         }
-        if (state.questDetailsTextStyleOpen || !state.questDetailsTextFontSizeSliderTarget.isBlank()) {
-            state.questDetailsTextStyleOpen = false;
-            state.questDetailsTextStyleTarget = "";
-            state.questDetailsTextStyleMenuX = 0;
-            state.questDetailsTextStyleMenuY = 0;
-            state.questDetailsTextStyleMenuW = 0;
-            state.questDetailsTextStyleMenuH = 0;
-            state.questDetailsTextFontSizeSliderTarget = "";
-            state.questDetailsTextFontSizeSliderDragging = false;
-            state.questDetailsTextFontSizeSliderDragTarget = "";
+        if (TextStyleSession.questDetailsOpenOrEditingFont(state)) {
+            TextStyleSession.closeQuestDetails(state);
             changed = true;
         }
-        if (state.canvasTextEditOpen || !state.questDetailsTextEditTarget.isBlank()) {
-            state.canvasTextEditOpen = false;
-            state.canvasTextEditTarget = "";
-            state.canvasTextEditDraft = "";
-            state.questDetailsTextEditTarget = "";
-            state.questDetailsTextEditDraft = "";
+        if (TextEditSession.isAnyEditing(state)) {
+            TextEditSession.closeAny(state, true);
             changed = true;
         }
-        if (state.questDetailsTitleFocused || state.questDetailsQuestId.equals(state.pendingQuestTitleChangeId)) {
-            state.questDetailsTitleFocused = false;
-            if (state.questDetailsQuestId.equals(state.pendingQuestTitleChangeId)) {
-                state.pendingQuestTitleChangeId = "";
-                state.questTitleDraft = "";
+        if (state.questDetails.questDetailsTitleFocused || state.questDetails.questDetailsQuestId.equals(state.questDetails.pendingQuestTitleChangeId)) {
+            state.questDetails.questDetailsTitleFocused = false;
+            if (state.questDetails.questDetailsQuestId.equals(state.questDetails.pendingQuestTitleChangeId)) {
+                state.questDetails.pendingQuestTitleChangeId = "";
+                state.questDetails.questTitleDraft = "";
             }
             changed = true;
         }
-        if (!state.questDetailsTransformKind.isBlank() || !state.questDetailsTransformId.isBlank()) {
-            state.questDetailsTransformKind = "";
-            state.questDetailsTransformId = "";
-            state.questDetailsTransformMode = "";
+        if (!state.questDetails.questDetailsTransformKind.isBlank() || !state.questDetails.questDetailsTransformId.isBlank()) {
+            CanvasTransformSessions.clearQuestDetailsSession(state);
             changed = true;
         }
-        if (state.questDetailsBoxSelecting) {
-            state.questDetailsBoxSelecting = false;
+        if (state.questDetails.questDetailsBoxSelecting) {
+            state.questDetails.questDetailsBoxSelecting = false;
             changed = true;
         }
         return changed;

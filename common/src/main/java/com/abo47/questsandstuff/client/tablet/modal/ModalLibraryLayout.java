@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class ModalLibraryLayout {
     public static final int PREVIEW_X = 8;

@@ -106,6 +106,6 @@ public record SimpleQuestTaskDefinition(
             return false;
         }
         TagKey<Block> tagKey = TagKey.create(BuiltInRegistries.BLOCK.key(), tagId);
-        return block.builtInRegistryHolder().is(tagKey);
+        return block.defaultBlockState().is(tagKey);
     }
 }

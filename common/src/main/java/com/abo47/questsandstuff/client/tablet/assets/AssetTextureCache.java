@@ -43,10 +43,13 @@ final class AssetTextureCache {
             return cached;
         }
         Path path = AssetPathResolver.resolveAssetPath(assetsRoot, background);
-        if (path == null || !Files.exists(path) || Files.isDirectory(path)) {
+        if (!availableAssetFile("asset.background", assetsRoot, background, path)) {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
+        if (!AssetPathResolver.hasImageThumbnail(background)) {
+            return null;
+        }
         IGuiTexture out = "gif".equals(ext) ? loadGifTexture(path, cacheKey, grayscale) : loadStaticTexture(path, cacheKey, grayscale);
         if (out != null) {
             TEXTURE_CACHE.put(cacheKey, out);
@@ -58,10 +61,13 @@ final class AssetTextureCache {
         try {
             AssetPathResolver.ensureAssetsDirs(assetsRoot);
             Path path = AssetPathResolver.resolveAssetPath(assetsRoot, relativePath);
-            if (path == null || !Files.exists(path) || Files.isDirectory(path)) {
+            if (!availableAssetFile("asset.dimensions", assetsRoot, relativePath, path)) {
                 return null;
             }
             String ext = AssetPathResolver.extension(path.getFileName().toString());
+            if (!AssetPathResolver.hasImageThumbnail(relativePath)) {
+                return null;
+            }
             if ("gif".equals(ext)) {
                 AssetLibrary.AssetDimensions gifDimensions = gifDimensions(path);
                 if (gifDimensions != null) {
@@ -74,7 +80,15 @@ final class AssetTextureCache {
                     return new AssetLibrary.AssetDimensions(image.getWidth(), image.getHeight());
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debugOnce(
+                    "asset.dimensions.failed",
+                    String.valueOf(assetsRoot) + "|" + relativePath,
+                    "[QnS:UI] asset dimensions failed root={} asset={} error={}",
+                    assetsRoot,
+                    relativePath,
+                    exception.toString()
+            );
         }
         return null;
     }
@@ -89,10 +103,13 @@ final class AssetTextureCache {
             return cached;
         }
         Path path = AssetPathResolver.resolveAssetPath(assetsRoot, relativePath);
-        if (path == null || !Files.exists(path) || Files.isDirectory(path)) {
+        if (!availableAssetFile("asset.thumbnail", assetsRoot, relativePath, path)) {
             return null;
         }
         String ext = AssetPathResolver.extension(path.getFileName().toString());
+        if (!AssetPathResolver.hasImageThumbnail(relativePath)) {
+            return null;
+        }
         IGuiTexture out = "gif".equals(ext) ? loadGifFallbackStatic(path, relativePath + "_thumb", false) : loadStaticTexture(path, relativePath + "_thumb", false);
         if (out != null) {
             THUMBNAIL_CACHE.put(relativePath, out);
@@ -117,7 +134,14 @@ final class AssetTextureCache {
                     return new AssetLibrary.AssetDimensions(first.getWidth(), first.getHeight());
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debugOnce(
+                    "asset.gif.dimensions_failed",
+                    String.valueOf(path),
+                    "[QnS:UI] gif dimensions failed path={} error={}",
+                    path,
+                    exception.toString()
+            );
         }
         return null;
     }
@@ -185,7 +209,7 @@ final class AssetTextureCache {
             ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key + "_f" + index));
             Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
             frames.add(new ResourceTexture(id));
-            delaysMs.add(Math.max(40, gifDelayMs(reader, index)));
+            delaysMs.add(Math.max(40, gifDelayMs(reader, key, index)));
         }
     }
 
@@ -247,12 +271,20 @@ final class AssetTextureCache {
                 Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(nativeImage));
                 return new DynamicTexture(() -> new ResourceTexture(id));
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debugOnce(
+                    "asset.gif.fallback_failed",
+                    String.valueOf(path) + "|" + key,
+                    "[QnS:UI] gif fallback texture failed path={} key={} error={}",
+                    path,
+                    key,
+                    exception.toString()
+            );
             return null;
         }
     }
 
-    private static int gifDelayMs(ImageReader reader, int index) {
+    private static int gifDelayMs(ImageReader reader, String key, int index) {
         try {
             var metadata = reader.getImageMetadata(index);
             String format = metadata.getNativeMetadataFormatName();
@@ -271,8 +303,53 @@ final class AssetTextureCache {
                 int cs = Integer.parseInt(delayNode.getNodeValue());
                 return Math.max(10, cs) * 10;
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debugOnce(
+                    "asset.gif.delay_failed",
+                    key + "|" + index,
+                    "[QnS:UI] gif frame delay failed key={} frame={} error={}",
+                    key,
+                    index,
+                    exception.toString()
+            );
         }
         return 100;
+    }
+
+    private static boolean availableAssetFile(String eventPrefix, Path assetsRoot, String relativePath, Path path) {
+        String key = assetsRoot + "|" + relativePath;
+        if (path == null) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".invalid_path",
+                    key,
+                    "[QnS:UI] asset file skipped root={} asset={} reason=invalid_path",
+                    assetsRoot,
+                    relativePath
+            );
+            return false;
+        }
+        if (!Files.exists(path)) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".missing_file",
+                    key,
+                    "[QnS:UI] asset file skipped root={} asset={} resolved={} reason=missing_file",
+                    assetsRoot,
+                    relativePath,
+                    path
+            );
+            return false;
+        }
+        if (Files.isDirectory(path)) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".directory",
+                    key,
+                    "[QnS:UI] asset file skipped root={} asset={} resolved={} reason=directory",
+                    assetsRoot,
+                    relativePath,
+                    path
+            );
+            return false;
+        }
+        return true;
     }
 }

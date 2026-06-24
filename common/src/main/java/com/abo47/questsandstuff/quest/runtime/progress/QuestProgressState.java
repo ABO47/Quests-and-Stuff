@@ -19,6 +19,7 @@ public final class QuestProgressState {
     private boolean unlocked;
     private boolean completed;
     private long completedAt;
+    private final Set<String> disabledByExclusiveChoice = new HashSet<>();
 
     public Map<String, Integer> taskCounts() {
         Map<String, Integer> counts = new HashMap<>();
@@ -87,6 +88,18 @@ public final class QuestProgressState {
         taskProgress.clear();
     }
 
+    public Set<String> disabledByExclusiveChoice() {
+        return disabledByExclusiveChoice;
+    }
+
+    public void setDisabledByExclusiveChoice(String questId, boolean disabled) {
+        if (disabled) {
+            disabledByExclusiveChoice.add(questId);
+        } else {
+            disabledByExclusiveChoice.remove(questId);
+        }
+    }
+
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("unlocked", unlocked);
@@ -104,6 +117,12 @@ public final class QuestProgressState {
             claimedTag.add(StringTag.valueOf(rewardId));
         }
         tag.put("claimed", claimedTag);
+
+        ListTag disabledTag = new ListTag();
+        for (String questId : disabledByExclusiveChoice) {
+            disabledTag.add(StringTag.valueOf(questId));
+        }
+        tag.put("disabled_by_exclusive_choice", disabledTag);
         return tag;
     }
 
@@ -124,6 +143,11 @@ public final class QuestProgressState {
         ListTag claimedTag = tag.getList("claimed", Tag.TAG_STRING);
         for (int i = 0; i < claimedTag.size(); i++) {
             state.claimedRewards.add(claimedTag.getString(i));
+        }
+
+        ListTag disabledTag = tag.getList("disabled_by_exclusive_choice", Tag.TAG_STRING);
+        for (int i = 0; i < disabledTag.size(); i++) {
+            state.disabledByExclusiveChoice.add(disabledTag.getString(i));
         }
         return state;
     }

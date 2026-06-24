@@ -1,21 +1,17 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 
@@ -26,11 +22,11 @@ public final class RecipeViewerSelectionBridge {
     }
 
     public static boolean begin(Player player, TabletUiState state, String target, List<RecipeView> recipes, ItemStack stack, Runnable refresh) {
-        return begin(player, state, target, recipes, stack, refresh, SelectionMode.OUTPUT, null);
+        return begin(player, state, target, recipes, stack, refresh, RecipeViewerSelectionMode.OUTPUT, null);
     }
 
     public static boolean begin(Player player, TabletUiState state, String target, List<RecipeView> recipes, Runnable refresh) {
-        return begin(player, state, target, recipes, ItemStack.EMPTY, refresh, SelectionMode.OUTPUT, null);
+        return begin(player, state, target, recipes, ItemStack.EMPTY, refresh, RecipeViewerSelectionMode.OUTPUT, null);
     }
 
     public static boolean beginFromKeybind(
@@ -45,7 +41,7 @@ public final class RecipeViewerSelectionBridge {
         if (keybind == null) {
             return false;
         }
-        return begin(player, state, target, recipes, stack, refresh, keybind.recipes() ? SelectionMode.OUTPUT : SelectionMode.INPUT, keybind);
+        return begin(player, state, target, recipes, stack, refresh, keybind.recipes() ? RecipeViewerSelectionMode.OUTPUT : RecipeViewerSelectionMode.INPUT, keybind);
     }
 
     public static boolean beginFromKeybind(
@@ -59,7 +55,7 @@ public final class RecipeViewerSelectionBridge {
         if (keybind == null) {
             return false;
         }
-        return begin(player, state, target, recipes, ItemStack.EMPTY, refresh, keybind.recipes() ? SelectionMode.OUTPUT : SelectionMode.INPUT, keybind);
+        return begin(player, state, target, recipes, ItemStack.EMPTY, refresh, keybind.recipes() ? RecipeViewerSelectionMode.OUTPUT : RecipeViewerSelectionMode.INPUT, keybind);
     }
 
     private static boolean begin(
@@ -69,19 +65,23 @@ public final class RecipeViewerSelectionBridge {
             List<RecipeView> recipes,
             ItemStack stack,
             Runnable refresh,
-            SelectionMode mode,
+            RecipeViewerSelectionMode mode,
             RecipeViewerIntegrations.SelectionKeybind keybind
     ) {
         if (player == null || state == null || target == null || target.isBlank()) {
             return false;
         }
-        Set<String> recipeIds = recipeIds(recipes);
+        RecipeViewerSelectionRules.Selection selection = new RecipeViewerSelectionRules.Selection(
+                target,
+                RecipeViewerSelectionRules.recipeIds(recipes),
+                mode
+        );
         boolean targetOnlySelection = stack == null || stack.isEmpty();
-        if (recipeIds.isEmpty() && !targetOnlySelection) {
+        if (selection.recipeIds().isEmpty() && !targetOnlySelection) {
             return false;
         }
         Screen parent = Minecraft.getInstance().screen;
-        pendingSelection = new PendingSelection(player, state, target, recipeIds, refresh, parent, mode);
+        pendingSelection = new PendingSelection(player, state, selection, refresh, parent);
         boolean opened;
         if (targetOnlySelection) {
             opened = keybind == null
@@ -93,7 +93,7 @@ public final class RecipeViewerSelectionBridge {
                     : RecipeViewerIntegrations.showForSelection(stack.copy(), keybind);
         }
         if (opened) {
-            QuestsAndStuffMod.debugLog("[QnS:Compat] started native {} selection target={} recipes={}", mode.logName(), target, recipeIds.size());
+            QuestsAndStuffMod.debugLog("[QnS:Compat] started native {} selection target={} recipes={}", mode.logName(), target, selection.recipeIds().size());
             return true;
         }
         pendingSelection = null;
@@ -113,11 +113,8 @@ public final class RecipeViewerSelectionBridge {
         if (normalized.isBlank()) {
             return false;
         }
-        if (pending.recipeIds().contains(normalized)) {
-            return true;
-        }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        return recipe != null && pending.mode().matches(pending.target(), recipe);
+        return RecipeViewerSelectionRules.canPickRecipe(pending.selection(), normalized, recipe);
     }
 
     public static boolean canPickVisibleRecipe(String recipeId) {
@@ -134,10 +131,10 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        if (recipe != null && canPickRecipe(pending, normalized, recipe)) {
+        if (RecipeViewerSelectionRules.canPickVisibleRecipe(pending.selection(), normalized, recipe, visibleOutputTarget)) {
             return true;
         }
-        return pending.mode().visibleFallbackTarget(pending.target(), visibleOutputTarget) != null;
+        return false;
     }
 
     public static boolean matchesPendingTarget(String target) {
@@ -146,7 +143,7 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         String normalizedTarget = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(target));
-        String normalizedPending = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(pending.target()));
+        String normalizedPending = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(pending.selection().target()));
         return !normalizedTarget.isBlank() && normalizedTarget.equals(normalizedPending);
     }
 
@@ -173,12 +170,10 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        boolean knownRecipe = recipe != null && canPickRecipe(pending, normalized, recipe);
-        String fallbackTarget = pending.mode().visibleFallbackTarget(pending.target(), visibleOutputTarget);
-        if (!knownRecipe && (!allowVisibleFallback || fallbackTarget == null)) {
+        String target = RecipeViewerSelectionRules.pickTarget(pending.selection(), normalized, recipe, allowVisibleFallback, visibleOutputTarget);
+        if (target.isBlank()) {
             return false;
         }
-        String target = knownRecipe ? pending.mode().assetTarget(pending.target(), recipe) : fallbackTarget;
         String asset = CanvasRecipeCardAsset.assetForRecipe(target, normalized, viewerTypeId);
         if (asset.isBlank()) {
             return false;
@@ -193,111 +188,20 @@ public final class RecipeViewerSelectionBridge {
         if (parent != null) {
             Minecraft.getInstance().setScreen(parent);
         }
-        QuestsAndStuffMod.debugLog("[QnS:Compat] picked {} via {} recipe={} target={}", pending.mode().logName(), providerName, normalized, target);
+        QuestsAndStuffMod.debugLog("[QnS:Compat] picked {} via {} recipe={} target={}", pending.selection().mode().logName(), providerName, normalized, target);
         return true;
     }
 
-    private static boolean canPickRecipe(PendingSelection pending, String normalized, RecipeView recipe) {
-        if (recipe == null) {
-            return false;
-        }
-        if (pending.recipeIds().contains(normalized)) {
-            return true;
-        }
-        return pending.mode().matches(pending.target(), recipe);
-    }
-
-    private static String outputTarget(RecipeView recipe) {
-        if (recipe == null || recipe.output() == null || recipe.output().isEmpty()) {
-            return "";
-        }
-        ItemStack output = recipe.output().copy();
-        output.setCount(1);
-        return ItemStackIconCodec.iconFromStack(output);
-    }
-
-    private static Set<String> recipeIds(List<RecipeView> recipes) {
-        Set<String> ids = new LinkedHashSet<>();
-        if (recipes == null) {
-            return ids;
-        }
-        for (RecipeView recipe : recipes) {
-            String id = normalizeRecipeId(recipe == null ? "" : recipe.id());
-            if (!id.isBlank()) {
-                ids.add(id);
-            }
-        }
-        return ids;
-    }
-
     private static String normalizeRecipeId(String recipeId) {
-        ResourceLocation id = ResourceLocation.tryParse(recipeId == null ? "" : recipeId.trim());
-        return id == null ? "" : id.toString();
+        return RecipeViewerSelectionRules.normalizeRecipeId(recipeId);
     }
 
     private record PendingSelection(
             Player player,
             TabletUiState state,
-            String target,
-            Set<String> recipeIds,
+            RecipeViewerSelectionRules.Selection selection,
             Runnable refresh,
-            Screen parentScreen,
-            SelectionMode mode
+            Screen parentScreen
     ) {
-    }
-
-    private enum SelectionMode {
-        OUTPUT {
-            @Override
-            boolean matches(String target, RecipeView recipe) {
-                return CanvasRecipeCardAsset.matchesOutput(target, recipe.output());
-            }
-
-            @Override
-            String assetTarget(String target, RecipeView recipe) {
-                return target;
-            }
-
-            @Override
-            String logName() {
-                return "recipe";
-            }
-
-            @Override
-            String visibleFallbackTarget(String target, String visibleOutputTarget) {
-                String normalized = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(target));
-                return normalized.isBlank() ? null : normalized;
-            }
-        },
-        INPUT {
-            @Override
-            boolean matches(String target, RecipeView recipe) {
-                return CanvasRecipeCardRecipes.recipeUsesTarget(target, recipe);
-            }
-
-            @Override
-            String assetTarget(String target, RecipeView recipe) {
-                return outputTarget(recipe);
-            }
-
-            @Override
-            String logName() {
-                return "uses";
-            }
-
-            @Override
-            String visibleFallbackTarget(String target, String visibleOutputTarget) {
-                String normalized = CanvasRecipeCardAsset.target(CanvasRecipeCardAsset.assetForPick(visibleOutputTarget));
-                return normalized.isBlank() ? null : normalized;
-            }
-        };
-
-        abstract boolean matches(String target, RecipeView recipe);
-
-        abstract String assetTarget(String target, RecipeView recipe);
-
-        abstract String logName();
-
-        abstract String visibleFallbackTarget(String target, String visibleOutputTarget);
     }
 }

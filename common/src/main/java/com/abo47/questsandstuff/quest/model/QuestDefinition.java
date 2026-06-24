@@ -21,6 +21,8 @@ public record QuestDefinition(
         Map<String, Integer> connectionColors,
         Map<String, String> connectionModes,
         Set<String> hiddenConnections,
+        Map<String, String> connectionTextures,
+        Map<String, Integer> connectionTextureSpacings,
         List<String> tasksOrder,
         List<String> rewardsOrder,
         Map<String, QuestTaskDefinition> tasks,
@@ -45,7 +47,7 @@ public record QuestDefinition(
             Map<String, QuestTaskDefinition> tasks,
             Map<String, QuestRewardDefinition> rewards
     ) {
-        this(schema, id, display, settings, prerequisites, Map.of(), Map.of(), Set.of(), List.of(), List.of(), tasks, rewards);
+        this(schema, id, display, settings, prerequisites, Map.of(), Map.of(), Set.of(), Map.of(), Map.of(), List.of(), List.of(), tasks, rewards);
     }
 
     public QuestDefinition(
@@ -58,7 +60,7 @@ public record QuestDefinition(
             Map<String, QuestTaskDefinition> tasks,
             Map<String, QuestRewardDefinition> rewards
     ) {
-        this(schema, id, display, settings, prerequisites, connectionColors, Map.of(), Set.of(), List.of(), List.of(), tasks, rewards);
+        this(schema, id, display, settings, prerequisites, connectionColors, Map.of(), Set.of(), Map.of(), Map.of(), List.of(), List.of(), tasks, rewards);
     }
 
     public QuestDefinition(
@@ -73,7 +75,7 @@ public record QuestDefinition(
             Map<String, QuestTaskDefinition> tasks,
             Map<String, QuestRewardDefinition> rewards
     ) {
-        this(schema, id, display, settings, prerequisites, connectionColors, connectionModes, hiddenConnections, List.of(), List.of(), tasks, rewards);
+        this(schema, id, display, settings, prerequisites, connectionColors, connectionModes, hiddenConnections, Map.of(), Map.of(), List.of(), List.of(), tasks, rewards);
     }
 
     public static final Codec<QuestDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -85,6 +87,8 @@ public record QuestDefinition(
             Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("connection_colors").orElse(Map.of()).forGetter(QuestDefinition::connectionColors),
             Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf("connection_modes").orElse(Map.of()).forGetter(QuestDefinition::connectionModes),
             Codec.STRING.listOf().xmap(Set::copyOf, set -> new ArrayList<>(set)).fieldOf("hidden_connections").orElse(Set.of()).forGetter(QuestDefinition::hiddenConnections),
+            Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf("connection_textures").orElse(Map.of()).forGetter(QuestDefinition::connectionTextures),
+            Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("connection_texture_spacings").orElse(Map.of()).forGetter(QuestDefinition::connectionTextureSpacings),
             Codec.STRING.listOf().fieldOf("tasks_order").orElse(List.of()).forGetter(QuestDefinition::tasksOrder),
             Codec.STRING.listOf().fieldOf("rewards_order").orElse(List.of()).forGetter(QuestDefinition::rewardsOrder),
             Codec.unboundedMap(Codec.STRING, QuestTaskDefinition.CODEC).fieldOf("tasks").orElse(Map.of()).forGetter(QuestDefinition::tasks),

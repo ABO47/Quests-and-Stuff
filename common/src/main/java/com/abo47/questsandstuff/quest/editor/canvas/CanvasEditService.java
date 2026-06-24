@@ -5,11 +5,13 @@ import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,56 @@ public final class CanvasEditService {
 
     public CanvasEditService(EditorSessionService owner) {
         this.owner = owner;
+    }
+
+    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
+        String group = EditorSessionService.normalizeGroup(groupName);
+        if (group.isBlank() || ec == null || ec.id().isBlank()) {
+            return;
+        }
+        owner.captureUndo(owner.session(player));
+        owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+        owner.postMutation(player);
+    }
+
+    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
+        String group = EditorSessionService.normalizeGroup(groupName);
+        if (group.isBlank() || ecs == null || ecs.isEmpty()) {
+            return;
+        }
+        EditorSessionService.EditorSession session = owner.session(player);
+        boolean changed = false;
+        for (CanvasExclusiveChoice ec : ecs) {
+            if (ec == null || ec.id().isBlank()) {
+                continue;
+            }
+            if (!changed) {
+                owner.captureUndo(session);
+                changed = true;
+            }
+            owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+        }
+        if (changed) {
+            owner.postMutation(player);
+        }
+    }
+
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
+        String group = EditorSessionService.normalizeGroup(groupName);
+        if (group.isBlank() || ecId == null || ecId.isBlank()) {
+            return;
+        }
+        CanvasExclusiveChoice removed = owner.definitionStore().canvasExclusiveChoices(group).stream()
+                .filter(ec -> ec.id().equals(ecId))
+                .findFirst()
+                .orElse(null);
+        owner.captureUndo(owner.session(player));
+        if (owner.definitionStore().removeCanvasExclusiveChoice(group, ecId)) {
+            if (removed != null && !removed.connectionQuestIds().isEmpty()) {
+                owner.runtimeEngine().clearExclusiveChoiceDisabled(new HashSet<>(removed.connectionQuestIds()));
+            }
+            owner.postMutation(player);
+        }
     }
 
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {

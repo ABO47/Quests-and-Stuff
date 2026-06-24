@@ -9,7 +9,6 @@ import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,17 +47,7 @@ final class QuestTeamProgressReconciler {
             reconcileSharedQuest(progressData, members, definition, changedQuests);
         }
 
-        if (changedQuests.isEmpty()) {
-            return;
-        }
-
-        progressData.setDirty();
-        for (UUID member : members) {
-            ServerPlayer online = level.getServer().getPlayerList().getPlayer(member);
-            if (online != null) {
-                syncService.syncDelta(online, changedQuests);
-            }
-        }
+        QuestRuntimeSyncs.syncChangedToOnlineMembers(level, members, progressData, syncService, changedQuests);
     }
 
     private static Set<String> sharedQuestIds(QuestDefinitionStore definitionStore) {

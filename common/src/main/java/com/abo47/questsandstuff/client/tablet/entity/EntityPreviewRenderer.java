@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.entity;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.ui.TabletUiPerfProfiler;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -23,15 +23,19 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public final class EntityPreviewRenderer {
     public static final String ENTITY_ASSET_PREFIX = "entity:";
     private static final Map<String, Entity> ENTITY_CACHE = new HashMap<>();
+    private static float animationPartialTicks;
     public static final int FRONT_ENTITY_YAW = 205;
     private static final int DEFAULT_ICON_ENTITY_YAW = FRONT_ENTITY_YAW;
     private static final int DEFAULT_ICON_ENTITY_SPIN_SPEED = 0;
@@ -41,8 +45,32 @@ public final class EntityPreviewRenderer {
     private static final double TILE_ENTITY_MAX_SCALE = 112.0D;
     private static final double CANVAS_ENTITY_FILL = 0.94D;
     private static final double CANVAS_ENTITY_MAX_SCALE = 2048.0D;
+    private static final Map<Class<?>, Method> IMMUNE_SETTER_CACHE = new HashMap<>();
+    private static final Set<Class<?>> IMMUNE_NO_SETTER = new HashSet<>();
 
     private EntityPreviewRenderer() {
+    }
+
+    public static void prewarmEntityCache() {
+        if (Minecraft.getInstance().level == null) {
+            return;
+        }
+        for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+            if (type == null) {
+                continue;
+            }
+            ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+            if (id == null) {
+                continue;
+            }
+            String entityId = id.toString();
+            if (!ENTITY_CACHE.containsKey(entityId)) {
+                Entity entity = type.create(Minecraft.getInstance().level);
+                if (entity != null) {
+                    ENTITY_CACHE.put(entityId, entity);
+                }
+            }
+        }
     }
 
     public static boolean isEntityAsset(String asset) {
@@ -223,7 +251,8 @@ public final class EntityPreviewRenderer {
         float pitch = CanvasImageLayer.normalizeDegrees(pitchDegrees);
         prepareEntityForRender(entity, speed > 0);
         double scale = renderScale(entity, width, height, fill, maxScale);
-        TabletUiPerfProfiler.profile("ui.renderEntityPreview", () -> renderEntityInInventory(graphics, centerX, centerY, scale, entity, yaw, pitch, speed > 0 ? partialTicks : 0.0F));
+        float animPartialTicks = speed > 0 ? animationPartialTicks : 0.0F;
+        TabletUiPerfProfiler.profile("ui.renderEntityPreview", () -> renderEntityInInventory(graphics, centerX, centerY, scale, entity, yaw, pitch, animPartialTicks));
         return true;
     }
 
@@ -302,8 +331,9 @@ public final class EntityPreviewRenderer {
         if (speed <= 0) {
             return base;
         }
-        float elapsedSeconds = (System.currentTimeMillis() % 3_600_000L) / 1000.0F;
-        return CanvasImageLayer.normalizeDegrees(Math.round(base + elapsedSeconds * speed));
+        double elapsedSeconds = (System.nanoTime() % 3_600_000_000_000L) / 1_000_000_000.0;
+        double yaw = base + elapsedSeconds * speed;
+        return (float)(yaw - Math.floor(yaw / 360.0) * 360.0);
     }
 
     private static int parseIntParam(String value, int fallback, int min, int max) {
@@ -315,8 +345,14 @@ public final class EntityPreviewRenderer {
     }
 
     private static void prepareEntityForRender(Entity entity, boolean animated) {
-        int tick = animated ? (int) ((System.currentTimeMillis() / 50L) % 72000L) : 0;
-        entity.tickCount = tick;
+        if (animated) {
+            long now = System.nanoTime();
+            entity.tickCount = (int) ((now / 50_000_000L) % 72000L);
+            animationPartialTicks = (float) ((now % 50_000_000L) / 50_000_000.0);
+        } else {
+            entity.tickCount = 0;
+            animationPartialTicks = 0.0F;
+        }
         entity.setYRot(0.0F);
         entity.setXRot(0.0F);
         entity.yRotO = 0.0F;
@@ -327,8 +363,43 @@ public final class EntityPreviewRenderer {
             living.yHeadRot = 0.0F;
             living.yHeadRotO = 0.0F;
         }
+        suppressConversionAnimation(entity);
     }
 
+    private static void suppressConversionAnimation(Entity entity) {
+        Class<?> clazz = entity.getClass();
+        if (IMMUNE_NO_SETTER.contains(clazz)) return;
+        Method setter = IMMUNE_SETTER_CACHE.get(clazz);
+        if (setter == null) {
+            setter = findImmuneSetter(clazz);
+            if (setter == null) {
+                IMMUNE_NO_SETTER.add(clazz);
+                return;
+            }
+            setter.setAccessible(true);
+            IMMUNE_SETTER_CACHE.put(clazz, setter);
+        }
+        try {
+            setter.invoke(entity, true);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static Method findImmuneSetter(Class<?> clazz) {
+        try {
+            return clazz.getMethod("setImmuneToZombification", boolean.class);
+        } catch (NoSuchMethodException ignored) {
+        }
+        for (Class<?> c = clazz; c != null && c != Object.class; c = c.getSuperclass()) {
+            try {
+                return c.getDeclaredMethod("setImmuneToZombification", boolean.class);
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
     private static void renderEntityInInventory(GuiGraphics graphics, int x, int y, double scale, Entity entity, float yawDegrees, float pitchDegrees, float partialTicks) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
@@ -342,6 +413,7 @@ public final class EntityPreviewRenderer {
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);
+        dispatcher.overrideCameraOrientation(new Quaternionf());
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, graphics.pose(), graphics.bufferSource(), 15728880));
         graphics.flush();
         dispatcher.setRenderShadow(true);

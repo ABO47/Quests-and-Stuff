@@ -91,10 +91,7 @@ final class QuestSignalProgression {
             }
         }
 
-        if (!changedQuestIds.isEmpty()) {
-            progressData.setDirty();
-            actor.server.getPlayerList().getPlayers().forEach(player -> syncService.syncDelta(player, changedQuestIds));
-        }
+        QuestRuntimeSyncs.syncChangedToAll(actor, progressData, syncService, changedQuestIds);
         performanceTracker.recordSignal(System.nanoTime() - start, visitedBindings, changedQuestIds.size());
     }
 }

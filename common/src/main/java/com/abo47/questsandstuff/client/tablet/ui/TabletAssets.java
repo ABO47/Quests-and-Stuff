@@ -1,17 +1,31 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.icons.QuestIconProvider;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.screen.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
+import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 final class TabletAssets {
     private TabletAssets() {
@@ -19,17 +33,17 @@ final class TabletAssets {
 
     static int chapterBackgroundFill(String background, int fallback) {
         return switch (background == null ? "" : background) {
-            case "hexagons" -> TabletWidgets.withAlpha(ModColors.INTERACTIVE, 86);
-            case "octagons" -> TabletWidgets.withAlpha(ModColors.WARNING, 86);
-            case "circles" -> TabletWidgets.withAlpha(ModColors.SUCCESS, 86);
-            case "diamonds" -> TabletWidgets.withAlpha(ModColors.TEXT_SECONDARY, 86);
-            case "gears" -> TabletWidgets.withAlpha(ModColors.BORDER_ACCENT, 92);
-            case "hearts" -> TabletWidgets.withAlpha(ModColors.ERROR, 74);
-            case "pentagons" -> TabletWidgets.withAlpha(ModColors.INTERACTIVE, 108);
-            case "rounded_squares" -> TabletWidgets.withAlpha(ModColors.SURFACE_PANEL_ALT, 120);
+            case "hexagons" -> withAlpha(ModColors.INTERACTIVE, 86);
+            case "octagons" -> withAlpha(ModColors.WARNING, 86);
+            case "circles" -> withAlpha(ModColors.SUCCESS, 86);
+            case "diamonds" -> withAlpha(ModColors.TEXT_SECONDARY, 86);
+            case "gears" -> withAlpha(ModColors.BORDER_ACCENT, 92);
+            case "hearts" -> withAlpha(ModColors.ERROR, 74);
+            case "pentagons" -> withAlpha(ModColors.INTERACTIVE, 108);
+            case "rounded_squares" -> withAlpha(ModColors.SURFACE_PANEL_ALT, 120);
             default -> {
                 if (background != null && !background.isBlank() && !"default".equals(background) && chapterBackgroundTexture(background) != null) {
-                    yield TabletWidgets.withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
+                    yield withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
                 }
                 yield fallback;
             }
@@ -45,7 +59,7 @@ final class TabletAssets {
     }
 
     static ItemStackTexture iconTexture(String iconId) {
-        return QuestIconProvider.iconTexture(iconId);
+        return DisplayIconProvider.iconTexture(iconId);
     }
 
     static List<AssetLibrary.AssetEntry> listAssetEntries(String relativeDir) {
@@ -78,16 +92,7 @@ final class TabletAssets {
 
     static void prewarmClientUiAssets() {
         TabletUiPerfProfiler.profile("ui.prewarm.assetsDirs", TabletAssets::ensureAssetsDirs);
-        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(
-                "tools", "grid", "editor", "scroll", "align-center-horizontal", "align-center-vertical", "objects", "entity", "close", "search", "add", "rename", "delete",
-                "copy", "paste", "connect", "settings-2", "stat", "recipe", "item_use", "item_interact",
-                "icon", "image", "background", "style", "up", "down", "back", "chevron-right", "open", "context_open",
-                "size", "opacity", "magnet", "lock", "unlock", "lock_canvas", "unlock_canvas", "lock_separator", "unlock_separator",
-                "lock_quest", "unlock_quest", "lock_chapter", "unlock_chapter",
-                "background_opacity", "reset_zoom", "reset_quest", "repeat", "repeat-off", "variant", "motion", "properties", "minimap",
-                "style_align_left", "style_align_center", "style_align_right",
-                "style_bold", "style_italic", "style_color", "themes", "auto_claim", "claim_all", "xp", "send-horizontal", "eye", "eye-off", "audio-lines", "completion_hud_background", "play", "pause", "reset", "window_pin", "hud_layout"
-        ));
+        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(UiIconRegistry.preloadKeys()));
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();
             for (String group : ClientQuestCache.groupOrder()) {
@@ -101,5 +106,42 @@ final class TabletAssets {
                 chapterBackgroundTexture(background);
             }
         });
+        TabletUiPerfProfiler.profile("ui.prewarm.assetThumbnails", TabletAssets::prewarmAssetThumbnails);
+        TabletUiPerfProfiler.profile("ui.prewarm.modLogo", TabletAssets::prewarmModLogo);
+        TabletUiPerfProfiler.profile("ui.prewarm.fluidEntries", () -> DisplayIconProvider.prewarmFluidEntries());
+        TabletUiPerfProfiler.profile("ui.prewarm.entityPreviews", () -> EntityPreviewRenderer.prewarmEntityCache());
+        TabletUiPerfProfiler.profile("ui.prewarm.recipeIndex", () -> RecipeChoiceIndex.prewarm());
+        TabletUiPerfProfiler.profile("ui.prewarm.recipeCards", () -> CanvasRecipeCardRecipes.prewarm());
+    }
+
+    private static void prewarmAssetThumbnails() {
+        Path root = TabletLayout.ASSETS_ROOT_DIR;
+        if (!Files.exists(root)) {
+            return;
+        }
+        try (Stream<Path> walk = Files.walk(root)) {
+            walk.filter(Files::isRegularFile).forEach(path -> {
+                Path relative = root.relativize(path);
+                String rel = relative.toString().replace('\\', '/');
+                if (AssetLibrary.assetKind(rel).hasImageThumbnail()) {
+                    assetThumbnailTexture(rel);
+                }
+            });
+        } catch (Exception e) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] failed to prewarm asset thumbnails");
+        }
+    }
+
+    private static void prewarmModLogo() {
+        try (InputStream is = TabletAssets.class.getClassLoader().getResourceAsStream("questsandstuff.png")) {
+            if (is != null) {
+                NativeImage image = NativeImage.read(is);
+                DynamicTexture texture = new DynamicTexture(image);
+                ResourceLocation id = new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png");
+                Minecraft.getInstance().getTextureManager().register(id, texture);
+            }
+        } catch (Exception e) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] failed to prewarm mod logo texture");
+        }
     }
 }

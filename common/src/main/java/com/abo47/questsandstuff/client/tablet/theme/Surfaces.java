@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.theme;
 import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class Surfaces {
@@ -13,8 +14,24 @@ public final class Surfaces {
         return new ColorRectTexture(color);
     }
 
+    public static ColorRectTexture transparentFill() {
+        return fill(0x00000000);
+    }
+
+    public static int withAlpha(int color, int alpha) {
+        return UiThemeTokens.withAlpha(color, alpha);
+    }
+
+    public static GuiTextureGroup group(IGuiTexture... textures) {
+        return new GuiTextureGroup(textures);
+    }
+
+    public static IGuiTexture transparent() {
+        return IGuiTexture.EMPTY;
+    }
+
     public static GuiTextureGroup bordered(int fillColor, int borderColor) {
-        return new GuiTextureGroup(new ColorRectTexture(fillColor), new ColorBorderTexture(1, borderColor));
+        return group(fill(fillColor), new ColorBorderTexture(1, borderColor));
     }
 
     public static GuiTextureGroup transparentBorder(int borderColor) {
@@ -47,8 +64,8 @@ public final class Surfaces {
 
     public static GuiTextureGroup card(boolean selected, int accentColor, boolean muted) {
         int fill = muted
-                ? UiThemeTokens.withAlpha(ModColors.TEXT_MUTED, 34)
-                : (selected ? UiThemeTokens.withAlpha(accentColor, 70) : ModColors.elevatedSurface());
+                ? withAlpha(ModColors.TEXT_MUTED, 34)
+                : (selected ? withAlpha(accentColor, 70) : ModColors.elevatedSurface());
         int border = muted ? ModColors.subtleBorder() : (selected ? accentColor : ModColors.subtleBorder());
         return bordered(fill, border);
     }

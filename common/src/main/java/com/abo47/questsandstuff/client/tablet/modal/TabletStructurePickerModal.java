@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
@@ -25,19 +25,10 @@ public final class TabletStructurePickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
-                        QuestVocabulary.text(QuestVocabulary.CHOOSE_STRUCTURE),
-                        QuestVocabulary.text(QuestVocabulary.NO_STRUCTURES),
+                        ModalWindowManager.ModalType.STRUCTURE_PICKER,
+                        TabletVocabulary.text(QuestVocabulary.CHOOSE_STRUCTURE),
+                        TabletVocabulary.text(QuestVocabulary.NO_STRUCTURES),
                         "structure",
-                        () -> state.structureSearch,
-                        value -> state.structureSearch = value,
-                        value -> state.structureScroll = value,
-                        focused -> state.structureSearchFocused = focused,
-                        ScrollState.bind(
-                                () -> state.structureScroll,
-                                value -> state.structureScroll = value,
-                                () -> state.structureScrollDragging,
-                                dragging -> state.structureScrollDragging = dragging
-                        ),
                         TabletStructurePickerModal::structures,
                         TabletStructurePickerModal::displayName,
                         QuestDetailsWindow::applyStructurePick,

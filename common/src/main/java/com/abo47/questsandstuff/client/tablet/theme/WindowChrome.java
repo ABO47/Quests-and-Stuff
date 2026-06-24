@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.theme;
 
 
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,10 +34,10 @@ public final class WindowChrome {
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
 
-        ButtonWidget btn = new ButtonWidget(x, y, w, h, new GuiTextureGroup(iconTexture), callback);
+        ButtonWidget btn = new ButtonWidget(x, y, w, h, Surfaces.group(iconTexture), callback);
         btn.setClientSideWidget();
-        btn.setHoverTexture(new GuiTextureGroup(hoverTexture));
-        btn.setClickedTexture(new GuiTextureGroup(clickedTexture));
+        btn.setHoverTexture(Surfaces.group(hoverTexture));
+        btn.setClickedTexture(Surfaces.group(clickedTexture));
         return btn;
     }
 

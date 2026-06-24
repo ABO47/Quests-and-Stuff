@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -63,8 +63,8 @@ public final class DisplayIconWidget extends WidgetGroup {
             uiIcon.draw(graphics, mouseX, mouseY, x, y, width, height);
             return;
         }
-        if (CanvasModelPreviewRenderer.isModelAsset(safeIconId)
-                && CanvasModelPreviewRenderer.renderModelAsset(graphics, x, y, width, height, safeIconId)) {
+        if (ModelAssetPreviewRenderer.isModelAsset(safeIconId)
+                && ModelAssetPreviewRenderer.renderModelAsset(graphics, x, y, width, height, safeIconId)) {
             return;
         }
         if (FluidIconCodec.isFluidIcon(safeIconId) && renderFluidIcon(graphics, x, y, width, height, safeIconId)) {
@@ -75,11 +75,11 @@ public final class DisplayIconWidget extends WidgetGroup {
             int yaw = EntityPreviewRenderer.entityYaw(safeIconId);
             int spin = EntityPreviewRenderer.entitySpinSpeed(safeIconId);
             if (!EntityPreviewRenderer.renderEntityAsset(graphics, x, y, width, height, safeIconId, yaw, spin, partialTicks)) {
-                QuestIconProvider.iconTexture(EntityPreviewRenderer.spawnEggIcon(entityId)).draw(graphics, mouseX, mouseY, x, y, width, height);
+                DisplayIconProvider.iconTexture(EntityPreviewRenderer.spawnEggIcon(entityId)).draw(graphics, mouseX, mouseY, x, y, width, height);
             }
             return;
         }
-        QuestIconProvider.iconTexture(safeIconId).draw(graphics, mouseX, mouseY, x, y, width, height);
+        DisplayIconProvider.iconTexture(safeIconId).draw(graphics, mouseX, mouseY, x, y, width, height);
     }
 
     private static boolean renderFluidIcon(GuiGraphics graphics, int x, int y, int width, int height, String iconId) {

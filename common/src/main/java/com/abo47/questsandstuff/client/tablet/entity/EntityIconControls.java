@@ -1,14 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.entity;
 
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
+import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import java.util.List;
@@ -27,7 +32,7 @@ public final class EntityIconControls {
 
     public static void addChangeIconHit(WidgetGroup parent, TabletUiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
         var hit = TabletUiFactory.flatHitButton(x, y, size, size, click -> {
-            state.contextDeleteConfirmKey = "";
+            ContextMenuState.clearDeleteConfirm(state);
             openPicker.run();
             refresh.run();
         });
@@ -49,15 +54,15 @@ public final class EntityIconControls {
         }
         String entityId = EntityPreviewRenderer.entityId(icon);
         if (EntityVariantCatalog.hasVariants(entityId)) {
-            actions.add(new ContextAction("Change variant", "variant", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.changeVariant(() -> {
                 openVariantPicker(state, variantTarget, icon);
                 closeOwner.run();
                 QuestsAndStuffMod.debugLog("[QnS:UI] entity icon variant picker open target={} entity={}", variantTarget, entityId);
                 refresh.run();
             }));
         }
-        actions.add(new ContextAction("Edit motion", "motion", ModColors.INTERACTIVE, () -> {
-            state.contextDeleteConfirmKey = "";
+        actions.add(ContextActions.editMotion(() -> {
+            ContextMenuState.clearDeleteConfirm(state);
             openMotion.run();
             closeOwner.run();
             refresh.run();
@@ -76,8 +81,8 @@ public final class EntityIconControls {
         ModalOpenActions.openEntityVariantPicker(state, target, icon);
     }
 
-    public static GuiTextureGroup iconHoverTexture() {
-        return Surfaces.bordered(TabletUiFactory.withAlpha(ModColors.INTERACTIVE, 60), ModColors.BORDER_ACCENT);
+    public static IGuiTexture iconHoverTexture() {
+        return Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 60), ModColors.BORDER_ACCENT);
     }
 
     public static String pendingRemoveIconLabel(TabletUiState state, String key, String fallback) {

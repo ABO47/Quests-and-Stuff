@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
@@ -10,7 +10,15 @@ import java.util.List;
 interface RecipeViewerProvider {
     String name();
 
-    boolean isAvailable();
+    RecipeViewerProviderCapabilities capabilities();
+
+    default boolean isAvailable() {
+        return supports(RecipeViewerCapability.AVAILABLE);
+    }
+
+    default boolean supports(RecipeViewerCapability capability) {
+        return capabilities().supports(capability);
+    }
 
     boolean showRecipes(ItemStack stack);
 
@@ -25,7 +33,7 @@ interface RecipeViewerProvider {
     }
 
     default boolean supportsNativeRecipeSelection() {
-        return false;
+        return supports(RecipeViewerCapability.NATIVE_SELECTION);
     }
 
     default boolean renderRecipeSnapshot(GuiGraphics graphics, RecipeView recipe, int width, int height, int pivotX, int pivotY) {

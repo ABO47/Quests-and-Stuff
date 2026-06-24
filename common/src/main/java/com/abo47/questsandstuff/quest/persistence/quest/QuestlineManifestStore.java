@@ -21,6 +21,15 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
+/**
+ * Maintains the questline share manifest.
+ *
+ * Policy:
+ * - missing manifests are created with defaults;
+ * - server-owned compatibility fields are regenerated on every save;
+ * - editable pack metadata and optional mods are preserved only from readable manifests;
+ * - malformed or non-object manifests are replaced with defaults and logged with the reason.
+ */
 final class QuestlineManifestStore {
     static final int CURRENT_SCHEMA = 1;
 
@@ -118,9 +127,17 @@ final class QuestlineManifestStore {
         }
         try {
             JsonElement parsed = JsonParser.parseString(Files.readString(manifestFile, StandardCharsets.UTF_8));
-            return parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+            if (parsed.isJsonObject()) {
+                return parsed.getAsJsonObject();
+            }
+            QuestsAndStuffMod.LOGGER.warn(
+                    "Questline manifest {} is {}, rewriting defaults because editable metadata could not be read",
+                    manifestFile,
+                    jsonRootKind(parsed)
+            );
+            return null;
         } catch (Exception e) {
-            QuestsAndStuffMod.LOGGER.warn("Failed reading questline manifest {}, rewriting defaults", manifestFile, e);
+            QuestsAndStuffMod.LOGGER.warn("Failed parsing questline manifest {}, rewriting defaults", manifestFile, e);
             return null;
         }
     }
@@ -159,11 +176,29 @@ final class QuestlineManifestStore {
     }
 
     private static String minecraftVersion() {
-        return SharedConstants.getCurrentVersion().getName();
+        try {
+            String version = SharedConstants.getCurrentVersion().getName();
+            return version == null || version.isBlank() ? UNKNOWN_VERSION : version;
+        } catch (IllegalStateException ignored) {
+            return UNKNOWN_VERSION;
+        }
     }
 
     private static String loaderVersion() {
         String version = Services.platform().loaderVersion();
         return version == null || version.isBlank() ? UNKNOWN_VERSION : version;
+    }
+
+    private static String jsonRootKind(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return "null";
+        }
+        if (element.isJsonArray()) {
+            return "a JSON array";
+        }
+        if (element.isJsonPrimitive()) {
+            return "a JSON primitive";
+        }
+        return element.getClass().getSimpleName();
     }
 }

@@ -3,13 +3,13 @@ package com.abo47.questsandstuff.client.tablet.modal.entity;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.modal.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -28,7 +28,7 @@ import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 
 final class EntityVariantTiles {
@@ -90,10 +90,10 @@ final class EntityVariantTiles {
                 model.tiles(),
                 model.emptyText(),
                 ScrollState.bind(
-                        () -> state.entityVariantScroll,
-                        value -> state.entityVariantScroll = value,
-                        () -> state.entityVariantScrollDragging,
-                        dragging -> state.entityVariantScrollDragging = dragging
+                        () -> state.pickers.entityVariantScroll,
+                        value -> state.pickers.entityVariantScroll = value,
+                        () -> state.pickers.entityVariantScrollDragging,
+                        dragging -> state.pickers.entityVariantScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -123,11 +123,11 @@ final class EntityVariantTiles {
         boolean active = folder.key().equals(EntityVariantCatalog.variantFolderFor(model.entityId(), model.selected()));
         surface.addWidget(folderTile(folder, active, tileX, tileY, tileW, tileH));
         ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
-            state.entityVariantFolder = folder.key();
-            state.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
-            state.entityVariantSearch = "";
-            state.entityVariantSearchFocused = false;
-            state.entityVariantScroll = 0;
+            state.pickers.entityVariantFolder = folder.key();
+            state.pickers.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
+            state.pickers.entityVariantSearch = "";
+            state.pickers.entityVariantSearchFocused = false;
+            state.pickers.entityVariantScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder opened target={} entity={} folder={}", model.target(), model.entityId(), folder.key());
             refresh.run();
         });
@@ -140,7 +140,7 @@ final class EntityVariantTiles {
         boolean active = entry.key().equals(model.selected());
         surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, tileW, tileH, model.activeFolder()));
         ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
-            state.entityVariantSelected = entry.key();
+            state.pickers.entityVariantSelected = entry.key();
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant selected target={} entity={} variant={}", model.target(), model.entityId(), entry.key());
             if (click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
                 EntityVariantApplyActions.apply(player, state, model.target(), entry.key());

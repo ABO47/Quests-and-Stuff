@@ -14,31 +14,17 @@ import java.nio.file.StandardOpenOption;
 
 public final class QuestsAndStuffConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = 2600;
-    public static final int MIN_COMPLETION_HUD_DURATION_MS = 0;
-    public static final int MAX_COMPLETION_HUD_DURATION_MS = 60000;
+    public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.DEFAULT_DURATION_MS;
+    public static final int MIN_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MIN_DURATION_MS;
+    public static final int MAX_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MAX_DURATION_MS;
 
     private static boolean loaded;
-    private static boolean debugLogging;
-    private static boolean uiAnimations = true;
-    private static boolean contextMenuAnimations = true;
-    private static boolean toolsMenuAnimations = true;
-    private static boolean minimapAnimations = true;
-    private static boolean questWindowAnimations = true;
-    private static boolean popupWindowAnimations = true;
-    private static boolean connectionAnimations = true;
-    private static boolean chapterSwitchAnimations = true;
-    private static boolean fullScreenMode;
-    private static boolean minimap = true;
-    private static boolean visualMinimap;
-    private static boolean readOnlyCanvasFocus = true;
-    private static boolean questEffectIcons;
-    private static boolean canvasMiniNotifications;
-    private static boolean autoClaimRewards;
-    private static boolean commandRewards = true;
-    private static boolean completionHud = true;
-    private static boolean completionHudSound = true;
-    private static int completionHudDurationMs = DEFAULT_COMPLETION_HUD_DURATION_MS;
+    private static final QuestsAndStuffConfigSections.Debug DEBUG = new QuestsAndStuffConfigSections.Debug();
+    private static final QuestsAndStuffConfigSections.Animations ANIMATIONS = new QuestsAndStuffConfigSections.Animations();
+    private static final QuestsAndStuffConfigSections.Canvas CANVAS = new QuestsAndStuffConfigSections.Canvas();
+    private static final QuestsAndStuffConfigSections.Rewards REWARDS = new QuestsAndStuffConfigSections.Rewards();
+    private static final QuestsAndStuffConfigSections.Hud HUD = new QuestsAndStuffConfigSections.Hud();
+    private static final QuestsAndStuffConfigSections.Security SECURITY = new QuestsAndStuffConfigSections.Security();
 
     private QuestsAndStuffConfig() {
     }
@@ -64,377 +50,321 @@ public final class QuestsAndStuffConfig {
 
     public static boolean debugLoggingEnabled() {
         load();
-        return debugLogging;
+        return DEBUG.debugLogging;
     }
 
     public static void setDebugLoggingEnabled(boolean enabled) {
         load();
-        if (debugLogging != enabled) {
-            debugLogging = enabled;
+        if (DEBUG.debugLogging != enabled) {
+            DEBUG.debugLogging = enabled;
             save();
         }
     }
 
     public static boolean uiAnimationsEnabled() {
         load();
-        return uiAnimations;
+        return ANIMATIONS.ui;
     }
 
     public static void setUiAnimationsEnabled(boolean enabled) {
         load();
-        if (uiAnimations != enabled) {
-            uiAnimations = enabled;
+        if (ANIMATIONS.ui != enabled) {
+            ANIMATIONS.ui = enabled;
             save();
         }
     }
 
     public static boolean contextMenuAnimationSettingEnabled() {
         load();
-        return contextMenuAnimations;
+        return ANIMATIONS.contextMenu;
     }
 
     public static boolean contextMenuAnimationsEnabled() {
         load();
-        return uiAnimations && contextMenuAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.contextMenu;
     }
 
     public static void setContextMenuAnimationsEnabled(boolean enabled) {
         load();
-        if (contextMenuAnimations != enabled) {
-            contextMenuAnimations = enabled;
+        if (ANIMATIONS.contextMenu != enabled) {
+            ANIMATIONS.contextMenu = enabled;
             save();
         }
     }
 
     public static boolean toolsMenuAnimationSettingEnabled() {
         load();
-        return toolsMenuAnimations;
+        return ANIMATIONS.toolsMenu;
     }
 
     public static boolean toolsMenuAnimationsEnabled() {
         load();
-        return uiAnimations && toolsMenuAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.toolsMenu;
     }
 
     public static void setToolsMenuAnimationsEnabled(boolean enabled) {
         load();
-        if (toolsMenuAnimations != enabled) {
-            toolsMenuAnimations = enabled;
+        if (ANIMATIONS.toolsMenu != enabled) {
+            ANIMATIONS.toolsMenu = enabled;
             save();
         }
     }
 
     public static boolean minimapAnimationSettingEnabled() {
         load();
-        return minimapAnimations;
+        return ANIMATIONS.minimap;
     }
 
     public static boolean minimapAnimationsEnabled() {
         load();
-        return uiAnimations && minimapAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.minimap;
     }
 
     public static void setMinimapAnimationsEnabled(boolean enabled) {
         load();
-        if (minimapAnimations != enabled) {
-            minimapAnimations = enabled;
+        if (ANIMATIONS.minimap != enabled) {
+            ANIMATIONS.minimap = enabled;
             save();
         }
     }
 
     public static boolean questWindowAnimationSettingEnabled() {
         load();
-        return questWindowAnimations;
+        return ANIMATIONS.questWindow;
     }
 
     public static boolean questWindowAnimationsEnabled() {
         load();
-        return uiAnimations && questWindowAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.questWindow;
     }
 
     public static void setQuestWindowAnimationsEnabled(boolean enabled) {
         load();
-        if (questWindowAnimations != enabled) {
-            questWindowAnimations = enabled;
+        if (ANIMATIONS.questWindow != enabled) {
+            ANIMATIONS.questWindow = enabled;
             save();
         }
     }
 
     public static boolean popupWindowAnimationSettingEnabled() {
         load();
-        return popupWindowAnimations;
+        return ANIMATIONS.popupWindow;
     }
 
     public static boolean popupWindowAnimationsEnabled() {
         load();
-        return uiAnimations && popupWindowAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.popupWindow;
     }
 
     public static void setPopupWindowAnimationsEnabled(boolean enabled) {
         load();
-        if (popupWindowAnimations != enabled) {
-            popupWindowAnimations = enabled;
+        if (ANIMATIONS.popupWindow != enabled) {
+            ANIMATIONS.popupWindow = enabled;
             save();
         }
     }
 
     public static boolean connectionAnimationSettingEnabled() {
         load();
-        return connectionAnimations;
+        return ANIMATIONS.connection;
     }
 
     public static boolean connectionAnimationsEnabled() {
         load();
-        return uiAnimations && connectionAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.connection;
     }
 
     public static void setConnectionAnimationsEnabled(boolean enabled) {
         load();
-        if (connectionAnimations != enabled) {
-            connectionAnimations = enabled;
+        if (ANIMATIONS.connection != enabled) {
+            ANIMATIONS.connection = enabled;
             save();
         }
     }
 
     public static boolean chapterSwitchAnimationSettingEnabled() {
         load();
-        return chapterSwitchAnimations;
+        return ANIMATIONS.chapterSwitch;
     }
 
     public static boolean chapterSwitchAnimationsEnabled() {
         load();
-        return uiAnimations && chapterSwitchAnimations;
+        return ANIMATIONS.ui && ANIMATIONS.chapterSwitch;
     }
 
     public static void setChapterSwitchAnimationsEnabled(boolean enabled) {
         load();
-        if (chapterSwitchAnimations != enabled) {
-            chapterSwitchAnimations = enabled;
+        if (ANIMATIONS.chapterSwitch != enabled) {
+            ANIMATIONS.chapterSwitch = enabled;
             save();
         }
     }
 
     public static boolean fullScreenModeEnabled() {
         load();
-        return fullScreenMode;
+        return CANVAS.fullScreenMode;
     }
 
     public static void setFullScreenModeEnabled(boolean enabled) {
         load();
-        if (fullScreenMode != enabled) {
-            fullScreenMode = enabled;
+        if (CANVAS.fullScreenMode != enabled) {
+            CANVAS.fullScreenMode = enabled;
             save();
         }
     }
 
     public static boolean minimapEnabled() {
         load();
-        return minimap;
+        return CANVAS.minimap;
     }
 
     public static void setMinimapEnabled(boolean enabled) {
         load();
-        if (minimap != enabled) {
-            minimap = enabled;
+        if (CANVAS.minimap != enabled) {
+            CANVAS.minimap = enabled;
             save();
         }
     }
 
     public static boolean visualMinimapEnabled() {
         load();
-        return visualMinimap;
+        return CANVAS.visualMinimap;
     }
 
     public static void setVisualMinimapEnabled(boolean enabled) {
         load();
-        if (visualMinimap != enabled) {
-            visualMinimap = enabled;
+        if (CANVAS.visualMinimap != enabled) {
+            CANVAS.visualMinimap = enabled;
             save();
         }
     }
 
     public static boolean readOnlyCanvasFocusEnabled() {
         load();
-        return readOnlyCanvasFocus;
+        return CANVAS.readOnlyFocus;
     }
 
     public static void setReadOnlyCanvasFocusEnabled(boolean enabled) {
         load();
-        if (readOnlyCanvasFocus != enabled) {
-            readOnlyCanvasFocus = enabled;
+        if (CANVAS.readOnlyFocus != enabled) {
+            CANVAS.readOnlyFocus = enabled;
             save();
         }
     }
 
     public static boolean questEffectIconsEnabled() {
         load();
-        return questEffectIcons;
+        return CANVAS.questEffectIcons;
     }
 
     public static void setQuestEffectIconsEnabled(boolean enabled) {
         load();
-        if (questEffectIcons != enabled) {
-            questEffectIcons = enabled;
+        if (CANVAS.questEffectIcons != enabled) {
+            CANVAS.questEffectIcons = enabled;
             save();
         }
     }
 
     public static boolean canvasMiniNotificationsEnabled() {
         load();
-        return canvasMiniNotifications;
+        return CANVAS.miniNotifications;
     }
 
     public static void setCanvasMiniNotificationsEnabled(boolean enabled) {
         load();
-        if (canvasMiniNotifications != enabled) {
-            canvasMiniNotifications = enabled;
+        if (CANVAS.miniNotifications != enabled) {
+            CANVAS.miniNotifications = enabled;
             save();
         }
     }
 
     public static boolean autoClaimRewardsEnabled() {
         load();
-        return autoClaimRewards;
+        return REWARDS.autoClaim;
     }
 
     public static void setAutoClaimRewardsEnabled(boolean enabled) {
         load();
-        if (autoClaimRewards != enabled) {
-            autoClaimRewards = enabled;
+        if (REWARDS.autoClaim != enabled) {
+            REWARDS.autoClaim = enabled;
             save();
         }
     }
 
     public static boolean commandRewardsEnabled() {
         load();
-        return commandRewards;
+        return SECURITY.commandRewards;
     }
 
     public static void setCommandRewardsEnabled(boolean enabled) {
         load();
-        if (commandRewards != enabled) {
-            commandRewards = enabled;
+        if (SECURITY.commandRewards != enabled) {
+            SECURITY.commandRewards = enabled;
             save();
         }
     }
 
     public static boolean completionHudEnabled() {
         load();
-        return completionHud;
+        return HUD.enabled;
     }
 
     public static void setCompletionHudEnabled(boolean enabled) {
         load();
-        if (completionHud != enabled) {
-            completionHud = enabled;
+        if (HUD.enabled != enabled) {
+            HUD.enabled = enabled;
             save();
         }
     }
 
     public static boolean completionHudSoundEnabled() {
         load();
-        return completionHudSound;
+        return HUD.sound;
     }
 
     public static void setCompletionHudSoundEnabled(boolean enabled) {
         load();
-        if (completionHudSound != enabled) {
-            completionHudSound = enabled;
+        if (HUD.sound != enabled) {
+            HUD.sound = enabled;
             save();
         }
     }
 
     public static int completionHudDurationMs() {
         load();
-        return completionHudDurationMs;
+        return HUD.durationMs;
     }
 
     public static void setCompletionHudDurationMs(int durationMs) {
         load();
         int normalized = normalizeCompletionHudDurationMs(durationMs);
-        if (completionHudDurationMs != normalized) {
-            completionHudDurationMs = normalized;
+        if (HUD.durationMs != normalized) {
+            HUD.durationMs = normalized;
             save();
         }
     }
 
     public static int normalizeCompletionHudDurationMs(int durationMs) {
-        return Math.max(MIN_COMPLETION_HUD_DURATION_MS, Math.min(MAX_COMPLETION_HUD_DURATION_MS, durationMs));
+        return QuestsAndStuffConfigSections.Hud.normalizeDurationMs(durationMs);
     }
 
     private static void read(JsonObject root) {
-        JsonObject debug = object(root, "debug");
-        debugLogging = bool(debug, "debugLogging", debugLogging);
-
-        JsonObject animations = object(root, "animations");
-        uiAnimations = bool(animations, "uiAnimations", uiAnimations);
-        contextMenuAnimations = bool(animations, "contextMenuAnimations", contextMenuAnimations);
-        toolsMenuAnimations = bool(animations, "toolsMenuAnimations", toolsMenuAnimations);
-        minimapAnimations = bool(animations, "minimapAnimations", minimapAnimations);
-        questWindowAnimations = bool(animations, "questWindowAnimations", questWindowAnimations);
-        popupWindowAnimations = bool(animations, "popupWindowAnimations", popupWindowAnimations);
-        connectionAnimations = bool(animations, "connectionAnimations", connectionAnimations);
-        chapterSwitchAnimations = bool(animations, "chapterSwitchAnimations", chapterSwitchAnimations);
-
-        JsonObject canvas = object(root, "canvas");
-        fullScreenMode = bool(canvas, "fullScreenMode", fullScreenMode);
-        minimap = bool(canvas, "minimap", minimap);
-        visualMinimap = bool(canvas, "visualMinimap", visualMinimap);
-        readOnlyCanvasFocus = bool(canvas, "readOnlyCanvasFocus", readOnlyCanvasFocus);
-        questEffectIcons = bool(canvas, "questEffectIcons", questEffectIcons);
-        canvasMiniNotifications = bool(canvas, "miniNotifications", canvasMiniNotifications);
-
-        JsonObject rewards = object(root, "rewards");
-        autoClaimRewards = bool(rewards, "autoClaimRewards", autoClaimRewards);
-
-        JsonObject hud = object(root, "hud");
-        completionHud = bool(hud, "completionHud", completionHud);
-        completionHudSound = bool(hud, "completionHudSound", completionHudSound);
-        completionHudDurationMs = normalizeCompletionHudDurationMs(intValue(hud, "completionHudDurationMs", completionHudDurationMs));
-
-        JsonObject security = object(root, "security");
-        commandRewards = bool(security, "commandRewards", commandRewards);
+        DEBUG.read(QuestsAndStuffConfigSections.object(root, "debug"));
+        ANIMATIONS.read(QuestsAndStuffConfigSections.object(root, "animations"));
+        CANVAS.read(QuestsAndStuffConfigSections.object(root, "canvas"));
+        REWARDS.read(QuestsAndStuffConfigSections.object(root, "rewards"));
+        HUD.read(QuestsAndStuffConfigSections.object(root, "hud"));
+        SECURITY.read(QuestsAndStuffConfigSections.object(root, "security"));
     }
 
     private static synchronized void save() {
         JsonObject root = new JsonObject();
-        JsonObject debug = new JsonObject();
-        debug.addProperty("debugLogging", debugLogging);
-        root.add("debug", debug);
-
-        JsonObject animations = new JsonObject();
-        animations.addProperty("uiAnimations", uiAnimations);
-        animations.addProperty("contextMenuAnimations", contextMenuAnimations);
-        animations.addProperty("toolsMenuAnimations", toolsMenuAnimations);
-        animations.addProperty("minimapAnimations", minimapAnimations);
-        animations.addProperty("questWindowAnimations", questWindowAnimations);
-        animations.addProperty("popupWindowAnimations", popupWindowAnimations);
-        animations.addProperty("connectionAnimations", connectionAnimations);
-        animations.addProperty("chapterSwitchAnimations", chapterSwitchAnimations);
-        root.add("animations", animations);
-
-        JsonObject canvas = new JsonObject();
-        canvas.addProperty("fullScreenMode", fullScreenMode);
-        canvas.addProperty("minimap", minimap);
-        canvas.addProperty("visualMinimap", visualMinimap);
-        canvas.addProperty("readOnlyCanvasFocus", readOnlyCanvasFocus);
-        canvas.addProperty("questEffectIcons", questEffectIcons);
-        canvas.addProperty("miniNotifications", canvasMiniNotifications);
-        root.add("canvas", canvas);
-
-        JsonObject rewards = new JsonObject();
-        rewards.addProperty("autoClaimRewards", autoClaimRewards);
-        root.add("rewards", rewards);
-
-        JsonObject hud = new JsonObject();
-        hud.addProperty("completionHud", completionHud);
-        hud.addProperty("completionHudSound", completionHudSound);
-        hud.addProperty("completionHudDurationMs", completionHudDurationMs);
-        root.add("hud", hud);
-
-        JsonObject security = new JsonObject();
-        security.addProperty("commandRewards", commandRewards);
-        root.add("security", security);
+        root.add("debug", DEBUG.write());
+        root.add("animations", ANIMATIONS.write());
+        root.add("canvas", CANVAS.write());
+        root.add("rewards", REWARDS.write());
+        root.add("hud", HUD.write());
+        root.add("security", SECURITY.write());
 
         Path file = configFile();
         try {
@@ -450,34 +380,5 @@ public final class QuestsAndStuffConfig {
 
     private static Path configFile() {
         return Services.platform().configDir().resolve(QuestsAndStuffMod.MODID).resolve("config.json");
-    }
-
-    private static JsonObject object(JsonObject root, String key) {
-        if (root != null && root.has(key) && root.get(key).isJsonObject()) {
-            return root.getAsJsonObject(key);
-        }
-        return null;
-    }
-
-    private static boolean bool(JsonObject root, String key, boolean fallback) {
-        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
-            try {
-                return root.get(key).getAsBoolean();
-            } catch (Exception ignored) {
-                return fallback;
-            }
-        }
-        return fallback;
-    }
-
-    private static int intValue(JsonObject root, String key, int fallback) {
-        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
-            try {
-                return root.get(key).getAsInt();
-            } catch (Exception ignored) {
-                return fallback;
-            }
-        }
-        return fallback;
     }
 }

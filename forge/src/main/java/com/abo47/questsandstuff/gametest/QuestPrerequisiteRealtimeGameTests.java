@@ -2,8 +2,8 @@ package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.network.QuestNetwork;
-import com.abo47.questsandstuff.network.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -61,7 +61,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
 
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
-            QuestNetwork.setTestPacketSink((target, packet) -> {
+            ModNetwork.setTestPacketSink((target, packet) -> {
                 if (target != null && target.getUUID().equals(player.getUUID())) {
                     packets.add(packet);
                 }
@@ -93,7 +93,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
         } catch (IOException e) {
             throw new GameTestAssertException("Prerequisite relock test setup failed: " + e.getMessage());
         } finally {
-            QuestNetwork.clearTestPacketSink();
+            ModNetwork.clearTestPacketSink();
             if (store != null) {
                 store.shutdown();
             }

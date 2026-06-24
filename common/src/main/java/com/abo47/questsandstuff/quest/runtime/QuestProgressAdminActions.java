@@ -40,14 +40,18 @@ final class QuestProgressAdminActions {
             questState.setTaskProgress(task.getKey(), task.getValue(), QuestCompletionRules.completeProgress(task.getValue()));
         }
         questState.setCompleted(true, player.server.getTickCount());
+        engine.applyExclusiveChoiceDisable(player, player.getUUID(), state, questId);
         syncService.sendQuestEvent(player, "quest_completed", questId, "");
-        progressData.setDirty();
-        player.server.getPlayerList().getPlayers().forEach(target -> syncService.syncDelta(target, Set.of(questId)));
+        QuestRuntimeSyncs.syncChangedToAll(player, progressData, syncService, Set.of(questId));
     }
 
     void resetQuest(ServerPlayer player, String questId) {
         PlayerQuestState state = progressData.state(player.getUUID());
+        Set<String> siblings = engine.exclusiveChoiceSiblings(questId);
         state.quests().remove(questId);
+        if (!siblings.isEmpty()) {
+            engine.clearExclusiveChoiceDisabledForPlayer(player.getUUID(), siblings);
+        }
         engine.ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
         progressData.setDirty();
         syncService.syncFull(player);

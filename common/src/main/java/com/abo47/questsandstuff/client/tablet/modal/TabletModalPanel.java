@@ -3,9 +3,9 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasEntityPickerActions;
-import com.abo47.questsandstuff.client.tablet.modal.actions.CanvasModelPickerActions;
-import com.abo47.questsandstuff.client.tablet.model.CanvasModelPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerActions;
+import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -13,9 +13,7 @@ import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -25,12 +23,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletModalPanel {
     private TabletModalPanel() {
@@ -45,7 +41,7 @@ public final class TabletModalPanel {
         int closeY = Math.max(0, y - 3);
         Runnable close = () -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] modal close click");
-            state.iconSearchFocused = false;
+            state.pickers.iconSearchFocused = false;
             closeAll(state);
             refresh.run();
         };
@@ -56,10 +52,10 @@ public final class TabletModalPanel {
         String safeKey = key == null ? "" : key;
         long now = System.currentTimeMillis();
         boolean accepted = !safeKey.isBlank()
-                && safeKey.equals(state.pickerLastClickKey)
-                && now - state.pickerLastClickAtMs <= 350L;
-        state.pickerLastClickKey = safeKey;
-        state.pickerLastClickAtMs = now;
+                && safeKey.equals(state.pickers.pickerLastClickKey)
+                && now - state.pickers.pickerLastClickAtMs <= 350L;
+        state.pickers.pickerLastClickKey = safeKey;
+        state.pickers.pickerLastClickAtMs = now;
         return accepted;
     }
 
@@ -73,29 +69,6 @@ public final class TabletModalPanel {
 
     static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
         return CanvasModelPickerActions.run(state, target, pickedValue);
-    }
-
-    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        addModeToggleIconButton(parent, x, y, w, h, iconName, null, callback);
-    }
-
-    static void addModeToggleIconButton(WidgetGroup parent, int x, int y, int w, int h, String iconName, Component[] tooltip, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        WidgetGroup base = panel(x, y, w, h, withAlpha(ModColors.INTERACTIVE, 120), ModColors.BORDER_ACCENT);
-        parent.addWidget(base);
-        var texture = UiIconAtlas.iconTexture(iconName);
-        if (texture != null) {
-            int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, Math.min(w - 4, h - 4)));
-            int iconX = x + (w - iconSize) / 2;
-            int iconY = y + (h - iconSize) / 2;
-            parent.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, texture));
-        }
-        ButtonWidget hit = flatHitButton(x, y, w, h, callback);
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 66), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
-        if (tooltip != null && tooltip.length > 0) {
-            hit.setHoverTooltips(tooltip);
-        }
-        parent.addWidget(hit);
     }
 
     public static Component[] iconTooltip(String entry) {
@@ -114,8 +87,8 @@ public final class TabletModalPanel {
         if (entry.startsWith("#")) {
             return PickerTooltips.item(entry);
         }
-        if (CanvasModelPreviewRenderer.isModelAsset(entry)) {
-            return CanvasModelPreviewRenderer.modelTooltip(entry);
+        if (ModelAssetPreviewRenderer.isModelAsset(entry)) {
+            return ModelAssetPreviewRenderer.modelTooltip(entry);
         }
         String entityId = EntityPreviewRenderer.entityId(entry);
         if (!entityId.isBlank()) {

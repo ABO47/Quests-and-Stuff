@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.item.QuestTabletItem;
+import com.abo47.questsandstuff.item.TabletItem;
 import com.abo47.questsandstuff.loot.CompletedQuestLootCondition;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,7 @@ public final class ForgeContent {
     public static final DeferredRegister<LootItemConditionType> LOOT_CONDITION_TYPES = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, QuestsAndStuffMod.MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuestsAndStuffMod.MODID);
 
-    public static final RegistryObject<Item> QUEST_TABLET = ITEMS.register("quest_tablet", () -> new QuestTabletItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TABLET = ITEMS.register("quest_tablet", () -> new TabletItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<LootItemConditionType> COMPLETED_QUEST_LOOT_CONDITION = LOOT_CONDITION_TYPES.register(
             "completed_quest",
             () -> new LootItemConditionType(CompletedQuestLootCondition.SERIALIZER)
@@ -27,15 +27,15 @@ public final class ForgeContent {
     public static final RegistryObject<CreativeModeTab> MAIN_TAB = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.questsandstuff.main"))
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .icon(() -> QUEST_TABLET.get().getDefaultInstance())
-            .displayItems((parameters, output) -> output.accept(QUEST_TABLET.get()))
+            .icon(() -> TABLET.get().getDefaultInstance())
+            .displayItems((parameters, output) -> output.accept(TABLET.get()))
             .build());
 
     private ForgeContent() {
     }
 
     public static void register(IEventBus modBus) {
-        QuestsAndStuffMod.registerContent(QUEST_TABLET, COMPLETED_QUEST_LOOT_CONDITION);
+        QuestsAndStuffMod.registerContent(TABLET, COMPLETED_QUEST_LOOT_CONDITION);
         ITEMS.register(modBus);
         LOOT_CONDITION_TYPES.register(modBus);
         TABS.register(modBus);

@@ -6,8 +6,8 @@ import java.util.Locale;
 
 public record CanvasTextLayer(String id, String text, int x, int y, int w, int h, int rotation, String align, String style, int color, int fontSize, List<CanvasTextStyleSpan> spans) {
     public static final int DEFAULT_FONT_SIZE = 9;
-    public static final int MIN_FONT_SIZE = 6;
-    public static final int MAX_FONT_SIZE = 36;
+    public static final int MIN_FONT_SIZE = 1;
+    public static final int MAX_FONT_SIZE = 100;
 
     public CanvasTextLayer(String id, String text, int x, int y, int w, int h, int rotation, String align, String style, int color) {
         this(id, text, x, y, w, h, rotation, align, style, color, DEFAULT_FONT_SIZE, List.of());

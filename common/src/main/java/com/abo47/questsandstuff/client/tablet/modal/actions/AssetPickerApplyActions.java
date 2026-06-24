@@ -1,106 +1,239 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.hud.QuestHudLayout;
-import com.abo47.questsandstuff.client.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.StableIdAllocator;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class AssetPickerApplyActions {
     private AssetPickerApplyActions() {
     }
 
     public static void run(Player player, TabletUiState state, String background) {
-        String blueprintTarget = state.modalBlueprintTarget == null ? "" : state.modalBlueprintTarget.trim();
+        state.pickers.saveBrowseDirForMode();
+        String blueprintTarget = ModalTargetState.target(state, ModalSession.TargetSlot.BLUEPRINT, state.modal.modalBlueprintTarget);
         if (!blueprintTarget.isBlank()) {
             CanvasBlueprintController.beginPlacement(state, background);
-            state.modalBlueprintTarget = "";
-            state.assetBrowseDir = "";
+            state.modal.modalBlueprintTarget = "";
+            state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] picked blueprint target={} asset={}", blueprintTarget, background);
             return;
         }
-        String soundTarget = state.modalQuestCompletionSoundTarget == null ? "" : state.modalQuestCompletionSoundTarget.trim();
-        if (!state.modalQuestCompletionSoundTargets.isEmpty()) {
-            int count = state.modalQuestCompletionSoundTargets.size();
-            EditorCommandClient.setQuestCompletionSound(player, state.modalQuestCompletionSoundTargets, background);
-            state.modalQuestCompletionSoundTargets.clear();
-            state.assetBrowseDir = "";
+        String soundTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
+        Set<String> soundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
+        if (!soundTargets.isEmpty()) {
+            int count = soundTargets.size();
+            EditorCommandClient.setQuestCompletionSound(player, soundTargets, background);
+            state.modal.modalQuestCompletionSoundTargets.clear();
+            state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} asset={}", count, background);
             return;
         }
         if (!soundTarget.isBlank()) {
             EditorCommandClient.setQuestCompletionSound(player, soundTarget, background);
-            state.modalQuestCompletionSoundTarget = "";
-            state.assetBrowseDir = "";
+            state.modal.modalQuestCompletionSoundTarget = "";
+            state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest change completion sound picked quest={} asset={}", soundTarget, background);
             return;
         }
-        String questBackgroundTarget = state.modalQuestBackgroundTarget == null ? "" : state.modalQuestBackgroundTarget.trim();
-        if (!state.modalQuestBackgroundTargets.isEmpty()) {
-            EditorCommandClient.setQuestBackground(player, state.modalQuestBackgroundTargets, background, state.modalQuestBackgroundGrayscale);
-            int count = state.modalQuestBackgroundTargets.size();
-            state.modalQuestBackgroundTargets.clear();
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch background picked quests={} asset={} grayscale={}", count, background, state.modalQuestBackgroundGrayscale);
+        String questBackgroundTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget);
+        Set<String> questBackgroundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets);
+        if (!questBackgroundTargets.isEmpty()) {
+            EditorCommandClient.setQuestBackground(player, questBackgroundTargets, background, state.modal.modalQuestBackgroundGrayscale);
+            int count = questBackgroundTargets.size();
+            state.modal.modalQuestBackgroundTargets.clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest batch background picked quests={} asset={} grayscale={}", count, background, state.modal.modalQuestBackgroundGrayscale);
             return;
         }
         if (!questBackgroundTarget.isBlank()) {
-            EditorCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
-            state.modalQuestBackgroundTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modalQuestBackgroundGrayscale);
+            EditorCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modal.modalQuestBackgroundGrayscale);
+            state.modal.modalQuestBackgroundTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modal.modalQuestBackgroundGrayscale);
             return;
         }
-        String completionHudTarget = state.modalQuestCompletionHudBackgroundTarget == null ? "" : state.modalQuestCompletionHudBackgroundTarget.trim();
-        if (!state.modalQuestCompletionHudBackgroundTargets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionHudBackground(player, state.modalQuestCompletionHudBackgroundTargets, background);
-            int count = state.modalQuestCompletionHudBackgroundTargets.size();
-            state.modalQuestCompletionHudBackgroundTargets.clear();
+        String completionHudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTarget);
+        Set<String> completionHudTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTargets);
+        if (!completionHudTargets.isEmpty()) {
+            EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTargets, background);
+            int count = completionHudTargets.size();
+            state.modal.modalQuestCompletionHudBackgroundTargets.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion hud background picked quests={} asset={}", count, background);
             return;
         }
         if (!completionHudTarget.isBlank()) {
             EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTarget, background);
-            state.modalQuestCompletionHudBackgroundTarget = "";
+            state.modal.modalQuestCompletionHudBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion hud background picked quest={} asset={}", completionHudTarget, background);
             return;
         }
-        String hudTarget = state.modalHudBackgroundTarget == null ? "" : state.modalHudBackgroundTarget.trim();
+        String hudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
         QuestHudLayout.Element hudElement = hudElement(hudTarget);
         if (hudElement != null) {
             QuestHudLayout.setBackground(hudElement, background);
-            state.modalHudBackgroundTarget = "";
+            state.modal.modalHudBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] hud background picked target={} asset={}", hudTarget, background);
             return;
         }
-        String detailsTarget = state.questDetailsAssetPickTarget == null ? "" : state.questDetailsAssetPickTarget.trim();
-        if (!detailsTarget.isBlank()) {
-            QuestDetailsWindow.applyAssetPick(player, state, background);
+        ModalTargetParser.Target detailsTarget = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget);
+        if (!detailsTarget.kind().isBlank()) {
+            QuestDetailsWindow.applyAssetPick(player, state, detailsTarget, background);
             return;
         }
-        String imageTarget = state.modalCanvasImageTarget == null ? "" : state.modalCanvasImageTarget.trim();
+        String imageTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_IMAGE, state.modal.modalCanvasImageTarget);
         if (!imageTarget.isBlank()) {
             addCanvasImage(state, imageTarget, background);
             return;
         }
-        String canvasTarget = state.modalCanvasBackgroundTarget == null ? "" : state.modalCanvasBackgroundTarget.trim();
+        String ecTarget = state.modal.modalEcBackgroundTarget;
+        if (!ecTarget.isBlank()) {
+            String[] parts = ecTarget.split(":", 2);
+            if (parts.length == 2) {
+                String group = parts[0];
+                String ecId = parts[1];
+                CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+                if (ec != null) {
+                    CanvasExclusiveChoice updated = ec.withBackground(background);
+                    CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
+                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] exclusive choice background picked group={} ec={} background={}", group, ecId, background);
+                }
+            }
+            state.modal.modalEcBackgroundTarget = "";
+            return;
+        }
+        String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
         if (!canvasTarget.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas background picked group={} background={}", canvasTarget, background);
             TabletUiFactory.runGroupAction(player, state, "set_canvas_background", canvasTarget, background, 0);
             return;
         }
-        TabletUiFactory.runGroupAction(player, state, "set_background", state.modalChapterTarget, background, 0);
+        String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
+        java.util.Set<String> connectionTextureChapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        if (!connectionTextureChapterTargets.isEmpty()) {
+            String group = !connectionTextureTarget.isBlank() && connectionTextureTarget.startsWith("connection|")
+                    ? connectionTextureTarget.split("\\|")[1] : "";
+            java.util.Map<String, java.util.Map<String, String>> questTextures = new java.util.HashMap<>();
+            for (String chapterQuestId : connectionTextureChapterTargets) {
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(chapterQuestId);
+                if (questTag == null) continue;
+                java.util.Map<String, String> prereqTextures = new java.util.HashMap<>();
+                net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
+                for (int i = 0; i < prereqs.size(); i++) {
+                    String prerequisiteId = prereqs.getString(i);
+                    prereqTextures.put(prerequisiteId, background);
+                    com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
+                    if (!group.isBlank()) {
+                        ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, chapterQuestId, background);
+                    }
+                }
+                if (!prereqTextures.isEmpty()) {
+                    questTextures.put(chapterQuestId, prereqTextures);
+                }
+            }
+            if (!questTextures.isEmpty()) {
+                QuestsAndStuffMod.debugLog("[QnS:UI] chapter batch connection texture quests={} group={} bg={}", questTextures.size(), group, background);
+                net.minecraft.nbt.CompoundTag batchPayload = EditorCommandPayloads.connectionTextures(questTextures);
+                IntegratedServerActions.run(
+                        player,
+                        serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextures(serverPlayer, questTextures),
+                        () -> com.abo47.questsandstuff.network.ModNetwork.sendToServer(new com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket(EditorCommandType.CONNECTION_TEXTURE_MANY, batchPayload)));
+            }
+            if (!group.isBlank()) {
+                java.util.List<com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice> changedEcs = new java.util.ArrayList<>();
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+                    java.util.Map<String, String> textures = new java.util.HashMap<>(ec.connectionTextures());
+                    boolean changed = false;
+                    for (String connectedId : ec.connectionQuestIds()) {
+                        if (connectionTextureChapterTargets.contains(connectedId) || connectionTextureChapterTargets.contains(ec.id())) {
+                            textures.put(connectedId, background);
+                            changed = true;
+                        }
+                    }
+                    for (String prerequisiteId : ec.prerequisiteQuestIds()) {
+                        if (connectionTextureChapterTargets.contains(prerequisiteId) || connectionTextureChapterTargets.contains(ec.id())) {
+                            textures.put(prerequisiteId, background);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        changedEcs.add(ec.withConnectionTextures(textures));
+                    }
+                }
+                if (!changedEcs.isEmpty()) {
+                    com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations.putCanvasExclusiveChoices(state, group, changedEcs, true);
+                }
+            }
+            state.modal.modalConnectionTextureChapterTargets.clear();
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture chapter batch applied count={} asset={}", connectionTextureChapterTargets.size(), background);
+            return;
+        }
+        if (connectionTextureTarget.startsWith("connection_selection|")) {
+            String[] parts = connectionTextureTarget.split("\\|");
+            if (parts.length >= 2) {
+                String group = parts[1];
+                for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
+                    String prereq = edge.prerequisiteId();
+                    String quest = edge.questId();
+                    boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
+                    if (isEc) {
+                        EditorCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);
+                    } else {
+                        EditorCommandClient.runConnectionTextureAction(player, quest, prereq, background);
+                        ConnectionRenderer.setConnectionTexture(state, group, prereq, quest, background);
+                    }
+                }
+            }
+            state.modal.modalConnectionTextureTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture selection applied target={} asset={}", connectionTextureTarget, background);
+            return;
+        }
+        if (!connectionTextureTarget.isBlank()) {
+            String[] parts = connectionTextureTarget.split("\\|");
+            if (parts.length >= 4) {
+                String group = parts[1];
+                String prerequisiteId = parts[2];
+                String questId = parts[3];
+                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
+                if (isEc) {
+                    EditorCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, background);
+                } else {
+                    EditorCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, background);
+                    ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, questId, background);
+                }
+            }
+            state.modal.modalConnectionTextureTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection texture applied target={} asset={}", connectionTextureTarget, background);
+            return;
+        }
+        TabletUiFactory.runGroupAction(player, state, "set_background", ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modal.modalChapterTarget), background, 0);
     }
 
     private static void addCanvasImage(TabletUiState state, String group, String asset) {
@@ -108,32 +241,32 @@ public final class AssetPickerApplyActions {
         int[] imageSize = canvasImageSpawnSize(state, asset);
         int imageW = imageSize[0];
         int imageH = imageSize[1];
-        int x = state.canvasImageLogicalX - imageW / 2;
-        int y = state.canvasImageLogicalY - imageH / 2;
-        if (!state.gridSnapLocked) {
+        int x = state.canvas.canvasImageLogicalX - imageW / 2;
+        int y = state.canvas.canvasImageLogicalY - imageH / 2;
+        if (!state.canvas.gridSnapLocked) {
             x = TabletUiFactory.snapToGrid(state, x);
             y = TabletUiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, imageW, imageH);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, imageW, imageH, 0);
-        if (state.gridSnapLocked) {
+        if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasRenderer.putCanvasImage(state, group, image);
-        state.selectedCanvasImageId = id;
-        state.selectedQuestIds.clear();
-        state.draggingCanvasImage = false;
-        state.resizingCanvasImage = false;
-        state.rotatingCanvasImage = false;
-        state.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        state.contextMenuOpen = false;
-        state.contextDeleteConfirmKey = "";
+        CanvasLayerMutations.putCanvasImage(state, group, image);
+        state.canvas.canvasSelection.setPrimaryImageId(id);
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.draggingCanvasImage = false;
+        state.canvas.resizingCanvasImage = false;
+        state.canvas.rotatingCanvasImage = false;
+        state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
+        ContextMenuState.close(state);
+        ContextMenuState.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas image added group={} id={} asset={} pos={},{} size={}x{}", group, id, asset, clamped.x, clamped.y, imageW, imageH);
     }
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;

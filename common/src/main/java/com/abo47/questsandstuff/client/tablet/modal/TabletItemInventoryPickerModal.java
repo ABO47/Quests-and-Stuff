@@ -3,11 +3,13 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
     private static final int TILE = 18;
@@ -35,7 +37,7 @@ public final class TabletItemInventoryPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, QuestVocabulary.text(QuestVocabulary.CHOOSE_INVENTORY_ITEM), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_INVENTORY_ITEM), w, state, refresh);
         int sidePad = 8;
         int headY = 24;
         int headH = 18;
@@ -43,14 +45,14 @@ public final class TabletItemInventoryPickerModal {
         int gridY = headY + headH + 4;
         int gridW = w - sidePad * 2;
         int gridH = h - gridY - 8;
-        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.itemInventorySearch, 80, value -> {
-            state.itemInventorySearch = SearchFilter.normalizeUserInput(value);
-            state.itemInventoryScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] inventory item search query='{}'", state.itemInventorySearch);
+        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.pickers.itemInventorySearch, 80, value -> {
+            state.pickers.itemInventorySearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.itemInventoryScroll = 0;
+            QuestsAndStuffMod.debugLog("[QnS:UI] inventory item search query='{}'", state.pickers.itemInventorySearch);
             refresh.run();
-        }, focused -> state.itemInventorySearchFocused = focused);
+        }, focused -> state.pickers.itemInventorySearchFocused = focused);
 
-        List<ItemStack> entries = inventoryEntries(player, state.itemInventorySearch);
+        List<ItemStack> entries = inventoryEntries(player, state.pickers.itemInventorySearch);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -63,12 +65,12 @@ public final class TabletItemInventoryPickerModal {
                 6,
                 6,
                 entries,
-                QuestVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
                 ScrollState.bind(
-                        () -> state.itemInventoryScroll,
-                        value -> state.itemInventoryScroll = value,
-                        () -> state.itemInventoryScrollDragging,
-                        dragging -> state.itemInventoryScrollDragging = dragging
+                        () -> state.pickers.itemInventoryScroll,
+                        value -> state.pickers.itemInventoryScroll = value,
+                        () -> state.pickers.itemInventoryScrollDragging,
+                        dragging -> state.pickers.itemInventoryScrollDragging = dragging
                 ),
                 null,
                 refresh,
@@ -90,7 +92,7 @@ public final class TabletItemInventoryPickerModal {
         ItemStack preview = stack.copy();
         preview.setCount(1);
         surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.fill(0x00000000), click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
             if (onPick != null) {
                 onPick.accept(stack.copy());
             }

@@ -33,7 +33,7 @@ class TileGridLayoutTest {
         assertEquals(16, layout.scrollStart());
         assertEquals(2, layout.wheelStep());
         assertEquals(20, layout.visibleEnd());
-        assertEquals(53, layout.scrollBarX());
+        assertEquals(49, layout.scrollBarX());
         assertEquals(4, layout.scrollBarY());
         assertEquals(22, layout.scrollBarH());
         assertEquals(12, layout.knobH());

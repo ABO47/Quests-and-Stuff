@@ -52,6 +52,11 @@ final class PickerTooltips {
         };
     }
 
+    static Component[] nameOnly(String name) {
+        String safeName = name == null ? "" : name.trim();
+        return new Component[]{Component.literal(safeName).withStyle(ChatFormatting.WHITE)};
+    }
+
     private static boolean isTag(String id) {
         return id != null && id.trim().startsWith("#");
     }

@@ -4,6 +4,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -32,45 +33,49 @@ public final class TabletUiStatePersistence {
                 return;
             }
             JsonObject root = JsonParser.parseString(Files.readString(UI_STATE_FILE, StandardCharsets.UTF_8)).getAsJsonObject();
-            state.editMode = readBoolean(root, "edit_mode", state.editMode);
-            state.questDetailsEditMode = readBoolean(root, "quest_details_edit_mode", state.questDetailsEditMode);
-            state.gridEnabled = readBoolean(root, "grid_enabled", state.gridEnabled);
-            state.gridSnapLocked = readBoolean(root, "grid_snap_locked", state.gridSnapLocked);
-            state.centerSnapXEnabled = readBoolean(root, "center_snap_x_enabled", state.centerSnapXEnabled);
-            state.centerSnapYEnabled = readBoolean(root, "center_snap_y_enabled", state.centerSnapYEnabled);
-            state.objectSnapEnabled = readBoolean(root, "object_snap_enabled", state.objectSnapEnabled);
-            state.gridCanvasLocked = readBoolean(root, "grid_canvas_locked", state.gridCanvasLocked);
-            state.gridSizeIndex = readInt(root, "grid_size_index", state.gridSizeIndex);
-            state.gridOpacityIndex = readInt(root, "grid_opacity_index", state.gridOpacityIndex);
-            state.gridOpacityPercent = readInt(root, "grid_opacity_percent", state.gridOpacityPercent);
-            state.canvasBgOpacityIndex = readInt(root, "canvas_bg_opacity_index", state.canvasBgOpacityIndex);
-            state.canvasBgOpacityPercent = readInt(root, "canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
-            state.canvasZoom = readFloat(root, "canvas_zoom", state.canvasZoom);
+            state.root.editMode = readBoolean(root, "edit_mode", state.root.editMode);
+            state.questDetails.questDetailsEditMode = readBoolean(root, "quest_details_edit_mode", state.questDetails.questDetailsEditMode);
+            state.canvas.gridEnabled = readBoolean(root, "grid_enabled", state.canvas.gridEnabled);
+            state.canvas.gridSnapLocked = readBoolean(root, "grid_snap_locked", state.canvas.gridSnapLocked);
+            state.canvas.centerSnapXEnabled = readBoolean(root, "center_snap_x_enabled", state.canvas.centerSnapXEnabled);
+            state.canvas.centerSnapYEnabled = readBoolean(root, "center_snap_y_enabled", state.canvas.centerSnapYEnabled);
+            state.canvas.objectSnapEnabled = readBoolean(root, "object_snap_enabled", state.canvas.objectSnapEnabled);
+            state.canvas.gridCanvasLocked = readBoolean(root, "grid_canvas_locked", state.canvas.gridCanvasLocked);
+            state.canvas.gridSizeIndex = readInt(root, "grid_size_index", state.canvas.gridSizeIndex);
+            state.canvas.gridOpacityIndex = readInt(root, "grid_opacity_index", state.canvas.gridOpacityIndex);
+            state.canvas.gridOpacityPercent = readInt(root, "grid_opacity_percent", state.canvas.gridOpacityPercent);
+            state.canvas.gridColor = readInt(root, "grid_color", state.canvas.gridColor);
+            state.canvas.canvasBgOpacityIndex = readInt(root, "canvas_bg_opacity_index", state.canvas.canvasBgOpacityIndex);
+            state.canvas.canvasBgOpacityPercent = readInt(root, "canvas_bg_opacity_percent", state.canvas.canvasBgOpacityPercent);
+            state.canvas.canvasZoom = readFloat(root, "canvas_zoom", state.canvas.canvasZoom);
             readCanvasCameras(root, state);
-            state.minimapCollapsed = readBoolean(root, "minimap_collapsed", state.minimapCollapsed);
-            state.selectedGroup = readString(root, "last_selected_group", state.selectedGroup);
-            state.chapterPanelWidth = readInt(root, "chapter_panel_width", state.chapterPanelWidth);
-            state.chapterPanelCollapsed = readBoolean(root, "chapter_panel_collapsed", state.chapterPanelCollapsed);
-            state.chapterSplitterLocked = readBoolean(root, "chapter_splitter_locked", state.chapterSplitterLocked);
-            state.chapterPanelLastExpandedWidth = readInt(root, "chapter_panel_last_expanded_width", state.chapterPanelLastExpandedWidth);
-            state.questDetailsLeftPanelWidth = clampQuestDetailsLeftWidth(readInt(root, "quest_details_left_panel_width", state.questDetailsLeftPanelWidth));
-            state.questDetailsSplitterLocked = readBoolean(root, "quest_details_splitter_locked", state.questDetailsSplitterLocked);
-            state.questDetailsGridEnabled = readBoolean(root, "quest_details_grid_enabled", state.questDetailsGridEnabled);
-            state.questDetailsGridSnapLocked = readBoolean(root, "quest_details_grid_snap_locked", state.questDetailsGridSnapLocked);
-            state.questDetailsCenterSnapXEnabled = readBoolean(root, "quest_details_center_snap_x_enabled", state.questDetailsCenterSnapXEnabled);
-            state.questDetailsCenterSnapYEnabled = readBoolean(root, "quest_details_center_snap_y_enabled", state.questDetailsCenterSnapYEnabled);
-            state.questDetailsObjectSnapEnabled = readBoolean(root, "quest_details_object_snap_enabled", state.questDetailsObjectSnapEnabled);
-            state.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetailsCanvasLocked);
-            state.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetailsGridOpacityPercent);
-            state.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetailsCanvasBgOpacityPercent);
-        } catch (Exception ignored) {
+            state.canvas.minimapCollapsed = readBoolean(root, "minimap_collapsed", state.canvas.minimapCollapsed);
+            state.root.lastApp = readString(root, "last_app", state.root.lastApp);
+            state.root.selectedGroup = readString(root, "last_selected_group", state.root.selectedGroup);
+            state.chapterPanel.chapterPanelWidth = readInt(root, "chapter_panel_width", state.chapterPanel.chapterPanelWidth);
+            state.chapterPanel.chapterPanelCollapsed = readBoolean(root, "chapter_panel_collapsed", state.chapterPanel.chapterPanelCollapsed);
+            state.chapterPanel.chapterSplitterLocked = readBoolean(root, "chapter_splitter_locked", state.chapterPanel.chapterSplitterLocked);
+            state.chapterPanel.chapterPanelLastExpandedWidth = readInt(root, "chapter_panel_last_expanded_width", state.chapterPanel.chapterPanelLastExpandedWidth);
+            state.questDetails.questDetailsLeftPanelWidth = clampQuestDetailsLeftWidth(readInt(root, "quest_details_left_panel_width", state.questDetails.questDetailsLeftPanelWidth));
+            state.questDetails.questDetailsSplitterLocked = readBoolean(root, "quest_details_splitter_locked", state.questDetails.questDetailsSplitterLocked);
+            state.questDetails.questDetailsGridEnabled = readBoolean(root, "quest_details_grid_enabled", state.questDetails.questDetailsGridEnabled);
+            state.questDetails.questDetailsGridSnapLocked = readBoolean(root, "quest_details_grid_snap_locked", state.questDetails.questDetailsGridSnapLocked);
+            state.questDetails.questDetailsCenterSnapXEnabled = readBoolean(root, "quest_details_center_snap_x_enabled", state.questDetails.questDetailsCenterSnapXEnabled);
+            state.questDetails.questDetailsCenterSnapYEnabled = readBoolean(root, "quest_details_center_snap_y_enabled", state.questDetails.questDetailsCenterSnapYEnabled);
+            state.questDetails.questDetailsObjectSnapEnabled = readBoolean(root, "quest_details_object_snap_enabled", state.questDetails.questDetailsObjectSnapEnabled);
+            state.questDetails.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
+            state.questDetails.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
+            state.questDetails.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            readColorPalette(root, state);
+        } catch (Exception exception) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading UI state from {}, keeping defaults", UI_STATE_FILE, exception);
         }
     }
 
     public static boolean readEditMode() {
         TabletUiState state = new TabletUiState();
         read(state);
-        return state.editMode;
+        return state.root.editMode;
     }
 
     public static void write(TabletUiState state) {
@@ -80,37 +85,40 @@ public final class TabletUiStatePersistence {
         try {
             Files.createDirectories(UI_STATE_FILE.getParent());
             JsonObject root = new JsonObject();
-            root.addProperty("edit_mode", state.editMode);
-            root.addProperty("quest_details_edit_mode", state.questDetailsEditMode);
-            root.addProperty("grid_enabled", state.gridEnabled);
-            root.addProperty("grid_snap_locked", state.gridSnapLocked);
-            root.addProperty("center_snap_x_enabled", state.centerSnapXEnabled);
-            root.addProperty("center_snap_y_enabled", state.centerSnapYEnabled);
-            root.addProperty("object_snap_enabled", state.objectSnapEnabled);
-            root.addProperty("grid_canvas_locked", state.gridCanvasLocked);
-            root.addProperty("grid_size_index", state.gridSizeIndex);
-            root.addProperty("grid_opacity_index", state.gridOpacityIndex);
-            root.addProperty("grid_opacity_percent", state.gridOpacityPercent);
-            root.addProperty("canvas_bg_opacity_index", state.canvasBgOpacityIndex);
-            root.addProperty("canvas_bg_opacity_percent", state.canvasBgOpacityPercent);
-            root.addProperty("canvas_zoom", state.canvasZoom);
+            root.addProperty("edit_mode", state.root.editMode);
+            root.addProperty("quest_details_edit_mode", state.questDetails.questDetailsEditMode);
+            root.addProperty("grid_enabled", state.canvas.gridEnabled);
+            root.addProperty("grid_snap_locked", state.canvas.gridSnapLocked);
+            root.addProperty("center_snap_x_enabled", state.canvas.centerSnapXEnabled);
+            root.addProperty("center_snap_y_enabled", state.canvas.centerSnapYEnabled);
+            root.addProperty("object_snap_enabled", state.canvas.objectSnapEnabled);
+            root.addProperty("grid_canvas_locked", state.canvas.gridCanvasLocked);
+            root.addProperty("grid_size_index", state.canvas.gridSizeIndex);
+            root.addProperty("grid_opacity_index", state.canvas.gridOpacityIndex);
+            root.addProperty("grid_opacity_percent", state.canvas.gridOpacityPercent);
+            root.addProperty("grid_color", state.canvas.gridColor);
+            root.addProperty("canvas_bg_opacity_index", state.canvas.canvasBgOpacityIndex);
+            root.addProperty("canvas_bg_opacity_percent", state.canvas.canvasBgOpacityPercent);
+            root.addProperty("canvas_zoom", state.canvas.canvasZoom);
             root.add("canvas_cameras", writeCanvasCameras(state));
-            root.addProperty("minimap_collapsed", state.minimapCollapsed);
-            root.addProperty("last_selected_group", state.selectedGroup == null ? "" : state.selectedGroup);
+            root.addProperty("minimap_collapsed", state.canvas.minimapCollapsed);
+            root.addProperty("last_app", state.root.lastApp == null ? "" : state.root.lastApp);
+            root.addProperty("last_selected_group", state.root.selectedGroup == null ? "" : state.root.selectedGroup);
             root.addProperty("chapter_panel_width", chapterPanelWidth(state));
             root.addProperty("chapter_panel_collapsed", isChapterPanelCollapsed(state));
-            root.addProperty("chapter_splitter_locked", state.chapterSplitterLocked);
-            root.addProperty("chapter_panel_last_expanded_width", Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanelLastExpandedWidth)));
-            root.addProperty("quest_details_left_panel_width", clampQuestDetailsLeftWidth(state.questDetailsLeftPanelWidth));
-            root.addProperty("quest_details_splitter_locked", state.questDetailsSplitterLocked);
-            root.addProperty("quest_details_grid_enabled", state.questDetailsGridEnabled);
-            root.addProperty("quest_details_grid_snap_locked", state.questDetailsGridSnapLocked);
-            root.addProperty("quest_details_center_snap_x_enabled", state.questDetailsCenterSnapXEnabled);
-            root.addProperty("quest_details_center_snap_y_enabled", state.questDetailsCenterSnapYEnabled);
-            root.addProperty("quest_details_object_snap_enabled", state.questDetailsObjectSnapEnabled);
-            root.addProperty("quest_details_canvas_locked", state.questDetailsCanvasLocked);
-            root.addProperty("quest_details_grid_opacity_percent", state.questDetailsGridOpacityPercent);
-            root.addProperty("quest_details_canvas_bg_opacity_percent", state.questDetailsCanvasBgOpacityPercent);
+            root.addProperty("chapter_splitter_locked", state.chapterPanel.chapterSplitterLocked);
+            root.addProperty("chapter_panel_last_expanded_width", Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelLastExpandedWidth)));
+            root.addProperty("quest_details_left_panel_width", clampQuestDetailsLeftWidth(state.questDetails.questDetailsLeftPanelWidth));
+            root.addProperty("quest_details_splitter_locked", state.questDetails.questDetailsSplitterLocked);
+            root.addProperty("quest_details_grid_enabled", state.questDetails.questDetailsGridEnabled);
+            root.addProperty("quest_details_grid_snap_locked", state.questDetails.questDetailsGridSnapLocked);
+            root.addProperty("quest_details_center_snap_x_enabled", state.questDetails.questDetailsCenterSnapXEnabled);
+            root.addProperty("quest_details_center_snap_y_enabled", state.questDetails.questDetailsCenterSnapYEnabled);
+            root.addProperty("quest_details_object_snap_enabled", state.questDetails.questDetailsObjectSnapEnabled);
+            root.addProperty("quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
+            root.addProperty("quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
+            root.addProperty("quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            writeColorPalette(root, state);
             Files.writeString(UI_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed persisting UI state", e);
@@ -120,7 +128,7 @@ public final class TabletUiStatePersistence {
     public static void writeEditMode(boolean enabled) {
         TabletUiState state = new TabletUiState();
         read(state);
-        state.editMode = enabled;
+        state.root.editMode = enabled;
         write(state);
     }
 
@@ -130,7 +138,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsBoolean();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("boolean", key, fallback, exception);
             return fallback;
         }
     }
@@ -145,7 +154,8 @@ public final class TabletUiStatePersistence {
                 return fallback;
             }
             return Math.max(0.5f, Math.min(3.0f, value));
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("float", key, fallback, exception);
             return fallback;
         }
     }
@@ -156,7 +166,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsInt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("int", key, fallback, exception);
             return fallback;
         }
     }
@@ -167,7 +178,8 @@ public final class TabletUiStatePersistence {
         }
         try {
             return root.get(key).getAsString();
-        } catch (Exception ignored) {
+        } catch (RuntimeException exception) {
+            logFieldFallback("string", key, fallback, exception);
             return fallback;
         }
     }
@@ -185,14 +197,31 @@ public final class TabletUiStatePersistence {
                 JsonObject camera = cameras.getAsJsonObject(group);
                 double centerX = camera.has("center_x") ? camera.get("center_x").getAsDouble() : 0.0D;
                 double centerY = camera.has("center_y") ? camera.get("center_y").getAsDouble() : 0.0D;
-                float zoom = camera.has("zoom") ? camera.get("zoom").getAsFloat() : state.canvasZoom;
+                float zoom = camera.has("zoom") ? camera.get("zoom").getAsFloat() : state.canvas.canvasZoom;
                 if (Double.isFinite(centerX) && Double.isFinite(centerY) && Float.isFinite(zoom)) {
-                    state.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint(centerX, centerY));
-                    state.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
+                    state.canvas.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint(centerX, centerY));
+                    state.canvas.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
                 }
-            } catch (Exception ignored) {
+            } catch (RuntimeException exception) {
+                QuestsAndStuffMod.LOGGER.warn(
+                        "[QnS:UI] Invalid persisted canvas camera group={} file={}",
+                        group,
+                        UI_STATE_FILE,
+                        exception
+                );
             }
         }
+    }
+
+    private static void logFieldFallback(String type, String key, Object fallback, RuntimeException exception) {
+        QuestsAndStuffMod.LOGGER.warn(
+                "[QnS:UI] Invalid persisted UI state field type={} key={} fallback={} file={}",
+                type,
+                key,
+                fallback,
+                UI_STATE_FILE,
+                exception
+        );
     }
 
     private static JsonObject writeCanvasCameras(TabletUiState state) {
@@ -200,24 +229,51 @@ public final class TabletUiStatePersistence {
         if (state == null) {
             return cameras;
         }
-        for (String group : state.canvasCameraCentersByGroup.keySet()) {
+        for (String group : state.canvas.canvasCameraCentersByGroup.keySet()) {
             if (group == null || group.isBlank()) {
                 continue;
             }
-            com.abo47.questsandstuff.client.canvas.model.CanvasDoublePoint center = state.canvasCameraCentersByGroup.get(group);
+            com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint center = state.canvas.canvasCameraCentersByGroup.get(group);
             if (center == null || !Double.isFinite(center.x()) || !Double.isFinite(center.y())) {
                 continue;
             }
             JsonObject camera = new JsonObject();
             camera.addProperty("center_x", center.x());
             camera.addProperty("center_y", center.y());
-            camera.addProperty("zoom", Math.max(0.5f, Math.min(3.0f, state.canvasCameraZoomsByGroup.getOrDefault(group, state.canvasZoom))));
+            camera.addProperty("zoom", Math.max(0.5f, Math.min(3.0f, state.canvas.canvasCameraZoomsByGroup.getOrDefault(group, state.canvas.canvasZoom))));
             cameras.add(group, camera);
         }
         return cameras;
     }
 
-    private static int clampQuestDetailsLeftWidth(int width) {
-        return Math.max(120, Math.min(CHAPTER_W_MAX, Math.max(CHAPTER_W_MIN, width)));
+    private static void readColorPalette(JsonObject root, TabletUiState state) {
+        if (root == null || state == null || !root.has("color_palette") || !root.get("color_palette").isJsonArray()) {
+            return;
+        }
+        JsonArray palette = root.getAsJsonArray("color_palette");
+        if (palette.isEmpty()) {
+            return;
+        }
+        state.pickers.textColorPalette.clear();
+        for (int i = 0; i < palette.size(); i++) {
+            try {
+                state.pickers.textColorPalette.add(palette.get(i).getAsInt());
+            } catch (RuntimeException exception) {
+                QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Invalid color palette entry index={}", i, exception);
+            }
+        }
     }
+
+    private static void writeColorPalette(JsonObject root, TabletUiState state) {
+        JsonArray palette = new JsonArray();
+        for (int color : state.pickers.textColorPalette) {
+            palette.add(color);
+        }
+        root.add("color_palette", palette);
+    }
+
+    private static int clampQuestDetailsLeftWidth(int width) {
+        return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, width));
+    }
+
 }

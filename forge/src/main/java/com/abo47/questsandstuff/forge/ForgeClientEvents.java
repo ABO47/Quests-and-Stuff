@@ -2,8 +2,8 @@ package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
-import com.abo47.questsandstuff.client.hud.QuestHudOverlayRenderer;
-import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -13,6 +13,7 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public final class ForgeClientEvents {
     private ForgeClientEvents() {
@@ -26,6 +27,11 @@ public final class ForgeClientEvents {
         @SubscribeEvent
         public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
             TabletClientHooks.registerKeyMappings(event::register);
+        }
+
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            event.enqueueWork(TabletClientHooks::prewarmClientAtGameLaunch);
         }
     }
 

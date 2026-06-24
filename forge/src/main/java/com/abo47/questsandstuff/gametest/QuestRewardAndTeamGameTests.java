@@ -2,9 +2,9 @@ package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.network.QuestPacketContext;
-import com.abo47.questsandstuff.network.runtime.C2SManualTaskPacket;
-import com.abo47.questsandstuff.network.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;
@@ -25,9 +25,9 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -606,8 +606,8 @@ public final class QuestRewardAndTeamGameTests {
         );
     }
 
-    private static QuestPacketContext immediateContext(ServerPlayer player) {
-        return new QuestPacketContext() {
+    private static ModPacketContext immediateContext(ServerPlayer player) {
+        return new ModPacketContext() {
             @Override
             public ServerPlayer sender() {
                 return player;
@@ -653,15 +653,11 @@ public final class QuestRewardAndTeamGameTests {
         return QuestGameTestDefinitions.reward(id, type, amount, payload, selectable, args);
     }
 
-    private static ResourceLocation id(String path) {
-        return ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, path);
-    }
-
     private static int countItems(ServerPlayer player, String itemId) {
         ResourceLocation target = ResourceLocation.tryParse(itemId);
         int count = 0;
         for (var stack : player.getInventory().items) {
-            if (target != null && target.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
+            if (target != null && target.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) {
                 count += stack.getCount();
             }
         }

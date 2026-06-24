@@ -13,15 +13,30 @@ public final class RecipeViewerPickOverlays {
         if (!RecipeViewerSelectionBridge.hasPendingSelection()) {
             return;
         }
-        JeiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
-        EmiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
-        ReiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
+        if (RecipeViewerIntegrations.providerSupports("JEI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)) {
+            JeiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
+        }
+        if (RecipeViewerIntegrations.providerSupports("EMI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)) {
+            EmiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
+        }
+        if (RecipeViewerIntegrations.providerSupports("REI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)) {
+            ReiRecipePickOverlay.drawForScreen(screen, graphics, mouseX, mouseY);
+        }
     }
 
     public static boolean pickFromScreen(Object screen, double mouseX, double mouseY, int mouseButton) {
-        return RecipeViewerSelectionBridge.hasPendingSelection()
-                && (JeiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton)
-                || EmiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton)
-                || ReiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton));
+        if (!RecipeViewerSelectionBridge.hasPendingSelection()) {
+            return false;
+        }
+        if (RecipeViewerIntegrations.providerSupports("JEI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)
+                && JeiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton)) {
+            return true;
+        }
+        if (RecipeViewerIntegrations.providerSupports("EMI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)
+                && EmiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton)) {
+            return true;
+        }
+        return RecipeViewerIntegrations.providerSupports("REI", RecipeViewerCapability.VISIBLE_RECIPE_PICK)
+                && ReiRecipePickOverlay.pickFromScreen(screen, mouseX, mouseY, mouseButton);
     }
 }

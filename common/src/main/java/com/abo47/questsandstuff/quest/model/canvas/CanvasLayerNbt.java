@@ -6,7 +6,9 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CanvasLayerNbt {
     private CanvasLayerNbt() {
@@ -142,6 +144,146 @@ public final class CanvasLayerNbt {
             list.add(textToTag(text));
         }
         return list;
+    }
+
+    public static CompoundTag exclusiveChoiceToTag(CanvasExclusiveChoice ec) {
+        CompoundTag tag = new CompoundTag();
+        if (ec == null) {
+            return tag;
+        }
+        tag.putString("id", ec.id());
+        tag.putInt("x", ec.x());
+        tag.putInt("y", ec.y());
+        tag.putInt("w", ec.w());
+        tag.putInt("h", ec.h());
+        tag.putInt("rotation", ec.rotation());
+        tag.put("connections", stringsToListTag(ec.connectionQuestIds()));
+        if (!ec.prerequisiteQuestIds().isEmpty()) {
+            tag.put("prerequisites", stringsToListTag(ec.prerequisiteQuestIds()));
+        }
+        if (!ec.background().isBlank()) {
+            tag.putString("background", ec.background());
+        }
+        if (!ec.connectionColors().isEmpty()) {
+            CompoundTag colors = new CompoundTag();
+            for (Map.Entry<String, Integer> entry : ec.connectionColors().entrySet()) {
+                colors.putInt(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_colors", colors);
+        }
+        if (!ec.connectionModes().isEmpty()) {
+            CompoundTag modes = new CompoundTag();
+            for (Map.Entry<String, String> entry : ec.connectionModes().entrySet()) {
+                modes.putString(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_modes", modes);
+        }
+        if (!ec.connectionTextures().isEmpty()) {
+            CompoundTag textures = new CompoundTag();
+            for (Map.Entry<String, String> entry : ec.connectionTextures().entrySet()) {
+                textures.putString(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_textures", textures);
+        }
+        if (!ec.connectionTextureSpacings().isEmpty()) {
+            CompoundTag spacings = new CompoundTag();
+            for (Map.Entry<String, Integer> entry : ec.connectionTextureSpacings().entrySet()) {
+                spacings.putInt(entry.getKey(), entry.getValue());
+            }
+            tag.put("connection_texture_spacings", spacings);
+        }
+        return tag;
+    }
+
+    public static CanvasExclusiveChoice exclusiveChoiceFromTag(CompoundTag tag) {
+        if (tag == null) {
+            return null;
+        }
+        String id = tag.getString("id");
+        if (id.isBlank()) {
+            return null;
+        }
+        int width = tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : CanvasExclusiveChoice.DEFAULT_WIDTH;
+        int height = tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : CanvasExclusiveChoice.DEFAULT_HEIGHT;
+        List<String> connections = stringsFromListTag(tag.getList("connections", Tag.TAG_STRING));
+        List<String> prerequisites = stringsFromListTag(tag.getList("prerequisites", Tag.TAG_STRING));
+        String background = tag.contains("background", Tag.TAG_STRING) ? tag.getString("background") : "";
+        Map<String, Integer> connectionColors = new HashMap<>();
+        if (tag.contains("connection_colors", Tag.TAG_COMPOUND)) {
+            CompoundTag colors = tag.getCompound("connection_colors");
+            for (String key : colors.getAllKeys()) {
+                if (colors.contains(key, Tag.TAG_INT)) {
+                    connectionColors.put(key, colors.getInt(key));
+                }
+            }
+        }
+        Map<String, String> connectionModes = new HashMap<>();
+        if (tag.contains("connection_modes", Tag.TAG_COMPOUND)) {
+            CompoundTag modes = tag.getCompound("connection_modes");
+            for (String key : modes.getAllKeys()) {
+                if (modes.contains(key, Tag.TAG_STRING)) {
+                    connectionModes.put(key, modes.getString(key));
+                }
+            }
+        }
+        Map<String, String> connectionTextures = new HashMap<>();
+        if (tag.contains("connection_textures", Tag.TAG_COMPOUND)) {
+            CompoundTag textures = tag.getCompound("connection_textures");
+            for (String key : textures.getAllKeys()) {
+                if (textures.contains(key, Tag.TAG_STRING)) {
+                    connectionTextures.put(key, textures.getString(key));
+                }
+            }
+        }
+        Map<String, Integer> connectionTextureSpacings = new HashMap<>();
+        if (tag.contains("connection_texture_spacings", Tag.TAG_COMPOUND)) {
+            CompoundTag spacings = tag.getCompound("connection_texture_spacings");
+            for (String key : spacings.getAllKeys()) {
+                if (spacings.contains(key, Tag.TAG_INT)) {
+                    connectionTextureSpacings.put(key, spacings.getInt(key));
+                }
+            }
+        }
+        return new CanvasExclusiveChoice(
+                id,
+                tag.getInt("x"),
+                tag.getInt("y"),
+                width,
+                height,
+                tag.getInt("rotation"),
+                connections,
+                prerequisites,
+                background,
+                connectionColors,
+                connectionModes,
+                connectionTextures,
+                connectionTextureSpacings
+        );
+    }
+
+    public static ListTag exclusiveChoicesToListTag(List<CanvasExclusiveChoice> choices) {
+        ListTag list = new ListTag();
+        if (choices == null) {
+            return list;
+        }
+        for (CanvasExclusiveChoice ec : choices) {
+            list.add(exclusiveChoiceToTag(ec));
+        }
+        return list;
+    }
+
+    public static List<CanvasExclusiveChoice> exclusiveChoicesFromListTag(ListTag list) {
+        List<CanvasExclusiveChoice> choices = new ArrayList<>();
+        if (list == null) {
+            return choices;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            CanvasExclusiveChoice ec = exclusiveChoiceFromTag(list.getCompound(i));
+            if (ec != null) {
+                choices.add(ec);
+            }
+        }
+        return choices;
     }
 
     public static ListTag stringsToListTag(List<String> values) {

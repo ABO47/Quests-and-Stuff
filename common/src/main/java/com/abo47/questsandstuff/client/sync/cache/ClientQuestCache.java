@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
 import com.abo47.questsandstuff.client.sync.mutation.ClientQuestLocalMutations;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
 import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
-import com.abo47.questsandstuff.quest.model.task.QuestTasks;
+import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +28,7 @@ public final class ClientQuestCache {
         ClientDisplayState.reset();
         ClientRawSyncPayload.reset();
         ClientSyncInbox.reset();
+        ClientSyncUiBridge.resetForTests();
     }
 
     public static void applyFullSync(CompoundTag payload) {
@@ -87,6 +90,20 @@ public final class ClientQuestCache {
         return ClientQuestState.questIdsSnapshot();
     }
 
+    public static List<String> questIdsInGroup(String group) {
+        if (group == null || group.isBlank()) {
+            return List.of();
+        }
+        List<String> result = new ArrayList<>();
+        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
+            CompoundTag groups = entry.getValue().getCompound(QuestSyncKeys.Quest.GROUPS);
+            if (groups.contains(group)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
     public static boolean containsQuest(String questId) {
         return ClientQuestState.containsQuest(questId);
     }
@@ -96,11 +113,11 @@ public final class ClientQuestCache {
     }
 
     public static CompoundTag questTasks(String questId) {
-        return ClientQuestState.questSectionCopy(questId, "tasks");
+        return ClientQuestState.questSectionCopy(questId, QuestSyncKeys.Quest.TASKS);
     }
 
     public static CompoundTag questRewards(String questId) {
-        return ClientQuestState.questSectionCopy(questId, "rewards");
+        return ClientQuestState.questSectionCopy(questId, QuestSyncKeys.Quest.REWARDS);
     }
 
     public static Set<String> pinned() {
@@ -180,79 +197,31 @@ public final class ClientQuestCache {
     }
 
     public static boolean groupLockedPreview(String group) {
-        if (!groupLockUntilUnlocked(group)) {
-            return false;
-        }
-        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
-            CompoundTag quest = entry.getValue();
-            if (!quest.getCompound("groups").contains(group)) {
-                continue;
-            }
-            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
-                return false;
-            }
-        }
-        return true;
+        return ClientQuestPreviewRules.groupLocked(group);
     }
 
     public static boolean groupHiddenPreview(String group) {
-        if (!groupHideUntilUnlocked(group)) {
-            return false;
-        }
-        for (Map.Entry<String, CompoundTag> entry : questEntries()) {
-            CompoundTag quest = entry.getValue();
-            if (!quest.getCompound("groups").contains(group)) {
-                continue;
-            }
-            if (quest.getBoolean("unlocked") || quest.getBoolean("completed")) {
-                return false;
-            }
-        }
-        return true;
+        return ClientQuestPreviewRules.groupHidden(group);
     }
 
     public static boolean groupOpenablePreview(String group) {
-        return !groupLockedPreview(group) && !groupHiddenPreview(group);
+        return ClientQuestPreviewRules.groupOpenable(group);
     }
 
     public static List<String> selectableGroupOrder(boolean canEdit) {
-        if (canEdit) {
-            return groupOrder();
-        }
-        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
-        for (String group : groupOrder()) {
-            if (groupOpenablePreview(group)) {
-                groups.add(group);
-            }
-        }
-        return List.copyOf(groups);
+        return ClientQuestPreviewRules.selectableGroupOrder(canEdit);
     }
 
     public static List<String> visibleGroupOrder(boolean canEdit) {
-        if (canEdit) {
-            return groupOrder();
-        }
-        java.util.ArrayList<String> groups = new java.util.ArrayList<>();
-        for (String group : groupOrder()) {
-            if (!groupHiddenPreview(group)) {
-                groups.add(group);
-            }
-        }
-        return List.copyOf(groups);
+        return ClientQuestPreviewRules.visibleGroupOrder(canEdit);
     }
 
     public static boolean questLockedPreview(CompoundTag quest) {
-        return quest != null
-                && "locked".equals(quest.getString("hidden_mode"))
-                && !quest.getBoolean("unlocked")
-                && !quest.getBoolean("completed");
+        return ClientQuestPreviewRules.questLocked(quest);
     }
 
     public static boolean questHiddenPreview(CompoundTag quest) {
-        return quest != null
-                && quest.getBoolean("visual_hidden")
-                && !quest.getBoolean("unlocked")
-                && !quest.getBoolean("completed");
+        return ClientQuestPreviewRules.questHidden(quest);
     }
 
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
@@ -261,6 +230,10 @@ public final class ClientQuestCache {
 
     public static Map<String, List<CanvasTextLayer>> canvasTextsByGroup() {
         return ClientCanvasLayerState.textsByGroup();
+    }
+
+    public static Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup() {
+        return ClientCanvasLayerState.exclusiveChoicesByGroup();
     }
 
     public static Map<String, List<String>> canvasLayerOrderByGroup() {
@@ -273,6 +246,10 @@ public final class ClientQuestCache {
 
     public static List<CanvasTextLayer> canvasTexts(String group) {
         return ClientCanvasLayerState.texts(group);
+    }
+
+    public static List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
+        return ClientCanvasLayerState.exclusiveChoices(group);
     }
 
     public static List<String> canvasLayerOrder(String group) {
@@ -333,6 +310,14 @@ public final class ClientQuestCache {
 
     public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
         ClientQuestLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    }
+
+    public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
+        ClientQuestLocalMutations.putCanvasExclusiveChoiceLocal(group, ec);
+    }
+
+    public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
+        ClientQuestLocalMutations.removeCanvasExclusiveChoiceLocal(group, ecId);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
@@ -433,6 +418,14 @@ public final class ClientQuestCache {
 
     public static void setConnectionHiddenLocal(String questId, String prerequisiteId, boolean hidden) {
         ClientQuestLocalMutations.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
+    }
+
+    public static void setConnectionTextureLocal(String questId, String prerequisiteId, String texture) {
+        ClientQuestLocalMutations.setConnectionTextureLocal(questId, prerequisiteId, texture);
+    }
+
+    public static void setConnectionTextureSpacingLocal(String questId, String prerequisiteId, int spacing) {
+        ClientQuestLocalMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
     }
 
     public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {

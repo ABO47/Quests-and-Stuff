@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import com.abo47.questsandstuff.network.sync.SyncPacketPayloadLimits;
+import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 
 import net.minecraft.nbt.CompoundTag;
 

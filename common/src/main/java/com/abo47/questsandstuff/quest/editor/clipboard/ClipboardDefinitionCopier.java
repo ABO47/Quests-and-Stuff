@@ -19,20 +19,7 @@ public final class ClipboardDefinitionCopier {
 
     public static QuestDefinition duplicateDefinition(QuestDefinition source, String newId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
         Set<String> prerequisites = copyPrerequisites(source.prerequisites(), copiedIds);
-        QuestDisplay display = new QuestDisplay(
-                source.display().title(),
-                source.display().subtitle(),
-                source.display().description(),
-                Map.of(group, new ChapterDefinition(true, x, y, scale)),
-                source.display().icon(),
-                source.display().iconBackground(),
-                source.display().completionSound(),
-                source.display().completionSoundVolume(),
-                source.display().completionHudBackground(),
-                source.display().visualHidden(),
-                source.display().questBackground(),
-                source.display().questBackgroundGrayscale()
-        );
+        QuestDisplay display = source.display().withGroups(Map.of(group, new ChapterDefinition(true, x, y, scale)));
         return new QuestDefinition(
                 source.schema(),
                 newId,
@@ -42,6 +29,10 @@ public final class ClipboardDefinitionCopier {
                 copyConnectionColors(source.connectionColors(), copiedIds, prerequisites),
                 copyConnectionModes(source.connectionModes(), copiedIds, prerequisites),
                 copyHiddenConnections(source.hiddenConnections(), copiedIds, prerequisites),
+                copyConnectionTextures(source.connectionTextures(), copiedIds),
+                copyConnectionTextureSpacings(source.connectionTextureSpacings(), copiedIds),
+                source.tasksOrder(),
+                source.rewardsOrder(),
                 copyTasks(source.tasks(), copiedIds),
                 copyRewards(source.rewards(), copiedIds)
         );
@@ -77,6 +68,35 @@ public final class ClipboardDefinitionCopier {
         for (Map.Entry<String, Integer> entry : colors.entrySet()) {
             String mapped = copiedIds.get(entry.getKey());
             if (mapped != null && copiedPrerequisites.contains(mapped) && entry.getValue() != null) {
+                copied.put(mapped, entry.getValue());
+            }
+        }
+        return Map.copyOf(copied);
+    }
+
+    private static Map<String, String> copyConnectionTextures(Map<String, String> textures, Map<String, String> copiedIds) {
+        if (textures == null || textures.isEmpty() || copiedIds == null || copiedIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> copied = new LinkedHashMap<>();
+        for (Map.Entry<String, String> entry : textures.entrySet()) {
+            String mapped = copiedIds.get(entry.getKey());
+            String texture = entry.getValue() == null ? "" : entry.getValue().trim();
+            if (mapped != null && !texture.isBlank()) {
+                copied.put(mapped, texture);
+            }
+        }
+        return Map.copyOf(copied);
+    }
+
+    private static Map<String, Integer> copyConnectionTextureSpacings(Map<String, Integer> spacings, Map<String, String> copiedIds) {
+        if (spacings == null || spacings.isEmpty() || copiedIds == null || copiedIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> copied = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : spacings.entrySet()) {
+            String mapped = copiedIds.get(entry.getKey());
+            if (mapped != null && entry.getValue() != null) {
                 copied.put(mapped, entry.getValue());
             }
         }

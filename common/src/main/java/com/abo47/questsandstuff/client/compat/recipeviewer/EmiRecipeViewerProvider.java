@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +21,18 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String EMI_RENDER_HELPER = "dev.emi.emi.EmiRenderHelper";
     private static final String EMI_INGREDIENT = "dev.emi.emi.api.stack.EmiIngredient";
     private static final String EMI_STACK = "dev.emi.emi.api.stack.EmiStack";
+    private static final String EMI_RECIPE_SCREEN = "dev.emi.emi.screen.RecipeScreen";
+    private static final RecipeViewerCapabilityProbe CAPABILITIES = RecipeViewerCapabilityProbe.provider("EMI")
+            .requires(RecipeViewerCapability.AVAILABLE, EMI_API, EMI_INGREDIENT, EMI_STACK)
+            .requires(RecipeViewerCapability.SHOW_RECIPES, EMI_API, EMI_INGREDIENT, EMI_STACK)
+            .requires(RecipeViewerCapability.SHOW_USES, EMI_API, EMI_INGREDIENT, EMI_STACK)
+            .requires(RecipeViewerCapability.NATIVE_SELECTION, EMI_API, EMI_INGREDIENT, EMI_STACK)
+            .requires(RecipeViewerCapability.RECIPE_KEYBIND, EMI_CONFIG)
+            .requires(RecipeViewerCapability.USES_KEYBIND, EMI_CONFIG)
+            .requires(RecipeViewerCapability.SNAPSHOT_RENDERING, EMI_API, EMI_DRAW_CONTEXT, EMI_PORT, EMI_RENDER_HELPER)
+            .requires(RecipeViewerCapability.VISIBLE_RECIPE_PICK, EMI_RECIPE_SCREEN)
+            .requires(RecipeViewerCapability.FLUID_ENTRIES, EMI_API)
+            .build();
 
     @Override
     public String name() {
@@ -28,10 +40,8 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     @Override
-    public boolean isAvailable() {
-        return RecipeViewerReflection.classPresent(EMI_API)
-                && RecipeViewerReflection.classPresent(EMI_INGREDIENT)
-                && RecipeViewerReflection.classPresent(EMI_STACK);
+    public RecipeViewerProviderCapabilities capabilities() {
+        return CAPABILITIES.evaluate();
     }
 
     @Override
@@ -52,11 +62,6 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     @Override
     public boolean showUses(String target) {
         return show(target, "displayUses");
-    }
-
-    @Override
-    public boolean supportsNativeRecipeSelection() {
-        return true;
     }
 
     @Override

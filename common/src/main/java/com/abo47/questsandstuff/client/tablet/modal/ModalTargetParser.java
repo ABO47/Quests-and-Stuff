@@ -171,6 +171,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.CANVAS_ENTITY_CHANGE);
         }
 
+        public boolean isCanvasEntityChangeBatch() {
+            return is(ModalTargets.CANVAS_ENTITY_CHANGE_BATCH);
+        }
+
         public boolean isCanvasItemNew() {
             return is(ModalTargets.CANVAS_ITEM_NEW);
         }
@@ -207,6 +211,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.CONNECTION_SELECTION);
         }
 
+        public boolean isGridColor() {
+            return is(ModalTargets.GRID_COLOR);
+        }
+
         public boolean isEntityIconPickerTarget() {
             return isDescEntityNew() || isDescEntity() || isTaskEntity();
         }
@@ -233,6 +241,10 @@ public final class ModalTargetParser {
 
         public String kind() {
             return part(0);
+        }
+
+        public String raw() {
+            return String.join("|", parts());
         }
 
         public String questId() {

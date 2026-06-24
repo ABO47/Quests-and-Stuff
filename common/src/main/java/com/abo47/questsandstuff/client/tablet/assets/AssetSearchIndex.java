@@ -19,7 +19,7 @@ final class AssetSearchIndex {
         try {
             AssetPathResolver.ensureAssetsDirs(assetsRoot);
             Path dir = AssetPathResolver.resolveDirectory(assetsRoot, relativeDir);
-            if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
+            if (!availableDirectory("asset.list", assetsRoot, relativeDir, dir)) {
                 return result;
             }
             String base = AssetPathResolver.normalizeRelative(relativeDir);
@@ -27,7 +27,14 @@ final class AssetSearchIndex {
                 files.forEach(path -> addDirectEntry(result, base, path));
             }
             sortByName(result);
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debug(
+                    "asset.list.failed",
+                    "[QnS:UI] asset list failed root={} dir={} error={}",
+                    assetsRoot,
+                    relativeDir,
+                    exception.toString()
+            );
         }
         return result;
     }
@@ -41,7 +48,7 @@ final class AssetSearchIndex {
         try {
             AssetPathResolver.ensureAssetsDirs(assetsRoot);
             Path dir = AssetPathResolver.resolveDirectory(assetsRoot, relativeDir);
-            if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
+            if (!availableDirectory("asset.search", assetsRoot, relativeDir, dir)) {
                 return List.of();
             }
             String base = AssetPathResolver.normalizeRelative(relativeDir);
@@ -53,11 +60,56 @@ final class AssetSearchIndex {
                         .filter(Files::isRegularFile)
                         .forEach(path -> addMatchingNestedEntry(result, base, dir, path, normalizedQuery));
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AssetDiagnostics.debug(
+                    "asset.search.failed",
+                    "[QnS:UI] asset search failed root={} dir={} query={} error={}",
+                    assetsRoot,
+                    relativeDir,
+                    normalizedQuery,
+                    exception.toString()
+            );
         }
         List<AssetLibrary.AssetEntry> values = new ArrayList<>(result.values());
         sortByRelativePath(values);
         return values;
+    }
+
+    private static boolean availableDirectory(String eventPrefix, Path assetsRoot, String relativeDir, Path dir) {
+        String key = assetsRoot + "|" + relativeDir;
+        if (dir == null) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".invalid_dir",
+                    key,
+                    "[QnS:UI] asset directory skipped root={} dir={} reason=invalid_dir",
+                    assetsRoot,
+                    relativeDir
+            );
+            return false;
+        }
+        if (!Files.exists(dir)) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".missing_dir",
+                    key,
+                    "[QnS:UI] asset directory skipped root={} dir={} resolved={} reason=missing_dir",
+                    assetsRoot,
+                    relativeDir,
+                    dir
+            );
+            return false;
+        }
+        if (!Files.isDirectory(dir)) {
+            AssetDiagnostics.debugOnce(
+                    eventPrefix + ".not_directory",
+                    key,
+                    "[QnS:UI] asset directory skipped root={} dir={} resolved={} reason=not_directory",
+                    assetsRoot,
+                    relativeDir,
+                    dir
+            );
+            return false;
+        }
+        return true;
     }
 
     private static void addDirectEntry(List<AssetLibrary.AssetEntry> result, String base, Path path) {

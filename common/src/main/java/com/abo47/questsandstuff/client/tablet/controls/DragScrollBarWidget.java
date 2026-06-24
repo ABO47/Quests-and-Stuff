@@ -9,9 +9,10 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 public final class DragScrollBarWidget extends WidgetGroup {
-    public static final int WIDTH = 4;
-    public static final int RESERVED_WIDTH = 6;
+    public static final int WIDTH = 6;
+    public static final int RESERVED_WIDTH = 10;
     private static final int RAIL_WIDTH = 2;
+    private static final int MIN_KNOB_HEIGHT = 14;
 
     private final IntSupplier valueSupplier;
     private final IntSupplier maxSupplier;
@@ -99,16 +100,18 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int h = getSizeHeight();
         int railW = Math.min(RAIL_WIDTH, Math.max(1, w));
         int railX = x + Math.max(0, (w - railW) / 2);
-        graphics.fill(railX, y, railX + railW, y + h, trackColor);
+        boolean active = draggingSupplier.getAsBoolean();
+        boolean hovered = isMouseOverElement(mouseX, mouseY);
+        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, trackColor);
 
         int knobH = knobHeight();
         int max = Math.max(0, maxSupplier.getAsInt());
         int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
         int span = Math.max(0, h - knobH);
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
-        int knobW = Math.min(w, knobVisualWidth);
+        int knobW = Math.min(w, active || hovered ? Math.max(knobVisualWidth, WIDTH) : knobVisualWidth);
         int knobX = x + Math.max(0, (w - knobW) / 2);
-        graphics.fill(knobX, knobY, knobX + knobW, knobY + knobH, draggingSupplier.getAsBoolean() ? activeKnobColor : knobColor);
+        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, active || hovered ? activeKnobColor : knobColor);
     }
 
     @Override
@@ -119,6 +122,25 @@ public final class DragScrollBarWidget extends WidgetGroup {
         draggingConsumer.accept(true);
         updateFromMouse(mouseY);
         refresh.run();
+        return true;
+    }
+
+    @Override
+    public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+        if (!isMouseOverElement(mouseX, mouseY)) {
+            return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+        }
+        int max = Math.max(0, maxSupplier.getAsInt());
+        if (max <= 0) {
+            return true;
+        }
+        int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
+        int step = Math.max(1, Math.min(24, Math.max(1, max / 8)));
+        int next = ScrollController.wheel(current, max, step, wheelDelta);
+        if (next != current) {
+            valueConsumer.accept(next);
+            refresh.run();
+        }
         return true;
     }
 
@@ -161,6 +183,21 @@ public final class DragScrollBarWidget extends WidgetGroup {
 
     private int knobHeight() {
         int h = getSizeHeight();
-        return Math.max(1, Math.min(h, knobHeightSupplier.getAsInt()));
+        return Math.max(1, Math.min(h, Math.max(MIN_KNOB_HEIGHT, knobHeightSupplier.getAsInt())));
+    }
+
+    public static void drawVerticalTrack(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
+        drawRect(graphics, x, y, width, height, color);
+    }
+
+    public static void drawVerticalThumb(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, int color) {
+        drawRect(graphics, x, y, width, height, color);
+    }
+
+    private static void drawRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        graphics.fill(x, y, x + width, y + height, color);
     }
 }

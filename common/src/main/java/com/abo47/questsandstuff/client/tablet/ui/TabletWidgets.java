@@ -1,12 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
+import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -14,10 +13,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class TabletWidgets {
     private TabletWidgets() {
-    }
-
-    static int withAlpha(int color, int alpha) {
-        return UiThemeTokens.withAlpha(color, alpha);
     }
 
     static WidgetGroup panel(int x, int y, int w, int h, int fill, int border) {
@@ -42,21 +37,29 @@ final class TabletWidgets {
         ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, callback);
     }
 
+    static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
+    }
+
+    static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
+    }
+
     static String contextIconForLabel(String label) {
         return ContextMenuSystem.iconForLabel(label);
     }
 
     static ButtonWidget button(int x, int y, int w, int h, String text, int baseColor, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        GuiTextureGroup base = new GuiTextureGroup(
+        var base = Surfaces.group(
                 Surfaces.bordered(baseColor, ModColors.subtleBorder()),
                 new TextTexture(text)
         );
-        GuiTextureGroup active = new GuiTextureGroup(
+        var active = Surfaces.group(
                 Surfaces.controlPressed(activeColor),
                 new TextTexture(text)
         );
         ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
-        button.setHoverTexture(new GuiTextureGroup(
+        button.setHoverTexture(Surfaces.group(
                 Surfaces.controlHover(activeColor),
                 new TextTexture(text)
         ));
@@ -70,24 +73,18 @@ final class TabletWidgets {
     }
 
     static ButtonWidget flatHitButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ButtonWidget button = new ButtonWidget(x, y, w, h, Surfaces.fill(0x00000000), callback);
+        ButtonWidget button = new ButtonWidget(x, y, w, h, Surfaces.transparentFill(), callback);
         button.setClientSideWidget();
-        button.setHoverTexture(Surfaces.fill(0x00000000));
-        button.setClickedTexture(Surfaces.fill(0x00000000));
+        button.setHoverTexture(Surfaces.transparentFill());
+        button.setClickedTexture(Surfaces.transparentFill());
         return button;
     }
 
     static String pendingDeleteLabel(TabletUiState state, String key, String fallback) {
-        return key != null && key.equals(state.contextDeleteConfirmKey) ? "Sure?" : fallback;
+        return ContextMenuState.pendingDeleteLabel(state, key, fallback);
     }
 
     static boolean confirmDeleteClick(TabletUiState state, String key) {
-        String safeKey = key == null ? "" : key;
-        if (safeKey.equals(state.contextDeleteConfirmKey)) {
-            state.contextDeleteConfirmKey = "";
-            return true;
-        }
-        state.contextDeleteConfirmKey = safeKey;
-        return false;
+        return ContextMenuState.confirmDeleteClick(state, key);
     }
 }

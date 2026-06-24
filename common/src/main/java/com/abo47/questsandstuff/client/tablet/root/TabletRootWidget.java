@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,6 +22,7 @@ public final class TabletRootWidget extends WidgetGroup {
     };
     private Runnable redoAction = () -> {
     };
+    private ButtonWidget homeBtn;
 
     public TabletRootWidget(int x, int y, int width, int height, TabletUiState state) {
         super(x, y, width, height);
@@ -50,16 +53,27 @@ public final class TabletRootWidget extends WidgetGroup {
         this.canvasViewport = canvasViewport;
     }
 
+    public void setHomeButton(ButtonWidget btn) {
+        this.homeBtn = btn;
+    }
+
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        drawFullscreenBackdrop(graphics);
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
+        if (homeBtn != null) {
+            homeBtn.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     @Override
     public void drawInForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.FOREGROUND, (g, x, y, t) -> super.drawInForeground(g, x, y, t));
+        if (homeBtn != null) {
+            homeBtn.drawInForeground(graphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     @Override
@@ -70,6 +84,9 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (homeBtn != null && homeBtn.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
         return TabletRootPointerRouter.mouseClicked(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseClicked(x, y, b), mouseX, mouseY, button);
     }
 
@@ -114,5 +131,26 @@ public final class TabletRootWidget extends WidgetGroup {
 
     boolean isFrontWindowOpen() {
         return QuestDetailsWindow.isVisible(state) && frontWindowLayer != null;
+    }
+
+    private void drawFullscreenBackdrop(GuiGraphics graphics) {
+        if (state == null || !state.root.fullScreenMode) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        int screenW = minecraft.getWindow().getGuiScaledWidth();
+        int screenH = minecraft.getWindow().getGuiScaledHeight();
+        if (screenW <= 0 || screenH <= 0) {
+            return;
+        }
+        int rootX = getPosition().x;
+        int rootY = getPosition().y;
+        int rootW = getSize().width;
+        int rootH = getSize().height;
+        int fill = ModColors.SURFACE_BASE;
+        graphics.fill(0, 0, rootX, screenH, fill);
+        graphics.fill(rootX + rootW, 0, screenW, screenH, fill);
+        graphics.fill(rootX, 0, rootX + rootW, rootY, fill);
+        graphics.fill(rootX, rootY + rootH, rootX + rootW, screenH, fill);
     }
 }

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.forge;
 
-import com.abo47.questsandstuff.client.tablet.screen.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.platform.PlatformService;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -39,21 +39,21 @@ public final class ForgePlatformService implements PlatformService {
 
     @Override
     public void registerNetwork() {
-        ForgeQuestNetwork.register();
+        ForgeModNetwork.register();
     }
 
     @Override
     public void sendToPlayer(Object packet, ServerPlayer player) {
-        ForgeQuestNetwork.sendToPlayer(packet, player);
+        ForgeModNetwork.sendToPlayer(packet, player);
     }
 
     @Override
     public void sendToServer(Object packet) {
-        ForgeQuestNetwork.sendToServer(packet);
+        ForgeModNetwork.sendToServer(packet);
     }
 
     @Override
-    public void openQuestTabletUi(Player player) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> TabletClientHooks.openQuestTabletUiFromItem(player));
+    public void openTabletUi(Player player) {
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> TabletClientHooks.openTabletUiFromItem(player));
     }
 }

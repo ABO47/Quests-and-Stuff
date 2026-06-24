@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -9,6 +10,22 @@ import java.util.List;
 
 public final class ClientCanvasLocalMutations {
     private ClientCanvasLocalMutations() {
+    }
+
+    public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
+        String normalized = ClientChapterState.normalizeGroup(group);
+        if (normalized.isBlank() || ec == null || ec.id().isBlank()) {
+            return;
+        }
+        ClientCanvasLayerState.putExclusiveChoice(normalized, ec);
+    }
+
+    public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
+        String normalized = ClientChapterState.normalizeGroup(group);
+        if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
+            return;
+        }
+        ClientCanvasLayerState.removeExclusiveChoice(normalized, ecId);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
