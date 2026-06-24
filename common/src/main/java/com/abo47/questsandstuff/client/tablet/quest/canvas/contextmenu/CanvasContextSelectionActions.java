@@ -19,6 +19,8 @@ import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -391,6 +393,11 @@ final class CanvasContextSelectionActions {
         boolean isEntity = EntityPreviewRenderer.isEntityAsset(primary.asset());
         boolean isItem = ModelAssetPreviewRenderer.isItemAsset(primary.asset());
         boolean isBlock = ModelAssetPreviewRenderer.isBlockModelAsset(primary.asset());
+        boolean allEntitySelection = state.canvas.canvasSelection.questIds().isEmpty()
+                && state.canvas.canvasSelection.textIds().isEmpty()
+                && state.canvas.canvasSelection.ecIds().isEmpty()
+                && !imageIds.isEmpty()
+                && selectedEntityImageIds(state, selectedGroup).size() == imageIds.size();
 
         if (isRecipeCard) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe"), "recipe", ModColors.INTERACTIVE, () -> {
@@ -399,11 +406,23 @@ final class CanvasContextSelectionActions {
                 canvasViewport.refresh();
             }));
         } else if (isEntity) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, finalPrimaryId), primary.x(), primary.y());
-                ContextMenuState.close(state);
-                canvasViewport.refresh();
-            }));
+            if (!allEntitySelection) {
+                actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedGroup, finalPrimaryId), primary.x(), primary.y());
+                    ContextMenuState.close(state);
+                    canvasViewport.refresh();
+                }));
+            }
+            Set<String> batchEntityIds = selectedEntityImageIds(state, selectedGroup);
+            batchEntityIds.remove(finalPrimaryId);
+            state.questDetails.entityMotionEditorBatchImageIds = String.join(",", batchEntityIds);
+            EntityIconControls.addEntityVariantAndMotionActions(
+                    actions, state, primary.asset(),
+                    ModalTargets.canvasImage(selectedGroup, finalPrimaryId),
+                    () -> ContextMenuState.clearDeleteConfirm(state),
+                    () -> EntityMotionEditor.openMainCanvas(state, selectedGroup, finalPrimaryId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY),
+                    canvasViewport::refresh
+            );
         } else if (isItem) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ModColors.INTERACTIVE, () -> {
                 ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedGroup, finalPrimaryId), primary.x(), primary.y());

@@ -67,6 +67,7 @@ final class CanvasContextElementActions {
                     ModalTargets.canvasImage(selectedGroup, state.contextMenu.contextCanvasImageId),
                     () -> ContextMenuState.close(state),
                     () -> {
+                        state.questDetails.entityMotionEditorBatchImageIds = "";
                         EntityMotionEditor.openMainCanvas(state, selectedGroup, state.contextMenu.contextCanvasImageId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
                         QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion group={} image={}", selectedGroup, state.contextMenu.contextCanvasImageId);
                     },

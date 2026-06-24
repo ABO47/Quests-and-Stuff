@@ -14,6 +14,9 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.HashSet;
+import java.util.Set;
+
 final class EntityMotionTargets {
     static final String SCOPE_CANVAS = "canvas";
     static final String SCOPE_QUEST_DETAILS = "quest_details";
@@ -175,12 +178,26 @@ final class EntityMotionTargets {
     }
 
     private static void applyCanvasMotion(TabletUiState state, int yaw, int spin, boolean sync) {
-        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, state.questDetails.entityMotionEditorGroup, state.questDetails.entityMotionEditorImageId);
-        if (image == null) {
+        CanvasImageLayer primary = CanvasLayerMutations.findCanvasImage(state, state.questDetails.entityMotionEditorGroup, state.questDetails.entityMotionEditorImageId);
+        if (primary == null) {
             EntityMotionEditor.close(state);
             return;
         }
-        CanvasLayerMutations.putCanvasImage(state, state.questDetails.entityMotionEditorGroup, image.withEntityMotion(yaw, spin), sync);
+        CanvasLayerMutations.putCanvasImage(state, state.questDetails.entityMotionEditorGroup, primary.withEntityMotion(yaw, spin), sync);
+        String batchRaw = state.questDetails.entityMotionEditorBatchImageIds;
+        if (!batchRaw.isBlank()) {
+            Set<String> applied = new HashSet<>();
+            applied.add(state.questDetails.entityMotionEditorImageId);
+            for (String id : batchRaw.split(",")) {
+                id = id.trim();
+                if (id.isBlank() || applied.contains(id)) continue;
+                applied.add(id);
+                CanvasImageLayer batch = CanvasLayerMutations.findCanvasImage(state, state.questDetails.entityMotionEditorGroup, id);
+                if (batch != null) {
+                    CanvasLayerMutations.putCanvasImage(state, state.questDetails.entityMotionEditorGroup, batch.withEntityMotion(yaw, spin), sync);
+                }
+            }
+        }
     }
 
     private static void applyQuestIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {

@@ -72,6 +72,7 @@ public final class EntityMotionEditor {
         state.questDetails.entityMotionEditorGroup = "";
         state.questDetails.entityMotionEditorQuestId = "";
         state.questDetails.entityMotionEditorImageId = "";
+        state.questDetails.entityMotionEditorBatchImageIds = "";
         state.questDetails.entityMotionEditorX = 0;
         state.questDetails.entityMotionEditorY = 0;
         state.questDetails.entityMotionEditorW = 0;
