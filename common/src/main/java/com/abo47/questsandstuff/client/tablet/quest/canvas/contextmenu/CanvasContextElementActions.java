@@ -154,6 +154,8 @@ final class CanvasContextElementActions {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.EXCLUSIVE_CHOICE || state.contextMenu.contextCanvasExclusiveChoiceId.isBlank()) {
             return;
         }
+        addExclusiveChoiceConnectedQuestActions(actions, canvasViewport, state, selectedGroup);
+        addExclusiveChoicePrerequisiteActions(actions, canvasViewport, state, selectedGroup);
         if (CanvasGridFitController.canFitExclusiveChoiceToGrid(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, () -> {
                 boolean changed = CanvasGridFitController.fitExclusiveChoiceToGrid(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
@@ -162,8 +164,6 @@ final class CanvasContextElementActions {
                 canvasViewport.refresh();
             }));
         }
-        addExclusiveChoiceConnectedQuestActions(actions, canvasViewport, state, selectedGroup);
-        addExclusiveChoicePrerequisiteActions(actions, canvasViewport, state, selectedGroup);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, state.contextMenu.contextCanvasExclusiveChoiceId);
         if (ec != null) {
             actions.add(ContextActions.action(

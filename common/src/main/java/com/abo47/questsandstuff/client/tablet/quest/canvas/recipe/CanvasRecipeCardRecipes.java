@@ -206,13 +206,11 @@ public final class CanvasRecipeCardRecipes {
     private static List<RecipeView> buildRecipes(String target, RecipeManager manager, RegistryAccess registryAccess) {
         List<RecipeView> source = ALL_RECIPE_VIEWS;
         if (source != null) {
-            List<RecipeView> found = source.stream()
+            return source.stream()
                     .filter(view -> CanvasRecipeCardAsset.matchesOutput(target, view.output()))
                     .sorted(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
                             .thenComparing(RecipeView::id))
                     .toList();
-            CACHED_BY_TARGET.put(target, found);
-            return found;
         }
         List<RecipeView> found = new ArrayList<>();
         for (Recipe<?> recipe : manager.getRecipes()) {
@@ -230,13 +228,11 @@ public final class CanvasRecipeCardRecipes {
     private static List<RecipeView> buildUses(String target, RecipeManager manager, RegistryAccess registryAccess) {
         List<RecipeView> source = ALL_RECIPE_VIEWS;
         if (source != null) {
-            List<RecipeView> found = source.stream()
+            return source.stream()
                     .filter(view -> recipeUsesTarget(target, view))
                     .sorted(Comparator.comparing(RecipeView::typeLabel, String.CASE_INSENSITIVE_ORDER)
                             .thenComparing(RecipeView::id))
                     .toList();
-            CACHED_USES_BY_TARGET.put(target, found);
-            return found;
         }
         List<RecipeView> found = new ArrayList<>();
         for (Recipe<?> recipe : manager.getRecipes()) {

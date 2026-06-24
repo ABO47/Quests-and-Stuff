@@ -42,7 +42,9 @@ final class CanvasContextQuestActions {
         }
         CompoundTag questTag = ClientQuestCache.quest(state.contextMenu.contextQuestId);
         ContextMenuState.closeExclusiveSubmenus(state);
-        actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+        QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
+
+        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ModColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
             openQuestDetails(canvasViewport, state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextMenu.contextQuestId);
         })));
@@ -68,17 +70,21 @@ final class CanvasContextQuestActions {
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextMenu.contextQuestId));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextMenu.contextQuestId);
         })));
+
         addQuestPrerequisiteActions(actions, canvasViewport, state, questTag);
-        QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
+        addQuestBehaviorActions(actions, canvasViewport, state, player, questTag);
+        addCompletionSoundActions(actions, canvasViewport, state, questTag);
+
+        addQuestBackgroundActions(actions, canvasViewport, state, player, questTag);
+
         if (CanvasGridFitController.canFitQuestToGrid(state, contextQuest)) {
             actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ModColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
                 boolean changed = CanvasGridFitController.fitQuestToGrid(player, state, contextQuest);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextMenu.contextQuestId, changed);
             })));
         }
-        addQuestBehaviorActions(actions, canvasViewport, state, player, questTag);
-        addCompletionSoundActions(actions, canvasViewport, state, questTag);
-        addQuestBackgroundActions(actions, canvasViewport, state, player, questTag);
+        addQuestArrangeActions(actions, canvasViewport, state, selectedGroup);
+
         EntityIconControls.addEntityVariantAndMotionActions(
                 actions,
                 state,
@@ -91,7 +97,6 @@ final class CanvasContextQuestActions {
                 },
                 canvasViewport::refresh
         );
-        addQuestArrangeActions(actions, canvasViewport, state, selectedGroup);
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, withCleanup(canvasViewport, state, () -> {
             EditorCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextMenu.contextQuestId);

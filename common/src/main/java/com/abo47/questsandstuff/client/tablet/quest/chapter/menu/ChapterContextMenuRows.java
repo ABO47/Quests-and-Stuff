@@ -25,22 +25,22 @@ public final class ChapterContextMenuRows {
         List<ContextAction> actions = new ArrayList<>();
         String target = layout.target();
         if (layout.hasTarget()) {
+            actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", ModColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             actions.add(ContextActions.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
             actions.add(ContextActions.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
             actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_BACKGROUND), "background", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
-        }
-        actions.add(ContextActions.add(tr("ui.questsandstuff.menu.new_chapter"), () -> ChapterContextMenuActions.addChapter(state, refresh)));
-        if (!layout.hasTarget()) {
+        } else {
+            actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", ModColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             return actions;
         }
 
         actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
         actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
+        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
         actions.add(ContextActions.submenu(tr("ui.questsandstuff.context.change_completion_sound"), "audio-lines", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
                 ContextActions.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
         )));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_connection_texture"), "background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
         boolean locked = ClientQuestCache.groupLockUntilUnlocked(target);
         boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_VISIBILITY), "eye", ModColors.INTERACTIVE, List.of(

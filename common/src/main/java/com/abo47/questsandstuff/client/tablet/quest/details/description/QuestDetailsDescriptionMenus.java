@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class QuestDetailsDescriptionMenus {
     private QuestDetailsDescriptionMenus() {
@@ -337,6 +338,7 @@ public final class QuestDetailsDescriptionMenus {
         if (selectionSupportsGizmo(state, model)) {
             CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
         }
+        addBatchDescElementActions(actions, state, questId, model);
         actions.add(ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_ALIGN), "align-center-horizontal", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", ModColors.INTERACTIVE, () -> {
                     ContextMenuState.clearDeleteConfirm(state);
@@ -368,6 +370,60 @@ public final class QuestDetailsDescriptionMenus {
         actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
             QuestDetailsDescriptionPanel.deleteDescriptionSelection(state, model);
             QuestDetailsDescriptionModel.save(player, questId, model);
+        }));
+    }
+
+    private static void addBatchDescElementActions(List<ContextAction> actions, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+        Set<String> imageIds = QuestDetailsDescriptionSelectionState.selectedImageIds(state);
+        Set<String> textIds = QuestDetailsDescriptionSelectionState.selectedTextIds(state);
+
+        if (imageIds.size() >= 2) {
+            addBatchDescImageOnlyActions(actions, state, questId, model, imageIds);
+        }
+        if (textIds.size() >= 2) {
+            addBatchDescTextOnlyActions(actions, state, questId, textIds);
+        }
+    }
+
+    private static void addBatchDescImageOnlyActions(List<ContextAction> actions, TabletUiState state, String questId, QuestDetailsDescriptionModel model, Set<String> imageIds) {
+        String primaryId = state.questDetails.questDetailsDescriptionSelection.primaryImageId();
+        if (primaryId.isBlank()) {
+            primaryId = imageIds.iterator().next();
+        }
+        String finalPrimaryId = primaryId;
+        CanvasImageLayer primary = model.image(finalPrimaryId);
+        if (primary == null) return;
+
+        boolean entityImage = EntityPreviewRenderer.isEntityAsset(primary.asset());
+        boolean itemImage = ModelAssetPreviewRenderer.isItemAsset(primary.asset()) || ModelAssetPreviewRenderer.isItemTagAsset(primary.asset());
+        boolean blockImage = ModelAssetPreviewRenderer.isBlockModelAsset(primary.asset());
+        boolean recipeImage = CanvasRecipeCardAsset.isRecipeCardAsset(primary.asset());
+
+        actions.add(ContextActions.action(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), ModColors.INTERACTIVE, () -> {
+            ContextMenuState.clearDeleteConfirm(state);
+            if (entityImage) {
+                QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, finalPrimaryId));
+            } else if (itemImage) {
+                QuestDetailsWindow.openIconPicker(state, ModalTargets.descItem(questId, finalPrimaryId));
+            } else if (blockImage) {
+                QuestDetailsWindow.openBlockPicker(state, ModalTargets.descBlock(questId, finalPrimaryId));
+            } else if (recipeImage) {
+                QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipe(questId, finalPrimaryId));
+            } else {
+                QuestDetailsWindow.openAssetPicker(state, ModalTargets.descImage(questId, finalPrimaryId));
+            }
+        }));
+    }
+
+    private static void addBatchDescTextOnlyActions(List<ContextAction> actions, TabletUiState state, String questId, Set<String> textIds) {
+        String primaryId = state.questDetails.questDetailsDescriptionSelection.primaryTextId();
+        if (primaryId.isBlank()) {
+            primaryId = textIds.iterator().next();
+        }
+        String finalPrimaryId = primaryId;
+        actions.add(new ContextAction(TabletVocabulary.text(QuestVocabulary.CONTEXT_TEXT_STYLE), "style", ModColors.INTERACTIVE, false, () -> {
+            ContextMenuState.clearDeleteConfirm(state);
+            TextStyleSession.openQuestDetails(state, finalPrimaryId);
         }));
     }
 

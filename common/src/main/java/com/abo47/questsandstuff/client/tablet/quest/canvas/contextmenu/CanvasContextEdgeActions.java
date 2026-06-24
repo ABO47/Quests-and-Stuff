@@ -71,7 +71,7 @@ final class CanvasContextEdgeActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "background", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openConnectionTexturePicker(state, selectedGroup, sourceId, targetId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
@@ -93,7 +93,7 @@ final class CanvasContextEdgeActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "background", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> {
             ModalOpenActions.openConnectionTexturePicker(state, selectedGroup, sourceId, targetId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
