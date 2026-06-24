@@ -36,6 +36,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +60,24 @@ final class CanvasContextSelectionActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", totalCount, saved);
                 canvasViewport.refresh();
             }));
+            Set<String> entityImageIds = selectedEntityImageIds(state, selectedGroup);
+            if (totalCount > 1
+                    && state.canvas.canvasSelection.questIds().isEmpty()
+                    && state.canvas.canvasSelection.textIds().isEmpty()
+                    && state.canvas.canvasSelection.ecIds().isEmpty()
+                    && !entityImageIds.isEmpty()
+                    && entityImageIds.size() == totalCount) {
+                String batchTarget = ModalTargets.canvasEntityChangeBatch(selectedGroup, entityImageIds.toArray(new String[0]));
+                actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ModColors.INTERACTIVE, () -> {
+                    int x = state.canvas.canvasImageLogicalX;
+                    int y = state.canvas.canvasImageLogicalY;
+                    ModalOpenActions.openCanvasEntityPicker(state, batchTarget, x, y);
+                    ContextMenuState.close(state);
+                    ContextMenuState.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_change_entity images={}", entityImageIds.size());
+                    canvasViewport.refresh();
+                }));
+            }
             Set<String> questIds = state.canvas.canvasSelection.questIds();
             if (totalCount > 1 && !questIds.isEmpty()) {
                 List<String> targets = new ArrayList<>(questIds);
@@ -319,6 +338,22 @@ final class CanvasContextSelectionActions {
         }
     }
 
+    private static Set<String> selectedEntityImageIds(TabletUiState state, String selectedGroup) {
+        Set<String> ids = new LinkedHashSet<>();
+        String primary = state.canvas.canvasSelection.primaryImageId();
+        if (!primary.isBlank()) ids.add(primary);
+        ids.addAll(state.canvas.canvasSelection.imageIds());
+        if (ids.isEmpty()) return ids;
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
+        Set<String> entityIds = new LinkedHashSet<>();
+        for (CanvasImageLayer image : images) {
+            if (ids.contains(image.id()) && EntityPreviewRenderer.isEntityAsset(image.asset())) {
+                entityIds.add(image.id());
+            }
+        }
+        return entityIds;
+    }
+
     private static void addBatchElementActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
         Set<String> questIds = state.canvas.canvasSelection.questIds();
         Set<String> imageIds = state.canvas.canvasSelection.imageIds();
@@ -338,7 +373,7 @@ final class CanvasContextSelectionActions {
         if (hasTexts) {
             addBatchTextOnlyActions(actions, canvasViewport, state, selectedGroup, textIds);
         }
-        if (hasEcs) {
+        if (hasEcs && (!hasImages || selectedEntityImageIds(state, selectedGroup).isEmpty())) {
             addBatchEcOnlyActions(actions, canvasViewport, state, selectedGroup, ecIds);
         }
     }

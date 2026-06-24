@@ -37,6 +37,7 @@ public final class ModalTargets {
     public static final String QUEST_DESC_TEXT = "quest_desc_text";
     public static final String CANVAS_ENTITY_NEW = "new";
     public static final String CANVAS_ENTITY_CHANGE = "change";
+    public static final String CANVAS_ENTITY_CHANGE_BATCH = "change_batch";
     public static final String CANVAS_ITEM_NEW = "item_new";
     public static final String CANVAS_ITEM_CHANGE = "item_change";
     public static final String CANVAS_BLOCK_NEW = "block_new";
@@ -204,6 +205,13 @@ public final class ModalTargets {
 
     public static String canvasEntityChange(String group, String imageId) {
         return of(CANVAS_ENTITY_CHANGE, group, imageId);
+    }
+
+    public static String canvasEntityChangeBatch(String group, String... imageIds) {
+        String[] all = new String[imageIds.length + 1];
+        all[0] = clean(group);
+        System.arraycopy(imageIds, 0, all, 1, imageIds.length);
+        return of(CANVAS_ENTITY_CHANGE_BATCH, (Object[]) all);
     }
 
     public static String canvasItemNew(String group) {

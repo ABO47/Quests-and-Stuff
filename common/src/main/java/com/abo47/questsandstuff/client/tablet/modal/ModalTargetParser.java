@@ -171,6 +171,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.CANVAS_ENTITY_CHANGE);
         }
 
+        public boolean isCanvasEntityChangeBatch() {
+            return is(ModalTargets.CANVAS_ENTITY_CHANGE_BATCH);
+        }
+
         public boolean isCanvasItemNew() {
             return is(ModalTargets.CANVAS_ITEM_NEW);
         }
