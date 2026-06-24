@@ -92,10 +92,6 @@ public final class QuestCompletionNotificationOverlay {
         drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
     }
 
-    public static void onHudHidden() {
-        finishActiveNotification();
-    }
-
     public static void renderPreview(GuiGraphics graphics, int x, int y, boolean selected) {
         renderPreview(
                 graphics,
