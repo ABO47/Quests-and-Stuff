@@ -4,13 +4,14 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.utils.Rect;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Quaternionf;
-import org.joml.Vector4f;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
@@ -20,6 +21,9 @@ public final class CanvasTransformGizmo {
     private static final int MOVE_HANDLE = 7;
     private static final int RING_STEP = 7;
     private static final int RING_THICKNESS = 3;
+    private static final int RING_ALPHA_IDLE = 155;
+    private static final int RING_ALPHA_ACTIVE = 255;
+    private static final int RING_SEGMENTS = 256;
     private static final int AXIS_X_COLOR = ModColors.ERROR;
     private static final int AXIS_Y_COLOR = ModColors.SUCCESS;
     private static final int AXIS_Z_COLOR = ModColors.INTERACTIVE;
@@ -168,7 +172,7 @@ public final class CanvasTransformGizmo {
         graphics.pose().translate(originX + geometry.centerX(), originY + geometry.centerY(), 0.0F);
         if (mode == CanvasTransformMode.ROTATE) {
             rotateAxes = rotateAxes(rotationRadius(geometry.width(), geometry.height()), rotationDegrees, yawDegrees, pitchDegrees);
-            drawRotateGizmo(graphics, rotateAxes);
+            drawRotateGizmo(graphics, state, rotateAxes, rotationDegrees, yawDegrees, pitchDegrees);
         } else {
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0F, 0.0F, (float) Math.toRadians(normalize(rotationDegrees))));
             if (mode == CanvasTransformMode.RESIZE) {
@@ -213,10 +217,15 @@ public final class CanvasTransformGizmo {
         drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, ModColors.SUCCESS);
     }
 
-    private static void drawRotateGizmo(GuiGraphics graphics, RotateAxes axes) {
-        drawSmoothCircleRing(graphics, axes.pitchRadius(), AXIS_X_COLOR, 175);
-        drawSmoothCircleRing(graphics, axes.yawRadius(), AXIS_Y_COLOR, 175);
-        drawSmoothCircleRing(graphics, axes.rollRadius(), AXIS_Z_COLOR, 185);
+    private static void drawRotateGizmo(GuiGraphics graphics, TabletUiState state, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
+        String active = activeAxis(state);
+        boolean dragging = isRotating(state);
+        int pitchAlpha = AXIS_PITCH.equals(active) && dragging ? RING_ALPHA_ACTIVE : RING_ALPHA_IDLE;
+        int yawAlpha = AXIS_YAW.equals(active) && dragging ? RING_ALPHA_ACTIVE : RING_ALPHA_IDLE;
+        int rollAlpha = AXIS_ROLL.equals(active) && dragging ? RING_ALPHA_ACTIVE : RING_ALPHA_IDLE;
+        drawCircleRing(graphics, axes.pitchRadius(), RING_THICKNESS, AXIS_X_COLOR, pitchAlpha);
+        drawCircleRing(graphics, axes.yawRadius(), RING_THICKNESS, AXIS_Y_COLOR, yawAlpha);
+        drawCircleRing(graphics, axes.rollRadius(), RING_THICKNESS, AXIS_Z_COLOR, rollAlpha);
         drawBoxHandle(graphics, axes.pitchHandleX(), axes.pitchHandleY(), AXIS_X_COLOR);
         drawBoxHandle(graphics, axes.yawHandleX(), axes.yawHandleY(), AXIS_Y_COLOR);
         drawBoxHandle(graphics, axes.rollHandleX(), axes.rollHandleY(), AXIS_Z_COLOR);
@@ -232,13 +241,35 @@ public final class CanvasTransformGizmo {
         }
     }
 
-    private static void drawSmoothCircleRing(GuiGraphics graphics, int radius, int color, int alpha) {
-        int diameter = Math.max(1, radius * 2);
-        float outer = Math.max(1.0F, radius);
-        float inner = Math.max(0.0F, outer - RING_THICKNESS);
-        Vector4f outerRadius = new Vector4f(outer, outer, outer, outer);
-        Vector4f innerRadius = new Vector4f(inner, inner, inner, inner);
-        DrawerHelper.drawFrameRoundBox(graphics, Rect.ofRelative(-radius, diameter, -radius, diameter), RING_THICKNESS, innerRadius, outerRadius, withAlpha(color, alpha));
+    private static void drawCircleRing(GuiGraphics graphics, int radius, int thickness, int color, int alpha) {
+        if (radius <= 0 || thickness <= 0) {
+            return;
+        }
+        float outer = radius;
+        float inner = Math.max(0.0F, radius - thickness);
+        int argb = withAlpha(color, alpha);
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        int a = (argb >> 24) & 0xFF;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableCull();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        var tesselator = Tesselator.getInstance();
+        var buffer = tesselator.getBuilder();
+        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        var pose = graphics.pose().last().pose();
+        for (int i = 0; i <= RING_SEGMENTS; i++) {
+            double angle = 2.0 * Math.PI * i / RING_SEGMENTS;
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+            buffer.vertex(pose, cos * inner, sin * inner, 0).color(r, g, b, a).endVertex();
+            buffer.vertex(pose, cos * outer, sin * outer, 0).color(r, g, b, a).endVertex();
+        }
+        tesselator.end();
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
     }
 
     private static void drawActiveRotateLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
@@ -481,9 +512,12 @@ public final class CanvasTransformGizmo {
         int pitchRadius = Math.max(12, radius - RING_STEP * 2);
         int yawRadius = Math.max(pitchRadius + RING_STEP, radius - RING_STEP);
         int rollRadius = Math.max(yawRadius + RING_STEP, radius);
-        LocalPoint pitchHandle = pointOnCircle(pitchRadius, pitchDegrees - 90);
-        LocalPoint yawHandle = pointOnCircle(yawRadius, yawDegrees - 90);
-        LocalPoint rollHandle = pointOnCircle(rollRadius, rotationDegrees - 90);
+        double pitchHandleR = Math.max(0, pitchRadius - RING_THICKNESS / 2.0);
+        double yawHandleR = Math.max(0, yawRadius - RING_THICKNESS / 2.0);
+        double rollHandleR = Math.max(0, rollRadius - RING_THICKNESS / 2.0);
+        LocalPoint pitchHandle = pointOnCircle(pitchHandleR, pitchDegrees - 90);
+        LocalPoint yawHandle = pointOnCircle(yawHandleR, yawDegrees - 90);
+        LocalPoint rollHandle = pointOnCircle(rollHandleR, rotationDegrees - 90);
         return new RotateAxes(
                 yawRadius,
                 (int) Math.round(yawHandle.x()),
@@ -497,7 +531,7 @@ public final class CanvasTransformGizmo {
         );
     }
 
-    private static LocalPoint pointOnCircle(int radius, int degrees) {
+    private static LocalPoint pointOnCircle(double radius, int degrees) {
         double radians = Math.toRadians(normalize(degrees));
         return new LocalPoint(Math.cos(radians) * radius, Math.sin(radians) * radius);
     }
