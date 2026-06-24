@@ -249,6 +249,14 @@ public final class EditorCommandPayloads {
         return groupId(group, ecId);
     }
 
+    public static CompoundTag ecConnectionHidden(String group, String sourceId, String targetId, boolean hidden) {
+        CompoundTag payload = group(group);
+        payload.putString(EditorCommandPayloadKeys.ID, sourceId);
+        payload.putString(EditorCommandPayloadKeys.PREREQUISITE, targetId);
+        payload.putBoolean(EditorCommandPayloadKeys.HIDDEN, hidden);
+        return payload;
+    }
+
     public static CompoundTag canvasImagePut(String group, CanvasImageLayer image) {
         CompoundTag payload = group(group);
         payload.put(EditorCommandPayloadKeys.IMAGE, CanvasLayerNbt.imageToTag(image));

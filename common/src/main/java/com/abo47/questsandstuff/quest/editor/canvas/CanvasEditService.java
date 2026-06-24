@@ -74,6 +74,30 @@ public final class CanvasEditService {
         }
     }
 
+    public void ecConnectionHidden(ServerPlayer player, String groupName, String sourceId, String targetId, boolean hidden) {
+        String group = EditorSessionService.normalizeGroup(groupName);
+        if (group.isBlank() || sourceId.isBlank() || targetId.isBlank()) {
+            return;
+        }
+        CanvasExclusiveChoice ec = owner.definitionStore().canvasExclusiveChoices(group).stream()
+                .filter(e -> e.id().equals(sourceId))
+                .findFirst()
+                .orElse(null);
+        if (ec == null) {
+            ec = owner.definitionStore().canvasExclusiveChoices(group).stream()
+                    .filter(e -> e.id().equals(targetId))
+                    .findFirst()
+                    .orElse(null);
+            if (ec == null) return;
+            owner.captureUndo(owner.session(player));
+            owner.definitionStore().putCanvasExclusiveChoice(group, ec.withHiddenConnection(sourceId, hidden));
+        } else {
+            owner.captureUndo(owner.session(player));
+            owner.definitionStore().putCanvasExclusiveChoice(group, ec.withHiddenConnection(targetId, hidden));
+        }
+        owner.postMutation(player);
+    }
+
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
         String group = EditorSessionService.normalizeGroup(groupName);
         if (group.isBlank() || image == null || image.id().isBlank()) {

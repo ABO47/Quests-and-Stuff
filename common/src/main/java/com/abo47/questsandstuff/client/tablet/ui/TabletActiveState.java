@@ -12,8 +12,10 @@ import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 final class TabletActiveState {
     private static Runnable activeTabletRefresh = () -> {
@@ -150,10 +152,11 @@ final class TabletActiveState {
                     Map<String, String> remappedModes = remapStringKeys(ec.connectionModes(), oldToNew);
                     Map<String, String> remappedTextures = remapStringKeys(ec.connectionTextures(), oldToNew);
                     Map<String, Integer> remappedSpacings = remapIntKeys(ec.connectionTextureSpacings(), oldToNew);
+                    Set<String> remappedHidden = remapStringSet(ec.hiddenConnections(), oldToNew);
                     updatedEcs.add(new CanvasExclusiveChoice(
                             ec.id(), ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
                             remappedConnections, remappedPrerequisites, ec.background(),
-                            remappedColors, remappedModes, remappedTextures, remappedSpacings
+                            remappedColors, remappedModes, remappedTextures, remappedSpacings, remappedHidden
                     ));
                 }
             }
@@ -216,6 +219,15 @@ final class TabletActiveState {
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             String mapped = oldToNew.get(entry.getKey());
             result.put(mapped != null ? mapped : entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    private static Set<String> remapStringSet(Set<String> set, Map<String, String> oldToNew) {
+        Set<String> result = new HashSet<>();
+        for (String value : set) {
+            String mapped = oldToNew.get(value);
+            result.add(mapped != null ? mapped : value);
         }
         return result;
     }

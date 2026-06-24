@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -529,6 +530,13 @@ public final class ClipboardEditService {
                     remappedSpacings.put(mapped, e.getValue());
                 }
             }
+            Set<String> remappedHidden = new LinkedHashSet<>();
+            for (String h : entry.hiddenConnections()) {
+                String mapped = allocatedQuestIds.get(h);
+                if (mapped != null) {
+                    remappedHidden.add(mapped);
+                }
+            }
             pasted.add(new CanvasExclusiveChoice(
                     newId,
                     anchorX + (entry.sourceX() - blueprint.originX()),
@@ -542,7 +550,8 @@ public final class ClipboardEditService {
                     remappedColors,
                     remappedModes,
                     remappedTextures,
-                    remappedSpacings
+                    remappedSpacings,
+                    remappedHidden
             ));
         }
         return pasted;

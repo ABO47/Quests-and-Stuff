@@ -140,6 +140,17 @@ final class ConnectionStateMutations {
         CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionTextureSpacing(questId));
     }
 
+    static void setEcConnectionHidden(TabletUiState state, String group, String ecId, String questId, boolean hidden) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withHiddenConnection(ecId, hidden));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withHiddenConnection(questId, hidden));
+    }
+
     static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
         Map<String, String> textures = state.canvas.connectionTexturesByGroup.computeIfAbsent(group, ignored -> new HashMap<>());

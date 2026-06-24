@@ -96,6 +96,13 @@ final class CanvasContextEdgeActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_ec_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
             canvasViewport.refresh();
         }));
+        boolean hidden = ConnectionRenderer.isConnectionHidden(state, selectedGroup, sourceId, targetId);
+        actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ModColors.INTERACTIVE : ModColors.WARNING, () -> {
+            EditorCommandClient.runEcConnectionHiddenAction(player, state, sourceId, targetId, !hidden);
+            ContextMenuState.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
+            canvasViewport.refresh();
+        }));
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
             int color = ConnectionRenderer.ecConnectionColor(state, selectedGroup, sourceId, targetId);
             ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, sourceId, targetId), color);

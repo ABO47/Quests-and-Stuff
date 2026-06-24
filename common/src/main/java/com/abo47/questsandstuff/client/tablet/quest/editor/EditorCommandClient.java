@@ -113,6 +113,10 @@ public final class EditorCommandClient {
         EditorCanvasCommandClient.runEcConnectionTextureAction(state, sourceId, targetId, texture);
     }
 
+    public static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
+        EditorCanvasCommandClient.runEcConnectionHiddenAction(player, state, sourceId, targetId, hidden);
+    }
+
     public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
         EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, sourceId, targetId, spacing);
     }

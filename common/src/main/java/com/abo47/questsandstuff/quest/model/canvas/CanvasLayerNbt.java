@@ -7,8 +7,10 @@ import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class CanvasLayerNbt {
     private CanvasLayerNbt() {
@@ -192,6 +194,9 @@ public final class CanvasLayerNbt {
             }
             tag.put("connection_texture_spacings", spacings);
         }
+        if (!ec.hiddenConnections().isEmpty()) {
+            tag.put("hidden_connections", stringsToListTag(new ArrayList<>(ec.hiddenConnections())));
+        }
         return tag;
     }
 
@@ -244,6 +249,7 @@ public final class CanvasLayerNbt {
                 }
             }
         }
+        Set<String> hiddenConnections = new HashSet<>(stringsFromListTag(tag.getList("hidden_connections", Tag.TAG_STRING)));
         return new CanvasExclusiveChoice(
                 id,
                 tag.getInt("x"),
@@ -257,7 +263,8 @@ public final class CanvasLayerNbt {
                 connectionColors,
                 connectionModes,
                 connectionTextures,
-                connectionTextureSpacings
+                connectionTextureSpacings,
+                hiddenConnections
         );
     }
 
