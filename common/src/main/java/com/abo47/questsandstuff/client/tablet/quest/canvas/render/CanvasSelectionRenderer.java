@@ -388,9 +388,11 @@ public final class CanvasSelectionRenderer {
         int resizeY = state.canvas.selectionBoundsBottom - HANDLE_SIZE;
         drawClippedRect(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
 
-        int rotateX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
-        int rotateY = state.canvas.selectionBoundsTop;
-        drawClippedRect(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
+            int rotateX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
+            int rotateY = state.canvas.selectionBoundsTop;
+            drawClippedRect(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
+        }
     }
 
     private static void drawClippedRect(GuiGraphics graphics, int originX, int originY, int maxW, int maxH, int x, int y, int width, int height, int fill, int border) {

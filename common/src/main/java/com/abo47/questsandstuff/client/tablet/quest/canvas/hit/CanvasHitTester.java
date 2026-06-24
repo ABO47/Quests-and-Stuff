@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -211,6 +212,9 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasExclusiveChoiceRotateHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
+        if (CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
+            return false;
+        }
         return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), x, y);
     }
 

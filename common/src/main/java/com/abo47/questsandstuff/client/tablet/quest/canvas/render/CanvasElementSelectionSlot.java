@@ -31,6 +31,20 @@ public final class CanvasElementSelectionSlot {
         drawBox(graphics, originX, originY, box, rotationDegrees);
     }
 
+    public static void drawResizeOnlyAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
+        if (box.right() > box.left() && box.bottom() > box.top()) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.fill(box.left(), box.top(), box.right(), box.bottom(), withAlpha(ModColors.INTERACTIVE, 18));
+            graphics.renderOutline(box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
+            graphics.fill(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, box.right(), box.bottom(), withAlpha(ModColors.SURFACE_BASE, 220));
+            graphics.renderOutline(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
+            graphics.pose().popPose();
+        }
+    }
+
     private static void drawBox(GuiGraphics graphics, int originX, int originY, CanvasElementGeometry.Box box, int rotationDegrees) {
         if (box.right() > box.left() && box.bottom() > box.top()) {
             graphics.pose().pushPose();

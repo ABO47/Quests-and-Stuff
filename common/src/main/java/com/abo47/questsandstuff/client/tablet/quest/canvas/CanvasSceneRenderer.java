@@ -414,7 +414,7 @@ final class CanvasSceneRenderer {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
                         return;
                     }
-                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                    CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                 }
             }
         };
