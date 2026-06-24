@@ -298,6 +298,7 @@
   "ui.questsandstuff.context.connection_grid": "Grid Connection",
   "ui.questsandstuff.context.completion_sound": "Change Completion Sound",
   "ui.questsandstuff.context.change_connection_texture": "Change Connection Texture",
+  "ui.questsandstuff.context.remove_connection_texture": "Remove Connection Texture",
   "ui.questsandstuff.context.connection_texture_spacing": "Texture Spacing",
   "ui.questsandstuff.context.connection_color": "Connection Color",
   "ui.questsandstuff.context.copy": "Copy",

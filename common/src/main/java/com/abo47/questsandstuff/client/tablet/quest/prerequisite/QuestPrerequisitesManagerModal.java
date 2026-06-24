@@ -227,11 +227,13 @@ public final class QuestPrerequisitesManagerModal {
         if (!PrerequisiteConnectionActions.canRemove(row)) {
             return;
         }
+        String group = TabletStateQueries.selectedGroupName(state);
         if (state.modal.prerequisitesManagerEcMode) {
             removeEcConnection(player, state, row);
         } else {
             EditorCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
         }
+        ConnectionRenderer.removeEdgeTransientState(state, group, row.sourceId(), row.targetId());
         PrerequisiteConnectionActions.clearAfterRemove(state, row);
         QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager action=remove_connection source={} target={}", row.sourceId(), row.targetId());
     }

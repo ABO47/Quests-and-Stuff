@@ -35,7 +35,6 @@ final class CanvasConnectionClickActions {
                     CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
                     CanvasConnectionAnimation.startIfNew(state, hit.questId(), state.canvas.quickConnectEcId);
                 }
-                state.canvas.quickConnectEcId = "";
                 state.canvas.canvasSelection.selectOnlyQuest(hit.questId());
                 state.chapterPanel.lastJumpQuest = hit.questId();
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas quick-connect exclusive_choice={} quest={}", ecHit != null ? ecHit.id() : state.canvas.quickConnectEcId, hit.questId());
@@ -55,7 +54,8 @@ final class CanvasConnectionClickActions {
                         CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
                         CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.quickConnectSourceQuestId);
                     }
-                    state.canvas.quickConnectSourceQuestId = ecHit.id();
+                    state.canvas.quickConnectEcId = ecHit.id();
+                    state.canvas.quickConnectSourceQuestId = "";
                     state.canvas.canvasSelection.selectOnlyEc(ecHit.id());
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas quick-connect quest={} exclusive_choice={}", state.canvas.quickConnectSourceQuestId, ecHit.id());
                     refresher.run();

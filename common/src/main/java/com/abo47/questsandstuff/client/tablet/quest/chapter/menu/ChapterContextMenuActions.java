@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -11,6 +12,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -187,6 +190,35 @@ public final class ChapterContextMenuActions {
         }
         ModalOpenActions.openChapterConnectionTexturePicker(state, target, targets);
         state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void removeConnectionTexture(Player player, TabletUiState state, String target, Runnable refresh) {
+        if (!EditorCommandClient.canManageGroups(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        String group = target;
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestCache.quest(questId);
+            if (quest == null) continue;
+            ListTag prereqs = quest.getList("prerequisites", Tag.TAG_STRING);
+            for (int i = 0; i < prereqs.size(); i++) {
+                String prereqId = prereqs.getString(i);
+                EditorCommandClient.runConnectionTextureAction(player, questId, prereqId, "");
+                ConnectionRenderer.setConnectionTexture(state, group, prereqId, questId, "");
+            }
+        }
+        for (var ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(target, java.util.List.of())) {
+            for (String connectedId : ec.connectionQuestIds()) {
+                EditorCommandClient.runEcConnectionTextureAction(state, ec.id(), connectedId, "");
+            }
+            for (String prereqId : ec.prerequisiteQuestIds()) {
+                EditorCommandClient.runEcConnectionTextureAction(state, ec.id(), prereqId, "");
+            }
+        }
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove connection textures target={} quests={}", target, questIds.size());
         refresh.run();
     }
 

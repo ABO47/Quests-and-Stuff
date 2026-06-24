@@ -316,6 +316,7 @@ final class TabletRootKeyboardRouter {
         if (TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
             state.canvas.quickConnectHeld = false;
             state.canvas.quickConnectSourceQuestId = "";
+            state.canvas.quickConnectEcId = "";
             refresher.run();
             return true;
         }

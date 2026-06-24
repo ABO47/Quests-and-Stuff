@@ -159,4 +159,33 @@ final class ConnectionStateMutations {
             spacings.put(key, spacing);
         }
     }
+
+    static void removeEdgeTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
+        Map<String, String> textures = state.canvas.connectionTexturesByGroup.get(group);
+        if (textures != null) {
+            textures.remove(key);
+            if (textures.isEmpty()) state.canvas.connectionTexturesByGroup.remove(group);
+        }
+        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.get(group);
+        if (spacings != null) {
+            spacings.remove(key);
+            if (spacings.isEmpty()) state.canvas.connectionTextureSpacingsByGroup.remove(group);
+        }
+        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.get(group);
+        if (colors != null) {
+            colors.remove(key);
+            if (colors.isEmpty()) state.canvas.connectionColorsByGroup.remove(group);
+        }
+        Set<String> grid = state.canvas.gridConnectionsByGroup.get(group);
+        if (grid != null) {
+            grid.remove(key);
+            if (grid.isEmpty()) state.canvas.gridConnectionsByGroup.remove(group);
+        }
+        Set<String> hidden = state.canvas.hiddenConnectionsByGroup.get(group);
+        if (hidden != null) {
+            hidden.remove(key);
+            if (hidden.isEmpty()) state.canvas.hiddenConnectionsByGroup.remove(group);
+        }
+    }
 }
