@@ -176,6 +176,18 @@ final class CanvasContextElementActions {
                         canvasViewport.refresh();
                     }
             ));
+            if (!ec.background().isBlank()) {
+                actions.add(ContextActions.action(
+                        CanvasContextMenuController.tr("ui.questsandstuff.context.remove_background"),
+                        "delete", ModColors.WARNING, () -> {
+                            CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedGroup, ec.withBackground(""));
+                            CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedGroup, ec.id());
+                            ContextMenuState.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_ec_background ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
+                            canvasViewport.refresh();
+                        }
+                ));
+            }
         }
         addLayerActions(actions, canvasViewport, state, selectedGroup, CanvasLayerOrdering.exclusiveChoiceKey(state.contextMenu.contextCanvasExclusiveChoiceId), "exclusive_choice", state.contextMenu.contextCanvasExclusiveChoiceId);
         addCopyAndDeleteActions(actions, canvasViewport, state);

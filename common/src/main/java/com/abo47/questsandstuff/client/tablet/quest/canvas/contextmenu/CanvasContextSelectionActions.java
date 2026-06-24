@@ -493,6 +493,20 @@ final class CanvasContextSelectionActions {
             ContextMenuState.close(state);
             canvasViewport.refresh();
         }));
+        if (!ec.background().isBlank()) {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_background"), "delete", ModColors.WARNING, () -> {
+                for (String batchEcId : ecIds) {
+                    CanvasExclusiveChoice batchEc = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedGroup, batchEcId);
+                    if (batchEc != null && !batchEc.background().isBlank()) {
+                        CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedGroup, batchEc.withBackground(""));
+                        CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedGroup, batchEcId);
+                    }
+                }
+                ContextMenuState.close(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_ec_background ecs={}", ecIds);
+                canvasViewport.refresh();
+            }));
+        }
     }
 
     private static void addBatchTextOnlyActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup, Set<String> textIds) {
