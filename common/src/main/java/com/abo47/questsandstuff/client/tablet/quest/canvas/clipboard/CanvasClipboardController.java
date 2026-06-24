@@ -325,7 +325,7 @@ public final class CanvasClipboardController {
             int x = TabletUiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
             int y = TabletUiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
-            CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings());
+            CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections());
             if (state.canvas.gridSnapLocked) {
                 duplicate = CanvasGridFitController.fittedExclusiveChoice(state, duplicate);
             }

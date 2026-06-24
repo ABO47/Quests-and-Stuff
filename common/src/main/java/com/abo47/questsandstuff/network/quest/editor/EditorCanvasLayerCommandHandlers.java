@@ -20,6 +20,7 @@ final class EditorCanvasLayerCommandHandlers {
         registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicePut);
         registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicesPut);
         registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoiceRemove);
+        registrar.register(EditorCommandType.EC_CONNECTION_HIDDEN, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::ecConnectionHidden);
         registrar.register(EditorCommandType.CANVAS_IMAGE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImagePut);
         registrar.register(EditorCommandType.CANVAS_IMAGE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImageRemove);
         registrar.register(EditorCommandType.CANVAS_TEXT_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextPut);
@@ -49,6 +50,17 @@ final class EditorCanvasLayerCommandHandlers {
                 EditorCommandPayloads.group(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID)
         );
+    }
+
+    private static void ecConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
+        String group = EditorCommandPayloads.group(payload);
+        String sourceId = EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID);
+        String targetId = EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.PREREQUISITE);
+        boolean hidden = EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.HIDDEN);
+        if (sourceId.isBlank() || targetId.isBlank()) {
+            return;
+        }
+        editor.ecConnectionHidden(player, group, sourceId, targetId, hidden);
     }
 
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {

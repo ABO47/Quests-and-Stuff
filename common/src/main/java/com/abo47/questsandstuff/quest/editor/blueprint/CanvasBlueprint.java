@@ -19,8 +19,11 @@ import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,6 +143,9 @@ public record CanvasBlueprint(
                 }
                 entryTag.put("connection_texture_spacings", spacings);
             }
+            if (!entry.hiddenConnections().isEmpty()) {
+                entryTag.put("hidden_connections", CanvasLayerNbt.stringsToListTag(new ArrayList<>(entry.hiddenConnections())));
+            }
             list.add(entryTag);
         }
         return list;
@@ -185,6 +191,7 @@ public record CanvasBlueprint(
                     }
                 }
             }
+            Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
             entries.add(new ExclusiveChoiceEntry(
                     entryTag.getString("source_id"),
                     entryTag.getString("source_group"),
@@ -199,7 +206,8 @@ public record CanvasBlueprint(
                     connectionColors,
                     connectionModes,
                     connectionTextures,
-                    connectionTextureSpacings
+                    connectionTextureSpacings,
+                    hiddenConnections
             ));
         }
         return entries;
@@ -325,6 +333,13 @@ public record CanvasBlueprint(
                     spacings.addProperty(e.getKey(), e.getValue());
                 }
                 obj.add("connection_texture_spacings", spacings);
+            }
+            if (!entry.hiddenConnections().isEmpty()) {
+                JsonArray hidden = new JsonArray();
+                for (String h : entry.hiddenConnections()) {
+                    hidden.add(h);
+                }
+                obj.add("hidden_connections", hidden);
             }
             array.add(obj);
         }
@@ -464,6 +479,17 @@ public record CanvasBlueprint(
                 }
             }
 
+            JsonArray hiddenArray = obj.getAsJsonArray("hidden_connections");
+            Set<String> hiddenConnections = new LinkedHashSet<>();
+            if (hiddenArray != null) {
+                for (JsonElement h : hiddenArray) {
+                    String value = stringValue(h, "hidden_connections");
+                    if (!value.isBlank()) {
+                        hiddenConnections.add(value);
+                    }
+                }
+            }
+
             entries.add(new ExclusiveChoiceEntry(
                     string(obj, "source_id"),
                     string(obj, "source_group"),
@@ -478,7 +504,8 @@ public record CanvasBlueprint(
                     connectionColors,
                     connectionModes,
                     connectionTextures,
-                    connectionTextureSpacings
+                    connectionTextureSpacings,
+                    hiddenConnections
             ));
         }
         return entries;
@@ -713,7 +740,8 @@ public record CanvasBlueprint(
             Map<String, Integer> connectionColors,
             Map<String, String> connectionModes,
             Map<String, String> connectionTextures,
-            Map<String, Integer> connectionTextureSpacings
+            Map<String, Integer> connectionTextureSpacings,
+            Set<String> hiddenConnections
     ) {
         public ExclusiveChoiceEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
@@ -726,6 +754,7 @@ public record CanvasBlueprint(
             connectionModes = connectionModes == null ? Map.of() : Map.copyOf(connectionModes);
             connectionTextures = connectionTextures == null ? Map.of() : Map.copyOf(connectionTextures);
             connectionTextureSpacings = connectionTextureSpacings == null ? Map.of() : Map.copyOf(connectionTextureSpacings);
+            hiddenConnections = hiddenConnections == null ? Set.of() : Set.copyOf(hiddenConnections);
         }
     }
 }

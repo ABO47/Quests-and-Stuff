@@ -30,6 +30,7 @@ public enum EditorCommandType {
     CONNECTION_TEXTURE("connection_texture"),
     CONNECTION_TEXTURE_MANY("connection_texture_many"),
     CONNECTION_TEXTURE_SPACING("connection_texture_spacing"),
+    EC_CONNECTION_HIDDEN("ec_connection_hidden"),
     TASK_PUT("task_put"),
     TASK_REMOVE("task_remove"),
     TASK_MOVE("task_move"),

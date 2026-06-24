@@ -52,6 +52,9 @@ final class ConnectionStyleResolver {
     }
 
     static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
+        if (isEcId(state, group, sourceQuestId) || isEcId(state, group, targetQuestId)) {
+            return ecIsConnectionHidden(state, group, sourceQuestId, targetQuestId);
+        }
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
         if (target != null && target.contains(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
             ListTag hiddenTag = target.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING);
@@ -178,6 +181,14 @@ final class ConnectionStyleResolver {
     }
 
     static boolean ecIsConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        CanvasExclusiveChoice ec = findEc(state, group, sourceQuestId);
+        if (ec != null) {
+            return ec.hiddenConnections().contains(targetQuestId);
+        }
+        ec = findEc(state, group, targetQuestId);
+        if (ec != null) {
+            return ec.hiddenConnections().contains(sourceQuestId);
+        }
         return false;
     }
 

@@ -248,6 +248,15 @@ final class EditorCanvasCommandClient {
         ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct);
     }
 
+    static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
+        String group = EditorChapterCommandClient.selectedGroupName(state);
+        if (group.isBlank()) return;
+        String ecId = resolveEcId(state, group, sourceId, targetId);
+        if (ecId.isBlank()) return;
+        String questId = resolveQuestId(ecId, sourceId, targetId);
+        ConnectionRenderer.setEcConnectionHidden(state, group, ecId, questId, hidden);
+    }
+
     static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
         String group = EditorChapterCommandClient.selectedGroupName(state);
         if (group.isBlank()) return;

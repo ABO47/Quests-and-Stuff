@@ -204,7 +204,7 @@ public final class CanvasBlueprintController {
                         ec.id(), group, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
                         ec.background(), ec.connectionQuestIds(), Set.copyOf(ec.prerequisiteQuestIds()),
                         ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(),
-                        ec.connectionTextureSpacings()));
+                        ec.connectionTextureSpacings(), ec.hiddenConnections()));
             }
         }
         return entries;

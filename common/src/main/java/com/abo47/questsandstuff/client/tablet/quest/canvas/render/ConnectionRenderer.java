@@ -162,6 +162,10 @@ public final class ConnectionRenderer {
         ConnectionStateMutations.setEcConnectionMode(state, group, ecId, questId, direct);
     }
 
+    public static void setEcConnectionHidden(TabletUiState state, String group, String ecId, String questId, boolean hidden) {
+        ConnectionStateMutations.setEcConnectionHidden(state, group, ecId, questId, hidden);
+    }
+
     public static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
         ConnectionStateMutations.setConnectionTexture(state, group, sourceQuestId, targetQuestId, texture);
     }

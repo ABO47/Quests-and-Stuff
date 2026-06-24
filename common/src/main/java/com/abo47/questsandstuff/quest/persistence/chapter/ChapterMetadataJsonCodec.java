@@ -11,9 +11,11 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 final class ChapterMetadataJsonCodec {
     private ChapterMetadataJsonCodec() {
@@ -146,6 +148,7 @@ final class ChapterMetadataJsonCodec {
             Map<String, String> connectionModes = readStringMap(json.get("connection_modes"));
             Map<String, String> connectionTextures = readStringMap(json.get("connection_textures"));
             Map<String, Integer> connectionTextureSpacings = readIntMap(json.get("connection_texture_spacings"));
+            Set<String> hiddenConnections = readStringSet(json.get("hidden_connections"));
             choices.add(new CanvasExclusiveChoice(
                     id,
                     intOr(json, "x", 0),
@@ -159,7 +162,8 @@ final class ChapterMetadataJsonCodec {
                     connectionColors,
                     connectionModes,
                     connectionTextures,
-                    connectionTextureSpacings
+                    connectionTextureSpacings,
+                    hiddenConnections
             ));
         }
         return choices;
@@ -193,6 +197,9 @@ final class ChapterMetadataJsonCodec {
             }
             if (!ec.connectionTextureSpacings().isEmpty()) {
                 json.add("connection_texture_spacings", writeIntMap(ec.connectionTextureSpacings()));
+            }
+            if (!ec.hiddenConnections().isEmpty()) {
+                json.add("hidden_connections", writeStringSet(ec.hiddenConnections()));
             }
             array.add(json);
         }
@@ -243,6 +250,33 @@ final class ChapterMetadataJsonCodec {
             json.addProperty(entry.getKey(), entry.getValue());
         }
         return json;
+    }
+
+    static Set<String> readStringSet(JsonElement element) {
+        Set<String> values = new HashSet<>();
+        if (element == null || !element.isJsonArray()) {
+            return values;
+        }
+        for (JsonElement child : element.getAsJsonArray()) {
+            String value = child.isJsonPrimitive() ? child.getAsString() : "";
+            if (value != null && !value.isBlank()) {
+                values.add(value);
+            }
+        }
+        return values;
+    }
+
+    static JsonArray writeStringSet(Set<String> values) {
+        JsonArray array = new JsonArray();
+        if (values == null) {
+            return array;
+        }
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                array.add(value);
+            }
+        }
+        return array;
     }
 
     static Map<String, String> readStringMap(JsonElement element) {

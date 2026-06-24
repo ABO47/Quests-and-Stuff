@@ -33,6 +33,10 @@ public final class EditorCanvasSessionActions {
         canvasEdits.removeCanvasExclusiveChoice(player, groupName, ecId);
     }
 
+    public void ecConnectionHidden(ServerPlayer player, String groupName, String sourceId, String targetId, boolean hidden) {
+        canvasEdits.ecConnectionHidden(player, groupName, sourceId, targetId, hidden);
+    }
+
     public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
         canvasEdits.putCanvasImage(player, groupName, image);
     }

@@ -53,7 +53,7 @@ class EditorCommandDispatcherTest {
         assertEquals(12, counts.get(EditorCommandFamily.QUEST));
         assertEquals(1, counts.get(EditorCommandFamily.DESCRIPTION));
         assertEquals(6, counts.get(EditorCommandFamily.OBJECTIVE));
-        assertEquals(8, counts.get(EditorCommandFamily.CANVAS_LAYER));
+        assertEquals(9, counts.get(EditorCommandFamily.CANVAS_LAYER));
     }
 
     private static EditorCommandFamily family(EditorCommandType type) {

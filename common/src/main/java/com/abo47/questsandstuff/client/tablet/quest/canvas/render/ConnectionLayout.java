@@ -100,13 +100,15 @@ final class ConnectionLayout {
                 int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
                 String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, ec.id(), connectedQuestId);
                 int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, ec.id(), connectedQuestId);
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, ec.id(), connectedQuestId);
+                int alpha = hidden ? 64 : 245;
                 lines.add(new ConnectionLine(
                         edgeId, ec.id(), connectedQuestId,
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
                         connectedQuest.centerX(), connectedQuest.centerY(),
-                        direct, false, color, false, 245, texture, textureSpacing
+                        direct, false, color, hidden, alpha, texture, textureSpacing
                 ));
             }
             for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
@@ -126,13 +128,15 @@ final class ConnectionLayout {
                 int color = ConnectionStyleResolver.ecConnectionColor(state, group, prerequisiteQuestId, ec.id());
                 String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, prerequisiteQuestId, ec.id());
                 int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, prerequisiteQuestId, ec.id());
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, prerequisiteQuestId, ec.id());
+                int alpha = hidden ? 64 : 245;
                 lines.add(new ConnectionLine(
                         edgeId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
                         ecCenterX, ecCenterY,
-                        direct, false, color, false, 245, texture, textureSpacing
+                        direct, false, color, hidden, alpha, texture, textureSpacing
                 ));
             }
         }
