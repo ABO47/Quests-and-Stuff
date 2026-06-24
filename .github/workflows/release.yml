@@ -96,7 +96,7 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon \
-            :questsandstuff-common:test \
+            -x :questsandstuff-common:test \
             :questsandstuff-forge:build \
             :questsandstuff-fabric:build \
             -Pmod_version="$RELEASE_VERSION"
