@@ -12,6 +12,8 @@ import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -37,6 +39,9 @@ public final class ChapterContextMenuRows {
         actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
         actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
         actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
+        if (chapterHasConnectionTexture(state, target)) {
+            actions.add(ContextActions.action(tr("ui.questsandstuff.context.remove_connection_texture"), "delete", ModColors.WARNING, () -> ChapterContextMenuActions.removeConnectionTexture(player, state, target, refresh)));
+        }
         actions.add(ContextActions.submenu(tr("ui.questsandstuff.context.change_completion_sound"), "audio-lines", ModColors.INTERACTIVE, List.of(
                 ContextActions.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
                 ContextActions.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ModColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
@@ -94,6 +99,20 @@ public final class ChapterContextMenuRows {
                 null,
                 ContextMenuAnimation.CHAPTER_KEY
         );
+    }
+
+    private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
+        for (String questId : ClientQuestCache.questIdsInGroup(target)) {
+            CompoundTag quest = ClientQuestCache.quest(questId);
+            if (quest != null && quest.contains("connection_textures", Tag.TAG_COMPOUND)) {
+                CompoundTag textures = quest.getCompound("connection_textures");
+                if (!textures.isEmpty()) return true;
+            }
+        }
+        for (var ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(target, List.of())) {
+            if (!ec.connectionTextures().isEmpty()) return true;
+        }
+        return false;
     }
 
     private static String tr(String key, Object... args) {

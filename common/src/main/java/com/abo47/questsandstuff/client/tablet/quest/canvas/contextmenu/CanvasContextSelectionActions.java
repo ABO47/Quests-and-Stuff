@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
@@ -124,6 +125,24 @@ final class CanvasContextSelectionActions {
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures group={} edges={}", selectedGroup, connectedEdges.size());
                     canvasViewport.refresh();
                 }));
+                if (selectionHasConnectionTexture(state, selectedGroup, connectedEdges)) {
+                    actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", ModColors.WARNING, () -> {
+                        ContextMenuState.clearDeleteConfirm(state);
+                        for (var edge : connectedEdges) {
+                            String prereq = edge.prerequisiteId();
+                            String quest = edge.questId();
+                            boolean isEc = ConnectionRenderer.isEcId(state, selectedGroup, prereq) || ConnectionRenderer.isEcId(state, selectedGroup, quest);
+                            if (isEc) {
+                                EditorCommandClient.runEcConnectionTextureAction(state, prereq, quest, "");
+                            } else {
+                                EditorCommandClient.runConnectionTextureAction(player, quest, prereq, "");
+                                ConnectionRenderer.setConnectionTexture(state, selectedGroup, prereq, quest, "");
+                            }
+                        }
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_textures group={} edges={}", selectedGroup, connectedEdges.size());
+                        canvasViewport.refresh();
+                    }));
+                }
             }
             addBatchElementActions(actions, canvasViewport, state, selectedGroup);
             if (selectionSupportsGizmo(state, selectedGroup)) {
@@ -300,6 +319,19 @@ final class CanvasContextSelectionActions {
             if (quest != null && !QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(quest.getString("completion_hud_background")))) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    private static boolean selectionHasConnectionTexture(TabletUiState state, String group, List<CanvasContextMenuController.EdgeRef> edges) {
+        for (var edge : edges) {
+            String prereq = edge.prerequisiteId();
+            String quest = edge.questId();
+            boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
+            String texture = isEc
+                    ? ConnectionRenderer.ecConnectionTexture(state, group, prereq, quest)
+                    : ConnectionRenderer.connectionTexture(state, group, prereq, quest);
+            if (!texture.isBlank()) return true;
         }
         return false;
     }

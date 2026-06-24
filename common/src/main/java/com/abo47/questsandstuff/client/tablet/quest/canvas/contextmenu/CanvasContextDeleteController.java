@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -95,21 +96,26 @@ public final class CanvasContextDeleteController {
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EDGE
                 && !state.contextMenu.contextEdgeSource.isBlank()
                 && !state.contextMenu.contextEdgeTarget.isBlank()) {
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.contextMenu.contextEdgeSource);
+            String source = state.contextMenu.contextEdgeSource;
+            String target = state.contextMenu.contextEdgeTarget;
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, source);
             if (ec != null) {
-                CanvasExclusiveChoice updated = ec.removeConnection(state.contextMenu.contextEdgeTarget);
+                CanvasExclusiveChoice updated = ec.removeConnection(target);
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                 CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connection delete ec={} quest={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+                ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connection delete ec={} quest={}", source, target);
             } else {
-                CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.contextMenu.contextEdgeTarget);
+                CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, target);
                 if (ecTarget != null) {
-                    CanvasExclusiveChoice updated = ecTarget.removePrerequisite(state.contextMenu.contextEdgeSource);
+                    CanvasExclusiveChoice updated = ecTarget.removePrerequisite(source);
                     CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                     CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec prerequisite delete quest={} ec={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec prerequisite delete quest={} ec={}", source, target);
                 } else {
-                    runPrerequisiteAction(player, state.contextMenu.contextEdgeTarget, state.contextMenu.contextEdgeSource, false);
+                    runPrerequisiteAction(player, target, source, false);
+                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
                 }
             }
             return;

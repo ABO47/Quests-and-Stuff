@@ -16,9 +16,11 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -172,12 +174,32 @@ public final class ContextMenuSystem {
     private static void addContextText(WidgetGroup menu, int rowY, int rowWidth, String text, int rightReserve) {
         int availableVisualW = Math.max(1, rowWidth - TEXT_X - rightReserve);
         int textureW = Math.max(1, Math.round(availableVisualW / TEXT_SCALE));
+        String fullText = text == null ? "" : text;
         int textureY = rowY + Math.max(0, (UiThemeTokens.CONTEXT_ROW_H - TEXT_LINE_H) / 2);
-        TextTextureWidget textWidget = TabletTextTextures.literal(TEXT_X, textureY, textureW, TEXT_LINE_H, text, ModColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        TextTextureWidget textWidget = TabletTextTextures.literal(TEXT_X, textureY, textureW, TEXT_LINE_H, fullText, ModColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        patchTextLines(textWidget.getTextTexture(), fullText, textureW);
         float xCompensation = -((1.0f - TEXT_SCALE) * textureW) / 2.0f;
         float yCompensation = (rowY + UiThemeTokens.CONTEXT_ROW_H / 2.0f) - (textureY + TEXT_LINE_H / 2.0f);
         textWidget.textureStyle(texture -> texture.scale(TEXT_SCALE).transform(xCompensation, yCompensation));
         menu.addWidget(textWidget);
+    }
+
+    private static void patchTextLines(TextTexture texture, String fullText, int maxWidth) {
+        Font font = Minecraft.getInstance().font;
+        if (font.width(fullText) <= maxWidth) {
+            return;
+        }
+        texture.supplier = null;
+        texture.text = fullText;
+        int dotWidth = font.width("..");
+        var truncated = font.substrByWidth(FormattedText.of(fullText), Math.max(0, maxWidth - dotWidth));
+        try {
+            java.lang.reflect.Field textsField = TextTexture.class.getDeclaredField("texts");
+            textsField.setAccessible(true);
+            textsField.set(texture, List.of(truncated.getString(), " "));
+        } catch (Exception e) {
+            // fallback: keep default splitLine word-wrap
+        }
     }
 
     private static void drawScaledText(GuiGraphics graphics, String text, int x, int rowY, int rowH, int color) {

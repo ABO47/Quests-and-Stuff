@@ -181,4 +181,8 @@ public final class ConnectionRenderer {
     public static int ecConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, sourceQuestId, targetQuestId);
     }
+
+    public static void removeEdgeTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        ConnectionStateMutations.removeEdgeTransientState(state, group, sourceQuestId, targetQuestId);
+    }
 }
