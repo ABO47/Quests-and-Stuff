@@ -110,6 +110,31 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
         return new CanvasExclusiveChoice(id, x, y, w, h, rotation, connectionQuestIds, next, background, connectionColors, connectionModes, connectionTextures, connectionTextureSpacings);
     }
 
+    public CanvasExclusiveChoice removeAllEdgeState(String questId) {
+        if (questId == null || questId.isBlank()) {
+            return this;
+        }
+        List<String> nextConnections = new ArrayList<>(connectionQuestIds);
+        nextConnections.remove(questId);
+        List<String> nextPrereqs = new ArrayList<>(prerequisiteQuestIds);
+        nextPrereqs.remove(questId);
+        Map<String, Integer> nextColors = connectionColors.containsKey(questId)
+                ? withEntryRemoved(connectionColors, questId) : connectionColors;
+        Map<String, String> nextModes = connectionModes.containsKey(questId)
+                ? withEntryRemoved(connectionModes, questId) : connectionModes;
+        Map<String, String> nextTextures = connectionTextures.containsKey(questId)
+                ? withEntryRemoved(connectionTextures, questId) : connectionTextures;
+        Map<String, Integer> nextSpacings = connectionTextureSpacings.containsKey(questId)
+                ? withEntryRemoved(connectionTextureSpacings, questId) : connectionTextureSpacings;
+        return new CanvasExclusiveChoice(id, x, y, w, h, rotation, nextConnections, nextPrereqs, background, nextColors, nextModes, nextTextures, nextSpacings);
+    }
+
+    private static <V> Map<String, V> withEntryRemoved(Map<String, V> map, String key) {
+        Map<String, V> next = new HashMap<>(map);
+        next.remove(key);
+        return next;
+    }
+
     public CanvasExclusiveChoice withBackground(String nextBackground) {
         return new CanvasExclusiveChoice(id, x, y, w, h, rotation, connectionQuestIds, prerequisiteQuestIds, nextBackground, connectionColors, connectionModes, connectionTextures, connectionTextureSpacings);
     }

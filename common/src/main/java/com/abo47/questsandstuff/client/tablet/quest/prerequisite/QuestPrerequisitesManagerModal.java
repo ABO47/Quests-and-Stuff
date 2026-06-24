@@ -244,13 +244,9 @@ public final class QuestPrerequisitesManagerModal {
         if (ec == null) {
             return;
         }
-        CanvasExclusiveChoice updated;
-        if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
-            updated = ec.removePrerequisite(row.sourceId());
-        } else {
-            updated = ec.removeConnection(row.targetId());
-        }
-        if (updated != null && !updated.equals(ec)) {
+        String removeId = row.kind() == PrerequisiteConnectionKind.INCOMING ? row.sourceId() : row.targetId();
+        CanvasExclusiveChoice updated = ec.removeAllEdgeState(removeId);
+        if (!updated.equals(ec)) {
             CanvasElementStore.putCanvasExclusiveChoice(state, group, updated, true);
         }
     }
