@@ -100,7 +100,7 @@ public final class CanvasContextDeleteController {
             String target = state.contextMenu.contextEdgeTarget;
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, source);
             if (ec != null) {
-                CanvasExclusiveChoice updated = ec.removeConnection(target);
+                CanvasExclusiveChoice updated = ec.removeAllEdgeState(target);
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                 CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
                 ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
@@ -108,7 +108,7 @@ public final class CanvasContextDeleteController {
             } else {
                 CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, target);
                 if (ecTarget != null) {
-                    CanvasExclusiveChoice updated = ecTarget.removePrerequisite(source);
+                    CanvasExclusiveChoice updated = ecTarget.removeAllEdgeState(source);
                     CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                     CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
                     ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
