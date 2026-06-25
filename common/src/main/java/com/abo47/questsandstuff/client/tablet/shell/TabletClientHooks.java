@@ -151,7 +151,11 @@ public final class TabletClientHooks {
             return;
         }
         if (ClientQuestCache.containsQuest(rememberedQuestDetailsQuestId)) {
-            QuestDetailsWindow.open(state, rememberedQuestDetailsQuestId);
+            if (state.questDetails.questDetailsOpen) {
+                QuestDetailsWindow.swapQuest(state, rememberedQuestDetailsQuestId);
+            } else {
+                QuestDetailsWindow.open(state, rememberedQuestDetailsQuestId);
+            }
         } else {
             rememberedQuestDetailsOpen = false;
             rememberedQuestDetailsQuestId = "";

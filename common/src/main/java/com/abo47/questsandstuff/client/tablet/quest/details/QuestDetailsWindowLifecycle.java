@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessio
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -41,6 +42,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsClosing = false;
         state.questDetails.questDetailsOpen = true;
         state.questDetails.questDetailsQuestId = trimmedQuestId;
+        ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
@@ -55,6 +57,26 @@ final class QuestDetailsWindowLifecycle {
                 state.questDetails.questDetailsAnimationSourceY,
                 state.questDetails.questDetailsAnimationSourceW,
                 state.questDetails.questDetailsAnimationSourceH);
+    }
+
+    static void swapQuest(TabletUiState state, String questId) {
+        if (state == null || questId == null || questId.isBlank()) {
+            return;
+        }
+        String trimmedQuestId = questId.trim();
+        if (!canOpenQuestDetails(state, trimmedQuestId)) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details swap blocked preview_hidden quest={}", trimmedQuestId);
+            return;
+        }
+        state.questDetails.questDetailsQuestId = trimmedQuestId;
+        ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
+        resetOpenTransientState(state);
+        EntityMotionEditor.close(state);
+        CompoundTag quest = ClientQuestCache.quest(state.questDetails.questDetailsQuestId);
+        state.questDetails.pendingQuestTitleChangeId = "";
+        state.questDetails.questTitleDraft = quest == null ? "" : quest.getString("title");
+        state.questDetails.questDetailsTitleFocused = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details swap quest={}", state.questDetails.questDetailsQuestId);
     }
 
     static void close(TabletUiState state) {
@@ -148,7 +170,7 @@ final class QuestDetailsWindowLifecycle {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details navigate blocked from={} direction={}", questId, direction);
             return;
         }
-        open(state, ids.get(next));
+        swapQuest(state, ids.get(next));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details navigate from={} to={} direction={}", questId, ids.get(next), direction);
     }
 
