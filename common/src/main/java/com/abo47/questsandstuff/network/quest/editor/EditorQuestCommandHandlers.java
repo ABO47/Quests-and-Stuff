@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import net.minecraft.nbt.CompoundTag;
@@ -30,98 +30,98 @@ final class EditorQuestCommandHandlers {
     private static void questIcon(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestIcon(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ICON)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ICON)
         );
     }
 
     private static void questRepeatable(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestRepeatable(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.ENABLED)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.ENABLED)
         );
     }
 
     private static void questHiddenMode(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestHiddenMode(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.MODE)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.MODE)
         );
     }
 
     private static void questVisualHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestVisualHidden(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.HIDDEN)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.HIDDEN)
         );
     }
 
     private static void completionSound(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSound(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.SOUND)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.SOUND)
         );
     }
 
     private static void completionSoundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSound(
                 player,
-                EditorCommandPayloads.questIds(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.SOUND)
+                EditorCommandPayloadReader.questIds(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.SOUND)
         );
     }
 
     private static void completionSoundVolume(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSoundVolume(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.VOLUME)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.VOLUME)
         );
     }
 
     private static void completionSoundVolumeMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSoundVolume(
                 player,
-                EditorCommandPayloads.questIds(payload),
-                EditorCommandPayloads.integer(payload, EditorCommandPayloadKeys.VOLUME)
+                EditorCommandPayloadReader.questIds(payload),
+                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.VOLUME)
         );
     }
 
     private static void completionHudBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionHudBackground(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND)
         );
     }
 
     private static void completionHudBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionHudBackground(
                 player,
-                EditorCommandPayloads.questIds(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND)
+                EditorCommandPayloadReader.questIds(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND)
         );
     }
 
     private static void questBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestBackground(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND),
-                EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
+                EditorCommandPayloadReader.quest(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND),
+                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
         );
     }
 
     private static void questBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestBackground(
                 player,
-                EditorCommandPayloads.questIds(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.BACKGROUND),
-                EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
+                EditorCommandPayloadReader.questIds(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND),
+                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
         );
     }
 }

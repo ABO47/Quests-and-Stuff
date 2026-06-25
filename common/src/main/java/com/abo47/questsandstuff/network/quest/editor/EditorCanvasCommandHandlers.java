@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import net.minecraft.nbt.CompoundTag;
@@ -23,9 +23,9 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void moveMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloadReader.group(payload);
         Map<String, int[]> moves = new HashMap<>();
-        ListTag moveTags = EditorCommandPayloads.moves(payload);
+        ListTag moveTags = EditorCommandPayloadReader.moves(payload);
         if (EditorCommandPayloadLimits.exceedsLimit(moveTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
@@ -41,9 +41,9 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void scaleMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloadReader.group(payload);
         Map<String, Float> scales = new HashMap<>();
-        ListTag scaleTags = EditorCommandPayloads.scales(payload);
+        ListTag scaleTags = EditorCommandPayloadReader.scales(payload);
         if (EditorCommandPayloadLimits.exceedsLimit(scaleTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
