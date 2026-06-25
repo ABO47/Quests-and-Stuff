@@ -24,10 +24,6 @@ public final class ConnectionRenderer {
         return ConnectionStyleResolver.connectionColor(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        return ConnectionStyleResolver.connectionColor(state, group, sourceQuestId, targetQuestId, target);
-    }
-
     public static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
         ConnectionStateMutations.setConnectionColor(state, group, sourceQuestId, targetQuestId, color);
     }
@@ -62,10 +58,6 @@ public final class ConnectionRenderer {
 
     public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         return ConnectionStyleResolver.metadata(state, group, sourceQuestId, targetQuestId);
-    }
-
-    public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        return ConnectionStyleResolver.metadata(state, group, sourceQuestId, targetQuestId, target);
     }
 
     public static void renderPrerequisiteConnections(
