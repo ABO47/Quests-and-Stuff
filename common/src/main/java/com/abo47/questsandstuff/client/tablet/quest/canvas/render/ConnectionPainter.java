@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
@@ -31,6 +32,16 @@ final class ConnectionPainter {
     private static final ResourceLocation CONNECTION_CHEVRON = ResourceLocation.tryBuild("questsandstuff", "textures/gui/chevron.png");
     private static final float CHEVRON_U0 = 50.0f / 256.0f;
     private static final float CHEVRON_U1 = 206.0f / 256.0f;
+    private static final int CHEVRON_BASE_W = 5;
+    private static final int CHEVRON_BASE_H = 9;
+    private static final float DARKEN_FACTOR = 0.52f;
+    private static final float SCALE_CLAMP_MIN = 0.25f;
+    private static final float SCALE_CLAMP_MAX = 2.0f;
+    private static final int PENDING_FILL_ALPHA = 72;
+    private static final int PENDING_OUTLINE_ALPHA = 220;
+    private static final float ANIMATION_ALPHA_BASE = 0.58f;
+    private static final float ANIMATION_ALPHA_PROGRESS = 0.42f;
+    private static final int DEFAULT_SPACING = 5;
 
     private ConnectionPainter() {
     }
@@ -77,33 +88,31 @@ final class ConnectionPainter {
     }
 
     static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
-        int gW = 5;
-        int gH = 9;
-        drawTexturedChevrons(graphics, path, color, alpha, null, 0, gW, gH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        drawTexturedChevrons(graphics, path, color, alpha, null, 0, CHEVRON_BASE_W, CHEVRON_BASE_H, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
-        float safeScale = Math.max(0.25f, Math.min(2.0f, scale));
-        int gW = Math.max(1, (int) Math.round(5 * safeScale));
-        int gH = Math.max(1, (int) Math.round(9 * safeScale));
+        float safeScale = clampScale(scale);
+        int gW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
+        int gH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         drawTexturedChevrons(graphics, path, color, alpha, 1.0f, safeScale, null, gW, gW, gH, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, String textureStr, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
         ResourceLocation tex = resolveTexture(textureStr);
-        float safeScale = Math.max(0.25f, Math.min(2.0f, scale));
-        int glyphW, glyphH;
+        float safeScale = clampScale(scale);
         int[] dims = tex != null ? textureDims(textureStr) : null;
+        int glyphW, glyphH;
         if (dims != null && dims[0] > 0 && dims[1] > 0) {
-            double baseArea = 5.0 * 9.0;
+            double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
             double texAspect = (double) dims[0] / (double) dims[1];
             double aW = Math.sqrt(baseArea * texAspect);
             double aH = baseArea / aW;
-            glyphW = Math.max(1, (int) Math.round(aW * safeScale));
-            glyphH = Math.max(1, (int) Math.round(aH * safeScale));
+            glyphW = scaledGlyphDim((int) Math.round(aW), safeScale);
+            glyphH = scaledGlyphDim((int) Math.round(aH), safeScale);
         } else {
-            glyphW = Math.max(1, (int) Math.round(5 * safeScale));
-            glyphH = Math.max(1, (int) Math.round(9 * safeScale));
+            glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
+            glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
         drawTexturedChevrons(graphics, path, color, alpha, 1.0f, safeScale, tex, glyphW, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
@@ -132,8 +141,9 @@ final class ConnectionPainter {
         int endY = originY + line.endY() + targetOffsetY;
 
         if (line.pending()) {
-            graphics.fill(startX - 5, startY - 5, startX + 6, startY + 6, withAlpha(ModColors.SUCCESS, 72));
-            graphics.renderOutline(startX - 5, startY - 5, 11, 11, withAlpha(ModColors.SUCCESS, 220));
+            int halfSize = CHEVRON_BASE_W;
+            graphics.fill(startX - halfSize, startY - halfSize, startX + halfSize + 1, startY + halfSize + 1, withAlpha(ModColors.SUCCESS, PENDING_FILL_ALPHA));
+            graphics.renderOutline(startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ModColors.SUCCESS, PENDING_OUTLINE_ALPHA));
             return;
         }
 
@@ -151,34 +161,34 @@ final class ConnectionPainter {
         if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
             return;
         }
-        int alpha = line.hidden() && hoveringEndpoint ? 245 : line.alpha();
+        int alpha = line.hidden() && hoveringEndpoint ? ConnectionRenderStyle.VISIBLE_ALPHA : line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
         String rawTextureStr = line.texture();
         ResourceLocation texture = resolveTexture(rawTextureStr);
         int spacing = line.textureSpacing();
         if (spacing <= 0 && texture != null) {
             int tw = textureWidth(rawTextureStr);
-            if (tw > 0) spacing = Math.max(tw, 5);
+            if (tw > 0) spacing = Math.max(tw, DEFAULT_SPACING);
         }
         spacing = Math.max(0, spacing);
         float zoom = state.canvas.canvasZoom;
-        float safeScale = Math.max(0.25f, Math.min(2.0f, zoom));
-        double baseArea = 5.0 * 9.0;
-        int glyphW, glyphH;
+        float safeScale = clampScale(zoom);
+        double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
         int[] dims = texture != null ? textureDims(rawTextureStr) : null;
+        int glyphW, glyphH;
         if (dims != null && dims[0] > 0 && dims[1] > 0) {
             double texAspect = (double) dims[0] / (double) dims[1];
             double aW = Math.sqrt(baseArea * texAspect);
             double aH = baseArea / aW;
-            glyphW = Math.max(1, (int) Math.round(aW * safeScale));
-            glyphH = Math.max(1, (int) Math.round(aH * safeScale));
+            glyphW = scaledGlyphDim((int) Math.round(aW), safeScale);
+            glyphH = scaledGlyphDim((int) Math.round(aH), safeScale);
         } else {
-            glyphW = Math.max(1, (int) Math.round(5 * safeScale));
-            glyphH = Math.max(1, (int) Math.round(9 * safeScale));
+            glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
+            glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.edgeId(), now);
         if (animation.running()) {
-            int animatedAlpha = Math.min(255, Math.round(alpha * (0.58f + 0.42f * animation.progress())));
+            int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
             return;
         }
@@ -231,8 +241,8 @@ final class ConnectionPainter {
         return state.canvas.canvasContentX + state.canvas.canvasOffsetX + snapped;
     }
 
-    private static final java.util.Map<String, Integer> TEX_WIDTH_CACHE = new java.util.HashMap<>();
-    private static final java.util.Map<String, int[]> TEX_DIM_CACHE = new java.util.HashMap<>();
+    private static final java.util.Map<String, Integer> TEX_WIDTH_CACHE = new ConcurrentHashMap<>();
+    private static final java.util.Map<String, int[]> TEX_DIM_CACHE = new ConcurrentHashMap<>();
 
     private static int textureWidth(String textureStr) {
         if (textureStr == null || textureStr.isBlank()) return -1;
@@ -362,7 +372,7 @@ final class ConnectionPainter {
             int clipMaxX,
             int clipMaxY
     ) {
-        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : 5.0);
+        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : (double) DEFAULT_SPACING);
         boolean customTex = texture != null;
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
@@ -422,7 +432,7 @@ final class ConnectionPainter {
     ) {
         int safeAlpha = Math.max(0, Math.min(255, alpha));
         int lightColor = withAlpha(color, safeAlpha);
-        int darkColor = withAlpha(darkenColor(color, 0.52f), safeAlpha);
+        int darkColor = withAlpha(darkenColor(color, DARKEN_FACTOR), safeAlpha);
         int pad = Math.max(glyphW, glyphH) + 2;
         double startDistance = glyphW / 2.0;
         double walked = 0.0D;
@@ -514,6 +524,14 @@ final class ConnectionPainter {
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter);
+    }
+
+    private static float clampScale(float scale) {
+        return Math.max(SCALE_CLAMP_MIN, Math.min(SCALE_CLAMP_MAX, scale));
+    }
+
+    private static int scaledGlyphDim(int baseDim, float scale) {
+        return Math.max(1, (int) Math.round(baseDim * scale));
     }
 
     private static int darkenColor(int color, float factor) {

@@ -14,8 +14,8 @@ record ConnectionRenderStyle(
         String texture,
         int textureSpacing
 ) {
-    private static final int VISIBLE_ALPHA = 245;
-    private static final int HIDDEN_ALPHA = 64;
+    static final int VISIBLE_ALPHA = 245;
+    static final int HIDDEN_ALPHA = 64;
 
     static ConnectionRenderStyle fromMetadata(QuestConnectionMetadata metadata) {
         return new ConnectionRenderStyle(

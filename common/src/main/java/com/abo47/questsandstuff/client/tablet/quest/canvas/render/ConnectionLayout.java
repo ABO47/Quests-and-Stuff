@@ -101,7 +101,7 @@ final class ConnectionLayout {
                 String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, ec.id(), connectedQuestId);
                 int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, ec.id(), connectedQuestId);
                 boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, ec.id(), connectedQuestId);
-                int alpha = hidden ? 64 : 245;
+                int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
                         edgeId, ec.id(), connectedQuestId,
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
@@ -129,7 +129,7 @@ final class ConnectionLayout {
                 String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, prerequisiteQuestId, ec.id());
                 int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, prerequisiteQuestId, ec.id());
                 boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, prerequisiteQuestId, ec.id());
-                int alpha = hidden ? 64 : 245;
+                int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
                         edgeId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
