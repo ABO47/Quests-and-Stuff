@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -63,7 +63,7 @@ final class CanvasContextQuestActions {
             })));
         }
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_CHANGE_TITLE), "rename", ModColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
-            EditorCommandClient.beginQuestTitleChange(state, state.contextMenu.contextQuestId);
+            EditorQuestCommandClient.beginQuestTitleChange(state, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextMenu.contextQuestId);
         })));
         actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ModColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
@@ -98,7 +98,7 @@ final class CanvasContextQuestActions {
                 canvasViewport::refresh
         );
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, withCleanup(canvasViewport, state, () -> {
-            EditorCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
+            EditorQuestCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextMenu.contextQuestId);
         })));
         addQuestCopyAndDeleteActions(actions, canvasViewport, state, player);
@@ -116,7 +116,7 @@ final class CanvasContextQuestActions {
         })));
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_BACKGROUND), "delete", ModColors.WARNING, withCleanup(canvasViewport, state, () -> {
-                EditorCommandClient.setQuestBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                EditorQuestCommandClient.setQuestBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextMenu.contextQuestId);
             })));
         }
@@ -150,7 +150,7 @@ final class CanvasContextQuestActions {
         })));
         if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
             actions.add(new ContextAction(CanvasContextMenuController.tr(QuestVocabulary.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), "delete", ModColors.WARNING, withCleanup(canvasViewport, state, () -> {
-                EditorCommandClient.setQuestCompletionHudBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                EditorQuestCommandClient.setQuestCompletionHudBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextMenu.contextQuestId);
             })));
         }
@@ -203,7 +203,7 @@ final class CanvasContextQuestActions {
                 repeatable ? "repeat-off" : "repeat",
                 repeatable ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 withCleanup(canvasViewport, state, () -> {
-                    EditorCommandClient.setQuestRepeatable(player, state.contextMenu.contextQuestId, !repeatable);
+                    EditorQuestCommandClient.setQuestRepeatable(player, state.contextMenu.contextQuestId, !repeatable);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextMenu.contextQuestId, !repeatable);
                 })));
     }
@@ -218,7 +218,7 @@ final class CanvasContextQuestActions {
                 lockUntilUnlocked ? "unlock_quest" : "lock_quest",
                 lockUntilUnlocked ? ModColors.SUCCESS : ModColors.INTERACTIVE,
                 withCleanup(canvasViewport, state, () -> {
-                    EditorCommandClient.setQuestHiddenMode(player, state.contextMenu.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
+                    EditorQuestCommandClient.setQuestHiddenMode(player, state.contextMenu.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !lockUntilUnlocked);
                 })));
     }
@@ -230,7 +230,7 @@ final class CanvasContextQuestActions {
                 hidden ? "eye" : "eye-off",
                 hidden ? ModColors.SUCCESS : ModColors.WARNING,
                 withCleanup(canvasViewport, state, () -> {
-                    EditorCommandClient.setQuestVisualHidden(player, state.contextMenu.contextQuestId, !hidden);
+                    EditorQuestCommandClient.setQuestVisualHidden(player, state.contextMenu.contextQuestId, !hidden);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !hidden);
                 })));
     }

@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
@@ -126,7 +126,7 @@ final class QuestDetailsWindowActions {
             return true;
         }
         if (!questId.isBlank()) {
-            EditorCommandClient.beginQuestTitleChange(state, questId);
+            EditorQuestCommandClient.beginQuestTitleChange(state, questId);
             state.questDetails.questDetailsTitleFocused = true;
             return true;
         }

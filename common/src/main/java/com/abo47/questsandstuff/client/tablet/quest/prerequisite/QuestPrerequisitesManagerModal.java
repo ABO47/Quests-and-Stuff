@@ -17,7 +17,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import net.minecraft.client.resources.language.I18n;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -30,7 +30,6 @@ import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -173,7 +172,7 @@ public final class QuestPrerequisitesManagerModal {
             actions.add(new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", ModColors.INTERACTIVE, () -> {
-                EditorCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
+                EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_connection_mode source={} target={}", sourceId, targetId);
                 refresh.run();
@@ -183,7 +182,7 @@ public final class QuestPrerequisitesManagerModal {
             actions.add(new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", ModColors.INTERACTIVE, () -> {
-                EditorCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
+                EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_ec_connection_mode source={} target={}", sourceId, targetId);
                 refresh.run();
@@ -231,7 +230,7 @@ public final class QuestPrerequisitesManagerModal {
         if (state.modal.prerequisitesManagerEcMode) {
             removeEcConnection(player, state, row);
         } else {
-            EditorCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
+            EditorCanvasCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
         }
         ConnectionRenderer.removeEdgeTransientState(state, group, row.sourceId(), row.targetId());
         PrerequisiteConnectionActions.clearAfterRemove(state, row);

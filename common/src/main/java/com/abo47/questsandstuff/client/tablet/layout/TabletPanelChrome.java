@@ -127,18 +127,6 @@ public final class TabletPanelChrome {
         graphics.renderOutline(panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
     }
 
-    private static void drawRootLighting(GuiGraphics graphics, int x, int y, int w, int h) {
-        if (w <= 1 || h <= 1) {
-            return;
-        }
-        int highlight = withAlpha(ModColors.TEXT_PRIMARY, 18);
-        int shade = withAlpha(ModColors.SURFACE_BASE, 86);
-        graphics.fill(x, y, x + w, y + 1, highlight);
-        graphics.fill(x, y + 1, x + 1, y + h, withAlpha(ModColors.TEXT_PRIMARY, 8));
-        graphics.fill(x, y + h - 1, x + w, y + h, shade);
-        graphics.fill(x + w - 1, y + 1, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 62));
-    }
-
     private static int gridLineColor(int gridOpacityPercent, int gridColor) {
         int alphaPercent = Math.max(0, Math.min(100, gridOpacityPercent));
         int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));

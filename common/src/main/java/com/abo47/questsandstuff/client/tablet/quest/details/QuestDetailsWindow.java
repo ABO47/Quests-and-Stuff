@@ -26,6 +26,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLifecycle.openAtSource(state, questId, sourceX, sourceY, sourceW, sourceH);
     }
 
+    public static void swapQuest(TabletUiState state, String questId) {
+        QuestDetailsWindowLifecycle.swapQuest(state, questId);
+    }
+
     public static void rebuild(WidgetGroup layer, TabletUiState state, Player player, Runnable refresh) {
         QuestDetailsWindowLayout.rebuild(layer, state, player, refresh);
     }

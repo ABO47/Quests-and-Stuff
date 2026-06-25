@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -9,9 +10,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 final class ConnectionStateMutations {
     private ConnectionStateMutations() {
+    }
+
+    private static void modifyEcConnection(TabletUiState state, String group, String ecId, String questId, Function<CanvasExclusiveChoice, CanvasExclusiveChoice> modifier) {
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
+        if (ec == null) {
+            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
+            if (other == null) return;
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, modifier.apply(other));
+            return;
+        }
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, modifier.apply(ec));
     }
 
     static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
@@ -34,14 +47,14 @@ final class ConnectionStateMutations {
     }
 
     static void toggleConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
+        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
         setConnectionHidden(state, group, sourceQuestId, targetQuestId, !hidden);
     }
 
     static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
         Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
-        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId)) {
+        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId))) {
             groupGrid.add(key);
         } else {
             groupGrid.remove(key);
@@ -52,103 +65,24 @@ final class ConnectionStateMutations {
     }
 
     static void setEcConnectionColor(TabletUiState state, String group, String ecId, String questId, int color) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionColor(ecId, color));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionColor(questId, color));
-    }
-
-    static void removeEcConnectionColor(TabletUiState state, String group, String ecId, String questId) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionColor(ecId));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionColor(questId));
+        modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionColor(questId, color));
     }
 
     static void setEcConnectionMode(TabletUiState state, String group, String ecId, String questId, boolean direct) {
         String mode = direct ? "direct" : "grid";
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionMode(ecId, mode));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionMode(questId, mode));
-    }
-
-    static void removeEcConnectionMode(TabletUiState state, String group, String ecId, String questId) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionMode(ecId));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionMode(questId));
+        modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionMode(questId, mode));
     }
 
     static void setEcConnectionTexture(TabletUiState state, String group, String ecId, String questId, String texture) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionTexture(ecId, texture));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionTexture(questId, texture));
-    }
-
-    static void removeEcConnectionTexture(TabletUiState state, String group, String ecId, String questId) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionTexture(ecId));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionTexture(questId));
+        modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionTexture(questId, texture));
     }
 
     static void setEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId, int spacing) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withConnectionTextureSpacing(ecId, spacing));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withConnectionTextureSpacing(questId, spacing));
-    }
-
-    static void removeEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withoutConnectionTextureSpacing(ecId));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withoutConnectionTextureSpacing(questId));
+        modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionTextureSpacing(questId, spacing));
     }
 
     static void setEcConnectionHidden(TabletUiState state, String group, String ecId, String questId, boolean hidden) {
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
-        if (ec == null) {
-            CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
-            if (other == null) return;
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, other.withHiddenConnection(ecId, hidden));
-            return;
-        }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, ec.withHiddenConnection(questId, hidden));
+        modifyEcConnection(state, group, ecId, questId, ec -> ec.withHiddenConnection(questId, hidden));
     }
 
     static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
@@ -173,30 +107,24 @@ final class ConnectionStateMutations {
 
     static void removeEdgeTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Map<String, String> textures = state.canvas.connectionTexturesByGroup.get(group);
-        if (textures != null) {
-            textures.remove(key);
-            if (textures.isEmpty()) state.canvas.connectionTexturesByGroup.remove(group);
-        }
-        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.get(group);
-        if (spacings != null) {
-            spacings.remove(key);
-            if (spacings.isEmpty()) state.canvas.connectionTextureSpacingsByGroup.remove(group);
-        }
-        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.get(group);
-        if (colors != null) {
-            colors.remove(key);
-            if (colors.isEmpty()) state.canvas.connectionColorsByGroup.remove(group);
-        }
-        Set<String> grid = state.canvas.gridConnectionsByGroup.get(group);
-        if (grid != null) {
-            grid.remove(key);
-            if (grid.isEmpty()) state.canvas.gridConnectionsByGroup.remove(group);
-        }
-        Set<String> hidden = state.canvas.hiddenConnectionsByGroup.get(group);
-        if (hidden != null) {
-            hidden.remove(key);
-            if (hidden.isEmpty()) state.canvas.hiddenConnectionsByGroup.remove(group);
-        }
+        removeFromMap(state.canvas.connectionTexturesByGroup, group, key);
+        removeFromMap(state.canvas.connectionTextureSpacingsByGroup, group, key);
+        removeFromMap(state.canvas.connectionColorsByGroup, group, key);
+        removeFromSet(state.canvas.gridConnectionsByGroup, group, key);
+        removeFromSet(state.canvas.hiddenConnectionsByGroup, group, key);
+    }
+
+    private static <V> void removeFromMap(Map<String, Map<String, V>> groupMap, String group, String key) {
+        Map<String, V> map = groupMap.get(group);
+        if (map == null) return;
+        map.remove(key);
+        if (map.isEmpty()) groupMap.remove(group);
+    }
+
+    private static void removeFromSet(Map<String, Set<String>> groupMap, String group, String key) {
+        Set<String> set = groupMap.get(group);
+        if (set == null) return;
+        set.remove(key);
+        if (set.isEmpty()) groupMap.remove(group);
     }
 }

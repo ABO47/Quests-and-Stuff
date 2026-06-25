@@ -21,7 +21,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

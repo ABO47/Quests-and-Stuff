@@ -5,7 +5,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletShellComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -155,35 +157,35 @@ public final class TabletUiFactory {
     }
 
     public static String uniqueGroupName(String preferred, String excludeCurrent) {
-        return EditorCommandClient.uniqueGroupName(preferred, excludeCurrent);
+        return EditorChapterCommandClient.uniqueGroupName(preferred, excludeCurrent);
     }
 
     public static String sanitizeGroupName(String value) {
-        return EditorCommandClient.sanitizeGroupName(value);
+        return EditorChapterCommandClient.sanitizeGroupName(value);
     }
 
     public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
-        EditorCommandClient.runGroupAction(player, state, action, group, value, offset);
+        EditorChapterCommandClient.runGroupAction(player, state, action, group, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
-        EditorCommandClient.runCanvasMoveAction(player, state, positions);
+        EditorCanvasCommandClient.runCanvasMoveAction(player, state, positions);
     }
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
-        EditorCommandClient.runPrerequisiteAction(player, questId, prerequisiteId, add);
+        EditorCanvasCommandClient.runPrerequisiteAction(player, questId, prerequisiteId, add);
     }
 
     public static void runQuestIconAction(Player player, String questId, String icon) {
-        EditorCommandClient.runQuestIconAction(player, questId, icon);
+        EditorQuestCommandClient.runQuestIconAction(player, questId, icon);
     }
 
     public static void runRemoveQuestAction(Player player, String questId) {
-        EditorCommandClient.runRemoveQuestAction(player, questId);
+        EditorQuestCommandClient.runRemoveQuestAction(player, questId);
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        EditorCommandClient.addQuestAt(player, state, logicalX, logicalY, title);
+        EditorQuestCommandClient.addQuestAt(player, state, logicalX, logicalY, title);
     }
 
     public static int snapToGrid(TabletUiState state, int value) {

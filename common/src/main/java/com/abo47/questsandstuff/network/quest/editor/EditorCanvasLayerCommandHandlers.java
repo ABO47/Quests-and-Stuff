@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -31,15 +31,15 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasExclusiveChoicePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasExclusiveChoice(
                 player,
-                EditorCommandPayloads.group(payload),
-                CanvasLayerNbt.exclusiveChoiceFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.EXCLUSIVE_CHOICE))
+                EditorCommandPayloadReader.group(payload),
+                CanvasLayerNbt.exclusiveChoiceFromTag(EditorCommandPayloadReader.compound(payload, EditorCommandPayloadKeys.EXCLUSIVE_CHOICE))
         );
     }
 
     private static void canvasExclusiveChoicesPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasExclusiveChoices(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloadReader.group(payload),
                 CanvasLayerNbt.exclusiveChoicesFromListTag(payload.getList(EditorCommandPayloadKeys.EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND))
         );
     }
@@ -47,16 +47,16 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasExclusiveChoiceRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasExclusiveChoice(
                 player,
-                EditorCommandPayloads.group(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID)
+                EditorCommandPayloadReader.group(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ID)
         );
     }
 
     private static void ecConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
-        String sourceId = EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID);
-        String targetId = EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.PREREQUISITE);
-        boolean hidden = EditorCommandPayloads.bool(payload, EditorCommandPayloadKeys.HIDDEN);
+        String group = EditorCommandPayloadReader.group(payload);
+        String sourceId = EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ID);
+        String targetId = EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.PREREQUISITE);
+        boolean hidden = EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.HIDDEN);
         if (sourceId.isBlank() || targetId.isBlank()) {
             return;
         }
@@ -66,40 +66,40 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasImage(
                 player,
-                EditorCommandPayloads.group(payload),
-                CanvasLayerNbt.imageFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.IMAGE))
+                EditorCommandPayloadReader.group(payload),
+                CanvasLayerNbt.imageFromTag(EditorCommandPayloadReader.compound(payload, EditorCommandPayloadKeys.IMAGE))
         );
     }
 
     private static void canvasImageRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasImage(
                 player,
-                EditorCommandPayloads.group(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID)
+                EditorCommandPayloadReader.group(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ID)
         );
     }
 
     private static void canvasTextPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        CompoundTag text = EditorCommandPayloads.compound(payload, EditorCommandPayloadKeys.TEXT);
+        CompoundTag text = EditorCommandPayloadReader.compound(payload, EditorCommandPayloadKeys.TEXT);
         if (EditorCommandPayloadLimits.exceedsLimit(text.getList(EditorCommandPayloadKeys.SPANS, Tag.TAG_COMPOUND), EditorCommandPayloadLimits.MAX_TEXT_SPANS)) {
             return;
         }
-        editor.putCanvasText(player, EditorCommandPayloads.group(payload), CanvasLayerNbt.textFromTag(text));
+        editor.putCanvasText(player, EditorCommandPayloadReader.group(payload), CanvasLayerNbt.textFromTag(text));
     }
 
     private static void canvasTextRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasText(
                 player,
-                EditorCommandPayloads.group(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloadKeys.ID)
+                EditorCommandPayloadReader.group(payload),
+                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ID)
         );
     }
 
     private static void canvasLayerOrder(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        ListTag order = EditorCommandPayloads.order(payload);
+        ListTag order = EditorCommandPayloadReader.order(payload);
         if (EditorCommandPayloadLimits.exceedsLimit(order, EditorCommandPayloadLimits.MAX_LAYER_ORDER_ENTRIES)) {
             return;
         }
-        editor.setCanvasLayerOrder(player, EditorCommandPayloads.group(payload), EditorCommandPayloads.nonBlankStringsFrom(order));
+        editor.setCanvasLayerOrder(player, EditorCommandPayloadReader.group(payload), EditorCommandPayloadReader.nonBlankStringsFrom(order));
     }
 }

@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
@@ -187,11 +187,11 @@ final class QuestObjectiveInlineFields {
         JsonObject next = entry.json().deepCopy();
         next.addProperty("amount", parsed);
         if (task) {
-            EditorCommandClient.putQuestTaskJson(player, questId, next.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, next.toString());
         } else if (QuestObjectiveSelectableRewards.commitDisplayAmount(player, questId, entry.id(), parsed)) {
             return;
         } else {
-            EditorCommandClient.putQuestRewardJson(player, questId, next.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, next.toString());
         }
     }
 

@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlay
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -76,10 +76,10 @@ public final class ColorPickerApplyActions {
             boolean isEc = ConnectionRenderer.isEcId(state, group, sourceId)
                     || ConnectionRenderer.isEcId(state, group, targetId);
             if (isEc) {
-                EditorCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
+                EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
             } else {
                 ConnectionRenderer.setConnectionColor(state, group, sourceId, targetId, color);
-                EditorCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
+                EditorCanvasCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
             }
             state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", group, sourceId, targetId, color);
@@ -98,10 +98,10 @@ public final class ColorPickerApplyActions {
                     String ecId = ConnectionRenderer.isEcId(state, group, prereq) ? prereq : quest;
                     String questId = ConnectionRenderer.isEcId(state, group, prereq) ? quest : prereq;
                     ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color);
-                    EditorCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
+                    EditorCanvasCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
                 } else {
                     ConnectionRenderer.setConnectionColor(state, group, prereq, quest, color);
-                    EditorCommandClient.runConnectionColorAction(player, quest, prereq, color);
+                    EditorCanvasCommandClient.runConnectionColorAction(player, quest, prereq, color);
                 }
                 applied++;
             }

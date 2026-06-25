@@ -3,7 +3,6 @@ package com.abo47.questsandstuff.quest.team;
 import com.abo47.questsandstuff.quest.model.team.TeamMember;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 

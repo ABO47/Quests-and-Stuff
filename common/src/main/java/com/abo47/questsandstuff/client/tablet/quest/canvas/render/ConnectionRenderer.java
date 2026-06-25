@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -21,11 +22,7 @@ public final class ConnectionRenderer {
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.connectionColor(state, group, sourceQuestId, targetQuestId);
-    }
-
-    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        return ConnectionStyleResolver.connectionColor(state, group, sourceQuestId, targetQuestId, target);
+        return ConnectionStyleResolver.connectionColor(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
 
     public static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
@@ -33,7 +30,7 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
+        return ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -49,7 +46,7 @@ public final class ConnectionRenderer {
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId);
+        return ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -61,11 +58,7 @@ public final class ConnectionRenderer {
     }
 
     public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.metadata(state, group, sourceQuestId, targetQuestId);
-    }
-
-    public static QuestConnectionMetadata connectionMetadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        return ConnectionStyleResolver.metadata(state, group, sourceQuestId, targetQuestId, target);
+        return ConnectionStyleResolver.metadata(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
 
     public static void renderPrerequisiteConnections(
@@ -175,7 +168,7 @@ public final class ConnectionRenderer {
     }
 
     public static String connectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.connectionTexture(state, group, sourceQuestId, targetQuestId);
+        return ConnectionStyleResolver.connectionTexture(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
     }
 
     public static String ecConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {

@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -195,7 +195,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             }
             selectChapterDirect(hit);
             state.chapterPanel.chapterMenuOpen = false;
-            if (EditorCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
+            if (EditorChapterCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
                 state.chapterPanel.chapterDragPending = true;
                 state.chapterPanel.chapterDragStartX = (int) Math.round(mouseX);
                 state.chapterPanel.chapterDragStartY = (int) Math.round(mouseY);
@@ -216,7 +216,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private boolean openIconPickerAt(int localX, int localY) {
-        if (!EditorCommandClient.canManageGroups(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
+        if (!EditorChapterCommandClient.canManageGroups(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
             return false;
         }
         String hit = chapterAtY(localY, state);

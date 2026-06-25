@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
@@ -41,9 +41,9 @@ final class QuestObjectiveRenameActions {
             json.addProperty("title", normalizedTitle);
         }
         if (task) {
-            EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
         } else {
-            EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details objective renamed quest={} id={} task={} title={}", questId, id, task, normalizedTitle);
     }

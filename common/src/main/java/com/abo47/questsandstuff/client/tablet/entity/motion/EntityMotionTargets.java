@@ -7,7 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -209,7 +210,7 @@ final class EntityMotionTargets {
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
         ClientQuestCache.setQuestIconLocal(state.questDetails.entityMotionEditorQuestId, nextIcon);
         if (sync) {
-            EditorCommandClient.runQuestIconAction(player, state.questDetails.entityMotionEditorQuestId, nextIcon);
+            EditorQuestCommandClient.runQuestIconAction(player, state.questDetails.entityMotionEditorQuestId, nextIcon);
         }
     }
 
@@ -222,7 +223,7 @@ final class EntityMotionTargets {
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
         ClientQuestCache.setGroupIconLocal(state.questDetails.entityMotionEditorGroup, nextIcon);
         if (sync) {
-            EditorCommandClient.runGroupAction(player, state, "set_icon", state.questDetails.entityMotionEditorGroup, nextIcon, 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_icon", state.questDetails.entityMotionEditorGroup, nextIcon, 0);
         }
     }
 

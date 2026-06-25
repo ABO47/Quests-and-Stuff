@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -47,17 +47,17 @@ final class ChapterTextStyleMenu {
 
         addIconToggleButton(floating, 0, fw, columns, "style_align_left", alignButtonBase(align, "left"), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=left", target);
-            EditorCommandClient.runGroupAction(player, state, "set_text_align", target, "left", 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_align", target, "left", 0);
             refresh.run();
         });
         addIconToggleButton(floating, 1, fw, columns, "style_align_center", alignButtonBase(align, "center"), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=center", target);
-            EditorCommandClient.runGroupAction(player, state, "set_text_align", target, "center", 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_align", target, "center", 0);
             refresh.run();
         });
         addIconToggleButton(floating, 2, fw, columns, "style_align_right", alignButtonBase(align, "right"), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=right", target);
-            EditorCommandClient.runGroupAction(player, state, "set_text_align", target, "right", 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_align", target, "right", 0);
             refresh.run();
         });
         addIconToggleButton(floating, 3, fw, columns, "style_color", ModColors.SURFACE_PANEL_ALT, ClientQuestCache.groupTextColor(target), click -> {
@@ -68,19 +68,19 @@ final class ChapterTextStyleMenu {
 
         addIconToggleButton(floating, 4, fw, columns, "context_style", toggleButtonBase(!bold && !italic), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style=normal", target);
-            EditorCommandClient.runGroupAction(player, state, "set_text_style", target, "normal", 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_style", target, "normal", 0);
             refresh.run();
         });
         addIconToggleButton(floating, 5, fw, columns, "style_bold", toggleButtonBase(bold), click -> {
             String nextStyle = CanvasTextLayer.styleFromFlags(!bold, italic);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
-            EditorCommandClient.runGroupAction(player, state, "set_text_style", target, nextStyle, 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
         addIconToggleButton(floating, 6, fw, columns, "style_italic", toggleButtonBase(italic), click -> {
             String nextStyle = CanvasTextLayer.styleFromFlags(bold, !italic);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
-            EditorCommandClient.runGroupAction(player, state, "set_text_style", target, nextStyle, 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
         addFontSizeControl(floating, state, player, target, fw, columns, fontSize, refresh);
@@ -113,7 +113,7 @@ final class ChapterTextStyleMenu {
         if (open) {
             TextStyleButtons.addFontSizeField(parent, 7, menuWidth, columns, fontSize, value -> {
                 QuestsAndStuffMod.debugLog("[QnS:UI] chapter text size target={} size={}", target, value);
-                EditorCommandClient.runGroupAction(player, state, "set_text_size", target, String.valueOf(value), 0);
+                EditorChapterCommandClient.runGroupAction(player, state, "set_text_size", target, String.valueOf(value), 0);
             }, () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh));
             return;
         }

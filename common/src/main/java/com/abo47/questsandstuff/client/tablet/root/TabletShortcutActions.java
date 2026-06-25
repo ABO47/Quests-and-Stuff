@@ -13,7 +13,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -95,7 +96,7 @@ final class TabletShortcutActions {
         }
         String selectedQuestId = TabletStateQueries.singleSelectedQuestId(state);
         if (!selectedQuestId.isBlank()) {
-            EditorCommandClient.beginQuestTitleChange(state, selectedQuestId);
+            EditorQuestCommandClient.beginQuestTitleChange(state, selectedQuestId);
             return true;
         }
         if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
@@ -115,7 +116,7 @@ final class TabletShortcutActions {
         String group = TabletStateQueries.selectedGroupName(state);
         boolean changed = false;
         for (String questId : TabletStateQueries.selectedQuestIdSnapshot(state)) {
-            EditorCommandClient.runRemoveQuestAction(player, questId);
+            EditorQuestCommandClient.runRemoveQuestAction(player, questId);
             changed = true;
         }
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
@@ -195,7 +196,7 @@ final class TabletShortcutActions {
             }
         }
         if (!questMoves.isEmpty()) {
-            EditorCommandClient.runCanvasMoveAction(player, state, questMoves);
+            EditorCanvasCommandClient.runCanvasMoveAction(player, state, questMoves);
             changed = true;
         }
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {

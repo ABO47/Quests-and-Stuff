@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -174,7 +174,7 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
-        if (!state.questDetails.pendingQuestTitleChangeId.isBlank() && EditorCommandClient.commitQuestTitleChange(root.resolvePlayer(), state)) {
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank() && EditorQuestCommandClient.commitQuestTitleChange(root.resolvePlayer(), state)) {
             refresher.run();
             return true;
         }

@@ -385,14 +385,6 @@ public final class TeamManagerGameTests {
         return new TestBundle(engine, store, helper);
     }
 
-    private static ServerPlayer createPlayer(GameTestHelper helper, String name) {
-        return new ServerPlayer(
-                helper.getLevel().getServer(),
-                helper.getLevel(),
-                new GameProfile(UUID.randomUUID(), name)
-        );
-    }
-
     private static void assertTrue(boolean condition, String message) {
         if (!condition) throw new GameTestAssertException(message);
     }

@@ -16,7 +16,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlay
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.QuestServices;
@@ -29,7 +30,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public final class AssetPickerApplyActions {
@@ -50,14 +50,14 @@ public final class AssetPickerApplyActions {
         Set<String> soundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
         if (!soundTargets.isEmpty()) {
             int count = soundTargets.size();
-            EditorCommandClient.setQuestCompletionSound(player, soundTargets, background);
+            EditorQuestCommandClient.setQuestCompletionSound(player, soundTargets, background);
             state.modal.modalQuestCompletionSoundTargets.clear();
             state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} asset={}", count, background);
             return;
         }
         if (!soundTarget.isBlank()) {
-            EditorCommandClient.setQuestCompletionSound(player, soundTarget, background);
+            EditorQuestCommandClient.setQuestCompletionSound(player, soundTarget, background);
             state.modal.modalQuestCompletionSoundTarget = "";
             state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest change completion sound picked quest={} asset={}", soundTarget, background);
@@ -66,14 +66,14 @@ public final class AssetPickerApplyActions {
         String questBackgroundTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget);
         Set<String> questBackgroundTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets);
         if (!questBackgroundTargets.isEmpty()) {
-            EditorCommandClient.setQuestBackground(player, questBackgroundTargets, background, state.modal.modalQuestBackgroundGrayscale);
+            EditorQuestCommandClient.setQuestBackground(player, questBackgroundTargets, background, state.modal.modalQuestBackgroundGrayscale);
             int count = questBackgroundTargets.size();
             state.modal.modalQuestBackgroundTargets.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch background picked quests={} asset={} grayscale={}", count, background, state.modal.modalQuestBackgroundGrayscale);
             return;
         }
         if (!questBackgroundTarget.isBlank()) {
-            EditorCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modal.modalQuestBackgroundGrayscale);
+            EditorQuestCommandClient.setQuestBackground(player, questBackgroundTarget, background, state.modal.modalQuestBackgroundGrayscale);
             state.modal.modalQuestBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest background picked quest={} asset={} grayscale={}", questBackgroundTarget, background, state.modal.modalQuestBackgroundGrayscale);
             return;
@@ -81,14 +81,14 @@ public final class AssetPickerApplyActions {
         String completionHudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTarget);
         Set<String> completionHudTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTargets);
         if (!completionHudTargets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTargets, background);
+            EditorQuestCommandClient.setQuestCompletionHudBackground(player, completionHudTargets, background);
             int count = completionHudTargets.size();
             state.modal.modalQuestCompletionHudBackgroundTargets.clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion hud background picked quests={} asset={}", count, background);
             return;
         }
         if (!completionHudTarget.isBlank()) {
-            EditorCommandClient.setQuestCompletionHudBackground(player, completionHudTarget, background);
+            EditorQuestCommandClient.setQuestCompletionHudBackground(player, completionHudTarget, background);
             state.modal.modalQuestCompletionHudBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion hud background picked quest={} asset={}", completionHudTarget, background);
             return;
@@ -203,9 +203,9 @@ public final class AssetPickerApplyActions {
                     String quest = edge.questId();
                     boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
                     if (isEc) {
-                        EditorCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);
+                        EditorCanvasCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);
                     } else {
-                        EditorCommandClient.runConnectionTextureAction(player, quest, prereq, background);
+                        EditorCanvasCommandClient.runConnectionTextureAction(player, quest, prereq, background);
                         ConnectionRenderer.setConnectionTexture(state, group, prereq, quest, background);
                     }
                 }
@@ -223,9 +223,9 @@ public final class AssetPickerApplyActions {
                 boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
                         || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
                 if (isEc) {
-                    EditorCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, background);
+                    EditorCanvasCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, background);
                 } else {
-                    EditorCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, background);
+                    EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, background);
                     ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, questId, background);
                 }
             }

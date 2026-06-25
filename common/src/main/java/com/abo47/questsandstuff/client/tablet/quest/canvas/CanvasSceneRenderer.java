@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
@@ -19,11 +18,10 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -294,10 +292,10 @@ final class CanvasSceneRenderer {
         InlineRenameField field = new InlineRenameField(x, y, fieldW, fieldH, () -> state.questDetails.questTitleDraft, value -> {
             state.questDetails.questTitleDraft = value == null ? "" : value;
         }, () -> {
-            EditorCommandClient.commitQuestTitleChange(player, state);
+            EditorQuestCommandClient.commitQuestTitleChange(player, state);
             refresh.run();
         }, () -> {
-            EditorCommandClient.cancelQuestTitleChange(state);
+            EditorQuestCommandClient.cancelQuestTitleChange(state);
             refresh.run();
         }, null, null);
         field.setClientSideWidget();

@@ -16,11 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-final class EditorChapterCommandClient {
+public final class EditorChapterCommandClient {
     private EditorChapterCommandClient() {
     }
 
-    static void cycleGroup(TabletUiState state, int dir) {
+    public static void cycleGroup(TabletUiState state, int dir) {
         List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.root.canEdit);
         if (groups.isEmpty()) {
             state.root.selectedGroup = "";
@@ -36,19 +36,19 @@ final class EditorChapterCommandClient {
         state.chapterPanel.groupDraft = state.root.selectedGroup;
     }
 
-    static String selectedGroupName(TabletUiState state) {
+    public static String selectedGroupName(TabletUiState state) {
         return TabletStateQueries.selectedGroupName(state);
     }
 
-    static boolean canEditGroups(TabletUiState state) {
+    public static boolean canEditGroups(TabletUiState state) {
         return state.root.canEdit;
     }
 
-    static boolean canManageGroups(TabletUiState state) {
+    public static boolean canManageGroups(TabletUiState state) {
         return state.root.canEdit;
     }
 
-    static String resolveGroupDraft(TabletUiState state, String fallback) {
+    public static String resolveGroupDraft(TabletUiState state, String fallback) {
         String sanitized = sanitizeGroupName(state.chapterPanel.groupDraft);
         if (!sanitized.isBlank()) {
             return sanitized;
@@ -56,11 +56,11 @@ final class EditorChapterCommandClient {
         return sanitizeGroupName(fallback);
     }
 
-    static String nextGroupName() {
+    public static String nextGroupName() {
         return nextGroupName("chapter");
     }
 
-    static String nextGroupName(String baseName) {
+    public static String nextGroupName(String baseName) {
         String base = sanitizeGroupName(baseName);
         if (base.isBlank()) {
             base = "chapter";
@@ -79,7 +79,7 @@ final class EditorChapterCommandClient {
         }
     }
 
-    static String uniqueGroupName(String preferred, String excludeCurrent) {
+    public static String uniqueGroupName(String preferred, String excludeCurrent) {
         String candidate = sanitizeGroupName(preferred);
         if (candidate.isBlank()) {
             candidate = tr("ui.questsandstuff.chapter.default_name");
@@ -102,7 +102,7 @@ final class EditorChapterCommandClient {
         }
     }
 
-    static String nextRenamedGroup(String source) {
+    public static String nextRenamedGroup(String source) {
         String base = sanitizeGroupName(source);
         if (base.isBlank()) {
             base = "chapter";
@@ -122,11 +122,11 @@ final class EditorChapterCommandClient {
         }
     }
 
-    static String sanitizeGroupName(String value) {
+    public static String sanitizeGroupName(String value) {
         return TabletStateQueries.sanitizeGroupName(value);
     }
 
-    static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
+    public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
         String op = action == null ? "" : action;
         String from = sanitizeGroupName(group);
         String rawValue = value == null ? "" : value.trim();

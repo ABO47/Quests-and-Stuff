@@ -112,10 +112,6 @@ final class CanvasViewportContextRouter {
         refresher.run();
     }
 
-    private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit) {
-        return edgeAboveHits(state, edgeHit, questHit, imageHit, textHit, null);
-    }
-
     private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice ecHit) {
         if (state == null || edgeHit == null) {
             return false;

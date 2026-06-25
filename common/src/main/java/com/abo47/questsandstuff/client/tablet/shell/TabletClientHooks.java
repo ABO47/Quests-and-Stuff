@@ -151,7 +151,11 @@ public final class TabletClientHooks {
             return;
         }
         if (ClientQuestCache.containsQuest(rememberedQuestDetailsQuestId)) {
-            QuestDetailsWindow.open(state, rememberedQuestDetailsQuestId);
+            if (state.questDetails.questDetailsOpen) {
+                QuestDetailsWindow.swapQuest(state, rememberedQuestDetailsQuestId);
+            } else {
+                QuestDetailsWindow.open(state, rememberedQuestDetailsQuestId);
+            }
         } else {
             rememberedQuestDetailsOpen = false;
             rememberedQuestDetailsQuestId = "";
@@ -272,9 +276,6 @@ public final class TabletClientHooks {
             return;
         }
         String lastApp = readLastApp();
-        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
-        int rootW = targetRootWidth(minecraft, fullScreen);
-        int rootH = targetRootHeight(minecraft, fullScreen);
         if ("TEAMS".equals(lastApp)) {
             openTeamsUi(minecraft, player);
         } else if ("QUESTS".equals(lastApp)) {

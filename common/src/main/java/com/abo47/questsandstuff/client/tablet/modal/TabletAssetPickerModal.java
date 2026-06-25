@@ -19,7 +19,7 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -500,19 +500,19 @@ public final class TabletAssetPickerModal {
                 net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {
                     String prerequisiteId = prereqs.getString(i);
-                    EditorCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
+                    EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
                 }
             }
             if (!group.isBlank()) {
                 for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
                     for (String connectedId : ec.connectionQuestIds()) {
                         if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
-                            EditorCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
+                            EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
                         }
                     }
                     for (String prerequisiteId : ec.prerequisiteQuestIds()) {
                         if (chapterTargets.contains(prerequisiteId) || chapterTargets.contains(ec.id())) {
-                            EditorCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, ec.id(), spacing);
+                            EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, ec.id(), spacing);
                         }
                     }
                 }
@@ -528,9 +528,9 @@ public final class TabletAssetPickerModal {
                 boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
                         || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
                 if (isEc) {
-                    EditorCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
+                    EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
                 } else {
-                    EditorCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
+                    EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
                     com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, group, prerequisiteId, questId, spacing);
                 }
             }

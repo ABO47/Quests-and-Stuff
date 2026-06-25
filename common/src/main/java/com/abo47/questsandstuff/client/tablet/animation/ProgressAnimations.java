@@ -17,6 +17,12 @@ public final class ProgressAnimations {
         return safeSurface + ":" + safeQuestId;
     }
 
+    public static void reset(String key) {
+        if (key != null && !key.isBlank()) {
+            ANIMATIONS.remove(key);
+        }
+    }
+
     public static float value(String key, float target) {
         String safeKey = key == null || key.isBlank() ? "unknown" : key;
         float safeTarget = Math.max(0.0f, Math.min(1.0f, target));

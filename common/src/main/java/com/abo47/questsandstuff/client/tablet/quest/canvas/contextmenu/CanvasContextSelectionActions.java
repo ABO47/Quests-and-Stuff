@@ -19,7 +19,8 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -33,7 +34,6 @@ import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -133,9 +133,9 @@ final class CanvasContextSelectionActions {
                             String quest = edge.questId();
                             boolean isEc = ConnectionRenderer.isEcId(state, selectedGroup, prereq) || ConnectionRenderer.isEcId(state, selectedGroup, quest);
                             if (isEc) {
-                                EditorCommandClient.runEcConnectionTextureAction(state, prereq, quest, "");
+                                EditorCanvasCommandClient.runEcConnectionTextureAction(state, prereq, quest, "");
                             } else {
-                                EditorCommandClient.runConnectionTextureAction(player, quest, prereq, "");
+                                EditorCanvasCommandClient.runConnectionTextureAction(player, quest, prereq, "");
                                 ConnectionRenderer.setConnectionTexture(state, selectedGroup, prereq, quest, "");
                             }
                         }
@@ -192,7 +192,7 @@ final class CanvasContextSelectionActions {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_background"), "delete", ModColors.WARNING, () -> {
                 ContextMenuState.clearDeleteConfirm(state);
                 for (String questId : targets) {
-                    EditorCommandClient.setQuestBackground(player, questId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                    EditorQuestCommandClient.setQuestBackground(player, questId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
                 }
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_quest_background quests={}", targets.size());
                 canvasViewport.refresh();
@@ -200,7 +200,7 @@ final class CanvasContextSelectionActions {
         }
         if (selectionHasCompletionHudBackground(targets)) {
             actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), "delete", ModColors.WARNING, () -> {
-                EditorCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                EditorQuestCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_completion_hud_background quests={}", targets.size());
                 canvasViewport.refresh();
@@ -245,7 +245,7 @@ final class CanvasContextSelectionActions {
                 () -> {
                     ContextMenuState.clearDeleteConfirm(state);
                     for (String questId : targets) {
-                        EditorCommandClient.setQuestRepeatable(player, questId, !repeatable);
+                        EditorQuestCommandClient.setQuestRepeatable(player, questId, !repeatable);
                     }
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_repeatable quests={}", targets.size());
                     canvasViewport.refresh();
@@ -257,7 +257,7 @@ final class CanvasContextSelectionActions {
                 () -> {
                     ContextMenuState.clearDeleteConfirm(state);
                     for (String questId : targets) {
-                        EditorCommandClient.setQuestHiddenMode(player, questId, lockUntilUnlocked ? prerequisitesVisible : locked);
+                        EditorQuestCommandClient.setQuestHiddenMode(player, questId, lockUntilUnlocked ? prerequisitesVisible : locked);
                     }
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_lock quests={}", targets.size());
                     canvasViewport.refresh();
@@ -269,7 +269,7 @@ final class CanvasContextSelectionActions {
                 () -> {
                     ContextMenuState.clearDeleteConfirm(state);
                     for (String questId : targets) {
-                        EditorCommandClient.setQuestVisualHidden(player, questId, !hidden);
+                        EditorQuestCommandClient.setQuestVisualHidden(player, questId, !hidden);
                     }
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_hide quests={}", targets.size());
                     canvasViewport.refresh();
@@ -286,7 +286,7 @@ final class CanvasContextSelectionActions {
         actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", ModColors.WARNING, () -> {
             ContextMenuState.clearDeleteConfirm(state);
             for (String questId : targets) {
-                EditorCommandClient.resetQuestProgress(player, questId);
+                EditorQuestCommandClient.resetQuestProgress(player, questId);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_reset_quest quests={}", targets.size());
             canvasViewport.refresh();
