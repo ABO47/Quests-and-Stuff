@@ -57,10 +57,6 @@ public final class TabletBlockPickerModal {
                 .filter(choice -> choice != null)
                 .sorted(Comparator.comparing(BlockChoice::value))
                 .toList();
-        ALL_TAGS = BuiltInRegistries.BLOCK.getTagNames()
-                .map(TabletBlockPickerModal::tagChoice)
-                .sorted(Comparator.comparing(BlockChoice::value))
-                .toList();
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
@@ -195,6 +191,7 @@ public final class TabletBlockPickerModal {
                     .map(TabletBlockPickerModal::tagChoice)
                     .sorted(Comparator.comparing(BlockChoice::value))
                     .toList();
+            ALL_TAGS = source;
         }
         return source.stream()
                 .filter(choice -> filter.isBlank()

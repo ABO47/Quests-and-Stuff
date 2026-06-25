@@ -41,10 +41,6 @@ public final class DisplayIconProvider {
                 .map(ResourceLocation::toString)
                 .sorted()
                 .toList();
-        ALL_TAG_IDS = BuiltInRegistries.ITEM.getTagNames()
-                .map(tag -> "#" + tag.location())
-                .sorted()
-                .toList();
     }
 
     public static void prewarmFluidEntries() {
@@ -200,10 +196,14 @@ public final class DisplayIconProvider {
         List<String> entries = new ArrayList<>();
         String tagRawQuery = tagMode ? rawQuery : rawQuery.substring(1);
         String tagQuery = tagMode ? query : SearchFilter.normalizeKey(tagRawQuery);
-        List<String> source = ALL_TAG_IDS != null ? ALL_TAG_IDS : BuiltInRegistries.ITEM.getTagNames()
-                .map(tag -> "#" + tag.location())
-                .sorted()
-                .toList();
+        List<String> source = ALL_TAG_IDS;
+        if (source == null) {
+            source = BuiltInRegistries.ITEM.getTagNames()
+                    .map(tag -> "#" + tag.location())
+                    .sorted()
+                    .toList();
+            ALL_TAG_IDS = source;
+        }
         for (String tag : source) {
             String stripped = tag.startsWith("#") ? tag.substring(1) : tag;
             if (tagRawQuery.isBlank() || SearchFilter.matches(tagRawQuery, stripped, stripped) || SearchFilter.normalizeKey(stripped).contains(tagQuery)) {
