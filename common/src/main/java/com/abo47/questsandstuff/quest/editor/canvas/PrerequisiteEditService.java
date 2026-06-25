@@ -26,12 +26,14 @@ public final class PrerequisiteEditService {
         this.owner = owner;
     }
 
+    private static boolean invalidQuestPair(String quest, String prerequisite) {
+        return quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite);
+    }
+
     public void setQuestPrerequisite(ServerPlayer player, String questId, String prerequisiteId, boolean enabled) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
 
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !owner.definitionStore().quests().containsKey(prerequisite)) {
@@ -53,9 +55,7 @@ public final class PrerequisiteEditService {
     public void setConnectionMode(ServerPlayer player, String questId, String prerequisiteId, boolean gridMode) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !source.prerequisites().contains(prerequisite)) {
             return;
@@ -79,9 +79,7 @@ public final class PrerequisiteEditService {
     public void setConnectionHidden(ServerPlayer player, String questId, String prerequisiteId, boolean hidden) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !source.prerequisites().contains(prerequisite)) {
             return;
@@ -100,9 +98,7 @@ public final class PrerequisiteEditService {
     public void setConnectionColor(ServerPlayer player, String questId, String prerequisiteId, int color) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !source.prerequisites().contains(prerequisite)) {
             return;
@@ -121,9 +117,7 @@ public final class PrerequisiteEditService {
     public void setConnectionTexture(ServerPlayer player, String questId, String prerequisiteId, String texture) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !source.prerequisites().contains(prerequisite)) {
             return;
@@ -195,9 +189,7 @@ public final class PrerequisiteEditService {
     public void setConnectionTextureSpacing(ServerPlayer player, String questId, String prerequisiteId, int spacing) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
-        if (quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite)) {
-            return;
-        }
+        if (invalidQuestPair(quest, prerequisite)) return;
         QuestDefinition source = owner.definitionStore().quests().get(quest);
         if (source == null || !source.prerequisites().contains(prerequisite)) {
             return;

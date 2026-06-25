@@ -31,7 +31,7 @@ class ConnectionRendererMetadataTest {
         hidden.add(StringTag.valueOf("quest/source"));
         target.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
 
-        QuestConnectionMetadata metadata = ConnectionRenderer.connectionMetadata(
+        QuestConnectionMetadata metadata = ConnectionStyleResolver.metadata(
                 state,
                 "main",
                 " quest/source ",
@@ -54,7 +54,7 @@ class ConnectionRendererMetadataTest {
         state.canvas.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
         state.canvas.hiddenConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
 
-        QuestConnectionMetadata metadata = ConnectionRenderer.connectionMetadata(
+        QuestConnectionMetadata metadata = ConnectionStyleResolver.metadata(
                 state,
                 "main",
                 "quest/source",
