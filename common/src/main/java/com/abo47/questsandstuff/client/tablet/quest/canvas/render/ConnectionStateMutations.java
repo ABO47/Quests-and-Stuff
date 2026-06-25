@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -46,14 +47,14 @@ final class ConnectionStateMutations {
     }
 
     static void toggleConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
+        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
         setConnectionHidden(state, group, sourceQuestId, targetQuestId, !hidden);
     }
 
     static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
         Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
-        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId)) {
+        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId))) {
             groupGrid.add(key);
         } else {
             groupGrid.remove(key);
