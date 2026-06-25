@@ -276,9 +276,6 @@ public final class TabletClientHooks {
             return;
         }
         String lastApp = readLastApp();
-        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
-        int rootW = targetRootWidth(minecraft, fullScreen);
-        int rootH = targetRootHeight(minecraft, fullScreen);
         if ("TEAMS".equals(lastApp)) {
             openTeamsUi(minecraft, player);
         } else if ("QUESTS".equals(lastApp)) {

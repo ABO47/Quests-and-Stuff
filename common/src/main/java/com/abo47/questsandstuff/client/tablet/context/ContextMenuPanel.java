@@ -9,7 +9,6 @@ import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import static com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem.CONTEXT_MENU_WIDTH;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -396,10 +395,6 @@ public final class ContextMenuPanel {
             overflow += right - maxRight;
         }
         return overflow;
-    }
-
-    private static int preferredWidth(List<ContextAction> actions, int minWidth, int maxWidth) {
-        return ContextActionLayout.preferredWidth(actions, minWidth, maxWidth);
     }
 
     private static WidgetGroup menuPanel(int x, int y, int w, int h, int borderColor, boolean needsScroll, ScrollState scrollState, Runnable refresh, int scrollMax) {

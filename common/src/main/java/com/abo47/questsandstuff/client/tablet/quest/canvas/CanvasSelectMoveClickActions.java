@@ -329,6 +329,8 @@ final class CanvasSelectMoveClickActions {
                 state.canvas.canvasSelection.ecIds().add(id);
                 state.canvas.canvasSelection.setPrimaryEcId(id);
             }
+            case CONNECTION -> {
+            }
         }
     }
 
@@ -367,6 +369,8 @@ final class CanvasSelectMoveClickActions {
                         return CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
                     }
                 }
+            }
+            case CONNECTION -> {
             }
         }
         return null;

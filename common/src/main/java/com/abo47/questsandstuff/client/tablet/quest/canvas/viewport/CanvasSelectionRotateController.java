@@ -156,7 +156,6 @@ final class CanvasSelectionRotateController {
         for (CanvasTextLayer text : result.texts().values()) {
             CanvasLayerMutations.putTransientCanvasText(state, clampRotationPreviewText(text));
         }
-        int deltaDegrees = (int) Math.round(Math.toDegrees(delta));
         for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.rotateStartEcLayers.entrySet()) {
             CanvasExclusiveChoice ec = entry.getValue();
             double ecCenterX = ec.x() + ec.w() / 2.0D;

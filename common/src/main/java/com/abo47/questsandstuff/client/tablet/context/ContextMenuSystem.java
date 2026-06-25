@@ -34,7 +34,6 @@ public final class ContextMenuSystem {
     private static final int TEXT_X = 22;
     private static final int SUBMENU_PAD = 5;
     private static final int CONTEXT_ICON_SIZE = 10;
-    private static final int FALLBACK_ICON_W = 10;
     private static final int FALLBACK_ICON_H = 8;
     private static final int TEXT_LINE_H = 9;
     private static final float TEXT_SCALE = 0.82f;

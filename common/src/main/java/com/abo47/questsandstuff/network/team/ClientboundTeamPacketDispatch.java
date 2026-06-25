@@ -4,14 +4,12 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
 import com.abo47.questsandstuff.quest.model.team.TeamMember;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import net.minecraft.client.resources.language.I18n;
 
