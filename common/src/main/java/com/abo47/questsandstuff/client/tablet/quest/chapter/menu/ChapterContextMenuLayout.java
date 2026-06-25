@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -91,7 +91,7 @@ public record ChapterContextMenuLayout(
     }
 
     private static String resolveTarget(TabletUiState state) {
-        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
+        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorChapterCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
     }
 
     private static int height(boolean hasTarget, int rowCount) {

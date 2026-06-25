@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
 import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -43,15 +43,15 @@ final class QuestObjectiveRequirementMenuActions {
         }
         QuestObjectiveMenuSupport.addMoveActions(actions, () -> {
             ContextMenuState.clearDeleteConfirm(state);
-            EditorCommandClient.moveQuestTask(player, questId, contextId, -1);
+            EditorQuestCommandClient.moveQuestTask(player, questId, contextId, -1);
         }, () -> {
             ContextMenuState.clearDeleteConfirm(state);
-            EditorCommandClient.moveQuestTask(player, questId, contextId, 1);
+            EditorQuestCommandClient.moveQuestTask(player, questId, contextId, 1);
         });
         actions.add(QuestObjectiveMenuSupport.visualsSubmenu(state, questId, contextId, true));
         String deleteKey = "quest_details_requirement:" + questId + ":" + contextId;
         actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
-            EditorCommandClient.removeQuestTask(player, questId, contextId);
+            EditorQuestCommandClient.removeQuestTask(player, questId, contextId);
         }));
         return actions;
     }

@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -98,7 +98,7 @@ final class CanvasViewportClickController {
                 return true;
             }
             if (button == 0 || button == 1) {
-                EditorCommandClient.cancelQuestTitleChange(state);
+                EditorQuestCommandClient.cancelQuestTitleChange(state);
                 refresher.run();
                 return true;
             }

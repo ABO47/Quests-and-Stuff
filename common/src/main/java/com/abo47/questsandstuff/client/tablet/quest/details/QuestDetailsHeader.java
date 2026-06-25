@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
@@ -165,7 +165,7 @@ final class QuestDetailsHeader {
         String oldTitle = quest.getString("title");
         String title = sanitizeTitleDraft(state.questDetails.questTitleDraft).trim();
         if (player != null && !title.equals(oldTitle)) {
-            EditorCommandClient.updateQuestDisplay(player, questId, title, quest.getString("subtitle"));
+            EditorQuestCommandClient.updateQuestDisplay(player, questId, title, quest.getString("subtitle"));
         }
         state.questDetails.pendingQuestTitleChangeId = "";
         state.questDetails.questTitleDraft = title;

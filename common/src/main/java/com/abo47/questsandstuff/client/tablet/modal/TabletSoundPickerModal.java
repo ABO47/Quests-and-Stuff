@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
@@ -128,13 +128,13 @@ public final class TabletSoundPickerModal {
     private static void applySound(TabletUiState state, Player player, String soundId) {
         Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
         if (!targets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionSound(player, targets, soundId);
+            EditorQuestCommandClient.setQuestCompletionSound(player, targets, soundId);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest batch completion sound picked quests={} sound={}", targets.size(), soundId);
             return;
         }
         String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
         if (!target.isBlank()) {
-            EditorCommandClient.setQuestCompletionSound(player, target, soundId);
+            EditorQuestCommandClient.setQuestCompletionSound(player, target, soundId);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest completion sound picked quest={} sound={}", target, soundId);
         }
     }

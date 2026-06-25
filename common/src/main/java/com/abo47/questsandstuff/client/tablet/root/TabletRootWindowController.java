@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
@@ -78,7 +78,7 @@ public final class TabletRootWindowController {
             return true;
         }
         if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
-            EditorCommandClient.cancelQuestTitleChange(state);
+            EditorQuestCommandClient.cancelQuestTitleChange(state);
             return true;
         }
         if (!state.canvas.pendingChapterRename.isBlank()) {

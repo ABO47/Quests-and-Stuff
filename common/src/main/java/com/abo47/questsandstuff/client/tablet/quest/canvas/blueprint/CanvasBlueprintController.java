@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -99,7 +99,7 @@ public final class CanvasBlueprintController {
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.textIds().clear();
         state.clipboard.canvasClipboard.clearPendingPastedLayers();
-        EditorCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
+        EditorCanvasCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
         state.canvas.blueprintPlacement.finish();
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement commit path={} anchor={},{} entries={}",
                 asset, anchor.x(), anchor.y(), blueprint.contentCount());

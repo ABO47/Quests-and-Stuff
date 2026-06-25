@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -27,7 +27,7 @@ final class CanvasConnectionClickActions {
         }
         if (!state.canvas.quickConnectEcId.isBlank()) {
             if (hit != null) {
-                String group = EditorCommandClient.selectedGroupName(state);
+                String group = EditorChapterCommandClient.selectedGroupName(state);
                 CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.quickConnectEcId);
                 if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
                     CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
@@ -46,7 +46,7 @@ final class CanvasConnectionClickActions {
         if (hit == null) {
             if (ecHit != null) {
                 if (!state.canvas.quickConnectSourceQuestId.isBlank()) {
-                    String group = EditorCommandClient.selectedGroupName(state);
+                    String group = EditorChapterCommandClient.selectedGroupName(state);
                     CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
                     if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.quickConnectSourceQuestId)) {
                         CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.quickConnectSourceQuestId);
@@ -103,7 +103,7 @@ final class CanvasConnectionClickActions {
                 refresher.run();
                 return true;
             }
-            String group = EditorCommandClient.selectedGroupName(state);
+            String group = EditorChapterCommandClient.selectedGroupName(state);
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.connectEcId);
             if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
                 CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
@@ -119,7 +119,7 @@ final class CanvasConnectionClickActions {
             return true;
         }
         if (!state.canvas.connectSourceQuestId.isBlank() && ecHit != null && hit == null) {
-            String group = EditorCommandClient.selectedGroupName(state);
+            String group = EditorChapterCommandClient.selectedGroupName(state);
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
             if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.connectSourceQuestId)) {
                 CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.connectSourceQuestId);

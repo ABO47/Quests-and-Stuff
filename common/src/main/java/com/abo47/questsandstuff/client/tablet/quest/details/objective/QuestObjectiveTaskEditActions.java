@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
@@ -74,7 +74,7 @@ final class QuestObjectiveTaskEditActions {
             QuestDetailsWindow.openIconPicker(state, ModalTargets.taskSimpleIcon(questId, id, type));
             return;
         }
-        EditorCommandClient.putQuestTaskJson(player, questId, defaultTaskJson(id, typePath, choice).toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, questId, defaultTaskJson(id, typePath, choice).toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details {} task quest={} task={} type={}", add ? "add" : "change", questId, id, typePath);
     }
 

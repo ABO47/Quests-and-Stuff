@@ -8,7 +8,8 @@ import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,7 +36,7 @@ final class QuestObjectivePickerApplyActions {
             if (FluidIconCodec.isFluidIcon(entry)) {
                 JsonObject json = fluidItemJson(id, type, entry);
                 json.addProperty("collection", "automatic");
-                EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+                EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details task fluid picked quest={} task={} fluid={}", questId, id, FluidIconCodec.fluidId(entry));
                 state.questDetails.questDetailsPickTarget = "";
                 return;
@@ -52,17 +53,17 @@ final class QuestObjectivePickerApplyActions {
             json.addProperty("amount", 1);
             json.addProperty("nbt", "");
             json.addProperty("collection", "automatic");
-            EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task item picked quest={} task={} entry={}", questId, id, entry);
         } else if (parsed.isTaskSimpleIcon()) {
             JsonObject json = QuestObjectiveJsons.simpleTask(id, type, entry, entry);
-            EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task icon picked quest={} task={} entry={}", questId, id, entry);
         } else if (parsed.isTaskEntity()) {
             String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(entry);
             if (!entityId.isBlank()) {
                 JsonObject json = QuestObjectiveJsons.simpleTask(id, type, entityId, "");
-                EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+                EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details task entity picked quest={} task={} entity={} egg={}", questId, id, entityId, entry);
             } else {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details task entity pick ignored quest={} task={} item={}", questId, id, entry);
@@ -74,7 +75,7 @@ final class QuestObjectivePickerApplyActions {
             if (FluidIconCodec.isFluidIcon(entry)) {
                 JsonObject json = fluidItemJson(id, type, entry);
                 QuestObjectiveRewardEditActions.preserveRewardSelectableFlag(questId, id, json);
-                EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+                EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward fluid picked quest={} reward={} fluid={}", questId, id, FluidIconCodec.fluidId(entry));
                 state.questDetails.questDetailsPickTarget = "";
                 return;
@@ -86,7 +87,7 @@ final class QuestObjectivePickerApplyActions {
             json.addProperty("amount", 1);
             json.addProperty("nbt", "");
             QuestObjectiveRewardEditActions.preserveRewardSelectableFlag(questId, id, json);
-            EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details reward item picked quest={} reward={} item={}", questId, id, entry);
         } else if (parsed.isRewardCommandEditorIcon()) {
             state.questDetails.questDetailsCommandRewardIcon = entry.startsWith("#") ? entry.substring(1) : entry;
@@ -109,13 +110,13 @@ final class QuestObjectivePickerApplyActions {
             return;
         }
         if (parsed.isQuestIcon() && ModalTargetState.requireParts("inventory_quest_icon", parsed, 2)) {
-            EditorCommandClient.runQuestIconAction(player, parsed.questId(), icon);
+            EditorQuestCommandClient.runQuestIconAction(player, parsed.questId(), icon);
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest inventory icon picked quest={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;
         }
         if (parsed.isChapterIcon() && ModalTargetState.requireParts("inventory_chapter_icon", parsed, 2)) {
-            EditorCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
+            EditorChapterCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter inventory icon picked chapter={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;
@@ -149,7 +150,7 @@ final class QuestObjectivePickerApplyActions {
             json.addProperty("amount", 1);
             json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
             json.addProperty("collection", "automatic");
-            EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory item picked quest={} task={} item={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.hasTag());
             return;
@@ -162,7 +163,7 @@ final class QuestObjectivePickerApplyActions {
             json.addProperty("amount", Math.max(1, stack.getCount()));
             json.addProperty("nbt", stack.hasTag() ? stack.getTag().toString() : "");
             QuestObjectiveRewardEditActions.preserveRewardSelectableFlag(parsed.questId(), parsed.entryId(), json);
-            EditorCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details inventory reward item picked quest={} reward={} item={} amount={} hasNbt={}", parsed.questId(), parsed.entryId(), itemId, stack.getCount(), stack.hasTag());
         }
@@ -177,7 +178,7 @@ final class QuestObjectivePickerApplyActions {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), biome, "biome");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
     }
@@ -191,7 +192,7 @@ final class QuestObjectivePickerApplyActions {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
     }
@@ -206,7 +207,7 @@ final class QuestObjectivePickerApplyActions {
         }
         String recipeTarget = recipe.trim();
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), recipeTarget, QuestObjectiveIconActions.recipeIcon(recipeTarget));
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe picked quest={} task={} recipe={}", parsed.questId(), parsed.entryId(), recipeTarget);
     }
@@ -220,7 +221,7 @@ final class QuestObjectivePickerApplyActions {
             return;
         }
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
     }
@@ -235,7 +236,7 @@ final class QuestObjectivePickerApplyActions {
         }
         String blockId = block.trim();
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), blockId, QuestObjectiveIconActions.blockIcon(blockId));
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
     }
@@ -250,7 +251,7 @@ final class QuestObjectivePickerApplyActions {
         }
         String statTarget = stat.trim();
         JsonObject json = QuestObjectiveJsons.simpleTask(parsed.entryId(), parsed.type(), statTarget, QuestObjectiveIconActions.statIcon(statTarget));
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details stat picked quest={} task={} stat={}", parsed.questId(), parsed.entryId(), statTarget);
     }
@@ -267,7 +268,7 @@ final class QuestObjectivePickerApplyActions {
         json.addProperty("type", parsed.type());
         json.addProperty("dimension", dimension.trim());
         json.addProperty("icon", "minecraft:compass");
-        EditorCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details dimension picked quest={} task={} dimension={}", parsed.questId(), parsed.entryId(), dimension.trim());
     }
@@ -297,7 +298,7 @@ final class QuestObjectivePickerApplyActions {
         }
         json.addProperty("loot_table", lootTable.trim());
         ClientQuestCache.putQuestRewardJsonLocal(parsed.questId(), json.toString());
-        EditorCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
+        EditorQuestCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details loot table picked quest={} reward={} lootTable={}", parsed.questId(), parsed.entryId(), lootTable.trim());
     }

@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -149,7 +149,7 @@ public final class CanvasSelectionActions {
         }
 
         if (!questPositions.isEmpty()) {
-            EditorCommandClient.runCanvasMoveAction(player, state, questPositions);
+            EditorCanvasCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
         if (changed) {
             ContextMenuState.clearDeleteConfirm(state);

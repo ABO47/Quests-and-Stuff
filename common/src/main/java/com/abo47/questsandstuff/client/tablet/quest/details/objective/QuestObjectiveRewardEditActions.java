@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
@@ -76,7 +76,7 @@ final class QuestObjectiveRewardEditActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp reward picker open quest={} reward={} add={}", questId, id, add);
             return;
         }
-        EditorCommandClient.putQuestRewardJson(player, questId, defaultRewardJson(id, typePath, choice).toString());
+        EditorQuestCommandClient.putQuestRewardJson(player, questId, defaultRewardJson(id, typePath, choice).toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details {} reward quest={} reward={} type={}", add ? "add" : "change", questId, id, typePath);
     }
 

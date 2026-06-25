@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportZoom;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
@@ -263,7 +263,7 @@ final class CanvasViewportInputController {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
             if (!state.canvas.transientQuestScales.isEmpty()) {
-                EditorCommandClient.runCanvasScaleAction(player, state, state.canvas.transientQuestScales);
+                EditorCanvasCommandClient.runCanvasScaleAction(player, state, state.canvas.transientQuestScales);
             }
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
             persistSelectedCanvasLayers(state);

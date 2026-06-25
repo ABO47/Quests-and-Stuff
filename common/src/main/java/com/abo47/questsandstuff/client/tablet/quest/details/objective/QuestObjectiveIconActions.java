@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -53,9 +53,9 @@ final class QuestObjectiveIconActions {
             return;
         }
         if (task) {
-            EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
         } else {
-            EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
         }
     }
 

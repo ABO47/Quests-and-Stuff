@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
 
@@ -120,9 +120,9 @@ final class QuestObjectiveListInteractions {
         }
         boolean task = "requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind);
         if (task) {
-            EditorCommandClient.removeQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
+            EditorQuestCommandClient.removeQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
         } else if ("reward".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.removeQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
+            EditorQuestCommandClient.removeQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId);
         } else {
             return false;
         }
@@ -137,11 +137,11 @@ final class QuestObjectiveListInteractions {
             return false;
         }
         if ("requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.moveQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
+            EditorQuestCommandClient.moveQuestTask(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
             return true;
         }
         if ("reward".equals(state.questDetails.questDetailsSelectedObjectiveKind)) {
-            EditorCommandClient.moveQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
+            EditorQuestCommandClient.moveQuestReward(player, questId, state.questDetails.questDetailsSelectedObjectiveId, offset);
             return true;
         }
         return false;
@@ -173,9 +173,9 @@ final class QuestObjectiveListInteractions {
             return;
         }
         if (requirement) {
-            EditorCommandClient.moveQuestTask(player, questId, moving, offset);
+            EditorQuestCommandClient.moveQuestTask(player, questId, moving, offset);
         } else {
-            EditorCommandClient.moveQuestReward(player, questId, moving, offset);
+            EditorQuestCommandClient.moveQuestReward(player, questId, moving, offset);
         }
     }
 }

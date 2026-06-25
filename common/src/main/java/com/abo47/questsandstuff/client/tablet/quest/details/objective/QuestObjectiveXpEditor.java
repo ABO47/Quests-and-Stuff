@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -86,7 +86,7 @@ final class QuestObjectiveXpEditor {
         JsonObject json = xpBase(existing, id);
         json.addProperty("mode", mode);
         json.addProperty("collection", collection);
-        EditorCommandClient.putQuestTaskJson(player, questId, json.toString());
+        EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
         QuestDetailsTransientState.closeXpPicker(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp requirement saved quest={} task={} mode={} collection={}", questId, id, mode, collection);
     }
@@ -98,7 +98,7 @@ final class QuestObjectiveXpEditor {
         JsonObject existing = existingJson(questId, id, false);
         JsonObject json = xpBase(existing, id);
         json.addProperty("mode", mode);
-        EditorCommandClient.putQuestRewardJson(player, questId, json.toString());
+        EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
         QuestDetailsTransientState.closeXpPicker(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp reward saved quest={} reward={} mode={}", questId, id, mode);
     }

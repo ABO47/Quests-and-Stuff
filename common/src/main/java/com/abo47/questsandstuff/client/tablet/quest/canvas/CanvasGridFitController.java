@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -85,12 +85,12 @@ public final class CanvasGridFitController {
         if (moved) {
             Map<String, CanvasPoint> positions = new HashMap<>();
             positions.put(card.questId(), new CanvasPoint(fitted.x(), fitted.y()));
-            EditorCommandClient.runCanvasMoveAction(player, state, positions);
+            EditorCanvasCommandClient.runCanvasMoveAction(player, state, positions);
         }
         if (scaled) {
             Map<String, Float> scales = new HashMap<>();
             scales.put(card.questId(), fitted.scale());
-            EditorCommandClient.runCanvasScaleAction(player, state, scales);
+            EditorCanvasCommandClient.runCanvasScaleAction(player, state, scales);
         }
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.questIds().add(card.questId());
@@ -185,10 +185,10 @@ public final class CanvasGridFitController {
         }
 
         if (!questPositions.isEmpty()) {
-            EditorCommandClient.runCanvasMoveAction(player, state, questPositions);
+            EditorCanvasCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
         if (!questScales.isEmpty()) {
-            EditorCommandClient.runCanvasScaleAction(player, state, questScales);
+            EditorCanvasCommandClient.runCanvasScaleAction(player, state, questScales);
         }
         return changed;
     }

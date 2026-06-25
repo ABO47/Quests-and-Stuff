@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -47,12 +47,12 @@ final class SoundVolumeControls {
         int volume = QuestDisplay.normalizeCompletionSoundVolume(state.pickers.soundVolumeDraft);
         state.pickers.soundVolumeDraft = volume;
         if (!targets.isEmpty()) {
-            EditorCommandClient.setQuestCompletionSoundVolume(player, targets, volume);
+            EditorQuestCommandClient.setQuestCompletionSoundVolume(player, targets, volume);
             QuestSoundPreview.restartIfPlaying(soundId, volume);
             return;
         }
         if (!target.isBlank()) {
-            EditorCommandClient.setQuestCompletionSoundVolume(player, target, volume);
+            EditorQuestCommandClient.setQuestCompletionSoundVolume(player, target, volume);
         }
         QuestSoundPreview.restartIfPlaying(soundId, volume);
     }

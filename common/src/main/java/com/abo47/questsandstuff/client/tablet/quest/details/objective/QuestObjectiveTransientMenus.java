@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditStat
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -126,7 +126,7 @@ final class QuestObjectiveTransientMenus {
         json.addProperty("id", state.questDetails.questDetailsCommandRewardId);
         json.addProperty("type", "questsandstuff:command");
         json.addProperty("command", state.questDetails.questDetailsCommandRewardCommand == null ? "" : state.questDetails.questDetailsCommandRewardCommand.trim());
-        EditorCommandClient.putQuestRewardJson(player, state.questDetails.questDetailsCommandRewardQuestId, json.toString());
+        EditorQuestCommandClient.putQuestRewardJson(player, state.questDetails.questDetailsCommandRewardQuestId, json.toString());
         closeCommandRewardEditor(state);
     }
 

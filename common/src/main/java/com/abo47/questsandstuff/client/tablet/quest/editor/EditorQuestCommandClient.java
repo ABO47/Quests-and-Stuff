@@ -24,14 +24,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-final class EditorQuestCommandClient {
+public final class EditorQuestCommandClient {
     private static final int MAX_DESCRIPTION_LINES = 256;
     private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
 
     private EditorQuestCommandClient() {
     }
 
-    static void runQuestIconAction(Player player, String questId, String icon) {
+    public static void runQuestIconAction(Player player, String questId, String icon) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedIcon = icon == null || icon.isBlank() ? "minecraft:book" : icon.trim();
         if (normalizedQuestId.isBlank()) {
@@ -44,7 +44,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestIcon(serverPlayer, normalizedQuestId, normalizedIcon));
     }
 
-    static void setQuestHiddenMode(Player player, String questId, String mode) {
+    public static void setQuestHiddenMode(Player player, String questId, String mode) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedMode = EditorCommandSender.value(mode);
         if (normalizedQuestId.isBlank() || normalizedMode.isBlank()) {
@@ -56,7 +56,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestHiddenMode(serverPlayer, normalizedQuestId, normalizedMode));
     }
 
-    static void setQuestVisualHidden(Player player, String questId, boolean hidden) {
+    public static void setQuestVisualHidden(Player player, String questId, boolean hidden) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {
             return;
@@ -67,7 +67,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestVisualHidden(serverPlayer, normalizedQuestId, hidden));
     }
 
-    static void setQuestCompletionSound(Player player, String questId, String sound) {
+    public static void setQuestCompletionSound(Player player, String questId, String sound) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedSound = sound == null || sound.isBlank() ? "minecraft:ui.toast.challenge_complete" : sound.trim();
         if (normalizedQuestId.isBlank()) {
@@ -79,7 +79,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, normalizedQuestId, normalizedSound));
     }
 
-    static void setQuestCompletionSound(Player player, Set<String> questIds, String sound) {
+    public static void setQuestCompletionSound(Player player, Set<String> questIds, String sound) {
         Set<String> targets = normalizedQuestIds(questIds);
         String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
         if (targets.isEmpty()) {
@@ -93,7 +93,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, targets, normalizedSound));
     }
 
-    static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
+    public static void setQuestCompletionSoundVolume(Player player, String questId, int volume) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {
             return;
@@ -105,7 +105,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, normalizedQuestId, normalizedVolume));
     }
 
-    static void setQuestCompletionSoundVolume(Player player, Set<String> questIds, int volume) {
+    public static void setQuestCompletionSoundVolume(Player player, Set<String> questIds, int volume) {
         Set<String> targets = normalizedQuestIds(questIds);
         if (targets.isEmpty()) {
             return;
@@ -119,7 +119,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, targets, normalizedVolume));
     }
 
-    static void setQuestCompletionHudBackground(Player player, String questId, String background) {
+    public static void setQuestCompletionHudBackground(Player player, String questId, String background) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
         if (normalizedQuestId.isBlank()) {
@@ -131,7 +131,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionHudBackground(serverPlayer, normalizedQuestId, normalizedBackground));
     }
 
-    static void setQuestCompletionHudBackground(Player player, Set<String> questIds, String background) {
+    public static void setQuestCompletionHudBackground(Player player, Set<String> questIds, String background) {
         Set<String> targets = normalizedQuestIds(questIds);
         String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
         if (targets.isEmpty()) {
@@ -145,7 +145,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestCompletionHudBackground(serverPlayer, targets, normalizedBackground));
     }
 
-    static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
+    public static void setQuestBackground(Player player, String questId, String background, boolean grayscale) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
         if (normalizedQuestId.isBlank()) {
@@ -157,7 +157,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestBackground(serverPlayer, normalizedQuestId, normalizedBackground, grayscale));
     }
 
-    static void setQuestBackground(Player player, Set<String> questIds, String background, boolean grayscale) {
+    public static void setQuestBackground(Player player, Set<String> questIds, String background, boolean grayscale) {
         Set<String> targets = normalizedQuestIds(questIds);
         String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
         if (targets.isEmpty()) {
@@ -171,7 +171,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestBackground(serverPlayer, targets, normalizedBackground, grayscale));
     }
 
-    static void runRemoveQuestAction(Player player, String questId) {
+    public static void runRemoveQuestAction(Player player, String questId) {
         if (questId == null || questId.isBlank()) {
             return;
         }
@@ -184,11 +184,11 @@ final class EditorQuestCommandClient {
                 });
     }
 
-    static String predictNextQuestId(TabletUiState state) {
+    public static String predictNextQuestId(TabletUiState state) {
         return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedGroupName(state), ClientQuestCache.questIds());
     }
 
-    static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
+    public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
         String group = EditorChapterCommandClient.selectedGroupName(state);
         if (group.isBlank()) {
             return;
@@ -214,7 +214,7 @@ final class EditorQuestCommandClient {
         state.chapterPanel.lastJumpQuest = predictedId;
     }
 
-    static void beginQuestTitleChange(TabletUiState state, String questId) {
+    public static void beginQuestTitleChange(TabletUiState state, String questId) {
         if (questId == null || questId.isBlank()) {
             return;
         }
@@ -227,7 +227,7 @@ final class EditorQuestCommandClient {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questDetails.questTitleDraft);
     }
 
-    static void cancelQuestTitleChange(TabletUiState state) {
+    public static void cancelQuestTitleChange(TabletUiState state) {
         if (state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
@@ -236,7 +236,7 @@ final class EditorQuestCommandClient {
         state.questDetails.questTitleDraft = "";
     }
 
-    static boolean commitQuestTitleChange(Player player, TabletUiState state) {
+    public static boolean commitQuestTitleChange(Player player, TabletUiState state) {
         String questId = state.questDetails.pendingQuestTitleChangeId;
         if (questId.isBlank()) {
             return false;
@@ -258,7 +258,7 @@ final class EditorQuestCommandClient {
         return true;
     }
 
-    static void putQuestTaskJson(Player player, String questId, String taskJson) {
+    public static void putQuestTaskJson(Player player, String questId, String taskJson) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank() || taskJson == null || taskJson.isBlank()) {
             return;
@@ -268,7 +268,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).putQuestTask(serverPlayer, normalizedQuestId, taskJson));
     }
 
-    static void removeQuestTask(Player player, String questId, String taskId) {
+    public static void removeQuestTask(Player player, String questId, String taskId) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedTaskId = EditorCommandSender.id(taskId);
         if (normalizedQuestId.isBlank() || normalizedTaskId.isBlank()) {
@@ -280,7 +280,7 @@ final class EditorQuestCommandClient {
         resetQuestProgress(player, normalizedQuestId);
     }
 
-    static void resetQuestProgress(Player player, String questId) {
+    public static void resetQuestProgress(Player player, String questId) {
         String normalizedQuestId = questId == null ? "" : questId.trim();
         if (normalizedQuestId.isBlank()) {
             return;
@@ -292,7 +292,7 @@ final class EditorQuestCommandClient {
                 () -> ModNetwork.sendToServer(new C2SResetQuestPacket(normalizedQuestId)));
     }
 
-    static void moveQuestTask(Player player, String questId, String taskId, int offset) {
+    public static void moveQuestTask(Player player, String questId, String taskId, int offset) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedTaskId = EditorCommandSender.id(taskId);
         if (normalizedQuestId.isBlank() || normalizedTaskId.isBlank() || offset == 0) {
@@ -304,7 +304,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).moveQuestTask(serverPlayer, normalizedQuestId, normalizedTaskId, offset));
     }
 
-    static void putQuestRewardJson(Player player, String questId, String rewardJson) {
+    public static void putQuestRewardJson(Player player, String questId, String rewardJson) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank() || rewardJson == null || rewardJson.isBlank()) {
             return;
@@ -314,7 +314,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).putQuestReward(serverPlayer, normalizedQuestId, rewardJson));
     }
 
-    static void removeQuestReward(Player player, String questId, String rewardId) {
+    public static void removeQuestReward(Player player, String questId, String rewardId) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedRewardId = EditorCommandSender.id(rewardId);
         if (normalizedQuestId.isBlank() || normalizedRewardId.isBlank()) {
@@ -325,7 +325,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).removeQuestReward(serverPlayer, normalizedQuestId, normalizedRewardId));
     }
 
-    static void moveQuestReward(Player player, String questId, String rewardId, int offset) {
+    public static void moveQuestReward(Player player, String questId, String rewardId, int offset) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         String normalizedRewardId = EditorCommandSender.id(rewardId);
         if (normalizedQuestId.isBlank() || normalizedRewardId.isBlank() || offset == 0) {
@@ -337,11 +337,11 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).moveQuestReward(serverPlayer, normalizedQuestId, normalizedRewardId, offset));
     }
 
-    static void updateQuestDisplay(Player player, String questId, String title, String subtitle) {
+    public static void updateQuestDisplay(Player player, String questId, String title, String subtitle) {
         runQuestDisplayAction(player, questId, title, subtitle);
     }
 
-    static void setQuestRepeatable(Player player, String questId, boolean enabled) {
+    public static void setQuestRepeatable(Player player, String questId, boolean enabled) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {
             return;
@@ -352,7 +352,7 @@ final class EditorQuestCommandClient {
                 serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestRepeatable(serverPlayer, normalizedQuestId, enabled));
     }
 
-    static void updateQuestDescription(Player player, String questId, List<String> description) {
+    public static void updateQuestDescription(Player player, String questId, List<String> description) {
         String normalizedQuestId = EditorCommandSender.id(questId);
         if (normalizedQuestId.isBlank()) {
             return;

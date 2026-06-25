@@ -19,11 +19,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-final class EditorCanvasCommandClient {
+public final class EditorCanvasCommandClient {
     private EditorCanvasCommandClient() {
     }
 
-    static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
+    public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
         if (positions == null || positions.isEmpty()) {
             return;
         }
@@ -45,7 +45,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runCanvasScaleAction(Player player, TabletUiState state, Map<String, Float> scales) {
+    public static void runCanvasScaleAction(Player player, TabletUiState state, Map<String, Float> scales) {
         if (scales == null || scales.isEmpty()) {
             return;
         }
@@ -77,7 +77,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runCanvasCopyAction(Player player, String groupName, Set<String> questIds) {
+    public static void runCanvasCopyAction(Player player, String groupName, Set<String> questIds) {
         if (questIds == null || questIds.isEmpty()) {
             return;
         }
@@ -103,7 +103,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
+    public static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
         String group = groupName == null ? "" : groupName.trim();
         if (group.isBlank()) {
             return;
@@ -119,7 +119,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
+    public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
         String group = EditorChapterCommandClient.selectedGroupName(state);
         if (group.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
@@ -139,7 +139,7 @@ final class EditorCanvasCommandClient {
         return questId == null || questId.isBlank() || prerequisiteId == null || prerequisiteId.isBlank() || questId.equals(prerequisiteId);
     }
 
-    static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
+    public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         ClientQuestCache.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
         IntegratedServerActions.run(
@@ -151,7 +151,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runConnectionColorAction(Player player, String questId, String prerequisiteId, int color) {
+    public static void runConnectionColorAction(Player player, String questId, String prerequisiteId, int color) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         ClientQuestCache.setConnectionColorLocal(questId, prerequisiteId, color);
         IntegratedServerActions.run(
@@ -163,7 +163,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runConnectionModeAction(Player player, String questId, String prerequisiteId, boolean gridMode) {
+    public static void runConnectionModeAction(Player player, String questId, String prerequisiteId, boolean gridMode) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         ClientQuestCache.setConnectionModeLocal(questId, prerequisiteId, gridMode);
         IntegratedServerActions.run(
@@ -175,7 +175,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runConnectionHiddenAction(Player player, String questId, String prerequisiteId, boolean hidden) {
+    public static void runConnectionHiddenAction(Player player, String questId, String prerequisiteId, boolean hidden) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         ClientQuestCache.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
         IntegratedServerActions.run(
@@ -187,7 +187,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
+    public static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof net.minecraft.server.level.ServerPlayer);
         ClientQuestCache.setConnectionTextureLocal(questId, prerequisiteId, texture);
@@ -200,7 +200,7 @@ final class EditorCanvasCommandClient {
                 });
     }
 
-    static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
+    public static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         ClientQuestCache.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
         IntegratedServerActions.run(
@@ -236,27 +236,27 @@ final class EditorCanvasCommandClient {
         action.run(group, ecId, questId);
     }
 
-    static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
+    public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
         runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
                 ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color));
     }
 
-    static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
+    public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
         runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
                 ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct));
     }
 
-    static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
+    public static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
         runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
                 ConnectionRenderer.setEcConnectionHidden(state, group, ecId, questId, hidden));
     }
 
-    static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
+    public static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
         runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
                 ConnectionRenderer.setEcConnectionTexture(state, group, ecId, questId, texture));
     }
 
-    static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
+    public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
         runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
                 ConnectionRenderer.setEcConnectionTextureSpacing(state, group, ecId, questId, spacing));
     }

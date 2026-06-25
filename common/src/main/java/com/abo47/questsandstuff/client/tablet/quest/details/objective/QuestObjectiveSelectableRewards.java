@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
@@ -141,7 +141,7 @@ final class QuestObjectiveSelectableRewards {
             return;
         }
         reward.addProperty("selectable", true);
-        EditorCommandClient.putQuestRewardJson(player, questId, reward.toString());
+        EditorQuestCommandClient.putQuestRewardJson(player, questId, reward.toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] reward marked selectable quest={} reward={}", questId, rewardId);
     }
 
@@ -266,7 +266,7 @@ final class QuestObjectiveSelectableRewards {
                 continue;
             }
             choice.getValue().getAsJsonObject().addProperty("amount", amount);
-            EditorCommandClient.putQuestRewardJson(player, questId, selectable.toString());
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, selectable.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] selectable reward display amount changed quest={} reward={} choice={} amount={}", questId, rewardId, choice.getKey(), amount);
             return true;
         }

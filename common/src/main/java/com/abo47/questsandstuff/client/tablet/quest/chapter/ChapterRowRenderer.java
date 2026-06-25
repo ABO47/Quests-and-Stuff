@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -273,7 +273,7 @@ final class ChapterRowRenderer {
     }
 
     private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String group, int x, int y) {
-        if (!EditorCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageGroups(state)) {
             return;
         }
         EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {

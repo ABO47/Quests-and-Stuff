@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
@@ -158,7 +158,7 @@ public final class CanvasClipboardController {
         ContextMenuState.clearDeleteConfirm(state);
 
         if (!copiedQuestIds.isEmpty()) {
-            EditorCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);
+            EditorCanvasCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);
         }
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy stored source={} group={} quests={} images={} texts={} ecs={} origin={},{}",
                 source, group, copiedQuestIds.size(), copiedImages.size(), copiedTexts.size(), copiedEcs.size(), origin.x, origin.y);
@@ -274,7 +274,7 @@ public final class CanvasClipboardController {
 
         boolean pastedElements = pasteCanvasElements(state, group, anchorX, anchorY);
         if (state.clipboard.canvasClipboard.hasQuestClipboard()) {
-            EditorCommandClient.runCanvasPasteClipboardAction(player, group, anchorX, anchorY);
+            EditorCanvasCommandClient.runCanvasPasteClipboardAction(player, group, anchorX, anchorY);
         }
 
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste requested source={} group={} quests={} images={} texts={} anchor={},{}",

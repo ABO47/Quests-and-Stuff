@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
@@ -125,7 +125,7 @@ public final class QuestDetailsDescriptionModel {
     }
 
     public static void save(Player player, String questId, QuestDetailsDescriptionModel model) {
-        EditorCommandClient.updateQuestDescription(player, questId, encode(model));
+        EditorQuestCommandClient.updateQuestDescription(player, questId, encode(model));
     }
 
     public static void preview(String questId, QuestDetailsDescriptionModel model) {

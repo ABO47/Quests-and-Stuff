@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
@@ -52,7 +52,7 @@ final class TabletRootDismissals {
         if (!state.questDetails.pendingQuestTitleChangeId.isBlank()
                 && !QuestDetailsWindow.isInside(state, mouseX, mouseY)
                 && !TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY)) {
-            EditorCommandClient.cancelQuestTitleChange(state);
+            EditorQuestCommandClient.cancelQuestTitleChange(state);
             changed = true;
         }
         if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
