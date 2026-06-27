@@ -8,9 +8,12 @@ import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -101,7 +104,7 @@ final class QuestDetailsWindowLayout {
                 if (alpha <= 0) {
                     return;
                 }
-                graphics.fill(getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
+                Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, alpha)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         };
         layer.addWidget(dim);
@@ -149,22 +152,23 @@ final class QuestDetailsWindowLayout {
         int holeTop = Math.max(top, Math.min(bottom, y + holeY));
         int holeRight = Math.max(left, Math.min(right, x + holeX + Math.max(0, holeW)));
         int holeBottom = Math.max(top, Math.min(bottom, y + holeY + Math.max(0, holeH)));
+        IGuiTexture fill = Surfaces.fill(ModColors.SURFACE_BASE);
         if (holeRight <= holeLeft || holeBottom <= holeTop) {
-            fillModalRect(graphics, left, top, right, bottom);
+            fillModalRect(fill, graphics, left, top, right, bottom);
         } else {
-            fillModalRect(graphics, left, top, right, holeTop);
-            fillModalRect(graphics, left, holeBottom, right, bottom);
-            fillModalRect(graphics, left, holeTop, holeLeft, holeBottom);
-            fillModalRect(graphics, holeRight, holeTop, right, holeBottom);
+            fillModalRect(fill, graphics, left, top, right, holeTop);
+            fillModalRect(fill, graphics, left, holeBottom, right, bottom);
+            fillModalRect(fill, graphics, left, holeTop, holeLeft, holeBottom);
+            fillModalRect(fill, graphics, holeRight, holeTop, right, holeBottom);
         }
         if (!fillsLayer) {
-            graphics.renderOutline(x, y, w, h, ModColors.BORDER_BASE);
+            TabletPanelChrome.drawRectOutline(graphics, x, y, w, h, ModColors.BORDER_BASE);
         }
     }
 
-    private static void fillModalRect(GuiGraphics graphics, int left, int top, int right, int bottom) {
+    private static void fillModalRect(IGuiTexture fill, GuiGraphics graphics, int left, int top, int right, int bottom) {
         if (right > left && bottom > top) {
-            graphics.fill(left, top, right, bottom, ModColors.SURFACE_BASE);
+            fill.draw(graphics, 0, 0, left, top, right - left, bottom - top);
         }
     }
 

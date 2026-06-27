@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -8,8 +10,7 @@ import javax.annotation.Nonnull;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
 
@@ -29,9 +30,9 @@ public final class SplitPanelLayout {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawPanelChrome(graphics, this);
+                Surfaces.fill(ModColors.SURFACE_PANEL).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawPanelOutline(graphics, this);
+                drawRectOutline(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), ModColors.BORDER_BASE);
             }
         };
     }

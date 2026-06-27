@@ -101,7 +101,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         drawBackgroundTexture(graphics, mouseX, mouseY);
         withScissor(graphics, () -> {
             QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-            QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, state, model, contentX(), contentY(), contentW(), contentH());
+            QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, mouseX, mouseY, state, model, contentX(), contentY(), contentW(), contentH());
             selection.drawMultiSelectionBounds(graphics, model);
             selection.drawBoxSelection(graphics);
             drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);

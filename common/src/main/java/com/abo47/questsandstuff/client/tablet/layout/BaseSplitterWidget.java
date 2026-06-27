@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -91,9 +92,9 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         int width = getSizeWidth();
         int height = getSizeHeight();
         int fill = hovered ? withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha()) : ModColors.SURFACE_BASE;
-        graphics.fill(left, top, left + width, top + height, fill);
-        graphics.fill(left, top, left + width, top + 1, ModColors.BORDER_BASE);
-        graphics.fill(left, top + height - 1, left + width, top + height, ModColors.BORDER_BASE);
+        Surfaces.fill(fill).draw(graphics, mouseX, mouseY, left, top, width, height);
+        Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
+        Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }

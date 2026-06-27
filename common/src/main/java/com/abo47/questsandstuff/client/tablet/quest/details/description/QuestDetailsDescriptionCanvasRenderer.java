@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
@@ -30,14 +31,14 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     private QuestDetailsDescriptionCanvasRenderer() {
     }
 
-    public static void drawContent(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+    public static void drawContent(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         drawDescriptionBackground(graphics, state, model, contentX, contentY, contentW, contentH);
-        drawGrid(graphics, state, contentX, contentY, contentW, contentH);
+        drawGrid(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
         drawElements(graphics, state, model, contentX, contentY, contentW, contentH);
-        drawGuides(graphics, state, contentX, contentY, contentW, contentH);
+        drawGuides(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
     }
 
-    private static void drawGrid(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawGrid(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
         if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditState.canEdit(state)) {
             return;
         }
@@ -48,14 +49,15 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         int spanH = contentH;
         int paintW = spanW + 1;
         int paintH = spanH + 1;
+        IGuiTexture line = Surfaces.fill(color);
         for (int x = 0; x <= spanW; x += cell) {
-            graphics.fill(contentX + x, contentY, contentX + x + 1, contentY + paintH, color);
+            line.draw(graphics, mouseX, mouseY, contentX + x, contentY, 1, paintH);
         }
         int offset = Math.floorMod(-state.questDetails.questDetailsDescScroll, cell);
         for (int y = offset; y <= spanH; y += cell) {
-            graphics.fill(contentX, contentY + y, contentX + paintW, contentY + y + 1, color);
+            line.draw(graphics, mouseX, mouseY, contentX, contentY + y, paintW, 1);
         }
-        graphics.fill(contentX + spanW, contentY, contentX + spanW + 1, contentY + paintH, color);
+        line.draw(graphics, mouseX, mouseY, contentX + spanW, contentY, 1, paintH);
     }
 
     private static void drawDescriptionBackground(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
@@ -89,18 +91,19 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
     }
 
-    private static void drawGuides(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawGuides(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
         if (!QuestDetailsEditState.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
+        IGuiTexture guide = Surfaces.fill(color);
         if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX <= contentW) {
             int x = contentX + state.canvas.snapGuideX;
-            graphics.fill(x, contentY, x + 1, contentY + contentH + 1, color);
+            guide.draw(graphics, mouseX, mouseY, x, contentY, 1, contentH + 1);
         }
         if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY <= contentH) {
             int y = contentY + state.canvas.snapGuideY;
-            graphics.fill(contentX, y, contentX + contentW + 1, y + 1, color);
+            guide.draw(graphics, mouseX, mouseY, contentX, y, contentW + 1, 1);
         }
     }
 
