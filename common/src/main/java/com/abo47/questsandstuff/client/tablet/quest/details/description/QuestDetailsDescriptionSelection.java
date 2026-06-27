@@ -13,6 +13,8 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.IntSupplier;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class QuestDetailsDescriptionSelection {
@@ -175,13 +177,12 @@ public final class QuestDetailsDescriptionSelection {
         if (right <= left || bottom <= top) {
             return;
         }
+        int cx = contentX.getAsInt();
+        int cy = contentY.getAsInt();
         if ((fill >>> 24) != 0) {
-            graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + bottom, fill);
+            Surfaces.fill(fill).draw(graphics, 0, 0, cx + left, cy + top, right - left, bottom - top);
         }
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + top + 1, border);
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + bottom - 1, contentX.getAsInt() + right, contentY.getAsInt() + bottom, border);
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + left + 1, contentY.getAsInt() + bottom, border);
-        graphics.fill(contentX.getAsInt() + right - 1, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + bottom, border);
+        drawRectOutline(graphics, cx + left, cy + top, right - left, bottom - top, border);
     }
 
     private static int[] bounds(int x, int y, int w, int h, int rotation) {

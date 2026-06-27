@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -27,7 +28,7 @@ public final class CanvasBackgroundOpacity {
         if ((fill >>> 24) == 0) {
             return;
         }
-        graphics.fill(x, y, x + width, y + height, fill);
+        Surfaces.fill(fill).draw(graphics, 0, 0, x, y, width, height);
     }
 
     public static void drawTexture(GuiGraphics graphics, IGuiTexture texture, int mouseX, int mouseY, int x, int y, int width, int height, int percent) {

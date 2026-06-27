@@ -2,8 +2,10 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 
@@ -83,15 +85,15 @@ public final class QuestMiniCardRenderer {
     }
 
     private static void drawHiddenOverlay(GuiGraphics graphics, int x, int y, int width, int height, int alpha, int maxAlpha) {
-        graphics.fill(x, y, x + width, y + height, hiddenOverlayColor(alpha, maxAlpha));
+        Surfaces.fill(hiddenOverlayColor(alpha, maxAlpha)).draw(graphics, 0, 0, x, y, width, height);
     }
 
     public static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int width, int height, int alpha) {
         int color = highlightColor(alpha);
-        graphics.fill(x - 2, y - 2, x + width + 2, y, color);
-        graphics.fill(x - 2, y + height, x + width + 2, y + height + 2, color);
-        graphics.fill(x - 2, y, x, y + height, color);
-        graphics.fill(x + width, y, x + width + 2, y + height, color);
+        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y - 2, width + 4, 2);
+        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y + height, width + 4, 2);
+        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y, 2, height);
+        Surfaces.fill(color).draw(graphics, 0, 0, x + width, y, 2, height);
     }
 
     public record IconRect(int x, int y, int size) {

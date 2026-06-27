@@ -4,15 +4,18 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Quaternionf;
 
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasTransformGizmo {
@@ -209,8 +212,8 @@ public final class CanvasTransformGizmo {
         int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
-        graphics.fill(left, top, right, bottom, withAlpha(ModColors.INTERACTIVE, 18));
-        graphics.renderOutline(left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(ModColors.SUCCESS, 185));
+        Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(ModColors.SUCCESS, 185));
         drawInsideHandle(graphics, left, top, ModColors.SUCCESS);
         drawInsideHandle(graphics, right - HANDLE, top, ModColors.SUCCESS);
         drawInsideHandle(graphics, left, bottom - HANDLE, ModColors.SUCCESS);
@@ -235,9 +238,9 @@ public final class CanvasTransformGizmo {
     private static void line(GuiGraphics graphics, int x1, int y1, int x2, int y2, int color, int alpha) {
         int c = withAlpha(color, alpha);
         if (y1 == y2) {
-            graphics.fill(Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1, y1 + 2, c);
+            Surfaces.fill(c).draw(graphics, 0, 0, Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1 - Math.min(x1, x2), 3);
         } else if (x1 == x2) {
-            graphics.fill(x1 - 1, Math.min(y1, y2), x1 + 2, Math.max(y1, y2) + 1, c);
+            Surfaces.fill(c).draw(graphics, 0, 0, x1 - 1, Math.min(y1, y2), 3, Math.max(y1, y2) + 1 - Math.min(y1, y2));
         }
     }
 
@@ -339,8 +342,8 @@ public final class CanvasTransformGizmo {
         var font = Minecraft.getInstance().font;
         int width = font.width(text) + 6;
         int height = font.lineHeight + 4;
-        graphics.fill(x - 3, y - 2, x - 3 + width, y - 2 + height, withAlpha(ModColors.SURFACE_BASE, 205));
-        graphics.renderOutline(x - 3, y - 2, width, height, withAlpha(color, 210));
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - 3, y - 2, width, height);
+        drawRectOutline(graphics, x - 3, y - 2, width, height, withAlpha(color, 210));
         graphics.drawString(font, text, x, y, ModColors.TEXT_PRIMARY, false);
     }
 
@@ -393,21 +396,21 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 72));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawInsideHandle(GuiGraphics graphics, int left, int top, int color) {
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawBoxHandle(GuiGraphics graphics, int centerX, int centerY, int color) {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static boolean near(LocalPoint point, int x, int y) {

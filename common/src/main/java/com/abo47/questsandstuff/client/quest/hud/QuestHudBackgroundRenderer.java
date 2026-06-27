@@ -3,6 +3,9 @@ package com.abo47.questsandstuff.client.quest.hud;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -39,17 +42,17 @@ final class QuestHudBackgroundRenderer {
                 graphics.setColor(1.0f, 1.0f, 1.0f, effectiveOpacity);
                 texture.draw(graphics, 0, 0, x, y, width, height);
                 resetTextureState(graphics);
-                graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity)));
+                Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity))).draw(graphics, 0, 0, x, y, width, height);
             }
         } else {
             int panelAlpha = Math.round(224.0f * effectiveOpacity);
             if (panelAlpha > 0) {
-                graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_PANEL, panelAlpha));
+                Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL, panelAlpha)).draw(graphics, 0, 0, x, y, width, height);
             }
         }
         int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
         if (borderAlpha > 0) {
-            graphics.renderOutline(x, y, width, height, withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
+            drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
         }
     }
 
@@ -72,8 +75,8 @@ final class QuestHudBackgroundRenderer {
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {
         if (background == null || background.isBlank()) {
-            graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 180));
-            graphics.renderOutline(x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
+            drawRectOutline(graphics, x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
             return;
         }
         IGuiTexture texture = TabletUiFactory.assetThumbnailTexture(background);
@@ -83,8 +86,8 @@ final class QuestHudBackgroundRenderer {
         if (texture != null) {
             texture.draw(graphics, 0, 0, x, y, width, height);
         } else {
-            graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 180));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
         }
-        graphics.renderOutline(x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
+        drawRectOutline(graphics, x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
     }
 }

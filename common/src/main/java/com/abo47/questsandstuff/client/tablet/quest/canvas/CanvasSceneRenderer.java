@@ -96,14 +96,14 @@ final class CanvasSceneRenderer {
                     if (x < visibleLeft || x > visibleRight) {
                         continue;
                     }
-                    graphics.fill(originX + x, originY + visibleTop, originX + x + 1, originY + visibleBottom + 1, lineColor);
+                    Surfaces.fill(lineColor).draw(graphics, 0, 0, originX + x, originY + visibleTop, 1, visibleBottom + 1 - visibleTop);
                 }
                 for (int row = firstRow; row <= lastRow; row++) {
                     int y = CanvasGeometry.screenY(state, row * cell);
                     if (y < visibleTop || y > visibleBottom) {
                         continue;
                     }
-                    graphics.fill(originX + visibleLeft, originY + y, originX + visibleRight + 1, originY + y + 1, lineColor);
+                    Surfaces.fill(lineColor).draw(graphics, 0, 0, originX + visibleLeft, originY + y, visibleRight + 1 - visibleLeft, 1);
                 }
             }
         });
@@ -126,14 +126,14 @@ final class CanvasSceneRenderer {
                 }
                 int originX = getPositionX();
                 int originY = getPositionY();
-                graphics.fill(originX, originY, originX + viewportW, originY + contentY, fill);
-                graphics.fill(originX, originY + contentY + paintH, originX + viewportW, originY + viewportH, fill);
-                graphics.fill(originX, originY + contentY, originX + contentX, originY + contentY + paintH, fill);
-                graphics.fill(originX + contentX + paintW, originY + contentY, originX + viewportW, originY + contentY + paintH, fill);
+                Surfaces.fill(fill).draw(graphics, 0, 0, originX, originY, viewportW, contentY);
+                Surfaces.fill(fill).draw(graphics, 0, 0, originX, originY + contentY + paintH, viewportW, viewportH - contentY - paintH);
+                Surfaces.fill(fill).draw(graphics, 0, 0, originX, originY + contentY, contentX, paintH);
+                Surfaces.fill(fill).draw(graphics, 0, 0, originX + contentX + paintW, originY + contentY, viewportW - contentX - paintW, paintH);
                 if (canvasBackground == null) {
-                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
+                    Surfaces.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
                 } else {
-                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
+                    Surfaces.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
                     CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
                 }
             }

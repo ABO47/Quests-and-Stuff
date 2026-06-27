@@ -4,6 +4,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,8 +21,8 @@ final class QuestHudProgressBar {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
         float safeProgress = Math.max(0.0f, Math.min(1.0f, progress));
-        graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, Math.min(178, safeAlpha)));
-        graphics.renderOutline(x, y, w, h, withAlpha(ModColors.BORDER_BASE, Math.min(130, safeAlpha)));
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, Math.min(178, safeAlpha))).draw(graphics, 0, 0, x, y, w, h);
+        drawRectOutline(graphics, x, y, w, h, withAlpha(ModColors.BORDER_BASE, Math.min(130, safeAlpha)));
         ProgressTexture texture = new ProgressTexture(
                 IGuiTexture.EMPTY,
                 Surfaces.fill(withAlpha(fillColor, Math.min(180, safeAlpha)))

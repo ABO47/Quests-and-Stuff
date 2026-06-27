@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -312,7 +313,7 @@ final class ChapterRowRenderer {
                 int fillSize = Math.min(w, h);
                 int fillX = x + Math.max(0, (w - fillSize) / 2);
                 int fillY = y + Math.max(0, (h - fillSize) / 2);
-                graphics.fill(fillX, fillY, fillX + fillSize, fillY + fillSize, fill);
+                Surfaces.fill(fill).draw(graphics, 0, 0, fillX, fillY, fillSize, fillSize);
             }
         }
     }

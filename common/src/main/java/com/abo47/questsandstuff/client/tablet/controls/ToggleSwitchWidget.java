@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
@@ -217,20 +218,20 @@ public final class ToggleSwitchWidget extends SwitchWidget {
                 knob = withAlpha(knob, 165);
             }
 
-            graphics.fill(ix, iy, ix + width, iy + height, border);
-            graphics.fill(ix + 1, iy + 1, ix + Math.max(2, width - 1), iy + Math.max(2, height - 1), track);
+            Surfaces.fill(border).draw(graphics, 0, 0, ix, iy, width, height);
+            Surfaces.fill(track).draw(graphics, 0, 0, ix + 1, iy + 1, Math.max(2, width - 1) - 1, Math.max(2, height - 1) - 1);
             int activeW = Math.round((width - 2) * amount);
             if (activeW > 2) {
-                graphics.fill(ix + 1, iy + 1, ix + 1 + activeW, iy + Math.max(2, height - 1), activeTrack);
+                Surfaces.fill(activeTrack).draw(graphics, 0, 0, ix + 1, iy + 1, activeW, Math.max(2, height - 1) - 1);
             }
 
             int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
             int knobTravel = Math.max(0, width - knobSize - 4);
             int knobX = ix + 2 + Math.round(knobTravel * amount);
             int knobY = iy + Math.max(2, (height - knobSize) / 2);
-            graphics.fill(knobX + 1, knobY + 1, knobX + knobSize + 1, knobY + knobSize + 1, withAlpha(ModColors.SURFACE_BASE, 100));
-            graphics.fill(knobX, knobY, knobX + knobSize, knobY + knobSize, knob);
-            graphics.fill(knobX + 2, knobY + 2, knobX + knobSize - 2, knobY + 3, withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 100)).draw(graphics, 0, 0, knobX + 1, knobY + 1, knobSize, knobSize);
+            Surfaces.fill(knob).draw(graphics, 0, 0, knobX, knobY, knobSize, knobSize);
+            Surfaces.fill(withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48)).draw(graphics, 0, 0, knobX + 2, knobY + 2, knobSize - 4, 1);
         }
     }
 
@@ -239,7 +240,7 @@ public final class ToggleSwitchWidget extends SwitchWidget {
         public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
             int ix = Math.round(x);
             int iy = Math.round(y);
-            graphics.fill(ix - 1, iy - 1, ix + width + 1, iy + height + 1, withAlpha(ModColors.INTERACTIVE, 30));
+            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 30)).draw(graphics, 0, 0, ix - 1, iy - 1, width + 2, height + 2);
         }
     }
 

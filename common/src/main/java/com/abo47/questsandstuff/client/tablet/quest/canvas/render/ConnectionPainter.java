@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
@@ -142,8 +144,8 @@ final class ConnectionPainter {
 
         if (line.pending()) {
             int halfSize = CHEVRON_BASE_W;
-            graphics.fill(startX - halfSize, startY - halfSize, startX + halfSize + 1, startY + halfSize + 1, withAlpha(ModColors.SUCCESS, PENDING_FILL_ALPHA));
-            graphics.renderOutline(startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ModColors.SUCCESS, PENDING_OUTLINE_ALPHA));
+            Surfaces.fill(withAlpha(ModColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
+            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ModColors.SUCCESS, PENDING_OUTLINE_ALPHA));
             return;
         }
 

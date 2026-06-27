@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -198,6 +200,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
         if (width <= 0 || height <= 0) {
             return;
         }
-        graphics.fill(x, y, x + width, y + height, color);
+        Surfaces.fill(color).draw(graphics, 0, 0, x, y, width, height);
     }
 }

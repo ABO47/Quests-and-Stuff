@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -54,11 +56,11 @@ final class EntityMotionSliderWidget extends WidgetGroup {
         int activeColor = withAlpha(ModColors.INTERACTIVE, 220);
         int mutedColor = withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
 
-        graphics.fill(trackLeft, trackY, trackRight, trackY + 2, trackColor);
-        graphics.fill(trackLeft, trackY, knobX + KNOB_W / 2, trackY + 2, activeColor);
-        graphics.fill(knobX, top + 3, knobX + KNOB_W, top + height - 3, activeColor);
+        Surfaces.fill(trackColor).draw(graphics, 0, 0, trackLeft, trackY, trackRight - trackLeft, 2);
+        Surfaces.fill(activeColor).draw(graphics, 0, 0, trackLeft, trackY, knobX + KNOB_W / 2 - trackLeft, 2);
+        Surfaces.fill(activeColor).draw(graphics, 0, 0, knobX, top + 3, KNOB_W, height - 6);
         if (KNOB_W > 2) {
-            graphics.fill(knobX + 1, top + 4, knobX + KNOB_W - 1, top + height - 4, mutedColor);
+            Surfaces.fill(mutedColor).draw(graphics, 0, 0, knobX + 1, top + 4, KNOB_W - 2, height - 8);
         }
     }
 

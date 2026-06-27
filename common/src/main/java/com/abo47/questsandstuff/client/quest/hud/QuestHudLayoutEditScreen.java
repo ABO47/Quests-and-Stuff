@@ -2,6 +2,10 @@ package com.abo47.questsandstuff.client.quest.hud;
 
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;
 import com.abo47.questsandstuff.client.tablet.context.ContextActions;
@@ -236,14 +240,14 @@ public final class QuestHudLayoutEditScreen extends Screen {
     }
 
     private void renderEditSurface(GuiGraphics graphics) {
-        graphics.fill(0, 0, width, height, withAlpha(ModColors.SURFACE_BASE, 86));
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 86)).draw(graphics, 0, 0, 0, 0, width, height);
         int lightLine = withAlpha(ModColors.BORDER_BASE, 62);
         int strongLine = withAlpha(ModColors.BORDER_ACCENT, 78);
         for (int x = 0; x <= width; x += GRID_STEP) {
-            graphics.fill(x, 0, x + 1, height, x % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
+            Surfaces.fill(x % (GRID_STEP * 4) == 0 ? strongLine : lightLine).draw(graphics, 0, 0, x, 0, 1, height);
         }
         for (int y = 0; y <= height; y += GRID_STEP) {
-            graphics.fill(0, y, width, y + 1, y % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
+            Surfaces.fill(y % (GRID_STEP * 4) == 0 ? strongLine : lightLine).draw(graphics, 0, 0, 0, y, width, 1);
         }
         Minecraft minecraft = Minecraft.getInstance();
         String title = getTitle().getString();
@@ -289,8 +293,8 @@ public final class QuestHudLayoutEditScreen extends Screen {
 
     private void drawResizeHandle(GuiGraphics graphics, QuestHudLayout.HudBox box) {
         QuestHudLayout.HudBox handle = resizeHandle(box);
-        graphics.fill(handle.x(), handle.y(), handle.x() + handle.width(), handle.y() + handle.height(), withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(handle.x(), handle.y(), handle.width(), handle.height(), ModColors.SUCCESS);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, handle.x(), handle.y(), handle.width(), handle.height());
+        drawRectOutline(graphics, handle.x(), handle.y(), handle.width(), handle.height(), ModColors.SUCCESS);
     }
 
     private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayout.HudBox box, QuestHudLayout.Element element) {
@@ -298,10 +302,10 @@ public final class QuestHudLayoutEditScreen extends Screen {
         int fillAlpha = Math.round(18.0f * opacity);
         int outlineAlpha = Math.round(185.0f * opacity);
         if (fillAlpha > 0) {
-            graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), withAlpha(ModColors.INTERACTIVE, fillAlpha));
+            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, fillAlpha)).draw(graphics, 0, 0, box.x(), box.y(), box.width(), box.height());
         }
         if (outlineAlpha > 0) {
-            graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), withAlpha(ModColors.SUCCESS, outlineAlpha));
+            drawRectOutline(graphics, box.x(), box.y(), box.width(), box.height(), withAlpha(ModColors.SUCCESS, outlineAlpha));
         }
     }
 

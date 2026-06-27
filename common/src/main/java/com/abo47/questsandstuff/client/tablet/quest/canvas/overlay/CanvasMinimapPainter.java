@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class CanvasMinimapPainter {
@@ -53,10 +54,10 @@ final class CanvasMinimapPainter {
             int bodyX = handleX - visibleBodyW;
             int bodyY = originY + layout.panelY();
             int bodyH = layout.panelH();
-            graphics.fill(bodyX, bodyY, handleX, bodyY + bodyH, withAlpha(ModColors.SURFACE_BASE, 248));
-            graphics.fill(bodyX, bodyY, handleX, bodyY + 1, withAlpha(ModColors.BORDER_BASE, 150));
-            graphics.fill(bodyX, bodyY + bodyH - 1, handleX, bodyY + bodyH, withAlpha(ModColors.BORDER_BASE, 150));
-            graphics.fill(bodyX, bodyY, bodyX + 1, bodyY + bodyH, withAlpha(ModColors.BORDER_BASE, 150));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, bodyH);
+            Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
+            Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
+            Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
         }
         drawHandle(graphics, handleX, handleY, handleW, handleH, mouseX, mouseY);
     }
@@ -141,11 +142,11 @@ final class CanvasMinimapPainter {
 
     private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
         if (w < 5 || h < 5) {
-            graphics.fill(x, y, x + w, y + h, withAlpha(color, 255));
+            Surfaces.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x, y, w, h);
             return;
         }
-        graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 255));
-        graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 255)).draw(graphics, 0, 0, x, y, w, h);
+        Surfaces.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x + 1, y + 1, w - 2, h - 2);
     }
 
     private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
@@ -197,7 +198,7 @@ final class CanvasMinimapPainter {
         boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
         int fill = hovered ? withAlpha(ModColors.INTERACTIVE, 115) : withAlpha(ModColors.SURFACE_PANEL_ALT, 236);
         int border = hovered ? withAlpha(ModColors.BORDER_ACCENT, 235) : withAlpha(ModColors.BORDER_BASE, 180);
-        graphics.fill(x, y, x + w, y + h, fill);
+        Surfaces.fill(fill).draw(graphics, 0, 0, x, y, w, h);
         drawBorder(graphics, x, y, w, h, border);
     }
 
@@ -210,7 +211,7 @@ final class CanvasMinimapPainter {
         if (x1 == x2 && y1 == y2) {
             int x = Math.round(x1);
             int y = Math.round(y1);
-            graphics.fill(x, y, x + 1, y + 1, color);
+            Surfaces.fill(color).draw(graphics, 0, 0, x, y, 1, 1);
             return;
         }
         if (connection.projectedPath() != null) {
@@ -231,17 +232,17 @@ final class CanvasMinimapPainter {
         int x2 = Math.round(x2f);
         int y2 = Math.round(y2f);
         if (x1 == x2 && y1 == y2) {
-            graphics.fill(x1, y1, x1 + 1, y1 + 1, color);
+            Surfaces.fill(color).draw(graphics, 0, 0, x1, y1, 1, 1);
             return;
         }
         if (x1 == x2) {
             int minY = Math.min(y1, y2);
             int maxY = Math.max(y1, y2);
-            graphics.fill(x1, minY, x1 + 1, maxY + 1, color);
+            Surfaces.fill(color).draw(graphics, 0, 0, x1, minY, 1, maxY + 1 - minY);
         } else if (y1 == y2) {
             int minX = Math.min(x1, x2);
             int maxX = Math.max(x1, x2);
-            graphics.fill(minX, y1, maxX + 1, y1 + 1, color);
+            Surfaces.fill(color).draw(graphics, 0, 0, minX, y1, maxX + 1 - minX, 1);
         } else {
             List<Vec2> pts = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
             Tesselator tessellator = Tesselator.getInstance();
@@ -258,10 +259,10 @@ final class CanvasMinimapPainter {
     }
 
     private static void drawBorder(GuiGraphics graphics, int x, int y, int w, int h, int color) {
-        graphics.fill(x, y, x + w, y + 1, color);
-        graphics.fill(x, y + h - 1, x + w, y + h, color);
-        graphics.fill(x, y, x + 1, y + h, color);
-        graphics.fill(x + w - 1, y, x + w, y + h, color);
+        Surfaces.fill(color).draw(graphics, 0, 0, x, y, w, 1);
+        Surfaces.fill(color).draw(graphics, 0, 0, x, y + h - 1, w, 1);
+        Surfaces.fill(color).draw(graphics, 0, 0, x, y, 1, h);
+        Surfaces.fill(color).draw(graphics, 0, 0, x + w - 1, y, 1, h);
     }
 
     private static int clamp(int value, int min, int max) {

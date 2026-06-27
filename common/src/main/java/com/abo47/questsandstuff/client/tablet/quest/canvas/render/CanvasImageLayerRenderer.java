@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,6 +66,6 @@ public final class CanvasImageLayerRenderer {
     }
 
     private static void drawFallback(GuiGraphics graphics, int width, int height, int pivotX, int pivotY) {
-        graphics.fill(-pivotX, -pivotY, -pivotX + width, -pivotY + height, withAlpha(ModColors.TEXT_MUTED, 45));
+        Surfaces.fill(withAlpha(ModColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
     }
 }

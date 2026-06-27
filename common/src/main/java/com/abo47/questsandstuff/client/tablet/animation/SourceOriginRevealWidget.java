@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.animation;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
@@ -163,10 +164,10 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = getSizeHeight();
         if (softAlpha > 0) {
-            graphics.fill(x + 4, y + 5, x + w + 4, y + h + 5, withAlpha(ModColors.SURFACE_BASE, softAlpha));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
         }
         if (hardAlpha > 0) {
-            graphics.fill(x + 2, y + 3, x + w + 2, y + h + 3, withAlpha(ModColors.SURFACE_BASE, hardAlpha));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
         }
     }
 

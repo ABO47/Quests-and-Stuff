@@ -73,7 +73,7 @@ public final class QuestCardBackgroundRenderer {
         drawTextureAlpha(graphics, texture, mouseX, mouseY, x, y, width, height, alpha);
         int filter = statusFilter(tag, alpha);
         if ((filter >>> 24) != 0) {
-            graphics.fill(x, y, x + width, y + height, filter);
+            Surfaces.fill(filter).draw(graphics, 0, 0, x, y, width, height);
         }
     }
 

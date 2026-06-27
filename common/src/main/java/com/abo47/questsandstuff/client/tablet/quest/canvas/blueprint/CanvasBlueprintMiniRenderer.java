@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackg
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -501,7 +502,7 @@ public final class CanvasBlueprintMiniRenderer {
     private static void drawCenteredTextPlaceholder(GuiGraphics graphics, int x, int y, int w, int h) {
         int cx = x + w / 2;
         int cy = y + h / 2;
-        graphics.fill(cx - 12, cy - 1, cx + 12, cy + 1, withAlpha(ModColors.TEXT_MUTED, 100));
+        Surfaces.fill(withAlpha(ModColors.TEXT_MUTED, 100)).draw(graphics, 0, 0, cx - 12, cy - 1, 24, 2);
     }
 
     public record BlueprintBounds(int minX, int minY, int width, int height) {

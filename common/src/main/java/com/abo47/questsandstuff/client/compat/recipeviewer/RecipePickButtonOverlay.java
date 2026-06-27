@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,6 +12,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 
 public final class RecipePickButtonOverlay {
     public static final int BUTTON_SIZE = 11;
@@ -37,10 +40,10 @@ public final class RecipePickButtonOverlay {
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, 350.0F);
         try {
-            graphics.fill(button.getX(), button.getY(), button.getX() + button.getWidth(), button.getY() + button.getHeight(), border);
-            graphics.fill(button.getX() + 1, button.getY() + 1, button.getX() + button.getWidth() - 1, button.getY() + button.getHeight() - 1, fill);
+            Surfaces.fill(border).draw(graphics, 0, 0, button.getX(), button.getY(), button.getWidth(), button.getHeight());
+            Surfaces.fill(fill).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             if (hovered) {
-                graphics.fill(button.getX() + 1, button.getY() + 1, button.getX() + button.getWidth() - 1, button.getY() + button.getHeight() - 1, hoverOverlay);
+                Surfaces.fill(hoverOverlay).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             }
             IGuiTexture icon = UiIconAtlas.iconTexture("add");
             if (icon != null) {

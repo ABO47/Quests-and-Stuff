@@ -2,9 +2,12 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 public final class CanvasElementSelectionSlot {
@@ -37,10 +40,10 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            graphics.fill(box.left(), box.top(), box.right(), box.bottom(), withAlpha(ModColors.INTERACTIVE, 18));
-            graphics.renderOutline(box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
-            graphics.fill(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, box.right(), box.bottom(), withAlpha(ModColors.SURFACE_BASE, 220));
-            graphics.renderOutline(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
+            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
+            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
             graphics.pose().popPose();
         }
     }
@@ -50,8 +53,8 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            graphics.fill(box.left(), box.top(), box.right(), box.bottom(), withAlpha(ModColors.INTERACTIVE, 18));
-            graphics.renderOutline(box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
+            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
             drawHandles(graphics, box);
             graphics.pose().popPose();
         }
@@ -80,10 +83,10 @@ public final class CanvasElementSelectionSlot {
     }
 
     private static void drawHandles(GuiGraphics graphics, CanvasElementGeometry.Box box) {
-        graphics.fill(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, box.right(), box.bottom(), withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
-        graphics.fill(box.right() - HANDLE_SIZE, box.top(), box.right(), box.top() + HANDLE_SIZE, withAlpha(ModColors.WARNING, 220));
-        graphics.renderOutline(box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, ModColors.WARNING);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
+        Surfaces.fill(withAlpha(ModColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, ModColors.WARNING);
     }
 
     private static int normalize(int rotationDegrees) {

@@ -9,9 +9,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
@@ -206,11 +208,11 @@ public final class CanvasSelectionRenderer {
                 int originY = getPositionY();
                 if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX < getSizeWidth()) {
                     int x = originX + state.canvas.snapGuideX;
-                    graphics.fill(x, originY, x + 1, originY + getSizeHeight(), color);
+                    Surfaces.fill(color).draw(graphics, 0, 0, x, originY, 1, getSizeHeight());
                 }
                 if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY < getSizeHeight()) {
                     int y = originY + state.canvas.snapGuideY;
-                    graphics.fill(originX, y, originX + getSizeWidth(), y + 1, color);
+                    Surfaces.fill(color).draw(graphics, 0, 0, originX, y, getSizeWidth(), 1);
                 }
             }
         });
@@ -404,7 +406,7 @@ public final class CanvasSelectionRenderer {
             return;
         }
         if ((fill >>> 24) != 0) {
-            graphics.fill(originX + left, originY + top, originX + right, originY + bottom, fill);
+            Surfaces.fill(fill).draw(graphics, 0, 0, originX + left, originY + top, right - left, bottom - top);
         }
         drawClippedLine(graphics, originX, originY, maxW, maxH, x, y, x + width, y + 1, border);
         drawClippedLine(graphics, originX, originY, maxW, maxH, x, y + height - 1, x + width, y + height, border);
@@ -420,7 +422,7 @@ public final class CanvasSelectionRenderer {
         if (clippedRight <= clippedLeft || clippedBottom <= clippedTop) {
             return;
         }
-        graphics.fill(originX + clippedLeft, originY + clippedTop, originX + clippedRight, originY + clippedBottom, color);
+        Surfaces.fill(color).draw(graphics, 0, 0, originX + clippedLeft, originY + clippedTop, clippedRight - clippedLeft, clippedBottom - clippedTop);
     }
 
     private static void drawRotatedSelectionBounds(GuiGraphics graphics, int originX, int originY, TabletUiState state) {
@@ -442,9 +444,9 @@ public final class CanvasSelectionRenderer {
 
     private static void drawRotatedOutline(GuiGraphics graphics, int left, int top, int right, int bottom, int thickness, int color) {
         int t = Math.max(1, thickness);
-        graphics.fill(left, top, right, top + t, color);
-        graphics.fill(left, bottom - t, right, bottom, color);
-        graphics.fill(left, top, left + t, bottom, color);
-        graphics.fill(right - t, top, right, bottom, color);
+        Surfaces.fill(color).draw(graphics, 0, 0, left, top, right - left, t);
+        Surfaces.fill(color).draw(graphics, 0, 0, left, bottom - t, right - left, t);
+        Surfaces.fill(color).draw(graphics, 0, 0, left, top, t, bottom - top);
+        Surfaces.fill(color).draw(graphics, 0, 0, right - t, top, t, bottom - top);
     }
 }

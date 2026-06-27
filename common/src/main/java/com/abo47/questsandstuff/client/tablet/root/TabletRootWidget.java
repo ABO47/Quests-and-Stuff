@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
@@ -148,9 +149,9 @@ public final class TabletRootWidget extends WidgetGroup {
         int rootW = getSize().width;
         int rootH = getSize().height;
         int fill = ModColors.SURFACE_BASE;
-        graphics.fill(0, 0, rootX, screenH, fill);
-        graphics.fill(rootX + rootW, 0, screenW, screenH, fill);
-        graphics.fill(rootX, 0, rootX + rootW, rootY, fill);
-        graphics.fill(rootX, rootY + rootH, rootX + rootW, screenH, fill);
+        Surfaces.fill(fill).draw(graphics, 0, 0, 0, 0, rootX, screenH);
+        Surfaces.fill(fill).draw(graphics, 0, 0, rootX + rootW, 0, screenW - (rootX + rootW), screenH);
+        Surfaces.fill(fill).draw(graphics, 0, 0, rootX, 0, rootW, rootY);
+        Surfaces.fill(fill).draw(graphics, 0, 0, rootX, rootY + rootH, rootW, screenH - (rootY + rootH));
     }
 }

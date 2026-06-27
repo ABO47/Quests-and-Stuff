@@ -1,11 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.context;
 
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiActionColors;
@@ -85,8 +88,8 @@ public final class ContextMenuSystem {
     }
 
     public static void drawVanillaPanel(GuiGraphics graphics, int x, int y, int width, int height, int borderColor) {
-        graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 246));
-        graphics.renderOutline(x, y, width, height, borderColor);
+        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 246)).draw(graphics, 0, 0, x, y, width, height);
+        drawRectOutline(graphics, x, y, width, height, borderColor);
     }
 
     public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, boolean hovered) {
@@ -96,10 +99,10 @@ public final class ContextMenuSystem {
     public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, int iconColor, boolean hovered) {
         int rowX = menuX + OUTER_PAD;
         int rowH = rowHeight();
-        graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, withAlpha(ModColors.SURFACE_PANEL_ALT, 84));
+        Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL_ALT, 84)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
         if (hovered) {
-            graphics.fill(rowX, rowY, rowX + rowWidth, rowY + rowH, withAlpha(ModColors.INTERACTIVE, 64));
-            graphics.renderOutline(rowX, rowY, rowWidth, rowH, withAlpha(ModColors.BORDER_ACCENT, 220));
+            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
+            drawRectOutline(graphics, rowX, rowY, rowWidth, rowH, withAlpha(ModColors.BORDER_ACCENT, 220));
         }
         drawVanillaIcon(graphics, menuX + ICON_X, centeredY(rowY, rowH, CONTEXT_ICON_SIZE), icon, iconColor);
         drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, ModColors.TEXT_PRIMARY);
@@ -167,7 +170,7 @@ public final class ContextMenuSystem {
             return;
         }
         int centerY = y + CONTEXT_ICON_SIZE / 2;
-        graphics.fill(x + 2, centerY, x + CONTEXT_ICON_SIZE - 2, centerY + 1, iconColor);
+        Surfaces.fill(iconColor).draw(graphics, 0, 0, x + 2, centerY, CONTEXT_ICON_SIZE - 4, 1);
     }
 
     private static void addContextText(WidgetGroup menu, int rowY, int rowWidth, String text, int rightReserve) {
