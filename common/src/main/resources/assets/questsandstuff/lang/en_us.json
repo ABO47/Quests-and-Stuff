@@ -10,6 +10,7 @@
   "key.questsandstuff.gizmo_move": "Gizmo Move",
   "key.questsandstuff.gizmo_resize": "Gizmo Resize",
   "key.questsandstuff.gizmo_rotate": "Gizmo Rotate",
+  "key.questsandstuff.toggle_skin_edit": "Toggle Skin Edit Mode",
   "emi.category.ldlib.modular_ui": "Modular UI",
   "command.questsandstuff.reload.success": "Reloaded Quests and Stuff quest definitions.",
   "command.questsandstuff.perf.reset": "Quests and Stuff perf counters reset.",

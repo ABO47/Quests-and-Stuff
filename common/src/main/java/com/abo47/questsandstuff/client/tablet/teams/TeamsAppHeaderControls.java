@@ -20,7 +20,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.refreshA
 final class TeamsAppHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = 4;
-    private static final int CONTENT_INSET = 6;
+    private static final int HEADER_INSET = 9;
 
     private final TextFieldWidget searchField;
     private final ButtonWidget leaveBtn;
@@ -40,10 +40,10 @@ final class TeamsAppHeaderControls {
     }
 
     static TeamsAppHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
-        int searchStartW = Math.max(40, bodyW - CONTENT_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
+        int searchStartW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
 
         TextFieldWidget searchField = StyledTextFields.search(
-                CONTENT_INSET, headerY, searchStartW, TOOL_SIZE,
+                HEADER_INSET, headerY, searchStartW, TOOL_SIZE,
                 () -> state.teams.search, Integer.MAX_VALUE,
                 value -> {
                     state.teams.search = SearchFilter.normalizeUserInput(value);
@@ -52,7 +52,7 @@ final class TeamsAppHeaderControls {
                 focused -> {}
         );
 
-        int btnAreaStartX = CONTENT_INSET + searchStartW;
+        int btnAreaStartX = HEADER_INSET + searchStartW;
         int leaveBtnX = btnAreaStartX + HEADER_GAP;
         int joinBtnX = leaveBtnX + TOOL_SIZE + HEADER_GAP;
         int inviteBtnX = joinBtnX + TOOL_SIZE + HEADER_GAP;
@@ -106,10 +106,10 @@ final class TeamsAppHeaderControls {
     }
 
     void layout(int headerY, int bodyW) {
-        int searchW = Math.max(40, bodyW - CONTENT_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
+        int searchW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
         searchField.setSize(searchW, TOOL_SIZE);
 
-        int baX = CONTENT_INSET + searchW;
+        int baX = HEADER_INSET + searchW;
         leaveBtn.setSelfPosition(baX + HEADER_GAP, headerY);
         joinBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE + HEADER_GAP, headerY);
         inviteBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE * 2 + HEADER_GAP * 2, headerY);

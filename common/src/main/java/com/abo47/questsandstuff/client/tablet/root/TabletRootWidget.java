@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.SkinEditOverlay;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -66,6 +67,9 @@ public final class TabletRootWidget extends WidgetGroup {
         if (homeBtn != null) {
             homeBtn.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         }
+        if (state != null && state.root.skinEditMode) {
+            SkinEditOverlay.draw(graphics, this, mouseX, mouseY);
+        }
     }
 
     @Override
@@ -85,6 +89,7 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (state != null && state.root.skinEditMode) return true;
         if (homeBtn != null && homeBtn.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
@@ -93,16 +98,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (state != null && state.root.skinEditMode) return true;
         return TabletRootPointerRouter.mouseDragged(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b, dx, dy) -> super.mouseDragged(x, y, b, dx, dy), mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (state != null && state.root.skinEditMode) return true;
         return TabletRootPointerRouter.mouseReleased(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseReleased(x, y, b), mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+        if (state != null && state.root.skinEditMode) return true;
         return TabletRootPointerRouter.mouseWheelMove(this, state, modalLayer, frontWindowLayer, (x, y, d) -> super.mouseWheelMove(x, y, d), mouseX, mouseY, wheelDelta);
     }
 

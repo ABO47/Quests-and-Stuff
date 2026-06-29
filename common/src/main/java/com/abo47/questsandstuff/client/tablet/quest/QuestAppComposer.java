@@ -88,6 +88,7 @@ public final class QuestAppComposer {
         WidgetGroup chapterPanel = SplitPanelLayout.leftPanel(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH);
         WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
         WidgetGroup canvasPanel = SplitPanelLayout.rightPanel(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH, state);
+        canvasPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
 
         final int contentInset = PANEL_INSET;
         final int topY = contentInset;
@@ -250,6 +251,7 @@ public final class QuestAppComposer {
 
         root.setUndoRedoActions(TabletShellBootstrap.undoAction(state, player), TabletShellBootstrap.redoAction(state, player));
         chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
+        chapterPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;
 

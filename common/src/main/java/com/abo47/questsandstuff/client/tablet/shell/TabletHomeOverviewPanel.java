@@ -36,6 +36,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                 TabletPanelChrome.drawPanelOutline(graphics, this);
             }
         };
+        innerContainer.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
         addWidget(innerContainer);
 
         int gutterX = innerX + innerW;

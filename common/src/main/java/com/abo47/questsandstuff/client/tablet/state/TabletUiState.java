@@ -44,6 +44,7 @@ public class TabletUiState {
         public boolean canEdit;
         public boolean editorAvailable;
         public boolean editMode = true;
+        public boolean skinEditMode;
         public String lastApp = "";
     }
 

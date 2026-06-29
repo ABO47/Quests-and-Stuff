@@ -30,6 +30,10 @@ final class TabletActiveState {
         } : refresh;
     }
 
+    static TabletUiState getActiveTabletState() {
+        return activeTabletState;
+    }
+
     static void setActiveTabletState(TabletUiState state) {
         activeTabletState = state;
         ClientSyncUiBridge.registerTabletCallbacks(

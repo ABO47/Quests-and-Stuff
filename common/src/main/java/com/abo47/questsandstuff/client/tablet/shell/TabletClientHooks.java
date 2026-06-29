@@ -77,6 +77,12 @@ public final class TabletClientHooks {
             GLFW.GLFW_KEY_R,
             CATEGORY
     );
+    private static final KeyMapping TOGGLE_SKIN_EDIT = new KeyMapping(
+            "key.questsandstuff.toggle_skin_edit",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
 
     private static boolean uiPrewarmed;
     private static boolean suppressNextOpenClick;
@@ -102,6 +108,7 @@ public final class TabletClientHooks {
         registrar.accept(GIZMO_MOVE);
         registrar.accept(GIZMO_RESIZE);
         registrar.accept(GIZMO_ROTATE);
+        registrar.accept(TOGGLE_SKIN_EDIT);
     }
 
     public static boolean quickConnectDown() {
@@ -134,6 +141,10 @@ public final class TabletClientHooks {
 
     public static boolean gizmoRotateMatches(int keyCode, int scanCode) {
         return GIZMO_ROTATE.matches(keyCode, scanCode);
+    }
+
+    public static boolean toggleSkinEditMatches(int keyCode, int scanCode) {
+        return TOGGLE_SKIN_EDIT.matches(keyCode, scanCode);
     }
 
     public static void rememberActiveWindow(TabletUiState state) {

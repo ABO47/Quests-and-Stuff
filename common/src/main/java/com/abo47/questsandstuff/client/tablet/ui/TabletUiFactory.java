@@ -88,6 +88,10 @@ public final class TabletUiFactory {
         TabletActiveState.setActiveTabletRefresh(refresh);
     }
 
+    public static TabletUiState getActiveTabletState() {
+        return TabletActiveState.getActiveTabletState();
+    }
+
     public static void setActiveTabletState(TabletUiState state) {
         TabletActiveState.setActiveTabletState(state);
     }

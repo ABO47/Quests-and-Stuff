@@ -103,6 +103,12 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
+        if (TabletClientHooks.toggleSkinEditMatches(keyCode, scanCode)) {
+            state.root.skinEditMode = !state.root.skinEditMode;
+            QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
+            refresher.run();
+            return true;
+        }
         if (!state.root.canEdit || !Widget.isCtrlDown()) {
             return false;
         }

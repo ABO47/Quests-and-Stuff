@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -10,9 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.UUID;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-
 public final class PlayerFaceTexture implements IGuiTexture {
+    private static final float FACE_U = 8f / 64f;
+    private static final float FACE_V = 8f / 64f;
+    private static final float FACE_SIZE = 8f / 64f;
+
     private final UUID uuid;
 
     public PlayerFaceTexture(UUID uuid, String name) {
@@ -22,8 +24,9 @@ public final class PlayerFaceTexture implements IGuiTexture {
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
         ResourceLocation skin = resolveSkin(uuid);
-        IGuiTexture texture = new com.lowdragmc.lowdraglib.gui.texture.ResourceTexture(skin);
-        texture.draw(graphics, 0, 0, (int) x, (int) y, width, height);
+        int size = Math.min(width, height);
+        new ResourceTexture(skin).getSubTexture(FACE_U, FACE_V, FACE_SIZE, FACE_SIZE)
+                .draw(graphics, mouseX, mouseY, x, y, size, size);
     }
 
     private static ResourceLocation resolveSkin(UUID uuid) {

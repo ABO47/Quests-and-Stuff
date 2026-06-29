@@ -31,6 +31,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.rootW
 public final class TeamsAppComposer {
     private static final int HOME_BTN_SIZE = 10;
     private static final int CONTENT_INSET = 6;
+    private static final int LIST_INSET = 9;
     private static final int GUTTER = 6;
     private static final int HEADER_LIST_GAP = 5;
 
@@ -76,7 +77,7 @@ public final class TeamsAppComposer {
 
         int listY = headerY + HEADER_H + HEADER_LIST_GAP;
         int listH = Math.max(1, bodyH - listY - GUTTER);
-        WidgetGroup memberListPanel = new WidgetGroup(CONTENT_INSET, listY, bodyW - CONTENT_INSET * 2, listH);
+        WidgetGroup memberListPanel = new WidgetGroup(LIST_INSET, listY, bodyW - LIST_INSET * 2, listH);
         memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
         WidgetGroup modalLayer = new WidgetGroup(0, 0, initialRootW, initialRootH);
@@ -103,7 +104,7 @@ public final class TeamsAppComposer {
 
             int clY = headerY + HEADER_H + HEADER_LIST_GAP;
             int clH = Math.max(1, cbh - clY - GUTTER);
-            memberListPanel.setSize(cbw - CONTENT_INSET * 2, clH);
+            memberListPanel.setSize(cbw - LIST_INSET * 2, clH);
 
             ClientTeamCache.JoinResult joinResult = ClientTeamCache.INSTANCE.takePendingJoinResult();
             if (joinResult != null) {
