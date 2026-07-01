@@ -9,19 +9,23 @@ import net.minecraft.client.Minecraft;
 
 import java.util.List;
 
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistSkinState;
+
 final class SettingsTabDescriptors {
     static final int THEMES = 0;
     static final int CANVAS = 1;
     static final int HUD = 2;
     static final int ANIMATIONS = 3;
     static final int DEBUG = 4;
+    static final int SKIN = 5;
 
     private static final List<SettingsTabDescriptor> TABS = List.of(
             new SettingsTabDescriptor(THEMES, "themes", "ui.questsandstuff.settings.tab_themes", true, state -> List.of()),
             new SettingsTabDescriptor(CANVAS, "canvas", "ui.questsandstuff.settings.tab_canvas", false, SettingsTabDescriptors::canvasOptions),
             new SettingsTabDescriptor(HUD, "hud", "ui.questsandstuff.settings.tab_hud", false, state -> hudOptions()),
             new SettingsTabDescriptor(ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations", false, state -> animationOptions()),
-            new SettingsTabDescriptor(DEBUG, "debug", "ui.questsandstuff.settings.tab_debug", false, state -> debugOptions())
+            new SettingsTabDescriptor(DEBUG, "debug", "ui.questsandstuff.settings.tab_debug", false, state -> debugOptions()),
+            new SettingsTabDescriptor(SKIN, "skin", "ui.questsandstuff.settings.tab_skin", false, SettingsTabDescriptors::skinOptions)
     );
 
     private SettingsTabDescriptors() {
@@ -244,5 +248,9 @@ final class SettingsTabDescriptors {
                         false
                 )
         );
+    }
+
+    private static List<SettingsOptionDescriptor> skinOptions(TabletUiState state) {
+        return List.of();
     }
 }

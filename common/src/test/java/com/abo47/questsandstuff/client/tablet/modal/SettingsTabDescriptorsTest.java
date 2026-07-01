@@ -15,7 +15,7 @@ class SettingsTabDescriptorsTest {
     @Test
     void tabRegistryOwnsSettingsSectionsInOrder() {
         assertIterableEquals(
-                List.of("themes", "canvas", "hud", "animations", "debug"),
+                List.of("themes", "canvas", "hud", "animations", "debug", "skin"),
                 SettingsTabDescriptors.all().stream()
                         .map(SettingsTabDescriptor::logName)
                         .toList()

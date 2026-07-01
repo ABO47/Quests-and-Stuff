@@ -40,7 +40,7 @@ final class MainCanvasToolsMenu {
 
         final int toolSlot = toolsW;
         final int menuPad = 1;
-        final int toolGap = 2;
+        final int toolGap = 1;
         final boolean editTools = state.root.canEdit;
         final int toolCount = editTools ? 10 : 2;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);

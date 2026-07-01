@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
@@ -101,6 +102,25 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] hud background picked target={} asset={}", hudTarget, background);
             return;
         }
+        String skinFillTarget = state.modal.skinEditFillTarget;
+        if (!skinFillTarget.isBlank()) {
+            String app = state.root.currentApp;
+            String entryKey = app.isBlank() ? skinFillTarget : app + ":" + skinFillTarget;
+            String existing = state.root.skinFillOverrides.get(entryKey);
+            if (existing == null) existing = state.root.skinFillOverrides.get(skinFillTarget);
+            SkinFillOverride existingOverride = SkinFillOverride.parse(existing);
+            String mode = (existingOverride != null) ? existingOverride.mode() : "stretch";
+            SkinFillOverride newOverride = new SkinFillOverride(mode, background);
+            state.root.skinFillOverrides.put(entryKey, newOverride.encode());
+            state.modal.skinEditFillTarget = "";
+            state.pickers.assetBrowseDir = "";
+            SkinFillOverride.clearCache();
+            TabletUiFactory.persistSkinState(state);
+            TabletUiFactory.refreshActiveTablet();
+            QuestsAndStuffMod.debugLog("[QnS:UI] skin fill override target={} asset={} mode={}", skinFillTarget, background, mode);
+            return;
+        }
+
         ModalTargetParser.Target detailsTarget = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget);
         if (!detailsTarget.kind().isBlank()) {
             QuestDetailsWindow.applyAssetPick(player, state, detailsTarget, background);

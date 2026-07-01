@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditStat
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -68,6 +69,12 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
+            if (TabletClientHooks.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
+                state.root.skinEditMode = !state.root.skinEditMode;
+                TabletUiFactory.persistSkinState(state);
+                refresher.run();
+                return true;
+            }
             return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
         if (!Widget.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
@@ -105,6 +112,7 @@ final class TabletRootKeyboardRouter {
         }
         if (TabletClientHooks.toggleSkinEditMatches(keyCode, scanCode)) {
             state.root.skinEditMode = !state.root.skinEditMode;
+            TabletUiFactory.persistSkinState(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
             refresher.run();
             return true;

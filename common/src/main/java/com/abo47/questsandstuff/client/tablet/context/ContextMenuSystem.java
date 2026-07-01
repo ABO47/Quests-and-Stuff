@@ -200,7 +200,6 @@ public final class ContextMenuSystem {
             textsField.setAccessible(true);
             textsField.set(texture, List.of(truncated.getString(), " "));
         } catch (Exception e) {
-            // fallback: keep default splitLine word-wrap
         }
     }
 

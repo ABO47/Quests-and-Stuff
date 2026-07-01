@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -91,8 +92,14 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         int top = getPositionY();
         int width = getSizeWidth();
         int height = getSizeHeight();
-        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha()) : ModColors.SURFACE_BASE;
-        Surfaces.fill(fill).draw(graphics, mouseX, mouseY, left, top, width, height);
+
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
+        } else {
+            IGuiTexture fill = hovered ? Surfaces.fill(withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha())) : Surfaces.fill(ModColors.SURFACE_PANEL_ALT);
+            fill.draw(graphics, mouseX, mouseY, left, top, width, height);
+        }
         Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
         Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
 

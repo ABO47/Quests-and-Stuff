@@ -179,6 +179,16 @@ public final class TabletClientHooks {
 
     public static void closeTabletUi(TabletUiState state, boolean suppressOpenClick, String reason) {
         rememberActiveWindow(state);
+        if (state != null) {
+            String app = state.root.currentApp;
+            if ("quest".equals(app)) {
+                saveLastApp("QUESTS");
+            } else if ("teams".equals(app)) {
+                saveLastApp("TEAMS");
+            } else if ("home".equals(app)) {
+                saveLastApp("");
+            }
+        }
         if (suppressOpenClick) {
             suppressNextOpenClick();
         }
@@ -300,6 +310,7 @@ public final class TabletClientHooks {
         if (player == null) {
             return;
         }
+        saveLastApp("");
         int rootW = TabletUiFactory.ROOT_W;
         int rootH = TabletUiFactory.ROOT_H;
         ModularUI uiTemplate = new ModularUI(TabletUiFactory.create(player, rootW, rootH, false), IUIHolder.EMPTY, player);

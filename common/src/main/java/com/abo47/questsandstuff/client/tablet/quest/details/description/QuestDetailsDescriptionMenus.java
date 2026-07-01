@@ -85,8 +85,10 @@ public final class QuestDetailsDescriptionMenus {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();
+        int viewportOriginX = state.questDetails.questDetailsViewportOriginX;
+        int viewportOriginY = state.questDetails.questDetailsViewportOriginY;
         switch (kind) {
-            case "description" -> addDescriptionActions(actions, state, player, questId, model, x, y);
+            case "description" -> addDescriptionActions(actions, state, player, questId, model, viewportOriginX, viewportOriginY);
             case "desc_text" -> addTextActions(actions, state, player, questId, model);
             case "desc_image" -> addImageActions(actions, state, player, questId, model, refresh);
             case "desc_selection" -> addSelectionActions(actions, state, player, questId, model, viewportW, viewportH, refresh);
@@ -106,12 +108,12 @@ public final class QuestDetailsDescriptionMenus {
         state.questDetails.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
         state.questDetails.questDetailsContextScroll = ScrollController.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
-        int localX = localContextCoordinate(state.questDetails.questDetailsContextAnchorX, x, viewportW);
-        int localY = localContextCoordinate(state.questDetails.questDetailsContextAnchorY, y, viewportH);
+        int localX = localContextCoordinate(state.questDetails.questDetailsContextAnchorX, viewportOriginX, viewportW);
+        int localY = localContextCoordinate(state.questDetails.questDetailsContextAnchorY, viewportOriginY, viewportH);
         int mx = ContextMenuPlacement.fitRightOrLeft(localX, viewportW, menuW);
         int my = ContextMenuPlacement.fitBelowOrAbove(localY, viewportH, menuH);
-        state.questDetails.questDetailsContextX = x + mx;
-        state.questDetails.questDetailsContextY = y + my;
+        state.questDetails.questDetailsContextX = viewportOriginX + mx;
+        state.questDetails.questDetailsContextY = viewportOriginY + my;
         state.questDetails.questDetailsContextW = menuW;
         state.questDetails.questDetailsContextH = menuH;
         WidgetGroup canvasMenuLayer = new WidgetGroup(x, y, viewportW, viewportH);

@@ -68,7 +68,9 @@ public final class CanvasTextStyleMenu {
         int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetails.questDetailsGridSnapLocked, toolCount);
         int x = viewportX + bounds[0];
         int y = viewportY + bounds[1];
-        TextStyleSession.setQuestDetailsBounds(state, x, y, bounds[2], bounds[3]);
+        int hitX = state.questDetails.questDetailsViewportOriginX + bounds[0];
+        int hitY = state.questDetails.questDetailsViewportOriginY + bounds[1];
+        TextStyleSession.setQuestDetailsBounds(state, hitX, hitY, bounds[2], bounds[3]);
         renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, openColorPicker);
     }
 

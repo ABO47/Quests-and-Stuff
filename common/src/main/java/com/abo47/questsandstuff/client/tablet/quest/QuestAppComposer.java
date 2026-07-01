@@ -17,6 +17,8 @@ import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
@@ -65,6 +67,8 @@ public final class QuestAppComposer {
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
         TabletUiState state = TabletShellBootstrap.prepare(player);
+        TabletClientHooks.restoreRememberedWindow(state);
+        state.root.currentApp = "quest";
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int initialRootW = rootWidth(state);
@@ -74,21 +78,13 @@ public final class QuestAppComposer {
 
         TabletRootWidget root = new TabletRootWidget(0, 0, initialRootW, initialRootH, state);
         refreshRootBackground(root, state);
-        WidgetGroup rootMaskTop = new WidgetGroup(0, 0, initialRootW, 0);
-        rootMaskTop.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-        WidgetGroup rootMaskLeft = new WidgetGroup(0, 0, 0, 0);
-        rootMaskLeft.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-        WidgetGroup rootMaskRight = new WidgetGroup(0, 0, 0, 0);
-        rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-        WidgetGroup rootMaskBottom = new WidgetGroup(0, 0, initialRootW, 0);
-        rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
         int initialChapterW = chapterPanelWidth(state);
         int initialCanvasX = canvasPanelX(state);
         int initialCanvasW = canvasPanelWidth(state);
-        WidgetGroup chapterPanel = SplitPanelLayout.leftPanel(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH);
-        WidgetGroup[] chapterPanelRef = new WidgetGroup[]{chapterPanel};
+        WidgetGroup chapterPanel = null;
+        WidgetGroup[] chapterPanelRef = new WidgetGroup[1];
         WidgetGroup canvasPanel = SplitPanelLayout.rightPanel(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH, state);
-        canvasPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
+        canvasPanel.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
 
         final int contentInset = PANEL_INSET;
         final int topY = contentInset;
@@ -109,17 +105,22 @@ public final class QuestAppComposer {
         Runnable[] refresh = new Runnable[1];
         Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
+        WidgetGroup[] viewportBgRef = new WidgetGroup[1];
         WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
         int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);
         CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
-        canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+
+        WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH);
+        viewportBg.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        viewportBgRef[0] = viewportBg;
 
         QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), chapterSideInset, chapterTopY, chapterHeaderH, initialChapterW, initialViewport[0], topY, headerH);
         TextFieldWidget chapterSearchField = headers.chapterSearchField();
         WidgetGroup toolsMenu = new ToolMenuLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
         WidgetGroup questDetailsLayer = new QuestDetailsLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
+        SkinAnchorRegistry.register("quest_details_layer", questDetailsLayer);
 
         int HOME_BTN_SIZE = 10;
         ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
@@ -132,11 +133,8 @@ public final class QuestAppComposer {
         root.setHomeButton(questHomeBtn);
 
         refresh[0] = () -> {
+            SkinAnchorRegistry.clear();
             refreshRootBackground(root, state);
-            rootMaskTop.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-            rootMaskLeft.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-            rootMaskRight.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-            rootMaskBottom.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
             state.root.editorAvailable = player.hasPermissions(2);
             state.root.canEdit = state.root.editorAvailable && state.root.editMode;
             if (!state.root.canEdit) {
@@ -166,7 +164,6 @@ public final class QuestAppComposer {
             int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - chapterBottomInset);
 
             chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-            canvasViewport.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
             headers.refreshSurfaces(state);
 
             chapterPanelRef[0].setSize(chapterW, chapterH);
@@ -176,6 +173,10 @@ public final class QuestAppComposer {
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
             canvasPanel.setSize(canvasW, canvasH);
+            canvasPanel.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+            if (viewportBgRef[0] != null) {
+                viewportBgRef[0].setSize(canvasW, canvasH);
+            }
             chapterMenuOverlay.setSize(currentRootW, currentRootH);
             toolsMenu.setSize(currentRootW, currentRootH);
             questDetailsLayer.setSize(currentRootW, currentRootH);
@@ -213,18 +214,6 @@ public final class QuestAppComposer {
             int homeBtnX = currentRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
             int homeBtnY = ROOT_PAD_Y + ((currentRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
             questHomeBtn.setSelfPosition(homeBtnX, homeBtnY);
-            int holeX = canvasX + viewportX;
-            int holeY = CANVAS_Y + viewportY;
-            int holeW = viewportW;
-            int holeH = viewportH;
-            rootMaskTop.setSelfPosition(0, 0);
-            rootMaskTop.setSize(currentRootW, Math.max(0, holeY));
-            rootMaskLeft.setSelfPosition(0, holeY);
-            rootMaskLeft.setSize(Math.max(0, holeX), holeH);
-            rootMaskRight.setSelfPosition(holeX + holeW, holeY);
-            rootMaskRight.setSize(Math.max(0, currentRootW - (holeX + holeW)), holeH);
-            rootMaskBottom.setSelfPosition(0, holeY + holeH);
-            rootMaskBottom.setSize(currentRootW, Math.max(0, currentRootH - (holeY + holeH)));
 
             int headerX = viewportX;
             int headerW = viewportW;
@@ -234,6 +223,15 @@ public final class QuestAppComposer {
             refreshChapterViews[0].run();
             TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
             refreshCanvas[0].run();
+            SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.register("quests_chapter", chapterPanelRef[0]);
+            SkinAnchorRegistry.register("quests_chapter_list", chapterList);
+            SkinAnchorRegistry.register("quests_splitter", splitterRef[0]);
+            SkinAnchorRegistry.register("quests_canvas", canvasPanel);
+            if (viewportBgRef[0] != null) {
+                SkinAnchorRegistry.register("quests_canvas_background", viewportBgRef[0]);
+            }
+            SkinEditManager.reapplyOverrides(state, root);
         };
         refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
@@ -251,30 +249,26 @@ public final class QuestAppComposer {
 
         root.setUndoRedoActions(TabletShellBootstrap.undoAction(state, player), TabletShellBootstrap.redoAction(state, player));
         chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
-        chapterPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL, ModColors.BORDER_BASE));
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;
 
         headers.syncFocus(state);
 
-        canvasPanel.addWidget(canvasViewport);
+        viewportBg.addWidget(canvasViewport);
+        canvasPanel.addWidget(viewportBg);
         headers.addToCanvas(canvasPanel);
 
-        WidgetGroup splitter = new ChapterSplitterWidget(state, refresh[0]);
+        WidgetGroup splitter = new ChapterSplitterWidget(state, refresh[0], SplitPanelLayout.splitterX(CHAPTER_X, initialChapterW));
         splitterRef[0] = splitter;
 
         root.addWidgets(
-                rootMaskTop,
-                rootMaskLeft,
-                rootMaskRight,
-                rootMaskBottom,
                 chapterPanel,
                 splitter,
                 canvasPanel,
                 chapterMenuOverlay,
                 toolsMenu,
-                questDetailsLayer,
-                modalLayer
+                modalLayer,
+                questDetailsLayer
         );
         refresh[0].run();
         return root;

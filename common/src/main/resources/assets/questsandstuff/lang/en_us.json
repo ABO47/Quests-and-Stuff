@@ -405,5 +405,11 @@
   "ui.questsandstuff.teams.confirm_transfer_title": "Transfer Ownership",
   "ui.questsandstuff.teams.confirm_transfer_message": "Are you sure?",
   "ui.questsandstuff.gui.confirm": "Confirm",
-  "ui.questsandstuff.gui.cancel": "Cancel"
+  "ui.questsandstuff.gui.cancel": "Cancel",
+  "ui.questsandstuff.skin.change_texture": "Change Texture",
+  "ui.questsandstuff.skin.remove_texture": "Remove Texture",
+  "ui.questsandstuff.skin.change_mode": "Change Mode",
+  "ui.questsandstuff.skin.mode_stretch": "Stretch",
+  "ui.questsandstuff.skin.mode_tile": "Tile",
+  "ui.questsandstuff.settings.tab_skin": "Skin"
 }

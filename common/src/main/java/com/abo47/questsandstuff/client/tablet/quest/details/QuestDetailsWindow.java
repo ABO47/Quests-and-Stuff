@@ -7,8 +7,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
 public final class QuestDetailsWindow {
-    static final int WINDOW_W = TabletUiFactory.ROOT_W;
-    static final int WINDOW_H = TabletUiFactory.ROOT_H;
+    static final int WINDOW_W = TabletUiFactory.BODY_W;
+    static final int WINDOW_H = TabletUiFactory.BODY_H;
     public static final int CONTENT_INSET = TabletUiFactory.PANEL_INSET;
     public static final int TOP_Y = CONTENT_INSET;
     public static final int HEADER_H = TabletUiFactory.HEADER_H;

@@ -5,9 +5,12 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+
+import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
+import org.joml.Vector4f;
 
 public final class TabletPanelChrome {
     private TabletPanelChrome() {
@@ -41,19 +44,23 @@ public final class TabletPanelChrome {
         int innerRight = x + Math.max(1, w - 1);
         int innerBottom = y + Math.max(1, h - 1);
 
-        int holeLeft = x + Math.max(1, Math.min(w - 1, viewportX));
-        int holeTop = y + Math.max(1, Math.min(h - 1, viewportY));
-        int holeRight = x + Math.max(1, Math.min(w - 1, viewportX + viewportW));
-        int holeBottom = y + Math.max(1, Math.min(h - 1, viewportY + viewportH));
+        IGuiTexture fill = resolveFill(panel);
+        fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
+    }
 
-        IGuiTexture fill = Surfaces.fill(ModColors.SURFACE_PANEL);
-        if (holeRight <= holeLeft || holeBottom <= holeTop) {
-            fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
-        } else {
-            fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, holeTop);
-            fillPanelRect(fill, graphics, innerLeft, holeBottom, innerRight, innerBottom);
-            fillPanelRect(fill, graphics, innerLeft, holeTop, holeLeft, holeBottom);
-            fillPanelRect(fill, graphics, holeRight, holeTop, innerRight, holeBottom);
+    public static void viewportScissor(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, Runnable draw) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int pvx = x + viewportX;
+        int pvy = y + viewportY;
+        var trans = graphics.pose().last().pose();
+        var p1 = trans.transform(new Vector4f(pvx, pvy, 0, 1));
+        var p2 = trans.transform(new Vector4f(pvx + viewportW, pvy + viewportH, 0, 1));
+        graphics.enableScissor((int) p1.x, (int) p1.y, (int) p2.x, (int) p2.y);
+        try {
+            draw.run();
+        } finally {
+            graphics.disableScissor();
         }
     }
 
@@ -80,6 +87,10 @@ public final class TabletPanelChrome {
         drawPanelOutline(graphics, panel);
     }
 
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable TabletUiState state, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent, int gridColor) {
+        drawCanvasPanelOutlines(graphics, panel, viewportX, viewportY, viewportW, viewportH, canEdit, gridEnabled, gridOpacityPercent, gridColor);
+    }
+
     public static void drawPanelChrome(GuiGraphics graphics, WidgetGroup panel) {
         drawPanelChromeNoShadow(graphics, panel);
     }
@@ -89,7 +100,7 @@ public final class TabletPanelChrome {
         int y = panel.getPositionY();
         int w = panel.getSize().width;
         int h = panel.getSize().height;
-        fillRootRect(Surfaces.fill(ModColors.SURFACE_BASE), graphics, x, y, x + Math.max(1, w), y + Math.max(1, h));
+        fillRootRect(resolveFill(panel), graphics, x, y, x + Math.max(1, w), y + Math.max(1, h));
     }
 
     public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
@@ -99,11 +110,15 @@ public final class TabletPanelChrome {
         int h = panel.getSize().height;
         int right = x + Math.max(1, w - 1);
         int bottom = y + Math.max(1, h - 1);
-        fillPanelRect(Surfaces.fill(ModColors.SURFACE_PANEL), graphics, x + 1, y + 1, right, bottom);
+        fillPanelRect(resolveFill(panel), graphics, x + 1, y + 1, right, bottom);
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
         drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
+    }
+
+    public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
+        drawPanelOutline(graphics, panel);
     }
 
     public static void drawRectOutline(GuiGraphics graphics, int x, int y, int w, int h, int color) {
@@ -115,6 +130,17 @@ public final class TabletPanelChrome {
         fill.draw(graphics, 0, 0, x, y + h - 1, w, 1);
         fill.draw(graphics, 0, 0, x, y + 1, 1, Math.max(0, h - 2));
         fill.draw(graphics, 0, 0, x + w - 1, y + 1, 1, Math.max(0, h - 2));
+    }
+
+    static IGuiTexture resolveFill(WidgetGroup panel) {
+        IGuiTexture bg = panel.getBackgroundTexture();
+        if (bg == null || bg.equals(IGuiTexture.EMPTY)) {
+            return Surfaces.fill(ModColors.SURFACE_PANEL);
+        }
+        if (bg instanceof ColorRectTexture crt) {
+            return Surfaces.fill(crt.color);
+        }
+        return bg;
     }
 
     private static int gridLineColor(int gridOpacityPercent, int gridColor) {

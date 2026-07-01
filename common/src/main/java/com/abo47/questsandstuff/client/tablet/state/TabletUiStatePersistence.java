@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.state;
 
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.theme.SkinFillOverride;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -270,6 +271,66 @@ public final class TabletUiStatePersistence {
             palette.add(color);
         }
         root.add("color_palette", palette);
+    }
+
+    private static void readSkinFillOverrides(JsonObject root, TabletUiState state) {
+        if (root == null || state == null || !root.has("skin_fill_overrides") || !root.get("skin_fill_overrides").isJsonObject()) {
+            return;
+        }
+        JsonObject overrides = root.getAsJsonObject("skin_fill_overrides");
+        state.root.skinFillOverrides.clear();
+        for (String key : overrides.keySet()) {
+            if (key != null && !key.isBlank() && overrides.get(key).isJsonPrimitive()) {
+                String val = overrides.get(key).getAsString();
+                if (SkinFillOverride.parse(val) != null) {
+                    state.root.skinFillOverrides.put(key, val);
+                }
+            }
+        }
+    }
+
+    private static void writeSkinFillOverrides(JsonObject root, TabletUiState state) {
+        if (state == null || state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) {
+            return;
+        }
+        JsonObject overrides = new JsonObject();
+        for (var entry : state.root.skinFillOverrides.entrySet()) {
+            if (entry.getKey() != null && !entry.getKey().isBlank() && entry.getValue() != null && !entry.getValue().isBlank()) {
+                overrides.addProperty(entry.getKey(), entry.getValue());
+            }
+        }
+        if (overrides.size() > 0) {
+            root.add("skin_fill_overrides", overrides);
+        }
+    }
+
+    private static final Path SKIN_STATE_FILE = Path.of("config", "questsandstuff", "skin_state.json");
+
+    public static void readSkinState(TabletUiState state) {
+        if (state == null) return;
+        try {
+            if (!Files.exists(SKIN_STATE_FILE)) return;
+            JsonObject root = JsonParser.parseString(Files.readString(SKIN_STATE_FILE, StandardCharsets.UTF_8)).getAsJsonObject();
+            state.root.skinEditMode = readBoolean(root, "skin_edit_mode", state.root.skinEditMode);
+            state.root.skinEditSelectedTarget = readString(root, "skin_edit_selected_target", state.root.skinEditSelectedTarget);
+            readSkinFillOverrides(root, state);
+        } catch (Exception exception) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading skin state from {}, keeping defaults", SKIN_STATE_FILE, exception);
+        }
+    }
+
+    public static void writeSkinState(TabletUiState state) {
+        if (state == null) return;
+        try {
+            Files.createDirectories(SKIN_STATE_FILE.getParent());
+            JsonObject root = new JsonObject();
+            root.addProperty("skin_edit_mode", state.root.skinEditMode);
+            root.addProperty("skin_edit_selected_target", state.root.skinEditSelectedTarget == null ? "" : state.root.skinEditSelectedTarget);
+            writeSkinFillOverrides(root, state);
+            Files.writeString(SKIN_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed persisting skin state", e);
+        }
     }
 
     private static int clampQuestDetailsLeftWidth(int width) {

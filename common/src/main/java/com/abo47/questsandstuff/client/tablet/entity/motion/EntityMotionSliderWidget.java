@@ -44,6 +44,11 @@ final class EntityMotionSliderWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.resolveFill;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -10,7 +11,7 @@ import javax.annotation.Nonnull;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
 
@@ -26,13 +27,13 @@ public final class SplitPanelLayout {
         return leftX + leftWidth + GAP;
     }
 
-    public static WidgetGroup leftPanel(int x, int y, int w, int h) {
+    public static WidgetGroup leftPanel(int x, int y, int w, int h, TabletUiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                Surfaces.fill(ModColors.SURFACE_PANEL).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                TabletPanelChrome.resolveFill(this).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawRectOutline(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), ModColors.BORDER_BASE);
+                drawPanelOutline(graphics, this, state);
             }
         };
     }
@@ -51,13 +52,14 @@ public final class SplitPanelLayout {
     public static WidgetGroup rightPanel(int x, int y, int w, int h,
                                           int viewportX, int viewportY, int viewportW, int viewportH,
                                           boolean canEdit, boolean showGrid,
-                                          int gridOpacity, int gridColor) {
+                                          int gridOpacity, int gridColor,
+                                          @javax.annotation.Nullable TabletUiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 drawCanvasPanelChrome(graphics, this, viewportX, viewportY, viewportW, viewportH);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                drawCanvasPanelOutlines(graphics, this, viewportX, viewportY, viewportW, viewportH, canEdit, showGrid, gridOpacity, gridColor);
+                drawCanvasPanelOutlines(graphics, this, state, viewportX, viewportY, viewportW, viewportH, canEdit, showGrid, gridOpacity, gridColor);
             }
         };
     }

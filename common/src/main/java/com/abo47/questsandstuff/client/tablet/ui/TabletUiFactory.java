@@ -375,4 +375,12 @@ public final class TabletUiFactory {
     public static void persistEditMode(boolean enabled) {
         TabletPersistence.persistEditMode(enabled);
     }
+
+    public static void readPersistedSkinState(TabletUiState state) {
+        TabletPersistence.readPersistedSkinState(state);
+    }
+
+    public static void persistSkinState(TabletUiState state) {
+        TabletPersistence.persistSkinState(state);
+    }
 }

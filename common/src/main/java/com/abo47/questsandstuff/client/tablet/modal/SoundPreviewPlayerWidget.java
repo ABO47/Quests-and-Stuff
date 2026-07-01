@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -35,6 +36,10 @@ final class SoundPreviewPlayerWidget extends WidgetGroup {
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (soundId.isBlank()) {
             return;
+        }
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
         }
         int x = getPositionX();
         int y = getPositionY();

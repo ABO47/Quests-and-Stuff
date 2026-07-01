@@ -10,10 +10,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetai
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -22,13 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import javax.annotation.Nonnull;
 
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
 import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 final class QuestDetailsWindowLayout {
@@ -63,21 +58,36 @@ final class QuestDetailsWindowLayout {
         }
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
-        int splitterX = SplitPanelLayout.splitterX(CHAPTER_X, leftW);
-        int canvasX = SplitPanelLayout.rightPanelX(CHAPTER_X, leftW);
+        int splitterX = SplitPanelLayout.splitterX(0, leftW);
+        int canvasX = SplitPanelLayout.rightPanelX(0, leftW);
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
-        WidgetGroup modal = addModal(layer, state, frame, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3], fillsLayer);
-        addObjectivePanel(modal, state, player, refresh, questId, quest, leftW);
-        modal.addWidget(new QuestDetailsSplitterWidget(splitterX, state, refresh));
+        WidgetGroup modal = addModal(layer, state, frame, fillsLayer);
+        WidgetGroup objectivePanel = addObjectivePanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
+        SkinAnchorRegistry.register("quest_details_objectives", objectivePanel);
+        WidgetGroup questDetailsSplitter = new QuestDetailsSplitterWidget(splitterX, 0, frame.h(), state, refresh);
+        modal.addWidget(questDetailsSplitter);
 
-        WidgetGroup canvasPanel = canvasPanel(state, canvasX, canvasW, viewport);
+        WidgetGroup canvasPanel = canvasPanel(state, canvasX, 0, canvasW, frame.h(), viewport);
         modal.addWidget(canvasPanel);
+
+        state.questDetails.questDetailsViewportOriginX = canvasX + viewport[0];
+        state.questDetails.questDetailsViewportOriginY = viewport[1];
+
+        WidgetGroup viewportBg = new WidgetGroup(viewport[0], viewport[1], viewport[2], viewport[3]);
+        viewportBg.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        canvasPanel.addWidget(viewportBg);
+
+        SkinAnchorRegistry.register("quest_details_splitter", questDetailsSplitter);
+        SkinAnchorRegistry.register("quest_details_modal", modal);
+        SkinAnchorRegistry.register("quest_details_canvas_panel", canvasPanel);
+        SkinAnchorRegistry.register("quest_details_canvas_background", viewportBg);
+
         int toolsX = QuestDetailsHeader.renderCanvasHeader(canvasPanel, state, player, refresh, questId, viewport[0], viewport[2]);
-        QuestDetailsDescriptionPanel.rebuild(modal, state, player, refresh, questId, quest, canvasX + viewport[0], CANVAS_Y + viewport[1], viewport[2], viewport[3]);
+        QuestDetailsDescriptionPanel.rebuild(viewportBg, state, player, refresh, questId, quest, 0, 0, viewport[2], viewport[3]);
         QuestDetailsObjectivesPanel.renderContextMenu(modal, state, player, refresh, questId);
         QuestDetailsObjectivesPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
-        TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, CANVAS_Y + QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
+        TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
     }
 
     static void syncScreenOrigin(WidgetGroup layer, TabletUiState state) {
@@ -118,14 +128,19 @@ final class QuestDetailsWindowLayout {
         return Math.round(120 * amount);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int holeX, int holeY, int holeW, int holeH, boolean fillsLayer) {
+    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, boolean fillsLayer) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawModalSurface(graphics, this, holeX, holeY, holeW, holeH, fillsLayer);
+                Surfaces.fill(ModColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+                if (!fillsLayer) {
+                    TabletPanelChrome.drawPanelOutline(graphics, this);
+                }
             }
         };
+        modal.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
+        // keep setBackground so SkinEditRenderer can identify this widget's background
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,
@@ -137,39 +152,6 @@ final class QuestDetailsWindowLayout {
             layer.addWidget(modal);
         }
         return modal;
-    }
-
-    private static void drawModalSurface(GuiGraphics graphics, WidgetGroup modal, int holeX, int holeY, int holeW, int holeH, boolean fillsLayer) {
-        int x = modal.getPositionX();
-        int y = modal.getPositionY();
-        int w = modal.getSizeWidth();
-        int h = modal.getSizeHeight();
-        int left = x + 1;
-        int top = y + 1;
-        int right = x + Math.max(1, w - 1);
-        int bottom = y + Math.max(1, h - 1);
-        int holeLeft = Math.max(left, Math.min(right, x + holeX));
-        int holeTop = Math.max(top, Math.min(bottom, y + holeY));
-        int holeRight = Math.max(left, Math.min(right, x + holeX + Math.max(0, holeW)));
-        int holeBottom = Math.max(top, Math.min(bottom, y + holeY + Math.max(0, holeH)));
-        IGuiTexture fill = Surfaces.fill(ModColors.SURFACE_BASE);
-        if (holeRight <= holeLeft || holeBottom <= holeTop) {
-            fillModalRect(fill, graphics, left, top, right, bottom);
-        } else {
-            fillModalRect(fill, graphics, left, top, right, holeTop);
-            fillModalRect(fill, graphics, left, holeBottom, right, bottom);
-            fillModalRect(fill, graphics, left, holeTop, holeLeft, holeBottom);
-            fillModalRect(fill, graphics, holeRight, holeTop, right, holeBottom);
-        }
-        if (!fillsLayer) {
-            TabletPanelChrome.drawRectOutline(graphics, x, y, w, h, ModColors.BORDER_BASE);
-        }
-    }
-
-    private static void fillModalRect(IGuiTexture fill, GuiGraphics graphics, int left, int top, int right, int bottom) {
-        if (right > left && bottom > top) {
-            fill.draw(graphics, 0, 0, left, top, right - left, bottom - top);
-        }
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
@@ -184,13 +166,13 @@ final class QuestDetailsWindowLayout {
         );
     }
 
-    private static void addObjectivePanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW) {
-        WidgetGroup objectivePanel = SplitPanelLayout.leftPanel(CHAPTER_X, CHAPTER_Y, leftW, CHAPTER_H);
+    private static WidgetGroup addObjectivePanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW, int frameH) {
+        WidgetGroup objectivePanel = SplitPanelLayout.leftPanel(0, 0, leftW, frameH, state);
         modal.addWidget(objectivePanel);
         int contentX = CHAPTER_PANEL_GUTTER_X;
         int contentY = QuestDetailsWindow.CONTENT_INSET;
         int contentW = Math.max(1, leftW - contentX * 2);
-        int contentH = Math.max(1, CHAPTER_H - contentY - CHAPTER_PANEL_GUTTER_BOTTOM);
+        int contentH = Math.max(1, frameH - contentY - CHAPTER_PANEL_GUTTER_BOTTOM);
         QuestDetailsObjectivesPanel.rebuild(
                 objectivePanel,
                 state,
@@ -203,14 +185,16 @@ final class QuestDetailsWindowLayout {
                 contentW,
                 contentH
         );
+        return objectivePanel;
     }
 
-    private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasW, int[] viewport) {
-        return SplitPanelLayout.rightPanel(canvasX, CANVAS_Y, canvasW, CANVAS_H,
+    private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasY, int canvasW, int canvasH, int[] viewport) {
+        return SplitPanelLayout.rightPanel(canvasX, canvasY, canvasW, canvasH,
                 viewport[0], viewport[1], viewport[2], viewport[3],
                 QuestDetailsEditState.canEdit(state), false,
                 state.questDetails.questDetailsGridOpacityPercent,
-                TabletGridControls.defaultGridColor(state));
+                TabletGridControls.defaultGridColor(state),
+                state);
     }
 
     private record QuestDetailsWindowFrame(int x, int y, int w, int h) {

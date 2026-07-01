@@ -8,8 +8,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
 
 final class QuestDetailsWindowHitTest {
@@ -89,11 +87,11 @@ final class QuestDetailsWindowHitTest {
             return false;
         }
         int leftW = QuestDetailsWindow.leftPanelWidth(state);
-        int canvasX = CHAPTER_X + leftW + GAP;
+        int canvasX = leftW + GAP;
         int canvasW = QuestDetailsWindow.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindow.mainCanvasViewport(state, canvasW);
         int vx = state.questDetails.questDetailsScreenX + canvasX + viewport[0];
-        int vy = state.questDetails.questDetailsScreenY + CANVAS_Y + viewport[1];
+        int vy = state.questDetails.questDetailsScreenY + viewport[1];
         int lx = (int) Math.round(mouseX - vx);
         int ly = (int) Math.round(mouseY - vy);
         if (lx < 0 || ly < 0 || lx > viewport[2] || ly > viewport[3]) {

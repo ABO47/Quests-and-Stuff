@@ -50,14 +50,16 @@ final class ChapterRowRenderer {
             return;
         }
 
-        int baseFill = selected ? withAlpha(ModColors.INTERACTIVE, 82) : ModColors.SURFACE_PANEL_ALT;
-        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), baseFill);
+        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), ModColors.SURFACE_PANEL_ALT);
         int border = selected ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
 
         IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestCache.groupBackground(group));
         if (bgTexture != null) {
-            chapterList.addWidget(new ImageWidget(layout.cardX() + 1, y + 1, layout.cardW() - 2, TabletUiFactory.CHAPTER_CARD_H - 2, bgTexture));
+            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, bgTexture));
+        }
+        if (selected) {
+            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82))));
         }
         String groupIcon = ClientQuestCache.groupIcon(group);
         int iconDrawX = layout.iconX();
@@ -310,10 +312,7 @@ final class ChapterRowRenderer {
             boolean hovered = isMouseOverElement(mouseX, mouseY);
             if (selected || hovered) {
                 int fill = selected ? withAlpha(ModColors.INTERACTIVE, 108) : withAlpha(ModColors.INTERACTIVE, 44);
-                int fillSize = Math.min(w, h);
-                int fillX = x + Math.max(0, (w - fillSize) / 2);
-                int fillY = y + Math.max(0, (h - fillSize) / 2);
-                Surfaces.fill(fill).draw(graphics, 0, 0, fillX, fillY, fillSize, fillSize);
+                Surfaces.fill(fill).draw(graphics, 0, 0, x, y, w, h);
             }
         }
     }

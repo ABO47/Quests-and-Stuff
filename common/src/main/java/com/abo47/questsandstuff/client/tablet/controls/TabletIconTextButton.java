@@ -8,9 +8,11 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class TabletIconTextButton extends ButtonWidget {
@@ -75,6 +77,38 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     @Override
+    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        boolean hovered = isMouseOverElement(mouseX, mouseY);
+        boolean pressed = isClicked && hovered;
+        State state = pressed ? visuals.pressed() : (hovered ? visuals.hover() : visuals.idle());
+
+        IGuiTexture bgOverride = getBackgroundTexture();
+        if (bgOverride != null && !bgOverride.equals(IGuiTexture.EMPTY)) {
+            bgOverride.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        } else {
+            Surfaces.bordered(state.fillColor(), state.borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            if (pressed) {
+                Surfaces.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            }
+        }
+
+        IGuiTexture content = buildContent(state);
+        if (content != null) {
+            content.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+    }
+
+    private IGuiTexture buildContent(State state) {
+        IGuiTexture icon = iconTexture(state.iconColor());
+        if (label == null) {
+            return icon;
+        }
+        TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
+        text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
+        return Surfaces.group(icon, text);
+    }
+
+    @Override
     protected void onSizeUpdate() {
         super.onSizeUpdate();
         if (visuals != null) {
@@ -83,20 +117,7 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     private void refreshTextures() {
-        setButtonTexture(texture(visuals.idle()));
-        setHoverTexture(texture(visuals.hover()));
-        setClickedTexture(texture(visuals.pressed()));
-    }
-
-    private IGuiTexture texture(State state) {
-        IGuiTexture background = Surfaces.bordered(state.fillColor(), state.borderColor());
-        IGuiTexture icon = iconTexture(state.iconColor());
-        if (label == null) {
-            return Surfaces.group(background, icon);
-        }
-        TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
-        text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
-        return Surfaces.group(background, icon, text);
+        super.setBackground(IGuiTexture.EMPTY);
     }
 
     private IGuiTexture iconTexture(int color) {

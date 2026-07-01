@@ -96,6 +96,11 @@ public final class DragScrollBarWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+
         int x = getPositionX();
         int y = getPositionY();
         int w = getSizeWidth();

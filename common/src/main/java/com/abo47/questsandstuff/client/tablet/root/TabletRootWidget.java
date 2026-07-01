@@ -5,8 +5,12 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.SkinEditOverlay;
+import com.abo47.questsandstuff.client.tablet.theme.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.SkinEditRenderer;
+import com.abo47.questsandstuff.client.tablet.theme.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
@@ -25,6 +29,11 @@ public final class TabletRootWidget extends WidgetGroup {
     private Runnable redoAction = () -> {
     };
     private ButtonWidget homeBtn;
+    private WidgetGroup contextMenuRoot;
+    private int contextMenuRootX;
+    private int contextMenuRootY;
+    private int contextMenuRootW;
+    private int contextMenuRootH;
 
     public TabletRootWidget(int x, int y, int width, int height, TabletUiState state) {
         super(x, y, width, height);
@@ -60,15 +69,56 @@ public final class TabletRootWidget extends WidgetGroup {
     }
 
     @Override
+    public void setGui(ModularUI gui) {
+        super.setGui(gui);
+        if (frontWindowLayer != null) {
+            frontWindowLayer.setGui(gui);
+        }
+    }
+
+    public boolean isContextMenuOpen() {
+        return contextMenuRoot != null;
+    }
+
+    public boolean isContextMenuAt(int x, int y) {
+        if (contextMenuRoot == null) return false;
+        return x >= contextMenuRootX && x < contextMenuRootX + contextMenuRootW
+                && y >= contextMenuRootY && y < contextMenuRootY + contextMenuRootH;
+    }
+
+    public void clickContextMenu(int mouseX, int mouseY, int button) {
+        if (contextMenuRoot != null) {
+            contextMenuRoot.mouseClicked(mouseX, mouseY, button);
+        }
+    }
+
+    public void closeContextMenu() {
+        contextMenuRoot = null;
+    }
+
+    public void setContextMenu(WidgetGroup menu, int x, int y, int w, int h) {
+        contextMenuRoot = menu;
+        contextMenuRootX = x;
+        contextMenuRootY = y;
+        contextMenuRootW = w;
+        contextMenuRootH = h;
+    }
+
+    public WidgetGroup getContextMenuRoot() {
+        return contextMenuRoot;
+    }
+
+    @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         drawFullscreenBackdrop(graphics);
+        drawRootFill(graphics);
         TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
         if (homeBtn != null) {
             homeBtn.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         }
         if (state != null && state.root.skinEditMode) {
-            SkinEditOverlay.draw(graphics, this, mouseX, mouseY);
+            SkinEditRenderer.draw(graphics, this, state, mouseX, mouseY, isFrontWindowOpen());
         }
     }
 
@@ -89,7 +139,9 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (state != null && state.root.skinEditMode) return true;
+        if (state != null && state.root.skinEditMode) {
+            if (SkinEditManager.handleClick(state, this, refresher, (int) mouseX, (int) mouseY, button)) return true;
+        }
         if (homeBtn != null && homeBtn.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
@@ -98,19 +150,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state != null && state.root.skinEditMode) return true;
+        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseDragged(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b, dx, dy) -> super.mouseDragged(x, y, b, dx, dy), mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (state != null && state.root.skinEditMode) return true;
+        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseReleased(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseReleased(x, y, b), mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
-        if (state != null && state.root.skinEditMode) return true;
+        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseWheelMove(this, state, modalLayer, frontWindowLayer, (x, y, d) -> super.mouseWheelMove(x, y, d), mouseX, mouseY, wheelDelta);
     }
 
@@ -161,5 +213,36 @@ public final class TabletRootWidget extends WidgetGroup {
         Surfaces.fill(fill).draw(graphics, 0, 0, rootX + rootW, 0, screenW - (rootX + rootW), screenH);
         Surfaces.fill(fill).draw(graphics, 0, 0, rootX, 0, rootW, rootY);
         Surfaces.fill(fill).draw(graphics, 0, 0, rootX, rootY + rootH, rootW, screenH - (rootY + rootH));
+    }
+
+    private void drawRootFill(GuiGraphics graphics) {
+        if (state == null) return;
+        String app = state.root.currentApp;
+        String rootKey = app.isBlank() ? "root" : app + ":root";
+        String raw = state.root.skinFillOverrides.get(rootKey);
+        if (raw == null) raw = state.root.skinFillOverrides.get("root");
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override != null) {
+            IGuiTexture tex = override.createTexture();
+            if (tex != null) {
+                tex.draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                return;
+            }
+        }
+        Surfaces.fill(ModColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+    }
+
+    public static IGuiTexture resolveRootFill(TabletUiState state) {
+        if (state == null) return null;
+        String app = state.root.currentApp;
+        String rootKey = app.isBlank() ? "root" : app + ":root";
+        String raw = state.root.skinFillOverrides.get(rootKey);
+        if (raw == null) raw = state.root.skinFillOverrides.get("root");
+        if (raw == null) return null;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return null;
+        IGuiTexture tex = override.createTexture();
+        if (tex instanceof com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture) return null;
+        return tex;
     }
 }

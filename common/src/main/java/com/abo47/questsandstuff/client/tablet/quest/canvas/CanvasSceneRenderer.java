@@ -133,7 +133,6 @@ final class CanvasSceneRenderer {
                 if (canvasBackground == null) {
                     Surfaces.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
                 } else {
-                    Surfaces.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
                     CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
                 }
             }

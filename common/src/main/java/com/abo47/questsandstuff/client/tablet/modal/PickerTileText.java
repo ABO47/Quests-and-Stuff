@@ -17,9 +17,10 @@ public final class PickerTileText {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 var font = Minecraft.getInstance().font;
                 String fitted = fitText(safeText, Math.max(1, getSizeWidth()));
-                int drawX = getPositionX() + Math.max(0, (getSizeWidth() - font.width(fitted)) / 2);
-                com.lowdragmc.lowdraglib.gui.texture.TextTexture txt = new com.lowdragmc.lowdraglib.gui.texture.TextTexture(fitted).setType(com.lowdragmc.lowdraglib.gui.texture.TextTexture.TextType.NORMAL).setColor(color);
-                txt.draw(graphics, mouseX, mouseY, drawX, getPositionY(), 200, 20);
+                int textWidth = font.width(fitted);
+                int drawX = getPositionX() + Math.max(0, (getSizeWidth() - textWidth) / 2);
+                int drawY = getPositionY() + Math.max(0, (10 - font.lineHeight) / 2);
+                graphics.drawString(font, fitted, drawX, drawY, color, false);
             }
         };
     }

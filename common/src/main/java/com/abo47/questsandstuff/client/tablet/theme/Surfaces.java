@@ -65,7 +65,7 @@ public final class Surfaces {
     public static GuiTextureGroup card(boolean selected, int accentColor, boolean muted) {
         int fill = muted
                 ? withAlpha(ModColors.TEXT_MUTED, 34)
-                : (selected ? withAlpha(accentColor, 70) : ModColors.elevatedSurface());
+                : (selected ? withAlpha(accentColor, 180) : ModColors.elevatedSurface());
         int border = muted ? ModColors.subtleBorder() : (selected ? accentColor : ModColors.subtleBorder());
         return bordered(fill, border);
     }

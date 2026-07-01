@@ -27,7 +27,7 @@ final class QuestDetailsToolsMenu {
             return;
         }
         final int menuPad = 1;
-        final int toolGap = 2;
+        final int toolGap = 1;
         final boolean editTools = QuestDetailsEditState.canEdit(state);
         final int toolCount = editTools ? 9 : 1;
         final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);

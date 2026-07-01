@@ -81,7 +81,6 @@ public final class ClientQuestCache {
         return ClientQuestState.questSnapshot();
     }
 
-    // Read-only hot-path view; callers must not mutate the returned tags.
     public static List<Map.Entry<String, CompoundTag>> questEntries() {
         return ClientQuestState.questEntries();
     }

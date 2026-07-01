@@ -18,7 +18,7 @@ public final class QuestHudLayout {
     private static final int UNSET = Integer.MIN_VALUE;
     private static final int MIN_SCALE = 60;
     private static final int MAX_SCALE = 2000;
-    private static final int DEFAULT_OPACITY = 0;
+    private static final int DEFAULT_OPACITY = 100;
     private static final int DEFAULT_COMPLETION_X = 225;
     private static final int DEFAULT_COMPLETION_Y = 241;
     private static final int DEFAULT_PINNED_X = 1;

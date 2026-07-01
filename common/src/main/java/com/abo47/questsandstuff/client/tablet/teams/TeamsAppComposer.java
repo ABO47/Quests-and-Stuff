@@ -1,14 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
+import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
@@ -44,6 +50,8 @@ public final class TeamsAppComposer {
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
         TabletUiState state = TabletShellBootstrap.prepare(player);
+        TabletClientHooks.rememberMainWindow();
+        state.root.currentApp = "teams";
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int initialRootW = rootWidth(state);
@@ -59,7 +67,7 @@ public final class TeamsAppComposer {
 
         int bodyH = chapterHeight(state);
         int bodyW = initialRootW - ROOT_PAD_X * 2;
-        WidgetGroup mainPanel = SplitPanelLayout.leftPanel(BODY_X, BODY_Y, bodyW, bodyH);
+        WidgetGroup mainPanel = SplitPanelLayout.leftPanel(BODY_X, BODY_Y, bodyW, bodyH, state);
 
         int homeBtnX = initialRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
         int homeBtnY = ROOT_PAD_Y + ((initialRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
@@ -80,14 +88,15 @@ public final class TeamsAppComposer {
         WidgetGroup memberListPanel = new WidgetGroup(LIST_INSET, listY, bodyW - LIST_INSET * 2, listH);
         memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
-        WidgetGroup modalLayer = new WidgetGroup(0, 0, initialRootW, initialRootH);
+        Runnable[] refresh = new Runnable[1];
+        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         if (ClientTeamCache.INSTANCE.getTeam() == null) {
             ModNetwork.sendToServer(new C2STeamCreatePacket());
         }
 
-        Runnable[] refresh = new Runnable[1];
         refresh[0] = () -> {
+            SkinAnchorRegistry.clear();
             int crw = rootWidth(state);
             int crh = rootHeight(state);
             root.setSize(crw, crh);
@@ -105,6 +114,8 @@ public final class TeamsAppComposer {
             int clY = headerY + HEADER_H + HEADER_LIST_GAP;
             int clH = Math.max(1, cbh - clY - GUTTER);
             memberListPanel.setSize(cbw - LIST_INSET * 2, clH);
+memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+            mainPanel.setBackground((IGuiTexture) null);
 
             ClientTeamCache.JoinResult joinResult = ClientTeamCache.INSTANCE.takePendingJoinResult();
             if (joinResult != null) {
@@ -115,10 +126,16 @@ public final class TeamsAppComposer {
                 }
             }
 
-            modalLayer.clearAllWidgets();
+            if (!ModalStateQueries.anyOpen(state) && !state.modal.modalWindowClosing) {
+                modalLayer.clearAllWidgets();
+                TeamsInviteCodeModal.rebuild(modalLayer, state, refresh[0], crw, crh);
+                TeamsConfirmModal.rebuild(modalLayer, state, refresh[0], crw, crh);
+            }
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             TeamsMemberCardRenderer.rebuildMemberList(memberListPanel, state, refresh[0]);
-            TeamsInviteCodeModal.rebuild(modalLayer, state, refresh[0], crw, crh);
-            TeamsConfirmModal.rebuild(modalLayer, state, refresh[0], crw, crh);
+            SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.register("teams_member_list", memberListPanel);
+            SkinEditManager.reapplyOverrides(state, root);
         };
 
         setActiveTabletState(state);

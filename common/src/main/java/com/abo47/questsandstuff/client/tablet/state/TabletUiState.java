@@ -46,6 +46,9 @@ public class TabletUiState {
         public boolean editMode = true;
         public boolean skinEditMode;
         public String lastApp = "";
+        public String currentApp = "";
+        public String skinEditSelectedTarget = "";
+        public final Map<String, String> skinFillOverrides = new HashMap<>();
     }
 
     public static final class ChapterPanelState {
@@ -131,7 +134,7 @@ public class TabletUiState {
         public String modalQuestCompletionHudBackgroundTarget = "";
         public final Set<String> modalQuestCompletionHudBackgroundTargets = new java.util.LinkedHashSet<>();
         public String modalHudBackgroundTarget = "";
-        public int modalHudBackgroundOpacityDraft = 68;
+        public int modalHudBackgroundOpacityDraft = 100;
         public boolean modalHudBackgroundOpacityDragging;
         public boolean blueprintCodeOpen;
         public boolean blueprintCodeImportMode;
@@ -160,6 +163,7 @@ public class TabletUiState {
         public final Set<String> modalQuestCompletionSoundTargets = new java.util.LinkedHashSet<>();
         public String modalConnectionTextureTarget = "";
         public final java.util.Set<String> modalConnectionTextureChapterTargets = new java.util.LinkedHashSet<>();
+        public String skinEditFillTarget = "";
     }
 
     public static final class PickerState {
@@ -319,10 +323,10 @@ public class TabletUiState {
         public boolean gridCanvasLocked;
         public int gridSizeIndex = 2;
         public int gridOpacityIndex = 2;
-        public int gridOpacityPercent = 50;
+        public int gridOpacityPercent = 100;
         public int gridColor;
         public int canvasBgOpacityIndex = 4;
-        public int canvasBgOpacityPercent = 60;
+        public int canvasBgOpacityPercent = 100;
         public float canvasZoom = 1.0f;
         public boolean canvasLimitEnabled;
         public int canvasLimitIndex = 2;
@@ -342,7 +346,7 @@ public class TabletUiState {
         public long toolsMenuAnimationStartMs;
         public boolean toolsGridSizeMenuOpen;
         public boolean toolsGridOpacityMenuOpen;
-        public String toolsGridOpacityDraft = "50";
+        public String toolsGridOpacityDraft = "100";
         public String pendingChapterRename = "";
         public int canvasImageLogicalX;
         public int canvasImageLogicalY;
@@ -544,6 +548,8 @@ public class TabletUiState {
         public int questDetailsScreenY;
         public int questDetailsW;
         public int questDetailsH;
+        public int questDetailsViewportOriginX;
+        public int questDetailsViewportOriginY;
         public long questDetailsAnimationStartMs;
         public boolean questDetailsAnimationHasSource;
         public int questDetailsAnimationSourceX;
@@ -565,8 +571,8 @@ public class TabletUiState {
         public boolean questDetailsCenterSnapYEnabled;
         public boolean questDetailsObjectSnapEnabled;
         public boolean questDetailsCanvasLocked;
-        public int questDetailsGridOpacityPercent = 50;
-        public int questDetailsCanvasBgOpacityPercent = 60;
+        public int questDetailsGridOpacityPercent = 100;
+        public int questDetailsCanvasBgOpacityPercent = 100;
         public int questDetailsDescScroll;
         public boolean questDetailsDescScrollDragging;
         public boolean questDetailsPanning;

@@ -22,4 +22,12 @@ final class TabletPersistence {
     static void persistEditMode(boolean enabled) {
         TabletUiStatePersistence.writeEditMode(enabled);
     }
+
+    static void readPersistedSkinState(TabletUiState state) {
+        TabletUiStatePersistence.readSkinState(state);
+    }
+
+    static void persistSkinState(TabletUiState state) {
+        TabletUiStatePersistence.writeSkinState(state);
+    }
 }

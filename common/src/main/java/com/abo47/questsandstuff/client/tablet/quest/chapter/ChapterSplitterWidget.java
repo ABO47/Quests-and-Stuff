@@ -19,8 +19,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistU
 public final class ChapterSplitterWidget extends BaseSplitterWidget {
     private static final int DRAG_THRESHOLD_PX = 3;
 
-    public ChapterSplitterWidget(TabletUiState state, Runnable refresh) {
-        super(0, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
+    public ChapterSplitterWidget(TabletUiState state, Runnable refresh, int x) {
+        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
     }
 
     @Override

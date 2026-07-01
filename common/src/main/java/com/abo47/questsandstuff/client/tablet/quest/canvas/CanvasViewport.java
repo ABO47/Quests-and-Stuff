@@ -8,9 +8,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnecti
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -294,7 +294,7 @@ public final class CanvasViewport extends WidgetGroup {
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         CanvasMiniNotificationController.rememberPointer(this, state, mouseX, mouseY);
         drawBackgroundTexture(graphics, mouseX, mouseY);
-        CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
+        drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

@@ -23,6 +23,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ensureAs
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.readPersistedUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.readPersistedSkinState;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.syncCanvasStateFromCache;
 
@@ -36,6 +37,7 @@ public final class TabletShellBootstrap {
         TabletUiState state = new TabletUiState();
         state.root.editorAvailable = player.hasPermissions(2);
         readPersistedUiState(state);
+        readPersistedSkinState(state);
         state.root.canEdit = state.root.editorAvailable && state.root.editMode;
         state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
         state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
@@ -50,7 +52,6 @@ public final class TabletShellBootstrap {
         state.canvas.toolsGridOpacityDraft = Integer.toString(state.canvas.gridOpacityPercent);
         applyCanvasBgOpacityPercent(state, state.canvas.canvasBgOpacityPercent);
         syncCanvasStateFromCache(state);
-        TabletClientHooks.restoreRememberedWindow(state);
         return state;
     }
 

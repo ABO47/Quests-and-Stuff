@@ -45,7 +45,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawAnchored(graphics, true, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
+        drawAnchored(graphics, false, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
