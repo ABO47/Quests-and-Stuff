@@ -452,11 +452,11 @@ public final class EditorSessionService {
     }
 
     public static String normalizeGroup(String groupName) {
-        return EditorSessionNames.normalizeGroup(groupName);
+        return groupName.trim().replace('\\', '/').replaceAll("/{2,}", "/");
     }
 
     public static String normalizeQuestId(String questId) {
-        return EditorSessionNames.normalizeQuestId(questId);
+        return questId.trim().replace('\\', '/').replaceAll("/{2,}", "/");
     }
 
     public enum EditorMode {

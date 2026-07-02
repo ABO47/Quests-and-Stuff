@@ -37,7 +37,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestIconLocal(normalizedQuestId, normalizedIcon);
+        ClientQuestStateFacade.setQuestIconLocal(normalizedQuestId, normalizedIcon);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest icon picked quest={} icon={}", normalizedQuestId, normalizedIcon);
         CompoundTag payload = EditorCommandPayloads.questIcon(normalizedQuestId, normalizedIcon);
         EditorCommandSender.run(player, EditorCommandType.QUEST_ICON, payload,
@@ -50,7 +50,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank() || normalizedMode.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestHiddenModeLocal(normalizedQuestId, normalizedMode);
+        ClientQuestStateFacade.setQuestHiddenModeLocal(normalizedQuestId, normalizedMode);
         CompoundTag payload = EditorCommandPayloads.questHiddenMode(normalizedQuestId, normalizedMode);
         EditorCommandSender.run(player, EditorCommandType.QUEST_HIDDEN_MODE, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestHiddenMode(serverPlayer, normalizedQuestId, normalizedMode));
@@ -61,7 +61,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestVisualHiddenLocal(normalizedQuestId, hidden);
+        ClientQuestStateFacade.setQuestVisualHiddenLocal(normalizedQuestId, hidden);
         CompoundTag payload = EditorCommandPayloads.questVisualHidden(normalizedQuestId, hidden);
         EditorCommandSender.run(player, EditorCommandType.QUEST_VISUAL_HIDDEN, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestVisualHidden(serverPlayer, normalizedQuestId, hidden));
@@ -73,7 +73,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestCompletionSoundLocal(normalizedQuestId, normalizedSound);
+        ClientQuestStateFacade.setQuestCompletionSoundLocal(normalizedQuestId, normalizedSound);
         CompoundTag payload = EditorCommandPayloads.completionSound(normalizedQuestId, normalizedSound);
         EditorCommandSender.run(player, EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestCompletionSound(serverPlayer, normalizedQuestId, normalizedSound));
@@ -86,7 +86,7 @@ public final class EditorQuestCommandClient {
             return;
         }
         for (String questId : targets) {
-            ClientQuestCache.setQuestCompletionSoundLocal(questId, normalizedSound);
+            ClientQuestStateFacade.setQuestCompletionSoundLocal(questId, normalizedSound);
         }
         CompoundTag payload = EditorCommandPayloads.completionSoundMany(targets, normalizedSound);
         EditorCommandSender.run(player, EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_MANY, payload,
@@ -99,7 +99,7 @@ public final class EditorQuestCommandClient {
             return;
         }
         int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
-        ClientQuestCache.setQuestCompletionSoundVolumeLocal(normalizedQuestId, normalizedVolume);
+        ClientQuestStateFacade.setQuestCompletionSoundVolumeLocal(normalizedQuestId, normalizedVolume);
         CompoundTag payload = EditorCommandPayloads.completionSoundVolume(normalizedQuestId, normalizedVolume);
         EditorCommandSender.run(player, EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestCompletionSoundVolume(serverPlayer, normalizedQuestId, normalizedVolume));
@@ -112,7 +112,7 @@ public final class EditorQuestCommandClient {
         }
         int normalizedVolume = QuestDisplay.normalizeCompletionSoundVolume(volume);
         for (String questId : targets) {
-            ClientQuestCache.setQuestCompletionSoundVolumeLocal(questId, normalizedVolume);
+            ClientQuestStateFacade.setQuestCompletionSoundVolumeLocal(questId, normalizedVolume);
         }
         CompoundTag payload = EditorCommandPayloads.completionSoundVolumeMany(targets, normalizedVolume);
         EditorCommandSender.run(player, EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY, payload,
@@ -125,7 +125,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestCompletionHudBackgroundLocal(normalizedQuestId, normalizedBackground);
+        ClientQuestStateFacade.setQuestCompletionHudBackgroundLocal(normalizedQuestId, normalizedBackground);
         CompoundTag payload = EditorCommandPayloads.completionHudBackground(normalizedQuestId, normalizedBackground);
         EditorCommandSender.run(player, EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestCompletionHudBackground(serverPlayer, normalizedQuestId, normalizedBackground));
@@ -138,7 +138,7 @@ public final class EditorQuestCommandClient {
             return;
         }
         for (String questId : targets) {
-            ClientQuestCache.setQuestCompletionHudBackgroundLocal(questId, normalizedBackground);
+            ClientQuestStateFacade.setQuestCompletionHudBackgroundLocal(questId, normalizedBackground);
         }
         CompoundTag payload = EditorCommandPayloads.completionHudBackgroundMany(targets, normalizedBackground);
         EditorCommandSender.run(player, EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY, payload,
@@ -151,7 +151,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestBackgroundLocal(normalizedQuestId, normalizedBackground, grayscale);
+        ClientQuestStateFacade.setQuestBackgroundLocal(normalizedQuestId, normalizedBackground, grayscale);
         CompoundTag payload = EditorCommandPayloads.questBackground(normalizedQuestId, normalizedBackground, grayscale);
         EditorCommandSender.run(player, EditorCommandType.QUEST_BACKGROUND, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestBackground(serverPlayer, normalizedQuestId, normalizedBackground, grayscale));
@@ -164,7 +164,7 @@ public final class EditorQuestCommandClient {
             return;
         }
         for (String questId : targets) {
-            ClientQuestCache.setQuestBackgroundLocal(questId, normalizedBackground, grayscale);
+            ClientQuestStateFacade.setQuestBackgroundLocal(questId, normalizedBackground, grayscale);
         }
         CompoundTag payload = EditorCommandPayloads.questBackgroundMany(targets, normalizedBackground, grayscale);
         EditorCommandSender.run(player, EditorCommandType.QUEST_BACKGROUND_MANY, payload,
@@ -179,13 +179,13 @@ public final class EditorQuestCommandClient {
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).removeQuest(serverPlayer, questId),
                 () -> {
-                    ClientQuestCache.removeQuestLocal(questId);
+                    ClientQuestStateFacade.removeQuestLocal(questId);
                     ModNetwork.sendToServer(new C2SEditorRemoveQuestPacket(questId));
                 });
     }
 
     public static String predictNextQuestId(TabletUiState state) {
-        return QuestNaming.nextQuestId(EditorGroupCommandClient.selectedGroupName(state), ClientQuestCache.questIds());
+        return QuestNaming.nextQuestId(EditorGroupCommandClient.selectedGroupName(state), ClientQuestStateFacade.questIds());
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
@@ -205,7 +205,7 @@ public final class EditorQuestCommandClient {
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).addQuest(serverPlayer, group, predictedId, targetX, targetY, normalizedTitle),
                 () -> {
-                    ClientQuestCache.createEditorQuestLocal(predictedId, group, targetX, targetY, normalizedTitle);
+                    ClientQuestStateFacade.createEditorQuestLocal(predictedId, group, targetX, targetY, normalizedTitle);
                     ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, targetX, targetY, normalizedTitle));
                 });
 
@@ -218,10 +218,10 @@ public final class EditorQuestCommandClient {
         if (questId == null || questId.isBlank()) {
             return;
         }
-        if (!ClientQuestCache.containsQuest(questId)) {
+        if (!ClientQuestStateFacade.containsQuest(questId)) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         state.questDetails.pendingQuestTitleChangeId = questId;
         state.questDetails.questTitleDraft = quest.getString("title");
         QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questDetails.questTitleDraft);
@@ -241,11 +241,11 @@ public final class EditorQuestCommandClient {
         if (questId.isBlank()) {
             return false;
         }
-        if (!ClientQuestCache.containsQuest(questId)) {
+        if (!ClientQuestStateFacade.containsQuest(questId)) {
             cancelQuestTitleChange(state);
             return false;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String oldTitle = quest.getString("title");
         String subtitle = quest.getString("subtitle");
         String title = sanitizeQuestTitle(state.questDetails.questTitleDraft, oldTitle);
@@ -285,7 +285,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.resetQuestProgressLocal(normalizedQuestId);
+        ClientQuestStateFacade.resetQuestProgressLocal(normalizedQuestId);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.engine(serverPlayer.server).resetQuest(serverPlayer, normalizedQuestId),
@@ -346,7 +346,7 @@ public final class EditorQuestCommandClient {
         if (normalizedQuestId.isBlank()) {
             return;
         }
-        ClientQuestCache.setQuestRepeatableLocal(normalizedQuestId, enabled);
+        ClientQuestStateFacade.setQuestRepeatableLocal(normalizedQuestId, enabled);
         CompoundTag payload = EditorCommandPayloads.questRepeatable(normalizedQuestId, enabled);
         EditorCommandSender.run(player, EditorCommandType.QUEST_REPEATABLE, payload,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestRepeatable(serverPlayer, normalizedQuestId, enabled));
@@ -362,7 +362,7 @@ public final class EditorQuestCommandClient {
                 .map(EditorQuestCommandClient::limitDescriptionLine)
                 .limit(MAX_DESCRIPTION_LINES)
                 .toList();
-        ClientQuestCache.setQuestDescriptionLocal(normalizedQuestId, safeDescription);
+        ClientQuestStateFacade.setQuestDescriptionLocal(normalizedQuestId, safeDescription);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest description save quest={} lines={}", normalizedQuestId, safeDescription.size());
         CompoundTag payload = EditorCommandPayloads.description(normalizedQuestId, safeDescription);
         EditorCommandSender.run(player, EditorCommandType.DESCRIPTION_PUT, payload,
@@ -416,7 +416,7 @@ public final class EditorQuestCommandClient {
     }
 
     private static boolean isOccupied(String group, int x, int y) {
-        for (var entry : ClientQuestCache.questEntries()) {
+        for (var entry : ClientQuestStateFacade.questEntries()) {
             CompoundTag quest = entry.getValue();
             CompoundTag groups = quest.getCompound("groups");
             if (!groups.contains(group)) {
@@ -442,7 +442,7 @@ public final class EditorQuestCommandClient {
     }
 
     private static void runQuestDisplayAction(Player player, String questId, String title, String subtitle) {
-        ClientQuestCache.setQuestDisplayLocal(questId, title, subtitle);
+        ClientQuestStateFacade.setQuestDisplayLocal(questId, title, subtitle);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).updateQuestDisplay(serverPlayer, questId, title, subtitle),

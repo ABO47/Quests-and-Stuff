@@ -162,13 +162,13 @@ public final class TabletColorPickerModal {
         int ctxX = state.pickers.colorPaletteContextX;
         int ctxY = state.pickers.colorPaletteContextY;
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", TabletColors.INTERACTIVE, () -> {
             TabletModalPanel.applyColorPickerValue(player, state, target, state.pickers.colorPaletteContextValue);
             closeColorPicker(state);
             refresh.run();
         }));
         String key = "palette:delete:" + state.pickers.colorPaletteContextValue;
-        actions.add(ContextActions.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+        actions.add(ContextActionFactory.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
             state.pickers.textColorPalette.removeIf(value -> value == state.pickers.colorPaletteContextValue);
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;

@@ -129,7 +129,7 @@ public final class QuestDetailsDescriptionModel {
     }
 
     public static void preview(String questId, QuestDetailsDescriptionModel model) {
-        ClientQuestCache.setQuestDescriptionLocal(questId, encode(model));
+        ClientQuestStateFacade.setQuestDescriptionLocal(questId, encode(model));
     }
 
     public static String limit(String value, int max) {

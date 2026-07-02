@@ -47,14 +47,14 @@ final class ConnectionStateMutations {
     }
 
     static void toggleConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId));
+        boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId));
         setConnectionHidden(state, group, sourceQuestId, targetQuestId, !hidden);
     }
 
     static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
         Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
-        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestCache.quest(targetQuestId))) {
+        if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId))) {
             groupGrid.add(key);
         } else {
             groupGrid.remove(key);

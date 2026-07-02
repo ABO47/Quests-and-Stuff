@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.theme;
 
 import org.junit.jupiter.api.Test;
 
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

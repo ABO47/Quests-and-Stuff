@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.util.naming.QuestNaming;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 import net.minecraft.nbt.CompoundTag;

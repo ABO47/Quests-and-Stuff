@@ -70,8 +70,8 @@ public final class CanvasEntityPickerLauncher {
             state.canvas.canvasSelection.textIds().clear();
             state.canvas.canvasSelection.questIds().clear();
         }
-        ContextMenuState.close(state);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.close(state);
+        ContextMenuController.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed group={} images={} entity={}", group, targets.size(), entityId);
         return !targets.isEmpty();
     }
@@ -100,8 +100,8 @@ public final class CanvasEntityPickerLauncher {
         state.canvas.resizingCanvasImage = false;
         state.canvas.rotatingCanvasImage = false;
         state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        ContextMenuState.close(state);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.close(state);
+        ContextMenuController.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity added group={} id={} entity={} pos={},{} size={}x{}", group, id, entityId, clamped.x, clamped.y, size, size);
     }
 

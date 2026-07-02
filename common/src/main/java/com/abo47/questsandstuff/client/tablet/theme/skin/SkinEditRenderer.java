@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;

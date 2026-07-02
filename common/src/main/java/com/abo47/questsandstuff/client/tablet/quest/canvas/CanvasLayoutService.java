@@ -39,7 +39,7 @@ public final class CanvasLayoutService {
 
         QuestMatch inGroup = null;
         QuestMatch crossGroup = null;
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
         for (Map.Entry<String, CompoundTag> quest : quests) {
             if (!matchesSearchOnly(quest.getValue(), state.root.search)) {

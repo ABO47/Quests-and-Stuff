@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import org.junit.jupiter.api.Test;
 

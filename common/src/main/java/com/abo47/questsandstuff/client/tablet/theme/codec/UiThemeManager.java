@@ -159,7 +159,7 @@ public final class UiThemeManager {
         }
     }
 
-    static void resetGlobalPaletteToDefaults() {
+    public static void resetGlobalPaletteToDefaults() {
         synchronized (LOCK) {
             installLoadedState(UiThemeState.defaults());
             initialized = false;

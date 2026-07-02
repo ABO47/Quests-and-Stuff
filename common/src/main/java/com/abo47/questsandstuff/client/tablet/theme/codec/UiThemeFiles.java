@@ -16,15 +16,15 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
 
-final class UiThemeFiles {
-    static final String DEFAULT_THEME_NAME = "default";
+public final class UiThemeFiles {
+    public static final String DEFAULT_THEME_NAME = "default";
     static final Path THEMES_DIR = Services.platform().configDir().resolve(QuestsAndStuffMod.MODID).resolve("themes");
     static final Path ACTIVE_THEME_FILE = THEMES_DIR.resolve("active_theme.json");
 
     private UiThemeFiles() {
     }
 
-    static void bootstrapIfMissing(Gson gson) {
+    public static void bootstrapIfMissing(Gson gson) {
         try {
             Files.createDirectories(THEMES_DIR);
             writeThemeIfMissing(gson, DEFAULT_THEME_NAME, UiThemeDefaults.defaultThemeJson());

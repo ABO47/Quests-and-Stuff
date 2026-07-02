@@ -21,7 +21,7 @@ public final class EditorGroupCommandClient {
     }
 
     public static void cycleGroup(TabletUiState state, int dir) {
-        List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.root.canEdit);
+        List<String> groups = ClientQuestStateFacade.selectableGroupOrder(state != null && state.root.canEdit);
         if (groups.isEmpty()) {
             state.root.selectedGroup = "";
             state.chapterPanel.groupDraft = "";
@@ -65,7 +65,7 @@ public final class EditorGroupCommandClient {
         if (base.isBlank()) {
             base = "chapter";
         }
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.groupOrder());
         if (!groups.contains(base)) {
             return base;
         }
@@ -85,7 +85,7 @@ public final class EditorGroupCommandClient {
             candidate = tr("ui.questsandstuff.chapter.default_name");
         }
         String excluded = sanitizeGroupName(excludeCurrent);
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.groupOrder());
         if (!excluded.isBlank()) {
             groups.remove(excluded);
         }
@@ -107,7 +107,7 @@ public final class EditorGroupCommandClient {
         if (base.isBlank()) {
             base = "chapter";
         }
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.groupOrder());
         String first = base + "_renamed";
         if (!groups.contains(first)) {
             return first;
@@ -212,42 +212,42 @@ public final class EditorGroupCommandClient {
     private static void applyLocalGroupAction(TabletUiState state, String op, String from, String to, int offset) {
         switch (op) {
             case "create" -> {
-                ClientQuestCache.createGroupLocal(to);
+                ClientQuestStateFacade.createGroupLocal(to);
                 if (!to.isBlank()) {
                     state.chapterPanel.recentlyCreatedGroups.add(to);
                 }
             }
             case "rename" -> {
-                ClientQuestCache.renameGroupLocal(from, to);
+                ClientQuestStateFacade.renameGroupLocal(from, to);
                 if (state.chapterPanel.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
                     state.chapterPanel.recentlyCreatedGroups.add(to);
                 }
             }
             case "delete" -> {
-                ClientQuestCache.deleteGroupLocal(from);
+                ClientQuestStateFacade.deleteGroupLocal(from);
                 state.chapterPanel.recentlyCreatedGroups.remove(from);
             }
-            case "move" -> ClientQuestCache.moveGroupLocal(from, offset);
-            case "move_to" -> ClientQuestCache.moveGroupToIndexLocal(from, offset);
-            case "set_icon" -> ClientQuestCache.setGroupIconLocal(from, to);
-            case "set_background" -> ClientQuestCache.setGroupBackgroundLocal(from, to);
-            case "set_canvas_background" -> ClientQuestCache.setGroupCanvasBackgroundLocal(from, to);
-            case "set_text_align" -> ClientQuestCache.setGroupTextAlignLocal(from, to);
+            case "move" -> ClientQuestStateFacade.moveGroupLocal(from, offset);
+            case "move_to" -> ClientQuestStateFacade.moveGroupToIndexLocal(from, offset);
+            case "set_icon" -> ClientQuestStateFacade.setGroupIconLocal(from, to);
+            case "set_background" -> ClientQuestStateFacade.setGroupBackgroundLocal(from, to);
+            case "set_canvas_background" -> ClientQuestStateFacade.setGroupCanvasBackgroundLocal(from, to);
+            case "set_text_align" -> ClientQuestStateFacade.setGroupTextAlignLocal(from, to);
             case "set_text_color" -> {
                 try {
-                    ClientQuestCache.setGroupTextColorLocal(from, Integer.parseInt(to));
+                    ClientQuestStateFacade.setGroupTextColorLocal(from, Integer.parseInt(to));
                 } catch (NumberFormatException ignored) {
                 }
             }
-            case "set_text_style" -> ClientQuestCache.setGroupTextStyleLocal(from, to);
+            case "set_text_style" -> ClientQuestStateFacade.setGroupTextStyleLocal(from, to);
             case "set_text_size" -> {
                 try {
-                    ClientQuestCache.setGroupTextSizeLocal(from, Integer.parseInt(to));
+                    ClientQuestStateFacade.setGroupTextSizeLocal(from, Integer.parseInt(to));
                 } catch (NumberFormatException ignored) {
                 }
             }
-            case "set_lock_until_unlocked" -> ClientQuestCache.setGroupLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
-            case "set_hide_until_unlocked" -> ClientQuestCache.setGroupHideUntilUnlockedLocal(from, Boolean.parseBoolean(to));
+            case "set_lock_until_unlocked" -> ClientQuestStateFacade.setGroupLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
+            case "set_hide_until_unlocked" -> ClientQuestStateFacade.setGroupHideUntilUnlockedLocal(from, Boolean.parseBoolean(to));
             default -> {
             }
         }

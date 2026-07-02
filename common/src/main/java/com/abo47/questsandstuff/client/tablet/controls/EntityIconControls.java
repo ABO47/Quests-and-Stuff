@@ -33,7 +33,7 @@ public final class EntityIconControls {
 
     public static void addChangeIconHit(WidgetGroup parent, TabletUiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
         var hit = TabletUiFactory.flatHitButton(x, y, size, size, click -> {
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             openPicker.run();
             refresh.run();
         });
@@ -55,15 +55,15 @@ public final class EntityIconControls {
         }
         String entityId = EntityPreviewRenderer.entityId(icon);
         if (EntityVariantCatalog.hasVariants(entityId)) {
-            actions.add(ContextActions.changeVariant(() -> {
+            actions.add(ContextActionFactory.changeVariant(() -> {
                 openVariantPicker(state, variantTarget, icon);
                 closeOwner.run();
                 QuestsAndStuffMod.debugLog("[QnS:UI] entity icon variant picker open target={} entity={}", variantTarget, entityId);
                 refresh.run();
             }));
         }
-        actions.add(ContextActions.editMotion(() -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        actions.add(ContextActionFactory.editMotion(() -> {
+            ContextMenuController.clearDeleteConfirm(state);
             openMotion.run();
             closeOwner.run();
             refresh.run();

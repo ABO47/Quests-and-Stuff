@@ -62,7 +62,7 @@ final class EditorSessionState {
     }
 
     void ensureGroupExists(String rawGroup) {
-        String group = EditorSessionNames.normalizeGroup(rawGroup);
+        String group = rawGroup.trim().replace('\\', '/').replaceAll("/{2,}", "/");
         if (group.isBlank()) {
             return;
         }

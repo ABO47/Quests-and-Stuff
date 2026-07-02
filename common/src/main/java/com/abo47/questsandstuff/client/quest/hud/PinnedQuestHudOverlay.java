@@ -196,11 +196,11 @@ public final class PinnedQuestHudOverlay {
 
     private static List<CompoundTag> pinnedQuestTags() {
         List<CompoundTag> quests = new ArrayList<>();
-        for (String questId : ClientQuestCache.pinned()) {
+        for (String questId : ClientQuestStateFacade.pinned()) {
             if (quests.size() >= MAX_QUESTS) {
                 break;
             }
-            CompoundTag quest = ClientQuestCache.quest(questId);
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
             if (!quest.isEmpty()) {
                 quest.putString("_hud_id", questId);
                 quests.add(quest);

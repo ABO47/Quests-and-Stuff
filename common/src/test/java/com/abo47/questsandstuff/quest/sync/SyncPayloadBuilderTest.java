@@ -226,10 +226,10 @@ class SyncPayloadBuilderTest {
 
     @Test
     void optimisticEditorQuestUsesServerDisplayDefaults() {
-        ClientQuestCache.resetStateForTests();
-        ClientQuestCache.createEditorQuestLocal("quest/new", "main", 42, 77, " New Quest ");
+        ClientQuestStateFacade.resetStateForTests();
+        ClientQuestStateFacade.createEditorQuestLocal("quest/new", "main", 42, 77, " New Quest ");
 
-        CompoundTag client = ClientQuestCache.quest("quest/new");
+        CompoundTag client = ClientQuestStateFacade.quest("quest/new");
         QuestDefinition definition = quest("quest/new", "main", 42, 77, 1.0f, "New Quest");
         PlayerQuestState playerState = new PlayerQuestState();
         playerState.quest("quest/new").setUnlocked(true);
@@ -249,8 +249,8 @@ class SyncPayloadBuilderTest {
 
     @Test
     void optimisticCopiedQuestKeepsDisplayDefaultsAndClearsProgress() {
-        ClientQuestCache.resetStateForTests();
-        ClientQuestCache.createEditorQuestLocal("quest/source", "main", 10, 20, "Source");
+        ClientQuestStateFacade.resetStateForTests();
+        ClientQuestStateFacade.createEditorQuestLocal("quest/source", "main", 10, 20, "Source");
         CompoundTag source = ClientQuestState.mutableQuest("quest/source");
         source.putBoolean(SyncKeys.Quest.COMPLETED, true);
         source.putBoolean(SyncKeys.Quest.UNLOCKED, true);
@@ -264,10 +264,10 @@ class SyncPayloadBuilderTest {
         task.putInt(SyncKeys.Objective.COUNT, 4);
         source.getCompound(SyncKeys.Quest.TASKS).put("task/a", task);
 
-        ClientQuestCache.copyQuestLocal("quest/source", "quest/copy", "copied", 100, 120, 1.5f, Map.of());
+        ClientQuestStateFacade.copyQuestLocal("quest/source", "quest/copy", "copied", 100, 120, 1.5f, Map.of());
 
-        CompoundTag copy = ClientQuestCache.quest("quest/copy");
-        assertDisplayDefaultsEqual(ClientQuestCache.quest("quest/source"), copy);
+        CompoundTag copy = ClientQuestStateFacade.quest("quest/copy");
+        assertDisplayDefaultsEqual(ClientQuestStateFacade.quest("quest/source"), copy);
         assertGroupView(copy, "copied", 100, 120, 1.5f);
         assertFalse(copy.getBoolean(SyncKeys.Quest.COMPLETED));
         assertFalse(copy.getBoolean(SyncKeys.Quest.UNLOCKED));
@@ -281,18 +281,18 @@ class SyncPayloadBuilderTest {
 
     @Test
     void optimisticRemoveDropsQuestAndConnectionReferences() {
-        ClientQuestCache.resetStateForTests();
-        ClientQuestCache.createEditorQuestLocal("quest/parent", "main", 0, 0, "Parent");
-        ClientQuestCache.createEditorQuestLocal("quest/child", "main", 80, 0, "Child");
-        ClientQuestCache.setQuestPrerequisiteLocal("quest/child", "quest/parent", true);
-        ClientQuestCache.setConnectionColorLocal("quest/child", "quest/parent", 0x22AAEE);
-        ClientQuestCache.setConnectionModeLocal("quest/child", "quest/parent", true);
-        ClientQuestCache.setConnectionHiddenLocal("quest/child", "quest/parent", true);
+        ClientQuestStateFacade.resetStateForTests();
+        ClientQuestStateFacade.createEditorQuestLocal("quest/parent", "main", 0, 0, "Parent");
+        ClientQuestStateFacade.createEditorQuestLocal("quest/child", "main", 80, 0, "Child");
+        ClientQuestStateFacade.setQuestPrerequisiteLocal("quest/child", "quest/parent", true);
+        ClientQuestStateFacade.setConnectionColorLocal("quest/child", "quest/parent", 0x22AAEE);
+        ClientQuestStateFacade.setConnectionModeLocal("quest/child", "quest/parent", true);
+        ClientQuestStateFacade.setConnectionHiddenLocal("quest/child", "quest/parent", true);
 
-        ClientQuestCache.removeQuestLocal("quest/parent");
+        ClientQuestStateFacade.removeQuestLocal("quest/parent");
 
-        assertFalse(ClientQuestCache.containsQuest("quest/parent"));
-        CompoundTag child = ClientQuestCache.quest("quest/child");
+        assertFalse(ClientQuestStateFacade.containsQuest("quest/parent"));
+        CompoundTag child = ClientQuestStateFacade.quest("quest/child");
         assertTrue(child.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING).isEmpty());
         assertFalse(child.getCompound(SyncKeys.Quest.CONNECTION_COLORS).contains("quest/parent"));
         assertFalse(child.getCompound(SyncKeys.Quest.CONNECTION_MODES).contains("quest/parent"));

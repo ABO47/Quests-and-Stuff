@@ -27,35 +27,35 @@ public final class GroupContextMenuRows {
         List<ContextAction> actions = new ArrayList<>();
         String target = layout.target();
         if (layout.hasTarget()) {
-            actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> GroupContextMenuActions.addChapter(state, refresh)));
-            actions.add(ContextActions.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> GroupContextMenuActions.rename(state, target, refresh)));
-            actions.add(ContextActions.changeIcon(() -> GroupContextMenuActions.changeIcon(state, target, refresh)));
-            actions.add(ContextActions.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", ActionTone.PRIMARY, () -> GroupContextMenuActions.changeBackground(state, target, refresh)));
+            actions.add(ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> GroupContextMenuActions.addChapter(state, refresh)));
+            actions.add(ContextActionFactory.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> GroupContextMenuActions.rename(state, target, refresh)));
+            actions.add(ContextActionFactory.changeIcon(() -> GroupContextMenuActions.changeIcon(state, target, refresh)));
+            actions.add(ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", ActionTone.PRIMARY, () -> GroupContextMenuActions.changeBackground(state, target, refresh)));
         } else {
-            actions.add(ContextActions.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> GroupContextMenuActions.addChapter(state, refresh)));
+            actions.add(ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> GroupContextMenuActions.addChapter(state, refresh)));
             return actions;
         }
 
-        actions.add(ContextActions.action(tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.textStyle(state, target, refresh)));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
-        actions.add(ContextActions.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeConnectionTexture(state, target, refresh)));
+        actions.add(ContextActionFactory.action(tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.textStyle(state, target, refresh)));
+        actions.add(ContextActionFactory.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
+        actions.add(ContextActionFactory.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeConnectionTexture(state, target, refresh)));
         if (chapterHasConnectionTexture(state, target)) {
-            actions.add(ContextActions.action(tr("ui.questsandstuff.context.remove_connection_texture"), "delete", TabletColors.WARNING, () -> GroupContextMenuActions.removeConnectionTexture(player, state, target, refresh)));
+            actions.add(ContextActionFactory.action(tr("ui.questsandstuff.context.remove_connection_texture"), "delete", TabletColors.WARNING, () -> GroupContextMenuActions.removeConnectionTexture(player, state, target, refresh)));
         }
-        actions.add(ContextActions.submenu(tr("ui.questsandstuff.context.change_completion_sound"), "audio-lines", TabletColors.INTERACTIVE, List.of(
-                ContextActions.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
-                ContextActions.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
+        actions.add(ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_completion_sound"), "audio-lines", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
+                ContextActionFactory.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> GroupContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
         )));
-        boolean locked = ClientQuestCache.groupLockUntilUnlocked(target);
-        boolean hidden = ClientQuestCache.groupHideUntilUnlocked(target);
-        actions.add(ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISIBILITY), "eye", TabletColors.INTERACTIVE, List.of(
-                ContextActions.action(
+        boolean locked = ClientQuestStateFacade.groupLockUntilUnlocked(target);
+        boolean hidden = ClientQuestStateFacade.groupHideUntilUnlocked(target);
+        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISIBILITY), "eye", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(
                         tr(locked ? QuestTranslationKeys.CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED : QuestTranslationKeys.CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED),
                         locked ? "unlock_chapter" : "lock_chapter",
                         locked ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
                         () -> GroupContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
                 ),
-                ContextActions.action(
+                ContextActionFactory.action(
                         tr(hidden ? QuestTranslationKeys.CONTEXT_REVEAL_CHAPTER : QuestTranslationKeys.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
                         hidden ? "eye" : "eye-off",
                         hidden ? TabletColors.SUCCESS : TabletColors.WARNING,
@@ -64,20 +64,20 @@ public final class GroupContextMenuRows {
         )));
 
         if (layout.entityVariants()) {
-            actions.add(ContextActions.changeVariant(() -> GroupContextMenuActions.changeVariant(state, target, refresh)));
+            actions.add(ContextActionFactory.changeVariant(() -> GroupContextMenuActions.changeVariant(state, target, refresh)));
         }
         if (layout.entityIcon()) {
-            actions.add(ContextActions.editMotion(() -> GroupContextMenuActions.editMotion(state, target, refresh)));
+            actions.add(ContextActionFactory.editMotion(() -> GroupContextMenuActions.editMotion(state, target, refresh)));
         }
-        actions.add(ContextActions.moveUp(() -> GroupContextMenuActions.move(player, state, target, -1, refresh)));
-        actions.add(ContextActions.moveDown(() -> GroupContextMenuActions.move(player, state, target, 1, refresh)));
+        actions.add(ContextActionFactory.moveUp(() -> GroupContextMenuActions.move(player, state, target, -1, refresh)));
+        actions.add(ContextActionFactory.moveDown(() -> GroupContextMenuActions.move(player, state, target, 1, refresh)));
         String deleteLabel = TabletUiFactory.pendingDeleteLabel(state, GroupContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete"));
         actions.add(new ContextAction(deleteLabel, "delete", TabletColors.ERROR, false, true, () -> GroupContextMenuActions.delete(player, state, target, refresh)));
-        if (!ClientQuestCache.groupIcon(target).isBlank()) {
+        if (!ClientQuestStateFacade.groupIcon(target).isBlank()) {
             String removeIconLabel = TabletUiFactory.pendingDeleteLabel(state, GroupContextMenuLayout.removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon"));
             actions.add(new ContextAction(removeIconLabel, "delete", TabletColors.WARNING, false, false, () -> GroupContextMenuActions.removeIcon(player, state, target, refresh)));
         }
-        if (!"default".equals(ClientQuestCache.groupBackground(target))) {
+        if (!"default".equals(ClientQuestStateFacade.groupBackground(target))) {
             String removeCardBgLabel = TabletUiFactory.pendingDeleteLabel(state, GroupContextMenuLayout.removeBackgroundKey(target), tr("ui.questsandstuff.menu.remove_card_bg"));
             actions.add(new ContextAction(removeCardBgLabel, "delete", TabletColors.WARNING, false, false, () -> GroupContextMenuActions.removeBackground(player, state, target, refresh)));
         }
@@ -97,13 +97,13 @@ public final class GroupContextMenuRows {
                 y,
                 state,
                 null,
-                ContextMenuAnimation.CHAPTER_KEY
+                ContextMenuAnimationBridge.CHAPTER_KEY
         );
     }
 
     private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
-        for (String questId : ClientQuestCache.questIdsInGroup(target)) {
-            CompoundTag quest = ClientQuestCache.quest(questId);
+        for (String questId : ClientQuestStateFacade.questIdsInGroup(target)) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
             if (quest != null && quest.contains("connection_textures", Tag.TAG_COMPOUND)) {
                 CompoundTag textures = quest.getCompound("connection_textures");
                 if (!textures.isEmpty()) return true;

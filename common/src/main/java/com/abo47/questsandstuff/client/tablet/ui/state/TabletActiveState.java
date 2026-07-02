@@ -57,13 +57,13 @@ public final class TabletActiveState {
             return;
         }
         state.canvas.canvasImagesByGroup.clear();
-        state.canvas.canvasImagesByGroup.putAll(ClientQuestCache.canvasImagesByGroup());
+        state.canvas.canvasImagesByGroup.putAll(ClientQuestStateFacade.canvasImagesByGroup());
         state.canvas.canvasTextsByGroup.clear();
-        state.canvas.canvasTextsByGroup.putAll(ClientQuestCache.canvasTextsByGroup());
+        state.canvas.canvasTextsByGroup.putAll(ClientQuestStateFacade.canvasTextsByGroup());
         state.canvas.canvasExclusiveChoicesByGroup.clear();
-        state.canvas.canvasExclusiveChoicesByGroup.putAll(ClientQuestCache.canvasExclusiveChoicesByGroup());
+        state.canvas.canvasExclusiveChoicesByGroup.putAll(ClientQuestStateFacade.canvasExclusiveChoicesByGroup());
         state.canvas.canvasLayerOrderByGroup.clear();
-        state.canvas.canvasLayerOrderByGroup.putAll(ClientQuestCache.canvasLayerOrderByGroup());
+        state.canvas.canvasLayerOrderByGroup.putAll(ClientQuestStateFacade.canvasLayerOrderByGroup());
     }
 
     public static void syncActiveCanvasStateFromCache() {
@@ -92,7 +92,7 @@ public final class TabletActiveState {
         }
         String group = payload == null ? "" : payload.getString("group").trim();
         if (!group.isBlank()) {
-            ClientQuestCache.createGroupLocal(group);
+            ClientQuestStateFacade.createGroupLocal(group);
             activeTabletState.root.selectedGroup = group;
             activeTabletState.chapterPanel.groupDraft = group;
             activeTabletState.chapterPanel.chapterDraftName = group;

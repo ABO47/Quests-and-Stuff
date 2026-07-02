@@ -68,7 +68,7 @@ public final class CanvasBlueprintController {
             return;
         }
         state.canvas.blueprintPlacement.begin(path);
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         state.pickers.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
     }
@@ -153,7 +153,7 @@ public final class CanvasBlueprintController {
         }
         List<CanvasBlueprint.QuestEntry> quests = new ArrayList<>();
         for (String questId : questIds) {
-            CompoundTag tag = ClientQuestCache.quest(questId);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
             QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, tag);
             if (definition == null) {
                 continue;

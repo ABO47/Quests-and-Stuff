@@ -45,7 +45,7 @@ final class CanvasContextCanvasActions {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.CANVAS || selectedGroup.isBlank()) {
             return;
         }
-        actions.add(ContextActions.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.quick_add_quest"), "add", TabletColors.SUCCESS, () -> {
+        actions.add(ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.quick_add_quest"), "add", TabletColors.SUCCESS, () -> {
             int logicalX = snapToGrid(state, state.contextMenu.contextLogicalX);
             int logicalY = snapToGrid(state, state.contextMenu.contextLogicalY);
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
@@ -62,13 +62,13 @@ final class CanvasContextCanvasActions {
             canvasViewport.refresh();
         }));
         List<ContextAction> addActions = new ArrayList<>();
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_image"), "image", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_image"), "image", TabletColors.SUCCESS, () -> {
             ModalOpenActions.openCanvasImagePicker(state, selectedGroup, state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_image group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
             canvasViewport.refresh();
         }));
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_text_box"), "text", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_text_box"), "text", TabletColors.SUCCESS, () -> {
             String id = StableIdAllocator.nextId("txt", canvasTextIds(state, selectedGroup));
             int textW = 96;
             int textH = 32;
@@ -83,18 +83,18 @@ final class CanvasContextCanvasActions {
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.questIds().clear();
             TextEditSession.beginMainCanvas(state, id, text.text());
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             canvasViewport.setFocus(true);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_text_box group={} id={} logical={},{}", selectedGroup, id, x, y);
             canvasViewport.refresh();
         }));
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_entity"), "entity", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_entity"), "entity", TabletColors.SUCCESS, () -> {
             ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew(selectedGroup), state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_entity group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
             canvasViewport.refresh();
         }));
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_exclusive_choice"), "split", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_exclusive_choice"), "split", TabletColors.SUCCESS, () -> {
             String id = StableIdAllocator.nextId("ec", canvasExclusiveChoiceIds(state, selectedGroup));
             int defaultW = TabletUiFactory.CARD_W;
             int defaultH = TabletUiFactory.CARD_H;
@@ -109,47 +109,47 @@ final class CanvasContextCanvasActions {
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.questIds().clear();
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             canvasViewport.setFocus(true);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_exclusive_choice group={} id={} logical={},{}", selectedGroup, id, x, y);
             canvasViewport.refresh();
         }));
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_item"), "icon", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_item"), "icon", TabletColors.SUCCESS, () -> {
             ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemNew(selectedGroup), state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_item_model group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
             canvasViewport.refresh();
         }));
-        addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_block"), "add_block", TabletColors.SUCCESS, () -> {
+        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_block"), "add_block", TabletColors.SUCCESS, () -> {
             ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockNew(selectedGroup), state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_block_model group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
             canvasViewport.refresh();
         }));
         if (RecipeViewerIntegrations.hasAvailableViewer()) {
-            addActions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_recipe_card"), "recipe", TabletColors.SUCCESS, () -> {
+            addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_recipe_card"), "recipe", TabletColors.SUCCESS, () -> {
                 ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeNew(selectedGroup), state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-                ContextMenuState.close(state);
+                ContextMenuController.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_recipe_card group={} logical={},{}", selectedGroup, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
                 canvasViewport.refresh();
             }));
         }
-        actions.add(ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
+        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
 
-        actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openCanvasBackgroundPicker(state, selectedGroup, ClientQuestCache.groupCanvasBackground(selectedGroup));
+        actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, () -> {
+            ModalOpenActions.openCanvasBackgroundPicker(state, selectedGroup, ClientQuestStateFacade.groupCanvasBackground(selectedGroup));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg group={}", selectedGroup);
             canvasViewport.refresh();
         }));
-        actions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = TabletGridControls.defaultGridColor(state);
             ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_grid_color color={}", color);
             canvasViewport.refresh();
         }));
-        if (!ClientQuestCache.groupCanvasBackground(selectedGroup).isBlank()
-                && !"default".equals(ClientQuestCache.groupCanvasBackground(selectedGroup))) {
-            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", TabletColors.WARNING, () -> {
+        if (!ClientQuestStateFacade.groupCanvasBackground(selectedGroup).isBlank()
+                && !"default".equals(ClientQuestStateFacade.groupCanvasBackground(selectedGroup))) {
+            actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", TabletColors.WARNING, () -> {
                 runGroupAction(player, state, "set_canvas_background", selectedGroup, "default", 0);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_canvas_bg group={}", selectedGroup);
                 canvasViewport.refresh();
@@ -157,10 +157,10 @@ final class CanvasContextCanvasActions {
         }
 
         List<ContextAction> debugActions = new ArrayList<>();
-        debugActions.add(ContextActions.action(
+        debugActions.add(ContextActionFactory.action(
                 CanvasContextMenuController.tr("ui.questsandstuff.context.debug_spawn_all_entities"),
                 "entity", TabletColors.INTERACTIVE, () -> spawnAllEntities(state, selectedGroup, canvasViewport)));
-        actions.add(ContextActions.submenu(
+        actions.add(ContextActionFactory.submenu(
                 CanvasContextMenuController.tr("ui.questsandstuff.context.debug"),
                 "debug", TabletColors.INTERACTIVE, debugActions));
     }

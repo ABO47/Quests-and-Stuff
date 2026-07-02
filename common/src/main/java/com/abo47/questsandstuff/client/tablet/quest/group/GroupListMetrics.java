@@ -28,7 +28,7 @@ final class GroupListMetrics {
             if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
-            if (!canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!canEdit && ClientQuestStateFacade.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(chapterQuery, group)) {

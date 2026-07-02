@@ -34,19 +34,19 @@ public final class TabletWidgets {
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, callback);
+        ContextMenuRenderer.addWindowsContextRow(menu, y, width, text, icon, callback);
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
+        ContextMenuRenderer.addWindowsContextRow(menu, y, width, text, icon, submenu, callback);
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ContextMenuSystem.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
+        ContextMenuRenderer.addWindowsContextRow(menu, y, width, text, icon, iconColor, submenu, callback);
     }
 
     public static String contextIconForLabel(String label) {
-        return ContextMenuSystem.iconForLabel(label);
+        return ContextMenuRenderer.iconForLabel(label);
     }
 
     public static ButtonWidget button(int x, int y, int w, int h, String text, int baseColor, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
@@ -81,10 +81,10 @@ public final class TabletWidgets {
     }
 
     public static String pendingDeleteLabel(TabletUiState state, String key, String fallback) {
-        return ContextMenuState.pendingDeleteLabel(state, key, fallback);
+        return ContextMenuController.pendingDeleteLabel(state, key, fallback);
     }
 
     public static boolean confirmDeleteClick(TabletUiState state, String key) {
-        return ContextMenuState.confirmDeleteClick(state, key);
+        return ContextMenuController.confirmDeleteClick(state, key);
     }
 }

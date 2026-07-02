@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import org.junit.jupiter.api.Test;
 

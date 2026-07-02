@@ -57,11 +57,11 @@ final class TabletRootDismissals {
         }
         if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
             state.chapterPanel.chapterMenuOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             changed = true;
         }
         if (clickState.contextMenuWasOpen() && state.contextMenu.contextMenuOpen && !clickState.contextMenuHit()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             changed = true;
         }
         if (clickState.chapterTextMenuWasOpen() && state.chapterPanel.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
@@ -77,7 +77,7 @@ final class TabletRootDismissals {
         if (state.pickers.assetContextOpen && !clickState.assetContextHit()) {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             changed = true;
         }
         boolean insideCanvasViewport = TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY);

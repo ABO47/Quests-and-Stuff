@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.theme.tokens;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import java.util.Locale;
 
 public final class UiActionColors {

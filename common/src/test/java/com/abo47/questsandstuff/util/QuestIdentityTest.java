@@ -2,6 +2,9 @@ package com.abo47.questsandstuff.util;
 
 import org.junit.jupiter.api.Test;
 
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.SafeNames;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class QuestIdentityTest {

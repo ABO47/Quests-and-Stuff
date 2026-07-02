@@ -86,14 +86,14 @@ public final class ModalOpenActions {
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             state.pickers.colorPaletteScrollDragging = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         });
     }
 
     public static void openThemePicker(TabletUiState state) {
         openPickerModal(state, ModalWindowManager.ModalType.THEME_PICKER, () -> {
             state.modal.themeScrollDragging = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         });
     }
 
@@ -102,7 +102,7 @@ public final class ModalOpenActions {
             state.modal.settingsTab = 0;
             state.modal.settingsScroll = 0;
             state.modal.settingsScrollDragging = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         });
     }
 
@@ -116,8 +116,8 @@ public final class ModalOpenActions {
             state.modal.prerequisitesManagerContextPrerequisiteId = "";
             state.modal.prerequisitesManagerSelectedConnectionKey = "";
             state.modal.prerequisitesManagerHoveredConnectionKey = "";
-            ContextMenuState.clearDeleteConfirm(state);
-            ContextMenuState.close(state);
+            ContextMenuController.clearDeleteConfirm(state);
+            ContextMenuController.close(state);
         });
     }
 
@@ -131,8 +131,8 @@ public final class ModalOpenActions {
             state.modal.prerequisitesManagerContextPrerequisiteId = "";
             state.modal.prerequisitesManagerSelectedConnectionKey = "";
             state.modal.prerequisitesManagerHoveredConnectionKey = "";
-            ContextMenuState.clearDeleteConfirm(state);
-            ContextMenuState.close(state);
+            ContextMenuController.clearDeleteConfirm(state);
+            ContextMenuController.close(state);
         });
     }
 
@@ -285,7 +285,7 @@ public final class ModalOpenActions {
             state.pickers.entityVariantSelected = EntityPreviewRenderer.entityVariant(clean(icon));
             state.pickers.entityVariantFolder = "";
             ModalPickerStates.entityVariant(state).reset();
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         });
     }
 
@@ -340,7 +340,7 @@ public final class ModalOpenActions {
         openPickerModal(state, ModalWindowManager.ModalType.SOUND_PICKER, () -> {
             resetSoundPicker(state);
             configureTargets.run();
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             state.pickers.soundVolumeDraft = completionSoundVolume(volumeQuestId);
             state.pickers.soundVolumeDragging = false;
             state.pickers.soundSelected = clean(currentSound).isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
@@ -350,7 +350,7 @@ public final class ModalOpenActions {
     private static void openAssetSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
         openAssetPickerSession(state, clean(currentSound).isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound, () -> {
             configureTargets.run();
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             state.pickers.soundVolumeDraft = completionSoundVolume(volumeQuestId);
             state.pickers.soundVolumeDragging = false;
             state.pickers.assetBrowseDir = "sounds";
@@ -403,7 +403,7 @@ public final class ModalOpenActions {
     }
 
     private static int completionSoundVolume(String questId) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         if (quest == null || !quest.contains("completion_sound_volume")) {
             return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
         }
@@ -430,7 +430,7 @@ public final class ModalOpenActions {
 
     private static void closeBeforeOpen(TabletUiState state) {
         ModalCloseActions.closeAllImmediately(state);
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         state.questDetails.questDetailsContextOpen = false;
         state.questDetails.questDetailsContextKind = "";
         state.questDetails.questDetailsContextId = "";

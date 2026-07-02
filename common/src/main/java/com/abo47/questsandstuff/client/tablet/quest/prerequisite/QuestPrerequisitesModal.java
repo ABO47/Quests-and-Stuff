@@ -67,7 +67,7 @@ public final class QuestPrerequisitesModal {
             model = PrerequisiteConnectionModel.buildForEc(ec, group, state.modal.prerequisitesManagerSearch);
         } else {
             String questId = safe(state.modal.prerequisitesManagerQuestId);
-            CompoundTag questTag = ClientQuestCache.quest(questId);
+            CompoundTag questTag = ClientQuestStateFacade.quest(questId);
             model = PrerequisiteConnectionModel.build(questId, questTag, group, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
         }
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
@@ -95,7 +95,7 @@ public final class QuestPrerequisitesModal {
                 state.modal.prerequisitesManagerContextPrerequisiteId = "";
                 state.modal.prerequisitesManagerSelectedConnectionKey = "";
                 state.modal.prerequisitesManagerHoveredConnectionKey = "";
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] connections manager mode external={}", state.modal.prerequisitesManagerExternalMode);
                 refresh.run();
             });
@@ -151,7 +151,7 @@ public final class QuestPrerequisitesModal {
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.modal.prerequisitesManagerContextOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             refresh.run();
         });
         modal.addWidget(dismiss);
@@ -173,7 +173,7 @@ public final class QuestPrerequisitesModal {
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
                 EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_connection_mode source={} target={}", sourceId, targetId);
                 refresh.run();
             }));
@@ -183,7 +183,7 @@ public final class QuestPrerequisitesModal {
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
                 EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_ec_connection_mode source={} target={}", sourceId, targetId);
                 refresh.run();
             }));
@@ -193,11 +193,11 @@ public final class QuestPrerequisitesModal {
                 I18n.get("ui.questsandstuff.context.connection_color"),
                 "style_color", TabletColors.INTERACTIVE, () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.connection(group, sourceId, targetId), connectionColor);
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
             refresh.run();
         }));
-        actions.add(ContextActions.warningDelete(
+        actions.add(ContextActionFactory.warningDelete(
                 state,
                 "connection:remove:" + row.key(),
                 TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_REMOVE_CONNECTION),
@@ -216,7 +216,7 @@ public final class QuestPrerequisitesModal {
             if (action.closeAfterClick()) {
                 state.modal.prerequisitesManagerContextOpen = false;
                 state.modal.prerequisitesManagerContextPrerequisiteId = "";
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
             }
             refresh.run();
         }, CONTEXT_ANIMATION_KEY, w, h));

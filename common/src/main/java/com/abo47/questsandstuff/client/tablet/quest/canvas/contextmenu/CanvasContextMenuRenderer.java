@@ -17,13 +17,13 @@ final class CanvasContextMenuRenderer {
     }
 
     static void renderCanvasContextMenu(CanvasViewport canvasViewport, TabletUiState state) {
-        if (!ContextMenuState.isOpen(state)) {
-            ContextMenuState.resetClosedMetrics(state);
+        if (!ContextMenuController.isOpen(state)) {
+            ContextMenuController.resetClosedMetrics(state);
             return;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return;
         }
         int rowCount = ContextMenuPanel.rowActionCount(actions);
@@ -38,18 +38,18 @@ final class CanvasContextMenuRenderer {
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int menuX = ContextMenuPlacement.fitRightOrLeft(state.contextMenu.contextMenuAnchorX, canvasViewport.getSize().width, menuW);
         int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenu.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
-        ContextMenuState.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
+        ContextMenuController.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
 
         canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> close(state)));
         WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 close(state);
             }
-        }, canvasViewport.getSize().width, canvasViewport.getSize().height, ContextMenuState.scrollState(state), canvasViewport::refresh);
+        }, canvasViewport.getSize().width, canvasViewport.getSize().height, ContextMenuController.scrollState(state), canvasViewport::refresh);
         canvasViewport.addWidget(menu);
     }
 
     private static void close(TabletUiState state) {
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
     }
 }

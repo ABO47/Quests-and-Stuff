@@ -105,7 +105,7 @@ public final class QuestCardBackgroundRenderer {
     }
 
     public static int defaultTint(CompoundTag tag, int alpha) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
+        if (ClientQuestStateFacade.questLockedPreview(tag)) {
             return withAlpha(TabletColors.TEXT_SECONDARY, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.CLAIMED)) {
@@ -125,7 +125,7 @@ public final class QuestCardBackgroundRenderer {
     }
 
     public static int statusFilter(CompoundTag tag, int alpha) {
-        if (ClientQuestCache.questLockedPreview(tag)) {
+        if (ClientQuestStateFacade.questLockedPreview(tag)) {
             return scaledAlpha(TabletColors.SURFACE_BASE, 138, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.CLAIMED)) {

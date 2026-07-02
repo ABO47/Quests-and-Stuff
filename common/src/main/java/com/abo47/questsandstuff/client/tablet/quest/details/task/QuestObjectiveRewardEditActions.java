@@ -33,7 +33,7 @@ final class QuestObjectiveRewardEditActions {
     }
 
     static void openExistingCommandRewardEditor(TabletUiState state, String questId, String id) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag reward = quest.getCompound("rewards").getCompound(id);
         JsonObject json = TaskJsonFactory.readRewardForEdit(questId, id, reward.getString("json"));
         openCommandRewardEditor(
@@ -47,7 +47,7 @@ final class QuestObjectiveRewardEditActions {
     }
 
     static void preserveRewardSelectableFlag(String questId, String rewardId, JsonObject next) {
-        CompoundTag reward = ClientQuestCache.quest(questId)
+        CompoundTag reward = ClientQuestStateFacade.quest(questId)
                 .getCompound("rewards")
                 .getCompound(rewardId);
         JsonObject existing = TaskJsonFactory.readRewardForEdit(questId, rewardId, reward.getString("json"));

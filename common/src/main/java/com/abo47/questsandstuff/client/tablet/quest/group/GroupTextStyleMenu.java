@@ -38,9 +38,9 @@ final class GroupTextStyleMenu {
         });
 
         String target = state.chapterPanel.chapterTextMenuTarget;
-        String align = ClientQuestCache.groupTextAlign(target);
-        String style = ClientQuestCache.groupTextStyle(target);
-        int fontSize = ClientQuestCache.groupTextSize(target);
+        String align = ClientQuestStateFacade.groupTextAlign(target);
+        String style = ClientQuestStateFacade.groupTextStyle(target);
+        int fontSize = ClientQuestStateFacade.groupTextSize(target);
         boolean bold = CanvasTextLayer.hasStyleFlag(style, "bold");
         boolean italic = CanvasTextLayer.hasStyleFlag(style, "italic");
         int columns = TextStyleButtons.columnsForWidth(fw);
@@ -60,9 +60,9 @@ final class GroupTextStyleMenu {
             EditorGroupCommandClient.runGroupAction(player, state, "set_text_align", target, "right", 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 3, fw, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, ClientQuestCache.groupTextColor(target), click -> {
+        addIconToggleButton(floating, 3, fw, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, ClientQuestStateFacade.groupTextColor(target), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text color open picker target={}", target);
-            ModalOpenActions.openColorPicker(state, target, ClientQuestCache.groupTextColor(target));
+            ModalOpenActions.openColorPicker(state, target, ClientQuestStateFacade.groupTextColor(target));
             refresh.run();
         });
 

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.bootstrap;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManagerEditScreen;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
@@ -78,7 +78,7 @@ public final class TabletLifecycle {
             break;
         }
         while (TabletKeybindings.EDIT_HUD.consumeClick()) {
-            minecraft.setScreen(new QuestHudLayoutManagerEditScreen());
+            minecraft.setScreen(new QuestHudLayoutEditScreen());
             QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from keybind");
             break;
         }
@@ -98,7 +98,8 @@ public final class TabletLifecycle {
 
     public static void openApp(String appId) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (!(minecraft.player instanceof LocalPlayer player)) {
+        Player mcPlayer = minecraft.player;
+        if (!(mcPlayer instanceof LocalPlayer player)) {
             return;
         }
         TabletBootstrap.ensureAppsRegistered();
@@ -135,7 +136,7 @@ public final class TabletLifecycle {
         if (state == null || !rememberedQuestDetailsOpen || rememberedQuestDetailsQuestId.isBlank()) {
             return;
         }
-        if (ClientQuestCache.containsQuest(rememberedQuestDetailsQuestId)) {
+        if (ClientQuestStateFacade.containsQuest(rememberedQuestDetailsQuestId)) {
             if (state.questDetails.questDetailsOpen) {
                 QuestDetailsWindow.swapQuest(state, rememberedQuestDetailsQuestId);
             } else {
@@ -177,7 +178,7 @@ public final class TabletLifecycle {
     }
 
     private static void resetSessionLocalState() {
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
         rememberedQuestDetailsOpen = false;
         rememberedQuestDetailsQuestId = "";
         suppressNextOpenClick = false;

@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 
@@ -61,10 +61,10 @@ public final class CanvasQuestEffectBadges {
     private static List<Badge> badges(TabletUiState state, CompoundTag tag) {
         List<Badge> badges = new ArrayList<>();
         boolean editor = state != null && state.root.canEdit;
-        if (editor ? tag.getBoolean("visual_hidden") : ClientQuestCache.questHiddenPreview(tag)) {
+        if (editor ? tag.getBoolean("visual_hidden") : ClientQuestStateFacade.questHiddenPreview(tag)) {
             badges.add(new Badge("eye-off"));
         }
-        if (editor ? lockedSetting(tag) : ClientQuestCache.questLockedPreview(tag)) {
+        if (editor ? lockedSetting(tag) : ClientQuestStateFacade.questLockedPreview(tag)) {
             badges.add(new Badge("lock_quest"));
         }
         if (tag.getBoolean("repeatable")) {

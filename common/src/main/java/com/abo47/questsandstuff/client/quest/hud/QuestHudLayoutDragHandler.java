@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public final class QuestHudLayoutManagerDragHandler {
+public final class QuestHudLayoutDragHandler {
     private static final int GRID_STEP = 16;
     private static final int GRID_VISUAL_MARGIN = 1;
     private static final int HANDLE_SIZE = 6;
@@ -33,7 +33,7 @@ public final class QuestHudLayoutManagerDragHandler {
     private boolean openingChild;
     private Button snapButton;
 
-    public QuestHudLayoutManagerDragHandler() {
+    public QuestHudLayoutDragHandler() {
         this.original = QuestHudLayoutManager.snapshot();
     }
 
@@ -238,11 +238,24 @@ public final class QuestHudLayoutManagerDragHandler {
     }
 
     public QuestHudLayoutManager.HudBox visualBoxInSlot(QuestHudLayoutManager.HudBox slot) {
-        return QuestHudLayoutManager.visualBoxInSlot(slot, GRID_VISUAL_MARGIN);
+        return new QuestHudLayoutManager.HudBox(
+                slot.x() + GRID_VISUAL_MARGIN,
+                slot.y() + GRID_VISUAL_MARGIN,
+                slot.width() - GRID_VISUAL_MARGIN * 2,
+                slot.height() - GRID_VISUAL_MARGIN * 2
+        );
     }
 
     public static QuestHudLayoutManager.HudBox selectionBox(QuestHudLayoutManager.HudBox box) {
-        return QuestHudLayoutManager.snapToGrid() ? QuestHudLayoutManager.visualBoxInSlot(box) : box;
+        if (!QuestHudLayoutManager.snapToGrid()) {
+            return box;
+        }
+        return new QuestHudLayoutManager.HudBox(
+                box.x() + GRID_VISUAL_MARGIN,
+                box.y() + GRID_VISUAL_MARGIN,
+                box.width() - GRID_VISUAL_MARGIN * 2,
+                box.height() - GRID_VISUAL_MARGIN * 2
+        );
     }
 
     public QuestHudLayoutManager.HudBox resizeHandle(QuestHudLayoutManager.HudBox box) {
@@ -324,7 +337,7 @@ public final class QuestHudLayoutManagerDragHandler {
 
     private boolean insideContext(double mouseX, double mouseY, int screenWidth) {
         int menuW = contextMenuW();
-        return QuestHudLayoutManagerEditScreen.inside(mouseX, mouseY, contextMenuX(screenWidth), contextMenuY(screenWidth), menuW, QuestHudLayoutManagerEditScreen.contextMenuH());
+        return QuestHudLayoutEditScreen.inside(mouseX, mouseY, contextMenuX(screenWidth), contextMenuY(screenWidth), menuW, QuestHudLayoutEditScreen.contextMenuH());
     }
 
     private int contextMenuX(int screenWidth) {
@@ -333,7 +346,7 @@ public final class QuestHudLayoutManagerDragHandler {
     }
 
     private int contextMenuY(int screenHeight) {
-        int menuH = QuestHudLayoutManagerEditScreen.contextMenuH();
+        int menuH = QuestHudLayoutEditScreen.contextMenuH();
         return Math.max(4, Math.min(contextY, screenHeight - menuH - 4));
     }
 

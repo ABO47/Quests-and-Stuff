@@ -1,8 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.theme.tokens;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
-
-
 /**
  * Process-global tablet palette. Render paths read these mutable values directly for the
  * current theme; `UiThemeManager` is the only class that should assign them.

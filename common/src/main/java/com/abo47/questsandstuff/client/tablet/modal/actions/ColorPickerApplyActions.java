@@ -52,7 +52,7 @@ public final class ColorPickerApplyActions {
         }
         if (target.isQuestDescText()) {
             if (target.hasAtLeast(3)) {
-                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(target.questId()));
+                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(target.questId()));
                 var text = model.text(target.entryId());
                 if (text != null) {
                     return CanvasRenderer.activeTextColor(state, text);
@@ -60,7 +60,7 @@ public final class ColorPickerApplyActions {
             }
             return state.pickers.colorDraft == 0 ? TabletColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
-        return ClientQuestCache.groupTextColor(target.raw());
+        return ClientQuestStateFacade.groupTextColor(target.raw());
     }
 
     public static void apply(Player player, TabletUiState state, String target, int color) {

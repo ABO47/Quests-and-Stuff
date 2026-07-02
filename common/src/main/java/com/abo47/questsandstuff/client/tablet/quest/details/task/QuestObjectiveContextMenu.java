@@ -35,7 +35,7 @@ final class QuestObjectiveContextMenu {
         if (actions.isEmpty()) {
             return;
         }
-        int menuW = ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        int menuW = ContextMenuRenderer.CONTEXT_MENU_WIDTH;
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         int maxMenuH = Math.max(ContextMenuPanel.heightForRows(1), state.questDetails.questDetailsH - 8);

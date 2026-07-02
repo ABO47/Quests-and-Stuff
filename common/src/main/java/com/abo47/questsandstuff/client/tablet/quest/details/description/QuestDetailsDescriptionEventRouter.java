@@ -62,7 +62,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (!surface.isMouseOverElement(mouseX, mouseY)) {
             return surface.mouseWheelMoveFallback(mouseX, mouseY, wheelDelta);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (QuestDetailsDescriptionInteractionState.scrollByWheel(state, model, surface.contentH(), wheelDelta)) {
             refresh.run();
         }
@@ -94,7 +94,7 @@ final class QuestDetailsDescriptionEventRouter {
         int lx = localX(mouseX);
         int visibleY = localY(mouseY);
         int ly = visibleY + state.questDetails.questDetailsDescScroll;
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY);
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
@@ -194,7 +194,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (state.questDetails.questDetailsTransformId.isBlank()) {
             return surface.mouseDraggedFallback(mouseX, mouseY, button, dragX, dragY);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
         QuestDetailsDescriptionTransformApply.preview(state, model);
         if ("desc_text".equals(state.questDetails.questDetailsTransformKind)
@@ -249,7 +249,7 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (state.questDetails.questDetailsBoxSelecting) {
             state.questDetails.questDetailsBoxSelecting = false;
-            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
             selection.finishBoxSelection(model);
             refresh.run();
             return true;
@@ -257,7 +257,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (state.questDetails.questDetailsTransformId.isBlank()) {
             return surface.mouseReleasedFallback(mouseX, mouseY, button);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         QuestDetailsDescriptionTransformApply.CommitInfo info = QuestDetailsDescriptionTransformApply.commit(
                 player,
                 state,
@@ -475,7 +475,7 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void setScroll(int scroll) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, surface.contentH(), scroll);
     }
 

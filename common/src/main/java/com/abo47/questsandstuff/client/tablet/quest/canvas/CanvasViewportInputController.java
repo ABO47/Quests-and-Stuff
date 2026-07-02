@@ -164,7 +164,7 @@ final class CanvasViewportInputController {
         if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseReleased(mouseX, mouseY, button);
             if (state.contextMenu.contextMenuScrollDragging) {
-                ContextMenuState.setScrollDragging(state, false);
+                ContextMenuController.setScrollDragging(state, false);
             }
             refresher.run();
             return true;

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

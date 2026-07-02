@@ -46,7 +46,7 @@ public final class QuestDetailsObjectivesPanel {
         if (questId.isBlank()) {
             return false;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         if (quest.isEmpty()) {
             return false;
         }
@@ -77,7 +77,7 @@ public final class QuestDetailsObjectivesPanel {
         if (questId.isBlank()) {
             return ItemStack.EMPTY;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         if (quest.isEmpty()) {
             return ItemStack.EMPTY;
         }

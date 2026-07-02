@@ -141,7 +141,7 @@ public final class QuestAppComposer {
                 state.canvas.toolsGridSizeMenuOpen = false;
                 state.canvas.toolsGridOpacityMenuOpen = false;
                 state.chapterPanel.chapterMenuOpen = false;
-                ContextMenuState.close(state);
+                ContextMenuController.close(state);
                 state.canvas.canvasSelection.questIds().clear();
             }
             TabletBootstrap.keepSelectedGroupValid(state, true);

@@ -38,7 +38,7 @@ final class QuestObjectiveListInteractions {
         }
         state.questDetails.questDetailsSelectedObjectiveKind = "";
         state.questDetails.questDetailsSelectedObjectiveId = "";
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
         clearDrag(state);
         QuestDetailsTransientManager.closeObjectiveRename(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] objective selection cleared reason={}", reason == null ? "" : reason);

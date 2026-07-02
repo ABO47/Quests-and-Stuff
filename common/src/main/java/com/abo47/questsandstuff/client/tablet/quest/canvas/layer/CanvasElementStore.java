@@ -43,7 +43,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasImagesByGroup.put(group, images);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.imageKey(image.id()));
-        ClientQuestCache.putCanvasImageLocal(group, image);
+        ClientQuestStateFacade.putCanvasImageLocal(group, image);
         persistLayerOrderLocal(state, group);
         if (syncServer) {
             sendCanvasImage(group, image);
@@ -69,7 +69,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasSelection.imageIds().remove(imageId);
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.imageKey(imageId));
-        ClientQuestCache.removeCanvasImageLocal(group, imageId);
+        ClientQuestStateFacade.removeCanvasImageLocal(group, imageId);
         persistLayerOrderLocal(state, group);
         sendCanvasImageRemove(group, imageId);
         return true;
@@ -97,7 +97,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasTextsByGroup.put(group, texts);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.textKey(text.id()));
-        ClientQuestCache.putCanvasTextLocal(group, text);
+        ClientQuestStateFacade.putCanvasTextLocal(group, text);
         persistLayerOrderLocal(state, group);
         if (syncServer) {
             sendCanvasText(group, text);
@@ -126,7 +126,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasExclusiveChoicesByGroup.put(group, choices);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()));
-        ClientQuestCache.putCanvasExclusiveChoiceLocal(group, ec);
+        ClientQuestStateFacade.putCanvasExclusiveChoiceLocal(group, ec);
         persistLayerOrderLocal(state, group);
         if (syncServer) {
             sendCanvasExclusiveChoice(group, ec);
@@ -156,7 +156,7 @@ public final class CanvasElementStore {
         state.canvas.canvasExclusiveChoicesByGroup.put(group, existing);
         for (CanvasExclusiveChoice ec : ecs) {
             if (ec == null) continue;
-            ClientQuestCache.putCanvasExclusiveChoiceLocal(group, ec);
+            ClientQuestStateFacade.putCanvasExclusiveChoiceLocal(group, ec);
         }
         persistLayerOrderLocal(state, group);
         if (syncServer) {
@@ -183,7 +183,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasSelection.ecIds().remove(ecId);
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.exclusiveChoiceKey(ecId));
-        ClientQuestCache.removeCanvasExclusiveChoiceLocal(group, ecId);
+        ClientQuestStateFacade.removeCanvasExclusiveChoiceLocal(group, ecId);
         persistLayerOrderLocal(state, group);
         sendCanvasExclusiveChoiceRemove(group, ecId);
         return true;
@@ -221,7 +221,7 @@ public final class CanvasElementStore {
             TextStyleSession.closeMainCanvas(state);
         }
         CanvasLayerOrdering.remove(state, group, CanvasLayerOrdering.textKey(textId));
-        ClientQuestCache.removeCanvasTextLocal(group, textId);
+        ClientQuestStateFacade.removeCanvasTextLocal(group, textId);
         persistLayerOrderLocal(state, group);
         sendCanvasTextRemove(group, textId);
         return true;
@@ -253,7 +253,7 @@ public final class CanvasElementStore {
         if (image == null) {
             return;
         }
-        ClientQuestCache.putCanvasImageLocal(group, image);
+        ClientQuestStateFacade.putCanvasImageLocal(group, image);
         sendCanvasImage(group, image);
     }
 
@@ -262,7 +262,7 @@ public final class CanvasElementStore {
         if (text == null) {
             return;
         }
-        ClientQuestCache.putCanvasTextLocal(group, text);
+        ClientQuestStateFacade.putCanvasTextLocal(group, text);
         sendCanvasText(group, text);
     }
 
@@ -271,7 +271,7 @@ public final class CanvasElementStore {
         if (ec == null) {
             return;
         }
-        ClientQuestCache.putCanvasExclusiveChoiceLocal(group, ec);
+        ClientQuestStateFacade.putCanvasExclusiveChoiceLocal(group, ec);
         sendCanvasExclusiveChoice(group, ec);
     }
 
@@ -291,7 +291,7 @@ public final class CanvasElementStore {
     }
 
     private static void persistLayerOrderLocal(TabletUiState state, String group) {
-        ClientQuestCache.setCanvasLayerOrderLocal(group, state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        ClientQuestStateFacade.setCanvasLayerOrderLocal(group, state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
     }
 
     private static void sendCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {

@@ -279,8 +279,8 @@ public final class AssetPickerApplyActions {
         state.canvas.resizingCanvasImage = false;
         state.canvas.rotatingCanvasImage = false;
         state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        ContextMenuState.close(state);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.close(state);
+        ContextMenuController.clearDeleteConfirm(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas image added group={} id={} asset={} pos={},{} size={}x{}", group, id, asset, clamped.x, clamped.y, imageW, imageH);
     }
 

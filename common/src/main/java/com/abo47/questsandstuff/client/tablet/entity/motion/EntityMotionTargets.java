@@ -76,7 +76,7 @@ final class EntityMotionTargets {
             EntityIconMotion icon = currentObjectiveIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, objectiveMotionTask(state));
             return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetails.entityMotionEditorQuestId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(state.questDetails.entityMotionEditorQuestId));
         CanvasImageLayer image = model.image(state.questDetails.entityMotionEditorImageId);
         return isEditableEntity(image) ? new EntityMotionValues(image.entityYaw(), image.entitySpinSpeed()) : null;
     }
@@ -139,7 +139,7 @@ final class EntityMotionTargets {
     }
 
     static EntityIconMotion currentQuestIconMotion(String questId) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String icon = quest == null ? "" : quest.getString("icon");
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return new EntityIconMotion(icon, 0, 0, false);
@@ -148,7 +148,7 @@ final class EntityMotionTargets {
     }
 
     static EntityIconMotion currentChapterIconMotion(String chapter) {
-        String icon = ClientQuestCache.groupIcon(chapter);
+        String icon = ClientQuestStateFacade.groupIcon(chapter);
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return new EntityIconMotion(icon, 0, 0, false);
         }
@@ -175,7 +175,7 @@ final class EntityMotionTargets {
         state.questDetails.entityMotionFocusedField = "";
         state.questDetails.entityMotionYawSliderDragging = false;
         state.questDetails.entityMotionSpinSliderDragging = false;
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     private static void applyCanvasMotion(TabletUiState state, int yaw, int spin, boolean sync) {
@@ -208,7 +208,7 @@ final class EntityMotionTargets {
             return;
         }
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
-        ClientQuestCache.setQuestIconLocal(state.questDetails.entityMotionEditorQuestId, nextIcon);
+        ClientQuestStateFacade.setQuestIconLocal(state.questDetails.entityMotionEditorQuestId, nextIcon);
         if (sync) {
             EditorQuestCommandClient.runQuestIconAction(player, state.questDetails.entityMotionEditorQuestId, nextIcon);
         }
@@ -221,7 +221,7 @@ final class EntityMotionTargets {
             return;
         }
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
-        ClientQuestCache.setGroupIconLocal(state.questDetails.entityMotionEditorGroup, nextIcon);
+        ClientQuestStateFacade.setGroupIconLocal(state.questDetails.entityMotionEditorGroup, nextIcon);
         if (sync) {
             EditorGroupCommandClient.runGroupAction(player, state, "set_icon", state.questDetails.entityMotionEditorGroup, nextIcon, 0);
         }
@@ -238,7 +238,7 @@ final class EntityMotionTargets {
     }
 
     private static void applyQuestDetailsMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(state.questDetails.entityMotionEditorQuestId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(state.questDetails.entityMotionEditorQuestId));
         CanvasImageLayer detailsImage = model.image(state.questDetails.entityMotionEditorImageId);
         if (detailsImage == null) {
             EntityMotionEditor.close(state);

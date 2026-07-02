@@ -96,8 +96,8 @@ final class TabletAssets {
         TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> IconAtlas.prewarm(IconRegistry.preloadKeys()));
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();
-            for (String group : ClientQuestCache.groupOrder()) {
-                String background = ClientQuestCache.groupBackground(group);
+            for (String group : ClientQuestStateFacade.groupOrder()) {
+                String background = ClientQuestStateFacade.groupBackground(group);
                 if (background == null || background.isBlank() || "default".equals(background)) {
                     continue;
                 }

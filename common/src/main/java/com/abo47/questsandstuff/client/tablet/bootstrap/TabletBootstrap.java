@@ -110,7 +110,7 @@ public final class TabletBootstrap {
     }
 
     public static void keepSelectedGroupValid(TabletUiState state, boolean persist) {
-        List<String> groups = ClientQuestCache.selectableGroupOrder(state.root.canEdit);
+        List<String> groups = ClientQuestStateFacade.selectableGroupOrder(state.root.canEdit);
         if (groups.isEmpty()) {
             state.root.selectedGroup = "";
             return;
@@ -130,14 +130,14 @@ public final class TabletBootstrap {
             return;
         }
         if (state.chapterPanel.recentlyCreatedGroups.contains(selected)) {
-            ClientQuestCache.createGroupLocal(selected);
+            ClientQuestStateFacade.createGroupLocal(selected);
             state.root.selectedGroup = selected;
             state.chapterPanel.groupDraft = selected;
             state.chapterPanel.chapterDraftName = selected;
             if (persist) {
                 persistUiState(state);
             }
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} groups={}", selected, ClientQuestCache.groupOrder());
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} groups={}", selected, ClientQuestStateFacade.groupOrder());
             return;
         }
         state.root.selectedGroup = groups.get(0);

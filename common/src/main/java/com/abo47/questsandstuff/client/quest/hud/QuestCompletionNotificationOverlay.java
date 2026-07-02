@@ -42,7 +42,7 @@ public final class QuestCompletionNotificationOverlay {
         if (!QuestsAndStuffConfig.completionHudEnabled() || questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String title = quest.getString("title");
         String background = quest.getString("completion_hud_background");
         PENDING.addLast(new PendingNotification(

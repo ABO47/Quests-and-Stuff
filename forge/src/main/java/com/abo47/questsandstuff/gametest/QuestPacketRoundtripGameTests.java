@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
 import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
@@ -120,7 +120,7 @@ public final class QuestPacketRoundtripGameTests {
 
         boolean rejected = false;
         try {
-            S2CFullSyncPacket.decode(oversized);
+            S2CFullSyncPacket.fromBytes(oversized);
         } catch (RuntimeException expected) {
             rejected = true;
         }
@@ -139,7 +139,7 @@ public final class QuestPacketRoundtripGameTests {
         invalidIndex.writeVarInt(2);
 
         try {
-            S2CFullSyncPacket.decode(invalidIndex);
+            S2CFullSyncPacket.fromBytes(invalidIndex);
             throw new GameTestAssertException("Invalid full sync chunk index should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -150,7 +150,7 @@ public final class QuestPacketRoundtripGameTests {
         tooManyChunks.writeVarInt(SyncPacketPayloadLimits.MAX_SYNC_CHUNKS + 1);
 
         try {
-            S2CDeltaSyncPacket.decode(tooManyChunks);
+            S2CDeltaSyncPacket.fromBytes(tooManyChunks);
             throw new GameTestAssertException("Oversized delta sync chunk count should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -161,7 +161,7 @@ public final class QuestPacketRoundtripGameTests {
         zeroChunks.writeVarInt(0);
 
         try {
-            S2CDescriptionSyncPacket.decode(zeroChunks);
+            S2CDescriptionSyncPacket.fromBytes(zeroChunks);
             throw new GameTestAssertException("Zero description sync chunk count should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -269,19 +269,19 @@ public final class QuestPacketRoundtripGameTests {
     private static S2CFullSyncPacket roundtrip(S2CFullSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CFullSyncPacket.decode(buf);
+        return S2CFullSyncPacket.fromBytes(buf);
     }
 
     private static S2CDeltaSyncPacket roundtrip(S2CDeltaSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CDeltaSyncPacket.decode(buf);
+        return S2CDeltaSyncPacket.fromBytes(buf);
     }
 
     private static S2CDescriptionSyncPacket roundtrip(S2CDescriptionSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CDescriptionSyncPacket.decode(buf);
+        return S2CDescriptionSyncPacket.fromBytes(buf);
     }
 
     private static S2CDisplayCacheSyncPacket roundtrip(S2CDisplayCacheSyncPacket packet) {

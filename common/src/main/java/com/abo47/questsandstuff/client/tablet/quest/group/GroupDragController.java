@@ -63,8 +63,8 @@ public final class GroupDragController {
         if (moving.isBlank()) {
             return;
         }
-        int fromIndex = ClientQuestCache.groupOrder().indexOf(moving);
-        int size = ClientQuestCache.groupOrder().size();
+        int fromIndex = ClientQuestStateFacade.groupOrder().indexOf(moving);
+        int size = ClientQuestStateFacade.groupOrder().size();
         target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
         if (fromIndex >= 0 && target >= 0 && target != fromIndex) {

@@ -23,34 +23,34 @@ final class QuestObjectiveRequirementMenuActions {
 
     static List<ContextAction> actions(TabletUiState state, Player player, String questId, String contextId) {
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REQUIREMENT), "rename", TabletColors.INTERACTIVE, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        actions.add(ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REQUIREMENT), "rename", TabletColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.openTypePicker(state, "requirement_change", contextId);
         }));
-        actions.add(ContextActions.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REQUIREMENT), () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        actions.add(ContextActionFactory.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REQUIREMENT), () -> {
+            ContextMenuController.clearDeleteConfirm(state);
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, true);
         }));
-        CompoundTag requirementTag = ClientQuestCache.quest(questId)
+        CompoundTag requirementTag = ClientQuestStateFacade.quest(questId)
                 .getCompound("tasks")
                 .getCompound(contextId);
         JsonObject requirementJson = QuestObjectiveMenuSupport.parseObjectiveJson(requirementTag.getString("json"));
         if (QuestObjectiveXpEditor.isXp(requirementJson)) {
-            actions.add(QuestObjectiveMenuSupport.editSubmenu(List.of(ContextActions.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
-                ContextMenuState.clearDeleteConfirm(state);
+            actions.add(QuestObjectiveMenuSupport.editSubmenu(List.of(ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openXpPicker(state, questId, contextId, true);
             }))));
         }
         QuestObjectiveMenuSupport.addMoveActions(actions, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             EditorQuestCommandClient.moveQuestTask(player, questId, contextId, -1);
         }, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             EditorQuestCommandClient.moveQuestTask(player, questId, contextId, 1);
         });
         actions.add(QuestObjectiveMenuSupport.visualsSubmenu(state, questId, contextId, true));
         String deleteKey = "quest_details_requirement:" + questId + ":" + contextId;
-        actions.add(ContextActions.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
+        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
             EditorQuestCommandClient.removeQuestTask(player, questId, contextId);
         }));
         return actions;

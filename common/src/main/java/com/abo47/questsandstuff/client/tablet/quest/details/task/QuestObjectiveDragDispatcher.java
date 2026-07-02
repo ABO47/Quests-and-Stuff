@@ -59,7 +59,7 @@ public final class QuestObjectiveDragDispatcher {
 
     private static ObjectiveDragScope dragScope(TabletUiState state) {
         String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
-        CompoundTag quest = questId.isBlank() ? null : ClientQuestCache.quest(questId);
+        CompoundTag quest = questId.isBlank() ? null : ClientQuestStateFacade.quest(questId);
         if (quest == null || quest.isEmpty()) {
             return ObjectiveDragScope.invalid();
         }

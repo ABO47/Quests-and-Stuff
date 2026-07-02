@@ -9,7 +9,6 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,16 +20,16 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class QuestHudLayoutManagerEditScreen extends Screen {
+public final class QuestHudLayoutEditScreen extends Screen {
     private static final int BUTTON_W = 64;
     private static final int BUTTON_H = 20;
     private static final int BUTTON_GAP = 8;
 
-    private final QuestHudLayoutManagerDragHandler dragHandler;
+    private final QuestHudLayoutDragHandler dragHandler;
 
-    public QuestHudLayoutManagerEditScreen() {
+    public QuestHudLayoutEditScreen() {
         super(Component.translatable("ui.questsandstuff.hud.layout.title"));
-        this.dragHandler = new QuestHudLayoutManagerDragHandler();
+        this.dragHandler = new QuestHudLayoutDragHandler();
     }
 
     void returnFromChild() {
@@ -166,12 +165,12 @@ public final class QuestHudLayoutManagerEditScreen extends Screen {
         QuestCompletionNotificationOverlay.renderPreview(graphics, completion.x(), completion.y(), completion.width(), completion.height(), false);
         PinnedQuestHudOverlay.renderPreview(graphics, pinned.x(), pinned.y(), pinned.width(), pinned.height(), false);
         if (completionSelected) {
-            QuestHudLayoutManager.HudBox selection = QuestHudLayoutManagerDragHandler.selectionBox(completionSlot);
+            QuestHudLayoutManager.HudBox selection = QuestHudLayoutDragHandler.selectionBox(completionSlot);
             drawSelectionSlot(graphics, selection, QuestHudLayoutManager.Element.COMPLETION);
             drawResizeHandle(graphics, selection);
         }
         if (pinnedSelected) {
-            QuestHudLayoutManager.HudBox selection = QuestHudLayoutManagerDragHandler.selectionBox(pinnedSlot);
+            QuestHudLayoutManager.HudBox selection = QuestHudLayoutDragHandler.selectionBox(pinnedSlot);
             drawSelectionSlot(graphics, selection, QuestHudLayoutManager.Element.PINNED);
             drawResizeHandle(graphics, selection);
         }
@@ -182,13 +181,13 @@ public final class QuestHudLayoutManagerEditScreen extends Screen {
         int y = contextMenuY();
         int menuW = contextMenuW();
         List<ContextAction> actions = contextActions();
-        ContextMenuSystem.drawVanillaPanel(graphics, x, y, menuW, contextMenuH(), TabletColors.BORDER_ACCENT);
-        int rowY = y + ContextMenuSystem.outerPad();
-        int rowW = menuW - ContextMenuSystem.outerPad() * 2;
+        ContextMenuRenderer.drawVanillaPanel(graphics, x, y, menuW, contextMenuH(), TabletColors.BORDER_ACCENT);
+        int rowY = y + ContextMenuRenderer.outerPad();
+        int rowW = menuW - ContextMenuRenderer.outerPad() * 2;
         for (int i = 0; i < actions.size(); i++) {
             ContextAction action = actions.get(i);
-            boolean hovered = inside(mouseX, mouseY, x + ContextMenuSystem.outerPad(), rowY + i * ContextMenuSystem.rowHeight(), rowW, ContextMenuSystem.rowHeight());
-            ContextMenuSystem.drawVanillaContextRow(graphics, x, rowY + i * ContextMenuSystem.rowHeight(), rowW, action.label(), action.icon(), action.accentColor(), hovered);
+            boolean hovered = inside(mouseX, mouseY, x + ContextMenuRenderer.outerPad(), rowY + i * ContextMenuRenderer.rowHeight(), rowW, ContextMenuRenderer.rowHeight());
+            ContextMenuRenderer.drawVanillaContextRow(graphics, x, rowY + i * ContextMenuRenderer.rowHeight(), rowW, action.label(), action.icon(), action.accentColor(), hovered);
         }
     }
 
@@ -248,33 +247,33 @@ public final class QuestHudLayoutManagerEditScreen extends Screen {
     }
 
     private static int contextMenuW() {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     static int contextMenuH() {
-        return ContextMenuSystem.menuHeightForRows(2);
+        return ContextMenuRenderer.menuHeightForRows(2);
     }
 
     private static int contextRowAt(double mouseX, double mouseY, int x, int y, int menuW, int rows) {
-        int rowX = x + ContextMenuSystem.outerPad();
-        int rowY = y + ContextMenuSystem.outerPad();
-        int rowW = menuW - ContextMenuSystem.outerPad() * 2;
-        if (!inside(mouseX, mouseY, rowX, rowY, rowW, rows * ContextMenuSystem.rowHeight())) {
+        int rowX = x + ContextMenuRenderer.outerPad();
+        int rowY = y + ContextMenuRenderer.outerPad();
+        int rowW = menuW - ContextMenuRenderer.outerPad() * 2;
+        if (!inside(mouseX, mouseY, rowX, rowY, rowW, rows * ContextMenuRenderer.rowHeight())) {
             return -1;
         }
-        return ((int) Math.floor(mouseY) - rowY) / ContextMenuSystem.rowHeight();
+        return ((int) Math.floor(mouseY) - rowY) / ContextMenuRenderer.rowHeight();
     }
 
     private List<ContextAction> contextActions() {
         List<ContextAction> actions = new ArrayList<>();
         QuestHudLayoutManager.Element contextElement = dragHandler.contextElement();
-        actions.add(ContextActions.action(Component.translatable("ui.questsandstuff.hud.change_background").getString(), "background", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(Component.translatable("ui.questsandstuff.hud.change_background").getString(), "background", TabletColors.INTERACTIVE, () -> {
             dragHandler.setOpeningChild(true);
             if (!QuestHudAssetLibraryBridge.open(this, contextElement)) {
                 dragHandler.setOpeningChild(false);
             }
         }));
-        actions.add(ContextActions.action(Component.translatable("ui.questsandstuff.hud.remove_background").getString(), "delete", TabletColors.WARNING, () -> QuestHudLayoutManager.setBackground(contextElement, "")));
+        actions.add(ContextActionFactory.action(Component.translatable("ui.questsandstuff.hud.remove_background").getString(), "delete", TabletColors.WARNING, () -> QuestHudLayoutManager.setBackground(contextElement, "")));
         return actions;
     }
 }

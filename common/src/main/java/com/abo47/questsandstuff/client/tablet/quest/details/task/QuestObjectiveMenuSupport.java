@@ -23,22 +23,22 @@ final class QuestObjectiveMenuSupport {
     }
 
     static ContextAction editSubmenu(List<ContextAction> editActions) {
-        return ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT), "rename", TabletColors.INTERACTIVE, editActions);
+        return ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT), "rename", TabletColors.INTERACTIVE, editActions);
     }
 
     static void addMoveActions(List<ContextAction> actions, Runnable moveUp, Runnable moveDown) {
-        actions.add(ContextActions.moveUp(moveUp));
-        actions.add(ContextActions.moveDown(moveDown));
+        actions.add(ContextActionFactory.moveUp(moveUp));
+        actions.add(ContextActionFactory.moveDown(moveDown));
     }
 
     static ContextAction visualsSubmenu(TabletUiState state, String questId, String objectiveId, boolean task) {
         List<ContextAction> visualActions = new ArrayList<>();
-        visualActions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", TabletColors.INTERACTIVE, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        visualActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", TabletColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, objectiveId) : ModalTargets.rewardIcon(questId, objectiveId));
         }));
         addEntityIconActions(visualActions, state, questId, objectiveId, task);
-        return ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISUALS), "style", TabletColors.INTERACTIVE, visualActions);
+        return ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISUALS), "style", TabletColors.INTERACTIVE, visualActions);
     }
 
     static JsonObject parseObjectiveJson(String value) {

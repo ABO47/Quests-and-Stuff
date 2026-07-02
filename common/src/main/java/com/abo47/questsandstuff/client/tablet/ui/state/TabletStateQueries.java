@@ -21,10 +21,10 @@ public final class TabletStateQueries {
 
     public static String selectedGroupName(TabletUiState state) {
         String selected = sanitizeGroupName(state == null ? "" : state.root.selectedGroup);
-        if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestCache.groupOpenablePreview(selected)) {
+        if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestStateFacade.groupOpenablePreview(selected)) {
             return selected;
         }
-        for (String group : ClientQuestCache.selectableGroupOrder(false)) {
+        for (String group : ClientQuestStateFacade.selectableGroupOrder(false)) {
             String sanitized = sanitizeGroupName(group);
             if (!sanitized.isBlank()) {
                 return sanitized;

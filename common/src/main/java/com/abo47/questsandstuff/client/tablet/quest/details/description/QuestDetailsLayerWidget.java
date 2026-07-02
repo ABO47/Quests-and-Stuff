@@ -95,7 +95,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             refresh.run();
         } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetails.questDetailsContextOpen && !detailsContextHit) {
             QuestDetailsTransientManager.closeContext(state);
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             refresh.run();
         } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetails.questDetailsTextStyleOpen) {
             closeTextStyle("outside_click");

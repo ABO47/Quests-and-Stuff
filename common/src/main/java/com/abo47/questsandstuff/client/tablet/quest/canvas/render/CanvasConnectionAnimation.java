@@ -77,7 +77,7 @@ public final class CanvasConnectionAnimation {
     }
 
     private static boolean hasPrerequisite(String targetQuestId, String sourceQuestId) {
-        CompoundTag target = ClientQuestCache.quest(targetQuestId);
+        CompoundTag target = ClientQuestStateFacade.quest(targetQuestId);
         if (target == null) {
             return false;
         }

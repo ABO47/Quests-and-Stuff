@@ -12,7 +12,7 @@ public final class QuestDetailsTransientManager {
 
     public static void openContext(TabletUiState state, String kind, String id, int x, int y) {
         state.questDetails.questDetailsContextOpen = true;
-        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         state.questDetails.questDetailsContextKind = kind == null ? "" : kind;
         state.questDetails.questDetailsContextId = id == null ? "" : id;
         state.questDetails.questDetailsContextX = x;
@@ -23,13 +23,13 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsContextH = 0;
         state.questDetails.questDetailsContextScroll = 0;
         state.questDetails.questDetailsContextScrollMax = 0;
-        ContextMenuState.setScrollDragging(state, false);
+        ContextMenuController.setScrollDragging(state, false);
         closeTypePicker(state);
         closeItemSourcePicker(state);
         closeXpPicker(state);
         closeCommandRewardEditor(state);
         closeObjectiveRename(state);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     public static void closeContext(TabletUiState state) {
@@ -38,12 +38,12 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsContextId = "";
         state.questDetails.questDetailsContextScroll = 0;
         state.questDetails.questDetailsContextScrollMax = 0;
-        ContextMenuState.setScrollDragging(state, false);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.setScrollDragging(state, false);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     public static void openTypePicker(TabletUiState state, String kind, String targetId) {
-        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.type(kind, targetId, state.questDetails.questDetailsContextX, state.questDetails.questDetailsContextY);
     }
 
@@ -54,7 +54,7 @@ public final class QuestDetailsTransientManager {
     }
 
     public static void openItemSourcePicker(TabletUiState state, String target) {
-        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         QuestDetailsPickerSession active = state.questDetails.questDetailsPickerSession;
         int x = active.typePicker() ? active.x() : state.questDetails.questDetailsContextX;
         int y = active.typePicker() ? active.y() : state.questDetails.questDetailsContextY;
@@ -68,7 +68,7 @@ public final class QuestDetailsTransientManager {
     }
 
     public static void openXpPicker(TabletUiState state, String questId, String id, boolean task) {
-        ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+        ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         QuestDetailsPickerSession active = state.questDetails.questDetailsPickerSession;
         int x = active.typePicker() ? active.x() : state.questDetails.questDetailsContextX;
         int y = active.typePicker() ? active.y() : state.questDetails.questDetailsContextY;

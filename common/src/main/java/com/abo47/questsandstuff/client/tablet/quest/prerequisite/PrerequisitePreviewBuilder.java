@@ -113,7 +113,7 @@ final class PrerequisitePreviewBuilder {
         if (definitions.containsKey(questId)) {
             return;
         }
-        QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, ClientQuestCache.quest(questId));
+        QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, ClientQuestStateFacade.quest(questId));
         if (definition != null) {
             definitions.put(questId, definition);
         }
@@ -234,7 +234,7 @@ final class PrerequisitePreviewBuilder {
         if (group == null || group.isBlank()) {
             return null;
         }
-        List<CanvasExclusiveChoice> ecs = ClientQuestCache.canvasExclusiveChoicesByGroup().get(group);
+        List<CanvasExclusiveChoice> ecs = ClientQuestStateFacade.canvasExclusiveChoicesByGroup().get(group);
         if (ecs == null) {
             return null;
         }

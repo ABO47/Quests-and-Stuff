@@ -75,7 +75,7 @@ final class PrerequisiteRowsPanel {
                 ),
                 () -> {
                     state.modal.prerequisitesManagerContextOpen = false;
-                    ContextMenuState.clearDeleteConfirm(state);
+                    ContextMenuController.clearDeleteConfirm(state);
                 },
                 refresh,
                 (surface, row, index, x, y, cellW, cellH, tileLayout) -> renderConnectionRow(surface, state, refresh, modalW, modalH, questId, row, x, y, cellW, cellH)
@@ -117,7 +117,7 @@ final class PrerequisiteRowsPanel {
                 openConnectionContextAtPointer(state, modalW, modalH, row);
             } else if (click.button == 0) {
                 state.modal.prerequisitesManagerContextOpen = false;
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager row_click quest={} connection={} button={}", questId, row.key(), click.button);
             refresh.run();
@@ -159,7 +159,7 @@ final class PrerequisiteRowsPanel {
         state.modal.prerequisitesManagerSelectedConnectionKey = row.key();
         state.modal.prerequisitesManagerContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
         state.modal.prerequisitesManagerContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
-        ContextMenuState.clearDeleteConfirm(state);
-        ContextMenuAnimation.start(state, CONTEXT_ANIMATION_KEY);
+        ContextMenuController.clearDeleteConfirm(state);
+        ContextMenuAnimationBridge.start(state, CONTEXT_ANIMATION_KEY);
     }
 }

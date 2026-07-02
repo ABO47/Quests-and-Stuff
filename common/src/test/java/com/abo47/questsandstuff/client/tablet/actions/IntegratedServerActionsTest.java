@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.actions;
 
 import org.junit.jupiter.api.Test;
 
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -281,7 +281,7 @@ final class QuestDetailsDescriptionEditActions {
     }
 
     private static QuestDetailsDescriptionModel modelForQuest(String questId) {
-        return QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        return QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
     }
 
     private static String nextDescriptionTextId(QuestDetailsDescriptionModel model) {

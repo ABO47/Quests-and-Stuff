@@ -27,17 +27,17 @@ final class CanvasRenderStateController {
 
     static void pruneStaleInteractiveState(TabletUiState state, Set<String> visibleQuestIds) {
         state.canvas.canvasSelection.questIds().retainAll(visibleQuestIds);
-        if (!state.canvas.connectSourceQuestId.isBlank() && !ClientQuestCache.containsQuest(state.canvas.connectSourceQuestId)) {
+        if (!state.canvas.connectSourceQuestId.isBlank() && !ClientQuestStateFacade.containsQuest(state.canvas.connectSourceQuestId)) {
             state.canvas.connectSourceQuestId = "";
         }
-        state.canvas.connectSourceQuestIds.removeIf(questId -> !ClientQuestCache.containsQuest(questId));
+        state.canvas.connectSourceQuestIds.removeIf(questId -> !ClientQuestStateFacade.containsQuest(questId));
     }
 
     static void closeEditOnlyStateWhenReadOnly(TabletUiState state) {
         if (state.root.canEdit) {
             return;
         }
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         state.canvas.boxSelecting = false;
     }
 }

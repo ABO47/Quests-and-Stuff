@@ -17,7 +17,7 @@ final class QuestObjectiveIconActions {
     }
 
     static String objectiveIcon(String questId, String id, boolean task) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
         JsonObject json = TaskJsonFactory.read(entry.getString("json"));
@@ -36,7 +36,7 @@ final class QuestObjectiveIconActions {
     }
 
     static void putObjectiveIcon(Player player, String questId, String id, String icon, boolean task, boolean sync) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
         JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
@@ -45,9 +45,9 @@ final class QuestObjectiveIconActions {
         }
         json.addProperty("icon", icon.startsWith("#") ? icon.substring(1) : icon);
         if (task) {
-            ClientQuestCache.putQuestTaskJsonLocal(questId, json.toString());
+            ClientQuestStateFacade.putQuestTaskJsonLocal(questId, json.toString());
         } else {
-            ClientQuestCache.putQuestRewardJsonLocal(questId, json.toString());
+            ClientQuestStateFacade.putQuestRewardJsonLocal(questId, json.toString());
         }
         if (!sync) {
             return;

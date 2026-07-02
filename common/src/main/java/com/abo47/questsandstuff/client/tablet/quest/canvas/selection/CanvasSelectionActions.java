@@ -100,10 +100,10 @@ public final class CanvasSelectionActions {
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new LinkedHashMap<>();
         for (String questId : state.canvas.canvasSelection.questIds()) {
-            if (!ClientQuestCache.containsQuest(questId)) {
+            if (!ClientQuestStateFacade.containsQuest(questId)) {
                 continue;
             }
-            CompoundTag tag = ClientQuestCache.quest(questId);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
             QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
             CanvasPoint aligned = movedQuestPosition(state, card, offset, verticalCenterLine);
             if (aligned.x != card.logicalX() || aligned.y != card.logicalY()) {
@@ -152,7 +152,7 @@ public final class CanvasSelectionActions {
             EditorCanvasCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
         if (changed) {
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         }
         return changed;
     }
@@ -160,10 +160,10 @@ public final class CanvasSelectionActions {
     private static SelectionBounds selectedBounds(TabletUiState state, String group) {
         SelectionBounds bounds = new SelectionBounds();
         for (String questId : state.canvas.canvasSelection.questIds()) {
-            if (!ClientQuestCache.containsQuest(questId)) {
+            if (!ClientQuestStateFacade.containsQuest(questId)) {
                 continue;
             }
-            CompoundTag tag = ClientQuestCache.quest(questId);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
             QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }

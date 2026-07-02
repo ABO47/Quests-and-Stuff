@@ -171,7 +171,7 @@ public final class GroupPanelInteractionWidget extends WidgetGroup {
         if (state.root.canEdit) {
             String menuTarget = hit == null || hit.isBlank() ? "" : hit;
             state.chapterPanel.chapterMenuOpen = true;
-            ContextMenuAnimation.start(state, ContextMenuAnimation.CHAPTER_KEY);
+            ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.CHAPTER_KEY);
             state.chapterPanel.chapterMenuOpenedByClick = true;
             state.chapterPanel.chapterMenuTarget = menuTarget;
             state.chapterPanel.chapterMenuX = CHAPTER_X + localX;
@@ -256,11 +256,11 @@ public final class GroupPanelInteractionWidget extends WidgetGroup {
     private java.util.List<String> visibleChapterGroups() {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
-        for (String group : ClientQuestCache.groupOrder()) {
+        for (String group : ClientQuestStateFacade.groupOrder()) {
             if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
-            if (!state.root.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestStateFacade.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {
@@ -278,8 +278,8 @@ public final class GroupPanelInteractionWidget extends WidgetGroup {
         state.chapterPanel.chapterDragName = "";
         state.chapterPanel.chapterDragTargetIndex = -1;
         if (!moving.isBlank()) {
-            int fromIndex = ClientQuestCache.groupOrder().indexOf(moving);
-            int size = ClientQuestCache.groupOrder().size();
+            int fromIndex = ClientQuestStateFacade.groupOrder().indexOf(moving);
+            int size = ClientQuestStateFacade.groupOrder().size();
             target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
             if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
@@ -318,11 +318,11 @@ public final class GroupPanelInteractionWidget extends WidgetGroup {
         state.chapterPanel.chapterTextMenuTarget = "";
         state.chapterPanel.chapterTextFontSizeFieldTarget = "";
         state.chapterPanel.chapterSelectionJustChanged = true;
-        ClientQuestCache.clearGroupCompletionNotice(group);
+        ClientQuestStateFacade.clearGroupCompletionNotice(group);
         persistUiState(state);
     }
 
     private boolean canOpenChapter(String group) {
-        return state.root.canEdit || ClientQuestCache.groupOpenablePreview(group);
+        return state.root.canEdit || ClientQuestStateFacade.groupOpenablePreview(group);
     }
 }

@@ -100,8 +100,8 @@ public final class CanvasRecipeCardActions {
         state.canvas.canvasSelection.setPrimaryTextId("");
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.questIds().clear();
-        ContextMenuState.close(state);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.close(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {

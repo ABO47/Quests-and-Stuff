@@ -46,7 +46,7 @@ final class QuestDetailsWindowLifecycle {
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
-        CompoundTag quest = ClientQuestCache.quest(state.questDetails.questDetailsQuestId);
+        CompoundTag quest = ClientQuestStateFacade.quest(state.questDetails.questDetailsQuestId);
         state.questDetails.pendingQuestTitleChangeId = "";
         state.questDetails.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetails.questDetailsTitleFocused = false;
@@ -72,7 +72,7 @@ final class QuestDetailsWindowLifecycle {
         ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
         resetOpenTransientState(state);
         EntityMotionEditor.close(state);
-        CompoundTag quest = ClientQuestCache.quest(state.questDetails.questDetailsQuestId);
+        CompoundTag quest = ClientQuestStateFacade.quest(state.questDetails.questDetailsQuestId);
         state.questDetails.pendingQuestTitleChangeId = "";
         state.questDetails.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetails.questDetailsTitleFocused = false;
@@ -156,7 +156,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
-        List<String> ids = new ArrayList<>(ClientQuestCache.questIds());
+        List<String> ids = new ArrayList<>(ClientQuestStateFacade.questIds());
         if (ids.isEmpty()) {
             return;
         }
@@ -189,7 +189,7 @@ final class QuestDetailsWindowLifecycle {
         state.canvas.draggingSelection = false;
         state.canvas.resizingSelection = false;
         state.canvas.rotatingSelection = false;
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         TextStyleSession.closeMainCanvas(state);
         state.canvas.selectionBoundsVisible = false;
         state.questDetails.questDetailsBoxSelecting = false;
@@ -250,7 +250,7 @@ final class QuestDetailsWindowLifecycle {
         if (state == null || questId == null || questId.isBlank()) {
             return false;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
-        return state.root.canEdit || (!ClientQuestCache.questLockedPreview(quest) && !ClientQuestCache.questHiddenPreview(quest));
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
+        return state.root.canEdit || (!ClientQuestStateFacade.questLockedPreview(quest) && !ClientQuestStateFacade.questHiddenPreview(quest));
     }
 }

@@ -281,7 +281,7 @@ final class QuestObjectivePickerApplyActions {
         if (!ModalTargetState.requireParts("objective_loot_table", parsed, 3) || !parsed.isRewardLootTable()) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quest(parsed.questId());
+        CompoundTag quest = ClientQuestStateFacade.quest(parsed.questId());
         CompoundTag reward = quest.getCompound("rewards").getCompound(parsed.entryId());
         JsonObject existing = TaskJsonFactory.readRewardForEdit(parsed.questId(), parsed.entryId(), reward.getString("json"));
         String type = !parsed.type().isBlank() ? parsed.type() : TaskJsonFactory.MOD + "loot_table";
@@ -297,7 +297,7 @@ final class QuestObjectivePickerApplyActions {
             json.addProperty("icon", "minecraft:chest");
         }
         json.addProperty("loot_table", lootTable.trim());
-        ClientQuestCache.putQuestRewardJsonLocal(parsed.questId(), json.toString());
+        ClientQuestStateFacade.putQuestRewardJsonLocal(parsed.questId(), json.toString());
         EditorQuestCommandClient.putQuestRewardJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details loot table picked quest={} reward={} lootTable={}", parsed.questId(), parsed.entryId(), lootTable.trim());

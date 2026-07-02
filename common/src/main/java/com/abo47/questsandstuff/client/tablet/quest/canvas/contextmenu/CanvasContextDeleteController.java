@@ -77,19 +77,19 @@ public final class CanvasContextDeleteController {
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.IMAGE && !state.contextMenu.contextCanvasImageId.isBlank()) {
             boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, state.contextMenu.contextCanvasImageId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, state.contextMenu.contextCanvasImageId, removed);
-            ContextMenuState.clearTarget(state);
+            ContextMenuController.clearTarget(state);
             return;
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.TEXT && !state.contextMenu.contextCanvasTextId.isBlank()) {
             boolean removed = CanvasLayerMutations.removeCanvasText(state, group, state.contextMenu.contextCanvasTextId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, state.contextMenu.contextCanvasTextId, removed);
-            ContextMenuState.clearTarget(state);
+            ContextMenuController.clearTarget(state);
             return;
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EXCLUSIVE_CHOICE && !state.contextMenu.contextCanvasExclusiveChoiceId.isBlank()) {
             boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, group, state.contextMenu.contextCanvasExclusiveChoiceId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete group={} id={} removed={}", group, state.contextMenu.contextCanvasExclusiveChoiceId, removed);
-            ContextMenuState.clearTarget(state);
+            ContextMenuController.clearTarget(state);
             return;
         }
 

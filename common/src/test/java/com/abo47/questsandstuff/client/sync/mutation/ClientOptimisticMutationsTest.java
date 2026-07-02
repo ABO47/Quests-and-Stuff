@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ClientOptimisticMutationsTest {
     @BeforeEach
     void resetClientState() {
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
     }
 
     @Test
@@ -49,7 +49,7 @@ class ClientOptimisticMutationsTest {
         ClientQuestMutator.putQuestTaskJsonLocal("quest/new", taskJson("task/a", "Updated"));
         ClientQuestMutator.putQuestRewardJsonLocal("quest/new", rewardJson("reward/a"));
 
-        CompoundTag quest = ClientQuestCache.quest("quest/new");
+        CompoundTag quest = ClientQuestStateFacade.quest("quest/new");
         assertEquals("Better Title", quest.getString(SyncKeys.Quest.TITLE));
         assertEquals("Better Subtitle", quest.getString(SyncKeys.Quest.SUBTITLE));
         assertIterableEquals(List.of("line one", "line two"), strings(quest.getList(SyncKeys.Quest.DESCRIPTION, Tag.TAG_STRING)));
@@ -89,7 +89,7 @@ class ClientOptimisticMutationsTest {
         ClientQuestMutator.setConnectionModeLocal("quest/child", "quest/parent", true);
         ClientQuestMutator.setConnectionHiddenLocal("quest/child", "quest/parent", true);
 
-        CompoundTag child = ClientQuestCache.quest("quest/child");
+        CompoundTag child = ClientQuestStateFacade.quest("quest/child");
         assertIterableEquals(List.of("quest/parent"), strings(child.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING)));
         assertFalse(child.getBoolean(SyncKeys.Quest.UNLOCKED));
         assertEquals(0x112233, child.getCompound(SyncKeys.Quest.CONNECTION_COLORS).getInt("quest/parent"));
@@ -98,10 +98,10 @@ class ClientOptimisticMutationsTest {
 
         ClientQuestState.mutableQuest("quest/parent").putBoolean(SyncKeys.Quest.COMPLETED, true);
         ClientQuestConnectionMutator.refreshLocalUnlockState(ClientQuestState.mutableQuest("quest/child"));
-        assertTrue(ClientQuestCache.quest("quest/child").getBoolean(SyncKeys.Quest.UNLOCKED));
+        assertTrue(ClientQuestStateFacade.quest("quest/child").getBoolean(SyncKeys.Quest.UNLOCKED));
 
         ClientQuestMutator.setQuestPrerequisiteLocal("quest/child", "quest/parent", false);
-        child = ClientQuestCache.quest("quest/child");
+        child = ClientQuestStateFacade.quest("quest/child");
         assertTrue(child.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING).isEmpty());
         assertTrue(child.getBoolean(SyncKeys.Quest.UNLOCKED));
         assertFalse(child.getCompound(SyncKeys.Quest.CONNECTION_COLORS).contains("quest/parent"));
@@ -120,7 +120,7 @@ class ClientOptimisticMutationsTest {
         ClientQuestMutator.setQuestClaimedLocal("quest/child", true);
         ClientQuestState.mutableQuest("quest/child").putBoolean(SyncKeys.Quest.COMPLETED, true);
         ClientQuestState.mutableQuest("quest/child").putFloat(SyncKeys.Quest.PROGRESS, 1.0f);
-        ClientQuestCache.togglePinnedLocal("quest/parent");
+        ClientQuestStateFacade.togglePinnedLocal("quest/parent");
 
         ClientQuestMutator.copyQuestLocal(
                 "quest/child",
@@ -132,7 +132,7 @@ class ClientOptimisticMutationsTest {
                 Map.of("quest/parent", "quest/parent_copy", "quest/child", "quest/child_copy")
         );
 
-        CompoundTag copy = ClientQuestCache.quest("quest/child_copy");
+        CompoundTag copy = ClientQuestStateFacade.quest("quest/child_copy");
         assertIterableEquals(List.of("quest/parent_copy"), strings(copy.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING)));
         assertEquals(0x445566, copy.getCompound(SyncKeys.Quest.CONNECTION_COLORS).getInt("quest/parent_copy"));
         assertEquals("grid", copy.getCompound(SyncKeys.Quest.CONNECTION_MODES).getString("quest/parent_copy"));
@@ -144,9 +144,9 @@ class ClientOptimisticMutationsTest {
         assertGroupView(copy, "copies", 16, 24, 1.25f);
 
         ClientQuestMutator.removeQuestLocal("quest/parent");
-        CompoundTag child = ClientQuestCache.quest("quest/child");
-        assertFalse(ClientQuestCache.containsQuest("quest/parent"));
-        assertEquals(Set.of(), ClientQuestCache.pinned());
+        CompoundTag child = ClientQuestStateFacade.quest("quest/child");
+        assertFalse(ClientQuestStateFacade.containsQuest("quest/parent"));
+        assertEquals(Set.of(), ClientQuestStateFacade.pinned());
         assertTrue(child.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING).isEmpty());
         assertFalse(child.getCompound(SyncKeys.Quest.CONNECTION_COLORS).contains("quest/parent"));
         assertFalse(child.getCompound(SyncKeys.Quest.CONNECTION_MODES).contains("quest/parent"));
@@ -162,20 +162,20 @@ class ClientOptimisticMutationsTest {
         ClientCanvasMutator.putCanvasImageLocal(" main ", image);
         ClientCanvasMutator.putCanvasTextLocal("main", text);
 
-        assertEquals(List.of(image), ClientQuestCache.canvasImages("main"));
-        assertEquals(List.of(text), ClientQuestCache.canvasTexts("main"));
-        assertIterableEquals(List.of("image:image/a", "text:text/a"), ClientQuestCache.canvasLayerOrder("main"));
+        assertEquals(List.of(image), ClientQuestStateFacade.canvasImages("main"));
+        assertEquals(List.of(text), ClientQuestStateFacade.canvasTexts("main"));
+        assertIterableEquals(List.of("image:image/a", "text:text/a"), ClientQuestStateFacade.canvasLayerOrder("main"));
 
         ClientCanvasMutator.setCanvasLayerOrderLocal("main", Arrays.asList("text:text/a", "", null, "image:image/a", "text:text/a"));
-        assertIterableEquals(List.of("text:text/a", "image:image/a"), ClientQuestCache.canvasLayerOrder("main"));
+        assertIterableEquals(List.of("text:text/a", "image:image/a"), ClientQuestStateFacade.canvasLayerOrder("main"));
 
         ClientCanvasMutator.removeCanvasImageLocal("main", "image/a");
-        assertTrue(ClientQuestCache.canvasImages("main").isEmpty());
-        assertIterableEquals(List.of("text:text/a"), ClientQuestCache.canvasLayerOrder("main"));
+        assertTrue(ClientQuestStateFacade.canvasImages("main").isEmpty());
+        assertIterableEquals(List.of("text:text/a"), ClientQuestStateFacade.canvasLayerOrder("main"));
 
         ClientCanvasMutator.removeCanvasTextLocal("main", "text/a");
-        assertTrue(ClientQuestCache.canvasTexts("main").isEmpty());
-        assertTrue(ClientQuestCache.canvasLayerOrder("main").isEmpty());
+        assertTrue(ClientQuestStateFacade.canvasTexts("main").isEmpty());
+        assertTrue(ClientQuestStateFacade.canvasLayerOrder("main").isEmpty());
     }
 
     private static String taskJson(String id, String label) {

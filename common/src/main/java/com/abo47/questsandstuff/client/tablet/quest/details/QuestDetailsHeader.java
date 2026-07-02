@@ -50,9 +50,9 @@ final class QuestDetailsHeader {
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
-        boolean pinned = ClientQuestCache.pinned().contains(questId);
+        boolean pinned = ClientQuestStateFacade.pinned().contains(questId);
         addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, pinned, click -> {
-            ClientQuestCache.togglePinnedLocal(questId);
+            ClientQuestStateFacade.togglePinnedLocal(questId);
             ModNetwork.sendToServer(new C2STogglePinPacket(questId));
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
@@ -92,7 +92,7 @@ final class QuestDetailsHeader {
     }
 
     private static void addQuestTitleField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String title = quest == null ? "" : quest.getString("title");
         if (!state.questDetails.questDetailsTitleFocused || !questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
             state.questDetails.questTitleDraft = title;
@@ -158,7 +158,7 @@ final class QuestDetailsHeader {
         if (!QuestDetailsEditController.canEdit(state) || questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         if (quest == null) {
             return;
         }

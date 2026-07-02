@@ -40,7 +40,7 @@ public final class TabletBiomePickerModal {
     }
 
     private static List<String> biomes(String query) {
-        Map<String, String> displays = ClientQuestCache.biomeDisplays();
+        Map<String, String> displays = ClientQuestStateFacade.biomeDisplays();
         List<String> values = new ArrayList<>(displays.isEmpty()
                 ? List.of("minecraft:plains", "minecraft:forest", "minecraft:desert", "minecraft:taiga", "minecraft:swamp")
                 : displays.keySet());
@@ -52,7 +52,7 @@ public final class TabletBiomePickerModal {
     }
 
     private static String displayName(String biome) {
-        return DisplayNameFormatter.biome(biome, ClientQuestCache.biomeDisplays());
+        return DisplayNameFormatter.biome(biome, ClientQuestStateFacade.biomeDisplays());
     }
 
 }

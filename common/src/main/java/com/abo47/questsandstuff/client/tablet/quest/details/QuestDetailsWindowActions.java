@@ -100,7 +100,7 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (keyCode == GLFW.GLFW_KEY_C) {
             return QuestDetailsDescriptionPanel.copySelectedDescriptionToClipboard(state, model);
         }
@@ -144,7 +144,7 @@ final class QuestDetailsWindowActions {
         if (QuestDetailsObjectivesPanel.deleteSelectedObjective(player, state, questId)) {
             return true;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         return QuestDetailsDescriptionPanel.deleteSelectedDescription(player, state, questId, model);
     }
 
@@ -156,7 +156,7 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         int[] viewport = viewport(state);
         return QuestDetailsDescriptionPanel.copySelectedDescriptionToClipboard(state, model)
                 && QuestDetailsDescriptionClipboard.pasteFromKeyboard(player, state, questId, model, viewport[2], viewport[3]);
@@ -172,7 +172,7 @@ final class QuestDetailsWindowActions {
         }
         state.questDetails.questDetailsSelectedObjectiveKind = "";
         state.questDetails.questDetailsSelectedObjectiveId = "";
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         return QuestDetailsDescriptionPanel.selectAllDescription(state, model);
     }
 
@@ -184,7 +184,7 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         return QuestDetailsDescriptionClipboard.nudgeSelected(player, state, questId, model, dx, dy);
     }
 

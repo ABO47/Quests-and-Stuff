@@ -15,11 +15,11 @@ public final class RecipeViewerCapabilityProbe {
         this.checks = List.copyOf(checks);
     }
 
-    static Builder provider(String providerName) {
+    public static Builder provider(String providerName) {
         return new Builder(providerName);
     }
 
-    RecipeViewerProviderCapabilities evaluate() {
+    public RecipeViewerProviderCapabilities evaluate() {
         List<RecipeViewerCapabilityStatus> statuses = new ArrayList<>();
         Set<RecipeViewerCapability> reported = EnumSet.noneOf(RecipeViewerCapability.class);
         for (CapabilityCheck check : checks) {
@@ -42,17 +42,17 @@ public final class RecipeViewerCapabilityProbe {
             this.providerName = providerName;
         }
 
-        Builder requires(RecipeViewerCapability capability, String... classNames) {
+        public Builder requires(RecipeViewerCapability capability, String... classNames) {
             checks.add(CapabilityCheck.all(capability, classNames));
             return this;
         }
 
-        Builder requiresAny(RecipeViewerCapability capability, String... classNames) {
+        public Builder requiresAny(RecipeViewerCapability capability, String... classNames) {
             checks.add(CapabilityCheck.any(capability, classNames));
             return this;
         }
 
-        RecipeViewerCapabilityProbe build() {
+        public RecipeViewerCapabilityProbe build() {
             return new RecipeViewerCapabilityProbe(providerName, checks);
         }
     }

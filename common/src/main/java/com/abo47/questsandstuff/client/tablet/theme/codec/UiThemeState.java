@@ -7,12 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-final class UiThemeState {
-    final Map<String, Integer> roleColors;
-    final Map<String, String> iconRoles;
-    final Map<String, Integer> uiColors;
+public final class UiThemeState {
+    public final Map<String, Integer> roleColors;
+    public final Map<String, String> iconRoles;
+    public final Map<String, Integer> uiColors;
 
-    UiThemeState(Map<String, Integer> roleColors, Map<String, String> iconRoles, Map<String, Integer> uiColors) {
+    public UiThemeState(Map<String, Integer> roleColors, Map<String, String> iconRoles, Map<String, Integer> uiColors) {
         this.roleColors = Map.copyOf(roleColors);
         this.iconRoles = Map.copyOf(iconRoles);
         this.uiColors = Map.copyOf(uiColors);
@@ -29,7 +29,7 @@ final class UiThemeState {
         return colorForRole(role);
     }
 
-    static UiThemeState defaults() {
+    public static UiThemeState defaults() {
         return new UiThemeState(defaultRoleColors(), defaultIconRoles(), defaultUiColors());
     }
 

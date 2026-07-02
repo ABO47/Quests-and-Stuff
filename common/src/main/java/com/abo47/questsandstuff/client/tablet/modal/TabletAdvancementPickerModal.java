@@ -40,7 +40,7 @@ public final class TabletAdvancementPickerModal {
     }
 
     private static List<String> advancements(String query) {
-        Map<String, String> displays = ClientQuestCache.advancementDisplays();
+        Map<String, String> displays = ClientQuestStateFacade.advancementDisplays();
         List<String> values = new ArrayList<>(displays.isEmpty()
                 ? List.of("minecraft:story/root", "minecraft:story/mine_stone", "minecraft:story/iron_tools", "minecraft:nether/root", "minecraft:end/root")
                 : displays.keySet());
@@ -54,6 +54,6 @@ public final class TabletAdvancementPickerModal {
     }
 
     private static String displayName(String advancement) {
-        return DisplayNameFormatter.advancement(advancement, ClientQuestCache.advancementDisplays());
+        return DisplayNameFormatter.advancement(advancement, ClientQuestStateFacade.advancementDisplays());
     }
 }

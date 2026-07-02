@@ -88,7 +88,7 @@ final class QuestObjectiveDisplayText {
         if ("advancement".equals(path)) {
             String advancementName = DisplayNameFormatter.advancement(
                     TaskJsonFactory.asString(json, "target", ""),
-                    ClientQuestCache.advancementDisplays()
+                    ClientQuestStateFacade.advancementDisplays()
             );
             return advancementName.isBlank() ? typeLabel(type) : advancementName;
         }

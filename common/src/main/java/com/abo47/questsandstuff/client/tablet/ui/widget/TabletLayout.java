@@ -262,11 +262,11 @@ public final class TabletLayout {
     private static List<String> visibleChapterGroups(TabletUiState state) {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         List<String> groups = new ArrayList<>();
-        for (String group : ClientQuestCache.groupOrder()) {
+        for (String group : ClientQuestStateFacade.groupOrder()) {
             if (DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
-            if (!state.root.canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestStateFacade.groupHiddenPreview(group)) {
                 continue;
             }
             if (!SearchFilter.matches(query, group)) {

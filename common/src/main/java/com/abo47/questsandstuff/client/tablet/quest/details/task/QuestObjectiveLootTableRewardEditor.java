@@ -25,7 +25,7 @@ final class QuestObjectiveLootTableRewardEditor {
     }
 
     static String displayName(String lootTable) {
-        return DisplayNameFormatter.lootTable(lootTable, ClientQuestCache.lootTableDisplays());
+        return DisplayNameFormatter.lootTable(lootTable, ClientQuestStateFacade.lootTableDisplays());
     }
 
     private static void renderSummary(WidgetGroup parent, JsonObject json, int x, int y, int w) {

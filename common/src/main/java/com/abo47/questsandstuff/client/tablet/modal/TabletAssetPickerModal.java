@@ -277,8 +277,8 @@ public final class TabletAssetPickerModal {
                     state.pickers.assetContextFile = relative;
                     anchorAssetContextAtPointer(state, w, h);
                     state.pickers.assetRenameOpen = false;
-                    ContextMenuState.clearDeleteConfirm(state);
-                    ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
                     refresh.run();
                     return;
                 }
@@ -329,7 +329,7 @@ public final class TabletAssetPickerModal {
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             refresh.run();
         });
         modal.addWidget(dismiss);
@@ -585,7 +585,7 @@ public final class TabletAssetPickerModal {
                 if (!state.pickers.assetRenameOpen) {
                     state.pickers.assetRenameDraft = "";
                 }
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
             }
             refresh.run();
         }, modalW, modalH));
@@ -593,7 +593,7 @@ public final class TabletAssetPickerModal {
 
     private static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
             if (isDir) {
                 state.pickers.assetBrowseDir = state.pickers.assetContextFile;
                 state.pickers.saveBrowseDirForMode();
@@ -605,15 +605,15 @@ public final class TabletAssetPickerModal {
             }
         }));
         if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
-            actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
+            actions.add(ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
                     TabletBlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
-            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
+            actions.add(ContextActionFactory.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
             String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
-            actions.add(ContextActions.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+            actions.add(ContextActionFactory.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
                 deleteAssetFile(state.pickers.assetContextFile);
                 state.pickers.assetContextOpen = false;
                 state.pickers.assetRenameOpen = false;
@@ -628,7 +628,7 @@ public final class TabletAssetPickerModal {
         state.pickers.assetRenameOpen = !state.pickers.assetContextFile.isBlank();
         state.pickers.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.pickers.assetContextFile);
         state.pickers.assetSearchFocused = false;
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     private static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {

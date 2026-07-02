@@ -61,12 +61,12 @@ record PrerequisiteConnectionModel(
         tag.putString("quest_background", ec.background());
         List<PrerequisiteConnectionRow> all = new ArrayList<>();
         for (String questId : ec.prerequisiteQuestIds()) {
-            CompoundTag questTag = ClientQuestCache.quest(questId);
+            CompoundTag questTag = ClientQuestStateFacade.quest(questId);
             String title = questTitle(questId, questTag);
             all.add(new PrerequisiteConnectionRow(questId, safeId, title, safeId, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.INCOMING, true));
         }
         for (String questId : ec.connectionQuestIds()) {
-            CompoundTag questTag = ClientQuestCache.quest(questId);
+            CompoundTag questTag = ClientQuestStateFacade.quest(questId);
             String title = questTitle(questId, questTag);
             all.add(new PrerequisiteConnectionRow(safeId, questId, safeId, title, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.OUTGOING, true));
         }
@@ -117,7 +117,7 @@ record PrerequisiteConnectionModel(
     }
 
     private static void addEcConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
-        for (List<CanvasExclusiveChoice> ecs : ClientQuestCache.canvasExclusiveChoicesByGroup().values()) {
+        for (List<CanvasExclusiveChoice> ecs : ClientQuestStateFacade.canvasExclusiveChoicesByGroup().values()) {
             for (CanvasExclusiveChoice ec : ecs) {
                 String ecId = safe(ec.id());
                 if (ecId.isBlank()) continue;
@@ -140,7 +140,7 @@ record PrerequisiteConnectionModel(
             if (sourceId.isBlank()) {
                 continue;
             }
-            CompoundTag sourceTag = ClientQuestCache.quest(sourceId);
+            CompoundTag sourceTag = ClientQuestStateFacade.quest(sourceId);
             PrerequisiteConnectionRow row = new PrerequisiteConnectionRow(
                     sourceId,
                     questId,
@@ -156,7 +156,7 @@ record PrerequisiteConnectionModel(
     }
 
     private static void addOutgoingRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String sourceTitle) {
-        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.questEntries()) {
+        for (Map.Entry<String, CompoundTag> entry : ClientQuestStateFacade.questEntries()) {
             String targetId = entry.getKey();
             if (questId.equals(targetId)) {
                 continue;
@@ -229,7 +229,7 @@ record PrerequisiteConnectionModel(
     }
 
     private static boolean questInGroup(String questId, String group) {
-        CompoundTag questTag = ClientQuestCache.quest(questId);
+        CompoundTag questTag = ClientQuestStateFacade.quest(questId);
         if (questTag == null || questTag.isEmpty() || group == null || group.isBlank()) {
             return false;
         }

@@ -21,16 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PrerequisiteConnectionModelTest {
     @BeforeEach
     void resetClientState() {
-        ClientQuestCache.resetStateForTests();
-        ClientQuestCache.createEditorQuestLocal("quest/parent", "main", 10, 20, "Parent");
-        ClientQuestCache.createEditorQuestLocal("quest/focus", "main", 30, 40, "Focus");
-        ClientQuestCache.createEditorQuestLocal("quest/child", "main", 50, 60, "Child");
-        ClientQuestCache.createEditorQuestLocal("quest/external", "other", 70, 80, "External");
-        ClientQuestCache.createEditorQuestLocal("quest/external_child", "other", 90, 100, "External Child");
-        ClientQuestCache.setQuestPrerequisiteLocal("quest/focus", "quest/parent", true);
-        ClientQuestCache.setQuestPrerequisiteLocal("quest/child", "quest/focus", true);
-        ClientQuestCache.setQuestPrerequisiteLocal("quest/focus", "quest/external", true);
-        ClientQuestCache.setQuestPrerequisiteLocal("quest/external_child", "quest/focus", true);
+        ClientQuestStateFacade.resetStateForTests();
+        ClientQuestStateFacade.createEditorQuestLocal("quest/parent", "main", 10, 20, "Parent");
+        ClientQuestStateFacade.createEditorQuestLocal("quest/focus", "main", 30, 40, "Focus");
+        ClientQuestStateFacade.createEditorQuestLocal("quest/child", "main", 50, 60, "Child");
+        ClientQuestStateFacade.createEditorQuestLocal("quest/external", "other", 70, 80, "External");
+        ClientQuestStateFacade.createEditorQuestLocal("quest/external_child", "other", 90, 100, "External Child");
+        ClientQuestStateFacade.setQuestPrerequisiteLocal("quest/focus", "quest/parent", true);
+        ClientQuestStateFacade.setQuestPrerequisiteLocal("quest/child", "quest/focus", true);
+        ClientQuestStateFacade.setQuestPrerequisiteLocal("quest/focus", "quest/external", true);
+        ClientQuestStateFacade.setQuestPrerequisiteLocal("quest/external_child", "quest/focus", true);
     }
 
     @Test
@@ -141,7 +141,7 @@ class PrerequisiteConnectionModelTest {
         state.modal.prerequisitesManagerHoveredConnectionKey = row.key();
         state.modal.prerequisitesManagerContextOpen = true;
         state.modal.prerequisitesManagerContextPrerequisiteId = row.sourceId();
-        ContextMenuState.confirmDeleteClick(state, "connection:remove:" + row.key());
+        ContextMenuController.confirmDeleteClick(state, "connection:remove:" + row.key());
 
         assertTrue(PrerequisiteConnectionRemover.canRemove(row));
         assertFalse(PrerequisiteConnectionRemover.canRemove(new PrerequisiteConnectionRow("", "quest/focus", "", "", "", "", PrerequisiteConnectionKind.INCOMING, false)));
@@ -158,7 +158,7 @@ class PrerequisiteConnectionModelTest {
     private static PrerequisiteConnectionModel model(boolean externalMode, String query) {
         return PrerequisiteConnectionModel.build(
                 "quest/focus",
-                ClientQuestCache.quest("quest/focus"),
+                ClientQuestStateFacade.quest("quest/focus"),
                 "main",
                 query,
                 externalMode

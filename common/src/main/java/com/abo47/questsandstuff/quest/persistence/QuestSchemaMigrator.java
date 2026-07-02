@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.persistence;
 
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.google.gson.JsonObject;
 
 public final class QuestSchemaMigrator {

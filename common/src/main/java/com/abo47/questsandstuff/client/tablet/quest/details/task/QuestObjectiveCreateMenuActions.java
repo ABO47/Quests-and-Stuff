@@ -18,14 +18,14 @@ final class QuestObjectiveCreateMenuActions {
     static List<ContextAction> actions(TabletUiState state, String kind) {
         List<ContextAction> actions = new ArrayList<>();
         if (kind.startsWith("requirement")) {
-            actions.add(ContextActions.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REQUIREMENT), () -> {
-                ContextMenuState.clearDeleteConfirm(state);
+            actions.add(ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REQUIREMENT), () -> {
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "requirement", "");
             }));
         }
         if (kind.startsWith("reward")) {
-            actions.add(ContextActions.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REWARD), () -> {
-                ContextMenuState.clearDeleteConfirm(state);
+            actions.add(ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REWARD), () -> {
+                ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "reward", "");
             }));
         }

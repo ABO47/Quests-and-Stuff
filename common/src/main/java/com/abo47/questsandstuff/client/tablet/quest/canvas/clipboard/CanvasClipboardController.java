@@ -75,7 +75,7 @@ public final class CanvasClipboardController {
         }
         Map<String, QuestCardLayout> byQuestId = canvasViewport.cardLookup();
         for (String questId : selection.questIds()) {
-            if (byQuestId.containsKey(questId) || ClientQuestCache.containsQuest(questId)) {
+            if (byQuestId.containsKey(questId) || ClientQuestStateFacade.containsQuest(questId)) {
                 return true;
             }
         }
@@ -155,7 +155,7 @@ public final class CanvasClipboardController {
 
         CanvasPoint origin = clipboardOrigin(state, canvasViewport, copiedQuestIds, copiedImages, copiedTexts, copiedEcs);
         state.clipboard.canvasClipboard.store(!copiedQuestIds.isEmpty(), copiedImages, copiedTexts, copiedEcs, origin.x, origin.y);
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
 
         if (!copiedQuestIds.isEmpty()) {
             EditorCanvasCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);
@@ -173,7 +173,7 @@ public final class CanvasClipboardController {
             if (normalized.isBlank()) {
                 continue;
             }
-            if (byQuestId.containsKey(normalized) || ClientQuestCache.containsQuest(normalized)) {
+            if (byQuestId.containsKey(normalized) || ClientQuestStateFacade.containsQuest(normalized)) {
                 copiedIds.add(normalized);
             }
         }

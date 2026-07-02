@@ -2,9 +2,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import net.minecraft.nbt.CompoundTag;

@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
@@ -44,7 +44,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
     public static void prerequisiteEditRelocksQuestOnServerAndClient(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_prerequisite_relock_");
             store = new QuestDefinitionStore(root);
             String rootQuest = "editor/root";
@@ -72,7 +72,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
             applyFullSyncPackets(packets);
             assertClientQuestUnlocked(childQuest, true, "Child quest should start unlocked before prerequisites are added");
 
-            ClientQuestCache.setQuestPrerequisiteLocal(childQuest, rootQuest, true);
+            ClientQuestStateFacade.setQuestPrerequisiteLocal(childQuest, rootQuest, true);
             assertClientQuestUnlocked(childQuest, false, "Local prerequisite edit should immediately relock the child quest");
 
             store.upsert(incompleteQuest(childQuest, "Main", 64, 32, Set.of(rootQuest)));
@@ -134,12 +134,12 @@ public final class QuestPrerequisiteRealtimeGameTests {
 
     private static void applyFullSyncPackets(List<Object> packets) {
         for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-            ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+            ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
         }
     }
 
     private static void assertClientQuestUnlocked(String questId, boolean expected, String message) {
-        CompoundTag quest = ClientQuestCache.quests().get(questId);
+        CompoundTag quest = ClientQuestStateFacade.quests().get(questId);
         if (quest == null) {
             throw new GameTestAssertException(message + ": quest missing from client cache");
         }

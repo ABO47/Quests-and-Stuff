@@ -40,7 +40,7 @@ public final class TabletLootTablePickerModal {
     }
 
     private static List<String> lootTables(String query) {
-        Map<String, String> displays = ClientQuestCache.lootTableDisplays();
+        Map<String, String> displays = ClientQuestStateFacade.lootTableDisplays();
         List<String> values = new ArrayList<>(displays.isEmpty()
                 ? List.of("minecraft:chests/simple_dungeon", "minecraft:chests/village/village_armorer", "minecraft:empty")
                 : displays.keySet());
@@ -54,7 +54,7 @@ public final class TabletLootTablePickerModal {
     }
 
     private static String displayName(String lootTable) {
-        return DisplayNameFormatter.lootTable(lootTable, ClientQuestCache.lootTableDisplays());
+        return DisplayNameFormatter.lootTable(lootTable, ClientQuestStateFacade.lootTableDisplays());
     }
 
 }

@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.theme.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -110,7 +110,7 @@ public final class SkinEditManager {
         String currentAsset = currentOverride != null ? currentOverride.path() : "";
 
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(
+        actions.add(ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_texture"),
                 "image",
                 TabletColors.INTERACTIVE,
@@ -122,7 +122,7 @@ public final class SkinEditManager {
                 }));
 
         List<ContextAction> modeActions = new ArrayList<>();
-        modeActions.add(ContextActions.action(
+        modeActions.add(ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"),
                 "size",
                 currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
@@ -130,7 +130,7 @@ public final class SkinEditManager {
                     root.closeContextMenu();
                     setFillMode(state, targetKey, "stretch", currentAsset, root, refresher);
                 }));
-        modeActions.add(ContextActions.action(
+        modeActions.add(ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
                 "grid",
                 currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
@@ -138,7 +138,7 @@ public final class SkinEditManager {
                     root.closeContextMenu();
                     setFillMode(state, targetKey, "tile", currentAsset, root, refresher);
                 }));
-        actions.add(ContextActions.submenu(
+        actions.add(ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "style",
                 TabletColors.TEXT_PRIMARY,
@@ -150,7 +150,7 @@ public final class SkinEditManager {
         }
         if (rawOverride != null && !rawOverride.isBlank()) {
             final String removalTarget = removeKey;
-            actions.add(ContextActions.action(
+            actions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     "delete",
                     TabletColors.ERROR,
@@ -166,7 +166,7 @@ public final class SkinEditManager {
 
         List<String> labels = new ArrayList<>();
         for (ContextAction a : actions) labels.add(a.label());
-        int menuW = ContextMenuSystem.preferredMenuWidth(labels, 90, 120);
+        int menuW = ContextMenuRenderer.preferredMenuWidth(labels, 90, 120);
         int menuH = ContextMenuPanel.heightFor(actions, actions.size());
 
         int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();

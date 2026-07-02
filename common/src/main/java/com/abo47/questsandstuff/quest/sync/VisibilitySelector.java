@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.quest.sync;
 
 import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import net.minecraft.server.level.ServerPlayer;

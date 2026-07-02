@@ -8,11 +8,11 @@ import com.google.gson.JsonObject;
 import java.util.Locale;
 import java.util.Map;
 
-final class UiThemeDefaults {
+public final class UiThemeDefaults {
     private UiThemeDefaults() {
     }
 
-    static JsonObject defaultThemeJson() {
+    public static JsonObject defaultThemeJson() {
         UiThemeState defaults = UiThemeState.defaults();
         JsonObject root = new JsonObject();
         root.addProperty("name", UiThemeFiles.DEFAULT_THEME_NAME);
@@ -34,7 +34,7 @@ final class UiThemeDefaults {
         return root;
     }
 
-    static JsonObject themedJson(String name, String[][] colors) {
+    public static JsonObject themedJson(String name, String[][] colors) {
         JsonObject root = defaultThemeJson();
         root.addProperty("name", name);
         JsonObject colorJson = root.getAsJsonObject("colors");

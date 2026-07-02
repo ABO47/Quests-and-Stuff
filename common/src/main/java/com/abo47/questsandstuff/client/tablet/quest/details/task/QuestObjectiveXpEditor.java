@@ -67,13 +67,13 @@ final class QuestObjectiveXpEditor {
     }
 
     private static void addTaskAction(List<ContextAction> actions, Player player, TabletUiState state, String labelKey, String mode, String collection) {
-        actions.add(ContextActions.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
             commitTask(player, state, mode, collection);
         }));
     }
 
     private static void addRewardAction(List<ContextAction> actions, Player player, TabletUiState state, String labelKey, String mode) {
-        actions.add(ContextActions.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
             commitReward(player, state, mode);
         }));
     }
@@ -113,7 +113,7 @@ final class QuestObjectiveXpEditor {
     }
 
     private static JsonObject existingJson(String questId, String id, boolean task) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         return TaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
     }

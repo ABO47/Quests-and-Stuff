@@ -154,7 +154,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (!state.canvas.selectingCanvasTextRange || !isEditing()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         updateCursor(model, state.questDetails.questDetailsTextEditTarget, lx, visibleY, false);
         refresh.run();
         return true;
@@ -178,7 +178,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (!isEditing()) {
             return;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(state.canvas.canvasTextEditTarget);
         if (text != null) {
             model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvas.canvasTextEditDraft))));
@@ -193,7 +193,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (state.canvas.canvasTextEditTarget.isBlank()) {
             return;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(state.canvas.canvasTextEditTarget);
         if (text == null) {
             return;
@@ -215,7 +215,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (!replacement.changed()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(state.canvas.canvasTextEditTarget);
         if (text != null) {
             model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));

@@ -36,7 +36,7 @@ public final class GroupContextMenu {
                 TabletColors.BORDER_BASE,
                 state,
                 null,
-                ContextMenuAnimation.CHAPTER_KEY
+                ContextMenuAnimationBridge.CHAPTER_KEY
         ));
     }
 

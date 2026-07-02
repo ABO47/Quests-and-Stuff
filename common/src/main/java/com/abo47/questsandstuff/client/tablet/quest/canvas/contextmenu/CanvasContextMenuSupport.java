@@ -32,11 +32,11 @@ public final class CanvasContextMenuSupport {
     }
 
     public static int contextMenuWidth(List<ContextAction> actions, int maxAvailableWidth) {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuWidth(TabletUiState state) {
-        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuHeight(int visibleRows) {
@@ -57,12 +57,12 @@ public final class CanvasContextMenuSupport {
     }
 
     public static boolean clickContextMenu(CanvasViewport canvasViewport, TabletUiState state, int x, int y) {
-        if (!ContextMenuState.isOpen(state) || !isContextMenuHit(state, x, y)) {
+        if (!ContextMenuController.isOpen(state) || !isContextMenuHit(state, x, y)) {
             return false;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return true;
         }
 
@@ -94,14 +94,14 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
-            ContextMenuState.setLastClick(state, x, y);
-            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
+            ContextMenuController.setLastClick(state, x, y);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
         }
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         return true;
     }
 
@@ -118,20 +118,20 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = visiblePromoted.get(i);
-            ContextMenuState.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
-            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
+            ContextMenuController.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return true;
         }
         return true;
     }
 
     public static void scrollContextMenu(TabletUiState state, double wheelDelta) {
-        ContextMenuState.scrollByWheel(state, wheelDelta);
+        ContextMenuController.scrollByWheel(state, wheelDelta);
     }
 
     public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {
@@ -150,7 +150,7 @@ public final class CanvasContextMenuSupport {
         if (questId == null || questId.isBlank()) {
             return false;
         }
-        for (String candidate : ClientQuestCache.questIds()) {
+        for (String candidate : ClientQuestStateFacade.questIds()) {
             if (!questId.equals(candidate)) {
                 return true;
             }
@@ -180,7 +180,7 @@ public final class CanvasContextMenuSupport {
     }
 
     public static String readableQuestTitle(String questId) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String title = quest.getString("title");
         String value = title == null || title.isBlank() ? questId : title;
         if (value == null) {

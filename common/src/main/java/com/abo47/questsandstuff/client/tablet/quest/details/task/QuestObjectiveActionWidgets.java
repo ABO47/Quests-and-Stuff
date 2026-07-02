@@ -95,7 +95,7 @@ final class QuestObjectiveActionWidgets {
                     if (state != null) {
                         state.questDetails.questDetailsClaimedOverrideQuestId = questId;
                     }
-                    ClientQuestCache.setQuestClaimedLocal(questId, true);
+                    ClientQuestStateFacade.setQuestClaimedLocal(questId, true);
                 }
                 refresh.run();
             });

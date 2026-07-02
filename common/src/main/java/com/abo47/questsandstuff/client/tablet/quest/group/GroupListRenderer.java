@@ -16,7 +16,7 @@ final class GroupListRenderer {
 
     static void rebuild(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh) {
         chapterList.clearAllWidgets();
-        List<String> groups = ClientQuestCache.groupOrder();
+        List<String> groups = ClientQuestStateFacade.groupOrder();
         int listH = chapterList.getSize().height;
         int listW = chapterList.getSize().width;
         boolean collapsed = state.chapterPanel.chapterPanelCollapsed || listW <= 54;

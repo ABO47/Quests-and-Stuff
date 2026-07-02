@@ -121,11 +121,11 @@ record EntityVariantPickerModel(
             return QuestDetailsWindow.descriptionImageAsset(parsed.questId(), parsed.entryId());
         }
         if (parsed.hasAtLeast(2) && parsed.isQuestIcon()) {
-            var quest = ClientQuestCache.quest(parsed.questId());
+            var quest = ClientQuestStateFacade.quest(parsed.questId());
             return quest == null ? "" : quest.getString("icon");
         }
         if (parsed.hasAtLeast(2) && parsed.isChapterIcon()) {
-            return ClientQuestCache.groupIcon(parsed.questId());
+            return ClientQuestStateFacade.groupIcon(parsed.questId());
         }
         if (parsed.hasAtLeast(3) && parsed.isObjectiveTask()) {
             return QuestObjectiveEditActions.objectiveIcon(parsed.questId(), parsed.entryId(), true);

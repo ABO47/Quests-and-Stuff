@@ -28,6 +28,6 @@ final class PrerequisiteConnectionRemover {
         }
         state.modal.prerequisitesManagerContextOpen = false;
         state.modal.prerequisitesManagerContextPrerequisiteId = "";
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 }

@@ -11,7 +11,7 @@ public final class S2CDescriptionSyncPacket extends ChunkedSyncPacket {
         super(sequence, chunkIndex, chunkCount, payload);
     }
 
-    public static S2CDescriptionSyncPacket decode(FriendlyByteBuf buf) {
+    public static S2CDescriptionSyncPacket fromBytes(FriendlyByteBuf buf) {
         Data d = ChunkedSyncPacket.decode(buf);
         return new S2CDescriptionSyncPacket(d.sequence(), d.chunkIndex(), d.chunkCount(), d.payload());
     }

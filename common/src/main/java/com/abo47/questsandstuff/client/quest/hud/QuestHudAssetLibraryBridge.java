@@ -18,7 +18,7 @@ final class QuestHudAssetLibraryBridge {
     private QuestHudAssetLibraryBridge() {
     }
 
-    static boolean open(QuestHudLayoutManagerEditScreen editScreen, QuestHudLayoutManager.Element element) {
+    static boolean open(QuestHudLayoutEditScreen editScreen, QuestHudLayoutManager.Element element) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         if (player == null || element == null) {
@@ -72,7 +72,7 @@ final class QuestHudAssetLibraryBridge {
         return true;
     }
 
-    private static void returnToParent(QuestHudLayoutManagerEditScreen parent, boolean[] returning) {
+    private static void returnToParent(QuestHudLayoutEditScreen parent, boolean[] returning) {
         if (returning[0]) {
             return;
         }

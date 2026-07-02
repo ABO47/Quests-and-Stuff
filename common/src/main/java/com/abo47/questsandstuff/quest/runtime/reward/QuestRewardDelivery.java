@@ -11,7 +11,7 @@ public final class QuestRewardDelivery {
     private QuestRewardDelivery() {
     }
 
-    static void giveItem(ServerPlayer player, ItemStack stack) {
+    public static void giveItem(ServerPlayer player, ItemStack stack) {
         if (player == null || stack.isEmpty()) {
             return;
         }

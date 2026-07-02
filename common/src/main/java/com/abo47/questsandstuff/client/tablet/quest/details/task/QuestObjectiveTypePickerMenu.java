@@ -87,7 +87,7 @@ final class QuestObjectiveTypePickerMenu {
             }
         }
         if (!children.isEmpty()) {
-            actions.add(ContextActions.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
+            actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
         }
     }
 
@@ -110,7 +110,7 @@ final class QuestObjectiveTypePickerMenu {
             CompoundTag quest,
             String targetId
     ) {
-        return ContextActions.action(choice.label(), choice.icon(), TabletColors.INTERACTIVE, () -> {
+        return ContextActionFactory.action(choice.label(), choice.icon(), TabletColors.INTERACTIVE, () -> {
             QuestDetailsTransientManager.closeTypePicker(state);
             QuestDetailsTransientManager.closeContext(state);
             if (rewards) {

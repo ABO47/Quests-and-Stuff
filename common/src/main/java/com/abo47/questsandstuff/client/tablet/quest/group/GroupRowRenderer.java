@@ -36,7 +36,7 @@ final class GroupRowRenderer {
     }
 
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, GroupListMetrics.Layout layout, boolean collapsed) {
-        boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
+        boolean lockedPreview = ClientQuestStateFacade.groupLockedPreview(group);
         boolean selected = group.equals(TabletStateQueries.selectedGroupName(state));
         String rowLabel = group.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : group;
         if (collapsed) {
@@ -50,18 +50,18 @@ final class GroupRowRenderer {
             return;
         }
 
-        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), TabletColors.SURFACE_PANEL_ALT);
+        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.groupBackground(group), TabletColors.SURFACE_PANEL_ALT);
         int border = selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
 
-        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestCache.groupBackground(group));
+        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.groupBackground(group));
         if (bgTexture != null) {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, bgTexture));
         }
         if (selected) {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82))));
         }
-        String groupIcon = ClientQuestCache.groupIcon(group);
+        String groupIcon = ClientQuestStateFacade.groupIcon(group);
         int iconDrawX = layout.iconX();
         if (groupIcon != null && !groupIcon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(iconDrawX, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, groupIcon));
@@ -83,7 +83,7 @@ final class GroupRowRenderer {
                 y,
                 layout.cardW(),
                 layout.iconX(),
-                ClientQuestCache.groupIcon(group),
+                ClientQuestStateFacade.groupIcon(group),
                 () -> state.chapterPanel.chapterDraftName,
                 value -> state.chapterPanel.chapterDraftName = GroupRenameActions.sanitizeInlineTitle(value),
                 value -> GroupRenameActions.commitRename(player, state, refresh, group, value),
@@ -122,15 +122,15 @@ final class GroupRowRenderer {
     }
 
     private static void addChapterLabel(WidgetGroup chapterList, String group, String rowLabel, int y, int cardX, int textW) {
-        int textColor = ClientQuestCache.groupTextColor(group);
-        String align = ClientQuestCache.groupTextAlign(group);
-        String textStyle = ClientQuestCache.groupTextStyle(group);
-        int textSize = ClientQuestCache.groupTextSize(group);
+        int textColor = ClientQuestStateFacade.groupTextColor(group);
+        String align = ClientQuestStateFacade.groupTextAlign(group);
+        String textStyle = ClientQuestStateFacade.groupTextStyle(group);
+        int textSize = ClientQuestStateFacade.groupTextSize(group);
         chapterList.addWidget(chapterStyledLabel(cardX + 24, chapterTextY(y, textSize), textW, chapterLabelHeight(textSize), rowLabel, textColor, textStyle, textSize, chapterTextType(align)));
     }
 
     private static void addCollapsedChapterRow(WidgetGroup chapterList, String group, String rowLabel, int y, GroupListMetrics.Layout layout, boolean selected) {
-        String groupIcon = ClientQuestCache.groupIcon(group);
+        String groupIcon = ClientQuestStateFacade.groupIcon(group);
         String initial = "";
         if (groupIcon == null || groupIcon.isBlank()) {
             initial = rowLabel == null || rowLabel.isBlank() ? "?" : rowLabel.substring(0, 1).toUpperCase();
@@ -173,7 +173,7 @@ final class GroupRowRenderer {
     }
 
     private static boolean canOpenChapter(TabletUiState state, String group) {
-        return state != null && (state.root.canEdit || ClientQuestCache.groupOpenablePreview(group));
+        return state != null && (state.root.canEdit || ClientQuestStateFacade.groupOpenablePreview(group));
     }
 
     private static void selectChapter(TabletUiState state, String group) {
@@ -184,7 +184,7 @@ final class GroupRowRenderer {
         state.chapterPanel.chapterTextMenuOpen = false;
         state.chapterPanel.chapterTextMenuTarget = "";
         state.chapterPanel.chapterTextFontSizeFieldTarget = "";
-        ClientQuestCache.clearGroupCompletionNotice(group);
+        ClientQuestStateFacade.clearGroupCompletionNotice(group);
     }
 
     private static WidgetGroup chapterStyledLabel(int x, int y, int width, int height, String text, int color, String style, int fontSize, TextTexture.TextType type) {
@@ -212,8 +212,8 @@ final class GroupRowRenderer {
                 x,
                 y,
                 w,
-                TabletUiFactory.chapterBackgroundTexture(ClientQuestCache.groupBackground(group)),
-                ClientQuestCache.groupIcon(group),
+                TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.groupBackground(group)),
+                ClientQuestStateFacade.groupIcon(group),
                 group
         );
     }
@@ -225,7 +225,7 @@ final class GroupRowRenderer {
     }
 
     private static void addCompletionNotice(WidgetGroup chapterList, String group, int x, int y) {
-        if (!ClientQuestCache.groupHasCompletionNotice(group)) {
+        if (!ClientQuestStateFacade.groupHasCompletionNotice(group)) {
             return;
         }
         chapterList.addWidget(new ChapterCompletionNoticeWidget(x, y, NOTICE_ICON_SIZE, NOTICE_ICON_SIZE));

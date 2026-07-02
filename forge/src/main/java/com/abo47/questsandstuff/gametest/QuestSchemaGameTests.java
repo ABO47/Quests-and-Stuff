@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTasks;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;

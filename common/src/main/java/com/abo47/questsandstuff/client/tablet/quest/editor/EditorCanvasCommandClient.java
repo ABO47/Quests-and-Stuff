@@ -33,7 +33,7 @@ public final class EditorCanvasCommandClient {
         }
         Map<String, int[]> moves = new HashMap<>();
         for (Map.Entry<String, CanvasPoint> entry : positions.entrySet()) {
-            ClientQuestCache.setQuestPositionInGroupLocal(entry.getKey(), groupName, entry.getValue().x, entry.getValue().y);
+            ClientQuestStateFacade.setQuestPositionInGroupLocal(entry.getKey(), groupName, entry.getValue().x, entry.getValue().y);
             moves.put(entry.getKey(), new int[]{entry.getValue().x, entry.getValue().y});
         }
         IntegratedServerActions.run(
@@ -62,7 +62,7 @@ public final class EditorCanvasCommandClient {
             }
             float scale = Math.max(0.5f, rawScale);
             normalized.put(questId, scale);
-            ClientQuestCache.setQuestScaleInGroupLocal(questId, groupName, scale);
+            ClientQuestStateFacade.setQuestScaleInGroupLocal(questId, groupName, scale);
         }
         if (normalized.isEmpty()) {
             return;
@@ -141,7 +141,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
+        ClientQuestStateFacade.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestPrerequisite(serverPlayer, questId, prerequisiteId, add),
@@ -153,7 +153,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionColorAction(Player player, String questId, String prerequisiteId, int color) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionColorLocal(questId, prerequisiteId, color);
+        ClientQuestStateFacade.setConnectionColorLocal(questId, prerequisiteId, color);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionColor(serverPlayer, questId, prerequisiteId, color),
@@ -165,7 +165,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionModeAction(Player player, String questId, String prerequisiteId, boolean gridMode) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionModeLocal(questId, prerequisiteId, gridMode);
+        ClientQuestStateFacade.setConnectionModeLocal(questId, prerequisiteId, gridMode);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionMode(serverPlayer, questId, prerequisiteId, gridMode),
@@ -177,7 +177,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionHiddenAction(Player player, String questId, String prerequisiteId, boolean hidden) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
+        ClientQuestStateFacade.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionHidden(serverPlayer, questId, prerequisiteId, hidden),
@@ -190,7 +190,7 @@ public final class EditorCanvasCommandClient {
     public static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof net.minecraft.server.level.ServerPlayer);
-        ClientQuestCache.setConnectionTextureLocal(questId, prerequisiteId, texture);
+        ClientQuestStateFacade.setConnectionTextureLocal(questId, prerequisiteId, texture);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
@@ -202,7 +202,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+        ClientQuestStateFacade.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
         IntegratedServerActions.run(
                 player,
                 serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),

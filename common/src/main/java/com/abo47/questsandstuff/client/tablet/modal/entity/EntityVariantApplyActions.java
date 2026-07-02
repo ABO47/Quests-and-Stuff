@@ -56,7 +56,7 @@ final class EntityVariantApplyActions {
         if (!parsed.hasAtLeast(2) || !parsed.isQuestIcon()) {
             return false;
         }
-        var quest = ClientQuestCache.quest(parsed.questId());
+        var quest = ClientQuestStateFacade.quest(parsed.questId());
         String icon = quest == null ? "" : quest.getString("icon");
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return true;
@@ -71,7 +71,7 @@ final class EntityVariantApplyActions {
         if (!parsed.hasAtLeast(2) || !parsed.isChapterIcon()) {
             return false;
         }
-        String icon = ClientQuestCache.groupIcon(parsed.questId());
+        String icon = ClientQuestStateFacade.groupIcon(parsed.questId());
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return true;
         }

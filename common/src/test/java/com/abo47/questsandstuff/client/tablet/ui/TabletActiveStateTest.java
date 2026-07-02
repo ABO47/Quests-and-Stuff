@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -24,7 +26,7 @@ class TabletActiveStateTest {
 
     @BeforeEach
     void resetClientState() throws IOException {
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
         TabletActiveState.setActiveTabletState(null);
         TabletActiveState.setActiveTabletRefresh(null);
         previousUiState = Files.exists(UI_STATE_FILE) ? Files.readString(UI_STATE_FILE, StandardCharsets.UTF_8) : null;
@@ -34,7 +36,7 @@ class TabletActiveStateTest {
     void restoreUiState() throws IOException {
         TabletActiveState.setActiveTabletState(null);
         TabletActiveState.setActiveTabletRefresh(null);
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
         if (previousUiState == null) {
             Files.deleteIfExists(UI_STATE_FILE);
             return;
@@ -74,7 +76,7 @@ class TabletActiveStateTest {
         assertEquals("local_text", state.canvas.canvasSelection.primaryTextId());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedImageIds().isEmpty());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedTextIds().isEmpty());
-        assertTrue(ClientQuestCache.groupOrder().contains("pasted_group"));
+        assertTrue(ClientQuestStateFacade.groupOrder().contains("pasted_group"));
         assertEquals(1, refreshes.get());
     }
 

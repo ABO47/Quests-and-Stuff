@@ -44,7 +44,7 @@ public final class TabletRootWindowController {
         if (state.pickers.assetContextOpen || state.pickers.assetRenameOpen) {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             return true;
         }
         if (state.pickers.colorPaletteContextOpen) {
@@ -60,7 +60,7 @@ public final class TabletRootWindowController {
             return true;
         }
         if (state.contextMenu.contextMenuOpen) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return true;
         }
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
@@ -70,7 +70,7 @@ public final class TabletRootWindowController {
         if (state.chapterPanel.chapterMenuOpen) {
             state.chapterPanel.chapterMenuOpen = false;
             state.chapterPanel.chapterMenuTarget = "";
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             return true;
         }
         if (state.canvas.toolsMenuOpen || state.canvas.toolsMenuClosing || state.canvas.toolsGridSizeMenuOpen || state.canvas.toolsGridOpacityMenuOpen) {

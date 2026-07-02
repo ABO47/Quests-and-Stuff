@@ -50,13 +50,13 @@ final class QuestObjectiveTransientMenus {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", TabletColors.INTERACTIVE, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", TabletColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openIconPicker(state, target);
         }));
-        actions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", TabletColors.INTERACTIVE, () -> {
-            ContextMenuState.clearDeleteConfirm(state);
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", TabletColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
         }));

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

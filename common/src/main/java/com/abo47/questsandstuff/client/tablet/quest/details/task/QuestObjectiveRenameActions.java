@@ -14,7 +14,7 @@ final class QuestObjectiveRenameActions {
     }
 
     static void openObjectiveRenameEditor(TabletUiState state, String questId, String id, boolean task) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
         QuestDetailsTransientManager.openObjectiveRename(
@@ -27,7 +27,7 @@ final class QuestObjectiveRenameActions {
     }
 
     static void putObjectiveTitle(Player player, String questId, String id, String title, boolean task) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
         JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();

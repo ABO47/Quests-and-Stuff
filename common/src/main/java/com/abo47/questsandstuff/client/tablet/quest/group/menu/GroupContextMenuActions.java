@@ -62,7 +62,7 @@ public final class GroupContextMenuActions {
         }
         EditorGroupCommandClient.runGroupAction(player, state, "delete", target, "", 0);
         if (target.equals(state.root.selectedGroup)) {
-            state.root.selectedGroup = ClientQuestCache.groupOrder().isEmpty() ? "" : ClientQuestCache.groupOrder().get(0);
+            state.root.selectedGroup = ClientQuestStateFacade.groupOrder().isEmpty() ? "" : ClientQuestStateFacade.groupOrder().get(0);
             state.chapterPanel.groupDraft = state.root.selectedGroup;
         }
         TabletUiFactory.persistUiState(state);
@@ -116,7 +116,7 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestCache.groupBackground(target));
+        ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestStateFacade.groupBackground(target));
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -138,7 +138,7 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> questIds = ClientQuestStateFacade.questIdsInGroup(target);
         if (questIds.isEmpty()) {
             return;
         }
@@ -152,7 +152,7 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> questIds = ClientQuestStateFacade.questIdsInGroup(target);
         if (questIds.isEmpty()) {
             return;
         }
@@ -166,7 +166,7 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> questIds = ClientQuestStateFacade.questIdsInGroup(target);
         if (questIds.isEmpty()) {
             return;
         }
@@ -180,7 +180,7 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> questIds = ClientQuestStateFacade.questIdsInGroup(target);
         List<String> targets = new java.util.ArrayList<>();
         targets.addAll(questIds);
         for (var ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(target, java.util.List.of())) {
@@ -198,10 +198,10 @@ public final class GroupContextMenuActions {
         if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        List<String> questIds = ClientQuestCache.questIdsInGroup(target);
+        List<String> questIds = ClientQuestStateFacade.questIdsInGroup(target);
         String group = target;
         for (String questId : questIds) {
-            CompoundTag quest = ClientQuestCache.quest(questId);
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
             if (quest == null) continue;
             ListTag prereqs = quest.getList("prerequisites", Tag.TAG_STRING);
             for (int i = 0; i < prereqs.size(); i++) {
@@ -235,7 +235,7 @@ public final class GroupContextMenuActions {
         if (questIds == null || questIds.isEmpty()) {
             return "";
         }
-        CompoundTag quest = ClientQuestCache.quest(questIds.get(0));
+        CompoundTag quest = ClientQuestStateFacade.quest(questIds.get(0));
         return quest == null ? "" : quest.getString(field);
     }
 

@@ -45,7 +45,7 @@ public final class CanvasRenderer {
         String selectedGroup = CanvasRenderStateController.prepareRebuild(state);
         CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
 
         int viewportW = canvasViewport.getSize().width;
@@ -130,7 +130,7 @@ public final class CanvasRenderer {
     }
 
     private static boolean isVisualHiddenOutsideEdit(CompoundTag questTag) {
-        return ClientQuestCache.questHiddenPreview(questTag);
+        return ClientQuestStateFacade.questHiddenPreview(questTag);
     }
 
     public static String edgeKey(String sourceQuestId, String targetQuestId) {

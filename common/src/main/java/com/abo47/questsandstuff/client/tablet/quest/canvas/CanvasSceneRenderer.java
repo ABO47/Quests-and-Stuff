@@ -112,7 +112,7 @@ final class CanvasSceneRenderer {
     static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
+        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestStateFacade.groupCanvasBackground(selectedGroupName(state)));
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -242,7 +242,7 @@ final class CanvasSceneRenderer {
         }
         renderQuestIcon(cardLayer, localCard);
         renderLockedPreviewState(cardLayer, localCard);
-        if (!ClientQuestCache.questLockedPreview(card.tag())) {
+        if (!ClientQuestStateFacade.questLockedPreview(card.tag())) {
             renderECConnectionLockedPreview(cardLayer, state, card);
         }
         renderSearchState(cardLayer, state, localCard);
@@ -318,7 +318,7 @@ final class CanvasSceneRenderer {
     }
 
     private static void renderLockedPreviewState(WidgetGroup canvasViewport, QuestCardLayout card) {
-        if (ClientQuestCache.questLockedPreview(card.tag())) {
+        if (ClientQuestStateFacade.questLockedPreview(card.tag())) {
             addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
         }
     }
@@ -444,7 +444,7 @@ final class CanvasSceneRenderer {
             title = card.questId();
         }
         int progress = QuestCardBackgroundRenderer.progressPercent(tag);
-        Component status = ClientQuestCache.questLockedPreview(tag)
+        Component status = ClientQuestStateFacade.questLockedPreview(tag)
                 ? Component.translatable("ui.questsandstuff.quest.locked")
                 : Component.literal(progress + "%");
         ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), SurfaceFactory.transparentFill(), click -> {});

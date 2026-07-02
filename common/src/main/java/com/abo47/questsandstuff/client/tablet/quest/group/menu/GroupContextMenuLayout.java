@@ -36,7 +36,7 @@ public record GroupContextMenuLayout(
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
-        return ContextMenuPanel.CONTEXT_MENU_WIDTH;
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public boolean contains(int x, int y) {
@@ -86,7 +86,7 @@ public record GroupContextMenuLayout(
     }
 
     public static String chapterIcon(String target) {
-        String icon = ClientQuestCache.groupIcon(target);
+        String icon = ClientQuestStateFacade.groupIcon(target);
         return icon == null ? "" : icon;
     }
 

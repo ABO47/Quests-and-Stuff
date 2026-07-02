@@ -17,32 +17,32 @@ public final class ClientSyncPacketHandler {
     }
 
     public static void handleFull(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        ClientQuestCache.acceptFullChunk(sequence, chunkIndex, chunkCount, payload);
+        ClientQuestStateFacade.acceptFullChunk(sequence, chunkIndex, chunkCount, payload);
         ClientSyncUiBridge.requestActiveTabletRefresh();
     }
 
     public static void handleDelta(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        ClientQuestCache.acceptDeltaChunk(sequence, chunkIndex, chunkCount, payload);
+        ClientQuestStateFacade.acceptDeltaChunk(sequence, chunkIndex, chunkCount, payload);
         ClientSyncUiBridge.requestActiveTabletRefresh();
     }
 
     public static void handleDescription(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        ClientQuestCache.acceptDescriptionChunk(sequence, chunkIndex, chunkCount, payload);
+        ClientQuestStateFacade.acceptDescriptionChunk(sequence, chunkIndex, chunkCount, payload);
         ClientSyncUiBridge.requestActiveTabletRefresh();
     }
 
     public static void handleDisplayCache(long sequence, CompoundTag payload) {
-        ClientQuestCache.applyDisplayCacheSync(sequence, payload);
+        ClientQuestStateFacade.applyDisplayCacheSync(sequence, payload);
     }
 
     public static void handlePinned(long sequence, List<String> pinned) {
-        ClientQuestCache.applyPinnedSync(sequence, pinned);
+        ClientQuestStateFacade.applyPinnedSync(sequence, pinned);
     }
 
     public static void handleQuestEvent(long sequence, String eventType, String questId, String rewardId) {
-        ClientQuestCache.applyQuestEvent(sequence, eventType, questId, rewardId);
+        ClientQuestStateFacade.applyQuestEvent(sequence, eventType, questId, rewardId);
         if ("quest_completed".equals(eventType)) {
-            ClientQuestCache.noteQuestCompletedForChapterNotices(questId, ClientSyncUiBridge.activeSelectedGroup());
+            ClientQuestStateFacade.noteQuestCompletedForChapterNotices(questId, ClientSyncUiBridge.activeSelectedGroup());
             QuestCompletionNotificationOverlay.push(questId);
             if (QuestsAndStuffConfig.autoClaimRewardsEnabled() && questId != null && !questId.isBlank()) {
                 ModNetwork.sendToServer(new C2SClaimAllRewardsPacket(""));
@@ -61,7 +61,7 @@ public final class ClientSyncPacketHandler {
         if (SyncKeys.EditorAction.ADD.equals(action)) {
             QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received editor add quest={} prerequisites={}", questId, questTag.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING));
         }
-        ClientQuestCache.applyEditorMutation(sequence, action, questId, questTag);
+        ClientQuestStateFacade.applyEditorMutation(sequence, action, questId, questTag);
         ClientSyncUiBridge.requestActiveTabletRefresh();
     }
 }

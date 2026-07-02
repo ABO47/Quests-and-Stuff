@@ -24,7 +24,7 @@ public final class EntityMotionEditor {
     }
 
     public static void openQuestDetails(TabletUiState state, String questId, String imageId, int x, int y) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;

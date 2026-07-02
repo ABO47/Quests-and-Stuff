@@ -81,7 +81,7 @@ final class QuestDetailsWindowHitTest {
         if (questId.isBlank() || normalizedTextId.isBlank()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(normalizedTextId);
         if (text == null) {
             return false;

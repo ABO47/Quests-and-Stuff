@@ -4,11 +4,11 @@ import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 import java.util.List;
 
-final class UiThemeCatalog {
+public final class UiThemeCatalog {
     private UiThemeCatalog() {
     }
 
-    static List<BuiltInTheme> builtIns() {
+    public static List<BuiltInTheme> builtIns() {
         return List.of(
                 new BuiltInTheme("aurora", "Aurora", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF13212B"},
@@ -209,6 +209,6 @@ final class UiThemeCatalog {
         );
     }
 
-    record BuiltInTheme(String id, String name, String[][] colors) {
+    public record BuiltInTheme(String id, String name, String[][] colors) {
     }
 }
