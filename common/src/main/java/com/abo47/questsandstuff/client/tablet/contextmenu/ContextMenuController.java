@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -130,7 +130,7 @@ public final class ContextMenuController {
         state.contextMenu.contextMenuHeightPx = Math.max(0, height);
         state.contextMenu.contextMenuRows = Math.max(0, rowCount);
         state.contextMenu.contextMenuScrollMax = Math.max(0, scrollMax);
-        state.contextMenu.contextMenuScroll = ScrollController.clamp(state.contextMenu.contextMenuScroll, state.contextMenu.contextMenuScrollMax);
+        state.contextMenu.contextMenuScroll = ScrollMath.clamp(state.contextMenu.contextMenuScroll, state.contextMenu.contextMenuScrollMax);
         if (state.contextMenu.contextMenuScrollMax <= 0) {
             state.contextMenu.contextMenuScrollDragging = false;
         }
@@ -156,7 +156,7 @@ public final class ContextMenuController {
         if (state == null) {
             return;
         }
-        state.contextMenu.contextMenuScroll = ScrollController.clamp(value, state.contextMenu.contextMenuScrollMax);
+        state.contextMenu.contextMenuScroll = ScrollMath.clamp(value, state.contextMenu.contextMenuScrollMax);
     }
 
     public static void setScrollDragging(TabletUiState state, boolean dragging) {

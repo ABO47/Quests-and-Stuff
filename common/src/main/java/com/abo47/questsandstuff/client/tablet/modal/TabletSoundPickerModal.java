@@ -49,7 +49,7 @@ public final class TabletSoundPickerModal {
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_SOUND), w, state, refresh);
-        ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
+        ModalPreviewLayout.Metrics libraryLayout = ModalPreviewLayout.calculate(w, h);
         int rightX = libraryLayout.rightX();
         int rightW = libraryLayout.rightW();
         addPreviewPanel(modal, state, player, refresh, libraryLayout);
@@ -80,10 +80,10 @@ public final class TabletSoundPickerModal {
         return search;
     }
 
-    private static void addPreviewPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, ModalLibraryLayout.Metrics layout) {
+    private static void addPreviewPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, ModalPreviewLayout.Metrics layout) {
         int previewW = layout.leftW();
         int previewH = layout.bodyH();
-        WidgetGroup preview = panel(ModalLibraryLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
+        WidgetGroup preview = panel(ModalPreviewLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
         String selected = state.pickers.soundSelected == null ? "" : state.pickers.soundSelected.trim();
         SoundChoice choice = selected.isBlank() ? null : SoundChoice.of(selected);
         preview.addWidget(new DisplayIconWidget(8, 9, 14, 14, "audio-lines"));

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.ui.widget;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -197,7 +197,7 @@ public final class TabletLayout {
         int y = state.chapterPanel.chapterListOriginY;
         int w = Math.max(CHAPTER_SCROLL_W, listRight - x);
         int h = Math.max(state.chapterPanel.chapterScrollTrackH, state.chapterPanel.chapterListHeight);
-        return ScrollController.hit(localX, localY, x, y, w, h);
+        return ScrollMath.hit(localX, localY, x, y, w, h);
     }
 
     public static boolean isChapterCardAreaHit(int localX, int localY, TabletUiState state) {
@@ -209,7 +209,7 @@ public final class TabletLayout {
     }
 
     public static void updateChapterScrollByMouse(double mouseY, TabletUiState state) {
-        state.chapterPanel.chapterScroll = ScrollController.byMouse((int) Math.round(mouseY), state.chapterPanel.chapterScrollTrackY, state.chapterPanel.chapterScrollTrackH, state.chapterPanel.chapterScrollKnobH, state.chapterPanel.chapterScrollMax);
+        state.chapterPanel.chapterScroll = ScrollMath.byMouse((int) Math.round(mouseY), state.chapterPanel.chapterScrollTrackY, state.chapterPanel.chapterScrollTrackH, state.chapterPanel.chapterScrollKnobH, state.chapterPanel.chapterScrollMax);
     }
 
     public static String chapterAtY(int localY, TabletUiState state) {

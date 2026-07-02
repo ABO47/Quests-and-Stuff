@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.entity;
+package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
@@ -6,6 +6,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withA
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;

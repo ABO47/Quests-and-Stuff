@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
@@ -43,7 +43,7 @@ final class QuestObjectiveContextMenu {
             visibleRows--;
         }
         state.questDetails.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
-        state.questDetails.questDetailsContextScroll = ScrollController.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
+        state.questDetails.questDetailsContextScroll = ScrollMath.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int x = Math.max(4, Math.min(state.questDetails.questDetailsContextX, state.questDetails.questDetailsW - menuW - 4));
         int y = Math.max(4, Math.min(state.questDetails.questDetailsContextY, state.questDetails.questDetailsH - menuH - 4));
@@ -58,7 +58,7 @@ final class QuestObjectiveContextMenu {
             refresh.run();
         }, state.questDetails.questDetailsW, state.questDetails.questDetailsH, ScrollState.bind(
                 () -> state.questDetails.questDetailsContextScroll,
-                value -> state.questDetails.questDetailsContextScroll = ScrollController.clamp(value, state.questDetails.questDetailsContextScrollMax),
+                value -> state.questDetails.questDetailsContextScroll = ScrollMath.clamp(value, state.questDetails.questDetailsContextScrollMax),
                 () -> state.contextMenu.contextMenuScrollDragging,
                 dragging -> state.contextMenu.contextMenuScrollDragging = dragging
         ), refresh);

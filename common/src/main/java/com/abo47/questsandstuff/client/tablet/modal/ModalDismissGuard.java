@@ -4,11 +4,11 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-public final class ModalLayerWidget extends WidgetGroup {
+public final class ModalDismissGuard extends WidgetGroup {
     private final TabletUiState state;
     private final Runnable refresh;
 
-    public ModalLayerWidget(int x, int y, int width, int height, TabletUiState state, Runnable refresh) {
+    public ModalDismissGuard(int x, int y, int width, int height, TabletUiState state, Runnable refresh) {
         super(x, y, width, height);
         this.state = state;
         this.refresh = refresh == null ? () -> {

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
@@ -89,7 +89,7 @@ public final class TeamsAppComposer {
         memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
-        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
+        WidgetGroup modalLayer = new ModalDismissGuard(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         if (ClientTeamCache.INSTANCE.getTeam() == null) {
             ModNetwork.sendToServer(new C2STeamCreatePacket());

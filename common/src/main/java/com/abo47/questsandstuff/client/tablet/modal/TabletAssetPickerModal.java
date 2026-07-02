@@ -112,12 +112,12 @@ public final class TabletAssetPickerModal {
             assets = filterByKind(assets, AssetLibrary.AssetKind.IMAGE, AssetLibrary.AssetKind.GIF);
         }
 
-        ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
+        ModalPreviewLayout.Metrics libraryLayout = ModalPreviewLayout.calculate(w, h);
         int leftW = libraryLayout.leftW();
         int rightX = libraryLayout.rightX();
         int rightW = libraryLayout.rightW();
         int previewH = libraryLayout.bodyH();
-        WidgetGroup preview = ModalLibraryLayout.previewPanel(libraryLayout);
+        WidgetGroup preview = ModalPreviewLayout.previewPanel(libraryLayout);
         String selected = state.pickers.assetSelected == null ? "" : state.pickers.assetSelected;
         preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ModColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()

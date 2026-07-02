@@ -6,14 +6,14 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
-public final class ModalLibraryLayout {
+public final class ModalPreviewLayout {
     public static final int PREVIEW_X = 8;
     public static final int LEFT_W = 150;
     public static final int RIGHT_X = 166;
     public static final int BODY_Y = 22;
     public static final int BODY_BOTTOM_PAD = 26;
 
-    private ModalLibraryLayout() {
+    private ModalPreviewLayout() {
     }
 
     public static Metrics calculate(int modalW, int modalH) {

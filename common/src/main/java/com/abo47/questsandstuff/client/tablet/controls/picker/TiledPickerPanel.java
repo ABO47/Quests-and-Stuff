@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
@@ -43,7 +43,7 @@ public final class TiledPickerPanel {
                 if (!isMouseOverElement(mouseX, mouseY) || layout.maxStart() <= 0) {
                     return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
                 }
-                int next = ScrollController.wheel(scroll.value(), layout.maxStart(), layout.wheelStep(), wheelDelta);
+                int next = ScrollMath.wheel(scroll.value(), layout.maxStart(), layout.wheelStep(), wheelDelta);
                 if (next != scroll.value()) {
                     scroll.setValue(next);
                     if (onScroll != null) {

@@ -43,7 +43,7 @@ public record TileGridLayout(
         int pageSize = Math.max(1, cols * rows);
         showScroll = safeCount > pageSize;
         int maxStart = Math.max(0, safeCount - pageSize);
-        int safeStart = ScrollController.clamp(scrollStart, maxStart);
+        int safeStart = ScrollMath.clamp(scrollStart, maxStart);
         return new TileGridLayout(width, height, safeTileW, safeTileH, safeGap, safePadX, safePadY, cols, rows, pageSize, showScroll, maxStart, safeStart, safeCount);
     }
 

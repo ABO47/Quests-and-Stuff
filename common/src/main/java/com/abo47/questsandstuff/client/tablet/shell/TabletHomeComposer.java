@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.shell;
 
-import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -40,7 +40,7 @@ final class TabletHomeComposer {
         root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
-        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, safeRootW, safeRootH, state, () -> refresh[0].run());
+        WidgetGroup modalLayer = new ModalDismissGuard(0, 0, safeRootW, safeRootH, state, () -> refresh[0].run());
         WidgetGroup homePanel = new TabletHomeOverviewPanel(0, 0, safeRootW, safeRootH);
 
         refresh[0] = () -> {

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
@@ -32,7 +32,7 @@ public final class PickerListPanel {
     ) {
         int rows = Math.max(1, h / rowH);
         int maxStart = Math.max(0, entries.size() - rows);
-        scroll.setValue(ScrollController.clamp(scroll.value(), maxStart));
+        scroll.setValue(ScrollMath.clamp(scroll.value(), maxStart));
         boolean showScroll = maxStart > 0;
         int rowW = showScroll ? w - DragScrollBarWidget.RESERVED_WIDTH - 2 : w;
 
@@ -42,7 +42,7 @@ public final class PickerListPanel {
                 if (!isMouseOverElement(mouseX, mouseY) || maxStart <= 0) {
                     return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
                 }
-                int next = ScrollController.wheel(scroll.value(), maxStart, Math.max(1, wheelStep), wheelDelta);
+                int next = ScrollMath.wheel(scroll.value(), maxStart, Math.max(1, wheelStep), wheelDelta);
                 if (next != scroll.value()) {
                     scroll.setValue(next);
                     refresh.run();

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
+import com.abo47.questsandstuff.client.tablet.controls.SearchNormalizer;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
@@ -37,15 +37,15 @@ public final class TabletColorPickerModal {
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr("ui.questsandstuff.modal.color_picker"), w, state, refresh);
         String resolvedTarget = ModalTargetState.target(state, COLOR_PICKER, state.pickers.colorPickerTarget);
         final String target = resolvedTarget.isBlank() ? selectedGroupName(state) : resolvedTarget;
-        ModalLibraryLayout.Metrics lib = ModalLibraryLayout.calculate(w, h);
+        ModalPreviewLayout.Metrics lib = ModalPreviewLayout.calculate(w, h);
         int wheelSize = Math.min(lib.leftW() - 20, lib.bodyH() - 84);
-        WidgetGroup left = ModalLibraryLayout.previewPanel(lib);
+        WidgetGroup left = ModalPreviewLayout.previewPanel(lib);
         HsbColorWidget picker = new HsbColorWidget(8, 8, wheelSize, wheelSize)
                 .setShowAlpha(false)
                 .setColor(TabletModalPanel.currentColorPickerValue(state, target))
                 .setOnChanged(color -> {
                     state.pickers.colorDraft = color;
-                    state.pickers.colorHexDraft = SearchFieldController.toHexColor(color);
+                    state.pickers.colorHexDraft = SearchNormalizer.toHexColor(color);
                 });
         left.addWidget(picker);
         TextFieldWidget hexField = StyledTextFields.hexField(
@@ -53,14 +53,14 @@ public final class TabletColorPickerModal {
                 () -> state.pickers.colorHexDraft,
                 value -> state.pickers.colorHexDraft = value == null ? "" : value,
                 () -> {
-                    int parsed = SearchFieldController.parseHexColor(state.pickers.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
+                    int parsed = SearchNormalizer.parseHexColor(state.pickers.colorHexDraft, TabletModalPanel.currentColorPickerValue(state, target));
                     state.pickers.colorDraft = parsed;
-                    state.pickers.colorHexDraft = SearchFieldController.toHexColor(parsed);
+                    state.pickers.colorHexDraft = SearchNormalizer.toHexColor(parsed);
                     refresh.run();
                 },
                 () -> {}, () -> {}
         );
-        state.pickers.colorHexDraft = state.pickers.colorHexDraft.isBlank() ? SearchFieldController.toHexColor(TabletModalPanel.currentColorPickerValue(state, target)) : state.pickers.colorHexDraft;
+        state.pickers.colorHexDraft = state.pickers.colorHexDraft.isBlank() ? SearchNormalizer.toHexColor(TabletModalPanel.currentColorPickerValue(state, target)) : state.pickers.colorHexDraft;
         hexField.setCurrentString(state.pickers.colorHexDraft);
         left.addWidget(hexField);
         ActionButtons.iconAction(left, 8, lib.bodyH() - 20, lib.leftW() - 16,
@@ -106,7 +106,7 @@ public final class TabletColorPickerModal {
                     }
                     boolean doubleClick = TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("color", target, color));
                     state.pickers.colorDraft = color;
-                    state.pickers.colorHexDraft = SearchFieldController.toHexColor(color);
+                    state.pickers.colorHexDraft = SearchNormalizer.toHexColor(color);
                     if (doubleClick) {
                         TabletModalPanel.applyColorPickerValue(player, state, target, color);
                         closeColorPicker(state);

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
@@ -404,8 +404,8 @@ public final class ContextMenuPanel {
                 if (!needsScroll || scrollState == null || !isMouseOverElement(mouseX, mouseY)) {
                     return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
                 }
-                int current = ScrollController.clamp(scrollState.value(), scrollMax);
-                int next = ScrollController.wheel(current, scrollMax, 1, wheelDelta);
+                int current = ScrollMath.clamp(scrollState.value(), scrollMax);
+                int next = ScrollMath.wheel(current, scrollMax, 1, wheelDelta);
                 if (next != current) {
                     scrollState.setValue(next);
                     if (refresh != null) {
@@ -433,10 +433,10 @@ public final class ContextMenuPanel {
                     trackY,
                     DragScrollBarWidget.RESERVED_WIDTH,
                     trackH,
-                    () -> ScrollController.clamp(scrollState.value(), scrollMax),
+                    () -> ScrollMath.clamp(scrollState.value(), scrollMax),
                     () -> scrollMax,
                     () -> knobH,
-                    value -> scrollState.setValue(ScrollController.clamp(value, scrollMax)),
+                    value -> scrollState.setValue(ScrollMath.clamp(value, scrollMax)),
                     scrollState::dragging,
                     scrollState::setDragging,
                     safeRefresh,

@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterSplitterWidge
 import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsLayerWidget;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
@@ -106,7 +106,7 @@ public final class QuestAppComposer {
         Runnable[] refreshCanvas = new Runnable[1];
         Runnable[] refreshChapterViews = new Runnable[1];
         WidgetGroup[] viewportBgRef = new WidgetGroup[1];
-        WidgetGroup modalLayer = new ModalLayerWidget(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
+        WidgetGroup modalLayer = new ModalDismissGuard(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
 
         int initialTop = CANVAS_TOP_H_COMPACT;
         int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);

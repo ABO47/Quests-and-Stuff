@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
@@ -37,7 +37,7 @@ final class PrerequisiteRowsPanel {
     private PrerequisiteRowsPanel() {
     }
 
-    static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows) {
+    static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows) {
         int rowW = rowWidth(layout, rows.size());
         TileGridLayout rowLayout = TileGridLayout.calculate(layout.rightW(), layout.bodyH(), rowW, ROW_H, ROW_GAP, PAD, PAD, rows.size(), state.modal.prerequisitesManagerScroll);
         state.modal.prerequisitesManagerScroll = rowLayout.scrollStart();
@@ -45,7 +45,7 @@ final class PrerequisiteRowsPanel {
         addConnectionList(modal, state, refresh, layout, modalW, modalH, questId, rows, rowW);
     }
 
-    private static int rowWidth(ModalLibraryLayout.Metrics layout, int rowCount) {
+    private static int rowWidth(ModalPreviewLayout.Metrics layout, int rowCount) {
         int contentH = Math.max(ROW_H, layout.bodyH() - PAD * 2);
         int visibleRows = Math.max(1, (contentH + ROW_GAP) / (ROW_H + ROW_GAP));
         boolean showScroll = rowCount > visibleRows;
@@ -53,7 +53,7 @@ final class PrerequisiteRowsPanel {
         return Math.max(96, layout.rightW() - PAD * 2 - scrollReserve);
     }
 
-    private static void addConnectionList(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows, int rowW) {
+    private static void addConnectionList(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows, int rowW) {
         TiledPickerPanel.add(
                 modal,
                 layout.rightX(),
@@ -126,7 +126,7 @@ final class PrerequisiteRowsPanel {
         surface.addWidget(hit);
     }
 
-    private static void addConnectionHoverTracker(WidgetGroup modal, TabletUiState state, List<PrerequisiteConnectionRow> rows, ModalLibraryLayout.Metrics layout, TileGridLayout rowLayout) {
+    private static void addConnectionHoverTracker(WidgetGroup modal, TabletUiState state, List<PrerequisiteConnectionRow> rows, ModalPreviewLayout.Metrics layout, TileGridLayout rowLayout) {
         WidgetGroup tracker = new WidgetGroup(layout.rightX(), layout.bodyY(), layout.rightW(), layout.bodyH()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

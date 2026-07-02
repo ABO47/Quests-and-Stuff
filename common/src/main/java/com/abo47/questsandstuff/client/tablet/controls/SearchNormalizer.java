@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import java.util.Locale;
 
-public final class SearchFieldController {
-    private SearchFieldController() {
+public final class SearchNormalizer {
+    private SearchNormalizer() {
     }
 
     public static String normalizeUserSearch(String value) {

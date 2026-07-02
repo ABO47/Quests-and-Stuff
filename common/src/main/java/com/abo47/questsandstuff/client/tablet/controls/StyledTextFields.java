@@ -49,7 +49,7 @@ public final class StyledTextFields {
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
-        field.setValidator(SearchFieldController::normalizeUserSearch);
+        field.setValidator(SearchNormalizer::normalizeUserSearch);
         applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
         return field;
     }
@@ -407,7 +407,7 @@ public final class StyledTextFields {
         );
         field.setClientSideWidget();
         field.setMaxStringLength(9);
-        field.setValidator(SearchFieldController::normalizeHexInput);
+        field.setValidator(SearchNormalizer::normalizeHexInput);
         applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
         return field;
     }

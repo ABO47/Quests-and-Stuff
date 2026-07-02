@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -138,9 +138,9 @@ final class QuestObjectiveSectionWidget {
         int visibleH = Math.max(1, h - listY - 4);
         int maxStart = scrollMax(entries, visibleH);
         if (requirements) {
-            state.questDetails.questDetailsReqScroll = ScrollController.clamp(state.questDetails.questDetailsReqScroll, maxStart);
+            state.questDetails.questDetailsReqScroll = ScrollMath.clamp(state.questDetails.questDetailsReqScroll, maxStart);
         } else {
-            state.questDetails.questDetailsRewardScroll = ScrollController.clamp(state.questDetails.questDetailsRewardScroll, maxStart);
+            state.questDetails.questDetailsRewardScroll = ScrollMath.clamp(state.questDetails.questDetailsRewardScroll, maxStart);
         }
         String kind = requirements ? "requirements" : "rewards";
         int listW = maxStart > 0 ? w - DragScrollBarWidget.RESERVED_WIDTH : w;

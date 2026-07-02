@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBr
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -71,7 +71,7 @@ public final class CanvasContextMenuSupport {
         List<ContextAction> rows = ContextMenuPanel.rowActions(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rows.size(), maxVisibleRows);
         int scrollMax = Math.max(0, rows.size() - visibleRows);
-        int scroll = ScrollController.clamp(state.contextMenu.contextMenuScroll, scrollMax);
+        int scroll = ScrollMath.clamp(state.contextMenu.contextMenuScroll, scrollMax);
         boolean needsScroll = scrollMax > 0;
         int menuW = contextMenuWidth(actions, canvasViewport.getSize().width);
         int rowWidth = needsScroll ? menuW - 14 : menuW - 8;

@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -58,7 +58,7 @@ public final class QuestPrerequisitesManagerModal {
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         addHeader(modal, state, refresh, w);
-        ModalLibraryLayout.Metrics layout = ModalLibraryLayout.calculate(w, h);
+        ModalPreviewLayout.Metrics layout = ModalPreviewLayout.calculate(w, h);
 
         String group = TabletStateQueries.selectedGroupName(state);
         PrerequisiteConnectionModel model;
@@ -105,7 +105,7 @@ public final class QuestPrerequisitesManagerModal {
         TabletModalPanel.addModalClose(modal, closeAnchorX, HEADER_CLOSE_ANCHOR_Y, HEADER_BUTTON_SIZE, state, refresh);
     }
 
-    private static TextFieldWidget addSearch(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW) {
+    private static TextFieldWidget addSearch(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW) {
         int modeX = headerModeButtonX(modalW);
         int searchW = Math.max(40, modeX - layout.rightX() - HEADER_SEARCH_TO_BUTTON_GAP);
         return ModalShell.addSearchField(modal, layout.rightX(), 2, searchW, 16, state.modal.prerequisitesManagerSearch, 80, value -> {
@@ -121,8 +121,8 @@ public final class QuestPrerequisitesManagerModal {
         return closeRenderX - HEADER_BUTTON_SIZE - HEADER_BUTTON_TO_CLOSE_GAP;
     }
 
-    private static void addPreview(WidgetGroup modal, TabletUiState state, PrerequisiteConnectionModel model, ModalLibraryLayout.Metrics layout, String group, boolean externalMode) {
-        WidgetGroup preview = ModalLibraryLayout.previewPanel(layout);
+    private static void addPreview(WidgetGroup modal, TabletUiState state, PrerequisiteConnectionModel model, ModalPreviewLayout.Metrics layout, String group, boolean externalMode) {
+        WidgetGroup preview = ModalPreviewLayout.previewPanel(layout);
         preview.addWidget(label(8, 8, crop(model.targetTitle(), 22), ModColors.TEXT_SECONDARY));
         String countKey = externalMode ? QuestVocabulary.CONNECTIONS_EXTERNAL_COUNT : QuestVocabulary.CONNECTIONS_LOCAL_COUNT;
         preview.addWidget(label(8, 20, TabletVocabulary.text(countKey, model.modeRows().size()), ModColors.TEXT_MUTED));

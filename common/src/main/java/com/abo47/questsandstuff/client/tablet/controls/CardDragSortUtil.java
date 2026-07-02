@@ -3,10 +3,10 @@ package com.abo47.questsandstuff.client.tablet.controls;
 import java.util.List;
 import java.util.function.Function;
 
-public final class CardReorderController {
+public final class CardDragSortUtil {
     private static final int DRAG_THRESHOLD_SQ = 9;
 
-    private CardReorderController() {
+    private CardDragSortUtil() {
     }
 
     public static boolean pastDragThreshold(double mouseX, double mouseY, int startX, int startY) {

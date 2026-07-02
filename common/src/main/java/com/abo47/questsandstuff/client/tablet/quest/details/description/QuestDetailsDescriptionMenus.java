@@ -19,7 +19,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -106,7 +106,7 @@ public final class QuestDetailsDescriptionMenus {
             visibleRows--;
         }
         state.questDetails.questDetailsContextScrollMax = Math.max(0, rowCount - visibleRows);
-        state.questDetails.questDetailsContextScroll = ScrollController.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
+        state.questDetails.questDetailsContextScroll = ScrollMath.clamp(state.questDetails.questDetailsContextScroll, state.questDetails.questDetailsContextScrollMax);
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int localX = localContextCoordinate(state.questDetails.questDetailsContextAnchorX, viewportOriginX, viewportW);
         int localY = localContextCoordinate(state.questDetails.questDetailsContextAnchorY, viewportOriginY, viewportH);
@@ -124,7 +124,7 @@ public final class QuestDetailsDescriptionMenus {
             refresh.run();
         }, viewportW, viewportH, ScrollState.bind(
                 () -> state.questDetails.questDetailsContextScroll,
-                value -> state.questDetails.questDetailsContextScroll = ScrollController.clamp(value, state.questDetails.questDetailsContextScrollMax),
+                value -> state.questDetails.questDetailsContextScroll = ScrollMath.clamp(value, state.questDetails.questDetailsContextScrollMax),
                 () -> state.contextMenu.contextMenuScrollDragging,
                 dragging -> state.contextMenu.contextMenuScrollDragging = dragging
         ), refresh);

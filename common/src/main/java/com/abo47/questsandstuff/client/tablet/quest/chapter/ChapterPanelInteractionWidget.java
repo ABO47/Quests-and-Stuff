@@ -2,8 +2,8 @@ package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
@@ -104,7 +104,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return true;
         }
         if (state.chapterPanel.chapterDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
+            if (!CardDragSortUtil.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
                 return true;
             }
             state.chapterPanel.chapterDragPending = false;
@@ -147,7 +147,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             return true;
         }
         int step = Math.max(8, chapterRowStep(state) / 3);
-        int next = ScrollController.wheel(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax, step, wheelDelta);
+        int next = ScrollMath.wheel(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax, step, wheelDelta);
         if (next != state.chapterPanel.chapterScroll) {
             state.chapterPanel.chapterScroll = next;
             refreshChapterViews.run();
@@ -280,7 +280,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (!moving.isBlank()) {
             int fromIndex = ClientQuestCache.groupOrder().indexOf(moving);
             int size = ClientQuestCache.groupOrder().size();
-            target = CardReorderController.targetIndexAfterDrop(fromIndex, target, size);
+            target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
             if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
                 runGroupAction(player, state, "move_to", moving, "", target);

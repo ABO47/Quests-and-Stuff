@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
@@ -55,7 +55,7 @@ final class QuestHudAssetLibraryBridge {
             }
         };
 
-        ModalLayerWidget modalLayer = new ModalLayerWidget(0, 0, screenW, screenH, state, () -> {
+        ModalDismissGuard modalLayer = new ModalDismissGuard(0, 0, screenW, screenH, state, () -> {
             if (refresh[0] != null) {
                 refresh[0].run();
             }

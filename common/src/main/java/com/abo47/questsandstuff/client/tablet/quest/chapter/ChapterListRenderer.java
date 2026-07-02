@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
@@ -51,7 +51,7 @@ final class ChapterListRenderer {
         int baseRows = chapterGroups.size() + (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename) ? 1 : 0);
         int totalHeight = (collapsed ? 0 : 16) + baseRows * rowStep;
         state.chapterPanel.chapterScrollMax = Math.max(0, totalHeight - (listH - 8));
-        state.chapterPanel.chapterScroll = ScrollController.clamp(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax);
+        state.chapterPanel.chapterScroll = ScrollMath.clamp(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax);
         boolean showScrollBar = !collapsed && state.chapterPanel.chapterScrollMax > 0;
         if (collapsed) {
             state.chapterPanel.chapterScrollDragging = false;

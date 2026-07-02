@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
 
-public final class ScrollController {
-    private ScrollController() {
+public final class ScrollMath {
+    private ScrollMath() {
     }
 
     public static boolean hit(int mouseX, int mouseY, int trackX, int trackY, int trackW, int trackH) {

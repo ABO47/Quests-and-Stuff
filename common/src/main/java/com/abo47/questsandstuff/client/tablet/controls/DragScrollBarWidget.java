@@ -113,7 +113,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
 
         int knobH = knobHeight();
         int max = Math.max(0, maxSupplier.getAsInt());
-        int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
+        int current = ScrollMath.clamp(valueSupplier.getAsInt(), max);
         int span = Math.max(0, h - knobH);
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
         int knobW = Math.min(w, active || hovered ? Math.max(knobVisualWidth, WIDTH) : knobVisualWidth);
@@ -141,9 +141,9 @@ public final class DragScrollBarWidget extends WidgetGroup {
         if (max <= 0) {
             return true;
         }
-        int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
+        int current = ScrollMath.clamp(valueSupplier.getAsInt(), max);
         int step = Math.max(1, Math.min(24, Math.max(1, max / 8)));
-        int next = ScrollController.wheel(current, max, step, wheelDelta);
+        int next = ScrollMath.wheel(current, max, step, wheelDelta);
         if (next != current) {
             valueConsumer.accept(next);
             refresh.run();
@@ -174,7 +174,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
 
     private boolean updateFromMouse(double mouseY) {
         int current = valueSupplier.getAsInt();
-        int next = ScrollController.byMouse(
+        int next = ScrollMath.byMouse(
                 (int) Math.round(mouseY),
                 getPositionY(),
                 getSizeHeight(),

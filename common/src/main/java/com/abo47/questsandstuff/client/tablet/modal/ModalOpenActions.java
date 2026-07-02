@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFieldController;
+import com.abo47.questsandstuff.client.tablet.controls.SearchNormalizer;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -82,7 +82,7 @@ public final class ModalOpenActions {
         openPickerModal(state, ModalWindowManager.ModalType.COLOR_PICKER, () -> {
             state.pickers.colorPickerTarget = clean(target);
             state.pickers.colorDraft = color;
-            state.pickers.colorHexDraft = SearchFieldController.toHexColor(color);
+            state.pickers.colorHexDraft = SearchNormalizer.toHexColor(color);
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             state.pickers.colorPaletteScrollDragging = false;

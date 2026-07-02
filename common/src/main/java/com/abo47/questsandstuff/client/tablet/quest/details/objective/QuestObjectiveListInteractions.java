@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.objective;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
+import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
@@ -77,7 +77,7 @@ final class QuestObjectiveListInteractions {
             return true;
         }
         if (state.questDetails.questDetailsObjectiveDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.questDetails.questDetailsObjectiveDragStartX, state.questDetails.questDetailsObjectiveDragStartY)) {
+            if (!CardDragSortUtil.pastDragThreshold(mouseX, mouseY, state.questDetails.questDetailsObjectiveDragStartX, state.questDetails.questDetailsObjectiveDragStartY)) {
                 return true;
             }
             state.questDetails.questDetailsObjectiveDragPending = false;
@@ -157,7 +157,7 @@ final class QuestObjectiveListInteractions {
 
     private static int objectiveInsertIndexAtY(TabletUiState state, List<QuestDetailsObjectiveEntry> entries, String kind, int listY, int listBottom, int localY) {
         int scroll = "requirements".equals(kind) ? state.questDetails.questDetailsReqScroll : state.questDetails.questDetailsRewardScroll;
-        return CardReorderController.insertIndexAtY(localY, listY, listBottom, scroll, QuestDetailsObjectivesPanel.LIST_PAD, QuestDetailsObjectivesPanel.CARD_H, QuestDetailsObjectivesPanel.CARD_GAP, entries.size());
+        return CardDragSortUtil.insertIndexAtY(localY, listY, listBottom, scroll, QuestDetailsObjectivesPanel.LIST_PAD, QuestDetailsObjectivesPanel.CARD_H, QuestDetailsObjectivesPanel.CARD_GAP, entries.size());
     }
 
     private static void finishDrag(Player player, TabletUiState state, String questId, List<QuestDetailsObjectiveEntry> entries) {
@@ -168,7 +168,7 @@ final class QuestObjectiveListInteractions {
         if (moving.isBlank()) {
             return;
         }
-        int offset = CardReorderController.offsetForDrop(moving, entries, QuestDetailsObjectiveEntry::id, target);
+        int offset = CardDragSortUtil.offsetForDrop(moving, entries, QuestDetailsObjectiveEntry::id, target);
         if (offset == 0) {
             return;
         }
