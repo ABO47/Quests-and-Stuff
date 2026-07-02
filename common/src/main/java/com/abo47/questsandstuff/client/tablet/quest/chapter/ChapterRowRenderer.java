@@ -276,7 +276,7 @@ final class ChapterRowRenderer {
     }
 
     private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String group, int x, int y) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {

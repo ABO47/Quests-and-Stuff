@@ -38,7 +38,7 @@ public final class ClientCanvasLayerState {
         if (payload == null) {
             return;
         }
-        if (payload.contains(SyncKeys.GROUPS, Tag.TAG_LIST)) {
+        if (payload.contains(SyncKeys.CHAPTERS, Tag.TAG_LIST)) {
             List<String> groups = ClientChapterState.chapterOrderSnapshot();
             CHAPTER_CANVAS_EXCLUSIVE_CHOICES.keySet().removeIf(group -> !groups.contains(group));
             CHAPTER_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));

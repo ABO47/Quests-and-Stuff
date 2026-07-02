@@ -29,7 +29,7 @@ public final class ClientSyncPayloadApplier {
     }
 
     public static void applyDeltaSync(CompoundTag payload) {
-        boolean chapterPayload = payload.contains(SyncKeys.GROUPS, Tag.TAG_LIST) || payload.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND);
+        boolean chapterPayload = payload.contains(SyncKeys.CHAPTERS, Tag.TAG_LIST) || payload.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND);
         if (chapterPayload) {
             ClientChapterState.mergeFromDeltaPayload(payload);
             ClientCanvasLayerState.mergeFromDeltaPayload(payload);

@@ -44,7 +44,7 @@ public final class ClientSyncChunkAccumulator {
                 continue;
             }
             if (groups.isEmpty()) {
-                groups = (ListTag) part.getList(SyncKeys.GROUPS, Tag.TAG_STRING).copy();
+                groups = (ListTag) part.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING).copy();
             }
             if (groupProps.isEmpty() && part.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND)) {
                 groupProps = part.getCompound(SyncKeys.CHAPTER_PROPS).copy();
@@ -54,7 +54,7 @@ public final class ClientSyncChunkAccumulator {
                 quests.put(key, partQuests.getCompound(key).copy());
             }
         }
-        full.put(SyncKeys.GROUPS, groups);
+        full.put(SyncKeys.CHAPTERS, groups);
         full.put(SyncKeys.CHAPTER_PROPS, groupProps);
         full.put(SyncKeys.QUESTS, quests);
         return full;
@@ -73,7 +73,7 @@ public final class ClientSyncChunkAccumulator {
                 continue;
             }
             if (groups.isEmpty()) {
-                groups = (ListTag) part.getList(SyncKeys.GROUPS, Tag.TAG_STRING).copy();
+                groups = (ListTag) part.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING).copy();
             }
             if (groupProps.isEmpty() && part.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND)) {
                 groupProps = part.getCompound(SyncKeys.CHAPTER_PROPS).copy();
@@ -93,7 +93,7 @@ public final class ClientSyncChunkAccumulator {
         }
 
         if (!groups.isEmpty() || !groupProps.isEmpty()) {
-            delta.put(SyncKeys.GROUPS, groups);
+            delta.put(SyncKeys.CHAPTERS, groups);
             delta.put(SyncKeys.CHAPTER_PROPS, groupProps);
         }
         delta.put(SyncKeys.CHANGED, changed);

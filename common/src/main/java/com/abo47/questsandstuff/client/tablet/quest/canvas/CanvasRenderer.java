@@ -43,7 +43,7 @@ public final class CanvasRenderer {
         CanvasCameraController.beforeCanvasRebuild(state);
         canvasViewport.clearAllWidgets();
         String selectedChapter = CanvasRenderStateController.prepareRebuild(state);
-        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedChapter);
+        CanvasChapterSwitchAnimation.trackSelectedChapter(state, selectedChapter);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));

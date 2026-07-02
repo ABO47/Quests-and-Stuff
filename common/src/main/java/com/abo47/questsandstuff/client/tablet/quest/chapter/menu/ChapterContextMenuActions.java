@@ -24,7 +24,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void rename(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         state.chapterPanel.chapterMenuOpen = false;
@@ -38,7 +38,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void addChapter(TabletUiState state, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         String drafted = EditorChapterCommandClient.uniqueChapterName(tr("ui.questsandstuff.chapter.default_name"), "");
@@ -51,7 +51,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void delete(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         String deleteKey = ChapterContextMenuLayout.deleteKey(target);
@@ -71,7 +71,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeIcon(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(target));
@@ -80,7 +80,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeVariant(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EntityIconControls.openVariantPicker(state, ModalTargets.chapterIcon(target), ChapterContextMenuLayout.chapterIcon(target));
@@ -90,7 +90,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void editMotion(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EntityMotionEditor.openChapterIcon(state, target, state.chapterPanel.chapterMenuX, state.chapterPanel.chapterMenuY);
@@ -100,7 +100,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeIcon(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         if (!EntityIconControls.confirmRemoveIcon(state, ChapterContextMenuLayout.removeIconKey(target))) {
@@ -113,7 +113,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeBackground(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestStateFacade.chapterBackground(target));
@@ -122,7 +122,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeBackground(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         if (!TabletUiFactory.confirmDeleteClick(state, ChapterContextMenuLayout.removeBackgroundKey(target))) {
@@ -135,7 +135,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
@@ -149,7 +149,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeCompletionSoundGame(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
@@ -163,7 +163,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeCompletionSoundCustom(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
@@ -177,7 +177,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeConnectionTexture(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
@@ -195,7 +195,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeConnectionTexture(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
@@ -240,7 +240,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void setLockUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EditorChapterCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
@@ -250,7 +250,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void setHideUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EditorChapterCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
@@ -267,7 +267,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void move(Player player, TabletUiState state, String target, int offset, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         EditorChapterCommandClient.runGroupAction(player, state, "move", target, "", offset);

@@ -281,7 +281,7 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void setQuestPositionInChapterLocal(String questId, String chapter, int x, int y) {
-        CompoundTag groupTag = mutableGroupView(questId, group);
+        CompoundTag groupTag = mutableChapterView(questId, chapter);
         if (groupTag == null) {
             return;
         }
@@ -290,7 +290,7 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void setQuestScaleInChapterLocal(String questId, String chapter, float scale) {
-        CompoundTag groupTag = mutableGroupView(questId, group);
+        CompoundTag groupTag = mutableChapterView(questId, chapter);
         if (groupTag == null) {
             return;
         }
@@ -331,7 +331,7 @@ public final class ClientQuestPropertyMutations {
         }
         ClientQuestState.removePinned(normalized);
         ClientQuestConnectionMutator.removeQuestReferences(normalized);
-        for (Map.Entry<String, List<CanvasExclusiveChoice>> entry : ClientCanvasLayerState.exclusiveChoicesByGroup().entrySet()) {
+        for (Map.Entry<String, List<CanvasExclusiveChoice>> entry : ClientCanvasLayerState.exclusiveChoicesByChapter().entrySet()) {
             String group = entry.getKey();
             for (CanvasExclusiveChoice ec : entry.getValue()) {
                 boolean changed = false;
@@ -350,19 +350,19 @@ public final class ClientQuestPropertyMutations {
         }
     }
 
-    private static CompoundTag mutableGroupView(String questId, String group) {
+    private static CompoundTag mutableChapterView(String questId, String chapter) {
         String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeChapter(group);
-        if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
+        String normalizedChapter = normalizeChapter(chapter);
+        if (normalizedQuest.isBlank() || normalizedChapter.isBlank()) {
             return null;
         }
         CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
         if (quest == null) {
             return null;
         }
-        CompoundTag groups = quest.getCompound(SyncKeys.Quest.CHAPTERS);
-        CompoundTag groupTag = groups.getCompound(normalizedGroup).copy();
-        groups.put(normalizedGroup, groupTag);
+        CompoundTag chapters = quest.getCompound(SyncKeys.Quest.CHAPTERS);
+        CompoundTag groupTag = chapters.getCompound(normalizedChapter).copy();
+        chapters.put(normalizedChapter, groupTag);
         return groupTag;
     }
 

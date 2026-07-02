@@ -144,7 +144,7 @@ public final class QuestAppComposer {
                 ContextMenuController.close(state);
                 state.canvas.canvasSelection.questIds().clear();
             }
-            TabletBootstrap.keepSelectedGroupValid(state, true);
+            TabletBootstrap.keepSelectedChapterValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;
             int currentRootW = rootWidth(state);
             int currentRootH = rootHeight(state);

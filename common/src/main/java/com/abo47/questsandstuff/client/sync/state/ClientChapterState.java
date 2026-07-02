@@ -50,7 +50,7 @@ public final class ClientChapterState {
         if (payload == null) {
             return;
         }
-        ListTag groupsTag = payload.getList(SyncKeys.GROUPS, Tag.TAG_STRING);
+        ListTag groupsTag = payload.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING);
         if (!groupsTag.isEmpty()) {
             CHAPTER_ORDER.clear();
             for (int i = 0; i < groupsTag.size(); i++) {

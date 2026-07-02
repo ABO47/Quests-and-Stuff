@@ -195,7 +195,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             }
             selectChapterDirect(hit);
             state.chapterPanel.chapterMenuOpen = false;
-            if (EditorChapterCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
+            if (EditorChapterCommandClient.canManageChapters(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
                 state.chapterPanel.chapterDragPending = true;
                 state.chapterPanel.chapterDragStartX = (int) Math.round(mouseX);
                 state.chapterPanel.chapterDragStartY = (int) Math.round(mouseY);
@@ -216,7 +216,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private boolean openIconPickerAt(int localX, int localY) {
-        if (!EditorChapterCommandClient.canManageGroups(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
+        if (!EditorChapterCommandClient.canManageChapters(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
             return false;
         }
         String hit = chapterAtY(localY, state);

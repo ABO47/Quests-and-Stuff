@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withGroups;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withChapters;
 
 public final class CanvasEditService {
     private final EditorSessionService owner;
@@ -185,7 +185,7 @@ public final class CanvasEditService {
 
             Map<String, ChapterDef> chapters = new HashMap<>(source.display().chapters());
             chapters.put(chapter, new ChapterDef(existingView.visible(), targetX, targetY, existingView.scale()));
-            owner.definitionStore().upsert(withGroups(source, chapters));
+            owner.definitionStore().upsert(withChapters(source, chapters));
         }
 
         if (changed) {
@@ -231,7 +231,7 @@ public final class CanvasEditService {
 
             Map<String, ChapterDef> chapters = new HashMap<>(source.display().chapters());
             chapters.put(chapter, new ChapterDef(existingView.visible(), existingView.x(), existingView.y(), targetScale));
-            owner.definitionStore().upsert(withGroups(source, chapters));
+            owner.definitionStore().upsert(withChapters(source, chapters));
         }
 
         if (changed) {

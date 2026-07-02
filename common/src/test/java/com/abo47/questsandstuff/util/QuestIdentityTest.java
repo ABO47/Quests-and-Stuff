@@ -23,7 +23,7 @@ class QuestIdentityTest {
     }
 
     @Test
-    void groupNamesStayDisplaySafeUntilFileSafeNameIsRequested() {
+    void chapterNamesStayDisplaySafeUntilFileSafeNameIsRequested() {
         assertEquals("", QuestIdentity.chapterName(null));
         assertEquals("Main Chapter!! 01", QuestIdentity.chapterName(" Main Chapter!! 01 "));
         assertEquals("main_chapter_01", QuestIdentity.chapterFolderName(" Main Chapter!! 01 "));
@@ -31,7 +31,7 @@ class QuestIdentityTest {
     }
 
     @Test
-    void uiGroupNamesReplaceLineBreaksAndClampLength() {
+    void uiChapterNamesReplaceLineBreaksAndClampLength() {
         assertEquals("Main  Chapter", QuestIdentity.uiChapterName(" Main\n\rChapter "));
         assertEquals(QuestIdentity.UI_CHAPTER_NAME_MAX_LENGTH, QuestIdentity.uiChapterName("1234567890123456789012345678901234567890suffix").length());
         assertEquals("1234567890123456789012345678901234567890", QuestIdentity.uiChapterName("1234567890123456789012345678901234567890suffix"));

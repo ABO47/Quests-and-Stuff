@@ -25,7 +25,7 @@ class EditorCommandPayloadsTest {
         moves.put("quest/b", new int[]{56, 78});
         CompoundTag movePayload = EditorCommandPayloads.moveMany(" main ", moves);
 
-        assertEquals("main", EditorCommandPayloads.group(movePayload));
+        assertEquals("main", EditorCommandPayloads.chapter(movePayload));
         ListTag moveTags = EditorCommandPayloads.moves(movePayload);
         assertEquals(2, moveTags.size());
         assertEquals("quest/a", moveTags.getCompound(0).getString(EditorCommandPayloads.QUEST));
@@ -36,13 +36,13 @@ class EditorCommandPayloadsTest {
         Map<String, Float> scales = new LinkedHashMap<>();
         scales.put(" quest/a ", 1.25f);
         CompoundTag scalePayload = EditorCommandPayloads.scaleMany(" main ", scales);
-        assertEquals("main", EditorCommandPayloads.group(scalePayload));
+        assertEquals("main", EditorCommandPayloads.chapter(scalePayload));
         assertEquals("quest/a", EditorCommandPayloads.scales(scalePayload).getCompound(0).getString(EditorCommandPayloads.QUEST));
         assertEquals(1.25f, EditorCommandPayloads.scales(scalePayload).getCompound(0).getFloat(EditorCommandPayloads.SCALE), 0.0001f);
         assertTrue(EditorCommandPayloads.isAllowed(EditorCommandType.SCALE_MANY, scalePayload));
 
         CompoundTag copyPayload = EditorCommandPayloads.copyMany(" main ", List.of(" quest/a ", "", "quest/b"));
-        assertEquals("main", EditorCommandPayloads.group(copyPayload));
+        assertEquals("main", EditorCommandPayloads.chapter(copyPayload));
         assertEquals(Set.of("quest/a", "quest/b"), EditorCommandPayloads.questIds(copyPayload));
         assertTrue(EditorCommandPayloads.isAllowed(EditorCommandType.COPY_MANY, copyPayload));
     }
@@ -73,12 +73,12 @@ class EditorCommandPayloadsTest {
     void canvasFactoriesUseKeysReadByPacketHelpers() {
         CanvasImageLayer image = new CanvasImageLayer(" image/a ", "asset:path", 1, 2, 40, 50, 0);
         CompoundTag imagePayload = EditorCommandPayloads.canvasImagePut(" main ", image);
-        assertEquals("main", EditorCommandPayloads.group(imagePayload));
+        assertEquals("main", EditorCommandPayloads.chapter(imagePayload));
         assertEquals("image/a", EditorCommandPayloads.compound(imagePayload, EditorCommandPayloads.IMAGE).getString(EditorCommandPayloads.ID));
 
         CanvasTextLayer text = new CanvasTextLayer(" text/a ", "Label", 3, 4, 80, 20, 0, "left", "normal", 0xFFFFFF);
         CompoundTag textPayload = EditorCommandPayloads.canvasTextPut(" main ", text);
-        assertEquals("main", EditorCommandPayloads.group(textPayload));
+        assertEquals("main", EditorCommandPayloads.chapter(textPayload));
         assertEquals("text/a", EditorCommandPayloads.compound(textPayload, EditorCommandPayloads.TEXT).getString(EditorCommandPayloads.ID));
         assertTrue(EditorCommandPayloads.isAllowed(EditorCommandType.CANVAS_TEXT_PUT, textPayload));
 
@@ -93,7 +93,7 @@ class EditorCommandPayloadsTest {
         C2SEditorCommandPacket packet = new C2SEditorCommandPacket(EditorCommandType.PASTE_BLUEPRINT, payload);
 
         assertEquals(EditorCommandType.PASTE_BLUEPRINT, packet.command().type());
-        assertEquals("main", EditorCommandPayloads.group(packet.command().payload()));
+        assertEquals("main", EditorCommandPayloads.chapter(packet.command().payload()));
         assertEquals(10, EditorCommandPayloads.integer(packet.command().payload(), EditorCommandPayloads.X));
         assertEquals(20, EditorCommandPayloads.integer(packet.command().payload(), EditorCommandPayloads.Y));
         assertTrue(packet.command().payload().contains(EditorCommandPayloads.BLUEPRINT, Tag.TAG_COMPOUND));

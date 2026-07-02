@@ -165,7 +165,7 @@ final class PrerequisitePreviewBuilder {
     private static QuestPlacement actualPlacement(QuestDefinition definition, String preferredGroup) {
         ChapterDef preferred = definition.display().chapters().get(preferredGroup);
         if (preferred != null) {
-            preferredGroupLayout = new ChapterDef(preferred.visible(), preferred.x(), preferred.y(), preferred.scale());
+            preferred = new ChapterDef(preferred.visible(), preferred.x(), preferred.y(), preferred.scale());
         }
         for (Map.Entry<String, ChapterDef> entry : definition.display().chapters().entrySet()) {
             ChapterDef view = entry.getValue();
