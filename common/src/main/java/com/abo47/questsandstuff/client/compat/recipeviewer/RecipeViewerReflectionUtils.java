@@ -6,20 +6,20 @@ import net.minecraft.client.Minecraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-final class RecipeViewerReflection {
-    private RecipeViewerReflection() {
+public final class RecipeViewerReflectionUtils {
+    private RecipeViewerReflectionUtils() {
     }
 
-    static boolean classPresent(String className) {
+    public static boolean classPresent(String className) {
         try {
-            Class.forName(className, false, RecipeViewerReflection.class.getClassLoader());
+            Class.forName(className, false, RecipeViewerReflectionUtils.class.getClassLoader());
             return true;
         } catch (ClassNotFoundException | LinkageError ignored) {
             return false;
         }
     }
 
-    static Method firstMethod(Class<?> owner, String name, int parameterCount) throws NoSuchMethodException {
+    public static Method firstMethod(Class<?> owner, String name, int parameterCount) throws NoSuchMethodException {
         for (Method method : owner.getMethods()) {
             if (method.getName().equals(name) && method.getParameterCount() == parameterCount) {
                 method.setAccessible(true);
@@ -29,7 +29,7 @@ final class RecipeViewerReflection {
         throw new NoSuchMethodException(owner.getName() + "#" + name + "/" + parameterCount);
     }
 
-    static boolean matchesMinecraftKey(String[] mappingNames, int keyCode, int scanCode) {
+    public static boolean matchesMinecraftKey(String[] mappingNames, int keyCode, int scanCode) {
         if (mappingNames == null || mappingNames.length == 0) {
             return false;
         }
@@ -48,7 +48,7 @@ final class RecipeViewerReflection {
         return false;
     }
 
-    static boolean matchesPublicStaticBind(String className, String fieldName, int keyCode, int scanCode) {
+    public static boolean matchesPublicStaticBind(String className, String fieldName, int keyCode, int scanCode) {
         try {
             Class<?> configClass = Class.forName(className);
             Field field = configClass.getField(fieldName);
@@ -59,7 +59,7 @@ final class RecipeViewerReflection {
         }
     }
 
-    static boolean matchesSingletonBind(String className, String accessorName, int keyCode, int scanCode) {
+    public static boolean matchesSingletonBind(String className, String accessorName, int keyCode, int scanCode) {
         try {
             Class<?> configClass = Class.forName(className);
             Object config = configClass.getMethod("getInstance").invoke(null);

@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-interface RecipeViewerProvider {
+public interface RecipeViewerProvider {
     String name();
 
     RecipeViewerProviderCapabilities capabilities();

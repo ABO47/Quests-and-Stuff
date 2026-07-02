@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.network.quest.runtime;
+package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
 

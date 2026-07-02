@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RecipeViewerSelectionRulesTest {
+class RecipeViewerSelectionUtilsTest {
     @BeforeAll
     static void bootstrapMinecraft() {
         SharedConstants.tryDetectVersion();
@@ -26,61 +26,61 @@ class RecipeViewerSelectionRulesTest {
 
     @Test
     void outputSelectionAcceptsExplicitRecipeIdsAndMatchingOutputs() {
-        RecipeViewerSelectionRules.Selection selection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection selection = new RecipeViewerSelectionUtils.Selection(
                 "minecraft:diamond",
                 Set.of("minecraft:known_recipe"),
                 RecipeViewerSelectionMode.OUTPUT
         );
 
-        assertTrue(RecipeViewerSelectionRules.canPickRecipe(selection, "minecraft:known_recipe", recipe("minecraft:known_recipe", Items.STONE)));
-        assertTrue(RecipeViewerSelectionRules.canPickRecipe(selection, "minecraft:diamond_recipe", recipe("minecraft:diamond_recipe", Items.DIAMOND)));
-        assertFalse(RecipeViewerSelectionRules.canPickRecipe(selection, "minecraft:gold_recipe", recipe("minecraft:gold_recipe", Items.GOLD_INGOT)));
+        assertTrue(RecipeViewerSelectionUtils.canPickRecipe(selection, "minecraft:known_recipe", recipe("minecraft:known_recipe", Items.STONE)));
+        assertTrue(RecipeViewerSelectionUtils.canPickRecipe(selection, "minecraft:diamond_recipe", recipe("minecraft:diamond_recipe", Items.DIAMOND)));
+        assertFalse(RecipeViewerSelectionUtils.canPickRecipe(selection, "minecraft:gold_recipe", recipe("minecraft:gold_recipe", Items.GOLD_INGOT)));
     }
 
     @Test
     void inputSelectionUsesRecipeOutputAsPickedTarget() {
-        RecipeViewerSelectionRules.Selection selection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection selection = new RecipeViewerSelectionUtils.Selection(
                 "minecraft:diamond",
                 Set.of(),
                 RecipeViewerSelectionMode.INPUT
         );
         RecipeView recipe = recipeUsing("minecraft:gold_from_diamond", Items.GOLD_INGOT, Ingredient.of(Items.DIAMOND));
 
-        assertTrue(RecipeViewerSelectionRules.canPickRecipe(selection, recipe.id(), recipe));
-        assertEquals("minecraft:gold_ingot", RecipeViewerSelectionRules.pickTarget(selection, recipe.id(), recipe, false, ""));
+        assertTrue(RecipeViewerSelectionUtils.canPickRecipe(selection, recipe.id(), recipe));
+        assertEquals("minecraft:gold_ingot", RecipeViewerSelectionUtils.pickTarget(selection, recipe.id(), recipe, false, ""));
     }
 
     @Test
     void visibleFallbackUsesOutputTargetRulesPerSelectionMode() {
-        RecipeViewerSelectionRules.Selection outputSelection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection outputSelection = new RecipeViewerSelectionUtils.Selection(
                 "minecraft:diamond",
                 Set.of(),
                 RecipeViewerSelectionMode.OUTPUT
         );
-        RecipeViewerSelectionRules.Selection inputSelection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection inputSelection = new RecipeViewerSelectionUtils.Selection(
                 "minecraft:diamond",
                 Set.of(),
                 RecipeViewerSelectionMode.INPUT
         );
 
-        assertTrue(RecipeViewerSelectionRules.canPickVisibleRecipe(outputSelection, "minecraft:external", null, ""));
-        assertEquals("minecraft:diamond", RecipeViewerSelectionRules.pickTarget(outputSelection, "minecraft:external", null, true, ""));
-        assertFalse(RecipeViewerSelectionRules.canPickVisibleRecipe(inputSelection, "minecraft:external", null, ""));
-        assertTrue(RecipeViewerSelectionRules.canPickVisibleRecipe(inputSelection, "minecraft:external", null, "minecraft:gold_ingot"));
-        assertEquals("minecraft:gold_ingot", RecipeViewerSelectionRules.pickTarget(inputSelection, "minecraft:external", null, true, "minecraft:gold_ingot"));
+        assertTrue(RecipeViewerSelectionUtils.canPickVisibleRecipe(outputSelection, "minecraft:external", null, ""));
+        assertEquals("minecraft:diamond", RecipeViewerSelectionUtils.pickTarget(outputSelection, "minecraft:external", null, true, ""));
+        assertFalse(RecipeViewerSelectionUtils.canPickVisibleRecipe(inputSelection, "minecraft:external", null, ""));
+        assertTrue(RecipeViewerSelectionUtils.canPickVisibleRecipe(inputSelection, "minecraft:external", null, "minecraft:gold_ingot"));
+        assertEquals("minecraft:gold_ingot", RecipeViewerSelectionUtils.pickTarget(inputSelection, "minecraft:external", null, true, "minecraft:gold_ingot"));
     }
 
     @Test
     void invalidRecipeIdsAndEmptySelectionsDoNotPick() {
-        RecipeViewerSelectionRules.Selection selection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection selection = new RecipeViewerSelectionUtils.Selection(
                 "minecraft:diamond",
                 Set.of(),
                 RecipeViewerSelectionMode.OUTPUT
         );
 
-        assertEquals("", RecipeViewerSelectionRules.normalizeRecipeId("not a recipe id"));
-        assertFalse(RecipeViewerSelectionRules.canPickRecipe(selection, "not a recipe id", recipe("minecraft:diamond_recipe", Items.DIAMOND)));
-        assertEquals("", RecipeViewerSelectionRules.pickTarget(selection, "not a recipe id", recipe("minecraft:diamond_recipe", Items.DIAMOND), true, "minecraft:diamond"));
+        assertEquals("", RecipeViewerSelectionUtils.normalizeRecipeId("not a recipe id"));
+        assertFalse(RecipeViewerSelectionUtils.canPickRecipe(selection, "not a recipe id", recipe("minecraft:diamond_recipe", Items.DIAMOND)));
+        assertEquals("", RecipeViewerSelectionUtils.pickTarget(selection, "not a recipe id", recipe("minecraft:diamond_recipe", Items.DIAMOND), true, "minecraft:diamond"));
     }
 
     private static RecipeView recipe(String id, net.minecraft.world.item.Item output) {

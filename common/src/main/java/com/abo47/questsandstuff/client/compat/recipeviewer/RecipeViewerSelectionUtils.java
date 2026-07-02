@@ -7,11 +7,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-final class RecipeViewerSelectionRules {
-    private RecipeViewerSelectionRules() {
+public final class RecipeViewerSelectionUtils {
+    private RecipeViewerSelectionUtils() {
     }
 
-    static Set<String> recipeIds(List<RecipeView> recipes) {
+    public static Set<String> recipeIds(List<RecipeView> recipes) {
         Set<String> ids = new LinkedHashSet<>();
         if (recipes == null) {
             return ids;
@@ -25,7 +25,7 @@ final class RecipeViewerSelectionRules {
         return ids;
     }
 
-    static boolean canPickRecipe(Selection selection, String recipeId, RecipeView recipe) {
+    public static boolean canPickRecipe(Selection selection, String recipeId, RecipeView recipe) {
         String normalized = normalizeRecipeId(recipeId);
         if (selection == null || normalized.isBlank() || recipe == null) {
             return false;
@@ -36,7 +36,7 @@ final class RecipeViewerSelectionRules {
         return selection.mode().matches(selection.target(), recipe);
     }
 
-    static boolean canPickVisibleRecipe(Selection selection, String recipeId, RecipeView recipe, String visibleOutputTarget) {
+    public static boolean canPickVisibleRecipe(Selection selection, String recipeId, RecipeView recipe, String visibleOutputTarget) {
         String normalized = normalizeRecipeId(recipeId);
         if (selection == null || normalized.isBlank()) {
             return false;
@@ -47,7 +47,7 @@ final class RecipeViewerSelectionRules {
         return selection.mode().visibleFallbackTarget(selection.target(), visibleOutputTarget) != null;
     }
 
-    static String pickTarget(Selection selection, String recipeId, RecipeView recipe, boolean allowVisibleFallback, String visibleOutputTarget) {
+    public static String pickTarget(Selection selection, String recipeId, RecipeView recipe, boolean allowVisibleFallback, String visibleOutputTarget) {
         String normalized = normalizeRecipeId(recipeId);
         if (selection == null || normalized.isBlank()) {
             return "";
@@ -60,13 +60,13 @@ final class RecipeViewerSelectionRules {
         return allowVisibleFallback && fallbackTarget != null ? fallbackTarget : "";
     }
 
-    static String normalizeRecipeId(String recipeId) {
+    public static String normalizeRecipeId(String recipeId) {
         ResourceLocation id = ResourceLocation.tryParse(recipeId == null ? "" : recipeId.trim());
         return id == null ? "" : id.toString();
     }
 
-    record Selection(String target, Set<String> recipeIds, RecipeViewerSelectionMode mode) {
-        Selection {
+    public record Selection(String target, Set<String> recipeIds, RecipeViewerSelectionMode mode) {
+        public Selection {
             target = target == null ? "" : target;
             recipeIds = recipeIds == null ? Set.of() : Set.copyOf(recipeIds);
             mode = mode == null ? RecipeViewerSelectionMode.OUTPUT : mode;

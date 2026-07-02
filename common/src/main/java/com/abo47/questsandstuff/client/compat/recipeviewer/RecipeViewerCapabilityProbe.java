@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-final class RecipeViewerCapabilityProbe {
+public final class RecipeViewerCapabilityProbe {
     private final String providerName;
     private final List<CapabilityCheck> checks;
 
@@ -34,7 +34,7 @@ final class RecipeViewerCapabilityProbe {
         return new RecipeViewerProviderCapabilities(providerName, statuses);
     }
 
-    static final class Builder {
+    public static final class Builder {
         private final String providerName;
         private final List<CapabilityCheck> checks = new ArrayList<>();
 
@@ -84,7 +84,7 @@ final class RecipeViewerCapabilityProbe {
         private List<String> missingClasses() {
             List<String> missing = new ArrayList<>();
             for (String className : classNames) {
-                if (!RecipeViewerReflection.classPresent(className)) {
+                if (!RecipeViewerReflectionUtils.classPresent(className)) {
                     missing.add(className);
                 }
             }

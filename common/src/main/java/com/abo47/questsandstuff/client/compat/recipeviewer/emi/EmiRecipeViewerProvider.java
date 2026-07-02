@@ -1,5 +1,11 @@
-package com.abo47.questsandstuff.client.compat.recipeviewer;
+package com.abo47.questsandstuff.client.compat.recipeviewer.emi;
 
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-final class EmiRecipeViewerProvider implements RecipeViewerProvider {
+public final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String EMI_API = "dev.emi.emi.api.EmiApi";
     private static final String EMI_CONFIG = "dev.emi.emi.config.EmiConfig";
     private static final String EMI_DRAW_CONTEXT = "dev.emi.emi.runtime.EmiDrawContext";
@@ -66,12 +72,12 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
 
     @Override
     public boolean matchesRecipeKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesPublicStaticBind(EMI_CONFIG, "viewRecipes", keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesPublicStaticBind(EMI_CONFIG, "viewRecipes", keyCode, scanCode);
     }
 
     @Override
     public boolean matchesUsesKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesPublicStaticBind(EMI_CONFIG, "viewUses", keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesPublicStaticBind(EMI_CONFIG, "viewUses", keyCode, scanCode);
     }
 
     @Override
@@ -95,7 +101,7 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
             }
             List<String> entries = new ArrayList<>();
             for (Object stack : iterable) {
-                Object key = RecipeViewerReflection.firstMethod(stack.getClass(), "getKey", 0).invoke(stack);
+                Object key = RecipeViewerReflectionUtils.firstMethod(stack.getClass(), "getKey", 0).invoke(stack);
                 if (key instanceof Fluid fluid) {
                     addFluidEntry(entries, fluid);
                 }
@@ -164,8 +170,8 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         if (recipe == null) {
             return null;
         }
-        int displayWidth = intValue(RecipeViewerReflection.firstMethod(recipe.getClass(), "getDisplayWidth", 0).invoke(recipe));
-        int displayHeight = intValue(RecipeViewerReflection.firstMethod(recipe.getClass(), "getDisplayHeight", 0).invoke(recipe));
+        int displayWidth = intValue(RecipeViewerReflectionUtils.firstMethod(recipe.getClass(), "getDisplayWidth", 0).invoke(recipe));
+        int displayHeight = intValue(RecipeViewerReflectionUtils.firstMethod(recipe.getClass(), "getDisplayHeight", 0).invoke(recipe));
         if (displayWidth <= 0 || displayHeight <= 0) {
             return null;
         }
@@ -173,8 +179,8 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         int snapshotHeight = displayHeight + 8;
         Class<?> drawContextClass = Class.forName(EMI_DRAW_CONTEXT);
         Class<?> renderHelperClass = Class.forName(EMI_RENDER_HELPER);
-        Method wrap = RecipeViewerReflection.firstMethod(drawContextClass, "wrap", 1);
-        Method renderRecipe = RecipeViewerReflection.firstMethod(renderHelperClass, "renderRecipe", 6);
+        Method wrap = RecipeViewerReflectionUtils.firstMethod(drawContextClass, "wrap", 1);
+        Method renderRecipe = RecipeViewerReflectionUtils.firstMethod(renderHelperClass, "renderRecipe", 6);
         return new RecipeViewerSnapshotRenderer.SnapshotPlan(snapshotWidth, snapshotHeight, snapshotGraphics -> {
             try {
                 Object context = wrap.invoke(null, snapshotGraphics);
@@ -190,7 +196,7 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         if (recipe != null) {
             return recipe;
         }
-        return RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getRecipe", 1).invoke(recipeManager, recipeId);
+        return RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "getRecipe", 1).invoke(recipeManager, recipeId);
     }
 
     private static Object findRecipeByCategory(Object recipeManager, Object recipeId, String typeId) throws ReflectiveOperationException {
@@ -198,21 +204,21 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
         if (categoryId == null) {
             return null;
         }
-        Object categories = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getCategories", 0).invoke(recipeManager);
+        Object categories = RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "getCategories", 0).invoke(recipeManager);
         if (!(categories instanceof List<?> list)) {
             return null;
         }
         for (Object category : list) {
-            Object id = RecipeViewerReflection.firstMethod(category.getClass(), "getId", 0).invoke(category);
+            Object id = RecipeViewerReflectionUtils.firstMethod(category.getClass(), "getId", 0).invoke(category);
             if (!Objects.equals(id, categoryId)) {
                 continue;
             }
-            Object recipes = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "getRecipes", 1).invoke(recipeManager, category);
+            Object recipes = RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "getRecipes", 1).invoke(recipeManager, category);
             if (!(recipes instanceof List<?> recipeList)) {
                 return null;
             }
             for (Object recipe : recipeList) {
-                Object idValue = RecipeViewerReflection.firstMethod(recipe.getClass(), "getId", 0).invoke(recipe);
+                Object idValue = RecipeViewerReflectionUtils.firstMethod(recipe.getClass(), "getId", 0).invoke(recipe);
                 if (Objects.equals(idValue, recipeId)) {
                     return recipe;
                 }
@@ -232,7 +238,7 @@ final class EmiRecipeViewerProvider implements RecipeViewerProvider {
             return null;
         }
         Class<?> portClass = Class.forName(EMI_PORT);
-        return RecipeViewerReflection.firstMethod(portClass, "id", 1).invoke(null, id.toString());
+        return RecipeViewerReflectionUtils.firstMethod(portClass, "id", 1).invoke(null, id.toString());
     }
 
     private static void addFluidEntry(List<String> entries, Fluid fluid) {

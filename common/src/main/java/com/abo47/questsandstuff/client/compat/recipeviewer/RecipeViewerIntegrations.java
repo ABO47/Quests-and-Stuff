@@ -1,6 +1,9 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.emi.EmiRecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.jei.JeiRecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.rei.ReiRecipeViewerProvider;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;

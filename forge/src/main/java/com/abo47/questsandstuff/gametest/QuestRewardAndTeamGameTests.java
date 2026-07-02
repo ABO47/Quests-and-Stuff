@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
-import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;

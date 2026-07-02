@@ -1,5 +1,11 @@
-package com.abo47.questsandstuff.client.compat.recipeviewer;
+package com.abo47.questsandstuff.client.compat.recipeviewer.jei;
 
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class JeiRecipeViewerProvider implements RecipeViewerProvider {
+public final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String INTERNAL = "mezz.jei.common.Internal";
     private static final String RECIPE_ROLE = "mezz.jei.api.recipe.RecipeIngredientRole";
     private static final String VANILLA_TYPES = "mezz.jei.api.constants.VanillaTypes";
@@ -112,12 +118,12 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
 
     @Override
     public boolean matchesRecipeKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesMinecraftKey(RECIPE_KEYS, keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesMinecraftKey(RECIPE_KEYS, keyCode, scanCode);
     }
 
     @Override
     public boolean matchesUsesKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesMinecraftKey(USES_KEYS, keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesMinecraftKey(USES_KEYS, keyCode, scanCode);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -136,7 +142,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             Class<?> roleClass = Class.forName(RECIPE_ROLE);
             Object role = Enum.valueOf((Class<Enum>) roleClass.asSubclass(Enum.class), roleName);
             Object itemStackType = Class.forName(VANILLA_TYPES).getField("ITEM_STACK").get(null);
-            Method createFocus = RecipeViewerReflection.firstMethod(focusFactory.getClass(), "createFocus", 3);
+            Method createFocus = RecipeViewerReflectionUtils.firstMethod(focusFactory.getClass(), "createFocus", 3);
             Object focus = createFocus.invoke(focusFactory, role, itemStackType, stack.copy());
             Object recipesGui = runtime.getClass().getMethod("getRecipesGui").invoke(runtime);
             recipesGui.getClass().getMethod("show", List.class).invoke(recipesGui, List.of(focus));
@@ -194,12 +200,12 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
         }
         Object lookup;
         try {
-            lookup = RecipeViewerReflection.firstMethod(recipeManager.getClass(), "createRecipeCategoryLookup", 0).invoke(recipeManager);
+            lookup = RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "createRecipeCategoryLookup", 0).invoke(recipeManager);
         } catch (NoSuchMethodException exception) {
             return null;
         }
         try {
-            RecipeViewerReflection.firstMethod(lookup.getClass(), "includeHidden", 0).invoke(lookup);
+            RecipeViewerReflectionUtils.firstMethod(lookup.getClass(), "includeHidden", 0).invoke(lookup);
         } catch (NoSuchMethodException ignored) {
         }
         Object value = lookup.getClass().getMethod("get").invoke(lookup);
@@ -235,7 +241,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             return null;
         }
         try {
-            Object recipeType = RecipeViewerReflection.firstMethod(category.getClass(), "getRecipeType", 0).invoke(category);
+            Object recipeType = RecipeViewerReflectionUtils.firstMethod(category.getClass(), "getRecipeType", 0).invoke(category);
             Object recipe = findJeiRecipe(recipeManager, recipeType, category, recipeId);
             return recipe == null ? null : new RecipeMatch(category, recipe);
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
@@ -267,7 +273,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
             Object fluidIngredient = firstCompatibleMethod(fluidHelper.getClass(), "create", 2).invoke(fluidHelper, fluid, amount);
             Class<?> roleClass = Class.forName(RECIPE_ROLE);
             Object role = Enum.valueOf((Class<Enum>) roleClass.asSubclass(Enum.class), roleName);
-            Method createFocus = RecipeViewerReflection.firstMethod(focusFactory.getClass(), "createFocus", 3);
+            Method createFocus = RecipeViewerReflectionUtils.firstMethod(focusFactory.getClass(), "createFocus", 3);
             Object focus = createFocus.invoke(focusFactory, role, fluidType, fluidIngredient);
             Object recipesGui = runtime.getClass().getMethod("getRecipesGui").invoke(runtime);
             recipesGui.getClass().getMethod("show", List.class).invoke(recipesGui, List.of(focus));
@@ -280,7 +286,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     private Object findJeiRecipe(Object recipeManager, Object recipeType, Object category, ResourceLocation recipeId) throws ReflectiveOperationException {
         Object lookup = firstCompatibleMethod(recipeManager.getClass(), "createRecipeLookup", 1).invoke(recipeManager, recipeType);
         try {
-            RecipeViewerReflection.firstMethod(lookup.getClass(), "includeHidden", 0).invoke(lookup);
+            RecipeViewerReflectionUtils.firstMethod(lookup.getClass(), "includeHidden", 0).invoke(lookup);
         } catch (NoSuchMethodException ignored) {
         }
         Object value = lookup.getClass().getMethod("get").invoke(lookup);
@@ -298,13 +304,13 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     private Object createLayout(Object recipeManager, Object category, Object recipe, Object focusGroup) throws ReflectiveOperationException {
         Object previewBackground = recipePreviewBackground();
         if (previewBackground != null) {
-            Object layout = optionalValue(RecipeViewerReflection.firstMethod(recipeManager.getClass(), "createRecipeLayoutDrawable", 5)
+            Object layout = optionalValue(RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "createRecipeLayoutDrawable", 5)
                     .invoke(recipeManager, category, recipe, focusGroup, previewBackground, 4));
             if (layout != null) {
                 return layout;
             }
         }
-        return optionalValue(RecipeViewerReflection.firstMethod(recipeManager.getClass(), "createRecipeLayoutDrawable", 3)
+        return optionalValue(RecipeViewerReflectionUtils.firstMethod(recipeManager.getClass(), "createRecipeLayoutDrawable", 3)
                 .invoke(recipeManager, category, recipe, focusGroup));
     }
 
@@ -319,7 +325,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
 
     private static ResourceLocation registryName(Object category, Object recipe) {
         try {
-            Object id = RecipeViewerReflection.firstMethod(category.getClass(), "getRegistryName", 1).invoke(category, recipe);
+            Object id = RecipeViewerReflectionUtils.firstMethod(category.getClass(), "getRegistryName", 1).invoke(category, recipe);
             return id instanceof ResourceLocation resourceLocation ? resourceLocation : null;
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return null;
@@ -329,7 +335,7 @@ final class JeiRecipeViewerProvider implements RecipeViewerProvider {
     private static Object emptyFocusGroup(Object runtime) throws ReflectiveOperationException {
         Object helpers = runtime.getClass().getMethod("getJeiHelpers").invoke(runtime);
         Object focusFactory = helpers.getClass().getMethod("getFocusFactory").invoke(helpers);
-        return RecipeViewerReflection.firstMethod(focusFactory.getClass(), "createFocusGroup", 1).invoke(focusFactory, List.of());
+        return RecipeViewerReflectionUtils.firstMethod(focusFactory.getClass(), "createFocusGroup", 1).invoke(focusFactory, List.of());
     }
 
     private static ResourceLocation jeiRecipeTypeId(String vanillaTypeId) {

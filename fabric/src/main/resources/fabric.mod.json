@@ -21,7 +21,7 @@
       "com.abo47.questsandstuff.fabric.QuestsAndStuffFabricClient"
     ],
     "emi": [
-      "com.abo47.questsandstuff.client.compat.recipeviewer.emi.QuestsAndStuffEmiPlugin"
+      "com.abo47.questsandstuff.client.compat.recipeviewer.emi.QuestEmiPlugin"
     ],
     "rei_client": [
       "com.abo47.questsandstuff.fabric.compat.recipeviewer.FabricReiClientPlugin"

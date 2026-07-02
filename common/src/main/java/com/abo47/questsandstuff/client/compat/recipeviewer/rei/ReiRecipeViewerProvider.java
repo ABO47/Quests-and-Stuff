@@ -1,5 +1,11 @@
-package com.abo47.questsandstuff.client.compat.recipeviewer;
+package com.abo47.questsandstuff.client.compat.recipeviewer.rei;
 
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.client.Minecraft;
@@ -17,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class ReiRecipeViewerProvider implements RecipeViewerProvider {
+public final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String ENTRY_STACK = "me.shedaniel.rei.api.common.entry.EntryStack";
     private static final String ENTRY_STACKS = "me.shedaniel.rei.api.common.util.EntryStacks";
     private static final String CONFIG_OBJECT = "me.shedaniel.rei.api.client.config.ConfigObject";
@@ -74,12 +80,12 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
 
     @Override
     public boolean matchesRecipeKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesSingletonBind(CONFIG_OBJECT, "getRecipeKeybind", keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesSingletonBind(CONFIG_OBJECT, "getRecipeKeybind", keyCode, scanCode);
     }
 
     @Override
     public boolean matchesUsesKey(int keyCode, int scanCode) {
-        return RecipeViewerReflection.matchesSingletonBind(CONFIG_OBJECT, "getUsageKeybind", keyCode, scanCode);
+        return RecipeViewerReflectionUtils.matchesSingletonBind(CONFIG_OBJECT, "getUsageKeybind", keyCode, scanCode);
     }
 
     @Override
@@ -93,12 +99,12 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
 
     @Override
     public List<String> fluidEntries() {
-        if (!isAvailable() || !RecipeViewerReflection.classPresent(ENTRY_REGISTRY)) {
+        if (!isAvailable() || !RecipeViewerReflectionUtils.classPresent(ENTRY_REGISTRY)) {
             return List.of();
         }
         try {
             Object registry = Class.forName(ENTRY_REGISTRY).getMethod("getInstance").invoke(null);
-            Object value = RecipeViewerReflection.firstMethod(registry.getClass(), "getEntryStacks", 0).invoke(registry);
+            Object value = RecipeViewerReflectionUtils.firstMethod(registry.getClass(), "getEntryStacks", 0).invoke(registry);
             List<String> entries = new ArrayList<>();
             if (value instanceof Stream<?> stream) {
                 try (stream) {
@@ -172,18 +178,18 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
         }
         Object categoryRegistry = Class.forName(CATEGORY_REGISTRY).getMethod("getInstance").invoke(null);
-        Object config = RecipeViewerReflection.firstMethod(categoryRegistry.getClass(), "get", 1).invoke(categoryRegistry, match.categoryId());
-        Object category = RecipeViewerReflection.firstMethod(config.getClass(), "getCategory", 0).invoke(config);
-        Object viewObject = RecipeViewerReflection.firstMethod(config.getClass(), "getView", 1).invoke(config, match.display());
-        int snapshotWidth = intValue(RecipeViewerReflection.firstMethod(category.getClass(), "getDisplayWidth", 1).invoke(category, match.display()));
-        int snapshotHeight = intValue(RecipeViewerReflection.firstMethod(category.getClass(), "getDisplayHeight", 0).invoke(category));
+        Object config = RecipeViewerReflectionUtils.firstMethod(categoryRegistry.getClass(), "get", 1).invoke(categoryRegistry, match.categoryId());
+        Object category = RecipeViewerReflectionUtils.firstMethod(config.getClass(), "getCategory", 0).invoke(config);
+        Object viewObject = RecipeViewerReflectionUtils.firstMethod(config.getClass(), "getView", 1).invoke(config, match.display());
+        int snapshotWidth = intValue(RecipeViewerReflectionUtils.firstMethod(category.getClass(), "getDisplayWidth", 1).invoke(category, match.display()));
+        int snapshotHeight = intValue(RecipeViewerReflectionUtils.firstMethod(category.getClass(), "getDisplayHeight", 0).invoke(category));
         if (snapshotWidth <= 0 || snapshotHeight <= 0) {
             return null;
         }
         Object bounds = Class.forName(RECTANGLE)
                 .getConstructor(int.class, int.class, int.class, int.class)
                 .newInstance(0, 0, snapshotWidth, snapshotHeight);
-        Object widgets = RecipeViewerReflection.firstMethod(viewObject.getClass(), "setupDisplay", 2).invoke(viewObject, match.display(), bounds);
+        Object widgets = RecipeViewerReflectionUtils.firstMethod(viewObject.getClass(), "setupDisplay", 2).invoke(viewObject, match.display(), bounds);
         if (!(widgets instanceof List<?> widgetList) || widgetList.isEmpty()) {
             return null;
         }
@@ -198,12 +204,12 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         Class<?> displaySpecClass = Class.forName(DISPLAY_SPEC);
         Object component = componentClass.getConstructor(displaySpecClass).newInstance(display);
         Font font = Minecraft.getInstance().font;
-        int snapshotWidth = intValue(RecipeViewerReflection.firstMethod(componentClass, "getWidth", 1).invoke(component, font));
-        int snapshotHeight = intValue(RecipeViewerReflection.firstMethod(componentClass, "getHeight", 0).invoke(component));
+        int snapshotWidth = intValue(RecipeViewerReflectionUtils.firstMethod(componentClass, "getWidth", 1).invoke(component, font));
+        int snapshotHeight = intValue(RecipeViewerReflectionUtils.firstMethod(componentClass, "getHeight", 0).invoke(component));
         if (snapshotWidth <= 0 || snapshotHeight <= 0) {
             return null;
         }
-        Method renderImage = RecipeViewerReflection.firstMethod(componentClass, "renderImage", 4);
+        Method renderImage = RecipeViewerReflectionUtils.firstMethod(componentClass, "renderImage", 4);
         return new RecipeViewerSnapshotRenderer.SnapshotPlan(snapshotWidth, snapshotHeight, snapshotGraphics -> {
             try {
                 renderImage.invoke(component, font, 0, 0, snapshotGraphics);
@@ -214,7 +220,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     private static DisplayMatch findDisplay(Object displayRegistry, ResourceLocation recipeId, ResourceLocation preferredCategoryId) throws ReflectiveOperationException {
-        Object all = RecipeViewerReflection.firstMethod(displayRegistry.getClass(), "getAll", 0).invoke(displayRegistry);
+        Object all = RecipeViewerReflectionUtils.firstMethod(displayRegistry.getClass(), "getAll", 0).invoke(displayRegistry);
         if (!(all instanceof Map<?, ?> map)) {
             return null;
         }
@@ -262,7 +268,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     }
 
     private static Optional<?> displayLocation(Object display) throws ReflectiveOperationException {
-        Object value = RecipeViewerReflection.firstMethod(display.getClass(), "getDisplayLocation", 0).invoke(display);
+        Object value = RecipeViewerReflectionUtils.firstMethod(display.getClass(), "getDisplayLocation", 0).invoke(display);
         return value instanceof Optional<?> optional ? optional : Optional.empty();
     }
 
@@ -270,7 +276,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
         float delta = Minecraft.getInstance().getDeltaFrameTime();
         for (Object widget : widgets) {
             try {
-                Method render = RecipeViewerReflection.firstMethod(widget.getClass(), "render", 4);
+                Method render = RecipeViewerReflectionUtils.firstMethod(widget.getClass(), "render", 4);
                 render.invoke(widget, graphics, -10_000, -10_000, delta);
             } catch (ReflectiveOperationException exception) {
                 throw new IllegalStateException(exception);
@@ -293,7 +299,7 @@ final class ReiRecipeViewerProvider implements RecipeViewerProvider {
             return null;
         }
         try {
-            Method method = RecipeViewerReflection.firstMethod(owner.getClass(), name, 0);
+            Method method = RecipeViewerReflectionUtils.firstMethod(owner.getClass(), name, 0);
             return method.invoke(owner);
         } catch (ReflectiveOperationException | LinkageError | RuntimeException ignored) {
             return null;

@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorRemoveQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorUpdateQuestPacket;
-import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;

@@ -24,7 +24,7 @@ class TabletPureHelperCoverageTest {
                 entry("recipe choice index", "com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndexTest"),
                 entry("recipe picker mode controller", "com.abo47.questsandstuff.client.tablet.modal.RecipePickerModeControllerTest"),
                 entry("recipe viewer capabilities", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityMatrixTest"),
-                entry("recipe viewer selection rules", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionRulesTest"),
+                entry("recipe viewer selection rules", "com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionUtilsTest"),
                 entry("prerequisite connection model", "com.abo47.questsandstuff.client.tablet.quest.prerequisite.PrerequisiteConnectionModelTest"),
                 entry("shared smart snap engine", "com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngineTest"),
                 entry("main canvas smart snap adapter", "com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSmartSnapperTest"),

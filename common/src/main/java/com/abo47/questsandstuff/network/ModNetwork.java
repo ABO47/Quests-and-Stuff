@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPa
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualItemSubmitPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
-import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;

@@ -71,9 +71,9 @@ public final class RecipeViewerSelectionBridge {
         if (player == null || state == null || target == null || target.isBlank()) {
             return false;
         }
-        RecipeViewerSelectionRules.Selection selection = new RecipeViewerSelectionRules.Selection(
+        RecipeViewerSelectionUtils.Selection selection = new RecipeViewerSelectionUtils.Selection(
                 target,
-                RecipeViewerSelectionRules.recipeIds(recipes),
+                RecipeViewerSelectionUtils.recipeIds(recipes),
                 mode
         );
         boolean targetOnlySelection = stack == null || stack.isEmpty();
@@ -114,7 +114,7 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        return RecipeViewerSelectionRules.canPickRecipe(pending.selection(), normalized, recipe);
+        return RecipeViewerSelectionUtils.canPickRecipe(pending.selection(), normalized, recipe);
     }
 
     public static boolean canPickVisibleRecipe(String recipeId) {
@@ -131,7 +131,7 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        if (RecipeViewerSelectionRules.canPickVisibleRecipe(pending.selection(), normalized, recipe, visibleOutputTarget)) {
+        if (RecipeViewerSelectionUtils.canPickVisibleRecipe(pending.selection(), normalized, recipe, visibleOutputTarget)) {
             return true;
         }
         return false;
@@ -170,7 +170,7 @@ public final class RecipeViewerSelectionBridge {
             return false;
         }
         RecipeView recipe = CanvasRecipeCardRecipes.recipeById(normalized);
-        String target = RecipeViewerSelectionRules.pickTarget(pending.selection(), normalized, recipe, allowVisibleFallback, visibleOutputTarget);
+        String target = RecipeViewerSelectionUtils.pickTarget(pending.selection(), normalized, recipe, allowVisibleFallback, visibleOutputTarget);
         if (target.isBlank()) {
             return false;
         }
@@ -193,13 +193,13 @@ public final class RecipeViewerSelectionBridge {
     }
 
     private static String normalizeRecipeId(String recipeId) {
-        return RecipeViewerSelectionRules.normalizeRecipeId(recipeId);
+        return RecipeViewerSelectionUtils.normalizeRecipeId(recipeId);
     }
 
     private record PendingSelection(
             Player player,
             TabletUiState state,
-            RecipeViewerSelectionRules.Selection selection,
+            RecipeViewerSelectionUtils.Selection selection,
             Runnable refresh,
             Screen parentScreen
     ) {
