@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessio
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
@@ -143,7 +143,7 @@ final class CanvasSelectionRotateController {
                 state.canvas.rotateStartImageLayers,
                 state.canvas.rotateStartTextLayers
         );
-        CanvasLayerGroupTransform.Result result = CanvasLayerGroupTransform.rotate(
+        CanvasSelectionRotate.Result result = CanvasSelectionRotate.rotate(
                 layerSnapshot,
                 state.canvas.rotatePivotX,
                 state.canvas.rotatePivotY,

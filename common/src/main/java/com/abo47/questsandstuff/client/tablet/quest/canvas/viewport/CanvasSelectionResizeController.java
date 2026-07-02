@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitControll
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroupResizeTransform;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
@@ -100,7 +100,7 @@ final class CanvasSelectionResizeController {
                 state.canvas.resizeStartImageLayers,
                 state.canvas.resizeStartTextLayers
         );
-        CanvasGroupResizeTransform.Result resize = CanvasGroupResizeTransform.resizeBottomRight(
+        CanvasSelectionResize.Result resize = CanvasSelectionResize.resizeBottomRight(
                 layerSnapshot,
                 logicalMouseX,
                 logicalMouseY,
@@ -145,13 +145,13 @@ final class CanvasSelectionResizeController {
         }
     }
 
-    private CanvasGroupResizeTransform.Constraints resizeConstraints() {
+    private CanvasSelectionResize.Constraints resizeConstraints() {
         int minimum = Math.max(4, CanvasGeometry.gridSize(state) / 2);
-        int minLeft = state.canvas.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
-        int minTop = state.canvas.gridCanvasLocked ? 0 : CanvasGroupResizeTransform.UNBOUNDED;
-        int maxRight = state.canvas.gridCanvasLocked ? state.canvas.canvasContentW : CanvasGroupResizeTransform.UNBOUNDED;
-        int maxBottom = state.canvas.gridCanvasLocked ? state.canvas.canvasContentH : CanvasGroupResizeTransform.UNBOUNDED;
-        return new CanvasGroupResizeTransform.Constraints(
+        int minLeft = state.canvas.gridCanvasLocked ? 0 : CanvasSelectionResize.UNBOUNDED;
+        int minTop = state.canvas.gridCanvasLocked ? 0 : CanvasSelectionResize.UNBOUNDED;
+        int maxRight = state.canvas.gridCanvasLocked ? state.canvas.canvasContentW : CanvasSelectionResize.UNBOUNDED;
+        int maxBottom = state.canvas.gridCanvasLocked ? state.canvas.canvasContentH : CanvasSelectionResize.UNBOUNDED;
+        return new CanvasSelectionResize.Constraints(
                 minimum,
                 minimum,
                 CanvasGeometry.gridSize(state),

@@ -9,8 +9,8 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class CanvasLayerGroupTransform {
-    private CanvasLayerGroupTransform() {
+public final class CanvasSelectionRotate {
+    private CanvasSelectionRotate() {
     }
 
     public static Result rotate(

@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class CanvasGroupResizeTransform {
+public final class CanvasSelectionResize {
     public static final int UNBOUNDED = Integer.MIN_VALUE;
 
-    private CanvasGroupResizeTransform() {
+    private CanvasSelectionResize() {
     }
 
     public static Result resizeBottomRight(CanvasLayerSelectionSnapshot snapshot, int pointerX, int pointerY, Constraints constraints) {

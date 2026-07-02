@@ -6,8 +6,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessio
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroupResizeTransform;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
@@ -164,7 +164,7 @@ public final class QuestDetailsDescriptionTransform {
     private void applySelectionResize(QuestDetailsDescriptionModel model, int mouseX, int mouseY) {
         int logicalMouseX = mouseX - screenContentX();
         int logicalMouseY = mouseY - screenContentY() + state.questDetails.questDetailsDescScroll;
-        CanvasGroupResizeTransform.Result result = CanvasGroupResizeTransform.resizeBottomRight(
+        CanvasSelectionResize.Result result = CanvasSelectionResize.resizeBottomRight(
                 activeLayerSnapshot(
                         state.canvas.resizeStartLeft,
                         state.canvas.resizeStartTop,
@@ -190,7 +190,7 @@ public final class QuestDetailsDescriptionTransform {
             delta = Math.round(delta / snap) * snap;
         }
         state.canvas.rotatePreviewAngle = delta;
-        CanvasLayerGroupTransform.Result result = CanvasLayerGroupTransform.rotate(
+        CanvasSelectionRotate.Result result = CanvasSelectionRotate.rotate(
                 activeLayerSnapshot(
                         state.canvas.rotateStartBoundsLeft,
                         state.canvas.rotateStartBoundsTop,
@@ -222,8 +222,8 @@ public final class QuestDetailsDescriptionTransform {
         return clampRotated(x, y, width, height, pivotX, pivotY, rotationDegrees);
     }
 
-    private CanvasGroupResizeTransform.Constraints selectionResizeConstraints() {
-        return new CanvasGroupResizeTransform.Constraints(
+    private CanvasSelectionResize.Constraints selectionResizeConstraints() {
+        return new CanvasSelectionResize.Constraints(
                 4,
                 4,
                 CanvasGeometry.gridSize(state),
@@ -232,11 +232,11 @@ public final class QuestDetailsDescriptionTransform {
                 QuestDetailsDescriptionLayout.visibleLeftEdge(),
                 QuestDetailsDescriptionLayout.visibleTopEdge(state),
                 contentW.getAsInt(),
-                CanvasGroupResizeTransform.UNBOUNDED
+                CanvasSelectionResize.UNBOUNDED
         );
     }
 
-    private void applyResizeTransformResult(QuestDetailsDescriptionModel model, CanvasGroupResizeTransform.Result result) {
+    private void applyResizeTransformResult(QuestDetailsDescriptionModel model, CanvasSelectionResize.Result result) {
         for (CanvasImageLayer image : result.images().values()) {
             model.putImage(fitAndClampImage(image));
         }
@@ -245,7 +245,7 @@ public final class QuestDetailsDescriptionTransform {
         }
     }
 
-    private void applyRotationTransformResult(QuestDetailsDescriptionModel model, CanvasLayerGroupTransform.Result result) {
+    private void applyRotationTransformResult(QuestDetailsDescriptionModel model, CanvasSelectionRotate.Result result) {
         for (CanvasImageLayer image : result.images().values()) {
             model.putImage(clampRotationPreviewImage(image));
         }
