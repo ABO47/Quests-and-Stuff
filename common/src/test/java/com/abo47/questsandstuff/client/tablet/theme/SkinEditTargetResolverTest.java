@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditTargetResolver;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;

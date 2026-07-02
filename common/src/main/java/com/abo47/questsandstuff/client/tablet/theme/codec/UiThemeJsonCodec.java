@@ -13,11 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-final class UiThemeJsonCodec {
+public final class UiThemeJsonCodec {
     private UiThemeJsonCodec() {
     }
 
-    static UiThemeState loadUiThemeState(Path themePath) {
+    public static UiThemeState loadUiThemeState(Path themePath) {
         UiThemeState defaults = UiThemeState.defaults();
         try {
             if (!Files.exists(themePath)) {

@@ -11,7 +11,7 @@ class TabletPureHelperCoverageTest {
     @Test
     void fastCommonCoverageSuitesStayPresentForTabletRefactors() {
         Map<String, String> coverage = Map.ofEntries(
-                entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.state.TabletModalStateTest"),
+                entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.TabletModalStateTest"),
                 entry("picker sessions", "com.abo47.questsandstuff.client.tablet.modal.ModalPickerStatesTest"),
                 entry("settings descriptors", "com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptorsTest"),
                 entry("transform sessions", "com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessionsTest"),
@@ -19,7 +19,7 @@ class TabletPureHelperCoverageTest {
                 entry("client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest"),
                 entry("optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest"),
                 entry("text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest"),
-                entry("tablet state queries", "com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueriesTest"),
+                entry("tablet state queries", "com.abo47.questsandstuff.client.tablet.ui.TabletStateQueriesTest"),
                 entry("quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest"),
                 entry("recipe choice index", "com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndexTest"),
                 entry("recipe picker mode controller", "com.abo47.questsandstuff.client.tablet.modal.RecipePickerModeControllerTest"),

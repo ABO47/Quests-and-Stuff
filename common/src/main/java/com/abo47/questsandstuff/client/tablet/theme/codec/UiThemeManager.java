@@ -153,7 +153,7 @@ public final class UiThemeManager {
         }
     }
 
-    static void applyLoadedState(UiThemeState nextState) {
+    public static void applyLoadedState(UiThemeState nextState) {
         synchronized (LOCK) {
             installLoadedState(nextState);
         }

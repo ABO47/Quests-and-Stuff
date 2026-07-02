@@ -11,11 +11,11 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-final class SkinEditTargetResolver {
+public final class SkinEditTargetResolver {
     private SkinEditTargetResolver() {
     }
 
-    static String findTargetKeyAt(WidgetGroup root, int mouseX, int mouseY) {
+    public static String findTargetKeyAt(WidgetGroup root, int mouseX, int mouseY) {
         Widget qdl = SkinAnchorRegistry.findByKey("quest_details_layer");
         if (qdl != null && qdl.isVisible() && qdl.isMouseOverElement(mouseX, mouseY) && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
@@ -49,7 +49,7 @@ final class SkinEditTargetResolver {
         return groupMatch;
     }
 
-    static Widget widgetForKey(WidgetGroup root, String targetKey) {
+    public static Widget widgetForKey(WidgetGroup root, String targetKey) {
         if (targetKey == null || targetKey.isBlank()) return null;
         Widget registered = SkinAnchorRegistry.findByKey(targetKey);
         if (registered != null) return registered;
@@ -72,7 +72,7 @@ final class SkinEditTargetResolver {
         return null;
     }
 
-    static String stableKeyFor(Widget widget) {
+    public static String stableKeyFor(Widget widget) {
         String registered = SkinAnchorRegistry.keyFor(widget);
         if (registered != null) return registered;
 
@@ -189,7 +189,7 @@ final class SkinEditTargetResolver {
         return sb.toString();
     }
 
-    static boolean isTargetable(Widget widget) {
+    public static boolean isTargetable(Widget widget) {
         if (isSkinExcluded(widget)) return false;
         if (hasVisibleBackground(widget)) return true;
         if (widget instanceof WidgetGroup wg && hasCustomChrome(wg)) return true;
@@ -231,7 +231,7 @@ final class SkinEditTargetResolver {
         return !bg.equals(IGuiTexture.EMPTY);
     }
 
-    static boolean hasCustomChrome(WidgetGroup widget) {
+    public static boolean hasCustomChrome(WidgetGroup widget) {
         try {
             if (widget.getClass().getMethod("drawInBackground", GuiGraphics.class, int.class, int.class, float.class)
                     .getDeclaringClass() != WidgetGroup.class) {
@@ -249,7 +249,7 @@ final class SkinEditTargetResolver {
         return false;
     }
 
-    static List<Rectangle> ancestorBounds(Widget widget, WidgetGroup stopAt) {
+    public static List<Rectangle> ancestorBounds(Widget widget, WidgetGroup stopAt) {
         List<Rectangle> rects = new ArrayList<>();
         Widget cur = widget.getParent();
         while (cur != null && cur != stopAt) {
