@@ -26,7 +26,6 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,7 +34,6 @@ import net.minecraft.world.entity.player.Player;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
 
 public final class ModalPanelRouter {

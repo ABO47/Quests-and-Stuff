@@ -8,7 +8,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.theme.ModColors;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.abo47.questsandstuff.client.tablet.theme.UiActionColors;

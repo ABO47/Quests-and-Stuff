@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.theme;
 
 
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.GuiGraphics;

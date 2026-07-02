@@ -13,8 +13,6 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-
 public final class RecipePickButtonOverlay {
     public static final int BUTTON_SIZE = 11;
     public static final int BUTTON_GAP = 2;

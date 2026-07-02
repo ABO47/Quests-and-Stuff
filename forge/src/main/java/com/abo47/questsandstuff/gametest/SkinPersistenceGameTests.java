@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class SkinPersistenceGameTests {

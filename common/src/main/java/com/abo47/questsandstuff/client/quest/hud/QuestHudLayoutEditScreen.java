@@ -4,7 +4,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.context.ContextAction;

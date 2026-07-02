@@ -1,10 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.resolveFill;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;

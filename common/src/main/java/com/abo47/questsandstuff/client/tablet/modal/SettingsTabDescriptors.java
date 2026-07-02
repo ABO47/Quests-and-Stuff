@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistSkinState;
-
 final class SettingsTabDescriptors {
     static final int THEMES = 0;
     static final int CANVAS = 1;
