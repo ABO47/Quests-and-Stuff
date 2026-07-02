@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
@@ -28,7 +28,7 @@ final class QuestDetailsDescriptionEditActions {
         String id = nextDescriptionTextId(model);
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 16);
-        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", ModColors.TEXT_PRIMARY);
+        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
         text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);

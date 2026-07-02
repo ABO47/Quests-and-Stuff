@@ -6,10 +6,10 @@ import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -26,7 +26,7 @@ final class QuestObjectiveInlineFields {
     }
 
     static void renderObjectiveTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, boolean task, int x, int y, int rightX) {
-        renderObjectiveTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, ModColors.TEXT_PRIMARY);
+        renderObjectiveTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, TabletColors.TEXT_PRIMARY);
     }
 
     static void renderObjectiveTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsObjectiveEntry entry, boolean task, int x, int y, int rightX, int color) {
@@ -64,11 +64,11 @@ final class QuestObjectiveInlineFields {
         field.setCurrentString(state.questDetails.questDetailsObjectiveRenameDraft);
         field.setMaxStringLength(80);
         field.setBordered(false);
-        field.setTextColor(ModColors.TEXT_PRIMARY);
-        field.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.INTERACTIVE));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));
         parent.addWidget(field);
         int doneX = x + fieldW + 3;
-        parent.addWidget(new ImageWidget(doneX, y + 2, TabletUiFactory.ACTION_ICON_SIZE, TabletUiFactory.ACTION_ICON_SIZE, UiIconAtlas.iconTexture("add.png")));
+        parent.addWidget(new ImageWidget(doneX, y + 2, TabletUiFactory.ACTION_ICON_SIZE, TabletUiFactory.ACTION_ICON_SIZE, IconAtlas.iconTexture("add.png")));
         parent.addWidget(flatHitButton(doneX, y, doneW, 16, click -> {
             commitObjectiveRename(player, state);
             refresh.run();
@@ -101,7 +101,7 @@ final class QuestObjectiveInlineFields {
         }
         if (task) {
             String progress = count + " /";
-            renderDisplayText(parent, x - 42, y, 36, progress, ModColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
+            renderDisplayText(parent, x - 42, y, 36, progress, TabletColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
         }
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
         TextFieldWidget field = StyledTextFields.numberField(
@@ -211,7 +211,7 @@ final class QuestObjectiveInlineFields {
     }
 
     private static void renderAmountText(WidgetGroup parent, int x, int y, int maxW, String text) {
-        renderDisplayText(parent, x, y, Math.max(12, maxW), text, ModColors.TEXT_SECONDARY, TextTexture.TextType.RIGHT_HIDE);
+        renderDisplayText(parent, x, y, Math.max(12, maxW), text, TabletColors.TEXT_SECONDARY, TextTexture.TextType.RIGHT_HIDE);
     }
 
     static void renderDisplayText(WidgetGroup parent, int x, int y, int width, String text, int color, TextTexture.TextType type) {

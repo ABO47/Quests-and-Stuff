@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -158,7 +158,7 @@ public final class CanvasBlueprintController {
             if (definition == null) {
                 continue;
             }
-            ChapterDefinition view = definition.display().groups().get(group);
+            GroupDef view = definition.display().groups().get(group);
             if (view == null) {
                 continue;
             }

@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = 4;
@@ -196,7 +196,7 @@ public final class CanvasSelectionRenderer {
         if (!state.root.canEdit) {
             return;
         }
-        int color = withAlpha(ModColors.WARNING, 225);
+        int color = withAlpha(TabletColors.WARNING, 225);
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -207,11 +207,11 @@ public final class CanvasSelectionRenderer {
                 int originY = getPositionY();
                 if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX < getSizeWidth()) {
                     int x = originX + state.canvas.snapGuideX;
-                    Surfaces.fill(color).draw(graphics, 0, 0, x, originY, 1, getSizeHeight());
+                    SurfaceFactory.fill(color).draw(graphics, 0, 0, x, originY, 1, getSizeHeight());
                 }
                 if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY < getSizeHeight()) {
                     int y = originY + state.canvas.snapGuideY;
-                    Surfaces.fill(color).draw(graphics, 0, 0, originX, y, getSizeWidth(), 1);
+                    SurfaceFactory.fill(color).draw(graphics, 0, 0, originX, y, getSizeWidth(), 1);
                 }
             }
         });
@@ -229,8 +229,8 @@ public final class CanvasSelectionRenderer {
         if (!state.root.canEdit || (!state.canvas.boxSelecting && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) || !state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
-        int fill = withAlpha(ModColors.INTERACTIVE, 14);
-        int border = withAlpha(ModColors.INTERACTIVE, 180);
+        int fill = withAlpha(TabletColors.INTERACTIVE, 14);
+        int border = withAlpha(TabletColors.INTERACTIVE, 180);
         for (QuestCardLayout card : cards) {
             if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
                 continue;
@@ -343,8 +343,8 @@ public final class CanvasSelectionRenderer {
                 minY,
                 boxW,
                 boxH,
-                withAlpha(ModColors.INTERACTIVE, 48),
-                ModColors.INTERACTIVE
+                withAlpha(TabletColors.INTERACTIVE, 48),
+                TabletColors.INTERACTIVE
         );
     }
 
@@ -383,16 +383,16 @@ public final class CanvasSelectionRenderer {
         int top = state.canvas.selectionBoundsTop;
         int width = Math.max(1, state.canvas.selectionBoundsRight - state.canvas.selectionBoundsLeft);
         int height = Math.max(1, state.canvas.selectionBoundsBottom - state.canvas.selectionBoundsTop);
-        drawClippedRect(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(ModColors.INTERACTIVE, 26), withAlpha(ModColors.INTERACTIVE, 214));
+        drawClippedRect(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(TabletColors.INTERACTIVE, 26), withAlpha(TabletColors.INTERACTIVE, 214));
 
         int resizeX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
         int resizeY = state.canvas.selectionBoundsBottom - HANDLE_SIZE;
-        drawClippedRect(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
+        drawClippedRect(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.SURFACE_BASE, 230), TabletColors.BORDER_BASE);
 
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
             int rotateX = state.canvas.selectionBoundsRight - HANDLE_SIZE;
             int rotateY = state.canvas.selectionBoundsTop;
-            drawClippedRect(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
+            drawClippedRect(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.WARNING, 210), TabletColors.WARNING);
         }
     }
 
@@ -405,7 +405,7 @@ public final class CanvasSelectionRenderer {
             return;
         }
         if ((fill >>> 24) != 0) {
-            Surfaces.fill(fill).draw(graphics, 0, 0, originX + left, originY + top, right - left, bottom - top);
+            SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX + left, originY + top, right - left, bottom - top);
         }
         drawClippedLine(graphics, originX, originY, maxW, maxH, x, y, x + width, y + 1, border);
         drawClippedLine(graphics, originX, originY, maxW, maxH, x, y + height - 1, x + width, y + height, border);
@@ -421,7 +421,7 @@ public final class CanvasSelectionRenderer {
         if (clippedRight <= clippedLeft || clippedBottom <= clippedTop) {
             return;
         }
-        Surfaces.fill(color).draw(graphics, 0, 0, originX + clippedLeft, originY + clippedTop, clippedRight - clippedLeft, clippedBottom - clippedTop);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, originX + clippedLeft, originY + clippedTop, clippedRight - clippedLeft, clippedBottom - clippedTop);
     }
 
     private static void drawRotatedSelectionBounds(GuiGraphics graphics, int originX, int originY, TabletUiState state) {
@@ -429,7 +429,7 @@ public final class CanvasSelectionRenderer {
         int height = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom) + SELECTION_PAD * 2;
         int pivotX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
         int pivotY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
-        int color = withAlpha(ModColors.INTERACTIVE, 225);
+        int color = withAlpha(TabletColors.INTERACTIVE, 225);
 
         int halfW = width / 2;
         int halfH = height / 2;
@@ -443,9 +443,9 @@ public final class CanvasSelectionRenderer {
 
     private static void drawRotatedOutline(GuiGraphics graphics, int left, int top, int right, int bottom, int thickness, int color) {
         int t = Math.max(1, thickness);
-        Surfaces.fill(color).draw(graphics, 0, 0, left, top, right - left, t);
-        Surfaces.fill(color).draw(graphics, 0, 0, left, bottom - t, right - left, t);
-        Surfaces.fill(color).draw(graphics, 0, 0, left, top, t, bottom - top);
-        Surfaces.fill(color).draw(graphics, 0, 0, right - t, top, t, bottom - top);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, top, right - left, t);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, bottom - t, right - left, t);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, top, t, bottom - top);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, right - t, top, t, bottom - top);
     }
 }

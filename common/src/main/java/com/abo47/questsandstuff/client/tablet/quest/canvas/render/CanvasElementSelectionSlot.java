@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasElementSelectionSlot {
     private static final int HANDLE_SIZE = 6;
@@ -39,10 +39,10 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
-            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
+            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SUCCESS, 185));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SUCCESS);
             graphics.pose().popPose();
         }
     }
@@ -52,8 +52,8 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
-            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ModColors.SUCCESS, 185));
+            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SUCCESS, 185));
             drawHandles(graphics, box);
             graphics.pose().popPose();
         }
@@ -82,10 +82,10 @@ public final class CanvasElementSelectionSlot {
     }
 
     private static void drawHandles(GuiGraphics graphics, CanvasElementGeometry.Box box) {
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ModColors.SUCCESS);
-        Surfaces.fill(withAlpha(ModColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, ModColors.WARNING);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SUCCESS);
+        SurfaceFactory.fill(withAlpha(TabletColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
     }
 
     private static int normalize(int rotationDegrees) {

@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -80,15 +80,15 @@ class ConnectionLayoutTest {
 
         CompoundTag colors = new CompoundTag();
         colors.putInt(prerequisiteId, 0x446688);
-        tag.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
+        tag.put(SyncKeys.Quest.CONNECTION_COLORS, colors);
 
         CompoundTag modes = new CompoundTag();
         modes.putString(prerequisiteId, QuestConnectionMode.GRID.serializedName());
-        tag.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        tag.put(SyncKeys.Quest.CONNECTION_MODES, modes);
 
         ListTag hidden = new ListTag();
         hidden.add(StringTag.valueOf(prerequisiteId));
-        tag.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
+        tag.put(SyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
         return tag;
     }
 }

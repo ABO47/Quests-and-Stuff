@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.task.progress.CheckQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
 import com.abo47.questsandstuff.quest.model.reward.CommandQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.CompositeQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.CompositeQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.reward.ItemQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.LocationQuestTaskDefinition;
@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.reward.SelectableQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.SimpleQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.StatQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;

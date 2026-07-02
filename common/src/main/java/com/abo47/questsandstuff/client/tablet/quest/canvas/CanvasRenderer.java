@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRend
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -31,7 +31,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_WIDTH;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasRenderer {
     public static final float MIN_CANVAS_ZOOM = 0.5f;
@@ -63,10 +63,10 @@ public final class CanvasRenderer {
         int contentY = Math.max(0, (usableH - contentH) / 2);
         CanvasRenderStateController.setContentBounds(state, contentX, contentY, contentW, contentH);
         CanvasCameraController.afterCanvasLayout(state, selectedGroup);
-        CanvasSceneRenderer.renderCanvasSurfaces(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
+        CanvasSceneRenderer.renderCanvasSurfaceFactory(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
         if (state.canvas.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
-            WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(ModColors.SURFACE_PANEL_ALT, 36), ModColors.BORDER_ACCENT);
+            WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(TabletColors.SURFACE_PANEL_ALT, 36), TabletColors.BORDER_ACCENT);
             canvasViewport.addWidget(bounds);
         }
 

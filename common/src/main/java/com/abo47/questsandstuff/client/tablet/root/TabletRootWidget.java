@@ -4,11 +4,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -208,11 +208,11 @@ public final class TabletRootWidget extends WidgetGroup {
         int rootY = getPosition().y;
         int rootW = getSize().width;
         int rootH = getSize().height;
-        int fill = ModColors.SURFACE_BASE;
-        Surfaces.fill(fill).draw(graphics, 0, 0, 0, 0, rootX, screenH);
-        Surfaces.fill(fill).draw(graphics, 0, 0, rootX + rootW, 0, screenW - (rootX + rootW), screenH);
-        Surfaces.fill(fill).draw(graphics, 0, 0, rootX, 0, rootW, rootY);
-        Surfaces.fill(fill).draw(graphics, 0, 0, rootX, rootY + rootH, rootW, screenH - (rootY + rootH));
+        int fill = TabletColors.SURFACE_BASE;
+        SurfaceFactory.fill(fill).draw(graphics, 0, 0, 0, 0, rootX, screenH);
+        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX + rootW, 0, screenW - (rootX + rootW), screenH);
+        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX, 0, rootW, rootY);
+        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX, rootY + rootH, rootW, screenH - (rootY + rootH));
     }
 
     private void drawRootFill(GuiGraphics graphics) {
@@ -229,7 +229,7 @@ public final class TabletRootWidget extends WidgetGroup {
                 return;
             }
         }
-        Surfaces.fill(ModColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
     }
 
     public static IGuiTexture resolveRootFill(TabletUiState state) {

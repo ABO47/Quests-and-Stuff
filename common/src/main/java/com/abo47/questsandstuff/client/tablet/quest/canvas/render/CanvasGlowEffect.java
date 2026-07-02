@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -26,7 +26,7 @@ public final class CanvasGlowEffect {
                 if (shader == null) {
                     return;
                 }
-                int glowColor = ModColors.INTERACTIVE;
+                int glowColor = TabletColors.INTERACTIVE;
                 float r = FastColor.ARGB32.red(glowColor) / 255f;
                 float g = FastColor.ARGB32.green(glowColor) / 255f;
                 float b = FastColor.ARGB32.blue(glowColor) / 255f;

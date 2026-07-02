@@ -8,10 +8,10 @@ import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -59,11 +59,11 @@ public final class TeamsAppComposer {
 
         TabletRootWidget root = new TabletRootWidget(0, 0, initialRootW, initialRootH, state);
         root.setBackground(fullScreenMode
-                ? Surfaces.transparent()
-                : Surfaces.transparentBorder(ModColors.BORDER_BASE));
+                ? SurfaceFactory.transparent()
+                : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
 
         WidgetGroup rootFill = new WidgetGroup(0, 0, initialRootW, initialRootH);
-        rootFill.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
+        rootFill.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
 
         int bodyH = chapterHeight(state);
         int bodyW = initialRootW - ROOT_PAD_X * 2;
@@ -72,11 +72,11 @@ public final class TeamsAppComposer {
         int homeBtnX = initialRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
         int homeBtnY = ROOT_PAD_Y + ((initialRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
-                Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
+                SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
-        homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
+        homeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(homeBtn);
         root.setHomeButton(homeBtn);
 
@@ -86,7 +86,7 @@ public final class TeamsAppComposer {
         int listY = headerY + HEADER_H + HEADER_LIST_GAP;
         int listH = Math.max(1, bodyH - listY - GUTTER);
         WidgetGroup memberListPanel = new WidgetGroup(LIST_INSET, listY, bodyW - LIST_INSET * 2, listH);
-        memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
         WidgetGroup modalLayer = new ModalDismissGuard(0, 0, initialRootW, initialRootH, state, () -> refresh[0].run());
@@ -114,7 +114,7 @@ public final class TeamsAppComposer {
             int clY = headerY + HEADER_H + HEADER_LIST_GAP;
             int clH = Math.max(1, cbh - clY - GUTTER);
             memberListPanel.setSize(cbw - LIST_INSET * 2, clH);
-memberListPanel.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
             mainPanel.setBackground((IGuiTexture) null);
 
             ClientTeamCache.JoinResult joinResult = ClientTeamCache.INSTANCE.takePendingJoinResult();

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.quest.team;
 
 import com.abo47.questsandstuff.quest.model.team.TeamMember;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -18,10 +18,10 @@ public final class TeamManager {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final ServerLevel level;
-    private final QuestRuntimeEngine engine;
+    private final RuntimeEngine engine;
     private TeamSavedData savedData;
 
-    public TeamManager(ServerLevel level, QuestRuntimeEngine engine) {
+    public TeamManager(ServerLevel level, RuntimeEngine engine) {
         this.level = level;
         this.engine = engine;
     }

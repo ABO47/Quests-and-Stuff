@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.theme.tokens;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import java.util.Locale;
 
 public final class UiActionColors {
@@ -11,16 +11,16 @@ public final class UiActionColors {
         String key = normalize(icon);
         String text = normalize(label);
         if (negative(key, text)) {
-            return ModColors.ERROR;
+            return TabletColors.ERROR;
         }
         if (warning(key, text)) {
-            return ModColors.WARNING;
+            return TabletColors.WARNING;
         }
         if (positive(key, text)) {
-            return ModColors.SUCCESS;
+            return TabletColors.SUCCESS;
         }
         if (interactive(key, text)) {
-            return ModColors.INTERACTIVE;
+            return TabletColors.INTERACTIVE;
         }
         return fallback;
     }

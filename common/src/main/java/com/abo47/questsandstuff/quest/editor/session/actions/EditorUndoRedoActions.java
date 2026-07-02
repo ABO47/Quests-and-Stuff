@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.quest.editor.session.actions;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
@@ -21,14 +21,14 @@ public final class EditorUndoRedoActions {
 
     private final EditorSessionService service;
     private final QuestDefinitionStore definitionStore;
-    private final QuestRuntimeEngine runtimeEngine;
-    private final QuestSyncService syncService;
+    private final RuntimeEngine runtimeEngine;
+    private final SyncService syncService;
 
     public EditorUndoRedoActions(
             EditorSessionService service,
             QuestDefinitionStore definitionStore,
-            QuestRuntimeEngine runtimeEngine,
-            QuestSyncService syncService
+            RuntimeEngine runtimeEngine,
+            SyncService syncService
     ) {
         this.service = service;
         this.definitionStore = definitionStore;

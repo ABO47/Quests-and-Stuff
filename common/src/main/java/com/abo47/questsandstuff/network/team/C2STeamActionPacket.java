@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.network.team;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
 import com.abo47.questsandstuff.quest.model.team.TeamMember;
 import com.abo47.questsandstuff.quest.team.TeamManager;
@@ -36,7 +36,7 @@ public record C2STeamActionPacket(Action action, UUID targetUuid) {
         }
         context.enqueueWork(() -> {
             ServerLevel level = player.serverLevel();
-            TeamManager manager = new TeamManager(level, QuestServices.engine(player.server));
+            TeamManager manager = new TeamManager(level, QuestServiceRegistry.engine(player.server));
             TeamData before = manager.getTeamByPlayer(player.getUUID());
             boolean success = false;
             switch (action) {

@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.CompoundTag;
@@ -78,11 +78,11 @@ public final class ClientQuestDefinitionSnapshots {
         );
     }
 
-    private static Map<String, ChapterDefinition> groups(CompoundTag groupsTag) {
-        Map<String, ChapterDefinition> groups = new LinkedHashMap<>();
+    private static Map<String, GroupDef> groups(CompoundTag groupsTag) {
+        Map<String, GroupDef> groups = new LinkedHashMap<>();
         for (String group : groupsTag.getAllKeys()) {
             CompoundTag view = groupsTag.getCompound(group);
-            groups.put(group, new ChapterDefinition(
+            groups.put(group, new GroupDef(
                     !view.contains("visible") || view.getBoolean("visible"),
                     view.getInt("x"),
                     view.getInt("y"),

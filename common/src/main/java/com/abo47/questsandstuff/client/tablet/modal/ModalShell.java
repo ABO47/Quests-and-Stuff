@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -18,7 +18,7 @@ public final class ModalShell {
     }
 
     public static void addTitleAndClose(WidgetGroup modal, String title, int w, TabletUiState state, Runnable refresh) {
-        modal.addWidget(label(8, 6, title, ModColors.TEXT_PRIMARY));
+        modal.addWidget(label(8, 6, title, TabletColors.TEXT_PRIMARY));
         TabletModalPanel.addModalClose(modal, w - 26, 4, 18, state, refresh);
     }
 
@@ -39,6 +39,6 @@ public final class ModalShell {
     }
 
     public static WidgetGroup bodyPanel(int x, int y, int w, int h) {
-        return Surfaces.panel(x, y, w, h, withAlpha(ModColors.elevatedSurface(), 190), ModColors.subtleBorder());
+        return SurfaceFactory.panel(x, y, w, h, withAlpha(TabletColors.elevatedSurface(), 190), TabletColors.subtleBorder());
     }
 }

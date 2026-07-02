@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestMiniCardRenderer {
     private QuestMiniCardRenderer() {
@@ -30,7 +30,7 @@ public final class QuestMiniCardRenderer {
     ) {
         QuestCardBackgroundRenderer.drawTagBackground(graphics, tag, x, y, width, height, mouseX, mouseY, alpha);
         IconRect icon = iconRect(x, y, width, height);
-        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, icon.x(), icon.y(), icon.size(), icon.size(), tag == null ? "" : tag.getString(QuestSyncKeys.Quest.ICON), partialTicks, alpha);
+        DisplayIconWidget.drawIcon(graphics, mouseX, mouseY, icon.x(), icon.y(), icon.size(), icon.size(), tag == null ? "" : tag.getString(SyncKeys.Quest.ICON), partialTicks, alpha);
         if (hiddenOverlay) {
             drawHiddenOverlay(graphics, x, y, width, height, alpha, 120);
         }
@@ -76,23 +76,23 @@ public final class QuestMiniCardRenderer {
 
     public static int hiddenOverlayColor(int alpha, int maxAlpha) {
         int safeMax = Math.max(0, Math.min(255, maxAlpha));
-        return withAlpha(ModColors.SURFACE_BASE, Math.min(safeMax, Math.max(0, Math.min(255, alpha)) / 2));
+        return withAlpha(TabletColors.SURFACE_BASE, Math.min(safeMax, Math.max(0, Math.min(255, alpha)) / 2));
     }
 
     public static int highlightColor(int alpha) {
-        return withAlpha(ModColors.BORDER_ACCENT, Math.max(0, Math.min(255, alpha)));
+        return withAlpha(TabletColors.BORDER_ACCENT, Math.max(0, Math.min(255, alpha)));
     }
 
     private static void drawHiddenOverlay(GuiGraphics graphics, int x, int y, int width, int height, int alpha, int maxAlpha) {
-        Surfaces.fill(hiddenOverlayColor(alpha, maxAlpha)).draw(graphics, 0, 0, x, y, width, height);
+        SurfaceFactory.fill(hiddenOverlayColor(alpha, maxAlpha)).draw(graphics, 0, 0, x, y, width, height);
     }
 
     public static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int width, int height, int alpha) {
         int color = highlightColor(alpha);
-        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y - 2, width + 4, 2);
-        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y + height, width + 4, 2);
-        Surfaces.fill(color).draw(graphics, 0, 0, x - 2, y, 2, height);
-        Surfaces.fill(color).draw(graphics, 0, 0, x + width, y, 2, height);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y - 2, width + 4, 2);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y + height, width + 4, 2);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y, 2, height);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x + width, y, 2, height);
     }
 
     public record IconRect(int x, int y, int size) {

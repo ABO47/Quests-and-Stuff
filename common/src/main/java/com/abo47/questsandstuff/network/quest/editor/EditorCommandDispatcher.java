@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -25,7 +25,7 @@ final class EditorCommandDispatcher {
         if (descriptor == null) {
             return false;
         }
-        descriptor.apply(player, QuestServices.editor(player.server), command.payload());
+        descriptor.apply(player, QuestServiceRegistry.editor(player.server), command.payload());
         return true;
     }
 
@@ -45,7 +45,7 @@ final class EditorCommandDispatcher {
         EditorPrerequisiteCommandHandlers.register(registrar);
         EditorQuestCommandHandlers.register(registrar);
         EditorDescriptionCommandHandlers.register(registrar);
-        EditorObjectiveCommandHandlers.register(registrar);
+        EditorTaskCommandHandlers.register(registrar);
         EditorCanvasLayerCommandHandlers.register(registrar);
         return Collections.unmodifiableMap(descriptors);
     }

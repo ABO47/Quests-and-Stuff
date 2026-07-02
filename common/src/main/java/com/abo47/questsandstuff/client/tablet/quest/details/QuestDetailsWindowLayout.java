@@ -9,10 +9,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestDetailsWindowLayout {
     private QuestDetailsWindowLayout() {
@@ -75,7 +75,7 @@ final class QuestDetailsWindowLayout {
         state.questDetails.questDetailsViewportOriginY = viewport[1];
 
         WidgetGroup viewportBg = new WidgetGroup(viewport[0], viewport[1], viewport[2], viewport[3]);
-        viewportBg.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         canvasPanel.addWidget(viewportBg);
 
         SkinAnchorRegistry.register("quest_details_splitter", questDetailsSplitter);
@@ -114,7 +114,7 @@ final class QuestDetailsWindowLayout {
                 if (alpha <= 0) {
                     return;
                 }
-                Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, alpha)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         };
         layer.addWidget(dim);
@@ -132,14 +132,14 @@ final class QuestDetailsWindowLayout {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                Surfaces.fill(ModColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
+                SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
                 if (!fillsLayer) {
                     TabletPanelChrome.drawPanelOutline(graphics, this);
                 }
             }
         };
-        modal.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
+        modal.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
         
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(

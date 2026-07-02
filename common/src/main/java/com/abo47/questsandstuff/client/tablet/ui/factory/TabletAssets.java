@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.ui.factory;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
 import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -34,17 +34,17 @@ final class TabletAssets {
 
     static int chapterBackgroundFill(String background, int fallback) {
         return switch (background == null ? "" : background) {
-            case "hexagons" -> withAlpha(ModColors.INTERACTIVE, 86);
-            case "octagons" -> withAlpha(ModColors.WARNING, 86);
-            case "circles" -> withAlpha(ModColors.SUCCESS, 86);
-            case "diamonds" -> withAlpha(ModColors.TEXT_SECONDARY, 86);
-            case "gears" -> withAlpha(ModColors.BORDER_ACCENT, 92);
-            case "hearts" -> withAlpha(ModColors.ERROR, 74);
-            case "pentagons" -> withAlpha(ModColors.INTERACTIVE, 108);
-            case "rounded_squares" -> withAlpha(ModColors.SURFACE_PANEL_ALT, 120);
+            case "hexagons" -> withAlpha(TabletColors.INTERACTIVE, 86);
+            case "octagons" -> withAlpha(TabletColors.WARNING, 86);
+            case "circles" -> withAlpha(TabletColors.SUCCESS, 86);
+            case "diamonds" -> withAlpha(TabletColors.TEXT_SECONDARY, 86);
+            case "gears" -> withAlpha(TabletColors.BORDER_ACCENT, 92);
+            case "hearts" -> withAlpha(TabletColors.ERROR, 74);
+            case "pentagons" -> withAlpha(TabletColors.INTERACTIVE, 108);
+            case "rounded_squares" -> withAlpha(TabletColors.SURFACE_PANEL_ALT, 120);
             default -> {
                 if (background != null && !background.isBlank() && !"default".equals(background) && chapterBackgroundTexture(background) != null) {
-                    yield withAlpha(ModColors.SURFACE_PANEL_ALT, 90);
+                    yield withAlpha(TabletColors.SURFACE_PANEL_ALT, 90);
                 }
                 yield fallback;
             }
@@ -93,7 +93,7 @@ final class TabletAssets {
 
     static void prewarmClientUiAssets() {
         TabletUiPerfProfiler.profile("ui.prewarm.assetsDirs", TabletAssets::ensureAssetsDirs);
-        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> UiIconAtlas.prewarm(UiIconRegistry.preloadKeys()));
+        TabletUiPerfProfiler.profile("ui.prewarm.icons", () -> IconAtlas.prewarm(IconRegistry.preloadKeys()));
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();
             for (String group : ClientQuestCache.groupOrder()) {

@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -74,7 +74,7 @@ public final class CanvasMiniNotificationController {
         }
         localY = clamp(localY, 2, Math.max(2, viewportH - font.lineHeight - 2));
         int alpha = remaining < FADE_MS ? clamp((int) (remaining * 255L / FADE_MS), 0, 255) : 255;
-        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(ModColors.SUCCESS, alpha), true);
+        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(TabletColors.SUCCESS, alpha), true);
     }
 
     private static int clamp(int value, int min, int max) {

@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
-import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
+import com.abo47.questsandstuff.quest.persistence.group.GroupMetadataSnapshot;
+import com.abo47.questsandstuff.quest.persistence.group.GroupMetadataStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -29,7 +29,7 @@ public final class QuestDefinitionStore {
     private final Path questsDir;
     private final Path chaptersDir;
     private final Map<String, QuestDefinition> quests = new HashMap<>();
-    private final ChapterMetadataStore chapters;
+    private final GroupMetadataStore chapters;
     private final QuestlineManifestStore manifest;
     private final QuestDefinitionSaveQueue saveQueue;
     private final QuestDefinitionMutations mutations;
@@ -38,7 +38,7 @@ public final class QuestDefinitionStore {
         this.root = root;
         this.questsDir = root.resolve("quests");
         this.chaptersDir = root.resolve("chapters");
-        this.chapters = new ChapterMetadataStore(chaptersDir);
+        this.chapters = new GroupMetadataStore(chaptersDir);
         this.manifest = new QuestlineManifestStore(root);
         this.saveQueue = new QuestDefinitionSaveQueue(questsDir, GSON);
         this.mutations = new QuestDefinitionMutations(questsDir, quests, chapters, saveQueue);
@@ -282,7 +282,7 @@ public final class QuestDefinitionStore {
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
     }
 
-    public record EditorSnapshot(Map<String, QuestDefinition> quests, ChapterMetadataSnapshot chapters) {
+    public record EditorSnapshot(Map<String, QuestDefinition> quests, GroupMetadataSnapshot chapters) {
     }
 
 }

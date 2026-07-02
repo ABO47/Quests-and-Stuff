@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
@@ -51,7 +51,7 @@ final class QuestObjectiveContextMenu {
         state.questDetails.questDetailsContextY = y;
         state.questDetails.questDetailsContextW = menuW;
         state.questDetails.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientManager.closeContext(state);
             }

@@ -6,16 +6,16 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.IntSupplier;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestDetailsDescriptionSelection {
     private static final int SELECTION_PAD = 4;
@@ -87,7 +87,7 @@ public final class QuestDetailsDescriptionSelection {
         if (right <= left || bottom <= top) {
             return;
         }
-        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(ModColors.INTERACTIVE, 28), withAlpha(ModColors.INTERACTIVE, 210));
+        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(TabletColors.INTERACTIVE, 28), withAlpha(TabletColors.INTERACTIVE, 210));
     }
 
     void drawMultiSelectionBounds(GuiGraphics graphics, QuestDetailsDescriptionModel model) {
@@ -99,9 +99,9 @@ public final class QuestDetailsDescriptionSelection {
         int top = bounds.top() - SELECTION_PAD;
         int right = bounds.right() + SELECTION_PAD;
         int bottom = bounds.bottom() + SELECTION_PAD;
-        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(ModColors.INTERACTIVE, 24), withAlpha(ModColors.INTERACTIVE, 214));
-        drawRect(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
-        drawRect(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
+        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(TabletColors.INTERACTIVE, 24), withAlpha(TabletColors.INTERACTIVE, 214));
+        drawRect(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.SURFACE_BASE, 230), TabletColors.BORDER_BASE);
+        drawRect(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.WARNING, 210), TabletColors.WARNING);
     }
 
     boolean selectionBoundsHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
@@ -180,7 +180,7 @@ public final class QuestDetailsDescriptionSelection {
         int cx = contentX.getAsInt();
         int cy = contentY.getAsInt();
         if ((fill >>> 24) != 0) {
-            Surfaces.fill(fill).draw(graphics, 0, 0, cx + left, cy + top, right - left, bottom - top);
+            SurfaceFactory.fill(fill).draw(graphics, 0, 0, cx + left, cy + top, right - left, bottom - top);
         }
         drawRectOutline(graphics, cx + left, cy + top, right - left, bottom - top, border);
     }

@@ -4,14 +4,14 @@ import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TiledPickerPanel {
     private TiledPickerPanel() {
@@ -54,11 +54,11 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(Surfaces.bordered(withAlpha(ModColors.elevatedSurface(), 150), ModColors.subtleBorder()));
+        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 150), TabletColors.subtleBorder()));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {
-            surface.addWidget(label(8, 8, emptyText, ModColors.TEXT_MUTED));
+            surface.addWidget(label(8, 8, emptyText, TabletColors.TEXT_MUTED));
             return layout;
         }
 
@@ -85,9 +85,9 @@ public final class TiledPickerPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    ModColors.scrollTrack(scroll.dragging()),
-                    ModColors.scrollThumb(false),
-                    ModColors.scrollThumb(true),
+                    TabletColors.scrollTrack(scroll.dragging()),
+                    TabletColors.scrollThumb(false),
+                    TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -19,7 +19,7 @@ record QuestDetailsTypeChoice(
     }
 
     String label() {
-        return QuestVocabulary.text(labelKey);
+        return QuestTranslationKeys.text(labelKey);
     }
 
     String fullType() {

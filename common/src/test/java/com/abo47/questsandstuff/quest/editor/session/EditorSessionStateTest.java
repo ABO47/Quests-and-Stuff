@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -114,7 +114,7 @@ class EditorSessionStateTest {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(id, Map.of(group, ChapterDefinition.DEFAULT)),
+                QuestDisplay.forNewQuest(id, Map.of(group, GroupDef.DEFAULT)),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),

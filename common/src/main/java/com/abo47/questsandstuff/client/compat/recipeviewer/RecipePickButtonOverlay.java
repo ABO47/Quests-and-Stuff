@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -32,18 +32,18 @@ public final class RecipePickButtonOverlay {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         boolean hovered = contains(button, mouseX, mouseY);
-        int border = hovered ? UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 105) : ModColors.subtleBorder();
-        int fill = UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 218);
-        int hoverOverlay = UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 16);
+        int border = hovered ? UiThemeTokens.withAlpha(TabletColors.INTERACTIVE, 105) : TabletColors.subtleBorder();
+        int fill = UiThemeTokens.withAlpha(TabletColors.SURFACE_PANEL_ALT, 218);
+        int hoverOverlay = UiThemeTokens.withAlpha(TabletColors.INTERACTIVE, 16);
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, 350.0F);
         try {
-            Surfaces.fill(border).draw(graphics, 0, 0, button.getX(), button.getY(), button.getWidth(), button.getHeight());
-            Surfaces.fill(fill).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
+            SurfaceFactory.fill(border).draw(graphics, 0, 0, button.getX(), button.getY(), button.getWidth(), button.getHeight());
+            SurfaceFactory.fill(fill).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             if (hovered) {
-                Surfaces.fill(hoverOverlay).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
+                SurfaceFactory.fill(hoverOverlay).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             }
-            IGuiTexture icon = UiIconAtlas.iconTexture("add");
+            IGuiTexture icon = IconAtlas.iconTexture("add");
             if (icon != null) {
                 int iconSize = centeredIconSize(button);
                 int iconX = button.getX() + (button.getWidth() - iconSize) / 2;

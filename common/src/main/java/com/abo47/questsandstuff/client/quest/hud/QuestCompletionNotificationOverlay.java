@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -78,12 +78,12 @@ public final class QuestCompletionNotificationOverlay {
         Window window = minecraft.getWindow();
         long elapsedMs = Math.max(0L, now - notification.startedAtMs());
         float age = progress(elapsedMs, displayMs);
-        float heightScale = QuestHudLayout.heightScale(QuestHudLayout.Element.COMPLETION);
-        QuestHudLayout.HudBox box = QuestHudLayout.completionBox(
+        float heightScale = QuestHudLayoutManager.heightScale(QuestHudLayoutManager.Element.COMPLETION);
+        QuestHudLayoutManager.HudBox box = QuestHudLayoutManager.completionBox(
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT)
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HEIGHT)
         );
         int x = box.x();
         float slideDistance = 12.0f * heightScale;
@@ -97,8 +97,8 @@ public final class QuestCompletionNotificationOverlay {
                 graphics,
                 x,
                 y,
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HEIGHT),
                 selected
         );
     }
@@ -124,12 +124,12 @@ public final class QuestCompletionNotificationOverlay {
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
         int contentW = Math.max(0, safeW - 14);
-        int text = withAlpha(ModColors.TEXT_PRIMARY, alpha);
+        int text = withAlpha(TabletColors.TEXT_PRIMARY, alpha);
 
-        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
         if (safeH >= 10) {
             int barH = safeH < 24 ? 4 : 6;
-            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, ModColors.SUCCESS, alpha);
+            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, TabletColors.SUCCESS, alpha);
         }
         if (contentW <= 0 || safeH < 12) {
             return;
@@ -142,7 +142,7 @@ public final class QuestCompletionNotificationOverlay {
         if (safeH >= 27) {
             graphics.drawString(font, completed, x + 7, y + 4, text, false);
             String title = cropToWidth(font, titleValue, contentW);
-            graphics.drawString(font, title, x + 7, y + 14, withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
+            graphics.drawString(font, title, x + 7, y + 14, withAlpha(TabletColors.TEXT_SECONDARY, alpha), false);
             return;
         }
         String title = cropToWidth(font, titleValue == null || titleValue.isBlank() ? completed : titleValue, contentW);

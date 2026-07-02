@@ -18,10 +18,10 @@ final class EditorDescriptionCommandHandlers {
     }
 
     private static void descriptionPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        ListTag description = EditorCommandPayloadReader.description(payload);
-        if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {
+        ListTag description = EditorCommandPayloads.description(payload);
+        if (EditorCommandPayloads.exceedsLimit(description, EditorCommandPayloads.MAX_DESCRIPTION_LINES)) {
             return;
         }
-        editor.updateQuestDescription(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.stringsFrom(description));
+        editor.updateQuestDescription(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.stringsFrom(description));
     }
 }

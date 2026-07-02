@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.network.team;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
 import com.abo47.questsandstuff.quest.team.TeamManager;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,7 +23,7 @@ public record C2STeamCreatePacket() {
         }
         context.enqueueWork(() -> {
             ServerLevel level = player.serverLevel();
-            TeamManager manager = new TeamManager(level, QuestServices.engine(player.server));
+            TeamManager manager = new TeamManager(level, QuestServiceRegistry.engine(player.server));
             TeamData team = manager.createTeam(player);
             TeamPacketHelper.send(player, team);
         });

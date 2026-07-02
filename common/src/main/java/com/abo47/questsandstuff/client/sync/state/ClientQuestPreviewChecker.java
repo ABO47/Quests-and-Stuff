@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -51,25 +51,25 @@ final class ClientQuestPreviewChecker {
 
     static boolean questLocked(CompoundTag quest) {
         return quest != null
-                && "locked".equals(quest.getString(QuestSyncKeys.Quest.HIDDEN_MODE))
-                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
-                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
+                && "locked".equals(quest.getString(SyncKeys.Quest.HIDDEN_MODE))
+                && !quest.getBoolean(SyncKeys.Quest.UNLOCKED)
+                && !quest.getBoolean(SyncKeys.Quest.COMPLETED);
     }
 
     static boolean questHidden(CompoundTag quest) {
         return quest != null
-                && quest.getBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN)
-                && !quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED)
-                && !quest.getBoolean(QuestSyncKeys.Quest.COMPLETED);
+                && quest.getBoolean(SyncKeys.Quest.VISUAL_HIDDEN)
+                && !quest.getBoolean(SyncKeys.Quest.UNLOCKED)
+                && !quest.getBoolean(SyncKeys.Quest.COMPLETED);
     }
 
     private static boolean groupHasNoUnlockedOrCompletedQuest(String group) {
         for (Map.Entry<String, CompoundTag> entry : ClientQuestState.questEntries()) {
             CompoundTag quest = entry.getValue();
-            if (!quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(group)) {
+            if (!quest.getCompound(SyncKeys.Quest.GROUPS).contains(group)) {
                 continue;
             }
-            if (quest.getBoolean(QuestSyncKeys.Quest.UNLOCKED) || quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
+            if (quest.getBoolean(SyncKeys.Quest.UNLOCKED) || quest.getBoolean(SyncKeys.Quest.COMPLETED)) {
                 return false;
             }
         }

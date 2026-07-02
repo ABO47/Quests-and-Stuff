@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.group;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
@@ -36,8 +36,8 @@ final class GroupInlineRenameRows {
                 y,
                 cardW,
                 TabletUiFactory.CHAPTER_CARD_H,
-                withAlpha(ModColors.INTERACTIVE, 108),
-                ModColors.BORDER_ACCENT
+                withAlpha(TabletColors.INTERACTIVE, 108),
+                TabletColors.BORDER_ACCENT
         ));
         if (icon != null && !icon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(iconX, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, icon));
@@ -62,14 +62,14 @@ final class GroupInlineRenameRows {
         field.setClientSideWidget();
         field.setMaxStringLength(40);
         field.setBordered(false);
-        field.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.INTERACTIVE));
-        field.setTextColor(ModColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
         chapterList.addWidget(field);
         addFlatIconAction(chapterList, doneX + 4, y + 10, TabletUiFactory.ACTION_ICON_SIZE, "add.png", click -> commit.accept(field.getCurrentString()));
     }
 
     private static void addFlatIconAction(WidgetGroup parent, int x, int y, int size, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        IGuiTexture texture = UiIconAtlas.iconTexture(iconName);
+        IGuiTexture texture = IconAtlas.iconTexture(iconName);
         if (texture != null) {
             parent.addWidget(new ImageWidget(x, y, size, size, texture));
         }

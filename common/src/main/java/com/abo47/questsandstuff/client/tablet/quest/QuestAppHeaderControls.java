@@ -15,17 +15,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBluep
 import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;
@@ -92,16 +92,16 @@ final class QuestAppHeaderControls {
         );
 
         WidgetGroup canvasHeaderSurface = new WidgetGroup(canvasHeaderX, topY, 60, headerH);
-        canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        canvasHeaderSurface.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
 
         int toolsW = headerH;
-        TabletIconTextButton toolsButton = headerButton(0, 0, toolsW, headerH, "tools", ModColors.INTERACTIVE, click -> {
+        TabletIconTextButton toolsButton = headerButton(0, 0, toolsW, headerH, "tools", TabletColors.INTERACTIVE, click -> {
             ToolMenuAnimation.toggleMain(state);
             refresh.run();
         });
 
-        TabletIconTextButton settingsButton = headerButton(0, 0, toolsW, headerH, "settings-2", ModColors.INTERACTIVE, click -> toggleSettingsPanel(state, refresh));
-        TabletIconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", ModColors.WARNING, click -> {
+        TabletIconTextButton settingsButton = headerButton(0, 0, toolsW, headerH, "settings-2", TabletColors.INTERACTIVE, click -> toggleSettingsPanel(state, refresh));
+        TabletIconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", TabletColors.WARNING, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuState.close(state);
             state.chapterPanel.chapterMenuOpen = false;
@@ -110,7 +110,7 @@ final class QuestAppHeaderControls {
             QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] library opened from main header");
             refresh.run();
         });
-        TabletIconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", ModColors.INTERACTIVE, click -> {
+        TabletIconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", TabletColors.INTERACTIVE, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuState.close(state);
             state.chapterPanel.chapterMenuOpen = false;
@@ -118,7 +118,7 @@ final class QuestAppHeaderControls {
             RewardClaimHandler.claimAll(player, "");
             refresh.run();
         });
-        TabletIconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", ModColors.INTERACTIVE, click -> {
+        TabletIconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", TabletColors.INTERACTIVE, click -> {
             if (!state.root.editorAvailable) {
                 return;
             }
@@ -152,15 +152,15 @@ final class QuestAppHeaderControls {
         }
     }
 
-    void refreshSurfaces(TabletUiState state) {
-        chapterSearchField.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        searchField.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-        canvasHeaderSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
-        toolsButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
-        settingsButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
-        blueprintButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
-        claimAllButton.visuals(headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, ModColors.INTERACTIVE));
-        editorButton.visuals(headerVisuals(withAlpha(state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR, 38), state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR, state.root.editMode ? ModColors.SUCCESS : ModColors.ERROR));
+    void refreshSurfaceFactory(TabletUiState state) {
+        chapterSearchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        canvasHeaderSurface.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
+        toolsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
+        settingsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
+        blueprintButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
+        claimAllButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
+        editorButton.visuals(headerVisuals(withAlpha(state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR, 38), state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR, state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR));
     }
 
     void layoutChapter(boolean chapterCollapsed, int dynamicListX, int dynamicListW, int chapterTopY, int chapterHeaderH) {
@@ -193,7 +193,7 @@ final class QuestAppHeaderControls {
         });
 
         layoutHeaderButton(claimAllButton, claimAllX, topY, toolsW, headerH, true, new Component[]{
-                TabletVocabulary.component(QuestVocabulary.CLAIM_ALL_REWARDS)
+                TabletTranslationKeys.component(QuestTranslationKeys.CLAIM_ALL_REWARDS)
         });
 
         layoutHeaderButton(settingsButton, settingsX, topY, toolsW, headerH, true, new Component[]{
@@ -240,14 +240,14 @@ final class QuestAppHeaderControls {
     }
 
     private static TabletIconTextButton headerButton(int x, int y, int width, int height, String icon, int accentColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        return TabletIconTextButton.icon(x, y, width, height, icon, headerVisuals(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, accentColor), callback);
+        return TabletIconTextButton.icon(x, y, width, height, icon, headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, accentColor), callback);
     }
 
     private static TabletIconTextButton.Visuals headerVisuals(int fill, int border, int accentColor) {
         return new TabletIconTextButton.Visuals(
                 TabletIconTextButton.State.of(fill, border, accentColor),
-                TabletIconTextButton.State.of(withAlpha(accentColor, 66), ModColors.BORDER_ACCENT, accentColor),
-                TabletIconTextButton.State.of(withAlpha(accentColor, 90), accentColor, ModColors.TEXT_PRIMARY)
+                TabletIconTextButton.State.of(withAlpha(accentColor, 66), TabletColors.BORDER_ACCENT, accentColor),
+                TabletIconTextButton.State.of(withAlpha(accentColor, 90), accentColor, TabletColors.TEXT_PRIMARY)
         );
     }
 

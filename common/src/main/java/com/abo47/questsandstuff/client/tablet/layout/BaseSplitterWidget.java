@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public abstract class BaseSplitterWidget extends WidgetGroup {
@@ -97,11 +97,11 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
             skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
         } else {
-            IGuiTexture fill = hovered ? Surfaces.fill(withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha())) : Surfaces.fill(ModColors.SURFACE_PANEL_ALT);
+            IGuiTexture fill = hovered ? SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, hoverPulseAlpha())) : SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT);
             fill.draw(graphics, mouseX, mouseY, left, top, width, height);
         }
-        Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
-        Surfaces.fill(ModColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
+        SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
+        SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }

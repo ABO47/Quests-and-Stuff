@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +15,7 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.c
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolButtons.addToggle;
 
 final class QuestDetailsToolsMenu {
@@ -30,7 +30,7 @@ final class QuestDetailsToolsMenu {
         final int toolGap = 1;
         final boolean editTools = QuestDetailsEditController.canEdit(state);
         final int toolCount = editTools ? 9 : 1;
-        final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
+        final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = buttonX - 1;
@@ -40,7 +40,7 @@ final class QuestDetailsToolsMenu {
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
         menu.setActive(ToolMenuAnimation.questDetailsInteractive(state));
 
-        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(TabletColors.SURFACE_BASE, 244), TabletColors.BORDER_ACCENT));
 
         if (!editTools) {
             addReadOnlyTools(menu, state, refresh, slotX, y, toolSlot, toolButtonBorder);
@@ -125,7 +125,7 @@ final class QuestDetailsToolsMenu {
 
     private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int border) {
         addToggle(menu, x, y, toolSlot, border, state.questDetails.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.questDetails.questDetailsSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
+                state.questDetails.questDetailsSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
                 !state.questDetails.questDetailsSplitterLocked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -241,7 +241,7 @@ public final class QuestDefinitionEdits {
         );
     }
 
-    public static QuestDefinition withGroups(QuestDefinition definition, Map<String, ChapterDefinition> groups) {
+    public static QuestDefinition withGroups(QuestDefinition definition, Map<String, GroupDef> groups) {
         Set<String> prerequisites = definition.prerequisites();
         QuestDisplay display = definition.display().withGroups(Map.copyOf(groups));
         return new QuestDefinition(

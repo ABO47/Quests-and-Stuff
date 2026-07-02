@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.group;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
@@ -10,10 +10,10 @@ import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -50,8 +50,8 @@ final class GroupRowRenderer {
             return;
         }
 
-        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), ModColors.SURFACE_PANEL_ALT);
-        int border = selected ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
+        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestCache.groupBackground(group), TabletColors.SURFACE_PANEL_ALT);
+        int border = selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
 
         IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestCache.groupBackground(group));
@@ -59,7 +59,7 @@ final class GroupRowRenderer {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, bgTexture));
         }
         if (selected) {
-            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82))));
+            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82))));
         }
         String groupIcon = ClientQuestCache.groupIcon(group);
         int iconDrawX = layout.iconX();
@@ -138,7 +138,7 @@ final class GroupRowRenderer {
         int tileY = collapsedTileY(y);
         chapterList.addWidget(new CollapsedChapterTileWidget(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, rowLabel, selected));
         if (!initial.isBlank()) {
-            chapterList.addWidget(TabletTextTextures.literal(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, initial, selected ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED, TextTexture.TextType.HIDE));
+            chapterList.addWidget(TabletTextTextures.literal(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, initial, selected ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED, TextTexture.TextType.HIDE));
         }
         if (groupIcon != null && !groupIcon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(collapsedIconX(layout), collapsedIconY(y), COLLAPSED_ICON_SIZE, COLLAPSED_ICON_SIZE, groupIcon));
@@ -220,7 +220,7 @@ final class GroupRowRenderer {
 
     private static void renderLockedFilter(WidgetGroup chapterList, int x, int y, int w, int h) {
         WidgetGroup filter = new WidgetGroup(x, y, w, h);
-        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 150)));
+        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 150)));
         chapterList.addWidget(filter);
     }
 
@@ -311,8 +311,8 @@ final class GroupRowRenderer {
             int h = getSizeHeight();
             boolean hovered = isMouseOverElement(mouseX, mouseY);
             if (selected || hovered) {
-                int fill = selected ? withAlpha(ModColors.INTERACTIVE, 108) : withAlpha(ModColors.INTERACTIVE, 44);
-                Surfaces.fill(fill).draw(graphics, 0, 0, x, y, w, h);
+                int fill = selected ? withAlpha(TabletColors.INTERACTIVE, 108) : withAlpha(TabletColors.INTERACTIVE, 44);
+                SurfaceFactory.fill(fill).draw(graphics, 0, 0, x, y, w, h);
             }
         }
     }
@@ -324,7 +324,7 @@ final class GroupRowRenderer {
 
         @Override
         public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            IGuiTexture texture = UiIconAtlas.iconTexture("chapter_notice");
+            IGuiTexture texture = IconAtlas.iconTexture("chapter_notice");
             if (texture == null) {
                 return;
             }

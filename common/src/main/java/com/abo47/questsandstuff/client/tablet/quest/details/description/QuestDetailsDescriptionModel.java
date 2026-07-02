@@ -2,9 +2,9 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -96,7 +96,7 @@ public final class QuestDetailsDescriptionModel {
                 }
             } else if (!line.isBlank()) {
                 String id = "line_" + i;
-                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, 160, 24, 0, "left", "normal", ModColors.TEXT_PRIMARY);
+                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, 160, 24, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
                 model.putText(text);
                 model.ensureOrder(ORDER_TEXT + id);
                 fallbackY += 28;
@@ -112,12 +112,12 @@ public final class QuestDetailsDescriptionModel {
             if (key.startsWith(ORDER_TEXT)) {
                 CanvasTextLayer text = model.texts.get(key.substring(ORDER_TEXT.length()));
                 if (text != null) {
-                    lines.add(TEXT_PREFIX + CanvasLayerNbt.textToTag(text.withText(limit(text.text(), MAX_TEXT_LENGTH))).toString());
+                    lines.add(TEXT_PREFIX + CanvasLayerNbtCodec.textToTag(text.withText(limit(text.text(), MAX_TEXT_LENGTH))).toString());
                 }
             } else if (key.startsWith(ORDER_IMAGE)) {
                 CanvasImageLayer image = model.images.get(key.substring(ORDER_IMAGE.length()));
                 if (image != null) {
-                    lines.add(IMAGE_PREFIX + CanvasLayerNbt.imageToTag(image).toString());
+                    lines.add(IMAGE_PREFIX + CanvasLayerNbtCodec.imageToTag(image).toString());
                 }
             }
         }
@@ -139,7 +139,7 @@ public final class QuestDetailsDescriptionModel {
 
     private static CanvasTextLayer parseText(String snbt) {
         try {
-            return CanvasLayerNbt.textFromTag(TagParser.parseTag(snbt));
+            return CanvasLayerNbtCodec.textFromTag(TagParser.parseTag(snbt));
         } catch (Exception ignored) {
             return null;
         }
@@ -147,7 +147,7 @@ public final class QuestDetailsDescriptionModel {
 
     private static CanvasImageLayer parseImage(String snbt) {
         try {
-            return CanvasLayerNbt.imageFromTag(TagParser.parseTag(snbt));
+            return CanvasLayerNbtCodec.imageFromTag(TagParser.parseTag(snbt));
         } catch (Exception ignored) {
             return null;
         }

@@ -6,9 +6,9 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import static com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer.CONTEXT_MENU_WIDTH;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.addWindowsContextRow;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ContextMenuPanel {
     public static final int PROMOTED_BAR_H = ContextActionLayout.PROMOTED_BAR_H;
@@ -278,7 +278,7 @@ public final class ContextMenuPanel {
                     .tooltips(new Component[]{Component.literal(action.label())}));
         }
         WidgetGroup sep = new WidgetGroup(OUTER_PAD, OUTER_PAD + PROMOTED_BAR_H - 1, menuW - OUTER_PAD * 2, 1);
-        sep.setBackground(Surfaces.fill(withAlpha(ModColors.BORDER_BASE, 130)));
+        sep.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 130)));
         menu.addWidget(sep);
     }
 
@@ -415,7 +415,7 @@ public final class ContextMenuPanel {
                 return true;
             }
         };
-        menu.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 246), borderColor));
+        menu.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), borderColor));
         return menu;
     }
 
@@ -440,9 +440,9 @@ public final class ContextMenuPanel {
                     scrollState::dragging,
                     scrollState::setDragging,
                     safeRefresh,
-                    ModColors.scrollTrack(scrollState.dragging()),
-                    ModColors.scrollThumb(false),
-                    ModColors.scrollThumb(true),
+                    TabletColors.scrollTrack(scrollState.dragging()),
+                    TabletColors.scrollThumb(false),
+                    TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
             return;
@@ -454,8 +454,8 @@ public final class ContextMenuPanel {
                 int railW = 2;
                 int railX = getPositionX() + Math.max(0, (getSizeWidth() - railW) / 2);
                 int thumbX = getPositionX() + Math.max(0, (getSizeWidth() - DragScrollBarWidget.WIDTH) / 2);
-                DragScrollBarWidget.drawVerticalTrack(graphics, mouseX, mouseY, railX, getPositionY(), railW, getSizeHeight(), ModColors.scrollTrack(false));
-                DragScrollBarWidget.drawVerticalThumb(graphics, mouseX, mouseY, thumbX, getPositionY() + knobOffset, DragScrollBarWidget.WIDTH, knobH, ModColors.scrollThumb(false));
+                DragScrollBarWidget.drawVerticalTrack(graphics, mouseX, mouseY, railX, getPositionY(), railW, getSizeHeight(), TabletColors.scrollTrack(false));
+                DragScrollBarWidget.drawVerticalThumb(graphics, mouseX, mouseY, thumbX, getPositionY() + knobOffset, DragScrollBarWidget.WIDTH, knobH, TabletColors.scrollThumb(false));
             }
         });
     }

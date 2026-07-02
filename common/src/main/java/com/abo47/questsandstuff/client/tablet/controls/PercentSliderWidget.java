@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
 import net.minecraft.network.chat.Component;
 
@@ -9,7 +9,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class PercentSliderWidget extends SliderWidget {
     private final IntConsumer onChange;
@@ -44,10 +44,10 @@ final class PercentSliderWidget extends SliderWidget {
         initTemplate();
         valueStep = 100;
         handleSize = 6;
-        setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 130), withAlpha(ModColors.BORDER_BASE, 180)));
-        setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 42), withAlpha(ModColors.BORDER_ACCENT, 200)));
-        handleTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 180), withAlpha(ModColors.INTERACTIVE, 235));
-        handleHoverTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 230), ModColors.focusBorder());
+        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 130), withAlpha(TabletColors.BORDER_BASE, 180)));
+        setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 42), withAlpha(TabletColors.BORDER_ACCENT, 200)));
+        handleTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 180), withAlpha(TabletColors.INTERACTIVE, 235));
+        handleHoverTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 230), TabletColors.focusBorder());
         setOverlay(null);
         setValue(this.currentValue / 100.0f);
         setSliderCallback(this::setValueFromSlider);

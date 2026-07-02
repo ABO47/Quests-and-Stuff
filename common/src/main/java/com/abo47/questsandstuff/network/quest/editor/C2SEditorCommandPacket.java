@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 public record C2SEditorCommandPacket(EditorCommand command) {
-    public static final String PREREQUISITE_FIELD = EditorCommandPayloadKeys.PREREQUISITE;
+    public static final String PREREQUISITE_FIELD = EditorCommandPayloads.PREREQUISITE;
 
     public C2SEditorCommandPacket(String action, CompoundTag payload) {
         this(new EditorCommand(EditorCommandType.fromWireName(action), payload));

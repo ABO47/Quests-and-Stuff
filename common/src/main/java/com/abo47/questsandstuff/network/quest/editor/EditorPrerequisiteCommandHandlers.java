@@ -30,57 +30,57 @@ final class EditorPrerequisiteCommandHandlers {
     }
 
     private static void addPrerequisite(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestPrerequisite(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.prerequisite(payload), true);
+        editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), true);
     }
 
     private static void removePrerequisite(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestPrerequisite(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.prerequisite(payload), false);
+        editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), false);
     }
 
     private static void connectionColor(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionColor(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.COLOR)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.COLOR)
         );
     }
 
     private static void connectionMode(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionMode(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRID)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRID)
         );
     }
 
     private static void connectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionHidden(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.HIDDEN)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.HIDDEN)
         );
     }
 
     private static void connectionTexture(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionTexture(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.TEXTURE)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.TEXTURE)
         );
     }
 
     private static void connectionTextures(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         Map<String, Map<String, String>> questTextures = new HashMap<>();
-        ListTag list = payload.getList(EditorCommandPayloadKeys.TEXTURES, Tag.TAG_COMPOUND);
+        ListTag list = payload.getList(EditorCommandPayloads.TEXTURES, Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag entry = list.getCompound(i);
-            String quest = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.QUEST);
-            String prerequisite = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.PREREQUISITE);
-            String texture = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.TEXTURE);
+            String quest = EditorCommandPayloads.string(entry, EditorCommandPayloads.QUEST);
+            String prerequisite = EditorCommandPayloads.string(entry, EditorCommandPayloads.PREREQUISITE);
+            String texture = EditorCommandPayloads.string(entry, EditorCommandPayloads.TEXTURE);
             if (quest.isBlank() || prerequisite.isBlank()) continue;
             questTextures.computeIfAbsent(quest, k -> new HashMap<>()).put(prerequisite, texture == null ? "" : texture);
         }
@@ -91,9 +91,9 @@ final class EditorPrerequisiteCommandHandlers {
     private static void connectionTextureSpacing(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionTextureSpacing(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.SPACING)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.SPACING)
         );
     }
 }

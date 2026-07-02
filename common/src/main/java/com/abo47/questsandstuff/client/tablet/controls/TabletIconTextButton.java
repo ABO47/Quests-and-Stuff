@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
@@ -29,7 +29,7 @@ public final class TabletIconTextButton extends ButtonWidget {
         this.iconName = iconName == null ? "" : iconName;
         this.label = label;
         this.iconSize = iconSize;
-        this.visuals = visuals == null ? Visuals.defaultControl(ModColors.INTERACTIVE, ModColors.TEXT_PRIMARY) : visuals;
+        this.visuals = visuals == null ? Visuals.defaultControl(TabletColors.INTERACTIVE, TabletColors.TEXT_PRIMARY) : visuals;
         setClientSideWidget();
         refreshTextures();
     }
@@ -86,9 +86,9 @@ public final class TabletIconTextButton extends ButtonWidget {
         if (bgOverride != null && !bgOverride.equals(IGuiTexture.EMPTY)) {
             bgOverride.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
         } else {
-            Surfaces.bordered(state.fillColor(), state.borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            SurfaceFactory.bordered(state.fillColor(), state.borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             if (pressed) {
-                Surfaces.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                SurfaceFactory.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         }
 
@@ -105,7 +105,7 @@ public final class TabletIconTextButton extends ButtonWidget {
         }
         TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
         text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
-        return Surfaces.group(icon, text);
+        return SurfaceFactory.group(icon, text);
     }
 
     @Override
@@ -141,12 +141,12 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     private static ResourceLocation resolveIcon(String iconName) {
-        ResourceLocation id = UiIconAtlas.icon(iconName);
+        ResourceLocation id = IconAtlas.icon(iconName);
         if (id == null && iconName != null && !iconName.isBlank()) {
-            id = UiIconAtlas.icon("context_" + iconName);
+            id = IconAtlas.icon("context_" + iconName);
         }
         if (id == null) {
-            id = UiIconAtlas.icon("text");
+            id = IconAtlas.icon("text");
         }
         return id;
     }
@@ -160,9 +160,9 @@ public final class TabletIconTextButton extends ButtonWidget {
     public record Visuals(State idle, State hover, State pressed) {
         public static Visuals defaultControl(int accentColor, int iconColor) {
             return new Visuals(
-                    State.of(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, iconColor),
-                    State.of(ModColors.hoverFill(accentColor), ModColors.BORDER_ACCENT, iconColor),
-                    State.of(ModColors.pressedFill(accentColor), accentColor, iconColor)
+                    State.of(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, iconColor),
+                    State.of(TabletColors.hoverFill(accentColor), TabletColors.BORDER_ACCENT, iconColor),
+                    State.of(TabletColors.pressedFill(accentColor), accentColor, iconColor)
             );
         }
     }

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.bootstrap;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManagerEditScreen;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
@@ -78,7 +78,7 @@ public final class TabletLifecycle {
             break;
         }
         while (TabletKeybindings.EDIT_HUD.consumeClick()) {
-            minecraft.setScreen(new QuestHudLayoutEditScreen());
+            minecraft.setScreen(new QuestHudLayoutManagerEditScreen());
             QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from keybind");
             break;
         }

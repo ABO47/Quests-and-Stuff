@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Quaternionf;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasTransformGizmo {
     private static final int HANDLE = 7;
@@ -26,9 +26,9 @@ public final class CanvasTransformGizmo {
     private static final int RING_ALPHA_IDLE = 155;
     private static final int RING_ALPHA_ACTIVE = 255;
     private static final int RING_SEGMENTS = 256;
-    private static final int AXIS_X_COLOR = ModColors.ERROR;
-    private static final int AXIS_Y_COLOR = ModColors.SUCCESS;
-    private static final int AXIS_Z_COLOR = ModColors.INTERACTIVE;
+    private static final int AXIS_X_COLOR = TabletColors.ERROR;
+    private static final int AXIS_Y_COLOR = TabletColors.SUCCESS;
+    private static final int AXIS_Z_COLOR = TabletColors.INTERACTIVE;
     public static final String AXIS_YAW = "yaw";
     public static final String AXIS_PITCH = "pitch";
     public static final String AXIS_ROLL = "roll";
@@ -211,12 +211,12 @@ public final class CanvasTransformGizmo {
         int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
-        Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
-        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(ModColors.SUCCESS, 185));
-        drawInsideHandle(graphics, left, top, ModColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, top, ModColors.SUCCESS);
-        drawInsideHandle(graphics, left, bottom - HANDLE, ModColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, ModColors.SUCCESS);
+        SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(TabletColors.SUCCESS, 185));
+        drawInsideHandle(graphics, left, top, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, top, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, left, bottom - HANDLE, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, TabletColors.SUCCESS);
     }
 
     private static void drawRotateGizmo(GuiGraphics graphics, TabletUiState state, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
@@ -237,9 +237,9 @@ public final class CanvasTransformGizmo {
     private static void line(GuiGraphics graphics, int x1, int y1, int x2, int y2, int color, int alpha) {
         int c = withAlpha(color, alpha);
         if (y1 == y2) {
-            Surfaces.fill(c).draw(graphics, 0, 0, Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1 - Math.min(x1, x2), 3);
+            SurfaceFactory.fill(c).draw(graphics, 0, 0, Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1 - Math.min(x1, x2), 3);
         } else if (x1 == x2) {
-            Surfaces.fill(c).draw(graphics, 0, 0, x1 - 1, Math.min(y1, y2), 3, Math.max(y1, y2) + 1 - Math.min(y1, y2));
+            SurfaceFactory.fill(c).draw(graphics, 0, 0, x1 - 1, Math.min(y1, y2), 3, Math.max(y1, y2) + 1 - Math.min(y1, y2));
         }
     }
 
@@ -341,9 +341,9 @@ public final class CanvasTransformGizmo {
         var font = Minecraft.getInstance().font;
         int width = font.width(text) + 6;
         int height = font.lineHeight + 4;
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - 3, y - 2, width, height);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - 3, y - 2, width, height);
         drawRectOutline(graphics, x - 3, y - 2, width, height, withAlpha(color, 210));
-        graphics.drawString(font, text, x, y, ModColors.TEXT_PRIMARY, false);
+        graphics.drawString(font, text, x, y, TabletColors.TEXT_PRIMARY, false);
     }
 
     private static boolean isRotating(TabletUiState state) {
@@ -395,12 +395,12 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawInsideHandle(GuiGraphics graphics, int left, int top, int color) {
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
@@ -408,7 +408,7 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 

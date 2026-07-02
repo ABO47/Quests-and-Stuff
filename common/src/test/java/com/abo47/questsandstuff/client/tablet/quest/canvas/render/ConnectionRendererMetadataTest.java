@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -23,13 +23,13 @@ class ConnectionRendererMetadataTest {
         CompoundTag target = new CompoundTag();
         CompoundTag colors = new CompoundTag();
         colors.putInt("quest/source", 0x336699);
-        target.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
+        target.put(SyncKeys.Quest.CONNECTION_COLORS, colors);
         CompoundTag modes = new CompoundTag();
         modes.putString("quest/source", QuestConnectionMode.GRID.serializedName());
-        target.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        target.put(SyncKeys.Quest.CONNECTION_MODES, modes);
         ListTag hidden = new ListTag();
         hidden.add(StringTag.valueOf("quest/source"));
-        target.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
+        target.put(SyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
 
         QuestConnectionMetadata metadata = ConnectionStyleResolver.metadata(
                 state,

@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import net.minecraft.network.chat.Component;
@@ -49,8 +49,8 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         StyledTextFields.applyIntegerValidator(this, MIN, MAX);
         setTextResponder(this::handleChanged);
         setCurrentString(Integer.toString(this.currentValue));
-        setBackground(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 150), ModColors.BORDER_ACCENT));
-        setTextColor(ModColors.TEXT_PRIMARY);
+        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 150), TabletColors.BORDER_ACCENT));
+        setTextColor(TabletColors.TEXT_PRIMARY);
         updateTooltip();
     }
 

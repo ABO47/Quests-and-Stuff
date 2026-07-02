@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import net.minecraft.world.entity.player.Player;
 
@@ -40,12 +40,12 @@ public final class ColorPickerApplyActions {
                 var first = edges.get(0);
                 return CanvasRenderer.connectionColor(state, connectionSelection, first.prerequisiteId(), first.questId());
             }
-            return ModColors.TEXT_SECONDARY;
+            return TabletColors.TEXT_SECONDARY;
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             var text = CanvasLayerMutations.findCanvasText(state, canvasText[0], canvasText[1]);
-            return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
+            return text == null ? TabletColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         if (target.isGridColor()) {
             return TabletGridControls.defaultGridColor(state);
@@ -58,7 +58,7 @@ public final class ColorPickerApplyActions {
                     return CanvasRenderer.activeTextColor(state, text);
                 }
             }
-            return state.pickers.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.pickers.colorDraft;
+            return state.pickers.colorDraft == 0 ? TabletColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
         return ClientQuestCache.groupTextColor(target.raw());
     }

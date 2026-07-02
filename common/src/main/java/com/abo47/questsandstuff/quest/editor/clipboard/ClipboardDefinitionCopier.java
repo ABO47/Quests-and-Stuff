@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.clipboard;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
@@ -19,7 +19,7 @@ public final class ClipboardDefinitionCopier {
 
     public static QuestDefinition duplicateDefinition(QuestDefinition source, String newId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
         Set<String> prerequisites = copyPrerequisites(source.prerequisites(), copiedIds);
-        QuestDisplay display = source.display().withGroups(Map.of(group, new ChapterDefinition(true, x, y, scale)));
+        QuestDisplay display = source.display().withGroups(Map.of(group, new GroupDef(true, x, y, scale)));
         return new QuestDefinition(
                 source.schema(),
                 newId,

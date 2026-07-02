@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasTextRenderer {
     private CanvasTextRenderer() {
@@ -138,7 +138,7 @@ public final class CanvasTextRenderer {
 
     public static int activeTextColor(TabletUiState state, CanvasTextLayer text) {
         if (state == null || text == null || !TextEditSession.isEditingTarget(state, text.id()) || text.text().isEmpty()) {
-            return text == null ? ModColors.TEXT_PRIMARY : text.color();
+            return text == null ? TabletColors.TEXT_PRIMARY : text.color();
         }
         int index = activeTextIndex(state, text);
         return text.colorAt(index);
@@ -169,7 +169,7 @@ public final class CanvasTextRenderer {
         graphics.pose().scale(scale, scale, 1.0f);
         for (TextGlyph glyph : layout.glyphs()) {
             if (selectionStart < selectionEnd && glyph.index() >= selectionStart && glyph.index() < selectionEnd) {
-                Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - 1, Math.max(1, glyph.width()), font.lineHeight + 2);
+                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - 1, Math.max(1, glyph.width()), font.lineHeight + 2);
             }
             String style = text.styleAt(glyph.index());
             int color = text.colorAt(glyph.index());
@@ -230,7 +230,7 @@ public final class CanvasTextRenderer {
         int y = point.y();
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 1.0f);
-        Surfaces.fill(text.color()).draw(graphics, 0, 0, x, y - 1, 1, font.lineHeight + 2);
+        SurfaceFactory.fill(text.color()).draw(graphics, 0, 0, x, y - 1, 1, font.lineHeight + 2);
         graphics.pose().popPose();
     }
 

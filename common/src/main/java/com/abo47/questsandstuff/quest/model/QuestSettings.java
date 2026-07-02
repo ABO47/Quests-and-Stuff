@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.model;
 
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

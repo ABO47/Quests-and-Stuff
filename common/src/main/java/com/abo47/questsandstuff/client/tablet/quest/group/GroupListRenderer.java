@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.group;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +27,7 @@ final class GroupListRenderer {
         if (groups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
             GroupListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
             if (!collapsed) {
-                chapterList.addWidget(TabletUiFactory.label(8, 8, GroupRenameActions.tr("ui.questsandstuff.chapter.none"), ModColors.TEXT_MUTED));
+                chapterList.addWidget(TabletUiFactory.label(8, 8, GroupRenameActions.tr("ui.questsandstuff.chapter.none"), TabletColors.TEXT_MUTED));
             }
             return;
         }
@@ -43,7 +43,7 @@ final class GroupListRenderer {
                 String emptyKey = state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank()
                         ? "ui.questsandstuff.chapter.none"
                         : "ui.questsandstuff.chapter.none_matching";
-                chapterList.addWidget(TabletUiFactory.label(8, 8, GroupRenameActions.tr(emptyKey), ModColors.TEXT_MUTED));
+                chapterList.addWidget(TabletUiFactory.label(8, 8, GroupRenameActions.tr(emptyKey), TabletColors.TEXT_MUTED));
             }
             return;
         }

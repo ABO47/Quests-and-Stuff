@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
 
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -23,7 +23,7 @@ public record C2SEditorGroupPacket(String action, String group, String value, in
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> {
-                var editor = QuestServices.editor(player.server);
+                var editor = QuestServiceRegistry.editor(player.server);
                 switch (action == null ? "" : action) {
                     case "create" -> editor.createGroup(player, group);
                     case "delete" -> editor.deleteGroup(player, group);

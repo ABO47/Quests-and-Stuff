@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.editor.canvas;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -168,7 +168,7 @@ public final class CanvasEditService {
             if (source == null) {
                 continue;
             }
-            ChapterDefinition existingView = source.display().groups().get(group);
+            GroupDef existingView = source.display().groups().get(group);
             if (existingView == null) {
                 continue;
             }
@@ -183,8 +183,8 @@ public final class CanvasEditService {
                 changed = true;
             }
 
-            Map<String, ChapterDefinition> groups = new HashMap<>(source.display().groups());
-            groups.put(group, new ChapterDefinition(existingView.visible(), targetX, targetY, existingView.scale()));
+            Map<String, GroupDef> groups = new HashMap<>(source.display().groups());
+            groups.put(group, new GroupDef(existingView.visible(), targetX, targetY, existingView.scale()));
             owner.definitionStore().upsert(withGroups(source, groups));
         }
 
@@ -211,7 +211,7 @@ public final class CanvasEditService {
             if (source == null) {
                 continue;
             }
-            ChapterDefinition existingView = source.display().groups().get(group);
+            GroupDef existingView = source.display().groups().get(group);
             if (existingView == null) {
                 continue;
             }
@@ -229,8 +229,8 @@ public final class CanvasEditService {
                 changed = true;
             }
 
-            Map<String, ChapterDefinition> groups = new HashMap<>(source.display().groups());
-            groups.put(group, new ChapterDefinition(existingView.visible(), existingView.x(), existingView.y(), targetScale));
+            Map<String, GroupDef> groups = new HashMap<>(source.display().groups());
+            groups.put(group, new GroupDef(existingView.visible(), existingView.x(), existingView.y(), targetScale));
             owner.definitionStore().upsert(withGroups(source, groups));
         }
 

@@ -23,26 +23,26 @@ final class EditorClipboardCommandHandlers {
     }
 
     private static void copyMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        ListTag questTags = EditorCommandPayloadReader.list(payload, EditorCommandPayloadKeys.QUESTS, Tag.TAG_STRING);
-        if (EditorCommandPayloadLimits.exceedsLimit(questTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
+        String group = EditorCommandPayloads.group(payload);
+        ListTag questTags = EditorCommandPayloads.list(payload, EditorCommandPayloads.QUESTS, Tag.TAG_STRING);
+        if (EditorCommandPayloads.exceedsLimit(questTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
-        editor.copyQuestsToClipboard(player, group, EditorCommandPayloadReader.questIds(payload));
+        editor.copyQuestsToClipboard(player, group, EditorCommandPayloads.questIds(payload));
     }
 
     private static void pasteClipboard(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        int x = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.X);
-        int y = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.Y);
+        String group = EditorCommandPayloads.group(payload);
+        int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
+        int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
         editor.pasteClipboardInGroup(player, group, x, y);
     }
 
     private static void pasteBlueprint(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        int x = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.X);
-        int y = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.Y);
-        CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloadReader.compound(payload, EditorCommandPayloadKeys.BLUEPRINT));
+        String group = EditorCommandPayloads.group(payload);
+        int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
+        int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
+        CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloads.compound(payload, EditorCommandPayloads.BLUEPRINT));
         if (blueprint.isEmpty()) {
             return;
         }

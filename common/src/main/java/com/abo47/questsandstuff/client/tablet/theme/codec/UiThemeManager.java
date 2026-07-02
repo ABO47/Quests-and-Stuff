@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Owns the process-global tablet theme. Existing render code reads `ModColors`
+ * Owns the process-global tablet theme. Existing render code reads `TabletColors`
  * statics directly, so all palette mutation is routed through this manager.
  */
 public final class UiThemeManager {
@@ -177,28 +177,28 @@ public final class UiThemeManager {
 
     private static void applyUiPalette(UiThemeState state) {
         Map<String, Integer> uiColors = state.uiColors;
-        ModColors.SURFACE_BASE = uiColors.getOrDefault(UI_SURFACE_BASE, ModColors.DEFAULT_SURFACE_BASE);
-        ModColors.SURFACE_PANEL = uiColors.getOrDefault(UI_SURFACE_PANEL, ModColors.DEFAULT_SURFACE_PANEL);
-        ModColors.SURFACE_PANEL_ALT = uiColors.getOrDefault(UI_SURFACE_PANEL_ALT, ModColors.DEFAULT_SURFACE_PANEL_ALT);
-        ModColors.BORDER_BASE = uiColors.getOrDefault(UI_BORDER_BASE, ModColors.DEFAULT_BORDER_BASE);
-        ModColors.BORDER_ACCENT = uiColors.getOrDefault(UI_BORDER_ACCENT, ModColors.DEFAULT_BORDER_ACCENT);
-        ModColors.TEXT_PRIMARY = uiColors.getOrDefault(UI_TEXT_PRIMARY, ModColors.DEFAULT_TEXT_PRIMARY);
-        ModColors.TEXT_SECONDARY = uiColors.getOrDefault(UI_TEXT_SECONDARY, ModColors.DEFAULT_TEXT_SECONDARY);
-        ModColors.TEXT_MUTED = uiColors.getOrDefault(UI_TEXT_MUTED, ModColors.DEFAULT_TEXT_MUTED);
-        ModColors.SUCCESS = uiColors.getOrDefault(UI_SUCCESS, ModColors.DEFAULT_SUCCESS);
-        ModColors.WARNING = uiColors.getOrDefault(UI_WARNING, ModColors.DEFAULT_WARNING);
-        ModColors.ERROR = uiColors.getOrDefault(UI_ERROR, ModColors.DEFAULT_ERROR);
-        ModColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, ModColors.DEFAULT_INTERACTIVE);
-        int scrollTrack = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_TRACK, ModColors.DEFAULT_SCROLL_TRACK);
-        int scrollThumb = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_THUMB, ModColors.DEFAULT_SCROLL_THUMB);
-        if (scrollTrack == ModColors.DEFAULT_SCROLL_TRACK && ModColors.BORDER_BASE != ModColors.DEFAULT_BORDER_BASE) {
-            scrollTrack = ModColors.BORDER_BASE;
+        TabletColors.SURFACE_BASE = uiColors.getOrDefault(UI_SURFACE_BASE, TabletColors.DEFAULT_SURFACE_BASE);
+        TabletColors.SURFACE_PANEL = uiColors.getOrDefault(UI_SURFACE_PANEL, TabletColors.DEFAULT_SURFACE_PANEL);
+        TabletColors.SURFACE_PANEL_ALT = uiColors.getOrDefault(UI_SURFACE_PANEL_ALT, TabletColors.DEFAULT_SURFACE_PANEL_ALT);
+        TabletColors.BORDER_BASE = uiColors.getOrDefault(UI_BORDER_BASE, TabletColors.DEFAULT_BORDER_BASE);
+        TabletColors.BORDER_ACCENT = uiColors.getOrDefault(UI_BORDER_ACCENT, TabletColors.DEFAULT_BORDER_ACCENT);
+        TabletColors.TEXT_PRIMARY = uiColors.getOrDefault(UI_TEXT_PRIMARY, TabletColors.DEFAULT_TEXT_PRIMARY);
+        TabletColors.TEXT_SECONDARY = uiColors.getOrDefault(UI_TEXT_SECONDARY, TabletColors.DEFAULT_TEXT_SECONDARY);
+        TabletColors.TEXT_MUTED = uiColors.getOrDefault(UI_TEXT_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
+        TabletColors.SUCCESS = uiColors.getOrDefault(UI_SUCCESS, TabletColors.DEFAULT_SUCCESS);
+        TabletColors.WARNING = uiColors.getOrDefault(UI_WARNING, TabletColors.DEFAULT_WARNING);
+        TabletColors.ERROR = uiColors.getOrDefault(UI_ERROR, TabletColors.DEFAULT_ERROR);
+        TabletColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
+        int scrollTrack = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
+        int scrollThumb = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
+        if (scrollTrack == TabletColors.DEFAULT_SCROLL_TRACK && TabletColors.BORDER_BASE != TabletColors.DEFAULT_BORDER_BASE) {
+            scrollTrack = TabletColors.BORDER_BASE;
         }
-        if (scrollThumb == ModColors.DEFAULT_SCROLL_THUMB && ModColors.INTERACTIVE != ModColors.DEFAULT_INTERACTIVE) {
-            scrollThumb = ModColors.INTERACTIVE;
+        if (scrollThumb == TabletColors.DEFAULT_SCROLL_THUMB && TabletColors.INTERACTIVE != TabletColors.DEFAULT_INTERACTIVE) {
+            scrollThumb = TabletColors.INTERACTIVE;
         }
-        ModColors.SCROLL_TRACK = scrollTrack;
-        ModColors.SCROLL_THUMB = scrollThumb;
+        TabletColors.SCROLL_TRACK = scrollTrack;
+        TabletColors.SCROLL_THUMB = scrollThumb;
     }
 
     public record ThemeInfo(String id, String label, int panel, int panelAlt, int accent, int success, int text) {

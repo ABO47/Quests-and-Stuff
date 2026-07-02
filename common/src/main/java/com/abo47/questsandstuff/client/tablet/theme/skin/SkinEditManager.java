@@ -9,9 +9,9 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.TabletColors;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -111,9 +111,9 @@ public final class SkinEditManager {
 
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActions.action(
-                TabletVocabulary.text("ui.questsandstuff.skin.change_texture"),
+                TabletTranslationKeys.text("ui.questsandstuff.skin.change_texture"),
                 "image",
-                ModColors.INTERACTIVE,
+                TabletColors.INTERACTIVE,
                 () -> {
                     root.closeContextMenu();
                     state.modal.skinEditFillTarget = targetKey;
@@ -123,25 +123,25 @@ public final class SkinEditManager {
 
         List<ContextAction> modeActions = new ArrayList<>();
         modeActions.add(ContextActions.action(
-                TabletVocabulary.text("ui.questsandstuff.skin.mode_stretch"),
+                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"),
                 "size",
-                currentMode.equals("stretch") ? ModColors.SUCCESS : ModColors.TEXT_SECONDARY,
+                currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     root.closeContextMenu();
                     setFillMode(state, targetKey, "stretch", currentAsset, root, refresher);
                 }));
         modeActions.add(ContextActions.action(
-                TabletVocabulary.text("ui.questsandstuff.skin.mode_tile"),
+                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
                 "grid",
-                currentMode.equals("tile") ? ModColors.SUCCESS : ModColors.TEXT_SECONDARY,
+                currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     root.closeContextMenu();
                     setFillMode(state, targetKey, "tile", currentAsset, root, refresher);
                 }));
         actions.add(ContextActions.submenu(
-                TabletVocabulary.text("ui.questsandstuff.skin.change_mode"),
+                TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "style",
-                ModColors.TEXT_PRIMARY,
+                TabletColors.TEXT_PRIMARY,
                 modeActions));
 
         String removeKey = overrideKey;
@@ -151,9 +151,9 @@ public final class SkinEditManager {
         if (rawOverride != null && !rawOverride.isBlank()) {
             final String removalTarget = removeKey;
             actions.add(ContextActions.action(
-                    TabletVocabulary.text("ui.questsandstuff.skin.remove_texture"),
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     "delete",
-                    ModColors.ERROR,
+                    TabletColors.ERROR,
                     () -> {
                         root.closeContextMenu();
                         state.root.skinFillOverrides.remove(removalTarget);
@@ -175,7 +175,7 @@ public final class SkinEditManager {
         int py = ContextMenuPlacement.fitBelowOrAbove(mouseY, screenH, menuH);
 
         root.setContextMenu(
-                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), ModColors.BORDER_BASE, state, a -> {}),
+                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> {}),
                 px, py, menuW, menuH
         );
     }

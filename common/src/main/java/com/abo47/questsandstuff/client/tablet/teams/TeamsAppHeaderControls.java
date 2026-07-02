@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.refreshActiveTablet;
 
@@ -125,9 +125,9 @@ final class TeamsAppHeaderControls {
     private static ButtonWidget headerIconButton(int x, int y, String icon, int color,
                                                   java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, color),
-                TabletIconTextButton.State.of(withAlpha(color, 66), ModColors.BORDER_ACCENT, color),
-                TabletIconTextButton.State.of(withAlpha(color, 90), color, ModColors.TEXT_PRIMARY)
+                TabletIconTextButton.State.of(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, color),
+                TabletIconTextButton.State.of(withAlpha(color, 66), TabletColors.BORDER_ACCENT, color),
+                TabletIconTextButton.State.of(withAlpha(color, 90), color, TabletColors.TEXT_PRIMARY)
         );
         return TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals, callback);
     }

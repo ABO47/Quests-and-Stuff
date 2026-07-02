@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal.panel;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletEntityVariantModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletIconPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
-import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesManagerModal;
+import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletRecipePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
@@ -24,8 +24,8 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStructurePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -59,7 +59,7 @@ public final class ModalPanelRouter {
                 return null;
             }, state -> false),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, TabletEntityVariantModal::rebuild, state -> state.pickers.entityVariantSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesManagerModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.SETTINGS_PANEL, (modal, state, player, refresh, w, h) -> {
                 TabletSettingsModal.rebuild(modal, state, refresh, w, h);
                 return null;
@@ -89,7 +89,7 @@ public final class ModalPanelRouter {
                 if (alpha <= 0) {
                     return;
                 }
-                Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         };
         overlay.addWidget(dim);
@@ -100,7 +100,7 @@ public final class ModalPanelRouter {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
-        modal.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 252), ModColors.BORDER_ACCENT));
+        modal.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 252), TabletColors.BORDER_ACCENT));
         TextFieldWidget searchField = descriptor.rebuild(modal, state, player, refresh, w, h);
         modal.setActive(!state.modal.modalWindowClosing);
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {

@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.teams;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -65,24 +65,24 @@ final class TeamsMemberCardRenderer {
         boolean isOwnerMember = member.role() == ClientTeamCache.ClientMember.Role.OWNER;
 
         WidgetGroup card = new WidgetGroup(0, 0, cardW, CARD_H);
-        card.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
+        card.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
 
         PlayerFaceTexture faceTexture = new PlayerFaceTexture(member.uuid(), member.name());
 
         ButtonWidget headBtn = new ButtonWidget(1, 1, CARD_H - 2, CARD_H - 2,
-                Surfaces.group(faceTexture), cd -> {});
+                SurfaceFactory.group(faceTexture), cd -> {});
         headBtn.setClientSideWidget();
 
         int textX = CARD_H + 4;
 
         int nameY = (CARD_H - 9 - 2 - 9) / 2;
         int roleY = nameY + 9 + 2;
-        LabelWidget nameLabel = label(textX, nameY, member.name(), ModColors.TEXT_PRIMARY);
+        LabelWidget nameLabel = label(textX, nameY, member.name(), TabletColors.TEXT_PRIMARY);
         LabelWidget roleLabel = label(textX, roleY,
                 isOwnerMember
                         ? I18n.get("ui.questsandstuff.teams.owner")
                         : I18n.get("ui.questsandstuff.teams.member"),
-                isOwnerMember ? ModColors.WARNING : ModColors.TEXT_MUTED);
+                isOwnerMember ? TabletColors.WARNING : TabletColors.TEXT_MUTED);
 
         card.addWidget(headBtn);
         card.addWidget(nameLabel);

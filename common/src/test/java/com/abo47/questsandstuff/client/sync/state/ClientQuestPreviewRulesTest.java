@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,15 +62,15 @@ class ClientQuestPreviewRulesTest {
     @Test
     void questPreviewRulesRespectUnlockedAndCompletedState() {
         CompoundTag quest = new CompoundTag();
-        quest.putString(QuestSyncKeys.Quest.HIDDEN_MODE, "locked");
-        quest.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, true);
-        quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, false);
-        quest.putBoolean(QuestSyncKeys.Quest.COMPLETED, false);
+        quest.putString(SyncKeys.Quest.HIDDEN_MODE, "locked");
+        quest.putBoolean(SyncKeys.Quest.VISUAL_HIDDEN, true);
+        quest.putBoolean(SyncKeys.Quest.UNLOCKED, false);
+        quest.putBoolean(SyncKeys.Quest.COMPLETED, false);
 
         assertTrue(ClientQuestStateFacade.questLockedPreview(quest));
         assertTrue(ClientQuestStateFacade.questHiddenPreview(quest));
 
-        quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, true);
+        quest.putBoolean(SyncKeys.Quest.UNLOCKED, true);
 
         assertFalse(ClientQuestStateFacade.questLockedPreview(quest));
         assertFalse(ClientQuestStateFacade.questHiddenPreview(quest));
@@ -78,7 +78,7 @@ class ClientQuestPreviewRulesTest {
 
     private static void setQuestState(String questId, boolean unlocked, boolean completed) {
         CompoundTag quest = ClientQuestState.mutableQuest(questId);
-        quest.putBoolean(QuestSyncKeys.Quest.UNLOCKED, unlocked);
-        quest.putBoolean(QuestSyncKeys.Quest.COMPLETED, completed);
+        quest.putBoolean(SyncKeys.Quest.UNLOCKED, unlocked);
+        quest.putBoolean(SyncKeys.Quest.COMPLETED, completed);
     }
 }

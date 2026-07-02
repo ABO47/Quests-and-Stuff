@@ -3,10 +3,10 @@ package com.abo47.questsandstuff.client.tablet.teams;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.WindowChrome;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
 import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
@@ -20,7 +20,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class TeamsInviteCodeModal {
     private static final int PAD = 8;
@@ -54,24 +54,24 @@ final class TeamsInviteCodeModal {
         int px = Math.max(8, (layerW - panelW) / 2);
         int py = Math.max(24, (layerH - panelH) / 2);
 
-        WidgetGroup panel = Surfaces.panel(px, py, panelW, panelH,
-                withAlpha(ModColors.elevatedSurface(), 245), ModColors.BORDER_ACCENT);
+        WidgetGroup panel = SurfaceFactory.panel(px, py, panelW, panelH,
+                withAlpha(TabletColors.elevatedSurface(), 245), TabletColors.BORDER_ACCENT);
 
         panel.addWidget(label(PAD, 6,
                 I18n.get(state.teams.inviteCodeImportMode
                         ? "ui.questsandstuff.teams.enter_invite_code"
                         : "ui.questsandstuff.teams.share_invite"),
-                ModColors.TEXT_PRIMARY));
+                TabletColors.TEXT_PRIMARY));
 
         int closeX = panelW - PAD - BTN_SIZE;
-        panel.addWidget(WindowChrome.closeIconButton(closeX, 4, BTN_SIZE, BTN_SIZE, click -> {
+        panel.addWidget(ChromeFactory.closeIconButton(closeX, 4, BTN_SIZE, BTN_SIZE, click -> {
             state.teams.inviteCodeModalOpen = false;
             refresh.run();
         }));
 
         int x = closeX - GAP - BTN_SIZE;
         if (state.teams.inviteCodeImportMode) {
-            panel.addWidget(WindowChrome.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
                     "manual_check", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS),
                     click -> {
                         String code = state.teams.inviteCodeDraft == null ? "" : state.teams.inviteCodeDraft.trim().toUpperCase();
@@ -87,7 +87,7 @@ final class TeamsInviteCodeModal {
                         refresh.run();
                     }));
             x -= GAP + BTN_SIZE;
-            panel.addWidget(WindowChrome.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
                     "paste", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
                     click -> {
                         state.teams.inviteCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
@@ -107,7 +107,7 @@ final class TeamsInviteCodeModal {
                 state.teams.inviteCodeMessage = "";
             }
             int renewX = x - GAP - BTN_SIZE;
-            panel.addWidget(WindowChrome.iconButton(renewX, 4, BTN_SIZE, BTN_SIZE,
+            panel.addWidget(ChromeFactory.iconButton(renewX, 4, BTN_SIZE, BTN_SIZE,
                     "reset_quest", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_WARNING),
                     click -> {
                         state.teams.inviteCodeDraft = "";
@@ -116,7 +116,7 @@ final class TeamsInviteCodeModal {
                         ModNetwork.sendToServer(new C2STeamInviteCodePacket());
                         refresh.run();
                     }));
-            panel.addWidget(WindowChrome.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
                     "copy", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
                     click -> {
                         Minecraft.getInstance().keyboardHandler.setClipboard(
@@ -130,7 +130,7 @@ final class TeamsInviteCodeModal {
                 new com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget(
                         PAD, CODE_Y, panelW - PAD * 2, CODE_H);
         editor.codeEditor.setLanguageDefinitionUnformatted();
-        editor.setBackground(Surfaces.bordered(ModColors.recessedSurface(), ModColors.BORDER_BASE));
+        editor.setBackground(SurfaceFactory.bordered(TabletColors.recessedSurface(), TabletColors.BORDER_BASE));
         String draft = state.teams.inviteCodeDraft == null ? "" : state.teams.inviteCodeDraft;
         editor.setLines(draft.isBlank() ? List.of("") : List.of(draft.split("\\R", -1)));
         editor.setFocus(true);
@@ -139,7 +139,7 @@ final class TeamsInviteCodeModal {
         if (state.teams.inviteCodeMessage != null && !state.teams.inviteCodeMessage.isBlank()) {
             panel.addWidget(label(PAD, CODE_Y + CODE_H + 8,
                     state.teams.inviteCodeMessage,
-                    state.teams.inviteCodeMessageSuccess ? ModColors.SUCCESS : ModColors.WARNING));
+                    state.teams.inviteCodeMessageSuccess ? TabletColors.SUCCESS : TabletColors.WARNING));
         }
 
         modal.addWidget(QuestsAndStuffConfig.popupWindowAnimationsEnabled()

@@ -14,8 +14,8 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandCl
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -40,7 +40,7 @@ final class CanvasContextEdgeActions {
         addConnectionLayerActions(actions, canvasViewport, state, selectedGroup);
         if (CanvasContextDeleteController.canDeleteContext(state)) {
             String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
-            actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
+            actions.add(ContextActions.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
                 CanvasContextDeleteController.runDeleteAction(player, state);
                 canvasViewport.refresh();
             }));
@@ -49,33 +49,33 @@ final class CanvasContextEdgeActions {
 
     private static void addQuestEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup, String sourceId, String targetId) {
         boolean direct = CanvasRenderer.isConnectionDirect(state, selectedGroup, sourceId, targetId);
-        actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", TabletColors.INTERACTIVE, () -> {
             EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = CanvasRenderer.connectionColor(state, selectedGroup, sourceId, targetId);
             ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
         boolean hidden = CanvasRenderer.isConnectionHidden(state, selectedGroup, sourceId, targetId);
-        actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ModColors.INTERACTIVE : ModColors.WARNING, () -> {
+        actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? TabletColors.INTERACTIVE : TabletColors.WARNING, () -> {
             EditorCanvasCommandClient.runConnectionHiddenAction(player, targetId, sourceId, !hidden);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
             ModalOpenActions.openConnectionTexturePicker(state, selectedGroup, sourceId, targetId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
         if (!ConnectionRenderer.connectionTexture(state, selectedGroup, sourceId, targetId).isBlank()) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", ModColors.WARNING, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", TabletColors.WARNING, () -> {
                 EditorCanvasCommandClient.runConnectionTextureAction(player, targetId, sourceId, "");
                 ConnectionRenderer.setConnectionTexture(state, selectedGroup, sourceId, targetId, "");
                 ContextMenuState.clearDeleteConfirm(state);
@@ -87,33 +87,33 @@ final class CanvasContextEdgeActions {
 
     private static void addEcEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup, String sourceId, String targetId) {
         boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, selectedGroup, sourceId, targetId);
-        actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", TabletColors.INTERACTIVE, () -> {
             EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_ec_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
             canvasViewport.refresh();
         }));
         boolean hidden = ConnectionRenderer.isConnectionHidden(state, selectedGroup, sourceId, targetId);
-        actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ModColors.INTERACTIVE : ModColors.WARNING, () -> {
+        actions.add(new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? TabletColors.INTERACTIVE : TabletColors.WARNING, () -> {
             EditorCanvasCommandClient.runEcConnectionHiddenAction(player, state, sourceId, targetId, !hidden);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = ConnectionRenderer.ecConnectionColor(state, selectedGroup, sourceId, targetId);
             ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedGroup, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
-        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ModColors.INTERACTIVE, () -> {
+        actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
             ModalOpenActions.openConnectionTexturePicker(state, selectedGroup, sourceId, targetId);
             ContextMenuState.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
         if (!ConnectionRenderer.ecConnectionTexture(state, selectedGroup, sourceId, targetId).isBlank()) {
-            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", ModColors.WARNING, () -> {
+            actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", TabletColors.WARNING, () -> {
                 EditorCanvasCommandClient.runEcConnectionTextureAction(state, sourceId, targetId, "");
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_ec_connection_texture source={} target={}", sourceId, targetId);
@@ -126,7 +126,7 @@ final class CanvasContextEdgeActions {
         String edgeId = CanvasRenderer.edgeKey(state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
         String layerKey = CanvasLayerOrdering.connectionKey(edgeId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
-            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ModColors.INTERACTIVE, () -> {
+            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", TabletColors.INTERACTIVE, () -> {
                 CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, true);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", edgeId);
@@ -134,7 +134,7 @@ final class CanvasContextEdgeActions {
             }));
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
-            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ModColors.TEXT_MUTED, () -> {
+            actions.add(ContextActions.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", TabletColors.TEXT_MUTED, () -> {
                 CanvasLayerMutations.moveConnectionLayer(state, selectedGroup, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, false);
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", edgeId);

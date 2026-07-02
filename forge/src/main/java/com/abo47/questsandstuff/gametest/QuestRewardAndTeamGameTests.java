@@ -7,16 +7,16 @@ import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProvider;
 import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
 import com.mojang.authlib.GameProfile;
@@ -591,9 +591,9 @@ public final class QuestRewardAndTeamGameTests {
         Path root = Files.createTempDirectory("qas_" + rootName + "_");
         QuestDefinitionStore store = new QuestDefinitionStore(root);
         QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-        QuestPerformanceTracker perf = new QuestPerformanceTracker();
-        QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-        QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+        PerformanceTracker perf = new PerformanceTracker();
+        SyncService sync = new SyncService(store, progressData, perf);
+        RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
         sync.setVisibilityFilter(engine::isVisibleFor);
         return new Bundle(store, progressData, engine);
     }
@@ -634,7 +634,7 @@ public final class QuestRewardAndTeamGameTests {
                         id,
                         "",
                         List.of(),
-                        Map.of("Main", ChapterDefinition.DEFAULT),
+                        Map.of("Main", GroupDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),
@@ -667,7 +667,7 @@ public final class QuestRewardAndTeamGameTests {
     private record Bundle(
             QuestDefinitionStore store,
             QuestProgressSavedData progressData,
-            QuestRuntimeEngine engine
+            RuntimeEngine engine
     ) {
         private void close() {
             store.shutdown();

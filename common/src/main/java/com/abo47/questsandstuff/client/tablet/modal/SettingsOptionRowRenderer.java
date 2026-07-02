@@ -4,9 +4,9 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -14,7 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
@@ -41,20 +41,20 @@ final class SettingsOptionRowRenderer {
         int rowX = ROW_INSET;
         int rowH = ROW_H - ROW_INSET;
         int cardW = Math.max(1, rowW - ROW_INSET * 2);
-        int fill = enabled ? withAlpha(ModColors.SUCCESS, 28) : withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
-        int border = enabled ? withAlpha(ModColors.SUCCESS, 170) : ModColors.BORDER_BASE;
+        int fill = enabled ? withAlpha(TabletColors.SUCCESS, 28) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int border = enabled ? withAlpha(TabletColors.SUCCESS, 170) : TabletColors.BORDER_BASE;
         list.addWidget(panel(rowX, rowY, cardW, rowH, fill, border));
 
         Component[] tooltips = tooltips(option);
         ButtonWidget hit = flatHitButton(rowX, rowY, cardW, rowH, click -> toggle(option, refresh));
-        hit.setHoverTexture(Surfaces.transparentBorder(ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)));
+        hit.setHoverTexture(SurfaceFactory.transparentBorder(TabletColors.BORDER_ACCENT));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)));
         hit.setHoverTooltips(tooltips);
 
         int switchX = Math.max(rowX + 104, rowX + cardW - ToggleSwitchWidget.DEFAULT_WIDTH - SWITCH_GAP);
         int textW = Math.max(16, switchX - rowX - 14);
         int crop = Math.max(14, textW / 6);
-        int titleColor = enabled ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
+        int titleColor = enabled ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY;
         list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), titleColor));
         list.addWidget(new ToggleSwitchWidget(
                 option.id(),
@@ -74,20 +74,20 @@ final class SettingsOptionRowRenderer {
         int rowX = ROW_INSET;
         int rowH = ROW_H - ROW_INSET;
         int cardW = Math.max(1, rowW - ROW_INSET * 2);
-        list.addWidget(panel(rowX, rowY, cardW, rowH, withAlpha(ModColors.INTERACTIVE, 28), ModColors.BORDER_BASE));
+        list.addWidget(panel(rowX, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE));
         Component[] tooltips = tooltips(option);
         int iconSize = 14;
         int iconX = rowX + cardW - iconSize - SWITCH_GAP;
-        var texture = UiIconAtlas.iconTexture("hud_layout");
+        var texture = IconAtlas.iconTexture("hud_layout");
         if (texture != null) {
             list.addWidget(new ImageWidget(iconX, rowY + Math.max(1, (rowH - iconSize) / 2), iconSize, iconSize, texture));
         }
         int textW = Math.max(16, iconX - rowX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), ModColors.TEXT_PRIMARY));
+        list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
         ButtonWidget hit = flatHitButton(rowX, rowY, cardW, rowH, click -> option.runAction());
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 58), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82)));
+        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 58), TabletColors.BORDER_ACCENT));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(tooltips);
         list.addWidget(hit);
     }
@@ -96,7 +96,7 @@ final class SettingsOptionRowRenderer {
         int rowX = ROW_INSET;
         int rowH = ROW_H - ROW_INSET;
         int cardW = Math.max(1, rowW - ROW_INSET * 2);
-        list.addWidget(panel(rowX, rowY, cardW, rowH, withAlpha(ModColors.SURFACE_PANEL_ALT, 180), ModColors.BORDER_BASE));
+        list.addWidget(panel(rowX, rowY, cardW, rowH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 180), TabletColors.BORDER_BASE));
 
         Component[] tooltips = tooltips(option);
         int unitW = 18;
@@ -104,7 +104,7 @@ final class SettingsOptionRowRenderer {
         int fieldX = Math.max(rowX + 104, rowX + cardW - fieldW - unitW - SWITCH_GAP);
         int textW = Math.max(16, fieldX - rowX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), ModColors.TEXT_SECONDARY));
+        list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_SECONDARY));
 
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
         Runnable commit = () -> {
@@ -138,7 +138,7 @@ final class SettingsOptionRowRenderer {
         field.setHoverTooltips(tooltips);
         fieldRef[0] = field;
         list.addWidget(field);
-        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, TabletModalPanel.tr("ui.questsandstuff.settings.duration_unit_ms"), ModColors.TEXT_MUTED));
+        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, TabletModalPanel.tr("ui.questsandstuff.settings.duration_unit_ms"), TabletColors.TEXT_MUTED));
     }
 
     private static void toggle(SettingsOptionDescriptor option, Runnable refresh) {

@@ -35,7 +35,7 @@ class RecipePickerModeControllerTest {
     }
 
     @Test
-    void contentKindsSeparateRecipeFluidAndInventorySurfaces() {
+    void contentKindsSeparateRecipeFluidAndInventorySurfaceFactory() {
         assertEquals(RecipePickerModeController.ContentKind.RECIPES, RecipePickerModeController.contentKind(RecipePickerMode.ITEMS));
         assertEquals(RecipePickerModeController.ContentKind.RECIPES, RecipePickerModeController.contentKind(RecipePickerMode.TAGS));
         assertEquals(RecipePickerModeController.ContentKind.FLUIDS, RecipePickerModeController.contentKind(RecipePickerMode.FLUIDS));

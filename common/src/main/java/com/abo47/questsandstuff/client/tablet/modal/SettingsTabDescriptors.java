@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManagerEditScreen;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.client.Minecraft;
@@ -116,7 +116,7 @@ final class SettingsTabDescriptors {
                         "ui.questsandstuff.hud.layout.button",
                         "ui.questsandstuff.hud.layout.button_tooltip",
                         () -> {
-                            Minecraft.getInstance().setScreen(new QuestHudLayoutEditScreen());
+                            Minecraft.getInstance().setScreen(new QuestHudLayoutManagerEditScreen());
                             QuestsAndStuffMod.debugLog("[QnS:UI] hud layout editor opened from settings");
                         }
                 ),

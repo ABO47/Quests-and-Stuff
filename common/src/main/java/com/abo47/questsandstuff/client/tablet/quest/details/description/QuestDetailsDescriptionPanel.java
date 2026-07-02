@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,7 @@ public final class QuestDetailsDescriptionPanel {
         int viewportH = fit[1] - 1;
         state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, state.questDetails.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
-        canvas.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+        canvas.setBackground(SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
@@ -66,9 +66,9 @@ public final class QuestDetailsDescriptionPanel {
                     state.questDetails.questDetailsDescScrollDragging = dragging;
                 },
                 refresh,
-                ModColors.scrollTrack(state.questDetails.questDetailsDescScrollDragging),
-                ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true),
+                TabletColors.scrollTrack(state.questDetails.questDetailsDescScrollDragging),
+                TabletColors.scrollThumb(false),
+                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

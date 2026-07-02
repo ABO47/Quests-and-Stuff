@@ -82,7 +82,7 @@ public final class QuestCompletionSoundPlayer {
                     QuestsAndStuffMod.MODID,
                     "completion_asset/" + Integer.toHexString(path.toAbsolutePath().normalize().toString().hashCode())
             );
-            return id == null ? null : new AssetSoundInstance(id, path, volume);
+            return id == null ? null : new FileSoundInstance(id, path, volume);
         }
         if (assetSoundValue) {
             return new FadeableSimpleSoundInstance(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, volume);
@@ -107,7 +107,7 @@ public final class QuestCompletionSoundPlayer {
         }
         Path root = TabletUiFactory.ASSETS_ROOT_DIR.toAbsolutePath().normalize();
         Path path = root.resolve(relative).normalize();
-        if (!path.startsWith(root) || !Files.isRegularFile(path) || !AssetSoundInstance.canPlay(path)) {
+        if (!path.startsWith(root) || !Files.isRegularFile(path) || !FileSoundInstance.canPlay(path)) {
             return Optional.empty();
         }
         return Optional.of(path);

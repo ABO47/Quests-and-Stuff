@@ -2,11 +2,11 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -14,8 +14,8 @@ import net.minecraft.nbt.Tag;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURES;
-import static com.abo47.questsandstuff.quest.sync.QuestSyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;
+import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURES;
+import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;
 
 final class ConnectionStyleResolver {
     private ConnectionStyleResolver() {
@@ -23,17 +23,17 @@ final class ConnectionStyleResolver {
 
     static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
-        if (target != null && target.contains(QuestSyncKeys.Quest.CONNECTION_COLORS, Tag.TAG_COMPOUND)) {
-            CompoundTag colorsTag = target.getCompound(QuestSyncKeys.Quest.CONNECTION_COLORS);
+        if (target != null && target.contains(SyncKeys.Quest.CONNECTION_COLORS, Tag.TAG_COMPOUND)) {
+            CompoundTag colorsTag = target.getCompound(SyncKeys.Quest.CONNECTION_COLORS);
             if (colorsTag.contains(metadataKey, Tag.TAG_INT)) {
                 return colorsTag.getInt(metadataKey);
             }
         }
         Map<String, Integer> colors = state.canvas.connectionColorsByGroup.get(group);
         if (colors == null) {
-            return ModColors.TEXT_SECONDARY;
+            return TabletColors.TEXT_SECONDARY;
         }
-        return colors.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), ModColors.TEXT_SECONDARY);
+        return colors.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), TabletColors.TEXT_SECONDARY);
     }
 
     static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -41,8 +41,8 @@ final class ConnectionStyleResolver {
             return ecIsConnectionHidden(state, group, sourceQuestId, targetQuestId);
         }
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
-        if (target != null && target.contains(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
-            ListTag hiddenTag = target.getList(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING);
+        if (target != null && target.contains(SyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
+            ListTag hiddenTag = target.getList(SyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_STRING);
             for (int i = 0; i < hiddenTag.size(); i++) {
                 if (metadataKey.equals(hiddenTag.getString(i))) {
                     return true;
@@ -58,8 +58,8 @@ final class ConnectionStyleResolver {
             return ecIsConnectionDirect(state, group, sourceQuestId, targetQuestId);
         }
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
-        if (target != null && target.contains(QuestSyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND)) {
-            CompoundTag modes = target.getCompound(QuestSyncKeys.Quest.CONNECTION_MODES);
+        if (target != null && target.contains(SyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND)) {
+            CompoundTag modes = target.getCompound(SyncKeys.Quest.CONNECTION_MODES);
             if (modes.contains(metadataKey, Tag.TAG_STRING)) {
                 return QuestConnectionMode.fromSerializedName(modes.getString(metadataKey)) != QuestConnectionMode.GRID;
             }
@@ -126,13 +126,13 @@ final class ConnectionStyleResolver {
     static int ecConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
         CanvasExclusiveChoice ec = findEc(state, group, sourceQuestId);
         if (ec != null) {
-            return ec.connectionColors().getOrDefault(targetQuestId, ModColors.TEXT_SECONDARY);
+            return ec.connectionColors().getOrDefault(targetQuestId, TabletColors.TEXT_SECONDARY);
         }
         ec = findEc(state, group, targetQuestId);
         if (ec != null) {
-            return ec.connectionColors().getOrDefault(sourceQuestId, ModColors.TEXT_SECONDARY);
+            return ec.connectionColors().getOrDefault(sourceQuestId, TabletColors.TEXT_SECONDARY);
         }
-        return ModColors.TEXT_SECONDARY;
+        return TabletColors.TEXT_SECONDARY;
     }
 
     static boolean ecIsConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {

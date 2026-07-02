@@ -6,13 +6,13 @@ import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteRequest;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.abo47.questsandstuff.util.naming.QuestNaming;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 import net.minecraft.nbt.CompoundTag;
@@ -66,7 +66,7 @@ public final class ClipboardEditService {
             QuestDefinition definition = owner.definitionStore().quest(sourceId);
             if (definition != null) {
                 QuestDefinition snapshot = deepCopyDefinition(definition);
-                ChapterDefinition view = group.isBlank() ? null : definition.display().groups().get(group);
+                GroupDef view = group.isBlank() ? null : definition.display().groups().get(group);
                 if (view == null) {
                     view = firstVisibleGroupView(definition);
                 }
@@ -607,7 +607,7 @@ public final class ClipboardEditService {
         return definition.display().groups().keySet().stream().sorted().findFirst().orElse("");
     }
 
-    private static ChapterDefinition firstVisibleGroupView(QuestDefinition definition) {
+    private static GroupDef firstVisibleGroupView(QuestDefinition definition) {
         String group = firstVisibleGroup(definition);
         return group.isBlank() ? null : definition.display().groups().get(group);
     }

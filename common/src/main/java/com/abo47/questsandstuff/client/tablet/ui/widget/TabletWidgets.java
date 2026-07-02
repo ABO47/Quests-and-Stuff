@@ -3,9 +3,9 @@ package com.abo47.questsandstuff.client.tablet.ui.widget;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.render.WindowChrome;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -17,7 +17,7 @@ public final class TabletWidgets {
 
     public static WidgetGroup panel(int x, int y, int w, int h, int fill, int border) {
         WidgetGroup panel = new WidgetGroup(x, y, w, h);
-        panel.setBackground(Surfaces.bordered(fill, border));
+        panel.setBackground(SurfaceFactory.bordered(fill, border));
         return panel;
     }
 
@@ -50,17 +50,17 @@ public final class TabletWidgets {
     }
 
     public static ButtonWidget button(int x, int y, int w, int h, String text, int baseColor, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        var base = Surfaces.group(
-                Surfaces.bordered(baseColor, ModColors.subtleBorder()),
+        var base = SurfaceFactory.group(
+                SurfaceFactory.bordered(baseColor, TabletColors.subtleBorder()),
                 new TextTexture(text)
         );
-        var active = Surfaces.group(
-                Surfaces.controlPressed(activeColor),
+        var active = SurfaceFactory.group(
+                SurfaceFactory.controlPressed(activeColor),
                 new TextTexture(text)
         );
         ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
-        button.setHoverTexture(Surfaces.group(
-                Surfaces.controlHover(activeColor),
+        button.setHoverTexture(SurfaceFactory.group(
+                SurfaceFactory.controlHover(activeColor),
                 new TextTexture(text)
         ));
         button.setClickedTexture(active);
@@ -69,14 +69,14 @@ public final class TabletWidgets {
     }
 
     public static ButtonWidget closeIconButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        return WindowChrome.closeIconButton(x, y, w, h, callback);
+        return ChromeFactory.closeIconButton(x, y, w, h, callback);
     }
 
     public static ButtonWidget flatHitButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ButtonWidget button = new ButtonWidget(x, y, w, h, Surfaces.transparentFill(), callback);
+        ButtonWidget button = new ButtonWidget(x, y, w, h, SurfaceFactory.transparentFill(), callback);
         button.setClientSideWidget();
-        button.setHoverTexture(Surfaces.transparentFill());
-        button.setClickedTexture(Surfaces.transparentFill());
+        button.setHoverTexture(SurfaceFactory.transparentFill());
+        button.setClickedTexture(SurfaceFactory.transparentFill());
         return button;
     }
 

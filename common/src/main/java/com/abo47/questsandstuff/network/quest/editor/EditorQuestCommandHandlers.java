@@ -30,98 +30,98 @@ final class EditorQuestCommandHandlers {
     private static void questIcon(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestIcon(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.ICON)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.ICON)
         );
     }
 
     private static void questRepeatable(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestRepeatable(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.ENABLED)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.ENABLED)
         );
     }
 
     private static void questHiddenMode(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestHiddenMode(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.MODE)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.MODE)
         );
     }
 
     private static void questVisualHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestVisualHidden(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.HIDDEN)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.HIDDEN)
         );
     }
 
     private static void completionSound(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSound(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.SOUND)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.SOUND)
         );
     }
 
     private static void completionSoundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSound(
                 player,
-                EditorCommandPayloadReader.questIds(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.SOUND)
+                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.SOUND)
         );
     }
 
     private static void completionSoundVolume(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSoundVolume(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.VOLUME)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.VOLUME)
         );
     }
 
     private static void completionSoundVolumeMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSoundVolume(
                 player,
-                EditorCommandPayloadReader.questIds(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.VOLUME)
+                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.VOLUME)
         );
     }
 
     private static void completionHudBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionHudBackground(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND)
         );
     }
 
     private static void completionHudBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionHudBackground(
                 player,
-                EditorCommandPayloadReader.questIds(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND)
+                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND)
         );
     }
 
     private static void questBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestBackground(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRAYSCALE)
         );
     }
 
     private static void questBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestBackground(
                 player,
-                EditorCommandPayloadReader.questIds(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.BACKGROUND),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRAYSCALE)
+                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRAYSCALE)
         );
     }
 }

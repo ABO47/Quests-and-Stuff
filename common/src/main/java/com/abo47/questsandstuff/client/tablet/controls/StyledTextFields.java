@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.util.naming.SafeNames;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -50,7 +50,7 @@ public final class StyledTextFields {
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
         field.setValidator(SearchNormalizer::normalizeUserSearch);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 
@@ -124,8 +124,8 @@ public final class StyledTextFields {
 
     public static void applyStandardStyle(TextFieldWidget field, int fillColor, int borderColor) {
         field.setBordered(false);
-        field.setBackground(Surfaces.bordered(fillColor, borderColor));
-        field.setTextColor(ModColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(fillColor, borderColor));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
     }
 
     public static TextFieldWidget textField(
@@ -141,7 +141,7 @@ public final class StyledTextFields {
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 
@@ -169,8 +169,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyResourceLocationValidator(field);
     }
@@ -199,8 +199,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyCompoundTagValidator(field);
     }
@@ -285,8 +285,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 focusResponder,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyIntegerValidator(field, min, max);
     }
@@ -318,8 +318,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyFloatValidator(field, min, max);
     }
@@ -347,8 +347,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyPercentageValidator(field);
     }
@@ -377,8 +377,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyIdentifierValidator(field);
     }
@@ -408,7 +408,7 @@ public final class StyledTextFields {
         field.setClientSideWidget();
         field.setMaxStringLength(9);
         field.setValidator(SearchNormalizer::normalizeHexInput);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 

@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.HsbColorWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -64,7 +64,7 @@ public final class TabletColorPickerModal {
         hexField.setCurrentString(state.pickers.colorHexDraft);
         left.addWidget(hexField);
         ActionButtons.iconAction(left, 8, lib.bodyH() - 20, lib.leftW() - 16,
-                "mouse-pointer-click", TabletModalPanel.tr("ui.questsandstuff.common.use"), ModColors.SUCCESS, click -> {
+                "mouse-pointer-click", TabletModalPanel.tr("ui.questsandstuff.common.use"), TabletColors.SUCCESS, click -> {
             TabletModalPanel.applyColorPickerValue(player, state, target, TabletModalPanel.currentColorPickerValue(state, target));
             closeColorPicker(state);
             refresh.run();
@@ -87,7 +87,7 @@ public final class TabletColorPickerModal {
         );
         scroll.setValue(layout.scrollStart());
         if (state.pickers.textColorPalette.isEmpty()) {
-            right.addWidget(label(12, paletteTop + 8, TabletModalPanel.tr("ui.questsandstuff.common.none_short"), ModColors.TEXT_MUTED));
+            right.addWidget(label(12, paletteTop + 8, TabletModalPanel.tr("ui.questsandstuff.common.none_short"), TabletColors.TEXT_MUTED));
         } else {
             for (int i = layout.scrollStart(); i < layout.visibleEnd(); i++) {
                 int visibleIndex = i - layout.scrollStart();
@@ -113,8 +113,8 @@ public final class TabletColorPickerModal {
                     }
                     refresh.run();
                 });
-                hit.setBackground(Surfaces.bordered(color, ModColors.BORDER_BASE));
-                hit.setHoverTexture(Surfaces.transparentBorder(ModColors.BORDER_ACCENT));
+                hit.setBackground(SurfaceFactory.bordered(color, TabletColors.BORDER_BASE));
+                hit.setHoverTexture(SurfaceFactory.transparentBorder(TabletColors.BORDER_ACCENT));
                 right.addWidget(hit);
             }
         }
@@ -125,13 +125,13 @@ public final class TabletColorPickerModal {
                     scroll::value, layout::maxStart, layout::knobH,
                     value -> scroll.setValue(value),
                     scroll::dragging, scroll::setDragging, refresh,
-                    ModColors.scrollTrack(scroll.dragging()),
-                    ModColors.scrollThumb(false), ModColors.scrollThumb(true),
+                    TabletColors.scrollTrack(scroll.dragging()),
+                    TabletColors.scrollThumb(false), TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }
         ActionButtons.iconAction(right, 4, lib.bodyH() - 20, lib.rightW() - 8,
-                "add", TabletModalPanel.tr("ui.questsandstuff.color.save_to_palette"), ModColors.INTERACTIVE, click -> {
+                "add", TabletModalPanel.tr("ui.questsandstuff.color.save_to_palette"), TabletColors.INTERACTIVE, click -> {
             int chosen = TabletModalPanel.currentColorPickerValue(state, target);
             if (!state.pickers.textColorPalette.contains(chosen)) {
                 state.pickers.textColorPalette.add(chosen);
@@ -162,7 +162,7 @@ public final class TabletColorPickerModal {
         int ctxX = state.pickers.colorPaletteContextX;
         int ctxY = state.pickers.colorPaletteContextY;
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", TabletColors.INTERACTIVE, () -> {
             TabletModalPanel.applyColorPickerValue(player, state, target, state.pickers.colorPaletteContextValue);
             closeColorPicker(state);
             refresh.run();
@@ -176,7 +176,7 @@ public final class TabletColorPickerModal {
         }));
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
-        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, ModColors.BORDER_ACCENT, state, action -> {
+        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, TabletColors.BORDER_ACCENT, state, action -> {
             if (action.closeAfterClick()) {
                 state.pickers.colorPaletteContextOpen = false;
                 state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;

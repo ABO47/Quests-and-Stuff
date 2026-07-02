@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.network.quest.runtime;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -20,6 +20,6 @@ public record C2STogglePinPacket(String questId) {
         if (player == null || normalizedQuestId.isBlank()) {
             return;
         }
-        context.enqueueWork(() -> QuestServices.engine(player.server).togglePin(player, normalizedQuestId));
+        context.enqueueWork(() -> QuestServiceRegistry.engine(player.server).togglePin(player, normalizedQuestId));
     }
 }

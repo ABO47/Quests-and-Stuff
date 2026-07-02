@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -21,7 +21,7 @@ public final class ClientEditorMutationApplier {
         if (normalizedId.isBlank()) {
             return;
         }
-        if (QuestSyncKeys.EditorAction.REMOVE.equals(normalizedAction)) {
+        if (SyncKeys.EditorAction.REMOVE.equals(normalizedAction)) {
             ClientQuestState.removeQuest(normalizedId);
             return;
         }
@@ -31,17 +31,17 @@ public final class ClientEditorMutationApplier {
     }
 
     private static void ensureGroupsFromQuestTag(String action, String questId, CompoundTag questTag) {
-        if (questTag == null || !questTag.contains(QuestSyncKeys.Quest.GROUPS, Tag.TAG_COMPOUND)) {
+        if (questTag == null || !questTag.contains(SyncKeys.Quest.GROUPS, Tag.TAG_COMPOUND)) {
             return;
         }
-        CompoundTag groups = questTag.getCompound(QuestSyncKeys.Quest.GROUPS);
+        CompoundTag groups = questTag.getCompound(SyncKeys.Quest.GROUPS);
         for (String rawGroup : groups.getAllKeys()) {
             String group = ClientChapterState.normalizeGroup(rawGroup);
             if (group.isBlank()) {
                 continue;
             }
             boolean missing = !ClientChapterState.containsGroup(group);
-            ClientQuestLocalMutations.createGroupLocal(group);
+            ClientQuestMutator.createGroupLocal(group);
             if (missing && ClientChapterState.containsGroup(group)) {
                 QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} group={}", action, questId, group);
             }

@@ -7,9 +7,9 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +35,7 @@ final class QuestObjectiveTypePickerMenu {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
         int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -58,10 +58,10 @@ final class QuestObjectiveTypePickerMenu {
         }
 
         List<ContextAction> actions = new ArrayList<>();
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestVocabulary.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
         return actions;
     }
 
@@ -87,7 +87,7 @@ final class QuestObjectiveTypePickerMenu {
             }
         }
         if (!children.isEmpty()) {
-            actions.add(ContextActions.submenu(TabletVocabulary.text(labelKey), icon, ModColors.INTERACTIVE, children));
+            actions.add(ContextActions.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
         }
     }
 
@@ -110,7 +110,7 @@ final class QuestObjectiveTypePickerMenu {
             CompoundTag quest,
             String targetId
     ) {
-        return ContextActions.action(choice.label(), choice.icon(), ModColors.INTERACTIVE, () -> {
+        return ContextActions.action(choice.label(), choice.icon(), TabletColors.INTERACTIVE, () -> {
             QuestDetailsTransientManager.closeTypePicker(state);
             QuestDetailsTransientManager.closeContext(state);
             if (rewards) {

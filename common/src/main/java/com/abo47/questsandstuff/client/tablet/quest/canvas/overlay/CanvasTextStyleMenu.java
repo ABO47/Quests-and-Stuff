@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
@@ -75,11 +75,11 @@ public final class CanvasTextStyleMenu {
     }
 
     private static int alignButtonBase(String currentAlign, String option) {
-        return option.equals(currentAlign) ? ModColors.INTERACTIVE : ModColors.SURFACE_PANEL_ALT;
+        return option.equals(currentAlign) ? TabletColors.INTERACTIVE : TabletColors.SURFACE_PANEL_ALT;
     }
 
     private static int toggleButtonBase(boolean enabled) {
-        return enabled ? ModColors.INTERACTIVE : ModColors.SURFACE_PANEL_ALT;
+        return enabled ? TabletColors.INTERACTIVE : TabletColors.SURFACE_PANEL_ALT;
     }
 
     private static void renderShared(
@@ -108,7 +108,7 @@ public final class CanvasTextStyleMenu {
         addTextStyleButton(floating, 0, menuW, columns, "style_align_left", alignButtonBase(align, "left"), click -> updateStyle(state, logScope, text, text.withAlign("left"), updateText, refresh));
         addTextStyleButton(floating, 1, menuW, columns, "style_align_center", alignButtonBase(align, "center"), click -> updateStyle(state, logScope, text, text.withAlign("center"), updateText, refresh));
         addTextStyleButton(floating, 2, menuW, columns, "style_align_right", alignButtonBase(align, "right"), click -> updateStyle(state, logScope, text, text.withAlign("right"), updateText, refresh));
-        addTextStyleButton(floating, 3, menuW, columns, "style_color", ModColors.SURFACE_PANEL_ALT, CanvasRenderer.activeTextColor(state, text), click -> {
+        addTextStyleButton(floating, 3, menuW, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, CanvasRenderer.activeTextColor(state, text), click -> {
             markStyleInteraction(state, logScope);
             openColorPicker.run();
         });
@@ -155,7 +155,7 @@ public final class CanvasTextStyleMenu {
             }, () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh));
             return;
         }
-        int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? ModColors.INTERACTIVE : ModColors.SURFACE_PANEL_ALT;
+        int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? TabletColors.INTERACTIVE : TabletColors.SURFACE_PANEL_ALT;
         addTextStyleButton(parent, 7, menuWidth, columns, "size", baseColor, null, new Component[]{
                 Component.literal("Font size: " + fontSize)
         }, click -> {

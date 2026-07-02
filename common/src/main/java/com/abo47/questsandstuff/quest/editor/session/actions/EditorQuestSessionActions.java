@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.editor.session.actions;
 import com.abo47.questsandstuff.quest.editor.canvas.PrerequisiteEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestContentEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
-import com.abo47.questsandstuff.quest.editor.quest.QuestLifecycleEditService;
+import com.abo47.questsandstuff.quest.editor.quest.QuestCrudHandler;
 import com.abo47.questsandstuff.quest.editor.quest.QuestSettingsEditService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorMode;
@@ -18,7 +18,7 @@ import java.util.Set;
 public final class EditorQuestSessionActions {
     private final EditorSessionService service;
     private final QuestContentEditService contentEdits;
-    private final QuestLifecycleEditService lifecycleEdits;
+    private final QuestCrudHandler lifecycleEdits;
     private final QuestDisplayEditService displayEdits;
     private final QuestSettingsEditService settingsEdits;
     private final PrerequisiteEditService prerequisiteEdits;
@@ -26,7 +26,7 @@ public final class EditorQuestSessionActions {
     public EditorQuestSessionActions(
             EditorSessionService service,
             QuestContentEditService contentEdits,
-            QuestLifecycleEditService lifecycleEdits,
+            QuestCrudHandler lifecycleEdits,
             QuestDisplayEditService displayEdits,
             QuestSettingsEditService settingsEdits,
             PrerequisiteEditService prerequisiteEdits

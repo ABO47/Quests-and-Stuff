@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
@@ -164,10 +164,10 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = getSizeHeight();
         if (softAlpha > 0) {
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
         }
         if (hardAlpha > 0) {
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
         }
     }
 

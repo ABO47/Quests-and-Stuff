@@ -14,16 +14,16 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_IMAGE;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_TEXT;
 
@@ -49,7 +49,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         int spanH = contentH;
         int paintW = spanW + 1;
         int paintH = spanH + 1;
-        IGuiTexture line = Surfaces.fill(color);
+        IGuiTexture line = SurfaceFactory.fill(color);
         for (int x = 0; x <= spanW; x += cell) {
             line.draw(graphics, mouseX, mouseY, contentX + x, contentY, 1, paintH);
         }
@@ -69,7 +69,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
         IGuiTexture texture = chapterBackgroundTexture(model.canvasBackground);
         if (texture == null) {
-            CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, ModColors.SURFACE_BASE, opacityPercent);
+            CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, TabletColors.SURFACE_BASE, opacityPercent);
             return;
         }
         CanvasBackgroundOpacity.drawTexture(graphics, texture, 0, 0, contentX, contentY, paintW, paintH, opacityPercent);
@@ -95,8 +95,8 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         if (!QuestDetailsEditController.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
             return;
         }
-        int color = withAlpha(ModColors.WARNING, 225);
-        IGuiTexture guide = Surfaces.fill(color);
+        int color = withAlpha(TabletColors.WARNING, 225);
+        IGuiTexture guide = SurfaceFactory.fill(color);
         if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX <= contentW) {
             int x = contentX + state.canvas.snapGuideX;
             guide.draw(graphics, mouseX, mouseY, x, contentY, 1, contentH + 1);

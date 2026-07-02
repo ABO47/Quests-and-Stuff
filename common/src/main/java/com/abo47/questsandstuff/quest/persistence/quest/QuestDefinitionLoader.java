@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSchemaMigrator;
+import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

@@ -36,7 +36,7 @@ class EditorCommandDispatcherTest {
         assertEquals(EditorCommandFamily.PREREQUISITE, family(EditorCommandType.CONNECTION_COLOR));
         assertEquals(EditorCommandFamily.QUEST, family(EditorCommandType.QUEST_BACKGROUND_MANY));
         assertEquals(EditorCommandFamily.DESCRIPTION, family(EditorCommandType.DESCRIPTION_PUT));
-        assertEquals(EditorCommandFamily.OBJECTIVE, family(EditorCommandType.REWARD_MOVE));
+        assertEquals(EditorCommandFamily.TASK, family(EditorCommandType.REWARD_MOVE));
         assertEquals(EditorCommandFamily.CANVAS_LAYER, family(EditorCommandType.CANVAS_LAYER_ORDER));
     }
 
@@ -52,7 +52,7 @@ class EditorCommandDispatcherTest {
         assertEquals(8, counts.get(EditorCommandFamily.PREREQUISITE));
         assertEquals(12, counts.get(EditorCommandFamily.QUEST));
         assertEquals(1, counts.get(EditorCommandFamily.DESCRIPTION));
-        assertEquals(6, counts.get(EditorCommandFamily.OBJECTIVE));
+        assertEquals(6, counts.get(EditorCommandFamily.TASK));
         assertEquals(9, counts.get(EditorCommandFamily.CANVAS_LAYER));
     }
 

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -96,6 +96,6 @@ class QuestDefinitionStoreTest {
     }
 
     private static QuestDisplay display(String title, String group) {
-        return QuestDisplay.forNewQuest(title, Map.of(group, ChapterDefinition.DEFAULT));
+        return QuestDisplay.forNewQuest(title, Map.of(group, GroupDef.DEFAULT));
     }
 }

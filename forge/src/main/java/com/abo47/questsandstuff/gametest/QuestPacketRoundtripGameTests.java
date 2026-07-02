@@ -224,7 +224,7 @@ public final class QuestPacketRoundtripGameTests {
         oversized.writeUtf(EditorCommandType.DESCRIPTION_PUT.wireName());
         CompoundTag payload = new CompoundTag();
         ListTag lines = new ListTag();
-        for (int i = 0; i <= EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES; i++) {
+        for (int i = 0; i <= EditorCommandPayloads.MAX_DESCRIPTION_LINES; i++) {
             lines.add(StringTag.valueOf("line_" + i));
         }
         payload.put("description", lines);

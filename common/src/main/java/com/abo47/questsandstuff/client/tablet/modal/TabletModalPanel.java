@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerLauncher;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
@@ -59,11 +59,11 @@ public final class TabletModalPanel {
     }
 
     static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
-        return CanvasEntityPickerActions.run(player, state, target, pickedItem);
+        return CanvasEntityPickerLauncher.run(player, state, target, pickedItem);
     }
 
     static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
-        return CanvasModelPickerActions.run(state, target, pickedValue);
+        return CanvasModelPickerLauncher.run(state, target, pickedValue);
     }
 
     public static Component[] iconTooltip(String entry) {

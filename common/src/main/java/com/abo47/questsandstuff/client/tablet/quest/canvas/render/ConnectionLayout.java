@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayoutService;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -193,7 +193,7 @@ final class ConnectionLayout {
                         source.centerY(),
                         false,
                         true,
-                        ModColors.TEXT_SECONDARY,
+                        TabletColors.TEXT_SECONDARY,
                         false,
                         245, "", 0
                 ));

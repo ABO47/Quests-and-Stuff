@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.state.ClientRawSyncStore;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -21,7 +21,7 @@ public final class ClientSyncPayloadApplier {
         ClientChapterState.loadFromFullPayload(payload);
         ClientCanvasLayerState.loadFromFullPayload(payload);
 
-        CompoundTag questsTag = payload.getCompound(QuestSyncKeys.QUESTS);
+        CompoundTag questsTag = payload.getCompound(SyncKeys.QUESTS);
         for (String questId : questsTag.getAllKeys()) {
             ClientQuestState.putQuest(questId, questsTag.getCompound(questId));
         }
@@ -29,16 +29,16 @@ public final class ClientSyncPayloadApplier {
     }
 
     public static void applyDeltaSync(CompoundTag payload) {
-        boolean chapterPayload = payload.contains(QuestSyncKeys.GROUPS, Tag.TAG_LIST) || payload.contains(QuestSyncKeys.GROUP_PROPS, Tag.TAG_COMPOUND);
+        boolean chapterPayload = payload.contains(SyncKeys.GROUPS, Tag.TAG_LIST) || payload.contains(SyncKeys.GROUP_PROPS, Tag.TAG_COMPOUND);
         if (chapterPayload) {
             ClientChapterState.mergeFromDeltaPayload(payload);
             ClientCanvasLayerState.mergeFromDeltaPayload(payload);
         }
-        CompoundTag changed = payload.getCompound(QuestSyncKeys.CHANGED);
+        CompoundTag changed = payload.getCompound(SyncKeys.CHANGED);
         for (String questId : changed.getAllKeys()) {
             ClientQuestState.putQuest(questId, changed.getCompound(questId));
         }
-        CompoundTag removed = payload.getCompound(QuestSyncKeys.REMOVED);
+        CompoundTag removed = payload.getCompound(SyncKeys.REMOVED);
         for (String questId : removed.getAllKeys()) {
             ClientQuestState.removeQuest(questId);
         }
@@ -49,11 +49,11 @@ public final class ClientSyncPayloadApplier {
     }
 
     public static void applyDescriptionSync(CompoundTag payload) {
-        CompoundTag descriptions = payload.getCompound(QuestSyncKeys.DESCRIPTIONS);
+        CompoundTag descriptions = payload.getCompound(SyncKeys.DESCRIPTIONS);
         for (String questId : descriptions.getAllKeys()) {
             CompoundTag quest = ClientQuestState.mutableQuestOrCreate(questId);
             ListTag lines = descriptions.getList(questId, Tag.TAG_STRING);
-            quest.put(QuestSyncKeys.Quest.DESCRIPTION, lines.copy());
+            quest.put(SyncKeys.Quest.DESCRIPTION, lines.copy());
         }
     }
 

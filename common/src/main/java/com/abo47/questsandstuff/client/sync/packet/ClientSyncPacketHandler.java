@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.quest.hud.QuestCompletionNotificationOver
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimAllRewardsPacket;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -53,13 +53,13 @@ public final class ClientSyncPacketHandler {
     }
 
     public static void handleEditorMutation(long sequence, String action, String questId, CompoundTag questTag) {
-        if (QuestSyncKeys.EditorAction.PASTE_SELECT.equals(action)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select group={} ids={}", questTag.getString(QuestSyncKeys.EditorSelection.GROUP), questTag.getList(QuestSyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
+        if (SyncKeys.EditorAction.PASTE_SELECT.equals(action)) {
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select group={} ids={}", questTag.getString(SyncKeys.EditorSelection.GROUP), questTag.getList(SyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
             ClientSyncUiBridge.selectPastedQuests(questTag);
             return;
         }
-        if (QuestSyncKeys.EditorAction.ADD.equals(action)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received editor add quest={} prerequisites={}", questId, questTag.getList(QuestSyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING));
+        if (SyncKeys.EditorAction.ADD.equals(action)) {
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received editor add quest={} prerequisites={}", questId, questTag.getList(SyncKeys.Quest.PREREQUISITES, Tag.TAG_STRING));
         }
         ClientQuestCache.applyEditorMutation(sequence, action, questId, questTag);
         ClientSyncUiBridge.requestActiveTabletRefresh();

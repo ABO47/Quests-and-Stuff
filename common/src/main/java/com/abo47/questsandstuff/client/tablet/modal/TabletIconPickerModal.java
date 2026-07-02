@@ -12,10 +12,10 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
@@ -37,7 +37,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runQuestIconAction;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletIconPickerModal {
     private TabletIconPickerModal() {
@@ -134,7 +134,7 @@ public final class TabletIconPickerModal {
                     6,
                     6,
                     entries,
-                    TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                    TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
                             () -> state.pickers.iconScroll,
                             value -> state.pickers.iconScroll = value,
@@ -211,8 +211,8 @@ public final class TabletIconPickerModal {
                     refresh.run();
                 });
                 hit.setHoverTooltips(TabletModalPanel.iconTooltip(previewIcon));
-                hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-                hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+                hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+                hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });
         }

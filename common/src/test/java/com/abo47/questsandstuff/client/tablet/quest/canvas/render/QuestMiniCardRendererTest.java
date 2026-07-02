@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import org.junit.jupiter.api.Test;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class QuestMiniCardRendererTest {
@@ -18,8 +18,8 @@ class QuestMiniCardRendererTest {
 
     @Test
     void overlayAndHighlightColorsScaleWithAlpha() {
-        assertEquals(withAlpha(ModColors.SURFACE_BASE, 64), QuestMiniCardRenderer.hiddenOverlayColor(128, 130));
-        assertEquals(withAlpha(ModColors.SURFACE_BASE, 120), QuestMiniCardRenderer.hiddenOverlayColor(255, 120));
-        assertEquals(withAlpha(ModColors.BORDER_ACCENT, 180), QuestMiniCardRenderer.highlightColor(180));
+        assertEquals(withAlpha(TabletColors.SURFACE_BASE, 64), QuestMiniCardRenderer.hiddenOverlayColor(128, 130));
+        assertEquals(withAlpha(TabletColors.SURFACE_BASE, 120), QuestMiniCardRenderer.hiddenOverlayColor(255, 120));
+        assertEquals(withAlpha(TabletColors.BORDER_ACCENT, 180), QuestMiniCardRenderer.highlightColor(180));
     }
 }

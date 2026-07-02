@@ -8,10 +8,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
     private static final int TILE = 18;
@@ -37,7 +37,7 @@ public final class TabletItemInventoryPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_INVENTORY_ITEM), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_INVENTORY_ITEM), w, state, refresh);
         int sidePad = 8;
         int headY = 24;
         int headH = 18;
@@ -65,7 +65,7 @@ public final class TabletItemInventoryPickerModal {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 ScrollState.bind(
                         () -> state.pickers.itemInventoryScroll,
                         value -> state.pickers.itemInventoryScroll = value,
@@ -92,7 +92,7 @@ public final class TabletItemInventoryPickerModal {
         ItemStack preview = stack.copy();
         preview.setCount(1);
         surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
+        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, SurfaceFactory.transparentFill(), click -> {
             if (onPick != null) {
                 onPick.accept(stack.copy());
             }
@@ -105,8 +105,8 @@ public final class TabletItemInventoryPickerModal {
                 }
             }
         };
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setHoverTooltips(tooltip(stack));
         hit.setClientSideWidget();
         surface.addWidget(hit);

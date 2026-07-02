@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -219,7 +219,7 @@ final class CanvasMinimapOverlay {
                     ec.w(),
                     ec.h(),
                     MIN_EC_SIZE,
-                    ModColors.WARNING,
+                    TabletColors.WARNING,
                     EC_ALPHA,
                     ec.id(),
                     ecTag
@@ -237,7 +237,7 @@ final class CanvasMinimapOverlay {
                 if (targetBox == null) continue;
                 String edgeKey = "ec:" + ec.id() + "->" + connectedId;
                 if (!rendered.add(edgeKey)) continue;
-                int color = ec.connectionColors().getOrDefault(connectedId, ModColors.TEXT_SECONDARY);
+                int color = ec.connectionColors().getOrDefault(connectedId, TabletColors.TEXT_SECONDARY);
                 boolean direct = isEcDirect(ec, connectedId);
                 double[] tgtCenter = logicalCenters.get(connectedId);
                 float tgtCX = tgtCenter != null ? (float) CanvasMinimapGeometry.mapX(projection, tgtCenter[0]) : targetBox.x() + targetBox.w() / 2.0f;
@@ -256,7 +256,7 @@ final class CanvasMinimapOverlay {
                 if (sourceBox == null) continue;
                 String edgeKey = "ec:" + prerequisiteId + "->" + ec.id();
                 if (!rendered.add(edgeKey)) continue;
-                int color = ec.connectionColors().getOrDefault(prerequisiteId, ModColors.TEXT_SECONDARY);
+                int color = ec.connectionColors().getOrDefault(prerequisiteId, TabletColors.TEXT_SECONDARY);
                 boolean direct = isEcDirect(ec, prerequisiteId);
                 double[] srcCenter = logicalCenters.get(prerequisiteId);
                 float srcCX = srcCenter != null ? (float) CanvasMinimapGeometry.mapX(projection, srcCenter[0]) : sourceBox.x() + sourceBox.w() / 2.0f;
@@ -299,16 +299,16 @@ final class CanvasMinimapOverlay {
 
     private static int questColor(TabletUiState state, QuestCardLayout card) {
         if (state.canvas.canvasSelection.questIds().contains(card.questId())) {
-            return ModColors.WARNING;
+            return TabletColors.WARNING;
         }
         CompoundTag tag = card.tag();
         if (tag.getBoolean("claimed") || tag.getBoolean("completed")) {
-            return ModColors.SUCCESS;
+            return TabletColors.SUCCESS;
         }
         if (tag.getBoolean("unlocked")) {
-            return ModColors.INTERACTIVE;
+            return TabletColors.INTERACTIVE;
         }
-        return ModColors.TEXT_MUTED;
+        return TabletColors.TEXT_MUTED;
     }
 
     private static int cardAlpha(TabletUiState state, QuestCardLayout card) {

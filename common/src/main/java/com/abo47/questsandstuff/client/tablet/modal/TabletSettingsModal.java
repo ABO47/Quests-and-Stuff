@@ -5,13 +5,13 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
@@ -88,30 +88,30 @@ public final class TabletSettingsModal {
         boolean active = state.modal.settingsTab == tab.id();
         int tabY = active ? TAB_Y : TAB_Y + 3;
         int tabH = active ? TAB_H : TAB_H - 3;
-        int fill = active ? withAlpha(ModColors.SURFACE_BASE, 250) : withAlpha(ModColors.SURFACE_PANEL_ALT, 142);
-        int border = active ? ModColors.BORDER_ACCENT : ModColors.BORDER_BASE;
+        int fill = active ? withAlpha(TabletColors.SURFACE_BASE, 250) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 142);
+        int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         addTabShadow(modal, x, tabY, w, tabH, active);
         modal.addWidget(panel(x, tabY, w, tabH, fill, border));
         modal.addWidget(label(
                 x + 8,
                 tabY + 6,
                 SearchFilter.crop(TabletModalPanel.tr(tab.labelKey()), Math.max(8, (w - 16) / 6)),
-                active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_MUTED
+                active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED
         ));
         ButtonWidget hit = flatHitButton(x, tabY, w, tabH, click -> selectTab(state, tab, refresh));
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, active ? 72 : 42), ModColors.BORDER_ACCENT));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 82)));
+        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, active ? 72 : 42), TabletColors.BORDER_ACCENT));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(Component.translatable(tab.labelKey()));
         modal.addWidget(hit);
     }
 
     private static void addTabShadow(WidgetGroup modal, int x, int y, int w, int h, boolean active) {
         WidgetGroup cast = new WidgetGroup(x + 3, y + 4, w, h);
-        cast.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, active ? 126 : 78)));
+        cast.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, active ? 126 : 78)));
         modal.addWidget(cast);
 
         WidgetGroup soft = new WidgetGroup(x + 1, y + 2, w, h);
-        soft.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_PANEL, active ? 58 : 34)));
+        soft.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL, active ? 58 : 34)));
         modal.addWidget(soft);
     }
 

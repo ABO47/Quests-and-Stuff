@@ -4,17 +4,17 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -53,9 +53,9 @@ public final class QuestPrerequisiteRealtimeGameTests {
             store.upsert(incompleteQuest(childQuest, "Main", 64, 32, Set.of()));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             sync.setEditorVisibilityPredicate(ignored -> true);
 
@@ -110,7 +110,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
                         id,
                         "prerequisite relock",
                         List.of("sync"),
-                        Map.of(chapter, new ChapterDefinition(true, x, y, 1.0f)),
+                        Map.of(chapter, new GroupDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),

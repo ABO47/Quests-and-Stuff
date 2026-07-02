@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
 final class ConnectionPainter {
@@ -144,8 +144,8 @@ final class ConnectionPainter {
 
         if (line.pending()) {
             int halfSize = CHEVRON_BASE_W;
-            Surfaces.fill(withAlpha(ModColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
-            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ModColors.SUCCESS, PENDING_OUTLINE_ALPHA));
+            SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
+            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(TabletColors.SUCCESS, PENDING_OUTLINE_ALPHA));
             return;
         }
 

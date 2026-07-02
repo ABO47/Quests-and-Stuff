@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBr
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
@@ -33,7 +33,7 @@ public final class GroupContextMenu {
                 actions,
                 0,
                 ContextMenuPanel.rowActionCount(actions),
-                ModColors.BORDER_BASE,
+                TabletColors.BORDER_BASE,
                 state,
                 null,
                 ContextMenuAnimation.CHAPTER_KEY

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManager;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
@@ -21,7 +21,7 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandCli
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -95,9 +95,9 @@ public final class AssetPickerApplyActions {
             return;
         }
         String hudTarget = ModalTargetState.target(state, ModalSession.TargetSlot.HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
-        QuestHudLayout.Element hudElement = hudElement(hudTarget);
+        QuestHudLayoutManager.Element hudElement = hudElement(hudTarget);
         if (hudElement != null) {
-            QuestHudLayout.setBackground(hudElement, background);
+            QuestHudLayoutManager.setBackground(hudElement, background);
             state.modal.modalHudBackgroundTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] hud background picked target={} asset={}", hudTarget, background);
             return;
@@ -182,7 +182,7 @@ public final class AssetPickerApplyActions {
                 net.minecraft.nbt.CompoundTag batchPayload = EditorCommandPayloads.connectionTextures(questTextures);
                 IntegratedServerActions.run(
                         player,
-                        serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextures(serverPlayer, questTextures),
+                        serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTextures(serverPlayer, questTextures),
                         () -> com.abo47.questsandstuff.network.ModNetwork.sendToServer(new com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket(EditorCommandType.CONNECTION_TEXTURE_MANY, batchPayload)));
             }
             if (!group.isBlank()) {
@@ -304,12 +304,12 @@ public final class AssetPickerApplyActions {
         return new int[]{width, height};
     }
 
-    private static QuestHudLayout.Element hudElement(String target) {
+    private static QuestHudLayoutManager.Element hudElement(String target) {
         if ("completion".equalsIgnoreCase(target)) {
-            return QuestHudLayout.Element.COMPLETION;
+            return QuestHudLayoutManager.Element.COMPLETION;
         }
         if ("pinned".equalsIgnoreCase(target)) {
-            return QuestHudLayout.Element.PINNED;
+            return QuestHudLayoutManager.Element.PINNED;
         }
         return null;
     }

@@ -10,9 +10,9 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ final class QuestObjectiveMenuSupport {
     }
 
     static ContextAction editSubmenu(List<ContextAction> editActions) {
-        return ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT), "rename", ModColors.INTERACTIVE, editActions);
+        return ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT), "rename", TabletColors.INTERACTIVE, editActions);
     }
 
     static void addMoveActions(List<ContextAction> actions, Runnable moveUp, Runnable moveDown) {
@@ -33,12 +33,12 @@ final class QuestObjectiveMenuSupport {
 
     static ContextAction visualsSubmenu(TabletUiState state, String questId, String objectiveId, boolean task) {
         List<ContextAction> visualActions = new ArrayList<>();
-        visualActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ModColors.INTERACTIVE, () -> {
+        visualActions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", TabletColors.INTERACTIVE, () -> {
             ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, objectiveId) : ModalTargets.rewardIcon(questId, objectiveId));
         }));
         addEntityIconActions(visualActions, state, questId, objectiveId, task);
-        return ContextActions.submenu(TabletVocabulary.text(QuestVocabulary.CONTEXT_VISUALS), "style", ModColors.INTERACTIVE, visualActions);
+        return ContextActions.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISUALS), "style", TabletColors.INTERACTIVE, visualActions);
     }
 
     static JsonObject parseObjectiveJson(String value) {

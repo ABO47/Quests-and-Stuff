@@ -7,8 +7,8 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -19,7 +19,7 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletThemePickerModal {
     private static final int PAD = 8;
@@ -96,8 +96,8 @@ public final class TabletThemePickerModal {
     }
 
     private static void addThemeRow(WidgetGroup list, TabletUiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int x, int y, int w) {
-        int fill = active ? withAlpha(theme.success(), 66) : ModColors.SURFACE_PANEL_ALT;
-        int border = active ? theme.success() : ModColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : TabletColors.SURFACE_PANEL_ALT;
+        int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, ROW_H, fill, border));
 
         int swatchX = x + 6;
@@ -107,7 +107,7 @@ public final class TabletThemePickerModal {
         addSwatch(list, swatchX + 36, y + 6, theme.success());
 
         LabelWidget name = new LabelWidget(x + 54, y + 8, theme.label());
-        name.setColor(active ? ModColors.TEXT_PRIMARY : theme.text());
+        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, ROW_H, click -> {
@@ -117,7 +117,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(theme.accent(), 54), theme.accent()));
+        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(theme.accent(), 54), theme.accent()));
         list.addWidget(hit);
     }
 
@@ -125,8 +125,8 @@ public final class TabletThemePickerModal {
         int x = SETTINGS_ROW_INSET;
         int h = SETTINGS_ROW_H - SETTINGS_ROW_INSET;
         int w = Math.max(1, rowW - SETTINGS_ROW_INSET * 2);
-        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
-        int border = active ? theme.success() : ModColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, h, fill, border));
 
         int swatchX = x + 8;
@@ -139,7 +139,7 @@ public final class TabletThemePickerModal {
         int labelX = x + 58;
         int labelW = Math.max(16, w - 70);
         LabelWidget name = new LabelWidget(labelX, y + 10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
-        name.setColor(active ? ModColors.TEXT_PRIMARY : theme.text());
+        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, h, click -> {
@@ -149,13 +149,13 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(Surfaces.transparentBorder(theme.accent()));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(theme.accent(), 64)));
+        hit.setHoverTexture(SurfaceFactory.transparentBorder(theme.accent()));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(theme.accent(), 64)));
         list.addWidget(hit);
     }
 
     private static void addSwatch(WidgetGroup parent, int x, int y, int color) {
-        parent.addWidget(panel(x, y, 10, 14, color, ModColors.BORDER_BASE));
+        parent.addWidget(panel(x, y, 10, 14, color, TabletColors.BORDER_BASE));
     }
 
 }

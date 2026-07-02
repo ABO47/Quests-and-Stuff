@@ -4,10 +4,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -37,7 +37,7 @@ public final class TabletHomeComposer {
         int safeRootH = Math.max(1, rootHeight);
 
         TabletRootWidget root = new TabletRootWidget(0, 0, safeRootW, safeRootH, state);
-        root.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+        root.setBackground(SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
         WidgetGroup modalLayer = new ModalDismissGuard(0, 0, safeRootW, safeRootH, state, () -> refresh[0].run());
@@ -47,7 +47,7 @@ public final class TabletHomeComposer {
             SkinAnchorRegistry.clear();
             ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             Widget inner = SkinEditManager.findWidgetByKey(root, "home_inner");
-            if (inner != null) inner.setBackground(Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+            if (inner != null) inner.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
             IGuiTexture rootOverrideTex = TabletRootWidget.resolveRootFill(state);
             if (rootOverrideTex != null && inner != null) {
                 inner.setBackground(rootOverrideTex);

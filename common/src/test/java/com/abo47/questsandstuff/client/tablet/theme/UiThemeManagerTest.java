@@ -30,20 +30,20 @@ class UiThemeManagerTest {
     );
 
     private static final Map<String, Integer> DEFAULT_PALETTE = palette(
-            ModColors.DEFAULT_SURFACE_BASE,
-            ModColors.DEFAULT_SURFACE_PANEL,
-            ModColors.DEFAULT_SURFACE_PANEL_ALT,
-            ModColors.DEFAULT_BORDER_BASE,
-            ModColors.DEFAULT_BORDER_ACCENT,
-            ModColors.DEFAULT_TEXT_PRIMARY,
-            ModColors.DEFAULT_TEXT_SECONDARY,
-            ModColors.DEFAULT_TEXT_MUTED,
-            ModColors.DEFAULT_SUCCESS,
-            ModColors.DEFAULT_WARNING,
-            ModColors.DEFAULT_ERROR,
-            ModColors.DEFAULT_INTERACTIVE,
-            ModColors.DEFAULT_SCROLL_TRACK,
-            ModColors.DEFAULT_SCROLL_THUMB
+            TabletColors.DEFAULT_SURFACE_BASE,
+            TabletColors.DEFAULT_SURFACE_PANEL,
+            TabletColors.DEFAULT_SURFACE_PANEL_ALT,
+            TabletColors.DEFAULT_BORDER_BASE,
+            TabletColors.DEFAULT_BORDER_ACCENT,
+            TabletColors.DEFAULT_TEXT_PRIMARY,
+            TabletColors.DEFAULT_TEXT_SECONDARY,
+            TabletColors.DEFAULT_TEXT_MUTED,
+            TabletColors.DEFAULT_SUCCESS,
+            TabletColors.DEFAULT_WARNING,
+            TabletColors.DEFAULT_ERROR,
+            TabletColors.DEFAULT_INTERACTIVE,
+            TabletColors.DEFAULT_SCROLL_TRACK,
+            TabletColors.DEFAULT_SCROLL_THUMB
     );
 
     @TempDir
@@ -95,8 +95,8 @@ class UiThemeManagerTest {
 
         UiThemeManager.applyLoadedState(UiThemeJsonCodec.loadUiThemeState(theme));
 
-        assertEquals(0xFF010203, ModColors.SURFACE_BASE);
-        assertEquals(ModColors.DEFAULT_SURFACE_PANEL, ModColors.SURFACE_PANEL);
+        assertEquals(0xFF010203, TabletColors.SURFACE_BASE);
+        assertEquals(TabletColors.DEFAULT_SURFACE_PANEL, TabletColors.SURFACE_PANEL);
     }
 
     private static String customThemeJson() {
@@ -125,20 +125,20 @@ class UiThemeManagerTest {
 
     private static Map<String, Integer> currentPalette() {
         return palette(
-                ModColors.SURFACE_BASE,
-                ModColors.SURFACE_PANEL,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE,
-                ModColors.BORDER_ACCENT,
-                ModColors.TEXT_PRIMARY,
-                ModColors.TEXT_SECONDARY,
-                ModColors.TEXT_MUTED,
-                ModColors.SUCCESS,
-                ModColors.WARNING,
-                ModColors.ERROR,
-                ModColors.INTERACTIVE,
-                ModColors.SCROLL_TRACK,
-                ModColors.SCROLL_THUMB
+                TabletColors.SURFACE_BASE,
+                TabletColors.SURFACE_PANEL,
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE,
+                TabletColors.BORDER_ACCENT,
+                TabletColors.TEXT_PRIMARY,
+                TabletColors.TEXT_SECONDARY,
+                TabletColors.TEXT_MUTED,
+                TabletColors.SUCCESS,
+                TabletColors.WARNING,
+                TabletColors.ERROR,
+                TabletColors.INTERACTIVE,
+                TabletColors.SCROLL_TRACK,
+                TabletColors.SCROLL_THUMB
         );
     }
 

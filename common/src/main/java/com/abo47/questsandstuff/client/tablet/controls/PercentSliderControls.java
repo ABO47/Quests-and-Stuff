@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
@@ -63,7 +63,7 @@ public final class PercentSliderControls {
                 },
                 commit
         );
-        StyledTextFields.applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         if (tooltips != null && tooltips.length > 0) {
             field.setHoverTooltips(tooltips);
         }

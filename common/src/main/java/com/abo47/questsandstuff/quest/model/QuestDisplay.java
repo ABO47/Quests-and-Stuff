@@ -10,7 +10,7 @@ public record QuestDisplay(
         String title,
         String subtitle,
         List<String> description,
-        Map<String, ChapterDefinition> groups,
+        Map<String, GroupDef> groups,
         String icon,
         String iconBackground,
         String completionSound,
@@ -46,7 +46,7 @@ public record QuestDisplay(
             DEFAULT_QUEST_BACKGROUND_GRAYSCALE
     );
 
-    public static QuestDisplay forNewQuest(String title, Map<String, ChapterDefinition> groups) {
+    public static QuestDisplay forNewQuest(String title, Map<String, GroupDef> groups) {
         return new QuestDisplay(
                 title == null ? "" : title.trim(),
                 DEFAULT_SUBTITLE,
@@ -63,7 +63,7 @@ public record QuestDisplay(
         );
     }
 
-    public QuestDisplay withGroups(Map<String, ChapterDefinition> groups) {
+    public QuestDisplay withGroups(Map<String, GroupDef> groups) {
         return new QuestDisplay(
                 title,
                 subtitle,
@@ -84,7 +84,7 @@ public record QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, ChapterDefinition> groups,
+            Map<String, GroupDef> groups,
             String icon,
             String iconBackground
     ) {
@@ -95,7 +95,7 @@ public record QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, ChapterDefinition> groups,
+            Map<String, GroupDef> groups,
             String icon,
             String iconBackground,
             String completionSound,
@@ -108,7 +108,7 @@ public record QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, ChapterDefinition> groups,
+            Map<String, GroupDef> groups,
             String icon,
             String iconBackground,
             String completionSound,
@@ -122,7 +122,7 @@ public record QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, ChapterDefinition> groups,
+            Map<String, GroupDef> groups,
             String icon,
             String iconBackground,
             String completionSound,
@@ -151,7 +151,7 @@ public record QuestDisplay(
             Codec.STRING.fieldOf("title").orElse(DEFAULT_TITLE).forGetter(QuestDisplay::title),
             Codec.STRING.fieldOf("subtitle").orElse(DEFAULT_SUBTITLE).forGetter(QuestDisplay::subtitle),
             Codec.STRING.listOf().fieldOf("description").orElse(List.of()).forGetter(QuestDisplay::description),
-            Codec.unboundedMap(Codec.STRING, ChapterDefinition.CODEC).fieldOf("groups").orElse(Map.of()).forGetter(QuestDisplay::groups),
+            Codec.unboundedMap(Codec.STRING, GroupDef.CODEC).fieldOf("groups").orElse(Map.of()).forGetter(QuestDisplay::groups),
             Codec.STRING.fieldOf("icon").orElse(DEFAULT_ICON).forGetter(QuestDisplay::icon),
             Codec.STRING.fieldOf("icon_background").orElse(DEFAULT_ICON_BACKGROUND).forGetter(QuestDisplay::iconBackground),
             Codec.STRING.fieldOf("completion_sound").orElse(DEFAULT_COMPLETION_SOUND).forGetter(QuestDisplay::completionSound),

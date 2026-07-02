@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -54,9 +54,9 @@ final class GroupListMetrics {
                 () -> state.chapterPanel.chapterScrollDragging,
                 dragging -> state.chapterPanel.chapterScrollDragging = dragging,
                 refresh,
-                ModColors.scrollTrack(state.chapterPanel.chapterScrollDragging),
-                ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true),
+                TabletColors.scrollTrack(state.chapterPanel.chapterScrollDragging),
+                TabletColors.scrollThumb(false),
+                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

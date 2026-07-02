@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
@@ -17,7 +17,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestDetailsHeader {
     private QuestDetailsHeader() {
@@ -25,7 +25,7 @@ final class QuestDetailsHeader {
 
     static int renderCanvasHeader(WidgetGroup canvasPanel, TabletUiState state, Player player, Runnable refresh, String questId, int viewportX, int viewportW) {
         WidgetGroup headerSurface = new WidgetGroup(viewportX, QuestDetailsWindow.TOP_Y, viewportW, QuestDetailsWindow.HEADER_H);
-        headerSurface.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        headerSurface.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         canvasPanel.addWidget(headerSurface);
 
         int closeX = viewportX + viewportW - QuestDetailsWindow.TOOL_SIZE;
@@ -38,32 +38,32 @@ final class QuestDetailsHeader {
         int previousX = nextX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int titleW = Math.max(24, previousX - QuestDetailsWindow.HEADER_GAP - viewportX);
         addQuestTitleField(canvasPanel, state, player, refresh, questId, viewportX, QuestDetailsWindow.TOP_Y, titleW, QuestDetailsWindow.HEADER_H);
-        addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", ModColors.INTERACTIVE, false, click -> {
+        addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", TabletColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, -1);
             ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
-        addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", ModColors.INTERACTIVE, false, click -> {
+        addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", TabletColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, 1);
             ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         boolean pinned = ClientQuestCache.pinned().contains(questId);
-        addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? ModColors.SUCCESS : ModColors.INTERACTIVE, pinned, click -> {
+        addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, pinned, click -> {
             ClientQuestCache.togglePinnedLocal(questId);
             ModNetwork.sendToServer(new C2STogglePinPacket(questId));
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
-        addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, click -> {
+        addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, click -> {
             ToolMenuAnimation.toggleQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         if (showEditor) {
-            addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? ModColors.SUCCESS : ModColors.ERROR, state.questDetails.questDetailsEditMode, click -> {
+            addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? TabletColors.SUCCESS : TabletColors.ERROR, state.questDetails.questDetailsEditMode, click -> {
                 if (!QuestDetailsEditController.toggle(state)) {
                     return;
                 }
@@ -83,7 +83,7 @@ final class QuestDetailsHeader {
                 refresh.run();
             });
         }
-        addHeaderIconButton(canvasPanel, closeX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "close", ModColors.ERROR, false, click -> {
+        addHeaderIconButton(canvasPanel, closeX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "close", TabletColors.ERROR, false, click -> {
             QuestDetailsWindow.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details close quest={}", questId);
             refresh.run();
@@ -136,9 +136,9 @@ final class QuestDetailsHeader {
         boolean editing = state.questDetails.questDetailsTitleFocused && questId.equals(state.questDetails.pendingQuestTitleChangeId);
         boolean framed = QuestDetailsEditController.canEdit(state);
         titleField.setBackground(framed
-                ? Surfaces.bordered(ModColors.SURFACE_BASE, editing ? ModColors.INTERACTIVE : ModColors.BORDER_BASE)
-                : Surfaces.transparentFill());
-        titleField.setTextColor(ModColors.TEXT_PRIMARY);
+                ? SurfaceFactory.bordered(TabletColors.SURFACE_BASE, editing ? TabletColors.INTERACTIVE : TabletColors.BORDER_BASE)
+                : SurfaceFactory.transparentFill());
+        titleField.setTextColor(TabletColors.TEXT_PRIMARY);
         titleField.setActive(framed);
         if (editing) {
             titleField.setFocus(true);
@@ -172,11 +172,11 @@ final class QuestDetailsHeader {
     }
 
     private static void addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        int fill = active ? withAlpha(color, 38) : ModColors.SURFACE_PANEL_ALT;
+        int fill = active ? withAlpha(color, 38) : TabletColors.SURFACE_PANEL_ALT;
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(fill, active ? color : ModColors.BORDER_BASE, color),
-                TabletIconTextButton.State.of(withAlpha(color, 66), ModColors.BORDER_ACCENT, color),
-                TabletIconTextButton.State.of(withAlpha(color, 90), color, ModColors.TEXT_PRIMARY)
+                TabletIconTextButton.State.of(fill, active ? color : TabletColors.BORDER_BASE, color),
+                TabletIconTextButton.State.of(withAlpha(color, 66), TabletColors.BORDER_ACCENT, color),
+                TabletIconTextButton.State.of(withAlpha(color, 90), color, TabletColors.TEXT_PRIMARY)
         );
         parent.addWidget(TabletIconTextButton.icon(x, y, w, h, icon, visuals, callback));
     }

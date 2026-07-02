@@ -6,23 +6,23 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
@@ -239,9 +239,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(quest(questId));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
 
@@ -274,7 +274,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         CanvasTextLayer layer = new CanvasTextLayer("poem", poem, 12, 16, 112, 32, 0, "center", "bold", -1);
         CompoundTag quest = new CompoundTag();
         ListTag description = new ListTag();
-        description.add(StringTag.valueOf("@qas_desc_text:" + CanvasLayerNbt.textToTag(layer)));
+        description.add(StringTag.valueOf("@qas_desc_text:" + CanvasLayerNbtCodec.textToTag(layer)));
         quest.put("description", description);
 
         QuestDetailsDescriptionModel decoded = QuestDetailsDescriptionModel.decode(quest);
@@ -333,8 +333,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(withDescription);
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
             sync.setEditorVisibilityPredicate(ignored -> true);
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
@@ -381,8 +381,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             }
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
             sync.setVisibilityFilter((state, definition) -> true);
 
             ServerPlayer player = detachedPlayer(helper);
@@ -482,9 +482,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(quest(questId));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
 
             ServerPlayer player = detachedPlayer(helper);
@@ -545,9 +545,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(quest("editor/child", "Main", 64, 32, Set.of("editor/root"), Map.of(), Map.of(), Set.of()));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             sync.setEditorVisibilityPredicate(ignored -> true);
 
@@ -590,9 +590,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             Path root = Files.createTempDirectory("qas_empty_editor_");
             store = new QuestDefinitionStore(root);
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
@@ -683,9 +683,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             ));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
@@ -784,7 +784,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         ServerPlayer player = detachedPlayer(helper);
         CommandSourceStack playerSource = player.createCommandSourceStack().withPermission(0);
 
-        String questId = QuestServices.engine(server).questIds().stream().findFirst().orElse("starter/logging_basics");
+        String questId = QuestServiceRegistry.engine(server).questIds().stream().findFirst().orElse("starter/logging_basics");
         String quotedQuestId = quoteArg(questId);
         try {
             int result = dispatcher.execute("questsandstuff pin " + quotedQuestId, playerSource);
@@ -849,7 +849,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                         id,
                         "bulk",
                         List.of("sync"),
-                        Map.of(chapter, new ChapterDefinition(true, x, y, 1.0f)),
+                        Map.of(chapter, new GroupDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),

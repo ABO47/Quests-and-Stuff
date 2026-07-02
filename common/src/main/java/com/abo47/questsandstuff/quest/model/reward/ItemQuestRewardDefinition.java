@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
+import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardDelivery;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

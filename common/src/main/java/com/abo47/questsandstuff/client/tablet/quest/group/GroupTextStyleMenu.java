@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandCli
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
@@ -60,7 +60,7 @@ final class GroupTextStyleMenu {
             EditorGroupCommandClient.runGroupAction(player, state, "set_text_align", target, "right", 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 3, fw, columns, "style_color", ModColors.SURFACE_PANEL_ALT, ClientQuestCache.groupTextColor(target), click -> {
+        addIconToggleButton(floating, 3, fw, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, ClientQuestCache.groupTextColor(target), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text color open picker target={}", target);
             ModalOpenActions.openColorPicker(state, target, ClientQuestCache.groupTextColor(target));
             refresh.run();
@@ -89,11 +89,11 @@ final class GroupTextStyleMenu {
 
     private static int alignButtonBase(String currentAlign, String option) {
         String current = ClientChapterState.normalizeTextAlign(currentAlign);
-        return current.equals(option) ? ModColors.SUCCESS : ModColors.SURFACE_PANEL_ALT;
+        return current.equals(option) ? TabletColors.SUCCESS : TabletColors.SURFACE_PANEL_ALT;
     }
 
     private static int toggleButtonBase(boolean active) {
-        return active ? ModColors.SUCCESS : ModColors.SURFACE_PANEL_ALT;
+        return active ? TabletColors.SUCCESS : TabletColors.SURFACE_PANEL_ALT;
     }
 
     private static void addIconToggleButton(WidgetGroup parent, int index, int menuWidth, int columns, String iconName, int baseColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
@@ -117,7 +117,7 @@ final class GroupTextStyleMenu {
             }, () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh));
             return;
         }
-        int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? ModColors.SUCCESS : ModColors.SURFACE_PANEL_ALT;
+        int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? TabletColors.SUCCESS : TabletColors.SURFACE_PANEL_ALT;
         addIconToggleButton(parent, 7, menuWidth, columns, "size", baseColor, null, new Component[]{
                 Component.literal("Font size: " + fontSize)
         }, click -> {

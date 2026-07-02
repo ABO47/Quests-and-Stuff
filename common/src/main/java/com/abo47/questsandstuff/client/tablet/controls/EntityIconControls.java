@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -83,7 +83,7 @@ public final class EntityIconControls {
     }
 
     public static IGuiTexture iconHoverTexture() {
-        return Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 60), ModColors.BORDER_ACCENT);
+        return SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 60), TabletColors.BORDER_ACCENT);
     }
 
     public static String pendingRemoveIconLabel(TabletUiState state, String key, String fallback) {

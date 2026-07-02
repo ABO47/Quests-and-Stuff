@@ -4,15 +4,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasImageLayerRenderer {
     private CanvasImageLayerRenderer() {
@@ -66,6 +66,6 @@ public final class CanvasImageLayerRenderer {
     }
 
     private static void drawFallback(GuiGraphics graphics, int width, int height, int pivotX, int pivotY) {
-        Surfaces.fill(withAlpha(ModColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
+        SurfaceFactory.fill(withAlpha(TabletColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
     }
 }

@@ -3,9 +3,9 @@ package com.abo47.questsandstuff.client.tablet.quest.details.task;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -32,14 +32,14 @@ final class QuestObjectiveLootTableRewardEditor {
         String lootTable = lootTable(json);
         String naturalName = displayName(lootTable);
         String title = TaskJsonFactory.asString(json, "title", "");
-        String lootTableLabel = TabletVocabulary.text(QuestVocabulary.TYPE_LOOT_TABLE);
+        String lootTableLabel = TabletTranslationKeys.text(QuestTranslationKeys.TYPE_LOOT_TABLE);
         if (title.isBlank() || "Loot table".equalsIgnoreCase(title) || lootTableLabel.equalsIgnoreCase(title)) {
             title = naturalName;
         }
         if (title.isBlank()) {
-            title = TabletVocabulary.text(QuestVocabulary.CHOOSE_LOOT_TABLE);
+            title = TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE);
         }
-        QuestObjectiveInlineFields.renderDisplayText(parent, x, y, w, title, ModColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        QuestObjectiveInlineFields.renderDisplayText(parent, x, y, w, title, TabletColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
     }
 
     private static String lootTable(JsonObject json) {

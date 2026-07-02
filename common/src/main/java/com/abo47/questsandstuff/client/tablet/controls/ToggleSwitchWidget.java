@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ToggleSwitchWidget extends SwitchWidget {
     public static final int DEFAULT_WIDTH = 34;
@@ -209,29 +209,29 @@ public final class ToggleSwitchWidget extends SwitchWidget {
             float pulse = visual.pulse();
             int ix = Math.round(x);
             int iy = Math.round(y);
-            int border = amount > 0.5f ? ModColors.SUCCESS : ModColors.BORDER_BASE;
-            int track = withAlpha(ModColors.SURFACE_BASE, interactive ? 210 : 130);
-            int activeTrack = withAlpha(ModColors.SUCCESS, interactive ? 70 + Math.round(amount * 78) : 70);
-            int knob = amount > 0.5f ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
+            int border = amount > 0.5f ? TabletColors.SUCCESS : TabletColors.BORDER_BASE;
+            int track = withAlpha(TabletColors.SURFACE_BASE, interactive ? 210 : 130);
+            int activeTrack = withAlpha(TabletColors.SUCCESS, interactive ? 70 + Math.round(amount * 78) : 70);
+            int knob = amount > 0.5f ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY;
             if (!interactive) {
                 border = withAlpha(border, 120);
                 knob = withAlpha(knob, 165);
             }
 
-            Surfaces.fill(border).draw(graphics, 0, 0, ix, iy, width, height);
-            Surfaces.fill(track).draw(graphics, 0, 0, ix + 1, iy + 1, Math.max(2, width - 1) - 1, Math.max(2, height - 1) - 1);
+            SurfaceFactory.fill(border).draw(graphics, 0, 0, ix, iy, width, height);
+            SurfaceFactory.fill(track).draw(graphics, 0, 0, ix + 1, iy + 1, Math.max(2, width - 1) - 1, Math.max(2, height - 1) - 1);
             int activeW = Math.round((width - 2) * amount);
             if (activeW > 2) {
-                Surfaces.fill(activeTrack).draw(graphics, 0, 0, ix + 1, iy + 1, activeW, Math.max(2, height - 1) - 1);
+                SurfaceFactory.fill(activeTrack).draw(graphics, 0, 0, ix + 1, iy + 1, activeW, Math.max(2, height - 1) - 1);
             }
 
             int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
             int knobTravel = Math.max(0, width - knobSize - 4);
             int knobX = ix + 2 + Math.round(knobTravel * amount);
             int knobY = iy + Math.max(2, (height - knobSize) / 2);
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 100)).draw(graphics, 0, 0, knobX + 1, knobY + 1, knobSize, knobSize);
-            Surfaces.fill(knob).draw(graphics, 0, 0, knobX, knobY, knobSize, knobSize);
-            Surfaces.fill(withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48)).draw(graphics, 0, 0, knobX + 2, knobY + 2, knobSize - 4, 1);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 100)).draw(graphics, 0, 0, knobX + 1, knobY + 1, knobSize, knobSize);
+            SurfaceFactory.fill(knob).draw(graphics, 0, 0, knobX, knobY, knobSize, knobSize);
+            SurfaceFactory.fill(withAlpha(TabletColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48)).draw(graphics, 0, 0, knobX + 2, knobY + 2, knobSize - 4, 1);
         }
     }
 
@@ -240,7 +240,7 @@ public final class ToggleSwitchWidget extends SwitchWidget {
         public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
             int ix = Math.round(x);
             int iy = Math.round(y);
-            Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 30)).draw(graphics, 0, 0, ix - 1, iy - 1, width + 2, height + 2);
+            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 30)).draw(graphics, 0, 0, ix - 1, iy - 1, width + 2, height + 2);
         }
     }
 

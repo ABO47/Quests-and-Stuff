@@ -26,7 +26,7 @@ class CanvasSnapEngineTest {
     }
 
     @Test
-    void sameSnapContextProducesSameGuidesForBothCanvasSurfaces() {
+    void sameSnapContextProducesSameGuidesForBothCanvasSurfaceFactory() {
         CanvasSnapEngine.SnapContext mainCanvas = context();
         CanvasSnapEngine.SnapContext descriptionCanvas = context();
 

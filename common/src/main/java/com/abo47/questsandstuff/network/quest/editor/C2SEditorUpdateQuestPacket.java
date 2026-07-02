@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.network.quest.editor;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
 
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -21,7 +21,7 @@ public record C2SEditorUpdateQuestPacket(String questId, String title, String su
     public void handle(ModPacketContext context) {
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
-            context.enqueueWork(() -> QuestServices.editor(player.server)
+            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server)
                     .updateQuestDisplay(player, questId, title, subtitle));
         }
     }

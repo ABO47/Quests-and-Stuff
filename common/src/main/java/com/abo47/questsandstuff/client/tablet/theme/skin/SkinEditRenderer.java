@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.TabletColors;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -21,8 +21,8 @@ public final class SkinEditRenderer {
     private static final int DIM_COLOR = 0x60000000;
     private static final ColorRectTexture DIM_BG = new ColorRectTexture(DIM_COLOR);
     private static ShaderTexture glowShader;
-    private static final int GLOW_COLOR = ModColors.INTERACTIVE;
-    private static final int SELECTED_GLOW_COLOR = ModColors.SUCCESS;
+    private static final int GLOW_COLOR = TabletColors.INTERACTIVE;
+    private static final int SELECTED_GLOW_COLOR = TabletColors.SUCCESS;
 
     private SkinEditRenderer() {
     }

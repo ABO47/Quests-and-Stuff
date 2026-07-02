@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 
 import java.util.List;
 
@@ -26,27 +26,27 @@ public final class ContextActionFactory {
     }
 
     public static ContextAction changeIcon(Runnable action) {
-        return promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, action);
+        return promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction changeVariant(Runnable action) {
-        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_CHANGE_VARIANT), "variant", ActionTone.PRIMARY, action);
+        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_VARIANT), "variant", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction editMotion(Runnable action) {
-        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_EDIT_MOTION), "motion", ActionTone.PRIMARY, action);
+        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION), "motion", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction moveUp(Runnable action) {
-        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_MOVE_UP), "up", ActionTone.PRIMARY, action);
+        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_UP), "up", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction moveDown(Runnable action) {
-        return action(TabletVocabulary.text(QuestVocabulary.CONTEXT_MOVE_DOWN), "down", ActionTone.PRIMARY, action);
+        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_DOWN), "down", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction copy(Runnable action) {
-        return promoted(TabletVocabulary.text(QuestVocabulary.CONTEXT_COPY), "copy", ActionTone.PRIMARY, action);
+        return promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_COPY), "copy", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction delete(TabletUiState state, String key, String label, Runnable deleteAction) {

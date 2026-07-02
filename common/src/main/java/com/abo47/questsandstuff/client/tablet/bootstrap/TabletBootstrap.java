@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -88,7 +88,7 @@ public final class TabletBootstrap {
             }
             IntegratedServerActions.run(
                     player,
-                    serverPlayer -> QuestServices.editor(serverPlayer.server).undo(serverPlayer),
+                    serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).undo(serverPlayer),
                     () -> ModNetwork.sendToServer(new C2SEditorControlPacket("undo")));
         };
     }
@@ -100,7 +100,7 @@ public final class TabletBootstrap {
             }
             IntegratedServerActions.run(
                     player,
-                    serverPlayer -> QuestServices.editor(serverPlayer.server).redo(serverPlayer),
+                    serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).redo(serverPlayer),
                     () -> ModNetwork.sendToServer(new C2SEditorControlPacket("redo")));
         };
     }

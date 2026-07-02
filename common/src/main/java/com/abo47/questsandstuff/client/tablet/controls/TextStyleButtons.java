@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -29,14 +29,14 @@ public final class TextStyleButtons {
 
     public static WidgetGroup shell(int x, int y, int width, int height, Consumer<ClickData> callback) {
         WidgetGroup floating = new WidgetGroup(x, y, width, height);
-        floating.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT));
+        floating.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT));
         floating.addWidget(TabletUiFactory.panel(
                 1,
                 1,
                 Math.max(1, width - 2),
                 Math.max(1, height - 2),
-                withAlpha(ModColors.SURFACE_PANEL_ALT, 212),
-                withAlpha(ModColors.BORDER_BASE, 130)
+                withAlpha(TabletColors.SURFACE_PANEL_ALT, 212),
+                withAlpha(TabletColors.BORDER_BASE, 130)
         ));
         floating.addWidget(TabletUiFactory.flatHitButton(0, 0, width, height, callback));
         return floating;
@@ -107,23 +107,23 @@ public final class TextStyleButtons {
     }
 
     public static void add(WidgetGroup parent, int x, int y, int width, int height, String iconName, int baseColor, Integer iconTint, Component[] tooltips, Consumer<ClickData> callback) {
-        boolean active = baseColor != ModColors.SURFACE_PANEL_ALT;
-        int accent = active ? baseColor : ModColors.INTERACTIVE;
-        int iconColor = iconTint == null ? (active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY) : iconTint;
+        boolean active = baseColor != TabletColors.SURFACE_PANEL_ALT;
+        int accent = active ? baseColor : TabletColors.INTERACTIVE;
+        int iconColor = iconTint == null ? (active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY) : iconTint;
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
                 TabletIconTextButton.State.of(
-                        active ? withAlpha(accent, 158) : withAlpha(ModColors.SURFACE_BASE, 72),
-                        active ? accent : withAlpha(ModColors.BORDER_BASE, 116),
+                        active ? withAlpha(accent, 158) : withAlpha(TabletColors.SURFACE_BASE, 72),
+                        active ? accent : withAlpha(TabletColors.BORDER_BASE, 116),
                         iconColor
                 ),
                 TabletIconTextButton.State.of(
-                        active ? withAlpha(accent, 196) : withAlpha(ModColors.INTERACTIVE, 82),
-                        active ? ModColors.TEXT_PRIMARY : withAlpha(ModColors.BORDER_ACCENT, 210),
+                        active ? withAlpha(accent, 196) : withAlpha(TabletColors.INTERACTIVE, 82),
+                        active ? TabletColors.TEXT_PRIMARY : withAlpha(TabletColors.BORDER_ACCENT, 210),
                         iconColor
                 ),
                 TabletIconTextButton.State.of(
-                        active ? withAlpha(accent, 222) : withAlpha(ModColors.INTERACTIVE, 118),
-                        active ? ModColors.TEXT_PRIMARY : ModColors.BORDER_ACCENT,
+                        active ? withAlpha(accent, 222) : withAlpha(TabletColors.INTERACTIVE, 118),
+                        active ? TabletColors.TEXT_PRIMARY : TabletColors.BORDER_ACCENT,
                         iconColor
                 )
         );

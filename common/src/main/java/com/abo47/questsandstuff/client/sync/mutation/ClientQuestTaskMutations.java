@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.sync.mutation;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,11 +16,11 @@ public final class ClientQuestTaskMutations {
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
-        putObjectiveJsonLocal(questId, taskJson, QuestSyncKeys.Quest.TASKS, QuestSyncKeys.Quest.TASKS_ORDER);
+        putObjectiveJsonLocal(questId, taskJson, SyncKeys.Quest.TASKS, SyncKeys.Quest.TASKS_ORDER);
     }
 
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
-        putObjectiveJsonLocal(questId, rewardJson, QuestSyncKeys.Quest.REWARDS, QuestSyncKeys.Quest.REWARDS_ORDER);
+        putObjectiveJsonLocal(questId, rewardJson, SyncKeys.Quest.REWARDS, SyncKeys.Quest.REWARDS_ORDER);
     }
 
     private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
@@ -38,8 +38,8 @@ public final class ClientQuestTaskMutations {
         }
         CompoundTag bucket = quest.getCompound(bucketName);
         CompoundTag entry = bucket.getCompound(id);
-        entry.putString(QuestSyncKeys.Objective.JSON, jsonValue);
-        entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(normalizedQuest, id, bucketName, jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
+        entry.putString(SyncKeys.Objective.JSON, jsonValue);
+        entry.putString(SyncKeys.Objective.TYPE, objectiveType(normalizedQuest, id, bucketName, jsonValue, entry.getString(SyncKeys.Objective.TYPE)));
         bucket.put(id, entry);
         quest.put(bucketName, bucket);
         appendObjectiveOrder(quest, orderName, id);

@@ -5,17 +5,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasQuestEffectBadges {
     private static final int MAX_BADGES = 6;
@@ -99,7 +99,7 @@ public final class CanvasQuestEffectBadges {
 
     private static void addBadge(WidgetGroup parent, int x, int y, int boxSize, int iconSize, String icon) {
         WidgetGroup badge = new WidgetGroup(x, y, boxSize, boxSize);
-        badge.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 190)));
+        badge.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 190)));
         parent.addWidget(badge);
         parent.addWidget(new DisplayIconWidget(x + 1, y + 1, iconSize, iconSize, icon));
     }

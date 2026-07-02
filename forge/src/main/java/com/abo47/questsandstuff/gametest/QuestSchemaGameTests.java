@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.gametest;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.CheckQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
 import com.abo47.questsandstuff.quest.model.reward.CommandQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
@@ -12,12 +12,12 @@ import com.abo47.questsandstuff.quest.model.reward.ItemQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.reward.LootTableQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
-import com.abo47.questsandstuff.quest.model.QuestSchemaMigrator;
+import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTasks;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.model.task.progress.SimpleQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -57,7 +57,7 @@ public final class QuestSchemaGameTests {
                         "Roundtrip",
                         "",
                         List.of(),
-                        Map.of("Main", ChapterDefinition.DEFAULT),
+                        Map.of("Main", GroupDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier",
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,
@@ -158,7 +158,7 @@ public final class QuestSchemaGameTests {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "test/objective_ui",
-                new QuestDisplay("Objective UI", "", List.of(), Map.of("Main", ChapterDefinition.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay("Objective UI", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(itemTask.id(), itemTask, checkTask.id(), checkTask, biomeTask.id(), biomeTask),
@@ -201,7 +201,7 @@ public final class QuestSchemaGameTests {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "test/objective_order",
-                new QuestDisplay("Objective Order", "", List.of(), Map.of("Main", ChapterDefinition.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay("Objective Order", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 tasks,

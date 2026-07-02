@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.editor.blueprint;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -91,10 +91,10 @@ public record CanvasBlueprint(
             questTags.add(entryTag);
         }
         tag.put("quests", questTags);
-        tag.put("images", CanvasLayerNbt.imagesToListTag(images));
-        tag.put("texts", CanvasLayerNbt.textsToListTag(texts));
+        tag.put("images", CanvasLayerNbtCodec.imagesToListTag(images));
+        tag.put("texts", CanvasLayerNbtCodec.textsToListTag(texts));
         tag.put("exclusive_choices", exclusiveChoicesToListTag(exclusiveChoices));
-        tag.put("layer_order", CanvasLayerNbt.stringsToListTag(layerOrder));
+        tag.put("layer_order", CanvasLayerNbtCodec.stringsToListTag(layerOrder));
         return tag;
     }
 
@@ -110,8 +110,8 @@ public record CanvasBlueprint(
             entryTag.putInt("source_h", entry.sourceH());
             entryTag.putInt("rotation", entry.rotation());
             entryTag.putString("background", entry.background());
-            entryTag.put("connections", CanvasLayerNbt.stringsToListTag(entry.connections()));
-            entryTag.put("prerequisites", CanvasLayerNbt.stringsToListTag(List.copyOf(entry.prerequisites())));
+            entryTag.put("connections", CanvasLayerNbtCodec.stringsToListTag(entry.connections()));
+            entryTag.put("prerequisites", CanvasLayerNbtCodec.stringsToListTag(List.copyOf(entry.prerequisites())));
             if (!entry.connectionColors().isEmpty()) {
                 CompoundTag colors = new CompoundTag();
                 for (Map.Entry<String, Integer> e : entry.connectionColors().entrySet()) {
@@ -141,7 +141,7 @@ public record CanvasBlueprint(
                 entryTag.put("connection_texture_spacings", spacings);
             }
             if (!entry.hiddenConnections().isEmpty()) {
-                entryTag.put("hidden_connections", CanvasLayerNbt.stringsToListTag(new ArrayList<>(entry.hiddenConnections())));
+                entryTag.put("hidden_connections", CanvasLayerNbtCodec.stringsToListTag(new ArrayList<>(entry.hiddenConnections())));
             }
             list.add(entryTag);
         }
@@ -188,7 +188,7 @@ public record CanvasBlueprint(
                     }
                 }
             }
-            Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
+            Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
             entries.add(new ExclusiveChoiceEntry(
                     entryTag.getString("source_id"),
                     entryTag.getString("source_group"),
@@ -198,8 +198,8 @@ public record CanvasBlueprint(
                     entryTag.getInt("source_h"),
                     entryTag.contains("rotation", Tag.TAG_INT) ? entryTag.getInt("rotation") : 0,
                     entryTag.getString("background"),
-                    CanvasLayerNbt.stringsFromListTag(entryTag.getList("connections", Tag.TAG_STRING)),
-                    Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING))),
+                    CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("connections", Tag.TAG_STRING)),
+                    Set.copyOf(CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING))),
                     connectionColors,
                     connectionModes,
                     connectionTextures,
@@ -237,9 +237,9 @@ public record CanvasBlueprint(
                 tag.getInt("origin_x"),
                 tag.getInt("origin_y"),
                 quests,
-                CanvasLayerNbt.imagesFromListTag(tag.getList("images", Tag.TAG_COMPOUND)),
-                CanvasLayerNbt.textsFromListTag(tag.getList("texts", Tag.TAG_COMPOUND)),
-                CanvasLayerNbt.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING)),
+                CanvasLayerNbtCodec.imagesFromListTag(tag.getList("images", Tag.TAG_COMPOUND)),
+                CanvasLayerNbtCodec.textsFromListTag(tag.getList("texts", Tag.TAG_COMPOUND)),
+                CanvasLayerNbtCodec.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING)),
                 exclusiveChoicesFromListTag(tag.getList("exclusive_choices", Tag.TAG_COMPOUND))
         );
     }
@@ -575,7 +575,7 @@ public record CanvasBlueprint(
     private static JsonArray textsToJson(List<CanvasTextLayer> texts) {
         JsonArray array = new JsonArray();
         for (CanvasTextLayer text : texts) {
-            array.add(nbtToJson(CanvasLayerNbt.textToTag(text)));
+            array.add(nbtToJson(CanvasLayerNbtCodec.textToTag(text)));
         }
         return array;
     }
@@ -586,7 +586,7 @@ public record CanvasBlueprint(
             if (!element.isJsonObject()) {
                 continue;
             }
-            CanvasTextLayer text = CanvasLayerNbt.textFromTag(jsonToNbt(element.getAsJsonObject()));
+            CanvasTextLayer text = CanvasLayerNbtCodec.textFromTag(jsonToNbt(element.getAsJsonObject()));
             if (text != null) {
                 texts.add(text);
             }

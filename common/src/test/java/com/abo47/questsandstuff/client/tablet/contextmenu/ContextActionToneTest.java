@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,11 +10,11 @@ class ContextActionToneTest {
     @Test
     void factoryActionsCarryExplicitTones() {
         assertTone(ContextActionFactory.add("Add", () -> {
-        }), ActionTone.SUCCESS, ModColors.SUCCESS);
+        }), ActionTone.SUCCESS, TabletColors.SUCCESS);
         assertTone(ContextActionFactory.copy(() -> {
-        }), ActionTone.PRIMARY, ModColors.INTERACTIVE);
+        }), ActionTone.PRIMARY, TabletColors.INTERACTIVE);
         assertTone(ContextActionFactory.rename("Rename", () -> {
-        }), ActionTone.PRIMARY, ModColors.INTERACTIVE);
+        }), ActionTone.PRIMARY, TabletColors.INTERACTIVE);
     }
 
     @Test
@@ -26,19 +26,19 @@ class ContextActionToneTest {
         ContextAction warningDelete = ContextActionFactory.warningDelete(state, "quest", "Remove background", () -> {
         });
 
-        assertTone(delete, ActionTone.DANGER, ModColors.ERROR);
-        assertTone(warningDelete, ActionTone.WARNING, ModColors.WARNING);
+        assertTone(delete, ActionTone.DANGER, TabletColors.ERROR);
+        assertTone(warningDelete, ActionTone.WARNING, TabletColors.WARNING);
     }
 
     @Test
     void legacyColorsMapToTonesWithoutLabelOrIconInference() {
-        ContextAction neutralDeleteText = ContextActionFactory.action("Delete translated", "delete", ModColors.TEXT_MUTED, () -> {
+        ContextAction neutralDeleteText = ContextActionFactory.action("Delete translated", "delete", TabletColors.TEXT_MUTED, () -> {
         });
-        ContextAction warningColor = ContextActionFactory.action("Plain label", "plain", ModColors.WARNING, () -> {
+        ContextAction warningColor = ContextActionFactory.action("Plain label", "plain", TabletColors.WARNING, () -> {
         });
 
-        assertTone(neutralDeleteText, ActionTone.NEUTRAL, ModColors.TEXT_MUTED);
-        assertTone(warningColor, ActionTone.WARNING, ModColors.WARNING);
+        assertTone(neutralDeleteText, ActionTone.NEUTRAL, TabletColors.TEXT_MUTED);
+        assertTone(warningColor, ActionTone.WARNING, TabletColors.WARNING);
     }
 
     @Test
@@ -46,7 +46,7 @@ class ContextActionToneTest {
         ContextAction successDeleteIcon = new ContextAction("Delete translated", "delete", ActionTone.SUCCESS, () -> {
         });
 
-        assertTone(successDeleteIcon, ActionTone.SUCCESS, ModColors.SUCCESS);
+        assertTone(successDeleteIcon, ActionTone.SUCCESS, TabletColors.SUCCESS);
     }
 
     private static void assertTone(ContextAction action, ActionTone tone, int accentColor) {

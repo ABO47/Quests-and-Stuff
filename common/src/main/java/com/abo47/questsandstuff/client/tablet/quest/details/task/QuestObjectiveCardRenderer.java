@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestObjectiveCardRenderer {
     private QuestObjectiveCardRenderer() {
@@ -61,7 +61,7 @@ final class QuestObjectiveCardRenderer {
         if (!renaming && !selectableReward && QuestObjectiveLootTableRewardEditor.isLootTable(entry.json())) {
             QuestObjectiveLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, titleX, y + 8, rewardTitleRightX(entry, x, w));
         } else {
-            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, displayEntry, false, titleX, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? ModColors.TEXT_MUTED : ModColors.TEXT_PRIMARY);
+            QuestObjectiveInlineFields.renderObjectiveTitle(parent, state, player, refresh, questId, displayEntry, false, titleX, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? TabletColors.TEXT_MUTED : TabletColors.TEXT_PRIMARY);
         }
         if (!renaming) {
             QuestObjectiveInlineFields.renderAmountField(parent, state, player, refresh, questId, displayEntry, x + w - 34, y + 9, 30, false);
@@ -166,12 +166,12 @@ final class QuestObjectiveCardRenderer {
         boolean editSelected = kind.startsWith(state.questDetails.questDetailsSelectedObjectiveKind) && id.equals(state.questDetails.questDetailsSelectedObjectiveId);
         boolean claimSelected = claimChoiceEntry && QuestObjectiveSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
-        int accent = selectableReward ? (claimSelected ? ModColors.SUCCESS : ModColors.WARNING) : ModColors.INTERACTIVE;
-        card.setBackground(Surfaces.card(selected || selectableReward, accent, claimedReward));
+        int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING) : TabletColors.INTERACTIVE;
+        card.setBackground(SurfaceFactory.card(selected || selectableReward, accent, claimedReward));
         int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {
             WidgetGroup fill = new WidgetGroup(1, 1, Math.max(1, fillW), QuestDetailsObjectivesPanel.CARD_H - 2);
-            fill.setBackground(Surfaces.fill(withAlpha(ModColors.SUCCESS, 80)));
+            fill.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             card.addWidget(fill);
         }
         return card;

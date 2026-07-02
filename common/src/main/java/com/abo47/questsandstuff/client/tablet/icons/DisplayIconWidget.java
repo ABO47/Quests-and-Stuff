@@ -63,7 +63,7 @@ public final class DisplayIconWidget extends WidgetGroup {
 
     private static void drawIconContent(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, String iconId, float partialTicks) {
         String safeIconId = iconId == null ? "" : iconId;
-        ResourceTexture uiIcon = UiIconAtlas.iconTexture(safeIconId);
+        ResourceTexture uiIcon = IconAtlas.iconTexture(safeIconId);
         if (uiIcon != null) {
             uiIcon.draw(graphics, mouseX, mouseY, x, y, width, height);
             return;

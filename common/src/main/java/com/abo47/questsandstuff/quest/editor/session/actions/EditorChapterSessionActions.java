@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
-import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
+import com.abo47.questsandstuff.quest.editor.group.GroupEditService;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class EditorChapterSessionActions {
-    private final ChapterEditService chapterEdits;
+    private final GroupEditService chapterEdits;
 
-    public EditorChapterSessionActions(ChapterEditService chapterEdits) {
+    public EditorChapterSessionActions(GroupEditService chapterEdits) {
         this.chapterEdits = chapterEdits;
     }
 

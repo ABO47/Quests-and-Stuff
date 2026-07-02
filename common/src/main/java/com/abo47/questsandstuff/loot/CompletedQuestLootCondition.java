@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.loot;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -38,7 +38,7 @@ public record CompletedQuestLootCondition(String questId) implements LootItemCon
             return false;
         }
         try {
-            return QuestServices.engine(player.server).isQuestCompleted(player.getUUID(), questId);
+            return QuestServiceRegistry.engine(player.server).isQuestCompleted(player.getUUID(), questId);
         } catch (Exception ignored) {
             return false;
         }

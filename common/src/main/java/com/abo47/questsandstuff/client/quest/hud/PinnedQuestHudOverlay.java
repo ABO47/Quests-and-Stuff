@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveHudDisplay;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -61,11 +61,11 @@ public final class PinnedQuestHudOverlay {
 
         Window window = minecraft.getWindow();
         int stackHeight = stackHeight(quests);
-        QuestHudLayout.HudBox box = QuestHudLayout.pinnedBox(
+        QuestHudLayoutManager.HudBox box = QuestHudLayoutManager.pinnedBox(
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.PINNED, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.PINNED, stackHeight)
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, stackHeight)
         );
         drawPinnedStack(graphics, quests, box.x(), box.y(), box.width(), box.height(), false);
     }
@@ -75,8 +75,8 @@ public final class PinnedQuestHudOverlay {
                 graphics,
                 x,
                 y,
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.PINNED, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.PINNED, currentStackHeight()),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, currentStackHeight()),
                 selected
         );
     }
@@ -121,11 +121,11 @@ public final class PinnedQuestHudOverlay {
         Font font = minecraft.font;
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
-        int titleColor = withAlpha(ModColors.TEXT_PRIMARY, 235);
-        int secondary = withAlpha(ModColors.TEXT_SECONDARY, 202);
-        int muted = withAlpha(ModColors.TEXT_MUTED, 154);
+        int titleColor = withAlpha(TabletColors.TEXT_PRIMARY, 235);
+        int secondary = withAlpha(TabletColors.TEXT_SECONDARY, 202);
+        int muted = withAlpha(TabletColors.TEXT_MUTED, 154);
 
-        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.PINNED, x, y, safeW, safeH, selected);
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.PINNED, x, y, safeW, safeH, selected);
         if (safeW < PAD * 2 + 8 || safeH < 12) {
             return;
         }
@@ -147,7 +147,7 @@ public final class PinnedQuestHudOverlay {
         int barW = safeW - PAD * 2;
         if (safeH >= 22) {
             String progressKey = ProgressAnimations.key("pinned_hud", quest.getString("_hud_id"));
-            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), ModColors.SUCCESS, 230);
+            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), TabletColors.SUCCESS, 230);
         }
 
         List<RequirementLine> lines = requirementLines(quest);
@@ -184,13 +184,13 @@ public final class PinnedQuestHudOverlay {
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
         int contentW = Math.max(0, safeW - PAD * 2);
-        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.PINNED, x, y, safeW, safeH, selected);
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.PINNED, x, y, safeW, safeH, selected);
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + PAD, y + 5, withAlpha(ModColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + PAD, y + 5, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
         if (safeH >= 28) {
-            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + PAD, y + HEADER_HEIGHT + 2, withAlpha(ModColors.TEXT_MUTED, 170), false);
+            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + PAD, y + HEADER_HEIGHT + 2, withAlpha(TabletColors.TEXT_MUTED, 170), false);
         }
     }
 

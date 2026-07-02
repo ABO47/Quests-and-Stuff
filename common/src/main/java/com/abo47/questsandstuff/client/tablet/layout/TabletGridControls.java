@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.layout;
 
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,7 +40,7 @@ public final class TabletGridControls {
 
     public static int defaultGridColor(TabletUiState state) {
         if (state == null || state.canvas.gridColor == 0) {
-            return ModColors.TEXT_PRIMARY;
+            return TabletColors.TEXT_PRIMARY;
         }
         return state.canvas.gridColor;
     }

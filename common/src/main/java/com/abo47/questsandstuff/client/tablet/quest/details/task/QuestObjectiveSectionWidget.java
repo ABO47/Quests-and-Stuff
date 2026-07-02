@@ -6,9 +6,9 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ final class QuestObjectiveSectionWidget {
     static void renderRequirements(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestDetailsObjectiveEntry> tasks = QuestObjectiveEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "requirements", tasks, QuestDetailsObjectivesPanel.TITLE_H, 4, false);
-        section.addWidget(label(8, 6, QuestVocabulary.requirements(), ModColors.TEXT_PRIMARY));
+        section.addWidget(label(8, 6, QuestTranslationKeys.requirements(), TabletColors.TEXT_PRIMARY));
         renderCards(section, state, player, refresh, questId, tasks, w, h, QuestDetailsObjectivesPanel.TITLE_H, true);
         modal.addWidget(section);
     }
@@ -36,7 +36,7 @@ final class QuestObjectiveSectionWidget {
         List<QuestDetailsObjectiveEntry> displayRewards = QuestObjectiveSelectableRewards.displayEntries(rewards, QuestDetailsEditController.canEdit(state));
         boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestDetailsObjectivesPanel.TITLE_H, 4, rewardsClaimed);
-        section.addWidget(label(8, 6, QuestVocabulary.rewards(), ModColors.TEXT_PRIMARY));
+        section.addWidget(label(8, 6, QuestTranslationKeys.rewards(), TabletColors.TEXT_PRIMARY));
         renderCards(section, state, player, refresh, questId, displayRewards, w, h, QuestDetailsObjectivesPanel.TITLE_H, false, rewardsClaimed);
         modal.addWidget(section);
     }
@@ -118,7 +118,7 @@ final class QuestObjectiveSectionWidget {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        section.setBackground(Surfaces.insetPanel());
+        section.setBackground(SurfaceFactory.insetPanel());
         return section;
     }
 
@@ -286,9 +286,9 @@ final class QuestObjectiveSectionWidget {
                     }
                 },
                 refresh,
-                ModColors.scrollTrack(requirements ? state.questDetails.questDetailsReqScrollDragging : state.questDetails.questDetailsRewardScrollDragging),
-                ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true),
+                TabletColors.scrollTrack(requirements ? state.questDetails.questDetailsReqScrollDragging : state.questDetails.questDetailsRewardScrollDragging),
+                TabletColors.scrollThumb(false),
+                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

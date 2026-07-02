@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.entity.motion;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class EntityMotionPopup {
     private static final int W = 188;
@@ -33,9 +33,9 @@ final class EntityMotionPopup {
         state.questDetails.entityMotionEditorW = W;
         state.questDetails.entityMotionEditorH = H;
 
-        WidgetGroup popup = panel(x, y, W, H, withAlpha(ModColors.SURFACE_BASE, 248), ModColors.BORDER_ACCENT);
-        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(ModColors.SURFACE_PANEL_ALT, 170), ModColors.BORDER_BASE));
-        popup.addWidget(label(PAD, 6, "Entity spin", ModColors.TEXT_PRIMARY));
+        WidgetGroup popup = panel(x, y, W, H, withAlpha(TabletColors.SURFACE_BASE, 248), TabletColors.BORDER_ACCENT);
+        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(TabletColors.SURFACE_PANEL_ALT, 170), TabletColors.BORDER_BASE));
+        popup.addWidget(label(PAD, 6, "Entity spin", TabletColors.TEXT_PRIMARY));
         popup.addWidget(closeIconButton(W - 19, 3, 14, 14, click -> {
             EntityMotionEditor.close(state);
             refresh.run();
@@ -53,7 +53,7 @@ final class EntityMotionPopup {
             draft = Integer.toString(value);
             state.questDetails.entityMotionSpinDraft = draft;
         }
-        parent.addWidget(label(PAD, y + 4, "Spin", ModColors.TEXT_SECONDARY));
+        parent.addWidget(label(PAD, y + 4, "Spin", TabletColors.TEXT_SECONDARY));
         parent.addWidget(new EntityMotionSliderWidget(
                 56,
                 y + 1,
@@ -119,7 +119,7 @@ final class EntityMotionPopup {
                 }
         );
         field.setCurrentString(draft);
-        StyledTextFields.applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         field.setHoverTooltips(new Component[]{Component.literal("Spin speed")});
         return field;
     }

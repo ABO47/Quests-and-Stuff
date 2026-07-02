@@ -10,9 +10,9 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSe
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
@@ -40,7 +40,7 @@ final class QuestObjectiveXpEditor {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int x = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
         int y = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, ModColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -50,30 +50,30 @@ final class QuestObjectiveXpEditor {
 
     private static List<ContextAction> taskActions(Player player, TabletUiState state) {
         List<ContextAction> actions = new ArrayList<>();
-        addTaskAction(actions, player, state, QuestVocabulary.XP_POINTS_AUTOMATIC, "points", "automatic");
-        addTaskAction(actions, player, state, QuestVocabulary.XP_POINTS_MANUAL, "points", "manual");
-        addTaskAction(actions, player, state, QuestVocabulary.XP_POINTS_CONSUME, "points", "consume");
-        addTaskAction(actions, player, state, QuestVocabulary.XP_LEVELS_AUTOMATIC, "level", "automatic");
-        addTaskAction(actions, player, state, QuestVocabulary.XP_LEVELS_MANUAL, "level", "manual");
-        addTaskAction(actions, player, state, QuestVocabulary.XP_LEVELS_CONSUME, "level", "consume");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_POINTS_AUTOMATIC, "points", "automatic");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_POINTS_MANUAL, "points", "manual");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_POINTS_CONSUME, "points", "consume");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_LEVELS_AUTOMATIC, "level", "automatic");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_LEVELS_MANUAL, "level", "manual");
+        addTaskAction(actions, player, state, QuestTranslationKeys.XP_LEVELS_CONSUME, "level", "consume");
         return actions;
     }
 
     private static List<ContextAction> rewardActions(Player player, TabletUiState state) {
         List<ContextAction> actions = new ArrayList<>();
-        addRewardAction(actions, player, state, QuestVocabulary.XP_POINTS, "points");
-        addRewardAction(actions, player, state, QuestVocabulary.XP_LEVELS, "level");
+        addRewardAction(actions, player, state, QuestTranslationKeys.XP_POINTS, "points");
+        addRewardAction(actions, player, state, QuestTranslationKeys.XP_LEVELS, "level");
         return actions;
     }
 
     private static void addTaskAction(List<ContextAction> actions, Player player, TabletUiState state, String labelKey, String mode, String collection) {
-        actions.add(ContextActions.action(TabletVocabulary.text(labelKey), "xp", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
             commitTask(player, state, mode, collection);
         }));
     }
 
     private static void addRewardAction(List<ContextAction> actions, Player player, TabletUiState state, String labelKey, String mode) {
-        actions.add(ContextActions.action(TabletVocabulary.text(labelKey), "xp", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
             commitReward(player, state, mode);
         }));
     }

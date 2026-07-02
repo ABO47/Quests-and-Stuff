@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -23,14 +23,14 @@ public final class IconOnlyButton extends ButtonWidget {
     private boolean drawingHover;
 
     private IconOnlyButton(int x, int y, int size, ResourceLocation icon, int normalColor, int hoverColor, Consumer<ClickData> callback) {
-        super(x, y, size, size, Surfaces.transparentFill(), callback);
+        super(x, y, size, size, SurfaceFactory.transparentFill(), callback);
         this.iconSize = Math.max(8, size - 2);
         this.normalColor = normalColor;
         this.hoverColor = hoverColor;
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> drawingHover ? this.hoverColor : this.normalColor);
         setClientSideWidget();
-        setHoverTexture(Surfaces.transparentFill());
-        setClickedTexture(Surfaces.transparentFill());
+        setHoverTexture(SurfaceFactory.transparentFill());
+        setClickedTexture(SurfaceFactory.transparentFill());
     }
 
     public static IconOnlyButton create(int x, int y, int size, String icon, int color, Consumer<ClickData> callback) {
@@ -71,15 +71,15 @@ public final class IconOnlyButton extends ButtonWidget {
     }
 
     private static ResourceLocation resolveIcon(String icon) {
-        ResourceLocation iconLocation = UiIconAtlas.icon(icon);
+        ResourceLocation iconLocation = IconAtlas.icon(icon);
         if (iconLocation == null && icon != null && !icon.isBlank()) {
-            iconLocation = UiIconAtlas.icon("context_" + icon);
+            iconLocation = IconAtlas.icon("context_" + icon);
         }
         if (iconLocation == null) {
-            iconLocation = UiIconAtlas.icon("text");
+            iconLocation = IconAtlas.icon("text");
         }
         if (iconLocation == null) {
-            iconLocation = UiIconAtlas.icon("add");
+            iconLocation = IconAtlas.icon("add");
         }
         return iconLocation;
     }

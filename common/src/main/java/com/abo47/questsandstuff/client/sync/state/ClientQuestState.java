@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import net.minecraft.nbt.CompoundTag;
 
@@ -136,7 +136,7 @@ public final class ClientQuestState {
     public static int completedCount() {
         int count = 0;
         for (CompoundTag quest : QUESTS.values()) {
-            if (quest.getBoolean(QuestSyncKeys.Quest.COMPLETED)) {
+            if (quest.getBoolean(SyncKeys.Quest.COMPLETED)) {
                 count++;
             }
         }

@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ record EntityVariantPickerModel(
     }
 
     String emptyText() {
-        return TabletVocabulary.text(browsingFolder || !foldered ? QuestVocabulary.NO_VARIANTS : QuestVocabulary.NO_BIOME_FOLDERS);
+        return TabletTranslationKeys.text(browsingFolder || !foldered ? QuestTranslationKeys.NO_VARIANTS : QuestTranslationKeys.NO_BIOME_FOLDERS);
     }
 
     private static List<EntityVariantTile> tiles(boolean foldered, boolean browsingFolder, List<EntityVariantCatalog.VariantFolder> folders, List<EntityVariantCatalog.VariantEntry> variants) {

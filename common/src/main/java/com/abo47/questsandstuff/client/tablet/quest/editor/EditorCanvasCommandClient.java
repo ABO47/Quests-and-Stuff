@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -38,7 +38,7 @@ public final class EditorCanvasCommandClient {
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).moveQuestsInGroup(serverPlayer, groupName, moves),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).moveQuestsInGroup(serverPlayer, groupName, moves),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.moveMany(groupName, moves);
                     EditorCommandSender.send(EditorCommandType.MOVE_MANY, payload);
@@ -70,7 +70,7 @@ public final class EditorCanvasCommandClient {
 
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).scaleQuestsInGroup(serverPlayer, groupName, normalized),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).scaleQuestsInGroup(serverPlayer, groupName, normalized),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.scaleMany(groupName, normalized);
                     EditorCommandSender.send(EditorCommandType.SCALE_MANY, payload);
@@ -96,7 +96,7 @@ public final class EditorCanvasCommandClient {
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, group, normalizedQuestIds),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, group, normalizedQuestIds),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.copyMany(group, normalizedQuestIds);
                     EditorCommandSender.send(EditorCommandType.COPY_MANY, payload);
@@ -112,7 +112,7 @@ public final class EditorCanvasCommandClient {
                 group, x, y, IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).pasteClipboardInGroup(serverPlayer, group, x, y),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteClipboardInGroup(serverPlayer, group, x, y),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.pasteClipboard(group, x, y);
                     EditorCommandSender.send(EditorCommandType.PASTE_CLIPBOARD, payload);
@@ -128,7 +128,7 @@ public final class EditorCanvasCommandClient {
                 group, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).pasteBlueprintInGroup(serverPlayer, group, x, y, blueprint),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteBlueprintInGroup(serverPlayer, group, x, y, blueprint),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.pasteBlueprint(group, x, y, blueprint);
                     EditorCommandSender.send(EditorCommandType.PASTE_BLUEPRINT, payload);
@@ -144,7 +144,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestPrerequisite(serverPlayer, questId, prerequisiteId, add),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestPrerequisite(serverPlayer, questId, prerequisiteId, add),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.prerequisite(questId, prerequisiteId);
                     EditorCommandSender.send(add ? EditorCommandType.PREREQUISITE_ADD : EditorCommandType.PREREQUISITE_REMOVE, payload);
@@ -156,7 +156,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setConnectionColorLocal(questId, prerequisiteId, color);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionColor(serverPlayer, questId, prerequisiteId, color),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionColor(serverPlayer, questId, prerequisiteId, color),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionColor(questId, prerequisiteId, color);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_COLOR, payload);
@@ -168,7 +168,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setConnectionModeLocal(questId, prerequisiteId, gridMode);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionMode(serverPlayer, questId, prerequisiteId, gridMode),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionMode(serverPlayer, questId, prerequisiteId, gridMode),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionMode(questId, prerequisiteId, gridMode);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_MODE, payload);
@@ -180,7 +180,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionHidden(serverPlayer, questId, prerequisiteId, hidden),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionHidden(serverPlayer, questId, prerequisiteId, hidden),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionHidden(questId, prerequisiteId, hidden);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_HIDDEN, payload);
@@ -193,7 +193,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setConnectionTextureLocal(questId, prerequisiteId, texture);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionTexture(questId, prerequisiteId, texture);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE, payload);
@@ -205,7 +205,7 @@ public final class EditorCanvasCommandClient {
         ClientQuestCache.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionTextureSpacing(questId, prerequisiteId, spacing);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE_SPACING, payload);

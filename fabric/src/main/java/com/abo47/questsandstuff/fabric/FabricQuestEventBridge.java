@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
@@ -120,8 +120,8 @@ public final class FabricQuestEventBridge {
             return;
         }
         DIMENSION_SNAPSHOTS.put(player.getUUID(), player.level().dimension().location().toString());
-        QuestServices.engine(player.server).preparePlayerForFullSync(player);
-        QuestServices.sync(player.server).syncFull(player);
+        QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
+        QuestServiceRegistry.sync(player.server).syncFull(player);
     }
 
     private static void onPlayerLogout(ServerPlayer player) {
@@ -166,7 +166,7 @@ public final class FabricQuestEventBridge {
     }
 
     private static void send(ServerPlayer player, QuestSignalType type, String key, int amount) {
-        QuestServices.engine(player.server).onSignal(QuestSignal.of(type, player, key, amount, player.blockPosition()));
+        QuestServiceRegistry.engine(player.server).onSignal(QuestSignal.of(type, player, key, amount, player.blockPosition()));
     }
 
     private static void pushInventorySnapshotDelta(ServerPlayer player) {
@@ -192,7 +192,7 @@ public final class FabricQuestEventBridge {
     }
 
     private static void pushStatSnapshotDelta(ServerPlayer player) {
-        var engine = QuestServices.engine(player.server);
+        var engine = QuestServiceRegistry.engine(player.server);
         Map<String, Integer> current = new HashMap<>();
         for (String statKey : engine.trackedStatTaskTargets()) {
             current.put(statKey, QuestStatHelper.readStat(player, statKey));

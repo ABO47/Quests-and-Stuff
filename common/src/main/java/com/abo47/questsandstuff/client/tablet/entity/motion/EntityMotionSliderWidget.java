@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class EntityMotionSliderWidget extends WidgetGroup {
     private static final int TRACK_PAD_X = 6;
@@ -57,15 +57,15 @@ final class EntityMotionSliderWidget extends WidgetGroup {
         int trackRight = left + width - TRACK_PAD_X;
         int trackY = top + height / 2 - 1;
         int knobX = knobX(trackLeft, trackRight);
-        int trackColor = withAlpha(ModColors.BORDER_BASE, 180);
-        int activeColor = withAlpha(ModColors.INTERACTIVE, 220);
-        int mutedColor = withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
+        int trackColor = withAlpha(TabletColors.BORDER_BASE, 180);
+        int activeColor = withAlpha(TabletColors.INTERACTIVE, 220);
+        int mutedColor = withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
 
-        Surfaces.fill(trackColor).draw(graphics, 0, 0, trackLeft, trackY, trackRight - trackLeft, 2);
-        Surfaces.fill(activeColor).draw(graphics, 0, 0, trackLeft, trackY, knobX + KNOB_W / 2 - trackLeft, 2);
-        Surfaces.fill(activeColor).draw(graphics, 0, 0, knobX, top + 3, KNOB_W, height - 6);
+        SurfaceFactory.fill(trackColor).draw(graphics, 0, 0, trackLeft, trackY, trackRight - trackLeft, 2);
+        SurfaceFactory.fill(activeColor).draw(graphics, 0, 0, trackLeft, trackY, knobX + KNOB_W / 2 - trackLeft, 2);
+        SurfaceFactory.fill(activeColor).draw(graphics, 0, 0, knobX, top + 3, KNOB_W, height - 6);
         if (KNOB_W > 2) {
-            Surfaces.fill(mutedColor).draw(graphics, 0, 0, knobX + 1, top + 4, KNOB_W - 2, height - 8);
+            SurfaceFactory.fill(mutedColor).draw(graphics, 0, 0, knobX + 1, top + 4, KNOB_W - 2, height - 8);
         }
     }
 

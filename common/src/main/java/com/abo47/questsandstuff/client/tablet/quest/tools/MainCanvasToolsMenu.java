@@ -7,9 +7,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCamera
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class MainCanvasToolsMenu {
     private MainCanvasToolsMenu() {
@@ -43,7 +43,7 @@ final class MainCanvasToolsMenu {
         final int toolGap = 1;
         final boolean editTools = state.root.canEdit;
         final int toolCount = editTools ? 10 : 2;
-        final int toolButtonBorder = withAlpha(ModColors.TEXT_MUTED, 210);
+        final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = canvasX + toolsX - 1;
@@ -51,7 +51,7 @@ final class MainCanvasToolsMenu {
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
         menu.setActive(ToolMenuAnimation.mainInteractive(state));
 
-        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ModColors.SURFACE_BASE, 244), ModColors.BORDER_ACCENT));
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(TabletColors.SURFACE_BASE, 244), TabletColors.BORDER_ACCENT));
 
         int slotX = menuPad;
         int y = menuPad;
@@ -165,11 +165,11 @@ final class MainCanvasToolsMenu {
     private static void addRewardRows(ToolMenuRows rows, Runnable refresh) {
         boolean autoClaim = QuestsAndStuffConfig.autoClaimRewardsEnabled();
         rows.toggle("auto_claim",
-                autoClaim ? ModColors.SUCCESS : ModColors.ERROR,
+                autoClaim ? TabletColors.SUCCESS : TabletColors.ERROR,
                 autoClaim,
                 new Component[]{
-                        TabletVocabulary.component(QuestVocabulary.AUTO_CLAIM_REWARDS),
-                        TabletVocabulary.component(autoClaim ? TabletVocabulary.COMMON_ENABLED : TabletVocabulary.COMMON_DISABLED)
+                        TabletTranslationKeys.component(QuestTranslationKeys.AUTO_CLAIM_REWARDS),
+                        TabletTranslationKeys.component(autoClaim ? TabletTranslationKeys.COMMON_ENABLED : TabletTranslationKeys.COMMON_DISABLED)
                 },
                 () -> {
                     boolean next = !QuestsAndStuffConfig.autoClaimRewardsEnabled();
@@ -181,7 +181,7 @@ final class MainCanvasToolsMenu {
 
     private static void addReadOnlyRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
         rows.toggle(state.chapterPanel.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.chapterPanel.chapterSplitterLocked ? ModColors.ERROR : ModColors.SUCCESS,
+                state.chapterPanel.chapterSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
                 !state.chapterPanel.chapterSplitterLocked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),

@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -83,7 +83,7 @@ final class QuestObjectiveDisplayText {
             return title;
         }
         if ("biome".equals(path)) {
-            return TabletVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "target", "")));
+            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "target", "")));
         }
         if ("advancement".equals(path)) {
             String advancementName = DisplayNameFormatter.advancement(
@@ -102,37 +102,37 @@ final class QuestObjectiveDisplayText {
         }
         if ("structure".equals(path)) {
             String structureName = DisplayNameFormatter.resourceLeaf(TaskJsonFactory.asString(json, "target", ""));
-            return structureName.isBlank() ? typeLabel(type) : TabletVocabulary.text(QuestVocabulary.VISIT_TARGET, structureName);
+            return structureName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, structureName);
         }
         if ("block_interact".equals(path) || "block_interaction".equals(path)) {
             String blockName = blockTargetName(TaskJsonFactory.asString(json, "target", ""));
-            return blockName.isBlank() ? typeLabel(type) : TabletVocabulary.text(QuestVocabulary.INTERACT_TARGET, blockName);
+            return blockName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, blockName);
         }
         if ("stat".equals(path)) {
             String statName = StatTargetFormatter.displayName(TaskJsonFactory.asString(json, "target", ""));
             return statName.isBlank() ? typeLabel(type) : statName;
         }
         if ("location".equals(path)) {
-            return TabletVocabulary.text(QuestVocabulary.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "dimension", "")));
+            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "dimension", "")));
         }
         if ("kill_entity".equals(path)) {
             String entityId = TaskJsonFactory.asString(json, "target", "");
             String entityName = EntityPreviewRenderer.entityDisplayName(entityId);
             return entityName.isBlank()
-                    ? TabletVocabulary.text(QuestVocabulary.KILL_ENTITY)
-                    : TabletVocabulary.text(QuestVocabulary.KILL_ENTITY_NAMED, entityName);
+                    ? TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY)
+                    : TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY_NAMED, entityName);
         }
         if ("entity_interact".equals(path) || "entity_interaction".equals(path)) {
             String entityName = EntityPreviewRenderer.entityDisplayName(TaskJsonFactory.asString(json, "target", ""));
-            return entityName.isBlank() ? typeLabel(type) : TabletVocabulary.text(QuestVocabulary.INTERACT_TARGET, entityName);
+            return entityName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, entityName);
         }
         if ("item_interact".equals(path) || "item_interaction".equals(path)) {
             String itemName = itemTargetName(TaskJsonFactory.asString(json, "target", ""));
-            return itemName.isBlank() ? typeLabel(type) : TabletVocabulary.text(QuestVocabulary.INTERACT_TARGET, itemName);
+            return itemName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, itemName);
         }
         if ("item_use".equals(path)) {
             String itemName = itemTargetName(TaskJsonFactory.asString(json, "target", ""));
-            return itemName.isBlank() ? typeLabel(type) : TabletVocabulary.text(QuestVocabulary.USE_TARGET, itemName);
+            return itemName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.USE_TARGET, itemName);
         }
         if ("loot_table".equals(path) || "loot".equals(path)) {
             String lootName = QuestObjectiveLootTableRewardEditor.displayName(TaskJsonFactory.asString(json, "loot_table", ""));
@@ -158,7 +158,7 @@ final class QuestObjectiveDisplayText {
     static String typeLabel(String type) {
         String path = TaskJsonFactory.typePath(type);
         String spaced = path.replace('_', ' ');
-        return spaced.isBlank() ? TabletVocabulary.text(TabletVocabulary.COMMON_UNKNOWN) : Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
+        return spaced.isBlank() ? TabletTranslationKeys.text(TabletTranslationKeys.COMMON_UNKNOWN) : Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
     }
 
     static boolean isManualTask(JsonObject json) {
@@ -244,7 +244,7 @@ final class QuestObjectiveDisplayText {
             clean = clean.substring(colon + 1);
         }
         clean = clean.replace('/', ' ').replace('_', ' ').trim();
-        return clean.isBlank() ? TabletVocabulary.text(QuestVocabulary.BIOME_FALLBACK) : clean.toLowerCase(Locale.ROOT);
+        return clean.isBlank() ? TabletTranslationKeys.text(QuestTranslationKeys.BIOME_FALLBACK) : clean.toLowerCase(Locale.ROOT);
     }
 
     private static String readableTagName(String tag) {
@@ -256,7 +256,7 @@ final class QuestObjectiveDisplayText {
         String path = colon >= 0 ? value.substring(colon + 1) : value;
         path = path.replace('\\', '/');
         if (path.isBlank()) {
-            return TabletVocabulary.text(QuestVocabulary.ANY_ITEM);
+            return TabletTranslationKeys.text(QuestTranslationKeys.ANY_ITEM);
         }
         String[] parts = path.split("/");
         String name;
@@ -267,7 +267,7 @@ final class QuestObjectiveDisplayText {
         } else {
             name = singular(prettify(path));
         }
-        return TabletVocabulary.text(QuestVocabulary.ANY_NAMED_ITEM, name);
+        return TabletTranslationKeys.text(QuestTranslationKeys.ANY_NAMED_ITEM, name);
     }
 
     private static String prettify(String value) {

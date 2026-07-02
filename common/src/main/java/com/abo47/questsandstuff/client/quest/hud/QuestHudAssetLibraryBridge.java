@@ -18,7 +18,7 @@ final class QuestHudAssetLibraryBridge {
     private QuestHudAssetLibraryBridge() {
     }
 
-    static boolean open(QuestHudLayoutEditScreen editScreen, QuestHudLayout.Element element) {
+    static boolean open(QuestHudLayoutManagerEditScreen editScreen, QuestHudLayoutManager.Element element) {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         if (player == null || element == null) {
@@ -29,7 +29,7 @@ final class QuestHudAssetLibraryBridge {
         TabletUiState state = new TabletUiState();
         state.root.tabletRootWidth = screenW;
         state.root.tabletRootHeight = screenH;
-        ModalOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayout.background(element), QuestHudLayout.opacityPercent(element));
+        ModalOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayoutManager.background(element), QuestHudLayoutManager.opacityPercent(element));
 
         boolean[] returning = new boolean[]{false};
         Runnable[] refresh = new Runnable[1];
@@ -72,7 +72,7 @@ final class QuestHudAssetLibraryBridge {
         return true;
     }
 
-    private static void returnToParent(QuestHudLayoutEditScreen parent, boolean[] returning) {
+    private static void returnToParent(QuestHudLayoutManagerEditScreen parent, boolean[] returning) {
         if (returning[0]) {
             return;
         }
@@ -81,7 +81,7 @@ final class QuestHudAssetLibraryBridge {
         Minecraft.getInstance().setScreen(parent);
     }
 
-    private static String targetName(QuestHudLayout.Element element) {
-        return element == QuestHudLayout.Element.COMPLETION ? "completion" : "pinned";
+    private static String targetName(QuestHudLayoutManager.Element element) {
+        return element == QuestHudLayoutManager.Element.COMPLETION ? "completion" : "pinned";
     }
 }

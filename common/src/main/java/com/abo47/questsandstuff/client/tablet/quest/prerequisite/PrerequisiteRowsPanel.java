@@ -12,10 +12,10 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
@@ -66,7 +66,7 @@ final class PrerequisiteRowsPanel {
                 PAD,
                 PAD,
                 rows,
-                TabletVocabulary.text(QuestVocabulary.PREREQUISITES_NO_CONNECTIONS),
+                TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_NO_CONNECTIONS),
                 ScrollState.bind(
                         () -> state.modal.prerequisitesManagerScroll,
                         value -> state.modal.prerequisitesManagerScroll = value,
@@ -86,9 +86,9 @@ final class PrerequisiteRowsPanel {
         boolean selected = row.key().equals(state.modal.prerequisitesManagerSelectedConnectionKey);
         boolean hovered = row.key().equals(state.modal.prerequisitesManagerHoveredConnectionKey);
         WidgetGroup card = new WidgetGroup(x, y, cellW, cellH);
-        card.setBackground(Surfaces.bordered(
-                selected || hovered ? withAlpha(ModColors.INTERACTIVE, selected ? 64 : 44) : withAlpha(ModColors.SURFACE_PANEL_ALT, 106),
-                selected || hovered ? ModColors.BORDER_ACCENT : withAlpha(ModColors.BORDER_BASE, 120)
+        card.setBackground(SurfaceFactory.bordered(
+                selected || hovered ? withAlpha(TabletColors.INTERACTIVE, selected ? 64 : 44) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 106),
+                selected || hovered ? TabletColors.BORDER_ACCENT : withAlpha(TabletColors.BORDER_BASE, 120)
         ));
         if (row.exclusiveChoice()) {
             card.addWidget(new DisplayIconWidget(5, 7, 16, 16, "minecraft:ender_pearl"));
@@ -96,18 +96,18 @@ final class PrerequisiteRowsPanel {
             card.addWidget(new DisplayIconWidget(5, 7, 16, 16, row.icon()));
         }
         int textW = Math.max(10, cellW - 34);
-        String role = TabletVocabulary.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestVocabulary.PREREQUISITES_INCOMING : QuestVocabulary.PREREQUISITES_OUTGOING);
-        String ecLabel = TabletVocabulary.text(QuestVocabulary.PREREQUISITES_EXCLUSIVE_CHOICE);
+        String role = TabletTranslationKeys.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestTranslationKeys.PREREQUISITES_INCOMING : QuestTranslationKeys.PREREQUISITES_OUTGOING);
+        String ecLabel = TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_EXCLUSIVE_CHOICE);
         if (row.exclusiveChoice()) {
-            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
             if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
-                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             } else {
-                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             }
         } else {
-            card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
-            card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+            card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
         }
         surface.addWidget(card);
 
@@ -122,7 +122,7 @@ final class PrerequisiteRowsPanel {
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager row_click quest={} connection={} button={}", questId, row.key(), click.button);
             refresh.run();
         });
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 38)));
+        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 38)));
         surface.addWidget(hit);
     }
 

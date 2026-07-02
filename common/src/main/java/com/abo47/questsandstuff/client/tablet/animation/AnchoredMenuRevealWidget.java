@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
@@ -111,10 +111,10 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = frame.visibleHeight();
         if (softAlpha > 0) {
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 3, y + 4, w, h);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 3, y + 4, w, h);
         }
         if (hardAlpha > 0) {
-            Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 1, y + 2, w, h);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 1, y + 2, w, h);
         }
     }
 
@@ -125,7 +125,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
     }
 
     private boolean enableClip(GuiGraphics graphics, int left, int top, int right, int bottom) {

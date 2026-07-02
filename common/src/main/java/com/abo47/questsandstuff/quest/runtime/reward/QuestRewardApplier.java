@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.runtime.reward;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public final class QuestRewardApplier {
             QuestDefinition definition,
             QuestProgressState questState,
             long serverTick,
-            QuestSyncService syncService
+            SyncService syncService
     ) {
         if (hasUnclaimedSelectableRewards(definition, questState)) {
             return;

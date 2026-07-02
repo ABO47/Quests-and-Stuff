@@ -16,10 +16,10 @@ import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
@@ -84,7 +84,7 @@ public final class QuestAppComposer {
         WidgetGroup chapterPanel = null;
         WidgetGroup[] chapterPanelRef = new WidgetGroup[1];
         WidgetGroup canvasPanel = SplitPanelLayout.rightPanel(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH, state);
-        canvasPanel.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        canvasPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
 
         final int contentInset = PANEL_INSET;
         final int topY = contentInset;
@@ -99,7 +99,7 @@ public final class QuestAppComposer {
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
         WidgetGroup chapterList = new TabletScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));
-        chapterList.setBackground(isChapterPanelCollapsed(state) ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
+        chapterList.setBackground(isChapterPanelCollapsed(state) ? SurfaceFactory.fill(TabletColors.SURFACE_BASE) : SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, initialRootW, initialRootH);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
@@ -113,7 +113,7 @@ public final class QuestAppComposer {
         CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
 
         WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH);
-        viewportBg.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+        viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         viewportBgRef[0] = viewportBg;
 
         QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), chapterSideInset, chapterTopY, chapterHeaderH, initialChapterW, initialViewport[0], topY, headerH);
@@ -124,11 +124,11 @@ public final class QuestAppComposer {
 
         int HOME_BTN_SIZE = 10;
         ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
-                Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
+                SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
-        questHomeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
-        questHomeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
+        questHomeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        questHomeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(questHomeBtn);
         root.setHomeButton(questHomeBtn);
 
@@ -163,8 +163,8 @@ public final class QuestAppComposer {
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
             int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - chapterBottomInset);
 
-            chapterList.setBackground(chapterCollapsed ? Surfaces.fill(ModColors.SURFACE_BASE) : Surfaces.bordered(ModColors.SURFACE_BASE, ModColors.BORDER_BASE));
-            headers.refreshSurfaces(state);
+            chapterList.setBackground(chapterCollapsed ? SurfaceFactory.fill(TabletColors.SURFACE_BASE) : SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+            headers.refreshSurfaceFactory(state);
 
             chapterPanelRef[0].setSize(chapterW, chapterH);
             headers.layoutChapter(chapterCollapsed, dynamicListX, dynamicListW, chapterTopY, chapterHeaderH);
@@ -173,7 +173,7 @@ public final class QuestAppComposer {
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
             canvasPanel.setSize(canvasW, canvasH);
-            canvasPanel.setBackground(Surfaces.fill(ModColors.SURFACE_PANEL));
+            canvasPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
             if (viewportBgRef[0] != null) {
                 viewportBgRef[0].setSize(canvasW, canvasH);
             }
@@ -276,7 +276,7 @@ public final class QuestAppComposer {
 
     private static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
         root.setBackground(state != null && state.root.fullScreenMode
-                ? Surfaces.transparent()
-                : Surfaces.transparentBorder(ModColors.BORDER_BASE));
+                ? SurfaceFactory.transparent()
+                : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
     }
 }

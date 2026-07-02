@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
+import com.abo47.questsandstuff.quest.persistence.group.GroupMetadataStore;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -22,13 +22,13 @@ import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNo
 final class QuestDefinitionMutations {
     private final Path questsDir;
     private final Map<String, QuestDefinition> quests;
-    private final ChapterMetadataStore chapters;
+    private final GroupMetadataStore chapters;
     private final QuestDefinitionSaveQueue saveQueue;
 
     QuestDefinitionMutations(
             Path questsDir,
             Map<String, QuestDefinition> quests,
-            ChapterMetadataStore chapters,
+            GroupMetadataStore chapters,
             QuestDefinitionSaveQueue saveQueue
     ) {
         this.questsDir = questsDir;

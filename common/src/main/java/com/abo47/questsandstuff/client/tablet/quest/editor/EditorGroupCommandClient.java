@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorGroupPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenGroupPacket;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
 
@@ -164,7 +164,7 @@ public final class EditorGroupCommandClient {
 
     private static IntegratedServerActions.LocalAction integratedServerGroupAction(TabletUiState state, String op, String from, String to, int offset) {
         return serverPlayer -> {
-            var editor = QuestServices.editor(serverPlayer.server);
+            var editor = QuestServiceRegistry.editor(serverPlayer.server);
             switch (op) {
                 case "create" -> {
                     editor.createGroup(serverPlayer, to);

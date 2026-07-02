@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -24,10 +24,10 @@ public final class TabletPanelChrome {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int soft = withAlpha(ModColors.SURFACE_BASE, 82);
-        int hard = withAlpha(ModColors.SURFACE_BASE, 120);
-        Surfaces.fill(soft).draw(graphics, 0, 0, x + 4, y + 5, w, h);
-        Surfaces.fill(hard).draw(graphics, 0, 0, x + 2, y + 3, w, h);
+        int soft = withAlpha(TabletColors.SURFACE_BASE, 82);
+        int hard = withAlpha(TabletColors.SURFACE_BASE, 120);
+        SurfaceFactory.fill(soft).draw(graphics, 0, 0, x + 4, y + 5, w, h);
+        SurfaceFactory.fill(hard).draw(graphics, 0, 0, x + 2, y + 3, w, h);
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
@@ -79,7 +79,7 @@ public final class TabletPanelChrome {
         int holeBottom = y + Math.max(1, Math.min(h - 1, viewportY + viewportH));
 
         if (holeRight > holeLeft && holeBottom > holeTop) {
-            drawRectOutline(graphics, holeLeft - 1, holeTop - 1, holeRight - holeLeft + 2, holeBottom - holeTop + 2, ModColors.BORDER_BASE);
+            drawRectOutline(graphics, holeLeft - 1, holeTop - 1, holeRight - holeLeft + 2, holeBottom - holeTop + 2, TabletColors.BORDER_BASE);
             if (canEdit && gridEnabled) {
                 drawRectOutline(graphics, holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, gridLineColor(gridOpacityPercent, gridColor));
             }
@@ -114,7 +114,7 @@ public final class TabletPanelChrome {
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
-        drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ModColors.BORDER_BASE);
+        drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, TabletColors.BORDER_BASE);
     }
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
@@ -125,7 +125,7 @@ public final class TabletPanelChrome {
         if (w <= 0 || h <= 0) {
             return;
         }
-        IGuiTexture fill = Surfaces.fill(color);
+        IGuiTexture fill = SurfaceFactory.fill(color);
         fill.draw(graphics, 0, 0, x, y, w, 1);
         fill.draw(graphics, 0, 0, x, y + h - 1, w, 1);
         fill.draw(graphics, 0, 0, x, y + 1, 1, Math.max(0, h - 2));
@@ -135,10 +135,10 @@ public final class TabletPanelChrome {
     static IGuiTexture resolveFill(WidgetGroup panel) {
         IGuiTexture bg = panel.getBackgroundTexture();
         if (bg == null || bg.equals(IGuiTexture.EMPTY)) {
-            return Surfaces.fill(ModColors.SURFACE_PANEL);
+            return SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
         }
         if (bg instanceof ColorRectTexture crt) {
-            return Surfaces.fill(crt.color);
+            return SurfaceFactory.fill(crt.color);
         }
         return bg;
     }

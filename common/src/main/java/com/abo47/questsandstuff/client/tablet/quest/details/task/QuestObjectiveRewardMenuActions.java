@@ -7,9 +7,9 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -29,29 +29,29 @@ final class QuestObjectiveRewardMenuActions {
         boolean selectable = QuestObjectiveSelectableRewards.isSelectable(rewardJson);
         List<ContextAction> editActions = new ArrayList<>();
         if ("command".equals(TaskJsonFactory.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
-            editActions.add(ContextActions.rename(TabletVocabulary.text(QuestVocabulary.EDIT_COMMAND_REWARD), () -> {
+            editActions.add(ContextActions.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestObjectiveEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
         }
         if (QuestObjectiveXpEditor.isXp(rewardJson)) {
-            editActions.add(ContextActions.rename(TabletVocabulary.text(QuestVocabulary.EDIT_XP), () -> {
+            editActions.add(ContextActions.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
-            editActions.add(ContextActions.action(TabletVocabulary.text(QuestVocabulary.MAKE_SELECTABLE_REWARD), "selectable", ModColors.INTERACTIVE, () -> {
+            editActions.add(ContextActions.action(TabletTranslationKeys.text(QuestTranslationKeys.MAKE_SELECTABLE_REWARD), "selectable", TabletColors.INTERACTIVE, () -> {
                 ContextMenuState.clearDeleteConfirm(state);
                 QuestObjectiveSelectableRewards.makeSelectable(player, questId, contextId);
             }));
         }
         List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.promoted(TabletVocabulary.text(QuestVocabulary.CHANGE_REWARD), "rename", ModColors.INTERACTIVE, () -> {
+        actions.add(ContextActions.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REWARD), "rename", TabletColors.INTERACTIVE, () -> {
             ContextMenuState.clearDeleteConfirm(state);
             QuestDetailsTransientManager.openTypePicker(state, "reward_change", contextId);
         }));
-        actions.add(ContextActions.promotedRename(TabletVocabulary.text(QuestVocabulary.RENAME_REWARD), () -> {
+        actions.add(ContextActions.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REWARD), () -> {
             ContextMenuState.clearDeleteConfirm(state);
             QuestObjectiveEditActions.openObjectiveRenameEditor(state, questId, contextId, false);
         }));
@@ -67,7 +67,7 @@ final class QuestObjectiveRewardMenuActions {
         });
         actions.add(QuestObjectiveMenuSupport.visualsSubmenu(state, questId, contextId, false));
         String deleteKey = "quest_details_reward:" + questId + ":" + contextId;
-        actions.add(ContextActions.delete(state, deleteKey, TabletVocabulary.text(TabletVocabulary.COMMON_DELETE), () -> {
+        actions.add(ContextActions.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
             EditorQuestCommandClient.removeQuestReward(player, questId, contextId);
         }));
         return actions;

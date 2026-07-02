@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -39,8 +39,8 @@ public final class TabletStatPickerModal {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
                         ModalWindowManager.ModalType.STAT_PICKER,
-                        TabletVocabulary.text(QuestVocabulary.CHOOSE_STAT),
-                        TabletVocabulary.text(QuestVocabulary.NO_STATS),
+                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_STAT),
+                        TabletTranslationKeys.text(QuestTranslationKeys.NO_STATS),
                         "stat",
                         TabletStatPickerModal::stats,
                         TabletStatPickerModal::displayName,

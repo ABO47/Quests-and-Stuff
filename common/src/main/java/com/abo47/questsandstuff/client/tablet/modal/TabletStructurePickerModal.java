@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
@@ -26,8 +26,8 @@ public final class TabletStructurePickerModal {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
                         ModalWindowManager.ModalType.STRUCTURE_PICKER,
-                        TabletVocabulary.text(QuestVocabulary.CHOOSE_STRUCTURE),
-                        TabletVocabulary.text(QuestVocabulary.NO_STRUCTURES),
+                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_STRUCTURE),
+                        TabletTranslationKeys.text(QuestTranslationKeys.NO_STRUCTURES),
                         "structure",
                         TabletStructurePickerModal::structures,
                         TabletStructurePickerModal::displayName,

@@ -4,8 +4,8 @@ import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -44,11 +44,11 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         int btnX = gutterX + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
         int btnY = innerY + (innerH - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(btnX, btnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
-                Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
+                SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.closeTabletUi(null, false, "home_button"));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
-        homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
+        homeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
         java.util.Map<String, AppDescriptor> apps = TabletAppRegistry.all();
@@ -66,8 +66,8 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                     tex,
                     cd -> TabletLifecycle.openApp(app.id()));
             appBtn.setClientSideWidget();
-            appBtn.setHoverTexture(Surfaces.group(tex, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
-            appBtn.setClickedTexture(Surfaces.group(tex, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
+            appBtn.setHoverTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.hoverFill(TabletColors.INTERACTIVE))));
+            appBtn.setClickedTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.pressedFill(TabletColors.INTERACTIVE))));
             addWidget(appBtn);
             col++;
         }

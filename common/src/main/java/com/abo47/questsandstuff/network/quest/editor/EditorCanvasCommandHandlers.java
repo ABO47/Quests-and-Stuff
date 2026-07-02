@@ -23,34 +23,34 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void moveMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
+        String group = EditorCommandPayloads.group(payload);
         Map<String, int[]> moves = new HashMap<>();
-        ListTag moveTags = EditorCommandPayloadReader.moves(payload);
-        if (EditorCommandPayloadLimits.exceedsLimit(moveTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
+        ListTag moveTags = EditorCommandPayloads.moves(payload);
+        if (EditorCommandPayloads.exceedsLimit(moveTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
         for (int i = 0; i < moveTags.size(); i++) {
             CompoundTag moveTag = moveTags.getCompound(i);
-            String questId = moveTag.getString(EditorCommandPayloadKeys.QUEST);
+            String questId = moveTag.getString(EditorCommandPayloads.QUEST);
             moves.put(questId, new int[]{
-                    moveTag.getInt(EditorCommandPayloadKeys.X),
-                    moveTag.getInt(EditorCommandPayloadKeys.Y)
+                    moveTag.getInt(EditorCommandPayloads.X),
+                    moveTag.getInt(EditorCommandPayloads.Y)
             });
         }
         editor.moveQuestsInGroup(player, group, moves);
     }
 
     private static void scaleMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
+        String group = EditorCommandPayloads.group(payload);
         Map<String, Float> scales = new HashMap<>();
-        ListTag scaleTags = EditorCommandPayloadReader.scales(payload);
-        if (EditorCommandPayloadLimits.exceedsLimit(scaleTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
+        ListTag scaleTags = EditorCommandPayloads.scales(payload);
+        if (EditorCommandPayloads.exceedsLimit(scaleTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
         for (int i = 0; i < scaleTags.size(); i++) {
             CompoundTag scaleTag = scaleTags.getCompound(i);
-            String questId = scaleTag.getString(EditorCommandPayloadKeys.QUEST);
-            scales.put(questId, scaleTag.getFloat(EditorCommandPayloadKeys.SCALE));
+            String questId = scaleTag.getString(EditorCommandPayloads.QUEST);
+            scales.put(questId, scaleTag.getFloat(EditorCommandPayloads.SCALE));
         }
         editor.scaleQuestsInGroup(player, group, scales);
     }

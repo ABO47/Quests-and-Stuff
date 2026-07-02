@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
+import com.abo47.questsandstuff.quest.editor.group.GroupEditService;
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.quest.editor.canvas.PrerequisiteEditService;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
 import com.abo47.questsandstuff.quest.editor.quest.QuestContentEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
-import com.abo47.questsandstuff.quest.editor.quest.QuestLifecycleEditService;
+import com.abo47.questsandstuff.quest.editor.quest.QuestCrudHandler;
 import com.abo47.questsandstuff.quest.editor.quest.QuestSettingsEditService;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorCanvasSessionActions;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorChapterSessionActions;
@@ -19,8 +19,8 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.abo47.questsandstuff.quest.editor.clipboard.QuestClipboardDebugLog;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -35,14 +35,14 @@ import java.util.UUID;
 
 public final class EditorSessionService {
     private final QuestDefinitionStore definitionStore;
-    private final QuestRuntimeEngine runtimeEngine;
-    private final QuestSyncService syncService;
-    private final ChapterEditService chapterEdits;
+    private final RuntimeEngine runtimeEngine;
+    private final SyncService syncService;
+    private final GroupEditService chapterEdits;
     private final CanvasEditService canvasEdits;
     private final ClipboardEditService clipboardEdits;
     private final PrerequisiteEditService prerequisiteEdits;
     private final QuestContentEditService questContentEdits;
-    private final QuestLifecycleEditService questLifecycleEdits;
+    private final QuestCrudHandler questLifecycleEdits;
     private final QuestDisplayEditService questDisplayEdits;
     private final QuestSettingsEditService questSettingsEdits;
     private final EditorQuestSessionActions questActions;
@@ -53,16 +53,16 @@ public final class EditorSessionService {
 
     private final Map<UUID, EditorSession> sessions = new HashMap<>();
 
-    public EditorSessionService(QuestDefinitionStore definitionStore, QuestRuntimeEngine runtimeEngine, QuestSyncService syncService) {
+    public EditorSessionService(QuestDefinitionStore definitionStore, RuntimeEngine runtimeEngine, SyncService syncService) {
         this.definitionStore = definitionStore;
         this.runtimeEngine = runtimeEngine;
         this.syncService = syncService;
-        this.chapterEdits = new ChapterEditService(this);
+        this.chapterEdits = new GroupEditService(this);
         this.canvasEdits = new CanvasEditService(this);
         this.clipboardEdits = new ClipboardEditService(this);
         this.prerequisiteEdits = new PrerequisiteEditService(this);
         this.questContentEdits = new QuestContentEditService(this);
-        this.questLifecycleEdits = new QuestLifecycleEditService(this);
+        this.questLifecycleEdits = new QuestCrudHandler(this);
         this.questDisplayEdits = new QuestDisplayEditService(this);
         this.questSettingsEdits = new QuestSettingsEditService(this);
         this.questActions = new EditorQuestSessionActions(this, questContentEdits, questLifecycleEdits, questDisplayEdits, questSettingsEdits, prerequisiteEdits);
@@ -389,11 +389,11 @@ public final class EditorSessionService {
         return definitionStore;
     }
 
-    public QuestSyncService syncService() {
+    public SyncService syncService() {
         return syncService;
     }
 
-    public QuestRuntimeEngine runtimeEngine() {
+    public RuntimeEngine runtimeEngine() {
         return runtimeEngine;
     }
 

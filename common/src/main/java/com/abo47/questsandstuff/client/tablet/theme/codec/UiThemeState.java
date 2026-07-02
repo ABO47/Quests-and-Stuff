@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
-import com.abo47.questsandstuff.client.tablet.icons.UiIconRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -20,7 +20,7 @@ final class UiThemeState {
 
     int colorForRole(String role) {
         String normalized = normalizeRole(role);
-        return roleColors.getOrDefault(normalized, roleColors.getOrDefault(UiThemeManager.ROLE_ICON_DEFAULT, ModColors.DEFAULT_TEXT_SECONDARY));
+        return roleColors.getOrDefault(normalized, roleColors.getOrDefault(UiThemeManager.ROLE_ICON_DEFAULT, TabletColors.DEFAULT_TEXT_SECONDARY));
     }
 
     int colorForIcon(String iconFileName) {
@@ -35,36 +35,36 @@ final class UiThemeState {
 
     private static Map<String, Integer> defaultRoleColors() {
         Map<String, Integer> colors = new LinkedHashMap<>();
-        colors.put(UiThemeManager.ROLE_ICON_DEFAULT, ModColors.DEFAULT_TEXT_SECONDARY);
-        colors.put(UiThemeManager.ROLE_ICON_INTERACTIVE, ModColors.DEFAULT_INTERACTIVE);
-        colors.put(UiThemeManager.ROLE_ICON_SUCCESS, ModColors.DEFAULT_SUCCESS);
-        colors.put(UiThemeManager.ROLE_ICON_WARNING, ModColors.DEFAULT_WARNING);
-        colors.put(UiThemeManager.ROLE_ICON_ERROR, ModColors.DEFAULT_ERROR);
-        colors.put(UiThemeManager.ROLE_ICON_MUTED, ModColors.DEFAULT_TEXT_MUTED);
-        colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, ModColors.DEFAULT_BORDER_BASE);
-        colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, ModColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_DEFAULT, TabletColors.DEFAULT_TEXT_SECONDARY);
+        colors.put(UiThemeManager.ROLE_ICON_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_SUCCESS, TabletColors.DEFAULT_SUCCESS);
+        colors.put(UiThemeManager.ROLE_ICON_WARNING, TabletColors.DEFAULT_WARNING);
+        colors.put(UiThemeManager.ROLE_ICON_ERROR, TabletColors.DEFAULT_ERROR);
+        colors.put(UiThemeManager.ROLE_ICON_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
+        colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, TabletColors.DEFAULT_BORDER_BASE);
+        colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, TabletColors.DEFAULT_INTERACTIVE);
         return colors;
     }
 
     private static Map<String, Integer> defaultUiColors() {
         Map<String, Integer> uiColors = new LinkedHashMap<>();
-        uiColors.put(UiThemeManager.UI_SURFACE_BASE, ModColors.DEFAULT_SURFACE_BASE);
-        uiColors.put(UiThemeManager.UI_SURFACE_PANEL, ModColors.DEFAULT_SURFACE_PANEL);
-        uiColors.put(UiThemeManager.UI_SURFACE_PANEL_ALT, ModColors.DEFAULT_SURFACE_PANEL_ALT);
-        uiColors.put(UiThemeManager.UI_BORDER_BASE, ModColors.DEFAULT_BORDER_BASE);
-        uiColors.put(UiThemeManager.UI_BORDER_ACCENT, ModColors.DEFAULT_BORDER_ACCENT);
-        uiColors.put(UiThemeManager.UI_TEXT_PRIMARY, ModColors.DEFAULT_TEXT_PRIMARY);
-        uiColors.put(UiThemeManager.UI_TEXT_SECONDARY, ModColors.DEFAULT_TEXT_SECONDARY);
-        uiColors.put(UiThemeManager.UI_TEXT_MUTED, ModColors.DEFAULT_TEXT_MUTED);
-        uiColors.put(UiThemeManager.UI_SUCCESS, ModColors.DEFAULT_SUCCESS);
-        uiColors.put(UiThemeManager.UI_WARNING, ModColors.DEFAULT_WARNING);
-        uiColors.put(UiThemeManager.UI_ERROR, ModColors.DEFAULT_ERROR);
-        uiColors.put(UiThemeManager.UI_INTERACTIVE, ModColors.DEFAULT_INTERACTIVE);
+        uiColors.put(UiThemeManager.UI_SURFACE_BASE, TabletColors.DEFAULT_SURFACE_BASE);
+        uiColors.put(UiThemeManager.UI_SURFACE_PANEL, TabletColors.DEFAULT_SURFACE_PANEL);
+        uiColors.put(UiThemeManager.UI_SURFACE_PANEL_ALT, TabletColors.DEFAULT_SURFACE_PANEL_ALT);
+        uiColors.put(UiThemeManager.UI_BORDER_BASE, TabletColors.DEFAULT_BORDER_BASE);
+        uiColors.put(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_BORDER_ACCENT);
+        uiColors.put(UiThemeManager.UI_TEXT_PRIMARY, TabletColors.DEFAULT_TEXT_PRIMARY);
+        uiColors.put(UiThemeManager.UI_TEXT_SECONDARY, TabletColors.DEFAULT_TEXT_SECONDARY);
+        uiColors.put(UiThemeManager.UI_TEXT_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
+        uiColors.put(UiThemeManager.UI_SUCCESS, TabletColors.DEFAULT_SUCCESS);
+        uiColors.put(UiThemeManager.UI_WARNING, TabletColors.DEFAULT_WARNING);
+        uiColors.put(UiThemeManager.UI_ERROR, TabletColors.DEFAULT_ERROR);
+        uiColors.put(UiThemeManager.UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
         return uiColors;
     }
 
     private static Map<String, String> defaultIconRoles() {
-        return new LinkedHashMap<>(UiIconRegistry.defaultIconRoles());
+        return new LinkedHashMap<>(IconRegistry.defaultIconRoles());
     }
 
     private static String normalizeRole(String role) {
