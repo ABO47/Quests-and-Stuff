@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
@@ -232,7 +232,7 @@ final class TabletShortcutActions {
     }
 
     private static boolean activeEditMode(TabletUiState state) {
-        return state.questDetails.questDetailsOpen ? QuestDetailsEditState.canEdit(state) : state.root.canEdit;
+        return state.questDetails.questDetailsOpen ? QuestDetailsEditController.canEdit(state) : state.root.canEdit;
     }
 
     private static int nudgeDx(int keyCode, boolean shift, int step) {

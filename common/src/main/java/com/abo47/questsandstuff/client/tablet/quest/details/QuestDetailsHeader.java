@@ -30,7 +30,7 @@ final class QuestDetailsHeader {
 
         int closeX = viewportX + viewportW - QuestDetailsWindow.TOOL_SIZE;
         int toolsX = closeX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
-        boolean showEditor = QuestDetailsEditState.editorAvailable(state);
+        boolean showEditor = QuestDetailsEditController.editorAvailable(state);
         int editorX = showEditor ? toolsX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE : toolsX;
         int navigationRightX = showEditor ? editorX : toolsX;
         int pinX = navigationRightX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
@@ -41,35 +41,35 @@ final class QuestDetailsHeader {
         addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", ModColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, -1);
             ToolMenuAnimation.finishQuestDetails(state);
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", ModColors.INTERACTIVE, false, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, 1);
             ToolMenuAnimation.finishQuestDetails(state);
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         boolean pinned = ClientQuestCache.pinned().contains(questId);
         addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? ModColors.SUCCESS : ModColors.INTERACTIVE, pinned, click -> {
             ClientQuestCache.togglePinnedLocal(questId);
             ModNetwork.sendToServer(new C2STogglePinPacket(questId));
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? ModColors.SUCCESS : ModColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, click -> {
             ToolMenuAnimation.toggleQuestDetails(state);
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         });
         if (showEditor) {
             addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? ModColors.SUCCESS : ModColors.ERROR, state.questDetails.questDetailsEditMode, click -> {
-                if (!QuestDetailsEditState.toggle(state)) {
+                if (!QuestDetailsEditController.toggle(state)) {
                     return;
                 }
                 ToolMenuAnimation.finishQuestDetails(state);
                 if (!state.questDetails.questDetailsEditMode) {
-                    QuestDetailsTransientState.closeFloatingPopups(state);
+                    QuestDetailsTransientManager.closeFloatingPopups(state);
                     TextStyleSession.closeQuestDetails(state);
                     state.questDetails.questDetailsTitleFocused = false;
                     TextEditSession.closeQuestDetails(state, true);
@@ -77,7 +77,7 @@ final class QuestDetailsHeader {
                         state.questDetails.pendingQuestTitleChangeId = "";
                     }
                 } else {
-                    QuestDetailsTransientState.closeContext(state);
+                    QuestDetailsTransientManager.closeContext(state);
                 }
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details editor mode toggle enabled={}", state.questDetails.questDetailsEditMode);
                 refresh.run();
@@ -134,7 +134,7 @@ final class QuestDetailsHeader {
         titleField.setMaxStringLength(80);
         titleField.setBordered(false);
         boolean editing = state.questDetails.questDetailsTitleFocused && questId.equals(state.questDetails.pendingQuestTitleChangeId);
-        boolean framed = QuestDetailsEditState.canEdit(state);
+        boolean framed = QuestDetailsEditController.canEdit(state);
         titleField.setBackground(framed
                 ? Surfaces.bordered(ModColors.SURFACE_BASE, editing ? ModColors.INTERACTIVE : ModColors.BORDER_BASE)
                 : Surfaces.transparentFill());
@@ -155,7 +155,7 @@ final class QuestDetailsHeader {
     }
 
     private static void commitQuestTitle(Player player, TabletUiState state, String questId) {
-        if (!QuestDetailsEditState.canEdit(state) || questId == null || questId.isBlank()) {
+        if (!QuestDetailsEditController.canEdit(state) || questId == null || questId.isBlank()) {
             return;
         }
         CompoundTag quest = ClientQuestCache.quest(questId);

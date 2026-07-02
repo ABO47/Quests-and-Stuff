@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
@@ -191,7 +191,7 @@ final class QuestDetailsWindowLayout {
     private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasY, int canvasW, int canvasH, int[] viewport) {
         return SplitPanelLayout.rightPanel(canvasX, canvasY, canvasW, canvasH,
                 viewport[0], viewport[1], viewport[2], viewport[3],
-                QuestDetailsEditState.canEdit(state), false,
+                QuestDetailsEditController.canEdit(state), false,
                 state.questDetails.questDetailsGridOpacityPercent,
                 TabletGridControls.defaultGridColor(state),
                 state);

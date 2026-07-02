@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -136,7 +136,7 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     private SelectionRect selectionBounds(QuestDetailsDescriptionModel model) {
-        if (!QuestDetailsEditState.canEdit(state) || count() <= 1) {
+        if (!QuestDetailsEditController.canEdit(state) || count() <= 1) {
             return SelectionRect.empty();
         }
         int minX = Integer.MAX_VALUE;

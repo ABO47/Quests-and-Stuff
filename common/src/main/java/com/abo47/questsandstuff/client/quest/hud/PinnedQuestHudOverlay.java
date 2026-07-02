@@ -4,7 +4,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withA
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveHudDisplay;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveHudDisplay;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.mojang.blaze3d.platform.Window;

@@ -35,8 +35,8 @@ class TabletPureHelperCoverageTest {
                 entry("description layer selection", "com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionSelectionStateTest"),
                 entry("context action tones", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionToneTest"),
                 entry("context action layout", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionLayoutTest"),
-                entry("objective json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveJsonsTest"),
-                entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest")
+                entry("objective json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.task.TaskJsonFactoryTest"),
+                entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveTypeCatalogTest")
         );
 
         coverage.forEach((area, className) ->

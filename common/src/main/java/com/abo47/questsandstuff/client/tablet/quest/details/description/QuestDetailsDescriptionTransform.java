@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -364,11 +364,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private int screenContentX() {
-        return QuestDetailsMouse.screenX(state, contentX.getAsInt());
+        return QuestDetailsCoordinates.screenX(state, contentX.getAsInt());
     }
 
     private int screenContentY() {
-        return QuestDetailsMouse.screenY(state, contentY.getAsInt());
+        return QuestDetailsCoordinates.screenY(state, contentY.getAsInt());
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {

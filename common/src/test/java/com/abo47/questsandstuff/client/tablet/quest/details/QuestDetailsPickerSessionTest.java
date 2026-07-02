@@ -13,7 +13,7 @@ class QuestDetailsPickerSessionTest {
     void typePickerUsesSingleTypedSession() {
         TabletUiState state = contextAt(24, 36);
 
-        QuestDetailsTransientState.openTypePicker(state, "requirement_change", "task_a");
+        QuestDetailsTransientManager.openTypePicker(state, "requirement_change", "task_a");
 
         QuestDetailsPickerSession session = state.questDetails.questDetailsPickerSession;
         assertTrue(session.typePicker());
@@ -29,8 +29,8 @@ class QuestDetailsPickerSessionTest {
     void itemSourceAndXpReplaceActivePickerSession() {
         TabletUiState state = contextAt(12, 18);
 
-        QuestDetailsTransientState.openTypePicker(state, "requirement", "");
-        QuestDetailsTransientState.openItemSourcePicker(state, "task_item|quest_a|task_a|questsandstuff:item");
+        QuestDetailsTransientManager.openTypePicker(state, "requirement", "");
+        QuestDetailsTransientManager.openItemSourcePicker(state, "task_item|quest_a|task_a|questsandstuff:item");
 
         QuestDetailsPickerSession itemSource = state.questDetails.questDetailsPickerSession;
         assertTrue(itemSource.itemSourcePicker());
@@ -39,8 +39,8 @@ class QuestDetailsPickerSessionTest {
         assertEquals(12, itemSource.x());
         assertEquals(18, itemSource.y());
 
-        QuestDetailsTransientState.openTypePicker(state, "reward_change", "reward_a");
-        QuestDetailsTransientState.openXpPicker(state, "quest_a", "reward_a", false);
+        QuestDetailsTransientManager.openTypePicker(state, "reward_change", "reward_a");
+        QuestDetailsTransientManager.openXpPicker(state, "quest_a", "reward_a", false);
 
         QuestDetailsPickerSession xp = state.questDetails.questDetailsPickerSession;
         assertTrue(xp.xpPicker());
@@ -54,12 +54,12 @@ class QuestDetailsPickerSessionTest {
     @Test
     void closeFloatingPopupsClearsActivePickerSessionOnce() {
         TabletUiState state = contextAt(8, 14);
-        QuestDetailsTransientState.openTypePicker(state, "reward", "");
+        QuestDetailsTransientManager.openTypePicker(state, "reward", "");
 
-        assertTrue(QuestDetailsTransientState.closeFloatingPopups(state));
+        assertTrue(QuestDetailsTransientManager.closeFloatingPopups(state));
         assertEquals(QuestDetailsPickerSession.Type.NONE, state.questDetails.questDetailsPickerSession.type());
         assertFalse(state.questDetails.questDetailsPickerSession.active());
-        assertFalse(QuestDetailsTransientState.closeFloatingPopups(state));
+        assertFalse(QuestDetailsTransientManager.closeFloatingPopups(state));
     }
 
     @Test

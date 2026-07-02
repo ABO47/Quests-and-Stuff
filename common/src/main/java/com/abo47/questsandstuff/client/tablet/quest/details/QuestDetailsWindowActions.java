@@ -5,11 +5,11 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
+import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -112,7 +112,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean beginSelectedRename(TabletUiState state) {
-        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -134,7 +134,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean deleteSelected(Player player, TabletUiState state) {
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -149,7 +149,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean duplicateSelected(Player player, TabletUiState state) {
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -163,7 +163,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean selectAllDescription(TabletUiState state) {
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -177,7 +177,7 @@ final class QuestDetailsWindowActions {
     }
 
     static boolean nudgeSelected(Player player, TabletUiState state, int dx, int dy) {
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         String questId = questId(state);
@@ -193,7 +193,7 @@ final class QuestDetailsWindowActions {
             return;
         }
         String trimmed = questId.trim();
-        QuestRewardClaimActions.claimAll(player, trimmed);
+        RewardClaimHandler.claimAll(player, trimmed);
     }
 
     static void openIconPicker(TabletUiState state, String target) {
@@ -241,7 +241,7 @@ final class QuestDetailsWindowActions {
     }
 
     private static String editableQuestId(TabletUiState state) {
-        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditState.canEdit(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditController.canEdit(state)) {
             return "";
         }
         return questId(state);

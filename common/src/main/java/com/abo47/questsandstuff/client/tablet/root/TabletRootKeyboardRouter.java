@@ -7,9 +7,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipb
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
@@ -263,7 +263,7 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
-        if (!state.root.canEdit && !QuestDetailsEditState.canEdit(state)) {
+        if (!state.root.canEdit && !QuestDetailsEditController.canEdit(state)) {
             return false;
         }
         CanvasTransformMode mode = null;
@@ -311,7 +311,7 @@ final class TabletRootKeyboardRouter {
     }
 
     private static boolean handleQuestDetailsClipboardShortcut(TabletRootWidget root, TabletUiState state, Runnable refresher, int keyCode) {
-        if (!QuestDetailsEditState.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (!QuestDetailsEditController.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (QuestDetailsWindow.handleClipboardShortcut(root.resolvePlayer(), state, keyCode)) {
@@ -329,7 +329,7 @@ final class TabletRootKeyboardRouter {
             Runnable redoAction,
             int keyCode
     ) {
-        if (!QuestDetailsEditState.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
+        if (!QuestDetailsEditController.canEdit(state) || !Widget.isCtrlDown() || TabletRootWindowController.isTextInputActive(state, root)) {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_Z) {

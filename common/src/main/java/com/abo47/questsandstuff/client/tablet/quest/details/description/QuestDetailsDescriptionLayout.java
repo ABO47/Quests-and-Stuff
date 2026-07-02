@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasElementGridFit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -28,7 +28,7 @@ final class QuestDetailsDescriptionLayout {
         if (bounds == null) {
             return 0;
         }
-        if (QuestDetailsEditState.canEdit(state)) {
+        if (QuestDetailsEditController.canEdit(state)) {
             return current;
         }
         int safeViewportH = Math.max(1, viewportH);

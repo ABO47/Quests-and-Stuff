@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanel;
 import com.abo47.questsandstuff.client.tablet.quest.group.GroupDragController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveDragDispatcher;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;

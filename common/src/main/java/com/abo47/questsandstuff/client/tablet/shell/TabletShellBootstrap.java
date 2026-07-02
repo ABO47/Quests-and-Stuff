@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.shell;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -80,7 +80,7 @@ public final class TabletShellBootstrap {
     }
 
     private static boolean canUseEditorHistory(TabletUiState state) {
-        return state != null && state.root.editorAvailable && (state.root.canEdit || QuestDetailsEditState.canEdit(state));
+        return state != null && state.root.editorAvailable && (state.root.canEdit || QuestDetailsEditController.canEdit(state));
     }
 
     public static void keepSelectedGroupValid(TabletUiState state, boolean persist) {

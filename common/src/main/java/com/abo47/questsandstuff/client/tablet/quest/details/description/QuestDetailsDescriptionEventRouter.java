@@ -8,9 +8,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
@@ -84,11 +84,11 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (button == 2) {
             QuestDetailsDescriptionInteractionState.beginPanning(state, mouseX, mouseY);
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             ToolMenuAnimation.closeQuestDetails(state);
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return true;
         }
         int lx = localX(mouseX);
@@ -120,8 +120,8 @@ final class QuestDetailsDescriptionEventRouter {
         if (button != 0) {
             return true;
         }
-        QuestDetailsTransientState.closeContext(state);
-        QuestDetailsTransientState.closeTypePicker(state);
+        QuestDetailsTransientManager.closeContext(state);
+        QuestDetailsTransientManager.closeTypePicker(state);
         if (hit == null) {
             return handleCanvasClick(model, lx, visibleY);
         }
@@ -181,7 +181,7 @@ final class QuestDetailsDescriptionEventRouter {
             setScroll(state.questDetails.questDetailsPanStartScroll - dy);
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return surface.mouseDraggedFallback(mouseX, mouseY, button, dragX, dragY);
         }
         if (textEdit.dragSelectionTo(localX(mouseX), localY(mouseY))) {
@@ -209,7 +209,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
             return surface.keyPressedFallback(keyCode, scanCode, modifiers);
         }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleKey(keyCode)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
             return true;
         }
         return surface.keyPressedFallback(keyCode, scanCode, modifiers);
@@ -219,7 +219,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
             return surface.charTypedFallback(codePoint, modifiers);
         }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleChar(codePoint)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
             return true;
         }
         return surface.charTypedFallback(codePoint, modifiers);
@@ -238,7 +238,7 @@ final class QuestDetailsDescriptionEventRouter {
             refresh.run();
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             QuestDetailsDescriptionTransformApply.clearEditDragState(state);
             return surface.mouseReleasedFallback(mouseX, mouseY, button);
         }
@@ -298,7 +298,7 @@ final class QuestDetailsDescriptionEventRouter {
         boolean selectionHit = (hit == null && selection.selectionBoundsHit(model, lx, visibleY))
                 || (hit != null && selection.count() > 1 && hitTest.isHitSelected(hit));
         storeContextPosition(mouseX, mouseY, lx, visibleY);
-        QuestDetailsTransientState.openContext(
+        QuestDetailsTransientManager.openContext(
                 state,
                 selectionHit ? "desc_selection" : (hit == null ? "description" : hit.kind()),
                 hit == null ? "" : hit.id(),
@@ -459,19 +459,19 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private int localX(double mouseX) {
-        return QuestDetailsMouse.localX(state, mouseX, surface.contentX(), surface.contentW());
+        return QuestDetailsCoordinates.localX(state, mouseX, surface.contentX(), surface.contentW());
     }
 
     private int localY(double mouseY) {
-        return QuestDetailsMouse.localY(state, mouseY, surface.contentY(), surface.contentH());
+        return QuestDetailsCoordinates.localY(state, mouseY, surface.contentY(), surface.contentH());
     }
 
     private int pointerScreenX(double mouseX) {
-        return QuestDetailsMouse.screenX(state, surface.contentX()) + localX(mouseX);
+        return QuestDetailsCoordinates.screenX(state, surface.contentX()) + localX(mouseX);
     }
 
     private int pointerScreenY(double mouseY) {
-        return QuestDetailsMouse.screenY(state, surface.contentY()) + localY(mouseY);
+        return QuestDetailsCoordinates.screenY(state, surface.contentY()) + localY(mouseY);
     }
 
     private void setScroll(int scroll) {
@@ -480,7 +480,7 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void storeContextPosition(double mouseX, double mouseY, int lx, int ly) {
-        QuestDetailsMouse.openContextAtPointer(state, state.questDetails.questDetailsContextKind, state.questDetails.questDetailsContextId, mouseX, mouseY, surface.contentX(), surface.contentY(), lx, ly);
+        QuestDetailsCoordinates.openContextAtPointer(state, state.questDetails.questDetailsContextKind, state.questDetails.questDetailsContextId, mouseX, mouseY, surface.contentX(), surface.contentY(), lx, ly);
     }
 
     private boolean isQuestDetailsTextStyleMenuHit(double mouseX, double mouseY) {
@@ -490,8 +490,8 @@ final class QuestDetailsDescriptionEventRouter {
         if (QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
-        int localMenuX = state.questDetails.questDetailsTextStyleMenuX - (QuestDetailsMouse.screenX(state, surface.contentX()) - state.questDetails.questDetailsScreenX);
-        int localMenuY = state.questDetails.questDetailsTextStyleMenuY - (QuestDetailsMouse.screenY(state, surface.contentY()) - state.questDetails.questDetailsScreenY);
+        int localMenuX = state.questDetails.questDetailsTextStyleMenuX - (QuestDetailsCoordinates.screenX(state, surface.contentX()) - state.questDetails.questDetailsScreenX);
+        int localMenuY = state.questDetails.questDetailsTextStyleMenuY - (QuestDetailsCoordinates.screenY(state, surface.contentY()) - state.questDetails.questDetailsScreenY);
         return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetails.questDetailsTextStyleMenuW, state.questDetails.questDetailsTextStyleMenuH)
                 || inside(mouseX, mouseY, state.questDetails.questDetailsScreenX + localMenuX, state.questDetails.questDetailsScreenY + localMenuY,
                 state.questDetails.questDetailsTextStyleMenuW, state.questDetails.questDetailsTextStyleMenuH);

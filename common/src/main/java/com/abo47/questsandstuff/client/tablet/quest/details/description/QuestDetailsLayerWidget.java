@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
@@ -94,7 +94,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             closeFloatingDetailsState();
             refresh.run();
         } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetails.questDetailsContextOpen && !detailsContextHit) {
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             ContextMenuState.clearDeleteConfirm(state);
             refresh.run();
         } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetails.questDetailsTextStyleOpen) {
@@ -190,7 +190,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     private void closeFloatingDetailsState() {
-        QuestDetailsTransientState.closeFloatingPopups(state);
+        QuestDetailsTransientManager.closeFloatingPopups(state);
         EntityMotionEditor.close(state);
         closeTextStyle("details_outside");
     }

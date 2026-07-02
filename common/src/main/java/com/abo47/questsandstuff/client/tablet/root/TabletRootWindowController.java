@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
@@ -118,7 +118,7 @@ public final class TabletRootWindowController {
     }
 
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
-        boolean changed = QuestDetailsTransientState.closeFloatingPopups(state);
+        boolean changed = QuestDetailsTransientManager.closeFloatingPopups(state);
         if (EntityMotionEditor.isQuestDetailsOpen(state)) {
             EntityMotionEditor.close(state);
             changed = true;

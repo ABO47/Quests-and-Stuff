@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLay
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -39,7 +39,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGrid(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
@@ -92,7 +92,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawGuides(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
-        if (!QuestDetailsEditState.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
+        if (!QuestDetailsEditController.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
             return;
         }
         int color = withAlpha(ModColors.WARNING, 225);
@@ -110,7 +110,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
         CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
         withSelectionGeometry(state, contentW, contentH, () -> drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH));
-        if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
+        if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditController.canEdit(state) && selectedCount(state) <= 1) {
             drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
         }
     }
@@ -120,7 +120,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
         withSelectionGeometry(state, contentW, contentH, () -> drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing));
-        if (isSelectedText(state, drawText.id()) && QuestDetailsEditState.canEdit(state) && selectedCount(state) <= 1) {
+        if (isSelectedText(state, drawText.id()) && QuestDetailsEditController.canEdit(state) && selectedCount(state) <= 1) {
             drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
         }
     }

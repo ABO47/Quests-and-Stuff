@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -46,7 +46,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void keepTextStyleOpenForActiveEdit(TabletUiState state, QuestDetailsDescriptionModel model) {
-        if (!QuestDetailsEditState.canEdit(state)
+        if (!QuestDetailsEditController.canEdit(state)
                 || !TextEditSession.isQuestDetailsEditing(state)
                 || model.text(state.questDetails.questDetailsTextEditTarget) == null) {
             return;
@@ -55,7 +55,7 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     public static void renderStyleMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int w, int h) {
-        if (!TextStyleSession.questDetailsOpenOrEditingFont(state) || !QuestDetailsEditState.canEdit(state)) {
+        if (!TextStyleSession.questDetailsOpenOrEditingFont(state) || !QuestDetailsEditController.canEdit(state)) {
             TextStyleSession.resetQuestDetailsBounds(state);
             return;
         }
@@ -81,7 +81,7 @@ public final class QuestDetailsDescriptionMenus {
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int viewportW, int viewportH) {
         String kind = state.questDetails.questDetailsContextKind;
-        if (!state.questDetails.questDetailsContextOpen || kind == null || !kind.startsWith("desc") || !QuestDetailsEditState.canEdit(state)) {
+        if (!state.questDetails.questDetailsContextOpen || kind == null || !kind.startsWith("desc") || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
         List<ContextAction> actions = new ArrayList<>();
@@ -119,7 +119,7 @@ public final class QuestDetailsDescriptionMenus {
         WidgetGroup canvasMenuLayer = new WidgetGroup(x, y, viewportW, viewportH);
         WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
-                QuestDetailsTransientState.closeContext(state);
+                QuestDetailsTransientManager.closeContext(state);
             }
             refresh.run();
         }, viewportW, viewportH, ScrollState.bind(
@@ -252,7 +252,7 @@ public final class QuestDetailsDescriptionMenus {
                 actions.add(ContextActions.changeVariant(() -> {
                     ContextMenuState.clearDeleteConfirm(state);
                     String imageId = state.questDetails.questDetailsContextId;
-                    QuestDetailsTransientState.closeContext(state);
+                    QuestDetailsTransientManager.closeContext(state);
                     ModalOpenActions.openEntityVariantPicker(state, ModalTargets.questDetailsImage(questId, imageId), contextImage.asset());
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_entity_variant quest={} image={} entity={}", questId, imageId, entityId);
                 }));

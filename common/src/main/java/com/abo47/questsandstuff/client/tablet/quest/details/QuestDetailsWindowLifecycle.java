@@ -130,7 +130,7 @@ final class QuestDetailsWindowLifecycle {
     private static void applyCloseTransientState(TabletUiState state, String closingQuestId) {
         state.questDetails.questDetailsScreenX = state.questDetails.questDetailsX;
         state.questDetails.questDetailsScreenY = state.questDetails.questDetailsY;
-        QuestDetailsTransientState.closeFloatingPopups(state);
+        QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         state.questDetails.questDetailsDraggingSplitter = false;
         state.questDetails.questDetailsDescScrollDragging = false;
@@ -175,7 +175,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     private static void resetOpenTransientState(TabletUiState state) {
-        QuestDetailsTransientState.closeFloatingPopups(state);
+        QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         TextStyleSession.closeQuestDetails(state);
         state.questDetails.questDetailsTextLastClickId = "";

@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.tablet.quest.reward.QuestRewardClaimActions;
+import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
@@ -115,7 +115,7 @@ final class QuestAppHeaderControls {
             ContextMenuState.close(state);
             state.chapterPanel.chapterMenuOpen = false;
             state.pickers.assetContextOpen = false;
-            QuestRewardClaimActions.claimAll(player, "");
+            RewardClaimHandler.claimAll(player, "");
             refresh.run();
         });
         TabletIconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", ModColors.INTERACTIVE, click -> {
