@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;

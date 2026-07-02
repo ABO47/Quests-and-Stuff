@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.model.connection;
 
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public record QuestConnectionMetadata(
         String sourceQuestId,

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.network.team;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.quest.model.team.TeamData;
 import com.abo47.questsandstuff.quest.model.team.TeamMember;

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
 import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;

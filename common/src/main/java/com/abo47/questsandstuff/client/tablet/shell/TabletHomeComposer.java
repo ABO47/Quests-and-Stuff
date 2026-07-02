@@ -4,21 +4,21 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.readPersistedSkinState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.readPersistedUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedSkinState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
 
 final class TabletHomeComposer {
     private TabletHomeComposer() {

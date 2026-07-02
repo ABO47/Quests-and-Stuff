@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.util.QuestNaming;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
 
 import java.io.IOException;
 import java.nio.file.Path;

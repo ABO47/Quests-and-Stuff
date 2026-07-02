@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
 public final class ModalLibraryLayout {
     public static final int PREVIEW_X = 8;

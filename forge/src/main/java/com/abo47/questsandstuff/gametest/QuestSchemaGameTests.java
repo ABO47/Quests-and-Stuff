@@ -21,7 +21,7 @@ import com.abo47.questsandstuff.quest.model.task.progress.SimpleQuestTaskDefinit
 import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.util.StableIdAllocator;
+import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 final class CanvasGridMath {
     static final int QUEST_CELL_MARGIN = 1;

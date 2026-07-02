@@ -21,7 +21,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import com.abo47.questsandstuff.util.QuestClipboardDebugLog;
+import com.abo47.questsandstuff.quest.editor.clipboard.QuestClipboardDebugLog;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayDeque;

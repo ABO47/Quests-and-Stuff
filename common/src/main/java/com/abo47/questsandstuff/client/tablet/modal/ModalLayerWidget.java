@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class ModalLayerWidget extends WidgetGroup {

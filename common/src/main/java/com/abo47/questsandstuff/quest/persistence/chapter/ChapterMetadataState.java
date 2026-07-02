@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.persistence.chapter;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

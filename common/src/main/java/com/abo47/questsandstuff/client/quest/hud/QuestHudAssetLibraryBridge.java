@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalLayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
-import com.abo47.questsandstuff.client.tablet.screen.TabletGuiContainer;
+import com.abo47.questsandstuff.client.tablet.ui.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;

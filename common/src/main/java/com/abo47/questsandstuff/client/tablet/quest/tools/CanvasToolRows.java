@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;

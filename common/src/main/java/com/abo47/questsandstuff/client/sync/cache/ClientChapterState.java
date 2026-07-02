@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

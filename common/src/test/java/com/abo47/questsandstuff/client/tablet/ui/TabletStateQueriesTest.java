@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.shell;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class TabletHomeStatusBar extends WidgetGroup {

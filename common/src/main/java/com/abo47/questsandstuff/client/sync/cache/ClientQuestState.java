@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.sync.cache;
 
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;

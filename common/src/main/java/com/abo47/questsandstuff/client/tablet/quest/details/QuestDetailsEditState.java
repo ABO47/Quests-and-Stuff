@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public final class QuestDetailsEditState {
     private QuestDetailsEditState() {

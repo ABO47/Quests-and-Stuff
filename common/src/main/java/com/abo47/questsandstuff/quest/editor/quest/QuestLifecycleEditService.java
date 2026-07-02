@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.util.QuestNaming;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;

@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.BODY_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_TOP_H_COMPACT;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_TOP_H_COMPACT;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PANEL_W_MIN;
 
 final class QuestDetailsWindowGeometry {
     private QuestDetailsWindowGeometry() {

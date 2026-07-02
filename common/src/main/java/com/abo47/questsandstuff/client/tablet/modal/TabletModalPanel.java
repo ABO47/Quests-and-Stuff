@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerActions;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
 
 public final class TabletModalPanel {
     private TabletModalPanel() {

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.abo47.questsandstuff.client.tablet.theme.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import java.nio.file.Path;

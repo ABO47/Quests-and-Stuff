@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
 public final class ModalCloseActions {
     private ModalCloseActions() {

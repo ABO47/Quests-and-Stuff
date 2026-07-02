@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -12,9 +12,9 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -220,7 +220,7 @@ final class ChapterRowRenderer {
 
     private static void renderLockedFilter(WidgetGroup chapterList, int x, int y, int w, int h) {
         WidgetGroup filter = new WidgetGroup(x, y, w, h);
-        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 150)));
+        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 150)));
         chapterList.addWidget(filter);
     }
 

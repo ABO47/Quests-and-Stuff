@@ -5,17 +5,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runPrerequisiteAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runRemoveQuestAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runPrerequisiteAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runRemoveQuestAction;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
 
 public final class CanvasContextDeleteController {
     private CanvasContextDeleteController() {

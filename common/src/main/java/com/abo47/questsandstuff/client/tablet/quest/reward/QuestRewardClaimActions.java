@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.reward;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimAllRewardsPacket;
 import com.abo47.questsandstuff.quest.QuestServices;

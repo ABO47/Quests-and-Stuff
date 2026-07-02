@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.icons;
 
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;

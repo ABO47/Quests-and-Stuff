@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
 final class ConnectionPainter {
@@ -251,7 +251,7 @@ final class ConnectionPainter {
         Integer cached = TEX_WIDTH_CACHE.get(textureStr);
         if (cached != null) return cached;
         try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 TEX_WIDTH_CACHE.put(textureStr, ad.width());
@@ -268,7 +268,7 @@ final class ConnectionPainter {
         int[] cached = TEX_DIM_CACHE.get(textureStr);
         if (cached != null) return cached.length > 0 ? cached : null;
         try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 int[] dims = new int[]{ad.width(), ad.height()};
@@ -289,7 +289,7 @@ final class ConnectionPainter {
         if (parsed != null && parsed.getNamespace().equals(QuestsAndStuffMod.MODID)) {
             return parsed;
         }
-        java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+        java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
         try {
             com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.ensureAssetsDirs(assetsRoot);
             IGuiTexture guiTexture = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(assetsRoot, textureStr);

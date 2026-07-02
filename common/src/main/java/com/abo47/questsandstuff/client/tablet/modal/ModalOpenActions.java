@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletModalState.openModal;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.openModal;
 
 public final class ModalOpenActions {
     private ModalOpenActions() {

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.editor.session;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.util.QuestNaming;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

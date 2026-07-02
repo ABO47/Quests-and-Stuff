@@ -11,7 +11,7 @@ class TabletPureHelperCoverageTest {
     @Test
     void fastCommonCoverageSuitesStayPresentForTabletRefactors() {
         Map<String, String> coverage = Map.ofEntries(
-                entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.TabletModalStateTest"),
+                entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.state.TabletModalStateTest"),
                 entry("picker sessions", "com.abo47.questsandstuff.client.tablet.modal.ModalPickerStatesTest"),
                 entry("settings descriptors", "com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptorsTest"),
                 entry("transform sessions", "com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessionsTest"),
@@ -19,7 +19,7 @@ class TabletPureHelperCoverageTest {
                 entry("client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest"),
                 entry("optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest"),
                 entry("text field builders", "com.abo47.questsandstuff.client.tablet.controls.StyledTextFieldsTest"),
-                entry("tablet state queries", "com.abo47.questsandstuff.client.tablet.ui.TabletStateQueriesTest"),
+                entry("tablet state queries", "com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueriesTest"),
                 entry("quest details picker sessions", "com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSessionTest"),
                 entry("recipe choice index", "com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndexTest"),
                 entry("recipe picker mode controller", "com.abo47.questsandstuff.client.tablet.modal.RecipePickerModeControllerTest"),
@@ -33,8 +33,8 @@ class TabletPureHelperCoverageTest {
                 entry("canvas layer ordering", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrderingTest"),
                 entry("canvas layer selection", "com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionTest"),
                 entry("description layer selection", "com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionSelectionStateTest"),
-                entry("context action tones", "com.abo47.questsandstuff.client.tablet.context.ContextActionToneTest"),
-                entry("context action layout", "com.abo47.questsandstuff.client.tablet.context.ContextActionLayoutTest"),
+                entry("context action tones", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionToneTest"),
+                entry("context action layout", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionLayoutTest"),
                 entry("objective json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveJsonsTest"),
                 entry("objective defaults", "com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveTypeCatalogTest")
         );

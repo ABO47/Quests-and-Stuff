@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
 
 final class QuestDetailsWindowHitTest {
     private QuestDetailsWindowHitTest() {

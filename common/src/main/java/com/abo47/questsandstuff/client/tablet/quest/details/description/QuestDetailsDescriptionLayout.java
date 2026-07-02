@@ -5,12 +5,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasElementGridFit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.assetDimensions;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetDimensions;
 
 final class QuestDetailsDescriptionLayout {
     private static final int READ_ONLY_CONTENT_PAD = 16;

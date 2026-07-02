@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.layout.BaseSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.snapExpandedChapterWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
 
 final class QuestDetailsSplitterWidget extends BaseSplitterWidget {
     QuestDetailsSplitterWidget(int x, int y, int h, TabletUiState state, Runnable refresh) {

@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.shell;
 
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.PANEL_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_PAD_X;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ROOT_PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PANEL_GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 
 final class TabletHomeOverviewPanel extends WidgetGroup {
     private static final int HOME_BTN_SIZE = 10;

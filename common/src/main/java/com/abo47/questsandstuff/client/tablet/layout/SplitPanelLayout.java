@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
 
 public final class SplitPanelLayout {
     private SplitPanelLayout() {

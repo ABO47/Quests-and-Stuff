@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.NonNullList;

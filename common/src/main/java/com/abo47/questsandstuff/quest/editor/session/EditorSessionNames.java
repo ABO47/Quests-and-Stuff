@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 final class EditorSessionNames {
     private EditorSessionNames() {

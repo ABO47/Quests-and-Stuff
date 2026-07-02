@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.util.SafeNames;
+import com.abo47.questsandstuff.util.naming.SafeNames;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

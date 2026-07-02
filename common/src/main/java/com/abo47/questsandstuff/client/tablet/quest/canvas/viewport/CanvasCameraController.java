@@ -7,8 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoi
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import java.util.List;
 

@@ -5,30 +5,30 @@ import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterAtY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterInsertIndexAtY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterRowStep;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterCardAreaHit;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterScrollBarHit;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runGroupAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.updateChapterScrollByMouse;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTENT_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterInsertIndexAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterRowStep;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterCardAreaHit;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterScrollBarHit;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.updateChapterScrollByMouse;
 
 public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private final TabletUiState state;
@@ -257,7 +257,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
         for (String group : ClientQuestCache.groupOrder()) {
-            if (com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+            if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
             if (!state.root.canEdit && ClientQuestCache.groupHiddenPreview(group)) {

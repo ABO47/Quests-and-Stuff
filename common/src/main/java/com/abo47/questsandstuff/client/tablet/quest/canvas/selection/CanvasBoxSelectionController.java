@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import java.util.List;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
 
 public final class CanvasBoxSelectionController {
     private CanvasBoxSelectionController() {

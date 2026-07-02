@@ -2,16 +2,16 @@ package com.abo47.questsandstuff.client.tablet.layout;
 
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_BG_OPACITY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_OPACITY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_SIZES;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_BG_OPACITY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GRID_OPACITY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GRID_SIZES;
 
 public final class TabletGridControls {
     private TabletGridControls() {

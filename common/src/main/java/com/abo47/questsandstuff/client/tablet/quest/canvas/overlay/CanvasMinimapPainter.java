@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardR
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -22,8 +22,8 @@ import net.minecraft.world.phys.Vec2;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
+import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
 final class CanvasMinimapPainter {
     static final float BODY_REVEAL_START = 0.48f;
@@ -125,7 +125,7 @@ final class CanvasMinimapPainter {
             String bg = quest.tag().getString("ec_background");
             if (!bg.isBlank()) {
                 com.lowdragmc.lowdraglib.gui.texture.IGuiTexture tex = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(
-                        com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR, bg);
+                        com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR, bg);
                 if (tex != null) {
                     tex.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
                 } else {
