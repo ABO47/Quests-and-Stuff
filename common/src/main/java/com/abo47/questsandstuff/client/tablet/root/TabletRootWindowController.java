@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
@@ -37,7 +37,7 @@ public final class TabletRootWindowController {
                 return true;
             }
             QuestDetailsWindow.close(state);
-            TabletClientHooks.rememberMainWindow();
+            TabletLifecycle.rememberMainWindow();
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details close via escape");
             return true;
         }

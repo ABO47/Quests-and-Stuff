@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -80,7 +80,7 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean isQuickConnectActive(TabletUiState state) {
-        return state.canvas.quickConnectHeld || TabletClientHooks.quickConnectDown();
+        return state.canvas.quickConnectHeld || TabletKeybindings.quickConnectDown();
     }
 
     private static boolean hasPendingConnectSource(TabletUiState state) {

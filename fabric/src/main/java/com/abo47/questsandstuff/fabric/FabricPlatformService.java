@@ -51,7 +51,7 @@ public final class FabricPlatformService implements PlatformService {
     @Override
     public void openTabletUi(Player player) {
         try {
-            Class<?> hooks = Class.forName("com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks");
+            Class<?> hooks = Class.forName("com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle");
             Method method = hooks.getMethod("openTabletUiFromItem", Player.class);
             method.invoke(null, player);
         } catch (ReflectiveOperationException e) {

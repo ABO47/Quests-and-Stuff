@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.shell.TabletShellComposer;
+import com.abo47.questsandstuff.client.tablet.TabletComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -125,11 +125,11 @@ public final class TabletUiFactory {
     }
 
     public static WidgetGroup create(Player player) {
-        return TabletShellComposer.create(player);
+        return TabletComposer.create(player);
     }
 
     public static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
-        return TabletShellComposer.create(player, rootWidth, rootHeight, fullScreenMode);
+        return TabletComposer.create(player, rootWidth, rootHeight, fullScreenMode);
     }
 
     public static void applyRootSize(TabletUiState state, int width, int height, boolean fullScreenMode) {

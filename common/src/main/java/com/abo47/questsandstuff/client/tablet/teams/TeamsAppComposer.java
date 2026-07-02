@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
-import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
@@ -49,8 +49,8 @@ public final class TeamsAppComposer {
     }
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
-        TabletUiState state = TabletShellBootstrap.prepare(player);
-        TabletClientHooks.rememberMainWindow();
+        TabletUiState state = TabletBootstrap.prepare(player);
+        TabletLifecycle.rememberMainWindow();
         state.root.currentApp = "teams";
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
@@ -73,7 +73,7 @@ public final class TeamsAppComposer {
         int homeBtnY = ROOT_PAD_Y + ((initialRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
-                cd -> TabletClientHooks.openTabletUiHome(player));
+                cd -> TabletLifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
         homeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
         homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));

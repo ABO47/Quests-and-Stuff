@@ -140,7 +140,7 @@ final class QuestDetailsWindowLayout {
             }
         };
         modal.setBackground(Surfaces.fill(ModColors.SURFACE_BASE));
-        // keep setBackground so SkinEditRenderer can identify this widget's background
+        
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,

@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.shell;
+package com.abo47.questsandstuff.client.tablet.app;
 
 /**
  * Built-in tablet apps only. Addon registration is not exposed until a real API

@@ -1,7 +1,12 @@
-package com.abo47.questsandstuff.client.tablet.shell;
+package com.abo47.questsandstuff.client.tablet.bootstrap;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
+import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
+import com.abo47.questsandstuff.client.tablet.quest.QuestAppComposer;
+import com.abo47.questsandstuff.client.tablet.teams.TeamsAppComposer;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -9,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
 import com.abo47.questsandstuff.quest.QuestServices;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -27,11 +33,31 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.syncCanvasStateFromCache;
 
-public final class TabletShellBootstrap {
-    private TabletShellBootstrap() {
+public final class TabletBootstrap {
+    private static boolean appsRegistered;
+
+    private TabletBootstrap() {
+    }
+
+    static void ensureAppsRegistered() {
+        if (appsRegistered) return;
+        appsRegistered = true;
+        TabletAppRegistry.register(new AppDescriptor("home",
+                "ui.questsandstuff.app.home",
+                new ResourceLocation("questsandstuff", "textures/gui/home.png"),
+                TabletHomeComposer::create));
+        TabletAppRegistry.register(new AppDescriptor("QUESTS",
+                "ui.questsandstuff.app.quests",
+                new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png"),
+                QuestAppComposer::create));
+        TabletAppRegistry.register(new AppDescriptor("TEAMS",
+                "ui.questsandstuff.app.teams",
+                new ResourceLocation("questsandstuff", "textures/gui/teams.png"),
+                TeamsAppComposer::create));
     }
 
     public static TabletUiState prepare(Player player) {
+        ensureAppsRegistered();
         UiThemeManager.activeThemeName();
         ensureAssetsDirs();
         TabletUiState state = new TabletUiState();

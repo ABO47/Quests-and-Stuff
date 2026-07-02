@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.shell;
+package com.abo47.questsandstuff.client.tablet.home;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
@@ -20,15 +20,15 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
 
-final class TabletHomeComposer {
+public final class TabletHomeComposer {
     private TabletHomeComposer() {
     }
 
-    static WidgetGroup create(Player player) {
+    public static WidgetGroup create(Player player) {
         return create(player, ROOT_W, ROOT_H, false);
     }
 
-    static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
+    public static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
         UiThemeManager.activeThemeName();
         TabletUiState state = new TabletUiState();
         state.root.currentApp = "home";

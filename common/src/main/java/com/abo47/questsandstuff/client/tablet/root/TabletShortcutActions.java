@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
@@ -15,7 +16,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -36,7 +36,7 @@ final class TabletShortcutActions {
         if (state == null || !activeEditMode(state) || TabletRootWindowController.isTextInputActive(state, null)) {
             return false;
         }
-        if (TabletClientHooks.renameSelectedMatches(keyCode, scanCode)) {
+        if (TabletKeybindings.renameSelectedMatches(keyCode, scanCode)) {
             return beginRename(state);
         }
         if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {

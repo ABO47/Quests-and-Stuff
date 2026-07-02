@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
@@ -13,7 +15,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObj
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -51,8 +52,8 @@ final class TabletRootKeyboardRouter {
         if (!textInputActive && root.isAnyModalOpen() && modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if ((TabletClientHooks.openUiMatches(keyCode, scanCode) || TabletClientHooks.openQuestsUiMatches(keyCode, scanCode)) && !textInputActive) {
-            TabletClientHooks.closeTabletUi(state, true, "keybind");
+        if ((TabletKeybindings.openUiMatches(keyCode, scanCode) || TabletKeybindings.openQuestsUiMatches(keyCode, scanCode)) && !textInputActive) {
+            TabletLifecycle.closeTabletUi(state, true, "keybind");
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
@@ -75,7 +76,7 @@ final class TabletRootKeyboardRouter {
                 frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
                 return true;
             }
-            TabletClientHooks.closeTabletUi(state, false, "escape");
+            TabletLifecycle.closeTabletUi(state, false, "escape");
             return true;
         }
         if (root.isAnyModalOpen()) {
@@ -88,7 +89,7 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
-            if (TabletClientHooks.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
+            if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
                 state.root.skinEditMode = !state.root.skinEditMode;
                 TabletUiFactory.persistSkinState(state);
                 refresher.run();
@@ -96,7 +97,7 @@ final class TabletRootKeyboardRouter {
             }
             return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
-        if (!Widget.isCtrlDown() && TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
+        if (!Widget.isCtrlDown() && TabletKeybindings.quickConnectMatches(keyCode, scanCode)) {
             state.canvas.quickConnectHeld = true;
         }
         if (handleRenameCommit(root, state, refresher, keyCode)) {
@@ -129,7 +130,7 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
-        if (TabletClientHooks.toggleSkinEditMatches(keyCode, scanCode)) {
+        if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode)) {
             state.root.skinEditMode = !state.root.skinEditMode;
             TabletUiFactory.persistSkinState(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
@@ -267,11 +268,11 @@ final class TabletRootKeyboardRouter {
             return false;
         }
         CanvasTransformMode mode = null;
-        if (TabletClientHooks.gizmoMoveMatches(keyCode, scanCode)) {
+        if (TabletKeybindings.gizmoMoveMatches(keyCode, scanCode)) {
             mode = CanvasTransformMode.MOVE;
-        } else if (TabletClientHooks.gizmoResizeMatches(keyCode, scanCode)) {
+        } else if (TabletKeybindings.gizmoResizeMatches(keyCode, scanCode)) {
             mode = CanvasTransformMode.RESIZE;
-        } else if (TabletClientHooks.gizmoRotateMatches(keyCode, scanCode)) {
+        } else if (TabletKeybindings.gizmoRotateMatches(keyCode, scanCode)) {
             mode = CanvasTransformMode.ROTATE;
         }
         if (mode == null) {
@@ -346,7 +347,7 @@ final class TabletRootKeyboardRouter {
     }
 
     static boolean keyReleased(TabletRootWidget root, TabletUiState state, Runnable refresher, KeyDelegate selfKeyRelease, int keyCode, int scanCode, int modifiers) {
-        if (TabletClientHooks.quickConnectMatches(keyCode, scanCode)) {
+        if (TabletKeybindings.quickConnectMatches(keyCode, scanCode)) {
             state.canvas.quickConnectHeld = false;
             state.canvas.quickConnectSourceQuestId = "";
             state.canvas.quickConnectEcId = "";

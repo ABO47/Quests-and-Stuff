@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.client.Minecraft;
 
@@ -154,7 +154,7 @@ final class SettingsTabDescriptors {
 
     private static void setFullScreenMode(TabletUiState state, boolean enabled) {
         QuestsAndStuffConfig.setFullScreenModeEnabled(enabled);
-        TabletClientHooks.applyTabletLayoutMode(state);
+        TabletScreenManager.applyTabletLayoutMode(state);
     }
 
     private static List<SettingsOptionDescriptor> animationOptions() {

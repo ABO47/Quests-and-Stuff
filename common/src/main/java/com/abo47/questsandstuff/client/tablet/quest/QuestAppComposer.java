@@ -13,8 +13,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.shell.TabletShellBootstrap;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
@@ -66,8 +66,8 @@ public final class QuestAppComposer {
     }
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
-        TabletUiState state = TabletShellBootstrap.prepare(player);
-        TabletClientHooks.restoreRememberedWindow(state);
+        TabletUiState state = TabletBootstrap.prepare(player);
+        TabletLifecycle.restoreRememberedWindow(state);
         state.root.currentApp = "quest";
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
@@ -125,7 +125,7 @@ public final class QuestAppComposer {
         int HOME_BTN_SIZE = 10;
         ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
-                cd -> TabletClientHooks.openTabletUiHome(player));
+                cd -> TabletLifecycle.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
         questHomeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
         questHomeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
@@ -144,7 +144,7 @@ public final class QuestAppComposer {
                 ContextMenuState.close(state);
                 state.canvas.canvasSelection.questIds().clear();
             }
-            TabletShellBootstrap.keepSelectedGroupValid(state, true);
+            TabletBootstrap.keepSelectedGroupValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;
             int currentRootW = rootWidth(state);
             int currentRootH = rootHeight(state);
@@ -247,7 +247,7 @@ public final class QuestAppComposer {
         root.setFrontWindowLayer(questDetailsLayer);
         root.setCanvasViewport(canvasViewport);
 
-        root.setUndoRedoActions(TabletShellBootstrap.undoAction(state, player), TabletShellBootstrap.redoAction(state, player));
+        root.setUndoRedoActions(TabletBootstrap.undoAction(state, player), TabletBootstrap.redoAction(state, player));
         chapterPanel = new GroupPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;

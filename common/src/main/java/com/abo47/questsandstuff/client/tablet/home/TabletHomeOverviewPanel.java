@@ -1,5 +1,8 @@
-package com.abo47.questsandstuff.client.tablet.shell;
+package com.abo47.questsandstuff.client.tablet.home;
 
+import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
@@ -7,7 +10,6 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
@@ -43,34 +45,32 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         int btnY = innerY + (innerH - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(btnX, btnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.subtleBorder()),
-                cd -> TabletClientHooks.closeTabletUi(null, false, "home_button"));
+                cd -> TabletLifecycle.closeTabletUi(null, false, "home_button"));
         homeBtn.setClientSideWidget();
         homeBtn.setHoverTexture(Surfaces.bordered(ModColors.elevatedSurface(), ModColors.focusBorder()));
         homeBtn.setClickedTexture(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
-        int iconPairW = APP_ICON_SIZE * 2 + 16;
+        java.util.Map<String, AppDescriptor> apps = TabletAppRegistry.all();
+        int appCount = (int) apps.values().stream().filter(a -> !"home".equals(a.id())).count();
+        int iconPairW = APP_ICON_SIZE * appCount + Math.max(0, appCount - 1) * 16;
         int iconsStartX = innerX + (innerW - iconPairW) / 2;
         int iconY = innerY + (innerH - APP_ICON_SIZE) / 2;
 
-        ResourceTexture questTexture = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png"));
-        ResourceTexture teamsTexture = new ResourceTexture(new ResourceLocation("questsandstuff", "textures/gui/teams.png"));
-
-        ButtonWidget questApp = new ButtonWidget(iconsStartX, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
-                questTexture,
-                cd -> TabletClientHooks.openQuestsUiFromCurrentScreen());
-        questApp.setClientSideWidget();
-        questApp.setHoverTexture(Surfaces.group(questTexture, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
-        questApp.setClickedTexture(Surfaces.group(questTexture, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
-        addWidget(questApp);
-
-        ButtonWidget teamsApp = new ButtonWidget(iconsStartX + APP_ICON_SIZE + 16, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
-                teamsTexture,
-                cd -> TabletClientHooks.openTeamsUiFromCurrentScreen());
-        teamsApp.setClientSideWidget();
-        teamsApp.setHoverTexture(Surfaces.group(teamsTexture, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
-        teamsApp.setClickedTexture(Surfaces.group(teamsTexture, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
-        addWidget(teamsApp);
+        int col = 0;
+        for (AppDescriptor app : apps.values()) {
+            if ("home".equals(app.id())) continue;
+            int ix = iconsStartX + col * (APP_ICON_SIZE + 16);
+            ResourceTexture tex = new ResourceTexture(app.iconTexture());
+            ButtonWidget appBtn = new ButtonWidget(ix, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
+                    tex,
+                    cd -> TabletLifecycle.openApp(app.id()));
+            appBtn.setClientSideWidget();
+            appBtn.setHoverTexture(Surfaces.group(tex, Surfaces.fill(ModColors.hoverFill(ModColors.INTERACTIVE))));
+            appBtn.setClickedTexture(Surfaces.group(tex, Surfaces.fill(ModColors.pressedFill(ModColors.INTERACTIVE))));
+            addWidget(appBtn);
+            col++;
+        }
     }
 
     @Override

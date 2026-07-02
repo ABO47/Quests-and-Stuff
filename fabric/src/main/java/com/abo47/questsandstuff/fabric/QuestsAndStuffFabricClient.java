@@ -2,7 +2,8 @@ package com.abo47.questsandstuff.fabric;
 
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -14,12 +15,12 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 public final class QuestsAndStuffFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        TabletClientHooks.prewarmClientAtGameLaunch();
+        TabletLifecycle.prewarmClientAtGameLaunch();
         FabricModNetworkClient.register();
-        TabletClientHooks.registerKeyMappings(KeyBindingHelper::registerKeyBinding);
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> TabletClientHooks.onClientLogin());
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> TabletClientHooks.onClientLogout());
-        ClientTickEvents.END_CLIENT_TICK.register(client -> TabletClientHooks.onClientTick());
+        TabletKeybindings.registerKeyMappings(KeyBindingHelper::registerKeyBinding);
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> TabletLifecycle.onClientLogin());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> TabletLifecycle.onClientLogout());
+        ClientTickEvents.END_CLIENT_TICK.register(client -> TabletLifecycle.onClientTick());
         HudRenderCallback.EVENT.register((graphics, tickDelta) -> QuestHudOverlayRenderer.render(graphics));
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             ScreenEvents.afterRender(screen).register((currentScreen, graphics, mouseX, mouseY, tickDelta) ->

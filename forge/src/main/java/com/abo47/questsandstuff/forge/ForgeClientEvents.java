@@ -3,7 +3,8 @@ package com.abo47.questsandstuff.forge;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -26,12 +27,12 @@ public final class ForgeClientEvents {
 
         @SubscribeEvent
         public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
-            TabletClientHooks.registerKeyMappings(event::register);
+            TabletKeybindings.registerKeyMappings(event::register);
         }
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            event.enqueueWork(TabletClientHooks::prewarmClientAtGameLaunch);
+            event.enqueueWork(TabletLifecycle::prewarmClientAtGameLaunch);
         }
     }
 
@@ -42,18 +43,18 @@ public final class ForgeClientEvents {
 
         @SubscribeEvent
         public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-            TabletClientHooks.onClientLogin();
+            TabletLifecycle.onClientLogin();
         }
 
         @SubscribeEvent
         public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-            TabletClientHooks.onClientLogout();
+            TabletLifecycle.onClientLogout();
         }
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
-                TabletClientHooks.onClientTick();
+                TabletLifecycle.onClientTick();
             }
         }
 
