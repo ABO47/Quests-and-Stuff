@@ -30,7 +30,7 @@ import java.util.Map;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_WIDTH;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasRenderer {
@@ -42,8 +42,8 @@ public final class CanvasRenderer {
     public static void rebuildQuestCanvas(CanvasViewport canvasViewport, TabletUiState state) {
         CanvasCameraController.beforeCanvasRebuild(state);
         canvasViewport.clearAllWidgets();
-        String selectedGroup = CanvasRenderStateController.prepareRebuild(state);
-        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
+        String selectedChapter = CanvasRenderStateController.prepareRebuild(state);
+        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedChapter);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
         List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
@@ -62,7 +62,7 @@ public final class CanvasRenderer {
         int contentX = Math.max(0, (usableW - contentW) / 2);
         int contentY = Math.max(0, (usableH - contentH) / 2);
         CanvasRenderStateController.setContentBounds(state, contentX, contentY, contentW, contentH);
-        CanvasCameraController.afterCanvasLayout(state, selectedGroup);
+        CanvasCameraController.afterCanvasLayout(state, selectedChapter);
         CanvasSceneRenderer.renderCanvasSurfaceFactory(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
         if (state.canvas.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
@@ -73,7 +73,7 @@ public final class CanvasRenderer {
         List<QuestCardLayout> visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
         CanvasLayoutService.clampCanvasOffset(state, visibleCards, contentW, contentH);
         visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
-        if (CanvasCameraController.consumePendingQuestFocus(state, visibleCards, selectedGroup)) {
+        if (CanvasCameraController.consumePendingQuestFocus(state, visibleCards, selectedChapter)) {
             visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
         }
         CanvasCameraController.rememberCurrentGroup(state);
@@ -118,15 +118,15 @@ public final class CanvasRenderer {
     }
 
     static boolean matchesFilters(CompoundTag questTag, TabletUiState state) {
-        String selectedGroup = selectedGroupName(state);
-        CompoundTag groups = questTag.getCompound("groups");
-        if (selectedGroup.isBlank()) {
+        String selectedChapter = selectedChapterName(state);
+        CompoundTag groups = questTag.getCompound("chapters");
+        if (selectedChapter.isBlank()) {
             return false;
         }
         if (!state.root.canEdit && isVisualHiddenOutsideEdit(questTag)) {
             return false;
         }
-        return groups.contains(selectedGroup);
+        return groups.contains(selectedChapter);
     }
 
     private static boolean isVisualHiddenOutsideEdit(CompoundTag questTag) {

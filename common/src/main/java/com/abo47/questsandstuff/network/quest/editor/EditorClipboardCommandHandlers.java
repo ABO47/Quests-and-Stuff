@@ -21,7 +21,7 @@ final class EditorClipboardCommandHandlers {
     }
 
     private static void copyMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         ListTag questTags = EditorCommandPayloads.list(payload, EditorCommandPayloads.QUESTS, Tag.TAG_STRING);
         if (EditorCommandPayloads.exceedsLimit(questTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
             return;
@@ -30,20 +30,20 @@ final class EditorClipboardCommandHandlers {
     }
 
     private static void pasteClipboard(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
         int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
-        editor.pasteClipboardInGroup(player, group, x, y);
+        editor.pasteClipboardInChapter(player, group, x, y);
     }
 
     private static void pasteBlueprint(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
         int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
         CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloads.compound(payload, EditorCommandPayloads.BLUEPRINT));
         if (blueprint.isEmpty()) {
             return;
         }
-        editor.pasteBlueprintInGroup(player, group, x, y, blueprint);
+        editor.pasteBlueprintInChapter(player, group, x, y, blueprint);
     }
 }

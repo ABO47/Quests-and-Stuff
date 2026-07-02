@@ -39,9 +39,9 @@ public final class EditorQuestSessionActions {
         this.prerequisiteEdits = prerequisiteEdits;
     }
 
-    public String groupLabel(ServerPlayer player) {
+    public String chapterLabel(ServerPlayer player) {
         EditorSession session = service.session(player);
-        return "Group: " + session.currentGroup;
+        return "Chapter: " + session.currentChapter;
     }
 
     public String questLabel(ServerPlayer player) {
@@ -63,36 +63,36 @@ public final class EditorQuestSessionActions {
                 + " H=" + quest.settings().hiddenMode().name();
     }
 
-    public void nextGroup(ServerPlayer player) {
+    public void nextChapter(ServerPlayer player) {
         EditorSession session = service.session(player);
-        List<String> groups = service.groups();
-        if (groups.isEmpty()) {
+        List<String> chapters = service.chapters();
+        if (chapters.isEmpty()) {
             return;
         }
-        int idx = groups.indexOf(session.currentGroup);
-        idx = (idx + 1) % groups.size();
-        session.currentGroup = groups.get(idx);
+        int idx = chapters.indexOf(session.currentChapter);
+        idx = (idx + 1) % chapters.size();
+        session.currentChapter = chapters.get(idx);
         service.normalizeQuestSelection(session);
     }
 
-    public void prevGroup(ServerPlayer player) {
+    public void prevChapter(ServerPlayer player) {
         EditorSession session = service.session(player);
-        List<String> groups = service.groups();
-        if (groups.isEmpty()) {
+        List<String> chapters = service.chapters();
+        if (chapters.isEmpty()) {
             return;
         }
-        int idx = groups.indexOf(session.currentGroup);
+        int idx = chapters.indexOf(session.currentChapter);
         if (idx < 0) {
             idx = 0;
         }
-        idx = (idx - 1 + groups.size()) % groups.size();
-        session.currentGroup = groups.get(idx);
+        idx = (idx - 1 + chapters.size()) % chapters.size();
+        session.currentChapter = chapters.get(idx);
         service.normalizeQuestSelection(session);
     }
 
     public void nextQuest(ServerPlayer player) {
         EditorSession session = service.session(player);
-        List<String> questIds = service.questIdsInGroup(session.currentGroup);
+        List<String> questIds = service.questIdsInChapter(session.currentChapter);
         if (questIds.isEmpty()) {
             return;
         }
@@ -103,7 +103,7 @@ public final class EditorQuestSessionActions {
 
     public void prevQuest(ServerPlayer player) {
         EditorSession session = service.session(player);
-        List<String> questIds = service.questIdsInGroup(session.currentGroup);
+        List<String> questIds = service.questIdsInChapter(session.currentChapter);
         if (questIds.isEmpty()) {
             return;
         }
@@ -128,20 +128,20 @@ public final class EditorQuestSessionActions {
         lifecycleEdits.addQuest(player);
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup) {
-        lifecycleEdits.addQuest(player, preferredGroup);
+    public void addQuest(ServerPlayer player, String preferredChapter) {
+        lifecycleEdits.addQuest(player, preferredChapter);
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup, String preferredQuestId, int x, int y, String preferredTitle) {
-        lifecycleEdits.addQuest(player, preferredGroup, preferredQuestId, x, y, preferredTitle);
+    public void addQuest(ServerPlayer player, String preferredChapter, String preferredQuestId, int x, int y, String preferredTitle) {
+        lifecycleEdits.addQuest(player, preferredChapter, preferredQuestId, x, y, preferredTitle);
     }
 
     public void removeQuest(ServerPlayer player, String questId) {
         lifecycleEdits.removeQuest(player, questId);
     }
 
-    public void openGroup(ServerPlayer player, String groupName) {
-        lifecycleEdits.openGroup(player, groupName);
+    public void openChapter(ServerPlayer player, String chapterName) {
+        lifecycleEdits.openChapter(player, chapterName);
     }
 
     public void openQuest(ServerPlayer player, String questId) {

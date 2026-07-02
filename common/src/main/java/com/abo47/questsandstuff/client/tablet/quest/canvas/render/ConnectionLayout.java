@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 final class ConnectionLayout {
     private ConnectionLayout() {
@@ -45,7 +45,7 @@ final class ConnectionLayout {
     ) {
         List<ConnectionLine> lines = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
 
         for (QuestCardLayout quest : cards) {
             CompoundTag questTag = quest.tag();
@@ -71,7 +71,7 @@ final class ConnectionLayout {
                 lines.add(lineFromStyle(style, prerequisite, quest, false));
             }
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());

@@ -17,7 +17,7 @@ final class CanvasContextGlobalActions {
     private CanvasContextGlobalActions() {
     }
 
-    static void addGlobalActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
+    static void addGlobalActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
         if (state.canvas.canvasZoom != 1.0f) {
             actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_zoom"), "reset_zoom", TabletColors.INTERACTIVE, () -> {
                 CanvasCameraController.resetZoom(state, true);
@@ -26,7 +26,7 @@ final class CanvasContextGlobalActions {
                 canvasViewport.refresh();
             }));
         }
-        if (!selectedGroup.isBlank() && CanvasClipboardController.hasClipboardContent(state)) {
+        if (!selectedChapter.isBlank() && CanvasClipboardController.hasClipboardContent(state)) {
             actions.add(ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.paste"), "paste", TabletColors.SUCCESS, () -> {
                 CanvasContextMenuSupport.pasteClipboard(player, state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=paste target={}", state.contextMenu.contextMenuTarget);

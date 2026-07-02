@@ -77,7 +77,7 @@ class SkinStateCapsuleTest {
         state.root.skinFillOverrides.put("quest_details_modal", "tile|bg.png");
 
         state.root.editMode = true;
-        state.root.selectedGroup = "main";
+        state.root.selectedChapter = "main";
         state.root.currentApp = "quests";
 
         assertTrue(state.root.skinEditMode);
@@ -85,7 +85,7 @@ class SkinStateCapsuleTest {
         assertEquals("tile|bg.png", state.root.skinFillOverrides.get("quest_details_modal"));
 
         assertTrue(state.root.editMode);
-        assertEquals("main", state.root.selectedGroup);
+        assertEquals("main", state.root.selectedChapter);
         assertEquals("quests", state.root.currentApp);
     }
 }

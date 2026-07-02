@@ -73,28 +73,28 @@ public final class ClientDisplayState {
         return List.copyOf(RECENT_EVENTS);
     }
 
-    public static void noteQuestCompleted(CompoundTag quest, String currentGroup) {
+    public static void noteQuestCompleted(CompoundTag quest, String currentChapter) {
         if (quest == null || quest.isEmpty()) {
             return;
         }
-        String selected = currentGroup == null ? "" : currentGroup;
-        CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
-        for (String group : groups.getAllKeys()) {
-            if (group == null || group.isBlank() || group.equals(selected)) {
+        String selected = currentChapter == null ? "" : currentChapter;
+        CompoundTag groups = quest.getCompound(SyncKeys.Quest.CHAPTERS);
+        for (String chapter : groups.getAllKeys()) {
+            if (chapter == null || chapter.isBlank() || chapter.equals(selected)) {
                 continue;
             }
-            CHAPTER_COMPLETION_NOTICES.add(group);
+            CHAPTER_COMPLETION_NOTICES.add(chapter);
         }
     }
 
-    public static boolean chapterHasCompletionNotice(String group) {
-        return group != null && CHAPTER_COMPLETION_NOTICES.contains(group);
+    public static boolean chapterHasCompletionNotice(String chapter) {
+        return chapter != null && CHAPTER_COMPLETION_NOTICES.contains(chapter);
     }
 
-    public static void clearChapterCompletionNotice(String group) {
-        if (group == null || group.isBlank()) {
+    public static void clearChapterCompletionNotice(String chapter) {
+        if (chapter == null || chapter.isBlank()) {
             return;
         }
-        CHAPTER_COMPLETION_NOTICES.remove(group);
+        CHAPTER_COMPLETION_NOTICES.remove(chapter);
     }
 }

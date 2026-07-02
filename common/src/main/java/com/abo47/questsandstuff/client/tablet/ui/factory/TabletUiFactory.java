@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.TabletComposer;
@@ -104,8 +104,8 @@ public final class TabletUiFactory {
         TabletActiveState.refreshActiveTablet();
     }
 
-    public static String activeSelectedGroup() {
-        return TabletActiveState.activeSelectedGroup();
+    public static String activeSelectedChapter() {
+        return TabletActiveState.activeSelectedChapter();
     }
 
     public static void syncCanvasStateFromCache(TabletUiState state) {
@@ -164,16 +164,16 @@ public final class TabletUiFactory {
         return TabletLayout.canvasViewportBounds(panelW, panelH, topH);
     }
 
-    public static String uniqueGroupName(String preferred, String excludeCurrent) {
-        return EditorGroupCommandClient.uniqueGroupName(preferred, excludeCurrent);
+    public static String uniqueChapterName(String preferred, String excludeCurrent) {
+        return EditorChapterCommandClient.uniqueChapterName(preferred, excludeCurrent);
     }
 
-    public static String sanitizeGroupName(String value) {
-        return EditorGroupCommandClient.sanitizeGroupName(value);
+    public static String sanitizeChapterName(String value) {
+        return EditorChapterCommandClient.sanitizeChapterName(value);
     }
 
     public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
-        EditorGroupCommandClient.runGroupAction(player, state, action, group, value, offset);
+        EditorChapterCommandClient.runGroupAction(player, state, action, group, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {

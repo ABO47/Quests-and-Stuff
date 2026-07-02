@@ -25,7 +25,7 @@ final class QuestDefinitionNormalizer {
                         definition.display().title(),
                         definition.display().subtitle(),
                         new ArrayList<>(definition.display().description()),
-                        new HashMap<>(definition.display().groups()),
+                        new HashMap<>(definition.display().chapters()),
                         definition.display().icon(),
                         definition.display().iconBackground(),
                         definition.display().completionSound(),
@@ -138,19 +138,19 @@ final class QuestDefinitionNormalizer {
     static boolean hasAnyGroup(QuestDefinition definition) {
         return definition != null
                 && definition.display() != null
-                && definition.display().groups() != null
-                && !definition.display().groups().isEmpty();
+                && definition.display().chapters() != null
+                && !definition.display().chapters().isEmpty();
     }
 
-    static String groupFolderName(String group) {
-        return QuestIdentity.groupFolderName(group);
+    static String chapterFolderName(String group) {
+        return QuestIdentity.chapterFolderName(group);
     }
 
-    static String primaryGroup(QuestDefinition definition) {
-        if (definition.display().groups().isEmpty()) {
+    static String primaryChapter(QuestDefinition definition) {
+        if (definition.display().chapters().isEmpty()) {
             return "";
         }
-        return definition.display().groups().keySet().stream().sorted().findFirst().orElse("");
+        return definition.display().chapters().keySet().stream().sorted().findFirst().orElse("");
     }
 
     private static Map<String, String> filterConnectionModes(Map<String, String> modes, Set<String> prerequisites) {

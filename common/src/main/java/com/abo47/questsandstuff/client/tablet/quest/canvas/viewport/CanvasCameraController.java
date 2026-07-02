@@ -23,7 +23,7 @@ public final class CanvasCameraController {
     }
 
     public static void afterCanvasLayout(TabletUiState state, String group) {
-        String normalizedGroup = normalizeGroup(group);
+        String normalizedGroup = normalizeChapter(group);
         state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         state.canvas.canvasLivePanX = 0;
         state.canvas.canvasLivePanY = 0;
@@ -49,7 +49,7 @@ public final class CanvasCameraController {
         if (state == null || state.canvas.canvasContentW <= 0 || state.canvas.canvasContentH <= 0) {
             return;
         }
-        String group = normalizeGroup(state.canvas.canvasCameraGroup);
+        String group = normalizeChapter(state.canvas.canvasCameraGroup);
         if (group.isBlank()) {
             return;
         }
@@ -179,9 +179,9 @@ public final class CanvasCameraController {
 
     public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String group) {
         String questId = QuestIdentity.questId(state.canvas.pendingCameraQuestId);
-        String pendingGroup = normalizeGroup(state.canvas.pendingCameraGroup);
-        String selectedGroup = normalizeGroup(group);
-        if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedGroup))) {
+        String pendingGroup = normalizeChapter(state.canvas.pendingCameraGroup);
+        String selectedChapter = normalizeChapter(group);
+        if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedChapter))) {
             return false;
         }
         for (QuestCardLayout card : cards) {
@@ -191,7 +191,7 @@ public final class CanvasCameraController {
             centerOn(state, card.logicalCenterX(), card.logicalCenterY(), true);
             state.canvas.pendingCameraQuestId = "";
             state.canvas.pendingCameraGroup = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera center quest={} group={}", questId, selectedGroup);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera center quest={} group={}", questId, selectedChapter);
             return true;
         }
         return false;
@@ -250,7 +250,7 @@ public final class CanvasCameraController {
         return ZOOM_STOPS[0];
     }
 
-    private static String normalizeGroup(String group) {
-        return QuestIdentity.groupName(group);
+    private static String normalizeChapter(String group) {
+        return QuestIdentity.chapterName(group);
     }
 }

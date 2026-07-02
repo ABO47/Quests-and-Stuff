@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.COLOR_PICKER;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
@@ -36,7 +36,7 @@ public final class TabletColorPickerModal {
     public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletModalPanel.tr("ui.questsandstuff.modal.color_picker"), w, state, refresh);
         String resolvedTarget = ModalTargetState.target(state, COLOR_PICKER, state.pickers.colorPickerTarget);
-        final String target = resolvedTarget.isBlank() ? selectedGroupName(state) : resolvedTarget;
+        final String target = resolvedTarget.isBlank() ? selectedChapterName(state) : resolvedTarget;
         ModalPreviewLayout.Metrics lib = ModalPreviewLayout.calculate(w, h);
         int wheelSize = Math.min(lib.leftW() - 20, lib.bodyH() - 84);
         WidgetGroup left = ModalPreviewLayout.previewPanel(lib);

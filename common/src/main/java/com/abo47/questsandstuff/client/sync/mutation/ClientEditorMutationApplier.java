@@ -25,24 +25,24 @@ public final class ClientEditorMutationApplier {
             ClientQuestState.removeQuest(normalizedId);
             return;
         }
-        ensureGroupsFromQuestTag(normalizedAction, normalizedId, questTag);
+        ensureChaptersFromQuestTag(normalizedAction, normalizedId, questTag);
         CompoundTag existing = ClientQuestState.mutableQuestOrCreate(normalizedId);
         existing.merge(questTag == null ? new CompoundTag() : questTag.copy());
     }
 
-    private static void ensureGroupsFromQuestTag(String action, String questId, CompoundTag questTag) {
-        if (questTag == null || !questTag.contains(SyncKeys.Quest.GROUPS, Tag.TAG_COMPOUND)) {
+    private static void ensureChaptersFromQuestTag(String action, String questId, CompoundTag questTag) {
+        if (questTag == null || !questTag.contains(SyncKeys.Quest.CHAPTERS, Tag.TAG_COMPOUND)) {
             return;
         }
-        CompoundTag groups = questTag.getCompound(SyncKeys.Quest.GROUPS);
+        CompoundTag groups = questTag.getCompound(SyncKeys.Quest.CHAPTERS);
         for (String rawGroup : groups.getAllKeys()) {
-            String group = ClientChapterState.normalizeGroup(rawGroup);
+            String group = ClientChapterState.normalizeChapter(rawGroup);
             if (group.isBlank()) {
                 continue;
             }
-            boolean missing = !ClientChapterState.containsGroup(group);
-            ClientQuestMutator.createGroupLocal(group);
-            if (missing && ClientChapterState.containsGroup(group)) {
+            boolean missing = !ClientChapterState.containsChapter(group);
+            ClientQuestMutator.createChapterLocal(group);
+            if (missing && ClientChapterState.containsChapter(group)) {
                 QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} group={}", action, questId, group);
             }
         }

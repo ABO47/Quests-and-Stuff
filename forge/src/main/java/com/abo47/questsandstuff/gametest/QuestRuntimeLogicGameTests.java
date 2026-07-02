@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.gametest;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
@@ -133,7 +133,7 @@ public final class QuestRuntimeLogicGameTests {
                         id,
                         "",
                         List.of(),
-                        Map.of("Main", GroupDef.DEFAULT),
+                        Map.of("Main", ChapterDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),

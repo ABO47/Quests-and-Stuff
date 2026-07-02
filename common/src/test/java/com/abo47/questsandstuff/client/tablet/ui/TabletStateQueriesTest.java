@@ -28,13 +28,13 @@ class TabletStateQueriesTest {
     }
 
     @Test
-    void selectedGroupNameUsesSanitizedEditableSelection() {
+    void selectedChapterNameUsesSanitizedEditableSelection() {
         TabletUiState state = new TabletUiState();
         state.root.canEdit = true;
-        state.root.selectedGroup = "  main\nchapter with a very very very very very very long suffix  ";
+        state.root.selectedChapter = "  main\nchapter with a very very very very very very long suffix  ";
 
-        assertEquals(QuestIdentity.uiGroupName(state.root.selectedGroup), TabletStateQueries.sanitizeGroupName(state.root.selectedGroup));
-        assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedGroupName(state));
+        assertEquals(QuestIdentity.uiChapterName(state.root.selectedChapter), TabletStateQueries.sanitizeChapterName(state.root.selectedChapter));
+        assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedChapterName(state));
     }
 
     @Test

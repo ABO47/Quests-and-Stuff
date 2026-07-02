@@ -9,15 +9,15 @@ final class CanvasQuestCardGeometry {
     private CanvasQuestCardGeometry() {
     }
 
-    static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedGroup) {
+    static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedChapter) {
         CanvasPoint override = state.canvas.transientQuestPositions.get(questId);
-        CompoundTag groupsTag = questTag.getCompound("groups");
-        String resolvedGroup = selectedGroup == null ? "" : selectedGroup.trim();
-        if (resolvedGroup.isBlank() || !groupsTag.contains(resolvedGroup)) {
-            resolvedGroup = groupsTag.getAllKeys().stream().sorted().findFirst().orElse("");
+        CompoundTag groupsTag = questTag.getCompound("chapters");
+        String resolvedChapter = selectedChapter == null ? "" : selectedChapter.trim();
+        if (resolvedChapter.isBlank() || !groupsTag.contains(resolvedChapter)) {
+            resolvedChapter = groupsTag.getAllKeys().stream().sorted().findFirst().orElse("");
         }
 
-        CompoundTag groupTag = resolvedGroup.isBlank() ? new CompoundTag() : groupsTag.getCompound(resolvedGroup);
+        CompoundTag groupTag = resolvedChapter.isBlank() ? new CompoundTag() : groupsTag.getCompound(resolvedChapter);
         int logicalX = groupTag.getInt("x");
         int logicalY = groupTag.getInt("y");
         if (override != null) {

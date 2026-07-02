@@ -273,10 +273,10 @@ final class CanvasSelectMoveClickActions {
         if (anchorEnumKind == null) {
             return;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        String group = TabletStateQueries.selectedChapterName(state);
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
         int[] anchorBounds = elementBounds(byQuestId, images, texts, ecs, anchorEnumKind, anchorId);
         int[] clickBounds = elementBounds(byQuestId, images, texts, ecs, clickedKind, clickedId);
         if (anchorBounds == null || clickBounds == null) {

@@ -10,7 +10,7 @@ public record QuestDisplay(
         String title,
         String subtitle,
         List<String> description,
-        Map<String, GroupDef> groups,
+        Map<String, ChapterDef> chapters,
         String icon,
         String iconBackground,
         String completionSound,
@@ -46,12 +46,12 @@ public record QuestDisplay(
             DEFAULT_QUEST_BACKGROUND_GRAYSCALE
     );
 
-    public static QuestDisplay forNewQuest(String title, Map<String, GroupDef> groups) {
+    public static QuestDisplay forNewQuest(String title, Map<String, ChapterDef> chapters) {
         return new QuestDisplay(
                 title == null ? "" : title.trim(),
                 DEFAULT_SUBTITLE,
                 List.of(),
-                groups == null ? Map.of() : groups,
+                chapters == null ? Map.of() : chapters,
                 DEFAULT_ICON,
                 DEFAULT_ICON_BACKGROUND,
                 DEFAULT_COMPLETION_SOUND,
@@ -63,12 +63,12 @@ public record QuestDisplay(
         );
     }
 
-    public QuestDisplay withGroups(Map<String, GroupDef> groups) {
+    public QuestDisplay withChapters(Map<String, ChapterDef> chapters) {
         return new QuestDisplay(
                 title,
                 subtitle,
                 description,
-                groups == null ? Map.of() : groups,
+                chapters == null ? Map.of() : chapters,
                 icon,
                 iconBackground,
                 completionSound,
@@ -84,45 +84,45 @@ public record QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, GroupDef> groups,
+            Map<String, ChapterDef> chapters,
             String icon,
             String iconBackground
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, DEFAULT_COMPLETION_SOUND, DEFAULT_COMPLETION_SOUND_VOLUME, DEFAULT_COMPLETION_HUD_BACKGROUND, DEFAULT_VISUAL_HIDDEN, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
+        this(title, subtitle, description, chapters, icon, iconBackground, DEFAULT_COMPLETION_SOUND, DEFAULT_COMPLETION_SOUND_VOLUME, DEFAULT_COMPLETION_HUD_BACKGROUND, DEFAULT_VISUAL_HIDDEN, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
     }
 
     public QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, GroupDef> groups,
+            Map<String, ChapterDef> chapters,
             String icon,
             String iconBackground,
             String completionSound,
             boolean visualHidden
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, completionSound, DEFAULT_COMPLETION_SOUND_VOLUME, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
+        this(title, subtitle, description, chapters, icon, iconBackground, completionSound, DEFAULT_COMPLETION_SOUND_VOLUME, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
     }
 
     public QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, GroupDef> groups,
+            Map<String, ChapterDef> chapters,
             String icon,
             String iconBackground,
             String completionSound,
             int completionSoundVolume,
             boolean visualHidden
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, completionSound, completionSoundVolume, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
+        this(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, DEFAULT_QUEST_BACKGROUND, DEFAULT_QUEST_BACKGROUND_GRAYSCALE);
     }
 
     public QuestDisplay(
             String title,
             String subtitle,
             List<String> description,
-            Map<String, GroupDef> groups,
+            Map<String, ChapterDef> chapters,
             String icon,
             String iconBackground,
             String completionSound,
@@ -131,14 +131,14 @@ public record QuestDisplay(
             String questBackground,
             boolean questBackgroundGrayscale
     ) {
-        this(title, subtitle, description, groups, icon, iconBackground, completionSound, completionSoundVolume, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, questBackground, questBackgroundGrayscale);
+        this(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, DEFAULT_COMPLETION_HUD_BACKGROUND, visualHidden, questBackground, questBackgroundGrayscale);
     }
 
     public QuestDisplay {
         title = title == null ? DEFAULT_TITLE : title;
         subtitle = subtitle == null ? DEFAULT_SUBTITLE : subtitle;
         description = description == null ? List.of() : description;
-        groups = groups == null ? Map.of() : groups;
+        chapters = chapters == null ? Map.of() : chapters;
         icon = normalizeIcon(icon);
         iconBackground = normalizeIconBackground(iconBackground);
         completionSound = completionSound == null || completionSound.isBlank() ? DEFAULT_COMPLETION_SOUND : completionSound.trim();
@@ -151,7 +151,7 @@ public record QuestDisplay(
             Codec.STRING.fieldOf("title").orElse(DEFAULT_TITLE).forGetter(QuestDisplay::title),
             Codec.STRING.fieldOf("subtitle").orElse(DEFAULT_SUBTITLE).forGetter(QuestDisplay::subtitle),
             Codec.STRING.listOf().fieldOf("description").orElse(List.of()).forGetter(QuestDisplay::description),
-            Codec.unboundedMap(Codec.STRING, GroupDef.CODEC).fieldOf("groups").orElse(Map.of()).forGetter(QuestDisplay::groups),
+            Codec.unboundedMap(Codec.STRING, ChapterDef.CODEC).fieldOf("chapters").orElse(Map.of()).forGetter(QuestDisplay::chapters),
             Codec.STRING.fieldOf("icon").orElse(DEFAULT_ICON).forGetter(QuestDisplay::icon),
             Codec.STRING.fieldOf("icon_background").orElse(DEFAULT_ICON_BACKGROUND).forGetter(QuestDisplay::iconBackground),
             Codec.STRING.fieldOf("completion_sound").orElse(DEFAULT_COMPLETION_SOUND).forGetter(QuestDisplay::completionSound),

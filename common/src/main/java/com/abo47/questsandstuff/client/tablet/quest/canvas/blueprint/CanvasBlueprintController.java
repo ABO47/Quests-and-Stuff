@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -127,7 +127,7 @@ public final class CanvasBlueprintController {
         if (canvasViewport == null || state == null) {
             return CanvasBlueprint.empty();
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank()) {
             return CanvasBlueprint.empty();
         }
@@ -158,7 +158,7 @@ public final class CanvasBlueprintController {
             if (definition == null) {
                 continue;
             }
-            GroupDef view = definition.display().groups().get(group);
+            ChapterDef view = definition.display().chapters().get(group);
             if (view == null) {
                 continue;
             }
@@ -172,7 +172,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasImageLayer> images = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 images.add(image);
             }
@@ -185,7 +185,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasTextLayer> texts = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 texts.add(text);
             }
@@ -198,7 +198,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasBlueprint.ExclusiveChoiceEntry> entries = new ArrayList<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (ecIds.contains(ec.id())) {
                 entries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
                         ec.id(), group, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
@@ -238,7 +238,7 @@ public final class CanvasBlueprintController {
     private static List<String> selectedLayerOrder(TabletUiState state, String group, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
-        for (String key : state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of())) {
+        for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of())) {
             if (selected.remove(key)) {
                 order.add(key);
             }

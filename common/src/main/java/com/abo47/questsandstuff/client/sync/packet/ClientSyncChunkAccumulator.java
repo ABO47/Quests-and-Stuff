@@ -46,8 +46,8 @@ public final class ClientSyncChunkAccumulator {
             if (groups.isEmpty()) {
                 groups = (ListTag) part.getList(SyncKeys.GROUPS, Tag.TAG_STRING).copy();
             }
-            if (groupProps.isEmpty() && part.contains(SyncKeys.GROUP_PROPS, Tag.TAG_COMPOUND)) {
-                groupProps = part.getCompound(SyncKeys.GROUP_PROPS).copy();
+            if (groupProps.isEmpty() && part.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND)) {
+                groupProps = part.getCompound(SyncKeys.CHAPTER_PROPS).copy();
             }
             CompoundTag partQuests = part.getCompound(SyncKeys.QUESTS);
             for (String key : partQuests.getAllKeys()) {
@@ -55,7 +55,7 @@ public final class ClientSyncChunkAccumulator {
             }
         }
         full.put(SyncKeys.GROUPS, groups);
-        full.put(SyncKeys.GROUP_PROPS, groupProps);
+        full.put(SyncKeys.CHAPTER_PROPS, groupProps);
         full.put(SyncKeys.QUESTS, quests);
         return full;
     }
@@ -75,8 +75,8 @@ public final class ClientSyncChunkAccumulator {
             if (groups.isEmpty()) {
                 groups = (ListTag) part.getList(SyncKeys.GROUPS, Tag.TAG_STRING).copy();
             }
-            if (groupProps.isEmpty() && part.contains(SyncKeys.GROUP_PROPS, Tag.TAG_COMPOUND)) {
-                groupProps = part.getCompound(SyncKeys.GROUP_PROPS).copy();
+            if (groupProps.isEmpty() && part.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND)) {
+                groupProps = part.getCompound(SyncKeys.CHAPTER_PROPS).copy();
             }
             CompoundTag partChanged = part.getCompound(SyncKeys.CHANGED);
             for (String key : partChanged.getAllKeys()) {
@@ -94,7 +94,7 @@ public final class ClientSyncChunkAccumulator {
 
         if (!groups.isEmpty() || !groupProps.isEmpty()) {
             delta.put(SyncKeys.GROUPS, groups);
-            delta.put(SyncKeys.GROUP_PROPS, groupProps);
+            delta.put(SyncKeys.CHAPTER_PROPS, groupProps);
         }
         delta.put(SyncKeys.CHANGED, changed);
         delta.put(SyncKeys.REMOVED, removed);

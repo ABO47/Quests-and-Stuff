@@ -185,11 +185,11 @@ public final class EditorQuestCommandClient {
     }
 
     public static String predictNextQuestId(TabletUiState state) {
-        return QuestNaming.nextQuestId(EditorGroupCommandClient.selectedGroupName(state), ClientQuestStateFacade.questIds());
+        return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedChapterName(state), ClientQuestStateFacade.questIds());
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        String group = EditorGroupCommandClient.selectedGroupName(state);
+        String group = EditorChapterCommandClient.selectedChapterName(state);
         if (group.isBlank()) {
             return;
         }
@@ -418,7 +418,7 @@ public final class EditorQuestCommandClient {
     private static boolean isOccupied(String group, int x, int y) {
         for (var entry : ClientQuestStateFacade.questEntries()) {
             CompoundTag quest = entry.getValue();
-            CompoundTag groups = quest.getCompound("groups");
+            CompoundTag groups = quest.getCompound("chapters");
             if (!groups.contains(group)) {
                 continue;
             }

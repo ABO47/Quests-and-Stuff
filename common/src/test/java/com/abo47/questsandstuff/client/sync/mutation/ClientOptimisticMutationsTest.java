@@ -41,8 +41,8 @@ class ClientOptimisticMutationsTest {
         ClientQuestMutator.setQuestCompletionSoundVolumeLocal("quest/new", 250);
         ClientQuestMutator.setQuestCompletionHudBackgroundLocal("quest/new", " hud/rare ");
         ClientQuestMutator.setQuestBackgroundLocal("quest/new", " quest/rare ", true);
-        ClientQuestMutator.setQuestPositionInGroupLocal("quest/new", "main", 90, 120);
-        ClientQuestMutator.setQuestScaleInGroupLocal("quest/new", "main", -4.0f);
+        ClientQuestMutator.setQuestPositionInChapterLocal("quest/new", "main", 90, 120);
+        ClientQuestMutator.setQuestScaleInChapterLocal("quest/new", "main", -4.0f);
 
         ClientQuestMutator.putQuestTaskJsonLocal("quest/new", taskJson("task/a", "First"));
         ClientQuestMutator.putQuestTaskJsonLocal("quest/new", taskJson("task/b", "Second"));
@@ -62,7 +62,7 @@ class ClientOptimisticMutationsTest {
         assertEquals("quest/rare", quest.getString(SyncKeys.Quest.QUEST_BACKGROUND));
         assertTrue(quest.getBoolean(SyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE));
 
-        CompoundTag mainView = quest.getCompound(SyncKeys.Quest.GROUPS).getCompound("main");
+        CompoundTag mainView = quest.getCompound(SyncKeys.Quest.CHAPTERS).getCompound("main");
         assertEquals(90, mainView.getInt(SyncKeys.ChapterView.X));
         assertEquals(120, mainView.getInt(SyncKeys.ChapterView.Y));
         assertEquals(0.5f, mainView.getFloat(SyncKeys.ChapterView.SCALE), 0.0001f);
@@ -141,7 +141,7 @@ class ClientOptimisticMutationsTest {
         assertFalse(copy.getBoolean(SyncKeys.Quest.UNLOCKED));
         assertFalse(copy.getBoolean(SyncKeys.Quest.CLAIMED));
         assertEquals(0.0f, copy.getFloat(SyncKeys.Quest.PROGRESS), 0.0001f);
-        assertGroupView(copy, "copies", 16, 24, 1.25f);
+        assertChapterView(copy, "copies", 16, 24, 1.25f);
 
         ClientQuestMutator.removeQuestLocal("quest/parent");
         CompoundTag child = ClientQuestStateFacade.quest("quest/child");
@@ -155,7 +155,7 @@ class ClientOptimisticMutationsTest {
 
     @Test
     void canvasMutationsMaintainLayerStateAndOrder() {
-        ClientQuestMutator.createGroupLocal("main");
+        ClientQuestMutator.createChapterLocal("main");
         CanvasImageLayer image = new CanvasImageLayer("image/a", "item:minecraft:diamond", 10, 20, 40, 50, 0);
         CanvasTextLayer text = new CanvasTextLayer("text/a", "Label", 60, 70, 80, 30, 0, "center", "bold", 0xFFFFFF);
 
@@ -192,10 +192,10 @@ class ClientOptimisticMutationsTest {
                 .toList();
     }
 
-    private static void assertGroupView(CompoundTag quest, String group, int x, int y, float scale) {
-        CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
-        assertEquals(Set.of(group), groups.getAllKeys());
-        CompoundTag view = groups.getCompound(group);
+    private static void assertChapterView(CompoundTag quest, String chapter, int x, int y, float scale) {
+        CompoundTag chapters = quest.getCompound(SyncKeys.Quest.CHAPTERS);
+        assertEquals(Set.of(chapter), chapters.getAllKeys());
+        CompoundTag view = chapters.getCompound(chapter);
         assertTrue(view.getBoolean(SyncKeys.ChapterView.VISIBLE));
         assertEquals(x, view.getInt(SyncKeys.ChapterView.X));
         assertEquals(y, view.getInt(SyncKeys.ChapterView.Y));

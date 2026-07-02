@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.gametest;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
 import com.abo47.questsandstuff.quest.model.reward.CommandQuestRewardDefinition;
@@ -57,7 +57,7 @@ public final class QuestSchemaGameTests {
                         "Roundtrip",
                         "",
                         List.of(),
-                        Map.of("Main", GroupDef.DEFAULT),
+                        Map.of("Main", ChapterDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier",
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,
@@ -158,7 +158,7 @@ public final class QuestSchemaGameTests {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "test/task_ui",
-                new QuestDisplay("Task UI", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay("Task UI", "", List.of(), Map.of("Main", ChapterDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(itemTask.id(), itemTask, checkTask.id(), checkTask, biomeTask.id(), biomeTask),
@@ -201,7 +201,7 @@ public final class QuestSchemaGameTests {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "test/task_order",
-                new QuestDisplay("Task Order", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                new QuestDisplay("Task Order", "", List.of(), Map.of("Main", ChapterDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 tasks,
@@ -237,7 +237,7 @@ public final class QuestSchemaGameTests {
                     "title": "Fresh",
                     "subtitle": "",
                     "description": [],
-                    "groups": {},
+                    "chapters": {},
                     "icon": "minecraft:book",
                     "icon_background": "minecraft:barrier"
                   },

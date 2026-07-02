@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class CanvasSceneRenderer {
@@ -112,7 +112,7 @@ final class CanvasSceneRenderer {
     static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestStateFacade.groupCanvasBackground(selectedGroupName(state)));
+        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -149,10 +149,10 @@ final class CanvasSceneRenderer {
             int viewportH,
             BiConsumer<String, WidgetGroup> questCardLayerSink
     ) {
-        String group = selectedGroupName(state);
-        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
+        String group = selectedChapterName(state);
+        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
         if (exclusiveChoices.isEmpty() && images.isEmpty() && texts.isEmpty() && visibleCards.isEmpty()) {
             return;
         }
@@ -327,8 +327,8 @@ final class CanvasSceneRenderer {
         if (state.root.canEdit) {
             return;
         }
-        String group = selectedGroupName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        String group = selectedChapterName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (drawEc.connectionQuestIds().contains(card.questId()) && !drawEc.prerequisiteQuestIds().isEmpty()) {
                 addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));

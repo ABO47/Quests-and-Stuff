@@ -60,7 +60,7 @@ public final class QuestPrerequisitesModal {
         addHeader(modal, state, refresh, w);
         ModalPreviewLayout.Metrics layout = ModalPreviewLayout.calculate(w, h);
 
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         PrerequisiteConnectionModel model;
         if (state.modal.prerequisitesManagerEcMode) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
@@ -164,7 +164,7 @@ public final class QuestPrerequisitesModal {
             return;
         }
         List<ContextAction> actions = new java.util.ArrayList<>();
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         String sourceId = row.sourceId();
         String targetId = row.targetId();
         if (!row.exclusiveChoice()) {
@@ -226,7 +226,7 @@ public final class QuestPrerequisitesModal {
         if (!PrerequisiteConnectionRemover.canRemove(row)) {
             return;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         if (state.modal.prerequisitesManagerEcMode) {
             removeEcConnection(player, state, row);
         } else {
@@ -238,7 +238,7 @@ public final class QuestPrerequisitesModal {
     }
 
     private static void removeEcConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
         if (ec == null) {
             return;

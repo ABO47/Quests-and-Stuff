@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -110,7 +110,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
                         id,
                         "prerequisite relock",
                         List.of("sync"),
-                        Map.of(chapter, new GroupDef(true, x, y, 1.0f)),
+                        Map.of(chapter, new ChapterDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),

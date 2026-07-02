@@ -20,14 +20,14 @@ final class EditorSessionState {
 
     EditorSession createSession() {
         EditorSession session = new EditorSession();
-        List<String> groups = groups();
-        session.currentGroup = groups.isEmpty() ? "" : groups.get(0);
+        List<String> chapters = chapters();
+        session.currentChapter = chapters.isEmpty() ? "" : chapters.get(0);
         normalizeQuestSelection(session);
         return session;
     }
 
     void normalizeQuestSelection(EditorSession session) {
-        List<String> questIds = questIdsInGroup(session.currentGroup);
+        List<String> questIds = questIdsInChapter(session.currentChapter);
         if (questIds.isEmpty()) {
             session.currentQuest = "-";
             return;
@@ -37,40 +37,40 @@ final class EditorSessionState {
         }
     }
 
-    List<String> groups() {
-        return new ArrayList<>(definitionStore.groupOrder());
+    List<String> chapters() {
+        return new ArrayList<>(definitionStore.chapterOrder());
     }
 
-    List<String> questIdsInGroup(String group) {
+    List<String> questIdsInChapter(String chapter) {
         return definitionStore.questDefinitions().stream()
-                .filter(quest -> quest.display().groups().containsKey(group))
+                .filter(quest -> quest.display().chapters().containsKey(chapter))
                 .map(QuestDefinition::id)
                 .sorted(Comparator.naturalOrder())
                 .toList();
     }
 
-    String nextQuestId(String group) {
-        return QuestNaming.nextQuestId(group, definitionStore.questIds());
+    String nextQuestId(String chapter) {
+        return QuestNaming.nextQuestId(chapter, definitionStore.questIds());
     }
 
-    String nextQuestId(String group, Set<String> reservedIds) {
+    String nextQuestId(String chapter, Set<String> reservedIds) {
         Set<String> reserved = new HashSet<>(definitionStore.questIds());
         if (reservedIds != null) {
             reserved.addAll(reservedIds);
         }
-        return QuestNaming.nextQuestId(group, reserved);
+        return QuestNaming.nextQuestId(chapter, reserved);
     }
 
-    void ensureGroupExists(String rawGroup) {
-        String group = rawGroup.trim().replace('\\', '/').replaceAll("/{2,}", "/");
-        if (group.isBlank()) {
+    void ensureChapterExists(String rawChapter) {
+        String chapter = rawChapter.trim().replace('\\', '/').replaceAll("/{2,}", "/");
+        if (chapter.isBlank()) {
             return;
         }
-        List<String> groups = new ArrayList<>(definitionStore.groupOrder());
-        if (groups.contains(group)) {
+        List<String> chapters = new ArrayList<>(definitionStore.chapterOrder());
+        if (chapters.contains(chapter)) {
             return;
         }
-        groups.add(group);
-        definitionStore.setGroupOrder(groups);
+        chapters.add(chapter);
+        definitionStore.setChapterOrder(chapters);
     }
 }

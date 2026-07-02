@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.util.naming;
 
 public final class QuestIdentity {
     public static final String DEFAULT_QUEST_ID = "main/untitled";
-    public static final int UI_GROUP_NAME_MAX_LENGTH = 40;
+    public static final int UI_CHAPTER_NAME_MAX_LENGTH = 40;
 
     private QuestIdentity() {
     }
@@ -23,18 +23,18 @@ public final class QuestIdentity {
         return normalized.isBlank() ? DEFAULT_QUEST_ID : normalized;
     }
 
-    public static String groupName(String value) {
+    public static String chapterName(String value) {
         return value == null ? "" : value.trim();
     }
 
-    public static String uiGroupName(String value) {
-        String normalized = groupName(value).replace('\n', ' ').replace('\r', ' ');
-        return normalized.length() > UI_GROUP_NAME_MAX_LENGTH
-                ? normalized.substring(0, UI_GROUP_NAME_MAX_LENGTH)
+    public static String uiChapterName(String value) {
+        String normalized = chapterName(value).replace('\n', ' ').replace('\r', ' ');
+        return normalized.length() > UI_CHAPTER_NAME_MAX_LENGTH
+                ? normalized.substring(0, UI_CHAPTER_NAME_MAX_LENGTH)
                 : normalized;
     }
 
-    public static String groupFolderName(String value) {
-        return SafeNames.identifier(groupName(value), "ungrouped");
+    public static String chapterFolderName(String value) {
+        return SafeNames.identifier(chapterName(value), "ungrouped");
     }
 }

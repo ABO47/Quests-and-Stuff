@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
@@ -18,7 +18,7 @@ final class ClientQuestSnapshotBuilder {
     }
 
     static CompoundTag newEditorQuest(String title, String group, int x, int y, QuestVisibilityMode hiddenMode) {
-        QuestDisplay display = QuestDisplay.forNewQuest(title, Map.of(group, new GroupDef(true, x, y, 1.0f)));
+        QuestDisplay display = QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDef(true, x, y, 1.0f)));
         CompoundTag quest = emptyEditorQuest(display, hiddenMode);
         setProgressDefaults(quest, true);
         return quest;
@@ -64,7 +64,7 @@ final class ClientQuestSnapshotBuilder {
         quest.putBoolean(SyncKeys.Quest.VISUAL_HIDDEN, safe.visualHidden());
         quest.putString(SyncKeys.Quest.QUEST_BACKGROUND, safe.questBackground());
         quest.putBoolean(SyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, safe.questBackgroundGrayscale());
-        quest.put(SyncKeys.Quest.GROUPS, groupsTag(safe.groups()));
+        quest.put(SyncKeys.Quest.CHAPTERS, groupsTag(safe.chapters()));
     }
 
     private static void putSettingsDefaults(CompoundTag quest, QuestVisibilityMode hiddenMode) {
@@ -162,7 +162,7 @@ final class ClientQuestSnapshotBuilder {
         float normalizedScale = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
         groupTag.putFloat(SyncKeys.ChapterView.SCALE, Math.max(0.5f, normalizedScale));
         groups.put(group, groupTag);
-        quest.put(SyncKeys.Quest.GROUPS, groups);
+        quest.put(SyncKeys.Quest.CHAPTERS, groups);
     }
 
     private static ListTag stringListTag(List<String> values) {
@@ -178,16 +178,16 @@ final class ClientQuestSnapshotBuilder {
         return out;
     }
 
-    private static CompoundTag groupsTag(Map<String, GroupDef> groups) {
+    private static CompoundTag groupsTag(Map<String, ChapterDef> groups) {
         CompoundTag out = new CompoundTag();
         if (groups == null || groups.isEmpty()) {
             return out;
         }
-        for (Map.Entry<String, GroupDef> entry : groups.entrySet()) {
+        for (Map.Entry<String, ChapterDef> entry : groups.entrySet()) {
             if (entry.getKey() == null || entry.getKey().isBlank() || entry.getValue() == null) {
                 continue;
             }
-            GroupDef view = entry.getValue();
+            ChapterDef view = entry.getValue();
             CompoundTag groupTag = new CompoundTag();
             groupTag.putBoolean(SyncKeys.ChapterView.VISIBLE, view.visible());
             groupTag.putInt(SyncKeys.ChapterView.X, view.x());

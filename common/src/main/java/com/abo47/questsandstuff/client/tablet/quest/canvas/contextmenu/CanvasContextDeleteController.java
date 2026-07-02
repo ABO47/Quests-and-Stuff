@@ -15,7 +15,7 @@ import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runPrerequisiteAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runRemoveQuestAction;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasContextDeleteController {
     private CanvasContextDeleteController() {
@@ -58,7 +58,7 @@ public final class CanvasContextDeleteController {
     }
 
     public static void runDeleteAction(Player player, TabletUiState state) {
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.SELECTION) {
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
                 boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, imageId);

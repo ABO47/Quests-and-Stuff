@@ -13,7 +13,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || ec == null || ec.id().isBlank()) {
             return;
         }
@@ -21,7 +21,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
             return;
         }
@@ -29,7 +29,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || image == null || image.id().isBlank()) {
             return;
         }
@@ -37,7 +37,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void removeCanvasImageLocal(String group, String imageId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || imageId == null || imageId.isBlank()) {
             return;
         }
@@ -45,7 +45,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void putCanvasTextLocal(String group, CanvasTextLayer text) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || text == null || text.id().isBlank()) {
             return;
         }
@@ -53,7 +53,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void removeCanvasTextLocal(String group, String textId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank() || textId == null || textId.isBlank()) {
             return;
         }
@@ -61,7 +61,7 @@ public final class ClientCanvasMutator {
     }
 
     public static void setCanvasLayerOrderLocal(String group, List<String> order) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+        String normalized = ClientChapterState.normalizeChapter(group);
         if (normalized.isBlank()) {
             return;
         }

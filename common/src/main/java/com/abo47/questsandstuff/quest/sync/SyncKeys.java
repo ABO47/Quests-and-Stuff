@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 
 public final class SyncKeys {
     public static final String SCHEMA = "schema";
-    public static final String GROUPS = "groups";
-    public static final String GROUP_PROPS = "group_props";
+    public static final String CHAPTERS = "chapters";
+    public static final String CHAPTER_PROPS = "chapter_props";
     public static final String QUESTS = "quests";
     public static final String CHANGED = "changed";
     public static final String REMOVED = "removed";
@@ -15,7 +15,7 @@ public final class SyncKeys {
     private SyncKeys() {
     }
 
-    public static final class GroupProps {
+    public static final class ChapterProps {
         public static final String ICON = "icon";
         public static final String BACKGROUND = "background";
         public static final String CANVAS_BACKGROUND = "canvas_background";
@@ -30,7 +30,7 @@ public final class SyncKeys {
         public static final String CANVAS_TEXTS = "canvas_texts";
         public static final String CANVAS_LAYER_ORDER = "canvas_layer_order";
 
-        private GroupProps() {
+        private ChapterProps() {
         }
     }
 
@@ -63,7 +63,7 @@ public final class SyncKeys {
         public static final String HIDDEN_CONNECTIONS = "hidden_connections";
         public static final String CONNECTION_TEXTURES = "connection_textures";
         public static final String CONNECTION_TEXTURE_SPACINGS = "connection_texture_spacings";
-        public static final String GROUPS = SyncKeys.GROUPS;
+        public static final String CHAPTERS = SyncKeys.CHAPTERS;
 
         private Quest() {
         }
@@ -112,7 +112,7 @@ public final class SyncKeys {
     }
 
     public static final class EditorSelection {
-        public static final String GROUP = "group";
+        public static final String CHAPTER = "chapter";
         public static final String QUESTS = SyncKeys.QUESTS;
         public static final String ALLOCATED_IDS = "allocated_ids";
         public static final String IMAGES = "images";

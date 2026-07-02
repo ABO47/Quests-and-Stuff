@@ -339,7 +339,7 @@ public final class QuestPacketRoundtripGameTests {
     private static CompoundTag commandPayload(EditorCommandType type) {
         CompoundTag payload = samplePayload();
         payload.putString("type_name", type.name());
-        payload.putString("group", "Main");
+        payload.putString("chapter", "Main");
         payload.putString("quest", "quest/a");
         payload.putString(C2SEditorCommandPacket.PREREQUISITE_FIELD, "quest/b");
         payload.putInt("x", 42);

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanel;
-import com.abo47.questsandstuff.client.tablet.quest.group.GroupDragController;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterDragController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -48,7 +48,7 @@ final class TabletRootPointerRouter {
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
         }
         if (button == 0 && dismissState.chapterMenuHit()) {
-            boolean handled = GroupPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY));
+            boolean handled = ChapterPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY));
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, handled);
         }
         boolean handled = selfClick.invoke(mouseX, mouseY, button);
@@ -82,7 +82,7 @@ final class TabletRootPointerRouter {
             selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
             return true;
         }
-        if (GroupDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
+        if (ChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
             return true;
         }
         return selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
@@ -116,7 +116,7 @@ final class TabletRootPointerRouter {
             selfRelease.invoke(mouseX, mouseY, button);
             return true;
         }
-        if (GroupDragController.finish(state, root.resolvePlayer(), refresher)) {
+        if (ChapterDragController.finish(state, root.resolvePlayer(), refresher)) {
             return true;
         }
         return selfRelease.invoke(mouseX, mouseY, button);

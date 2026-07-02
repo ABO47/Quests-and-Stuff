@@ -48,8 +48,8 @@ class TabletActiveStateTest {
     @Test
     void selectPastedQuestsMergesServerIdsWithPendingClipboardLayerIds() {
         TabletUiState state = new TabletUiState();
-        state.root.selectedGroup = "old_group";
-        state.chapterPanel.groupDraft = "old_group";
+        state.root.selectedChapter = "old_group";
+        state.chapterPanel.chapterDraft = "old_group";
         state.chapterPanel.chapterDraftName = "old_group";
         state.canvas.canvasSelection.questIds().add("old_quest");
         state.canvas.canvasSelection.imageIds().add("old_image");
@@ -63,8 +63,8 @@ class TabletActiveStateTest {
 
         TabletActiveState.selectPastedQuests(pastePayload());
 
-        assertEquals("pasted_group", state.root.selectedGroup);
-        assertEquals("pasted_group", state.chapterPanel.groupDraft);
+        assertEquals("pasted_group", state.root.selectedChapter);
+        assertEquals("pasted_group", state.chapterPanel.chapterDraft);
         assertEquals("pasted_group", state.chapterPanel.chapterDraftName);
         assertEquals("quest:new", state.chapterPanel.lastJumpQuest);
         assertTrue(state.canvas.canvasSelection.questIds().contains("quest:new"));
@@ -76,13 +76,13 @@ class TabletActiveStateTest {
         assertEquals("local_text", state.canvas.canvasSelection.primaryTextId());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedImageIds().isEmpty());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedTextIds().isEmpty());
-        assertTrue(ClientQuestStateFacade.groupOrder().contains("pasted_group"));
+        assertTrue(ClientQuestStateFacade.chapterOrder().contains("pasted_group"));
         assertEquals(1, refreshes.get());
     }
 
     private static CompoundTag pastePayload() {
         CompoundTag payload = new CompoundTag();
-        payload.putString("group", " pasted_group ");
+        payload.putString("chapter", " pasted_group ");
         payload.put("quests", stringList("quest:new"));
         payload.put("images", stringList("remote_image"));
         payload.put("texts", stringList("remote_text"));

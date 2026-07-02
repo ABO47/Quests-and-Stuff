@@ -79,18 +79,18 @@ public final class CanvasClipboardController {
                 return true;
             }
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        String group = TabletStateQueries.selectedChapterName(state);
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (selection.imageIds().contains(image.id())) {
                 return true;
             }
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (selection.textIds().contains(text.id())) {
                 return true;
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (selection.ecIds().contains(ec.id())) {
                 return true;
             }
@@ -143,7 +143,7 @@ public final class CanvasClipboardController {
         if (state == null || canvasViewport == null || selection.isEmpty()) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, group, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, group, selection.textIds());
@@ -185,7 +185,7 @@ public final class CanvasClipboardController {
             return List.of();
         }
         List<CanvasImageLayer> copied = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 copied.add(image);
             }
@@ -198,7 +198,7 @@ public final class CanvasClipboardController {
             return List.of();
         }
         List<CanvasTextLayer> copied = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 copied.add(text);
             }
@@ -211,7 +211,7 @@ public final class CanvasClipboardController {
             return List.of();
         }
         List<CanvasExclusiveChoice> copied = new ArrayList<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (ecIds.contains(ec.id())) {
                 copied.add(ec);
             }
@@ -258,7 +258,7 @@ public final class CanvasClipboardController {
     }
 
     private static boolean pasteAt(Player player, TabletUiState state, int anchorX, int anchorY, String source) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank() || !hasClipboardContent(state)) {
             return false;
         }
@@ -341,7 +341,7 @@ public final class CanvasClipboardController {
 
     private static Set<String> existingImageIds(TabletUiState state, String group) {
         Set<String> ids = new LinkedHashSet<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;
@@ -349,7 +349,7 @@ public final class CanvasClipboardController {
 
     private static Set<String> existingTextIds(TabletUiState state, String group) {
         Set<String> ids = new LinkedHashSet<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             ids.add(text.id());
         }
         return ids;
@@ -357,7 +357,7 @@ public final class CanvasClipboardController {
 
     private static Set<String> existingExclusiveChoiceIds(TabletUiState state, String group) {
         Set<String> ids = new LinkedHashSet<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             ids.add(ec.id());
         }
         return ids;
@@ -398,23 +398,23 @@ public final class CanvasClipboardController {
             minX = Math.min(minX, card.logicalX());
             minY = Math.min(minY, card.logicalY());
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {
                 minX = Math.min(minX, image.x());
                 minY = Math.min(minY, image.y());
             }
         }
         Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (textIds.contains(text.id())) {
                 minX = Math.min(minX, text.x());
                 minY = Math.min(minY, text.y());
             }
         }
         Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (ecIds.contains(ec.id())) {
                 minX = Math.min(minX, ec.x());
                 minY = Math.min(minY, ec.y());

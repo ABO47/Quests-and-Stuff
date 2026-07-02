@@ -99,7 +99,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         CanvasImageLayer image = findImage(group, state.canvas.canvasSelection.primaryImageId());
         if (image == null) {
             return;
@@ -158,7 +158,7 @@ public final class CanvasElementTransformController {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()).stream()
                 .filter(entry -> entry.id().equals(imageId))
                 .findFirst()
                 .orElse(null);
@@ -225,7 +225,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateExclusiveChoiceTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
         if (ec == null) {
             return;
@@ -260,7 +260,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
         if (text == null) {
             return;

@@ -101,9 +101,9 @@ final class TabletShortcutActions {
         }
         if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
                 && CanvasSelectionActions.selectedTextIds(state).isEmpty() && CanvasSelectionActions.selectedEcIds(state).isEmpty()
-                && state.root.selectedGroup != null && !state.root.selectedGroup.isBlank()) {
-            state.canvas.pendingChapterRename = state.root.selectedGroup;
-            state.chapterPanel.chapterDraftName = state.root.selectedGroup;
+                && state.root.selectedChapter != null && !state.root.selectedChapter.isBlank()) {
+            state.canvas.pendingChapterRename = state.root.selectedChapter;
+            state.chapterPanel.chapterDraftName = state.root.selectedChapter;
             return true;
         }
         return false;
@@ -113,7 +113,7 @@ final class TabletShortcutActions {
         if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.deleteSelected(player, state);
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         boolean changed = false;
         for (String questId : TabletStateQueries.selectedQuestIdSnapshot(state)) {
             EditorQuestCommandClient.runRemoveQuestAction(player, questId);
@@ -142,21 +142,21 @@ final class TabletShortcutActions {
         if (canvasViewport == null) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.textIds().clear();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             state.canvas.canvasSelection.imageIds().add(image.id());
             state.canvas.canvasSelection.setPrimaryImageId(image.id());
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             state.canvas.canvasSelection.textIds().add(text.id());
             state.canvas.canvasSelection.setPrimaryTextId(text.id());
         }
         state.canvas.canvasSelection.ecIds().clear();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             state.canvas.canvasSelection.ecIds().add(ec.id());
             state.canvas.canvasSelection.setPrimaryEcId(ec.id());
         }
@@ -186,7 +186,7 @@ final class TabletShortcutActions {
         int step = shift ? CanvasGeometry.gridSize(state) : 1;
         int dx = nudgeDx(keyCode, false, step);
         int dy = nudgeDy(keyCode, false, step);
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         boolean changed = false;
         Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
         for (String questId : state.canvas.canvasSelection.questIds()) {

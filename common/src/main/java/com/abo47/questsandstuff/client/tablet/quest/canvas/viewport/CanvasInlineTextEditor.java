@@ -45,7 +45,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
@@ -53,7 +53,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
@@ -91,7 +91,7 @@ public final class CanvasInlineTextEditor {
         if (!TextEditSession.isMainCanvasEditing(state)) {
             return null;
         }
-        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextEditTarget);
+        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -244,7 +244,7 @@ public final class CanvasInlineTextEditor {
         if (!replacement.changed()) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         String id = state.canvas.canvasTextEditTarget;
         CanvasLayerMutations.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvas.canvasTextEditDraft.length(), state.canvas.canvasTextEditCursor);

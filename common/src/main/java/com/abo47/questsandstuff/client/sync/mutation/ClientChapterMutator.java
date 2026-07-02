@@ -13,22 +13,22 @@ public final class ClientChapterMutator {
     private ClientChapterMutator() {
     }
 
-    public static void createGroupLocal(String group) {
-        String normalized = ClientChapterState.normalizeGroup(group);
-        if (ClientChapterState.addGroup(normalized)) {
-            ClientCanvasLayerState.ensureGroup(normalized);
+    public static void createChapterLocal(String chapter) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
+        if (ClientChapterState.addChapter(normalized)) {
+            ClientCanvasLayerState.ensureChapter(normalized);
         }
     }
 
-    public static void renameGroupLocal(String from, String to) {
-        String source = ClientChapterState.normalizeGroup(from);
-        String target = ClientChapterState.normalizeGroup(to);
-        if (!ClientChapterState.renameGroup(source, target)) {
+    public static void renameChapterLocal(String from, String to) {
+        String source = ClientChapterState.normalizeChapter(from);
+        String target = ClientChapterState.normalizeChapter(to);
+        if (!ClientChapterState.renameChapter(source, target)) {
             return;
         }
-        ClientCanvasLayerState.renameGroup(source, target);
+        ClientCanvasLayerState.renameChapter(source, target);
         ClientQuestState.forEachQuest(quest -> {
-            CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
+            CompoundTag groups = quest.getCompound(SyncKeys.Quest.CHAPTERS);
             if (!groups.contains(source)) {
                 return;
             }
@@ -38,70 +38,70 @@ public final class ClientChapterMutator {
         });
     }
 
-    public static void deleteGroupLocal(String group) {
-        String normalized = ClientChapterState.normalizeGroup(group);
-        if (!ClientChapterState.removeGroup(normalized)) {
+    public static void deleteChapterLocal(String chapter) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
+        if (!ClientChapterState.removeChapter(normalized)) {
             return;
         }
-        ClientCanvasLayerState.removeGroup(normalized);
+        ClientCanvasLayerState.removeChapter(normalized);
         ClientQuestState.forEachQuest(quest -> {
-            CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
+            CompoundTag groups = quest.getCompound(SyncKeys.Quest.CHAPTERS);
             if (groups.contains(normalized)) {
                 groups.remove(normalized);
             }
         });
-        List<String> groupless = new ArrayList<>();
+        List<String> chapterless = new ArrayList<>();
         ClientQuestState.forEachQuestEntry((questId, quest) -> {
-            if (quest.getCompound(SyncKeys.Quest.GROUPS).isEmpty()) {
-                groupless.add(questId);
+            if (quest.getCompound(SyncKeys.Quest.CHAPTERS).isEmpty()) {
+                chapterless.add(questId);
             }
         });
-        for (String questId : groupless) {
+        for (String questId : chapterless) {
             ClientQuestMutator.removeQuestLocal(questId);
         }
     }
 
-    public static void moveGroupLocal(String group, int offset) {
-        ClientChapterState.moveGroup(group, offset);
+    public static void moveChapterLocal(String chapter, int offset) {
+        ClientChapterState.moveChapter(chapter, offset);
     }
 
-    public static void moveGroupToIndexLocal(String group, int targetIndex) {
-        ClientChapterState.moveGroupToIndex(group, targetIndex);
+    public static void moveChapterToIndexLocal(String chapter, int targetIndex) {
+        ClientChapterState.moveChapterToIndex(chapter, targetIndex);
     }
 
-    public static void setGroupIconLocal(String group, String icon) {
-        ClientChapterState.setGroupIcon(group, icon);
+    public static void setChapterIconLocal(String chapter, String icon) {
+        ClientChapterState.setChapterIcon(chapter, icon);
     }
 
-    public static void setGroupBackgroundLocal(String group, String background) {
-        ClientChapterState.setGroupBackground(group, background);
+    public static void setChapterBackgroundLocal(String chapter, String background) {
+        ClientChapterState.setChapterBackground(chapter, background);
     }
 
-    public static void setGroupCanvasBackgroundLocal(String group, String background) {
-        ClientChapterState.setGroupCanvasBackground(group, background);
+    public static void setChapterCanvasBackgroundLocal(String chapter, String background) {
+        ClientChapterState.setChapterCanvasBackground(chapter, background);
     }
 
-    public static void setGroupTextAlignLocal(String group, String align) {
-        ClientChapterState.setGroupTextAlign(group, align);
+    public static void setChapterTextAlignLocal(String chapter, String align) {
+        ClientChapterState.setChapterTextAlign(chapter, align);
     }
 
-    public static void setGroupTextColorLocal(String group, int color) {
-        ClientChapterState.setGroupTextColor(group, color);
+    public static void setChapterTextColorLocal(String chapter, int color) {
+        ClientChapterState.setChapterTextColor(chapter, color);
     }
 
-    public static void setGroupTextStyleLocal(String group, String style) {
-        ClientChapterState.setGroupTextStyle(group, style);
+    public static void setChapterTextStyleLocal(String chapter, String style) {
+        ClientChapterState.setChapterTextStyle(chapter, style);
     }
 
-    public static void setGroupTextSizeLocal(String group, int size) {
-        ClientChapterState.setGroupTextSize(group, size);
+    public static void setChapterTextSizeLocal(String chapter, int size) {
+        ClientChapterState.setChapterTextSize(chapter, size);
     }
 
-    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
-        ClientChapterState.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+    public static void setChapterLockUntilUnlockedLocal(String chapter, boolean lockUntilUnlocked) {
+        ClientChapterState.setChapterLockUntilUnlocked(chapter, lockUntilUnlocked);
     }
 
-    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
-        ClientChapterState.setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+    public static void setChapterHideUntilUnlockedLocal(String chapter, boolean hideUntilUnlocked) {
+        ClientChapterState.setChapterHideUntilUnlocked(chapter, hideUntilUnlocked);
     }
 }

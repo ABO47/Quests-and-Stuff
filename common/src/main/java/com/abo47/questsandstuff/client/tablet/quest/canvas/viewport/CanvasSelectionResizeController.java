@@ -56,11 +56,11 @@ final class CanvasSelectionResizeController {
             state.canvas.resizeStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             state.canvas.resizeStartScales.put(questId, CanvasSelectionBounds.scaleForQuest(questId, byQuestId));
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
         state.canvas.resizeStartImageLayers.putAll(snapshot.images());
         state.canvas.resizeStartTextLayers.putAll(snapshot.texts());
-        String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        String group = TabletStateQueries.selectedChapterName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.resizeStartEcLayers.put(ec.id(), ec);
                 CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);

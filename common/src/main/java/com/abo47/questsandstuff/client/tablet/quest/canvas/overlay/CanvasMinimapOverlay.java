@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
@@ -63,7 +63,7 @@ final class CanvasMinimapOverlay {
         CanvasMinimapGeometry.Layout layout = hitLayout.collapsed()
                 ? CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false)
                 : hitLayout;
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, group, canvasViewport.cardCache());
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
         if (!state.canvas.minimapCollapsed) {
@@ -205,7 +205,7 @@ final class CanvasMinimapOverlay {
             }
         }
 
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             net.minecraft.nbt.CompoundTag ecTag = null;
             if (!ec.background().isBlank()) {

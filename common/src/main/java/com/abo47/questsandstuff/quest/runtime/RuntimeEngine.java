@@ -257,7 +257,7 @@ public final class RuntimeEngine {
 
     public Set<String> exclusiveChoiceSiblings(String questId) {
         Set<String> siblings = new HashSet<>();
-        for (String group : definitionStore.groupOrder()) {
+        for (String group : definitionStore.chapterOrder()) {
             for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
                 if (ec.connectionQuestIds().contains(questId)) {
                     for (String sibling : ec.connectionQuestIds()) {
@@ -283,7 +283,7 @@ public final class RuntimeEngine {
     }
 
     void applyExclusiveChoiceDisable(ServerPlayer actor, UUID ownerId, PlayerQuestState state, String completedQuestId) {
-        for (String group : definitionStore.groupOrder()) {
+        for (String group : definitionStore.chapterOrder()) {
             for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
                 if (ec.connectionQuestIds().contains(completedQuestId)) {
                     for (String siblingId : ec.connectionQuestIds()) {
@@ -365,7 +365,7 @@ public final class RuntimeEngine {
         if (!completableQuests.shouldBeUnlocked(state, definition, progress)) {
             return false;
         }
-        for (String group : definitionStore.groupOrder()) {
+        for (String group : definitionStore.chapterOrder()) {
             for (CanvasExclusiveChoice ec : definitionStore.canvasExclusiveChoices(group)) {
                 if (ec.connectionQuestIds().contains(definition.id())) {
                     for (String prerequisiteId : ec.prerequisiteQuestIds()) {

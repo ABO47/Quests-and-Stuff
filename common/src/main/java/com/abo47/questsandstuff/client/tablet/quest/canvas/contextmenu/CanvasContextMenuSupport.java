@@ -162,9 +162,9 @@ public final class CanvasContextMenuSupport {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return false;
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
         List<QuestCardLayout> cards = canvasViewport.cardCache();
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : cards) {

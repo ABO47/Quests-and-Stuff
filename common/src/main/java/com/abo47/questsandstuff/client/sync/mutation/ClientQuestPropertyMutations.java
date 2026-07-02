@@ -21,70 +21,70 @@ public final class ClientQuestPropertyMutations {
     private ClientQuestPropertyMutations() {
     }
 
-    public static void createGroupLocal(String group) {
-        ClientChapterMutator.createGroupLocal(group);
+    public static void createChapterLocal(String group) {
+        ClientChapterMutator.createChapterLocal(group);
     }
 
-    public static void renameGroupLocal(String from, String to) {
-        ClientChapterMutator.renameGroupLocal(from, to);
+    public static void renameChapterLocal(String from, String to) {
+        ClientChapterMutator.renameChapterLocal(from, to);
     }
 
-    public static void deleteGroupLocal(String group) {
-        ClientChapterMutator.deleteGroupLocal(group);
+    public static void deleteChapterLocal(String group) {
+        ClientChapterMutator.deleteChapterLocal(group);
     }
 
-    public static void moveGroupLocal(String group, int offset) {
-        ClientChapterMutator.moveGroupLocal(group, offset);
+    public static void moveChapterLocal(String group, int offset) {
+        ClientChapterMutator.moveChapterLocal(group, offset);
     }
 
-    public static void moveGroupToIndexLocal(String group, int targetIndex) {
-        ClientChapterMutator.moveGroupToIndexLocal(group, targetIndex);
+    public static void moveChapterToIndexLocal(String group, int targetIndex) {
+        ClientChapterMutator.moveChapterToIndexLocal(group, targetIndex);
     }
 
-    public static void setGroupIconLocal(String group, String icon) {
-        ClientChapterMutator.setGroupIconLocal(group, icon);
+    public static void setChapterIconLocal(String group, String icon) {
+        ClientChapterMutator.setChapterIconLocal(group, icon);
     }
 
-    public static void setGroupBackgroundLocal(String group, String background) {
-        ClientChapterMutator.setGroupBackgroundLocal(group, background);
+    public static void setChapterBackgroundLocal(String group, String background) {
+        ClientChapterMutator.setChapterBackgroundLocal(group, background);
     }
 
-    public static void setGroupCanvasBackgroundLocal(String group, String background) {
-        ClientChapterMutator.setGroupCanvasBackgroundLocal(group, background);
+    public static void setChapterCanvasBackgroundLocal(String group, String background) {
+        ClientChapterMutator.setChapterCanvasBackgroundLocal(group, background);
     }
 
-    public static void setGroupTextAlignLocal(String group, String align) {
-        ClientChapterMutator.setGroupTextAlignLocal(group, align);
+    public static void setChapterTextAlignLocal(String group, String align) {
+        ClientChapterMutator.setChapterTextAlignLocal(group, align);
     }
 
-    public static void setGroupTextColorLocal(String group, int color) {
-        ClientChapterMutator.setGroupTextColorLocal(group, color);
+    public static void setChapterTextColorLocal(String group, int color) {
+        ClientChapterMutator.setChapterTextColorLocal(group, color);
     }
 
-    public static void setGroupTextStyleLocal(String group, String style) {
-        ClientChapterMutator.setGroupTextStyleLocal(group, style);
+    public static void setChapterTextStyleLocal(String group, String style) {
+        ClientChapterMutator.setChapterTextStyleLocal(group, style);
     }
 
-    public static void setGroupTextSizeLocal(String group, int size) {
-        ClientChapterMutator.setGroupTextSizeLocal(group, size);
+    public static void setChapterTextSizeLocal(String group, int size) {
+        ClientChapterMutator.setChapterTextSizeLocal(group, size);
     }
 
-    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
-        String normalizedGroup = ClientChapterState.normalizeGroup(group);
+    public static void setChapterLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        String normalizedGroup = ClientChapterState.normalizeChapter(group);
         if (normalizedGroup.isBlank()) {
             return;
         }
-        ClientChapterMutator.setGroupLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
+        ClientChapterMutator.setChapterLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
         String mode = (lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName();
         ClientQuestState.forEachQuestEntry((questId, quest) -> {
-            if (quest.getCompound(SyncKeys.Quest.GROUPS).contains(normalizedGroup)) {
+            if (quest.getCompound(SyncKeys.Quest.CHAPTERS).contains(normalizedGroup)) {
                 setQuestHiddenModeLocal(questId, mode);
             }
         });
     }
 
-    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
-        ClientChapterMutator.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    public static void setChapterHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientChapterMutator.setChapterHideUntilUnlockedLocal(group, hideUntilUnlocked);
     }
 
     public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
@@ -280,7 +280,7 @@ public final class ClientQuestPropertyMutations {
         ClientQuestConnectionMutator.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
     }
 
-    public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
+    public static void setQuestPositionInChapterLocal(String questId, String chapter, int x, int y) {
         CompoundTag groupTag = mutableGroupView(questId, group);
         if (groupTag == null) {
             return;
@@ -289,7 +289,7 @@ public final class ClientQuestPropertyMutations {
         groupTag.putInt(SyncKeys.ChapterView.Y, y);
     }
 
-    public static void setQuestScaleInGroupLocal(String questId, String group, float scale) {
+    public static void setQuestScaleInChapterLocal(String questId, String chapter, float scale) {
         CompoundTag groupTag = mutableGroupView(questId, group);
         if (groupTag == null) {
             return;
@@ -300,12 +300,12 @@ public final class ClientQuestPropertyMutations {
 
     public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {
         String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeGroup(group);
+        String normalizedGroup = normalizeChapter(group);
         if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
             return;
         }
         String normalizedTitle = title == null ? "" : title.trim();
-        QuestVisibilityMode hiddenMode = ClientChapterState.groupLockUntilUnlocked(normalizedGroup)
+        QuestVisibilityMode hiddenMode = ClientChapterState.chapterLockUntilUnlocked(normalizedGroup)
                 ? QuestVisibilityMode.LOCKED
                 : QuestVisibilityMode.PREREQUISITES_VISIBLE;
         CompoundTag quest = ClientQuestSnapshotBuilder.newEditorQuest(normalizedTitle, normalizedGroup, x, y, hiddenMode);
@@ -352,7 +352,7 @@ public final class ClientQuestPropertyMutations {
 
     private static CompoundTag mutableGroupView(String questId, String group) {
         String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeGroup(group);
+        String normalizedGroup = normalizeChapter(group);
         if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
             return null;
         }
@@ -360,7 +360,7 @@ public final class ClientQuestPropertyMutations {
         if (quest == null) {
             return null;
         }
-        CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
+        CompoundTag groups = quest.getCompound(SyncKeys.Quest.CHAPTERS);
         CompoundTag groupTag = groups.getCompound(normalizedGroup).copy();
         groups.put(normalizedGroup, groupTag);
         return groupTag;
@@ -375,7 +375,7 @@ public final class ClientQuestPropertyMutations {
         return QuestIdentity.questId(value);
     }
 
-    private static String normalizeGroup(String value) {
-        return QuestIdentity.groupName(value);
+    private static String normalizeChapter(String value) {
+        return QuestIdentity.chapterName(value);
     }
 }

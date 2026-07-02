@@ -38,7 +38,7 @@ class CanvasGeometryPartitionTest {
         main.putInt("y", 48);
         main.putFloat("scale", 0.5f);
         groups.put("main", main);
-        questTag.put("groups", groups);
+        questTag.put("chapters", groups);
 
         QuestCardLayout layout = CanvasGeometry.layoutQuest("quest", questTag, state, "main");
 

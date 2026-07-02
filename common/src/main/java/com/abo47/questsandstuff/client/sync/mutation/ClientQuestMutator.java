@@ -12,60 +12,60 @@ public final class ClientQuestMutator {
     private ClientQuestMutator() {
     }
 
-    public static void createGroupLocal(String group) {
-        ClientQuestPropertyMutations.createGroupLocal(group);
+    public static void createChapterLocal(String group) {
+        ClientQuestPropertyMutations.createChapterLocal(group);
     }
 
-    public static void renameGroupLocal(String from, String to) {
-        ClientQuestPropertyMutations.renameGroupLocal(from, to);
+    public static void renameChapterLocal(String from, String to) {
+        ClientQuestPropertyMutations.renameChapterLocal(from, to);
     }
 
-    public static void deleteGroupLocal(String group) {
-        ClientQuestPropertyMutations.deleteGroupLocal(group);
+    public static void deleteChapterLocal(String group) {
+        ClientQuestPropertyMutations.deleteChapterLocal(group);
     }
 
-    public static void moveGroupLocal(String group, int offset) {
-        ClientQuestPropertyMutations.moveGroupLocal(group, offset);
+    public static void moveChapterLocal(String group, int offset) {
+        ClientQuestPropertyMutations.moveChapterLocal(group, offset);
     }
 
-    public static void moveGroupToIndexLocal(String group, int targetIndex) {
-        ClientQuestPropertyMutations.moveGroupToIndexLocal(group, targetIndex);
+    public static void moveChapterToIndexLocal(String group, int targetIndex) {
+        ClientQuestPropertyMutations.moveChapterToIndexLocal(group, targetIndex);
     }
 
-    public static void setGroupIconLocal(String group, String icon) {
-        ClientQuestPropertyMutations.setGroupIconLocal(group, icon);
+    public static void setChapterIconLocal(String group, String icon) {
+        ClientQuestPropertyMutations.setChapterIconLocal(group, icon);
     }
 
-    public static void setGroupBackgroundLocal(String group, String background) {
-        ClientQuestPropertyMutations.setGroupBackgroundLocal(group, background);
+    public static void setChapterBackgroundLocal(String group, String background) {
+        ClientQuestPropertyMutations.setChapterBackgroundLocal(group, background);
     }
 
-    public static void setGroupCanvasBackgroundLocal(String group, String background) {
-        ClientQuestPropertyMutations.setGroupCanvasBackgroundLocal(group, background);
+    public static void setChapterCanvasBackgroundLocal(String group, String background) {
+        ClientQuestPropertyMutations.setChapterCanvasBackgroundLocal(group, background);
     }
 
-    public static void setGroupTextAlignLocal(String group, String align) {
-        ClientQuestPropertyMutations.setGroupTextAlignLocal(group, align);
+    public static void setChapterTextAlignLocal(String group, String align) {
+        ClientQuestPropertyMutations.setChapterTextAlignLocal(group, align);
     }
 
-    public static void setGroupTextColorLocal(String group, int color) {
-        ClientQuestPropertyMutations.setGroupTextColorLocal(group, color);
+    public static void setChapterTextColorLocal(String group, int color) {
+        ClientQuestPropertyMutations.setChapterTextColorLocal(group, color);
     }
 
-    public static void setGroupTextStyleLocal(String group, String style) {
-        ClientQuestPropertyMutations.setGroupTextStyleLocal(group, style);
+    public static void setChapterTextStyleLocal(String group, String style) {
+        ClientQuestPropertyMutations.setChapterTextStyleLocal(group, style);
     }
 
-    public static void setGroupTextSizeLocal(String group, int size) {
-        ClientQuestPropertyMutations.setGroupTextSizeLocal(group, size);
+    public static void setChapterTextSizeLocal(String group, int size) {
+        ClientQuestPropertyMutations.setChapterTextSizeLocal(group, size);
     }
 
-    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
-        ClientQuestPropertyMutations.setGroupLockUntilUnlockedLocal(group, lockUntilUnlocked);
+    public static void setChapterLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
+        ClientQuestPropertyMutations.setChapterLockUntilUnlockedLocal(group, lockUntilUnlocked);
     }
 
-    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
-        ClientQuestPropertyMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    public static void setChapterHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
+        ClientQuestPropertyMutations.setChapterHideUntilUnlockedLocal(group, hideUntilUnlocked);
     }
 
     public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
@@ -184,12 +184,12 @@ public final class ClientQuestMutator {
         ClientQuestPropertyMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
     }
 
-    public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
-        ClientQuestPropertyMutations.setQuestPositionInGroupLocal(questId, group, x, y);
+    public static void setQuestPositionInChapterLocal(String questId, String chapter, int x, int y) {
+        ClientQuestPropertyMutations.setQuestPositionInChapterLocal(questId, chapter, x, y);
     }
 
-    public static void setQuestScaleInGroupLocal(String questId, String group, float scale) {
-        ClientQuestPropertyMutations.setQuestScaleInGroupLocal(questId, group, scale);
+    public static void setQuestScaleInChapterLocal(String questId, String chapter, float scale) {
+        ClientQuestPropertyMutations.setQuestScaleInChapterLocal(questId, chapter, scale);
     }
 
     public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {

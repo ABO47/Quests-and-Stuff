@@ -29,7 +29,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || image == null) {
             return;
         }
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()));
+        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()));
         boolean replaced = false;
         for (int i = 0; i < images.size(); i++) {
             if (images.get(i).id().equals(image.id())) {
@@ -41,7 +41,7 @@ public final class CanvasElementStore {
         if (!replaced) {
             images.add(image);
         }
-        state.canvas.canvasImagesByGroup.put(group, images);
+        state.canvas.canvasImagesByChapter.put(group, images);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.imageKey(image.id()));
         ClientQuestStateFacade.putCanvasImageLocal(group, image);
         persistLayerOrderLocal(state, group);
@@ -54,15 +54,15 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return false;
         }
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()));
+        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()));
         boolean removed = images.removeIf(image -> image.id().equals(imageId));
         if (!removed) {
             return false;
         }
         if (images.isEmpty()) {
-            state.canvas.canvasImagesByGroup.remove(group);
+            state.canvas.canvasImagesByChapter.remove(group);
         } else {
-            state.canvas.canvasImagesByGroup.put(group, images);
+            state.canvas.canvasImagesByChapter.put(group, images);
         }
         if (imageId.equals(state.canvas.canvasSelection.primaryImageId())) {
             state.canvas.canvasSelection.setPrimaryImageId("");
@@ -83,7 +83,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || text == null) {
             return;
         }
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByGroup.getOrDefault(group, List.of()));
+        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()));
         boolean replaced = false;
         for (int i = 0; i < texts.size(); i++) {
             if (texts.get(i).id().equals(text.id())) {
@@ -95,7 +95,7 @@ public final class CanvasElementStore {
         if (!replaced) {
             texts.add(text);
         }
-        state.canvas.canvasTextsByGroup.put(group, texts);
+        state.canvas.canvasTextsByChapter.put(group, texts);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.textKey(text.id()));
         ClientQuestStateFacade.putCanvasTextLocal(group, text);
         persistLayerOrderLocal(state, group);
@@ -112,7 +112,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || ec == null) {
             return;
         }
-        List<CanvasExclusiveChoice> choices = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
         boolean replaced = false;
         for (int i = 0; i < choices.size(); i++) {
             if (choices.get(i).id().equals(ec.id())) {
@@ -124,7 +124,7 @@ public final class CanvasElementStore {
         if (!replaced) {
             choices.add(ec);
         }
-        state.canvas.canvasExclusiveChoicesByGroup.put(group, choices);
+        state.canvas.canvasExclusiveChoicesByChapter.put(group, choices);
         CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()));
         ClientQuestStateFacade.putCanvasExclusiveChoiceLocal(group, ec);
         persistLayerOrderLocal(state, group);
@@ -137,7 +137,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || ecs == null || ecs.isEmpty()) {
             return;
         }
-        List<CanvasExclusiveChoice> existing = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
+        List<CanvasExclusiveChoice> existing = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
         for (CanvasExclusiveChoice ec : ecs) {
             if (ec == null) continue;
             boolean replaced = false;
@@ -153,7 +153,7 @@ public final class CanvasElementStore {
             }
             CanvasLayerOrdering.ensurePresent(state, group, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()));
         }
-        state.canvas.canvasExclusiveChoicesByGroup.put(group, existing);
+        state.canvas.canvasExclusiveChoicesByChapter.put(group, existing);
         for (CanvasExclusiveChoice ec : ecs) {
             if (ec == null) continue;
             ClientQuestStateFacade.putCanvasExclusiveChoiceLocal(group, ec);
@@ -168,15 +168,15 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return false;
         }
-        List<CanvasExclusiveChoice> choices = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
         boolean removed = choices.removeIf(ec -> ec.id().equals(ecId));
         if (!removed) {
             return false;
         }
         if (choices.isEmpty()) {
-            state.canvas.canvasExclusiveChoicesByGroup.remove(group);
+            state.canvas.canvasExclusiveChoicesByChapter.remove(group);
         } else {
-            state.canvas.canvasExclusiveChoicesByGroup.put(group, choices);
+            state.canvas.canvasExclusiveChoicesByChapter.put(group, choices);
         }
         if (ecId.equals(state.canvas.canvasSelection.primaryEcId())) {
             state.canvas.canvasSelection.setPrimaryEcId("");
@@ -193,7 +193,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()).stream()
                 .filter(ec -> ec.id().equals(ecId))
                 .findFirst()
                 .orElse(null);
@@ -203,15 +203,15 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return false;
         }
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByGroup.getOrDefault(group, List.of()));
+        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()));
         boolean removed = texts.removeIf(text -> text.id().equals(textId));
         if (!removed) {
             return false;
         }
         if (texts.isEmpty()) {
-            state.canvas.canvasTextsByGroup.remove(group);
+            state.canvas.canvasTextsByChapter.remove(group);
         } else {
-            state.canvas.canvasTextsByGroup.put(group, texts);
+            state.canvas.canvasTextsByChapter.put(group, texts);
         }
         if (textId.equals(state.canvas.canvasSelection.primaryTextId())) {
             state.canvas.canvasSelection.setPrimaryTextId("");
@@ -231,7 +231,7 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasTextsByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()).stream()
                 .filter(text -> text.id().equals(textId))
                 .findFirst()
                 .orElse(null);
@@ -284,14 +284,14 @@ public final class CanvasElementStore {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()).stream()
                 .filter(image -> image.id().equals(imageId))
                 .findFirst()
                 .orElse(null);
     }
 
     private static void persistLayerOrderLocal(TabletUiState state, String group) {
-        ClientQuestStateFacade.setCanvasLayerOrderLocal(group, state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        ClientQuestStateFacade.setCanvasLayerOrderLocal(group, state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
     }
 
     private static void sendCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
@@ -330,7 +330,7 @@ public final class CanvasElementStore {
     }
 
     private static void sendLayerOrder(TabletUiState state, String group) {
-        CompoundTag payload = EditorCommandPayloads.canvasLayerOrder(group, state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        CompoundTag payload = EditorCommandPayloads.canvasLayerOrder(group, state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_LAYER_ORDER, payload));
     }
 }

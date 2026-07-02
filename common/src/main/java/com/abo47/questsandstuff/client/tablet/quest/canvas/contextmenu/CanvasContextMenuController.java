@@ -8,7 +8,7 @@ import net.minecraft.client.resources.language.I18n;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasContextMenuController {
     private CanvasContextMenuController() {
@@ -20,16 +20,16 @@ public final class CanvasContextMenuController {
 
     public static List<ContextAction> buildContextActions(CanvasViewport canvasViewport, TabletUiState state) {
         List<ContextAction> actions = new ArrayList<>();
-        String selectedGroup = selectedGroupName(state);
-        CanvasContextCanvasActions.addCanvasEmptyActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
-        CanvasContextSelectionActions.addSelectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
-        CanvasContextQuestActions.addQuestActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
-        CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedGroup);
-        CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedGroup);
-        CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedGroup);
-        CanvasContextEdgeActions.addEdgeActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
+        String selectedChapter = selectedChapterName(state);
+        CanvasContextCanvasActions.addCanvasEmptyActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextSelectionActions.addSelectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextQuestActions.addQuestActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedChapter);
+        CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedChapter);
+        CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedChapter);
+        CanvasContextEdgeActions.addEdgeActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
         if (!exclusiveSubmenuOpen(state)) {
-            CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedGroup);
+            CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
         }
         return actions;
     }

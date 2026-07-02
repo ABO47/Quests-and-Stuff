@@ -83,7 +83,7 @@ public final class TabletRootWindowController {
         }
         if (!state.canvas.pendingChapterRename.isBlank()) {
             state.canvas.pendingChapterRename = "";
-            state.chapterPanel.chapterDraftName = state.root.selectedGroup;
+            state.chapterPanel.chapterDraftName = state.root.selectedChapter;
             return true;
         }
         return false;

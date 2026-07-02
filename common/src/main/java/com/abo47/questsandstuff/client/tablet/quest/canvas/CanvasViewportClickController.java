@@ -177,10 +177,10 @@ final class CanvasViewportClickController {
         if (ecHit == null && state.root.canEdit) {
             ecHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
         }
-        String selectedGroup = TabletStateQueries.selectedGroupName(state);
-        List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroup, List.of());
+        String selectedChapter = TabletStateQueries.selectedChapterName(state);
+        List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
+        List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapter, List.of());
+        List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapter, List.of());
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(
                 state,
                 cards,
@@ -188,7 +188,7 @@ final class CanvasViewportClickController {
                 canvasViewport.getSize().width,
                 canvasViewport.getSize().height
         );
-        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedGroup, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
+        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedChapter, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
                 .resolveElementHit(hit, imageHit, textHit, ecHit);
         hit = layerHit.quest();
         imageHit = layerHit.image();

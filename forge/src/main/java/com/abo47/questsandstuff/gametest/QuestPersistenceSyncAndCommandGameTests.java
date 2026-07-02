@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -148,10 +148,10 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store = new QuestDefinitionStore(root);
             store.load();
 
-            if (!store.groupOrder().contains("Main")) {
+            if (!store.chapterOrder().contains("Main")) {
                 throw new GameTestAssertException("Chapter metadata should load chapter order");
             }
-            if (store.groupTextSize("Main") != 17) {
+            if (store.chapterTextSize("Main") != 17) {
                 throw new GameTestAssertException("Chapter metadata should load text_size");
             }
             if (store.canvasImages("Main").size() != 1 || store.canvasLayerOrder("Main").size() != 1) {
@@ -315,7 +315,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                             source.display().title(),
                             source.display().subtitle(),
                             List.of(detailLine),
-                            source.display().groups(),
+                            source.display().chapters(),
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
@@ -668,7 +668,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         try {
             Path root = Files.createTempDirectory("qas_clipboard_");
             store = new QuestDefinitionStore(root);
-            store.setGroupOrder(List.of("Original"));
+            store.setChapterOrder(List.of("Original"));
             store.upsert(quest("source/external", "Original", 96, 32, Set.of(), Map.of(), Map.of(), Set.of()));
             store.upsert(quest("source/a", "Original", 32, 32, Set.of("source/external"), Map.of("source/external", 0xFF00FF), Map.of("source/external", "grid"), Set.of("source/external")));
             store.upsert(quest(
@@ -693,8 +693,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             editor.copyQuestsToClipboard(player, "Original", new LinkedHashSet<>(List.of("source/a", "source/b")));
             store.remove("source/a");
             store.remove("source/b");
-            editor.createGroup(player, "After Copy");
-            editor.pasteClipboardInGroup(player, "After Copy", 200, 300);
+            editor.createChapter(player, "After Copy");
+            editor.pasteClipboardInChapter(player, "After Copy", 200, 300);
 
             List<QuestDefinition> firstPaste = pastedByTitle(store, "After Copy");
             if (firstPaste.size() != 2) {
@@ -719,12 +719,12 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             }
             assertClipboardGraph(redoPaste);
 
-            editor.pasteClipboardInGroup(player, "After Copy", 240, 340);
+            editor.pasteClipboardInChapter(player, "After Copy", 240, 340);
             List<QuestDefinition> secondPaste = pastedByTitle(store, "After Copy");
             if (secondPaste.size() != 4) {
                 throw new GameTestAssertException("Repeated paste should create unique quests; expected 4, got " + secondPaste.size());
             }
-            if (!store.groupOrder().contains("After Copy")) {
+            if (!store.chapterOrder().contains("After Copy")) {
                 throw new GameTestAssertException("Paste target chapter should exist after copy-created chapter paste");
             }
         } catch (IOException e) {
@@ -753,10 +753,10 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
         CompoundTag questTag = new CompoundTag();
         questTag.putString("title", "source/a");
-        questTag.put("groups", groups);
+        questTag.put("chapters", groups);
 
         ClientQuestStateFacade.applyEditorMutation(1L, "add", "after_copy/source_a_copy", questTag);
-        if (!ClientQuestStateFacade.groupOrder().contains("After Copy")) {
+        if (!ClientQuestStateFacade.chapterOrder().contains("After Copy")) {
             throw new GameTestAssertException("Editor add mutation should create missing client chapter metadata");
         }
         if (!ClientQuestStateFacade.quests().containsKey("after_copy/source_a_copy")) {
@@ -849,7 +849,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                         id,
                         "bulk",
                         List.of("sync"),
-                        Map.of(chapter, new GroupDef(true, x, y, 1.0f)),
+                        Map.of(chapter, new ChapterDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),
@@ -865,7 +865,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
     private static List<QuestDefinition> pastedByTitle(QuestDefinitionStore store, String chapter) {
         return store.quests().values().stream()
-                .filter(quest -> quest.display().groups().containsKey(chapter))
+                .filter(quest -> quest.display().chapters().containsKey(chapter))
                 .filter(quest -> "source/a".equals(quest.display().title()) || "source/b".equals(quest.display().title()))
                 .toList();
     }
@@ -900,7 +900,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     private static CompoundTag emptyFullPayload() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("schema", QuestDefinition.CURRENT_SCHEMA);
-        tag.put("groups", new ListTag());
+        tag.put("chapters", new ListTag());
         tag.put("quests", new CompoundTag());
         return tag;
     }

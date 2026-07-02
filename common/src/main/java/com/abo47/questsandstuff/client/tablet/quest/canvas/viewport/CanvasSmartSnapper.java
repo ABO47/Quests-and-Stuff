@@ -92,17 +92,17 @@ final class CanvasSmartSnapper {
                 targets.add(CanvasSnapBounds.forQuestCard(card));
             }
         }
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (!movingImageIds.contains(image.id())) {
                 targets.add(CanvasSnapBounds.forImage(image));
             }
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (!movingTextIds.contains(text.id())) {
                 targets.add(CanvasSnapBounds.forText(text));
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (!movingEcIds.contains(ec.id())) {
                 targets.add(CanvasSnapBounds.forExclusiveChoice(ec));
             }

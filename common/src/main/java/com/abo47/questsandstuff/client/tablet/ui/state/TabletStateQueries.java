@@ -19,13 +19,13 @@ public final class TabletStateQueries {
         return TabletLayout.rootHeight(state);
     }
 
-    public static String selectedGroupName(TabletUiState state) {
-        String selected = sanitizeGroupName(state == null ? "" : state.root.selectedGroup);
-        if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestStateFacade.groupOpenablePreview(selected)) {
+    public static String selectedChapterName(TabletUiState state) {
+        String selected = sanitizeChapterName(state == null ? "" : state.root.selectedChapter);
+        if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestStateFacade.chapterOpenablePreview(selected)) {
             return selected;
         }
-        for (String group : ClientQuestStateFacade.selectableGroupOrder(false)) {
-            String sanitized = sanitizeGroupName(group);
+        for (String group : ClientQuestStateFacade.selectableChapterOrder(false)) {
+            String sanitized = sanitizeChapterName(group);
             if (!sanitized.isBlank()) {
                 return sanitized;
             }
@@ -49,7 +49,7 @@ public final class TabletStateQueries {
         return state != null && !state.canvas.canvasSelection.questIds().isEmpty();
     }
 
-    public static String sanitizeGroupName(String value) {
-        return QuestIdentity.uiGroupName(value);
+    public static String sanitizeChapterName(String value) {
+        return QuestIdentity.uiChapterName(value);
     }
 }

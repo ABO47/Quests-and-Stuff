@@ -83,7 +83,7 @@ public final class CanvasSelectionActions {
         if (state == null || totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank()) {
             return false;
         }
@@ -113,7 +113,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -125,7 +125,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -137,7 +137,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }
@@ -169,7 +169,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -178,7 +178,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -187,7 +187,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }

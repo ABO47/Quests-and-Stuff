@@ -187,7 +187,7 @@ public final class AssetPickerApplyActions {
             }
             if (!group.isBlank()) {
                 java.util.List<com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice> changedEcs = new java.util.ArrayList<>();
-                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, java.util.List.of())) {
                     java.util.Map<String, String> textures = new java.util.HashMap<>(ec.connectionTextures());
                     boolean changed = false;
                     for (String connectedId : ec.connectionQuestIds()) {
@@ -286,7 +286,7 @@ public final class AssetPickerApplyActions {
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;

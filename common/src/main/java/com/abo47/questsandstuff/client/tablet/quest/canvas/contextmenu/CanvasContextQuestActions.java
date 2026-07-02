@@ -36,7 +36,7 @@ final class CanvasContextQuestActions {
     private CanvasContextQuestActions() {
     }
 
-    static void addQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedGroup) {
+    static void addQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.QUEST || state.contextMenu.contextQuestId.isBlank()) {
             return;
         }
@@ -83,7 +83,7 @@ final class CanvasContextQuestActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextMenu.contextQuestId, changed);
             })));
         }
-        addQuestArrangeActions(actions, canvasViewport, state, selectedGroup);
+        addQuestArrangeActions(actions, canvasViewport, state, selectedChapter);
 
         EntityIconControls.addEntityVariantAndMotionActions(
                 actions,
@@ -235,18 +235,18 @@ final class CanvasContextQuestActions {
                 })));
     }
 
-    private static void addQuestArrangeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedGroup) {
+    private static void addQuestArrangeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
         List<ContextAction> arrangeActions = new ArrayList<>();
         String layerKey = CanvasLayerOrdering.questKey(state.contextMenu.contextQuestId);
-        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, true)) {
+        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, true)) {
             arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
-                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextMenu.contextQuestId, true);
+                CanvasLayerMutations.moveQuestLayer(state, selectedChapter, state.contextMenu.contextQuestId, true);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextMenu.contextQuestId);
             })));
         }
-        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedGroup, layerKey, false)) {
+        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, false)) {
             arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", TabletColors.TEXT_MUTED, withCleanup(canvasViewport, state, () -> {
-                CanvasLayerMutations.moveQuestLayer(state, selectedGroup, state.contextMenu.contextQuestId, false);
+                CanvasLayerMutations.moveQuestLayer(state, selectedChapter, state.contextMenu.contextQuestId, false);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextMenu.contextQuestId);
             })));
         }

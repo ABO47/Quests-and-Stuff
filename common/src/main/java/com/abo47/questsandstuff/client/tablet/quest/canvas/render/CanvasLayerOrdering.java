@@ -53,7 +53,7 @@ public final class CanvasLayerOrdering {
         if (selected.isEmpty()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         for (String key : selected) {
             if (!order.contains(key)) {
                 order.add(key);
@@ -72,7 +72,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.addAll(0, moved);
         }
-        state.canvas.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
+        state.canvas.canvasLayerOrderByChapter.put(group, keepConnectionsBehindQuests(order));
     }
 
     public static List<String> normalize(
@@ -118,10 +118,10 @@ public final class CanvasLayerOrdering {
                 defaults.add(key);
             }
         }
-        List<String> existing = state.canvas.canvasLayerOrderByGroup.get(group);
+        List<String> existing = state.canvas.canvasLayerOrderByChapter.get(group);
         if (existing == null || existing.isEmpty()) {
             List<String> orderedDefaults = keepConnectionsBehindQuests(defaults);
-            state.canvas.canvasLayerOrderByGroup.put(group, orderedDefaults);
+            state.canvas.canvasLayerOrderByChapter.put(group, orderedDefaults);
             return orderedDefaults;
         }
         List<String> normalized = new ArrayList<>();
@@ -137,7 +137,7 @@ public final class CanvasLayerOrdering {
             }
         }
         List<String> ordered = keepConnectionsBehindQuests(normalized);
-        state.canvas.canvasLayerOrderByGroup.put(group, ordered);
+        state.canvas.canvasLayerOrderByChapter.put(group, ordered);
         return ordered;
     }
 
@@ -184,10 +184,10 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         if (!order.contains(key)) {
             order.add(key);
-            state.canvas.canvasLayerOrderByGroup.put(group, order);
+            state.canvas.canvasLayerOrderByChapter.put(group, order);
         }
     }
 
@@ -195,12 +195,12 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         if (order.remove(key)) {
             if (order.isEmpty()) {
-                state.canvas.canvasLayerOrderByGroup.remove(group);
+                state.canvas.canvasLayerOrderByChapter.remove(group);
             } else {
-                state.canvas.canvasLayerOrderByGroup.put(group, order);
+                state.canvas.canvasLayerOrderByChapter.put(group, order);
             }
         }
     }
@@ -250,7 +250,7 @@ public final class CanvasLayerOrdering {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         order.remove(key);
         if (front && key.startsWith(CONNECTION_PREFIX)) {
             int firstQuestIndex = firstQuestIndex(order);
@@ -264,7 +264,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.add(0, key);
         }
-        state.canvas.canvasLayerOrderByGroup.put(group, order);
+        state.canvas.canvasLayerOrderByChapter.put(group, order);
     }
 
     private static List<String> keepConnectionsBehindQuests(List<String> order) {

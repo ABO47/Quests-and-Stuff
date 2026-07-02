@@ -149,7 +149,7 @@ public final class CanvasGridFitController {
         }
 
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -161,7 +161,7 @@ public final class CanvasGridFitController {
         }
 
         Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -173,7 +173,7 @@ public final class CanvasGridFitController {
         }
 
         Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }
@@ -257,7 +257,7 @@ public final class CanvasGridFitController {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()).stream()
                 .filter(ec -> ec.id().equals(ecId))
                 .findFirst()
                 .orElse(null);
@@ -267,7 +267,7 @@ public final class CanvasGridFitController {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()).stream()
                 .filter(image -> image.id().equals(imageId))
                 .findFirst()
                 .orElse(null);

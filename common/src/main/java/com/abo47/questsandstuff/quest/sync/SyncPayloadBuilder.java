@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.quest.sync;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
@@ -30,60 +30,60 @@ final class SyncPayloadBuilder {
         this.definitionStore = definitionStore;
     }
 
-    ListTag groupsTag() {
-        return groupsTag(Set.of(), true);
+    ListTag chaptersTag() {
+        return chaptersTag(Set.of(), true);
     }
 
-    ListTag groupsTag(Set<String> visibleQuestIds, boolean includeAllGroups) {
-        ListTag groupsTag = new ListTag();
-        for (String group : definitionStore.groupOrder()) {
-            groupsTag.add(StringTag.valueOf(group));
+    ListTag chaptersTag(Set<String> visibleQuestIds, boolean includeAllChapters) {
+        ListTag chaptersTag = new ListTag();
+        for (String chapter : definitionStore.chapterOrder()) {
+            chaptersTag.add(StringTag.valueOf(chapter));
         }
-        return groupsTag;
+        return chaptersTag;
     }
 
-    CompoundTag groupPropsTag() {
-        return groupPropsTag(Set.of(), true);
+    CompoundTag chapterPropsTag() {
+        return chapterPropsTag(Set.of(), true);
     }
 
-    CompoundTag groupPropsTag(Set<String> visibleQuestIds, boolean includeAllGroups) {
-        return groupPropsTagForGroups(Set.copyOf(definitionStore.groupOrder()));
+    CompoundTag chapterPropsTag(Set<String> visibleQuestIds, boolean includeAllChapters) {
+        return chapterPropsTagForChapters(Set.copyOf(definitionStore.chapterOrder()));
     }
 
-    CompoundTag groupPropsTagForGroups(Set<String> groups) {
-        CompoundTag groupProps = new CompoundTag();
-        if (groups == null || groups.isEmpty()) {
-            return groupProps;
+    CompoundTag chapterPropsTagForChapters(Set<String> chapters) {
+        CompoundTag chapterProps = new CompoundTag();
+        if (chapters == null || chapters.isEmpty()) {
+            return chapterProps;
         }
-        Set<String> pending = new HashSet<>(groups);
-        for (String group : definitionStore.groupOrder()) {
-            if (pending.remove(group)) {
-                groupProps.put(group, groupPropsEntry(group));
+        Set<String> pending = new HashSet<>(chapters);
+        for (String chapter : definitionStore.chapterOrder()) {
+            if (pending.remove(chapter)) {
+                chapterProps.put(chapter, chapterPropsEntry(chapter));
             }
         }
-        for (String group : pending) {
-            if (group != null && !group.isBlank()) {
-                groupProps.put(group, groupPropsEntry(group));
+        for (String chapter : pending) {
+            if (chapter != null && !chapter.isBlank()) {
+                chapterProps.put(chapter, chapterPropsEntry(chapter));
             }
         }
-        return groupProps;
+        return chapterProps;
     }
 
-    private CompoundTag groupPropsEntry(String group) {
+    private CompoundTag chapterPropsEntry(String chapter) {
         CompoundTag entry = new CompoundTag();
-        entry.putString(SyncKeys.GroupProps.ICON, definitionStore.groupIcon(group));
-        entry.putString(SyncKeys.GroupProps.BACKGROUND, definitionStore.groupBackground(group));
-        entry.putString(SyncKeys.GroupProps.CANVAS_BACKGROUND, definitionStore.groupCanvasBackground(group));
-        entry.putString(SyncKeys.GroupProps.TEXT_ALIGN, definitionStore.groupTextAlign(group));
-        entry.putInt(SyncKeys.GroupProps.TEXT_COLOR, definitionStore.groupTextColor(group));
-        entry.putString(SyncKeys.GroupProps.TEXT_STYLE, definitionStore.groupTextStyle(group));
-        entry.putInt(SyncKeys.GroupProps.TEXT_SIZE, definitionStore.groupTextSize(group));
-        entry.putBoolean(SyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED, definitionStore.groupLockUntilUnlocked(group));
-        entry.putBoolean(SyncKeys.GroupProps.HIDE_UNTIL_UNLOCKED, definitionStore.groupHideUntilUnlocked(group));
-        entry.put(SyncKeys.GroupProps.CANVAS_EXCLUSIVE_CHOICES, CanvasLayerNbtCodec.exclusiveChoicesToListTag(definitionStore.canvasExclusiveChoices(group)));
-        entry.put(SyncKeys.GroupProps.CANVAS_IMAGES, CanvasLayerNbtCodec.imagesToListTag(definitionStore.canvasImages(group)));
-        entry.put(SyncKeys.GroupProps.CANVAS_TEXTS, CanvasLayerNbtCodec.textsToListTag(definitionStore.canvasTexts(group)));
-        entry.put(SyncKeys.GroupProps.CANVAS_LAYER_ORDER, CanvasLayerNbtCodec.stringsToListTag(definitionStore.canvasLayerOrder(group)));
+        entry.putString(SyncKeys.ChapterProps.ICON, definitionStore.chapterIcon(chapter));
+        entry.putString(SyncKeys.ChapterProps.BACKGROUND, definitionStore.chapterBackground(chapter));
+        entry.putString(SyncKeys.ChapterProps.CANVAS_BACKGROUND, definitionStore.chapterCanvasBackground(chapter));
+        entry.putString(SyncKeys.ChapterProps.TEXT_ALIGN, definitionStore.chapterTextAlign(chapter));
+        entry.putInt(SyncKeys.ChapterProps.TEXT_COLOR, definitionStore.chapterTextColor(chapter));
+        entry.putString(SyncKeys.ChapterProps.TEXT_STYLE, definitionStore.chapterTextStyle(chapter));
+        entry.putInt(SyncKeys.ChapterProps.TEXT_SIZE, definitionStore.chapterTextSize(chapter));
+        entry.putBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED, definitionStore.chapterLockUntilUnlocked(chapter));
+        entry.putBoolean(SyncKeys.ChapterProps.HIDE_UNTIL_UNLOCKED, definitionStore.chapterHideUntilUnlocked(chapter));
+        entry.put(SyncKeys.ChapterProps.CANVAS_EXCLUSIVE_CHOICES, CanvasLayerNbtCodec.exclusiveChoicesToListTag(definitionStore.canvasExclusiveChoices(chapter)));
+        entry.put(SyncKeys.ChapterProps.CANVAS_IMAGES, CanvasLayerNbtCodec.imagesToListTag(definitionStore.canvasImages(chapter)));
+        entry.put(SyncKeys.ChapterProps.CANVAS_TEXTS, CanvasLayerNbtCodec.textsToListTag(definitionStore.canvasTexts(chapter)));
+        entry.put(SyncKeys.ChapterProps.CANVAS_LAYER_ORDER, CanvasLayerNbtCodec.stringsToListTag(definitionStore.canvasLayerOrder(chapter)));
         return entry;
     }
 
@@ -146,7 +146,7 @@ final class SyncPayloadBuilder {
         CompoundTag ctTag = connectionTexturesTag(definition);
         questTag.put(SyncKeys.Quest.CONNECTION_TEXTURES, ctTag);
         questTag.put(SyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS, connectionTextureSpacingsTag(definition));
-        questTag.put(SyncKeys.Quest.GROUPS, chapterViewsTag(definition));
+        questTag.put(SyncKeys.Quest.CHAPTERS, chapterViewsTag(definition));
         return questTag;
     }
 
@@ -169,17 +169,17 @@ final class SyncPayloadBuilder {
     }
 
     private static CompoundTag chapterViewsTag(QuestDefinition definition) {
-        CompoundTag groups = new CompoundTag();
-        for (Map.Entry<String, GroupDef> groupEntry : definition.display().groups().entrySet()) {
-            GroupDef view = groupEntry.getValue();
-            CompoundTag groupTag = new CompoundTag();
-            groupTag.putBoolean(SyncKeys.ChapterView.VISIBLE, view.visible());
-            groupTag.putInt(SyncKeys.ChapterView.X, view.x());
-            groupTag.putInt(SyncKeys.ChapterView.Y, view.y());
-            groupTag.putFloat(SyncKeys.ChapterView.SCALE, view.scale());
-            groups.put(groupEntry.getKey(), groupTag);
+        CompoundTag chapters = new CompoundTag();
+        for (Map.Entry<String, ChapterDef> chapterEntry : definition.display().chapters().entrySet()) {
+            ChapterDef view = chapterEntry.getValue();
+            CompoundTag chapterTag = new CompoundTag();
+            chapterTag.putBoolean(SyncKeys.ChapterView.VISIBLE, view.visible());
+            chapterTag.putInt(SyncKeys.ChapterView.X, view.x());
+            chapterTag.putInt(SyncKeys.ChapterView.Y, view.y());
+            chapterTag.putFloat(SyncKeys.ChapterView.SCALE, view.scale());
+            chapters.put(chapterEntry.getKey(), chapterTag);
         }
-        return groups;
+        return chapters;
     }
 
     private static float progressPercent(QuestDefinition definition, QuestProgressState progress) {

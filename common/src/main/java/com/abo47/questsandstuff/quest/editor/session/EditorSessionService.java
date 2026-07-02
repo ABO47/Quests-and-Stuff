@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.editor.group.GroupEditService;
+import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -37,7 +37,7 @@ public final class EditorSessionService {
     private final QuestDefinitionStore definitionStore;
     private final RuntimeEngine runtimeEngine;
     private final SyncService syncService;
-    private final GroupEditService chapterEdits;
+    private final ChapterEditService chapterEdits;
     private final CanvasEditService canvasEdits;
     private final ClipboardEditService clipboardEdits;
     private final PrerequisiteEditService prerequisiteEdits;
@@ -57,7 +57,7 @@ public final class EditorSessionService {
         this.definitionStore = definitionStore;
         this.runtimeEngine = runtimeEngine;
         this.syncService = syncService;
-        this.chapterEdits = new GroupEditService(this);
+        this.chapterEdits = new ChapterEditService(this);
         this.canvasEdits = new CanvasEditService(this);
         this.clipboardEdits = new ClipboardEditService(this);
         this.prerequisiteEdits = new PrerequisiteEditService(this);
@@ -72,8 +72,8 @@ public final class EditorSessionService {
         this.sessionState = new EditorSessionState(definitionStore);
     }
 
-    public String groupLabel(ServerPlayer player) {
-        return questActions.groupLabel(player);
+    public String chapterLabel(ServerPlayer player) {
+        return questActions.chapterLabel(player);
     }
 
     public String questLabel(ServerPlayer player) {
@@ -88,12 +88,12 @@ public final class EditorSessionService {
         return questActions.settingsLabel(player);
     }
 
-    public void nextGroup(ServerPlayer player) {
-        questActions.nextGroup(player);
+    public void nextChapter(ServerPlayer player) {
+        questActions.nextChapter(player);
     }
 
-    public void prevGroup(ServerPlayer player) {
-        questActions.prevGroup(player);
+    public void prevChapter(ServerPlayer player) {
+        questActions.prevChapter(player);
     }
 
     public void nextQuest(ServerPlayer player) {
@@ -112,12 +112,12 @@ public final class EditorSessionService {
         questActions.addQuest(player);
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup) {
-        questActions.addQuest(player, preferredGroup);
+    public void addQuest(ServerPlayer player, String preferredChapter) {
+        questActions.addQuest(player, preferredChapter);
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup, String preferredQuestId, int x, int y, String preferredTitle) {
-        questActions.addQuest(player, preferredGroup, preferredQuestId, x, y, preferredTitle);
+    public void addQuest(ServerPlayer player, String preferredChapter, String preferredQuestId, int x, int y, String preferredTitle) {
+        questActions.addQuest(player, preferredChapter, preferredQuestId, x, y, preferredTitle);
     }
 
     public void updateQuestDisplay(ServerPlayer player, String questId, String title, String subtitle) {
@@ -159,126 +159,126 @@ public final class EditorSessionService {
     public void removeQuest(ServerPlayer player, String questId) {
         questActions.removeQuest(player, questId);
     }
-    public void createGroup(ServerPlayer player, String groupName) {
-        chapterActions.createGroup(player, groupName);
+    public void createChapter(ServerPlayer player, String chapterName) {
+        chapterActions.createChapter(player, chapterName);
     }
 
-    public void deleteGroup(ServerPlayer player, String groupName) {
-        chapterActions.deleteGroup(player, groupName);
+    public void deleteChapter(ServerPlayer player, String chapterName) {
+        chapterActions.deleteChapter(player, chapterName);
     }
 
-    public void moveGroup(ServerPlayer player, String groupName, int offset) {
-        chapterActions.moveGroup(player, groupName, offset);
+    public void moveChapter(ServerPlayer player, String chapterName, int offset) {
+        chapterActions.moveChapter(player, chapterName, offset);
     }
 
-    public void moveGroupToIndex(ServerPlayer player, String groupName, int targetIndex) {
-        chapterActions.moveGroupToIndex(player, groupName, targetIndex);
+    public void moveChapterToIndex(ServerPlayer player, String chapterName, int targetIndex) {
+        chapterActions.moveChapterToIndex(player, chapterName, targetIndex);
     }
 
-    public void renameGroup(ServerPlayer player, String fromName, String toName) {
-        chapterActions.renameGroup(player, fromName, toName);
+    public void renameChapter(ServerPlayer player, String fromName, String toName) {
+        chapterActions.renameChapter(player, fromName, toName);
     }
 
-    public void setGroupIcon(ServerPlayer player, String groupName, String iconId) {
-        chapterActions.setGroupIcon(player, groupName, iconId);
+    public void setChapterIcon(ServerPlayer player, String chapterName, String iconId) {
+        chapterActions.setChapterIcon(player, chapterName, iconId);
     }
 
-    public void setGroupBackground(ServerPlayer player, String groupName, String backgroundId) {
-        chapterActions.setGroupBackground(player, groupName, backgroundId);
+    public void setChapterBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        chapterActions.setChapterBackground(player, chapterName, backgroundId);
     }
 
-    public void setGroupCanvasBackground(ServerPlayer player, String groupName, String backgroundId) {
-        chapterActions.setGroupCanvasBackground(player, groupName, backgroundId);
+    public void setChapterCanvasBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        chapterActions.setChapterCanvasBackground(player, chapterName, backgroundId);
     }
 
-    public void setGroupTextAlign(ServerPlayer player, String groupName, String align) {
-        chapterActions.setGroupTextAlign(player, groupName, align);
+    public void setChapterTextAlign(ServerPlayer player, String chapterName, String align) {
+        chapterActions.setChapterTextAlign(player, chapterName, align);
     }
 
-    public void setGroupTextColor(ServerPlayer player, String groupName, int color) {
-        chapterActions.setGroupTextColor(player, groupName, color);
+    public void setChapterTextColor(ServerPlayer player, String chapterName, int color) {
+        chapterActions.setChapterTextColor(player, chapterName, color);
     }
 
-    public void setGroupTextStyle(ServerPlayer player, String groupName, String style) {
-        chapterActions.setGroupTextStyle(player, groupName, style);
+    public void setChapterTextStyle(ServerPlayer player, String chapterName, String style) {
+        chapterActions.setChapterTextStyle(player, chapterName, style);
     }
 
-    public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
-        chapterActions.setGroupTextSize(player, groupName, size);
+    public void setChapterTextSize(ServerPlayer player, String chapterName, int size) {
+        chapterActions.setChapterTextSize(player, chapterName, size);
     }
 
-    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
-        chapterActions.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
+    public void setChapterLockUntilUnlocked(ServerPlayer player, String chapterName, boolean lockUntilUnlocked) {
+        chapterActions.setChapterLockUntilUnlocked(player, chapterName, lockUntilUnlocked);
     }
 
-    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
-        chapterActions.setGroupHideUntilUnlocked(player, groupName, hideUntilUnlocked);
+    public void setChapterHideUntilUnlocked(ServerPlayer player, String chapterName, boolean hideUntilUnlocked) {
+        chapterActions.setChapterHideUntilUnlocked(player, chapterName, hideUntilUnlocked);
     }
 
-    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
-        canvasActions.putCanvasExclusiveChoice(player, groupName, ec);
+    public void putCanvasExclusiveChoice(ServerPlayer player, String chapterName, CanvasExclusiveChoice ec) {
+        canvasActions.putCanvasExclusiveChoice(player, chapterName, ec);
     }
 
-    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
-        canvasActions.putCanvasExclusiveChoices(player, groupName, ecs);
+    public void putCanvasExclusiveChoices(ServerPlayer player, String chapterName, List<CanvasExclusiveChoice> ecs) {
+        canvasActions.putCanvasExclusiveChoices(player, chapterName, ecs);
     }
 
-    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
-        canvasActions.removeCanvasExclusiveChoice(player, groupName, ecId);
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String ecId) {
+        canvasActions.removeCanvasExclusiveChoice(player, chapterName, ecId);
     }
 
-    public void ecConnectionHidden(ServerPlayer player, String groupName, String sourceId, String targetId, boolean hidden) {
-        canvasActions.ecConnectionHidden(player, groupName, sourceId, targetId, hidden);
+    public void ecConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
+        canvasActions.ecConnectionHidden(player, chapterName, sourceId, targetId, hidden);
     }
 
-    public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
-        canvasActions.putCanvasImage(player, groupName, image);
+    public void putCanvasImage(ServerPlayer player, String chapterName, CanvasImageLayer image) {
+        canvasActions.putCanvasImage(player, chapterName, image);
     }
 
-    public void removeCanvasImage(ServerPlayer player, String groupName, String imageId) {
-        canvasActions.removeCanvasImage(player, groupName, imageId);
+    public void removeCanvasImage(ServerPlayer player, String chapterName, String imageId) {
+        canvasActions.removeCanvasImage(player, chapterName, imageId);
     }
 
-    public void putCanvasText(ServerPlayer player, String groupName, CanvasTextLayer text) {
-        canvasActions.putCanvasText(player, groupName, text);
+    public void putCanvasText(ServerPlayer player, String chapterName, CanvasTextLayer text) {
+        canvasActions.putCanvasText(player, chapterName, text);
     }
 
-    public void removeCanvasText(ServerPlayer player, String groupName, String textId) {
-        canvasActions.removeCanvasText(player, groupName, textId);
+    public void removeCanvasText(ServerPlayer player, String chapterName, String textId) {
+        canvasActions.removeCanvasText(player, chapterName, textId);
     }
 
-    public void setCanvasLayerOrder(ServerPlayer player, String groupName, List<String> layerOrder) {
-        canvasActions.setCanvasLayerOrder(player, groupName, layerOrder);
+    public void setCanvasLayerOrder(ServerPlayer player, String chapterName, List<String> layerOrder) {
+        canvasActions.setCanvasLayerOrder(player, chapterName, layerOrder);
     }
 
-    public void openGroup(ServerPlayer player, String groupName) {
-        questActions.openGroup(player, groupName);
+    public void openChapter(ServerPlayer player, String chapterName) {
+        questActions.openChapter(player, chapterName);
     }
 
     public void openQuest(ServerPlayer player, String questId) {
         questActions.openQuest(player, questId);
     }
-    public void moveQuestsInGroup(ServerPlayer player, String groupName, Map<String, int[]> positions) {
-        canvasActions.moveQuestsInGroup(player, groupName, positions);
+    public void moveQuestsInChapter(ServerPlayer player, String chapterName, Map<String, int[]> positions) {
+        canvasActions.moveQuestsInChapter(player, chapterName, positions);
     }
 
-    public void scaleQuestsInGroup(ServerPlayer player, String groupName, Map<String, Float> scales) {
-        canvasActions.scaleQuestsInGroup(player, groupName, scales);
+    public void scaleQuestsInChapter(ServerPlayer player, String chapterName, Map<String, Float> scales) {
+        canvasActions.scaleQuestsInChapter(player, chapterName, scales);
     }
     public void copyQuestsToClipboard(ServerPlayer player, Set<String> questIds) {
         canvasActions.copyQuestsToClipboard(player, questIds);
     }
 
-    public void copyQuestsToClipboard(ServerPlayer player, String groupName, Set<String> questIds) {
-        canvasActions.copyQuestsToClipboard(player, groupName, questIds);
+    public void copyQuestsToClipboard(ServerPlayer player, String chapterName, Set<String> questIds) {
+        canvasActions.copyQuestsToClipboard(player, chapterName, questIds);
     }
 
-    public void pasteClipboardInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY) {
-        canvasActions.pasteClipboardInGroup(player, groupName, anchorX, anchorY);
+    public void pasteClipboardInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY) {
+        canvasActions.pasteClipboardInChapter(player, chapterName, anchorX, anchorY);
     }
 
-    public void pasteBlueprintInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
-        canvasActions.pasteBlueprintInGroup(player, groupName, anchorX, anchorY, blueprint);
+    public void pasteBlueprintInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
+        canvasActions.pasteBlueprintInChapter(player, chapterName, anchorX, anchorY, blueprint);
     }
     public void setQuestPrerequisite(ServerPlayer player, String questId, String prerequisiteId, boolean enabled) {
         questActions.setQuestPrerequisite(player, questId, prerequisiteId, enabled);
@@ -405,20 +405,20 @@ public final class EditorSessionService {
         sessionState.normalizeQuestSelection(session);
     }
 
-    public List<String> groups() {
-        return sessionState.groups();
+    public List<String> chapters() {
+        return sessionState.chapters();
     }
 
-    public List<String> questIdsInGroup(String group) {
-        return sessionState.questIdsInGroup(group);
+    public List<String> questIdsInChapter(String chapter) {
+        return sessionState.questIdsInChapter(chapter);
     }
 
-    public String nextQuestId(String group) {
-        return sessionState.nextQuestId(group);
+    public String nextQuestId(String chapter) {
+        return sessionState.nextQuestId(chapter);
     }
 
-    public String nextQuestId(String group, Set<String> reservedIds) {
-        return sessionState.nextQuestId(group, reservedIds);
+    public String nextQuestId(String chapter, Set<String> reservedIds) {
+        return sessionState.nextQuestId(chapter, reservedIds);
     }
 
     public void clipboardDebug(String message) {
@@ -434,25 +434,25 @@ public final class EditorSessionService {
             Collection<String> questIds,
             Collection<String> imageIds,
             Collection<String> textIds,
-            String group
+            String chapter
     ) {
-        undoRedoActions.capturePasteUndo(session, questIds, imageIds, textIds, group);
+        undoRedoActions.capturePasteUndo(session, questIds, imageIds, textIds, chapter);
     }
 
     public void postMutation(ServerPlayer player) {
         undoRedoActions.postMutation(player);
     }
 
-    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedGroups) {
-        undoRedoActions.postMutationDelta(player, changedQuestIds, changedGroups);
+    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedChapters) {
+        undoRedoActions.postMutationDelta(player, changedQuestIds, changedChapters);
     }
 
-    public void ensureGroupExists(String rawGroup) {
-        sessionState.ensureGroupExists(rawGroup);
+    public void ensureChapterExists(String rawChapter) {
+        sessionState.ensureChapterExists(rawChapter);
     }
 
-    public static String normalizeGroup(String groupName) {
-        return groupName.trim().replace('\\', '/').replaceAll("/{2,}", "/");
+    public static String normalizeChapter(String chapterName) {
+        return chapterName.trim().replace('\\', '/').replaceAll("/{2,}", "/");
     }
 
     public static String normalizeQuestId(String questId) {
@@ -466,7 +466,7 @@ public final class EditorSessionService {
     }
 
     public static final class EditorSession {
-        public String currentGroup;
+        public String currentChapter;
         public String currentQuest;
         public EditorMode mode = EditorMode.MOVE;
         public ClipboardSnapshot clipboardSnapshot = ClipboardSnapshot.empty();

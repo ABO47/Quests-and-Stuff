@@ -37,7 +37,7 @@ class ClientSyncInboxTest {
 
         assertTrue(ClientQuestStateFacade.containsQuest("quest/a"));
         assertTrue(ClientQuestStateFacade.containsQuest("quest/b"));
-        assertEquals(List.of("main"), ClientQuestStateFacade.groupOrder());
+        assertEquals(List.of("main"), ClientQuestStateFacade.chapterOrder());
         assertEquals(1, refreshes.get());
     }
 
@@ -88,14 +88,14 @@ class ClientSyncInboxTest {
         assertDoesNotThrow(() -> ClientQuestStateFacade.applyFullSync(fullPart("quest/no-tablet", true)));
 
         assertTrue(ClientQuestStateFacade.containsQuest("quest/no-tablet"));
-        assertEquals(List.of("main"), ClientQuestStateFacade.groupOrder());
+        assertEquals(List.of("main"), ClientQuestStateFacade.chapterOrder());
     }
 
     private static CompoundTag fullPart(String questId, boolean includeChapterPayload) {
         CompoundTag part = new CompoundTag();
         if (includeChapterPayload) {
-            part.put(SyncKeys.GROUPS, groupList());
-            part.put(SyncKeys.GROUP_PROPS, groupProps());
+            part.put(SyncKeys.CHAPTERS, groupList());
+            part.put(SyncKeys.CHAPTER_PROPS, groupProps());
         }
         part.put(SyncKeys.QUESTS, keyedQuest(questId));
         return part;
@@ -104,8 +104,8 @@ class ClientSyncInboxTest {
     private static CompoundTag deltaPart(String questId, boolean includeChapterPayload) {
         CompoundTag part = new CompoundTag();
         if (includeChapterPayload) {
-            part.put(SyncKeys.GROUPS, groupList());
-            part.put(SyncKeys.GROUP_PROPS, groupProps());
+            part.put(SyncKeys.CHAPTERS, groupList());
+            part.put(SyncKeys.CHAPTER_PROPS, groupProps());
         }
         part.put(SyncKeys.CHANGED, keyedQuest(questId));
         part.put(SyncKeys.REMOVED, new CompoundTag());
@@ -123,7 +123,7 @@ class ClientSyncInboxTest {
         quest.putString(SyncKeys.Quest.TITLE, questId);
         CompoundTag groups = new CompoundTag();
         groups.put("main", new CompoundTag());
-        quest.put(SyncKeys.Quest.GROUPS, groups);
+        quest.put(SyncKeys.Quest.CHAPTERS, groups);
         return quest;
     }
 
@@ -136,8 +136,8 @@ class ClientSyncInboxTest {
     private static CompoundTag groupProps() {
         CompoundTag groupProps = new CompoundTag();
         CompoundTag main = new CompoundTag();
-        main.putBoolean(SyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED, false);
-        main.putBoolean(SyncKeys.GroupProps.HIDE_UNTIL_UNLOCKED, false);
+        main.putBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED, false);
+        main.putBoolean(SyncKeys.ChapterProps.HIDE_UNTIL_UNLOCKED, false);
         groupProps.put("main", main);
         return groupProps;
     }

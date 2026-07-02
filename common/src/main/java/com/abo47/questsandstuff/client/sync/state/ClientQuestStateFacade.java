@@ -88,14 +88,14 @@ public final class ClientQuestStateFacade {
         return ClientQuestState.questIdsSnapshot();
     }
 
-    public static List<String> questIdsInGroup(String group) {
-        if (group == null || group.isBlank()) {
+    public static List<String> questIdsInChapter(String chapter) {
+        if (chapter == null || chapter.isBlank()) {
             return List.of();
         }
         List<String> result = new ArrayList<>();
         for (Map.Entry<String, CompoundTag> entry : questEntries()) {
-            CompoundTag groups = entry.getValue().getCompound(SyncKeys.Quest.GROUPS);
-            if (groups.contains(group)) {
+            CompoundTag groups = entry.getValue().getCompound(SyncKeys.Quest.CHAPTERS);
+            if (groups.contains(chapter)) {
                 result.add(entry.getKey());
             }
         }
@@ -142,76 +142,76 @@ public final class ClientQuestStateFacade {
         return ClientDisplayState.recentEvents();
     }
 
-    public static void noteQuestCompletedForChapterNotices(String questId, String currentGroup) {
-        ClientDisplayState.noteQuestCompleted(quest(questId), currentGroup);
+    public static void noteQuestCompletedForChapterNotices(String questId, String currentChapter) {
+        ClientDisplayState.noteQuestCompleted(quest(questId), currentChapter);
     }
 
-    public static boolean groupHasCompletionNotice(String group) {
-        return ClientDisplayState.chapterHasCompletionNotice(group);
+    public static boolean chapterHasCompletionNotice(String chapter) {
+        return ClientDisplayState.chapterHasCompletionNotice(chapter);
     }
 
-    public static void clearGroupCompletionNotice(String group) {
-        ClientDisplayState.clearChapterCompletionNotice(group);
+    public static void clearChapterCompletionNotice(String chapter) {
+        ClientDisplayState.clearChapterCompletionNotice(chapter);
     }
 
-    public static List<String> groupOrder() {
-        return ClientChapterState.groupOrderSnapshot();
+    public static List<String> chapterOrder() {
+        return ClientChapterState.chapterOrderSnapshot();
     }
 
-    public static String groupIcon(String group) {
-        return ClientChapterState.groupIcon(group);
+    public static String chapterIcon(String chapter) {
+        return ClientChapterState.chapterIcon(chapter);
     }
 
-    public static String groupBackground(String group) {
-        return ClientChapterState.groupBackground(group);
+    public static String chapterBackground(String chapter) {
+        return ClientChapterState.chapterBackground(chapter);
     }
 
-    public static String groupCanvasBackground(String group) {
-        return ClientChapterState.groupCanvasBackground(group);
+    public static String chapterCanvasBackground(String chapter) {
+        return ClientChapterState.chapterCanvasBackground(chapter);
     }
 
-    public static String groupTextAlign(String group) {
-        return ClientChapterState.groupTextAlign(group);
+    public static String chapterTextAlign(String chapter) {
+        return ClientChapterState.chapterTextAlign(chapter);
     }
 
-    public static int groupTextColor(String group) {
-        return ClientChapterState.groupTextColor(group);
+    public static int chapterTextColor(String chapter) {
+        return ClientChapterState.chapterTextColor(chapter);
     }
 
-    public static String groupTextStyle(String group) {
-        return ClientChapterState.groupTextStyle(group);
+    public static String chapterTextStyle(String chapter) {
+        return ClientChapterState.chapterTextStyle(chapter);
     }
 
-    public static int groupTextSize(String group) {
-        return ClientChapterState.groupTextSize(group);
+    public static int chapterTextSize(String chapter) {
+        return ClientChapterState.chapterTextSize(chapter);
     }
 
-    public static boolean groupLockUntilUnlocked(String group) {
-        return ClientChapterState.groupLockUntilUnlocked(group);
+    public static boolean chapterLockUntilUnlocked(String chapter) {
+        return ClientChapterState.chapterLockUntilUnlocked(chapter);
     }
 
-    public static boolean groupHideUntilUnlocked(String group) {
-        return ClientChapterState.groupHideUntilUnlocked(group);
+    public static boolean chapterHideUntilUnlocked(String chapter) {
+        return ClientChapterState.chapterHideUntilUnlocked(chapter);
     }
 
-    public static boolean groupLockedPreview(String group) {
-        return ClientQuestPreviewChecker.groupLocked(group);
+    public static boolean chapterLockedPreview(String chapter) {
+        return ClientQuestPreviewChecker.chapterLocked(chapter);
     }
 
-    public static boolean groupHiddenPreview(String group) {
-        return ClientQuestPreviewChecker.groupHidden(group);
+    public static boolean chapterHiddenPreview(String chapter) {
+        return ClientQuestPreviewChecker.chapterHidden(chapter);
     }
 
-    public static boolean groupOpenablePreview(String group) {
-        return ClientQuestPreviewChecker.groupOpenable(group);
+    public static boolean chapterOpenablePreview(String chapter) {
+        return ClientQuestPreviewChecker.chapterOpenable(chapter);
     }
 
-    public static List<String> selectableGroupOrder(boolean canEdit) {
-        return ClientQuestPreviewChecker.selectableGroupOrder(canEdit);
+    public static List<String> selectableChapterOrder(boolean canEdit) {
+        return ClientQuestPreviewChecker.selectableChapterOrder(canEdit);
     }
 
-    public static List<String> visibleGroupOrder(boolean canEdit) {
-        return ClientQuestPreviewChecker.visibleGroupOrder(canEdit);
+    public static List<String> visibleChapterOrder(boolean canEdit) {
+        return ClientQuestPreviewChecker.visibleChapterOrder(canEdit);
     }
 
     public static boolean questLockedPreview(CompoundTag quest) {
@@ -222,120 +222,120 @@ public final class ClientQuestStateFacade {
         return ClientQuestPreviewChecker.questHidden(quest);
     }
 
-    public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
-        return ClientCanvasLayerState.imagesByGroup();
+    public static Map<String, List<CanvasImageLayer>> canvasImagesByChapter() {
+        return ClientCanvasLayerState.imagesByChapter();
     }
 
-    public static Map<String, List<CanvasTextLayer>> canvasTextsByGroup() {
-        return ClientCanvasLayerState.textsByGroup();
+    public static Map<String, List<CanvasTextLayer>> canvasTextsByChapter() {
+        return ClientCanvasLayerState.textsByChapter();
     }
 
-    public static Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup() {
-        return ClientCanvasLayerState.exclusiveChoicesByGroup();
+    public static Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByChapter() {
+        return ClientCanvasLayerState.exclusiveChoicesByChapter();
     }
 
-    public static Map<String, List<String>> canvasLayerOrderByGroup() {
-        return ClientCanvasLayerState.layerOrderByGroup();
+    public static Map<String, List<String>> canvasLayerOrderByChapter() {
+        return ClientCanvasLayerState.layerOrderByChapter();
     }
 
-    public static List<CanvasImageLayer> canvasImages(String group) {
-        return ClientCanvasLayerState.images(group);
+    public static List<CanvasImageLayer> canvasImages(String chapter) {
+        return ClientCanvasLayerState.images(chapter);
     }
 
-    public static List<CanvasTextLayer> canvasTexts(String group) {
-        return ClientCanvasLayerState.texts(group);
+    public static List<CanvasTextLayer> canvasTexts(String chapter) {
+        return ClientCanvasLayerState.texts(chapter);
     }
 
-    public static List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
-        return ClientCanvasLayerState.exclusiveChoices(group);
+    public static List<CanvasExclusiveChoice> canvasExclusiveChoices(String chapter) {
+        return ClientCanvasLayerState.exclusiveChoices(chapter);
     }
 
-    public static List<String> canvasLayerOrder(String group) {
-        return ClientCanvasLayerState.layerOrder(group);
+    public static List<String> canvasLayerOrder(String chapter) {
+        return ClientCanvasLayerState.layerOrder(chapter);
     }
 
-    public static void createGroupLocal(String group) {
-        ClientQuestMutator.createGroupLocal(group);
+    public static void createChapterLocal(String chapter) {
+        ClientQuestMutator.createChapterLocal(chapter);
     }
 
-    public static void renameGroupLocal(String from, String to) {
-        ClientQuestMutator.renameGroupLocal(from, to);
+    public static void renameChapterLocal(String from, String to) {
+        ClientQuestMutator.renameChapterLocal(from, to);
     }
 
-    public static void deleteGroupLocal(String group) {
-        ClientQuestMutator.deleteGroupLocal(group);
+    public static void deleteChapterLocal(String chapter) {
+        ClientQuestMutator.deleteChapterLocal(chapter);
     }
 
-    public static void moveGroupLocal(String group, int offset) {
-        ClientQuestMutator.moveGroupLocal(group, offset);
+    public static void moveChapterLocal(String chapter, int offset) {
+        ClientQuestMutator.moveChapterLocal(chapter, offset);
     }
 
-    public static void moveGroupToIndexLocal(String group, int targetIndex) {
-        ClientQuestMutator.moveGroupToIndexLocal(group, targetIndex);
+    public static void moveChapterToIndexLocal(String chapter, int targetIndex) {
+        ClientQuestMutator.moveChapterToIndexLocal(chapter, targetIndex);
     }
 
-    public static void setGroupIconLocal(String group, String icon) {
-        ClientQuestMutator.setGroupIconLocal(group, icon);
+    public static void setChapterIconLocal(String chapter, String icon) {
+        ClientQuestMutator.setChapterIconLocal(chapter, icon);
     }
 
-    public static void setGroupBackgroundLocal(String group, String background) {
-        ClientQuestMutator.setGroupBackgroundLocal(group, background);
+    public static void setChapterBackgroundLocal(String chapter, String background) {
+        ClientQuestMutator.setChapterBackgroundLocal(chapter, background);
     }
 
-    public static void setGroupCanvasBackgroundLocal(String group, String background) {
-        ClientQuestMutator.setGroupCanvasBackgroundLocal(group, background);
+    public static void setChapterCanvasBackgroundLocal(String chapter, String background) {
+        ClientQuestMutator.setChapterCanvasBackgroundLocal(chapter, background);
     }
 
-    public static void setGroupTextAlignLocal(String group, String align) {
-        ClientQuestMutator.setGroupTextAlignLocal(group, align);
+    public static void setChapterTextAlignLocal(String chapter, String align) {
+        ClientQuestMutator.setChapterTextAlignLocal(chapter, align);
     }
 
-    public static void setGroupTextColorLocal(String group, int color) {
-        ClientQuestMutator.setGroupTextColorLocal(group, color);
+    public static void setChapterTextColorLocal(String chapter, int color) {
+        ClientQuestMutator.setChapterTextColorLocal(chapter, color);
     }
 
-    public static void setGroupTextStyleLocal(String group, String style) {
-        ClientQuestMutator.setGroupTextStyleLocal(group, style);
+    public static void setChapterTextStyleLocal(String chapter, String style) {
+        ClientQuestMutator.setChapterTextStyleLocal(chapter, style);
     }
 
-    public static void setGroupTextSizeLocal(String group, int size) {
-        ClientQuestMutator.setGroupTextSizeLocal(group, size);
+    public static void setChapterTextSizeLocal(String chapter, int size) {
+        ClientQuestMutator.setChapterTextSizeLocal(chapter, size);
     }
 
-    public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
-        ClientQuestMutator.setGroupLockUntilUnlockedLocal(group, lockUntilUnlocked);
+    public static void setChapterLockUntilUnlockedLocal(String chapter, boolean lockUntilUnlocked) {
+        ClientQuestMutator.setChapterLockUntilUnlockedLocal(chapter, lockUntilUnlocked);
     }
 
-    public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
-        ClientQuestMutator.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
+    public static void setChapterHideUntilUnlockedLocal(String chapter, boolean hideUntilUnlocked) {
+        ClientQuestMutator.setChapterHideUntilUnlockedLocal(chapter, hideUntilUnlocked);
     }
 
-    public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
-        ClientQuestMutator.putCanvasExclusiveChoiceLocal(group, ec);
+    public static void putCanvasExclusiveChoiceLocal(String chapter, CanvasExclusiveChoice ec) {
+        ClientQuestMutator.putCanvasExclusiveChoiceLocal(chapter, ec);
     }
 
-    public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
-        ClientQuestMutator.removeCanvasExclusiveChoiceLocal(group, ecId);
+    public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
+        ClientQuestMutator.removeCanvasExclusiveChoiceLocal(chapter, ecId);
     }
 
-    public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
-        ClientQuestMutator.putCanvasImageLocal(group, image);
+    public static void putCanvasImageLocal(String chapter, CanvasImageLayer image) {
+        ClientQuestMutator.putCanvasImageLocal(chapter, image);
     }
 
-    public static void removeCanvasImageLocal(String group, String imageId) {
-        ClientQuestMutator.removeCanvasImageLocal(group, imageId);
+    public static void removeCanvasImageLocal(String chapter, String imageId) {
+        ClientQuestMutator.removeCanvasImageLocal(chapter, imageId);
     }
 
-    public static void putCanvasTextLocal(String group, CanvasTextLayer text) {
-        ClientQuestMutator.putCanvasTextLocal(group, text);
+    public static void putCanvasTextLocal(String chapter, CanvasTextLayer text) {
+        ClientQuestMutator.putCanvasTextLocal(chapter, text);
     }
 
-    public static void removeCanvasTextLocal(String group, String textId) {
-        ClientQuestMutator.removeCanvasTextLocal(group, textId);
+    public static void removeCanvasTextLocal(String chapter, String textId) {
+        ClientQuestMutator.removeCanvasTextLocal(chapter, textId);
     }
 
-    public static void setCanvasLayerOrderLocal(String group, List<String> order) {
-        ClientQuestMutator.setCanvasLayerOrderLocal(group, order);
+    public static void setCanvasLayerOrderLocal(String chapter, List<String> order) {
+        ClientQuestMutator.setCanvasLayerOrderLocal(chapter, order);
     }
 
     public static int completedCount() {
@@ -426,24 +426,24 @@ public final class ClientQuestStateFacade {
         ClientQuestMutator.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
     }
 
-    public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
-        ClientQuestMutator.setQuestPositionInGroupLocal(questId, group, x, y);
+    public static void setQuestPositionInChapterLocal(String questId, String chapter, int x, int y) {
+        ClientQuestMutator.setQuestPositionInChapterLocal(questId, chapter, x, y);
     }
 
-    public static void setQuestScaleInGroupLocal(String questId, String group, float scale) {
-        ClientQuestMutator.setQuestScaleInGroupLocal(questId, group, scale);
+    public static void setQuestScaleInChapterLocal(String questId, String chapter, float scale) {
+        ClientQuestMutator.setQuestScaleInChapterLocal(questId, chapter, scale);
     }
 
-    public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {
-        ClientQuestMutator.createEditorQuestLocal(questId, group, x, y, title);
+    public static void createEditorQuestLocal(String questId, String chapter, int x, int y, String title) {
+        ClientQuestMutator.createEditorQuestLocal(questId, chapter, x, y, title);
     }
 
-    public static void copyQuestLocal(String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestMutator.copyQuestLocal(sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+    public static void copyQuestLocal(String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
+        ClientQuestMutator.copyQuestLocal(sourceQuestId, newQuestId, chapter, x, y, scale, copiedIds);
     }
 
-    public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestMutator.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+    public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
+        ClientQuestMutator.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, chapter, x, y, scale, copiedIds);
     }
 
     public static void remapCopiedQuestPrerequisitesLocal(Map<String, String> copiedIds, Map<String, CompoundTag> snapshots) {

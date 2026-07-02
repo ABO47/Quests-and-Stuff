@@ -55,11 +55,11 @@ final class CanvasSelectionRotateController {
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
         state.canvas.rotateStartImageLayers.putAll(snapshot.images());
         state.canvas.rotateStartTextLayers.putAll(snapshot.texts());
-        String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        String group = TabletStateQueries.selectedChapterName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.rotateStartEcLayers.put(ec.id(), ec);
                 CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);

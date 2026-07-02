@@ -60,7 +60,7 @@ public final class ColorPickerApplyActions {
             }
             return state.pickers.colorDraft == 0 ? TabletColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
-        return ClientQuestStateFacade.groupTextColor(target.raw());
+        return ClientQuestStateFacade.chapterTextColor(target.raw());
     }
 
     public static void apply(Player player, TabletUiState state, String target, int color) {

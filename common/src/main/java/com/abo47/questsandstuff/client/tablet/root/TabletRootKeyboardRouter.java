@@ -184,11 +184,11 @@ final class TabletRootKeyboardRouter {
             return false;
         }
         if (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
-            String typed = TabletUiFactory.sanitizeGroupName(state.chapterPanel.chapterDraftName);
-            String created = TabletUiFactory.uniqueGroupName(typed.isBlank() ? tr("ui.questsandstuff.chapter.default_name") : typed, "");
+            String typed = TabletUiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
+            String created = TabletUiFactory.uniqueChapterName(typed.isBlank() ? tr("ui.questsandstuff.chapter.default_name") : typed, "");
             TabletUiFactory.runGroupAction(root.resolvePlayer(), state, "create", created, created, 0);
-            state.root.selectedGroup = created;
-            state.chapterPanel.groupDraft = created;
+            state.root.selectedChapter = created;
+            state.chapterPanel.chapterDraft = created;
             state.chapterPanel.chapterDraftName = created;
             state.canvas.pendingChapterRename = "";
             refresher.run();
@@ -196,13 +196,13 @@ final class TabletRootKeyboardRouter {
         }
         if (!state.canvas.pendingChapterRename.isBlank()) {
             String from = state.canvas.pendingChapterRename;
-            String typed = TabletUiFactory.sanitizeGroupName(state.chapterPanel.chapterDraftName);
-            String renamed = TabletUiFactory.uniqueGroupName(typed, from);
+            String typed = TabletUiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
+            String renamed = TabletUiFactory.uniqueChapterName(typed, from);
             if (!renamed.equals(from)) {
                 TabletUiFactory.runGroupAction(root.resolvePlayer(), state, "rename", from, renamed, 0);
             }
-            state.root.selectedGroup = renamed;
-            state.chapterPanel.groupDraft = renamed;
+            state.root.selectedChapter = renamed;
+            state.chapterPanel.chapterDraft = renamed;
             state.chapterPanel.chapterDraftName = renamed;
             state.canvas.pendingChapterRename = "";
             refresher.run();

@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import java.util.List;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasBoxSelectionController {
     private CanvasBoxSelectionController() {
@@ -87,11 +87,11 @@ public final class CanvasBoxSelectionController {
                 state.canvas.canvasSelection.questIds().add(card.questId());
             }
         }
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().addAll(state.canvas.boxSelectionBaseCanvasImageIds);
         String lastImageId = "";
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
@@ -103,7 +103,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.textIds().addAll(state.canvas.boxSelectionBaseCanvasTextIds);
         String lastTextId = "";
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
@@ -115,7 +115,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.ecIds().clear();
         state.canvas.canvasSelection.ecIds().addAll(state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds);
         String lastEcId = "";
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {

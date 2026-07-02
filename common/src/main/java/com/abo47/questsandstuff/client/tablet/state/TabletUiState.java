@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class TabletUiState {
     public final RootState root = new RootState();
-    public final GroupPanelState chapterPanel = new GroupPanelState();
+    public final ChapterPanelState chapterPanel = new ChapterPanelState();
     public final ModalState modal = new ModalState();
     public final PickerState pickers = new PickerState();
     public final CanvasState canvas = new CanvasState();
@@ -38,7 +38,7 @@ public class TabletUiState {
         public boolean fullScreenMode;
         public int tabletRootWidth;
         public int tabletRootHeight;
-        public String selectedGroup = "";
+        public String selectedChapter = "";
         public String search = "";
         public boolean searchFocused;
         public boolean canEdit;
@@ -51,10 +51,10 @@ public class TabletUiState {
         public final Map<String, String> skinFillOverrides = new HashMap<>();
     }
 
-    public static final class GroupPanelState {
+    public static final class ChapterPanelState {
         public String chapterSearch = "";
         public boolean chapterSearchFocused;
-        public String groupDraft = "";
+        public String chapterDraft = "";
         public String chapterDraftName = "";
         public boolean chapterSelectionJustChanged;
         public boolean chapterPanelCollapsed;
@@ -65,7 +65,7 @@ public class TabletUiState {
         public int chapterSplitterDragStartX;
         public int chapterSplitterStartWidth;
         public String lastJumpQuest = "";
-        public final Set<String> recentlyCreatedGroups = new java.util.LinkedHashSet<>();
+        public final Set<String> recentlyCreatedChapters = new java.util.LinkedHashSet<>();
         public String canvasChapterSwitchGroup = "";
         public long canvasChapterSwitchAnimationStartMs;
         public int canvasChapterSwitchDirection = 1;
@@ -359,13 +359,13 @@ public class TabletUiState {
         public final Map<String, Map<String, String>> connectionTexturesByGroup = new HashMap<>();
         public final Map<String, Map<String, Integer>> connectionTextureSpacingsByGroup = new HashMap<>();
         public String hoveredQuestId = "";
-        public final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup = new HashMap<>();
-        public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
-        public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
+        public final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByChapter = new HashMap<>();
+        public final Map<String, List<CanvasImageLayer>> canvasImagesByChapter = new HashMap<>();
+        public final Map<String, List<CanvasTextLayer>> canvasTextsByChapter = new HashMap<>();
         public final Map<String, CanvasImageLayer> transientCanvasImages = new HashMap<>();
         public final Map<String, CanvasTextLayer> transientCanvasTexts = new HashMap<>();
         public final Map<String, CanvasExclusiveChoice> transientCanvasExclusiveChoices = new HashMap<>();
-        public final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
+        public final Map<String, List<String>> canvasLayerOrderByChapter = new HashMap<>();
         public final BlueprintPlacementState blueprintPlacement = new BlueprintPlacementState();
         public int canvasPointerX;
         public int canvasPointerY;

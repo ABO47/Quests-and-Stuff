@@ -116,8 +116,8 @@ final class CanvasViewportContextRouter {
         if (state == null || edgeHit == null) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        String group = TabletStateQueries.selectedChapterName(state);
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         String edgeKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.edgeKey(edgeHit.sourceQuestId(), edgeHit.targetQuestId()));
         int edgeIndex = order.indexOf(edgeKey);
         if (edgeIndex < 0) {

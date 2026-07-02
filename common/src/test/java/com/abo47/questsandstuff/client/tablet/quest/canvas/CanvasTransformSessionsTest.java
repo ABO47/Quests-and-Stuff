@@ -90,11 +90,11 @@ class CanvasTransformSessionsTest {
     @Test
     void elementBeginAndUpdateClearStaleSnapshotsBeforeCreatingPreview() {
         TabletUiState state = new TabletUiState();
-        state.root.selectedGroup = "main";
+        state.root.selectedChapter = "main";
         state.canvas.canvasZoom = 1.0f;
         state.canvas.canvasContentW = 512;
         state.canvas.canvasContentH = 512;
-        state.canvas.canvasImagesByGroup.put("main", List.of(image("image:a")));
+        state.canvas.canvasImagesByChapter.put("main", List.of(image("image:a")));
         seedMainCanvasTransform(state);
 
         CanvasTransformSessions.clearMainCanvasSession(state);

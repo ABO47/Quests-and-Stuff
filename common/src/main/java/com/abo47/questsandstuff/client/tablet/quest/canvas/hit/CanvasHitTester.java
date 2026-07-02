@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasHitTester {
     private static final int TEXT_MENU_MARGIN = 4;
@@ -44,7 +44,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasImageLayer hitTestCanvasImage(TabletUiState state, int x, int y) {
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
             CanvasImageLayer image = CanvasLayerMutations.effectiveCanvasImage(state, images.get(i));
@@ -61,7 +61,7 @@ public final class CanvasHitTester {
         if (state.canvas.canvasSelection.primaryImageId().isBlank()) {
             return null;
         }
-        CanvasImageLayer image = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+        CanvasImageLayer image = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapterName(state), List.of()).stream()
                 .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryImageId()))
                 .findFirst()
                 .orElse(null);
@@ -82,7 +82,7 @@ public final class CanvasHitTester {
     }
 
     public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         int tolerance = 4;
         for (QuestCardLayout quest : cards) {
             if (!quest.tag().getBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD)) {
@@ -114,7 +114,7 @@ public final class CanvasHitTester {
                 }
             }
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
@@ -163,7 +163,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasTextLayer hitTestCanvasText(TabletUiState state, int x, int y) {
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
             CanvasTextLayer text = CanvasLayerMutations.effectiveCanvasText(state, texts.get(i));
@@ -177,7 +177,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasExclusiveChoice hitTestCanvasExclusiveChoice(TabletUiState state, int x, int y) {
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, group);
         for (int i = ecs.size() - 1; i >= 0; i--) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ecs.get(i));
@@ -194,7 +194,7 @@ public final class CanvasHitTester {
         if (state.canvas.canvasSelection.primaryEcId().isBlank()) {
             return null;
         }
-        CanvasExclusiveChoice ec = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+        CanvasExclusiveChoice ec = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapterName(state), List.of()).stream()
                 .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryEcId()))
                 .findFirst()
                 .orElse(null);
@@ -234,7 +234,7 @@ public final class CanvasHitTester {
         if (state.canvas.canvasSelection.primaryTextId().isBlank()) {
             return null;
         }
-        CanvasTextLayer text = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of()).stream()
+        CanvasTextLayer text = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapterName(state), List.of()).stream()
                 .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryTextId()))
                 .findFirst()
                 .orElse(null);
@@ -314,24 +314,24 @@ public final class CanvasHitTester {
     }
 
     private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String group) {
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
         return images;
     }
 
     private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String group) {
-        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         ecs.sort(Comparator.comparingInt(ec -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()))));
         return ecs;
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String group) {
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByGroup.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.textKey(text.id()))));
         return texts;

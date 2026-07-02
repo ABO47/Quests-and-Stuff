@@ -117,7 +117,7 @@ record PrerequisiteConnectionModel(
     }
 
     private static void addEcConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
-        for (List<CanvasExclusiveChoice> ecs : ClientQuestStateFacade.canvasExclusiveChoicesByGroup().values()) {
+        for (List<CanvasExclusiveChoice> ecs : ClientQuestStateFacade.canvasExclusiveChoicesByChapter().values()) {
             for (CanvasExclusiveChoice ec : ecs) {
                 String ecId = safe(ec.id());
                 if (ecId.isBlank()) continue;
@@ -233,7 +233,7 @@ record PrerequisiteConnectionModel(
         if (questTag == null || questTag.isEmpty() || group == null || group.isBlank()) {
             return false;
         }
-        return questTag.getCompound("groups").contains(group, Tag.TAG_COMPOUND);
+        return questTag.getCompound("chapters").contains(group, Tag.TAG_COMPOUND);
     }
 
     static String questTitle(String questId, CompoundTag questTag) {

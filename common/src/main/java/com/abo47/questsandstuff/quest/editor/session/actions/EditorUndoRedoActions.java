@@ -93,11 +93,11 @@ public final class EditorUndoRedoActions {
         syncService.syncFull(players);
     }
 
-    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedGroups) {
+    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedChapters) {
         runtimeEngine.refreshIndex(changedQuestIds);
         List<ServerPlayer> players = player.server.getPlayerList().getPlayers();
         Set<String> syncedQuestIds = runtimeEngine.preparePlayersForDeltaSync(players, changedQuestIds);
-        syncService.syncDeltaWithMetadata(players, syncedQuestIds, changedGroups);
+        syncService.syncDeltaWithMetadata(players, syncedQuestIds, changedChapters);
     }
 
     private record FullSnapshotEntry(QuestDefinitionStore.EditorSnapshot snapshot) implements EditorHistoryEntry {

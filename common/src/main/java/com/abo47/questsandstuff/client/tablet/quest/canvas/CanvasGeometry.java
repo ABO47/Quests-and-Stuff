@@ -9,8 +9,8 @@ public final class CanvasGeometry {
     private CanvasGeometry() {
     }
 
-    public static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedGroup) {
-        return CanvasQuestCardGeometry.layoutQuest(questId, questTag, state, selectedGroup);
+    public static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedChapter) {
+        return CanvasQuestCardGeometry.layoutQuest(questId, questTag, state, selectedChapter);
     }
 
     public static int screenX(TabletUiState state, double logicalX) {

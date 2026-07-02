@@ -13,9 +13,9 @@ final class CanvasRenderStateController {
     }
 
     static String prepareRebuild(TabletUiState state) {
-        String selectedGroup = TabletStateQueries.selectedGroupName(state);
+        String selectedChapter = TabletStateQueries.selectedChapterName(state);
         state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
-        return selectedGroup;
+        return selectedChapter;
     }
 
     static void setContentBounds(TabletUiState state, int contentX, int contentY, int contentW, int contentH) {

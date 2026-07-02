@@ -29,7 +29,7 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasExclusiveChoicePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasExclusiveChoice(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 CanvasLayerNbtCodec.exclusiveChoiceFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloads.EXCLUSIVE_CHOICE))
         );
     }
@@ -37,7 +37,7 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasExclusiveChoicesPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasExclusiveChoices(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 CanvasLayerNbtCodec.exclusiveChoicesFromListTag(payload.getList(EditorCommandPayloads.EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND))
         );
     }
@@ -45,13 +45,13 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasExclusiveChoiceRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasExclusiveChoice(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.ID)
         );
     }
 
     private static void ecConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         String sourceId = EditorCommandPayloads.string(payload, EditorCommandPayloads.ID);
         String targetId = EditorCommandPayloads.string(payload, EditorCommandPayloads.PREREQUISITE);
         boolean hidden = EditorCommandPayloads.bool(payload, EditorCommandPayloads.HIDDEN);
@@ -64,7 +64,7 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.putCanvasImage(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 CanvasLayerNbtCodec.imageFromTag(EditorCommandPayloads.compound(payload, EditorCommandPayloads.IMAGE))
         );
     }
@@ -72,7 +72,7 @@ final class EditorCanvasLayerCommandHandlers {
     private static void canvasImageRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasImage(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.ID)
         );
     }
@@ -82,13 +82,13 @@ final class EditorCanvasLayerCommandHandlers {
         if (EditorCommandPayloads.exceedsLimit(text.getList(EditorCommandPayloads.SPANS, Tag.TAG_COMPOUND), EditorCommandPayloads.MAX_TEXT_SPANS)) {
             return;
         }
-        editor.putCanvasText(player, EditorCommandPayloads.group(payload), CanvasLayerNbtCodec.textFromTag(text));
+        editor.putCanvasText(player, EditorCommandPayloads.chapter(payload), CanvasLayerNbtCodec.textFromTag(text));
     }
 
     private static void canvasTextRemove(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.removeCanvasText(
                 player,
-                EditorCommandPayloads.group(payload),
+                EditorCommandPayloads.chapter(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.ID)
         );
     }
@@ -98,6 +98,6 @@ final class EditorCanvasLayerCommandHandlers {
         if (EditorCommandPayloads.exceedsLimit(order, EditorCommandPayloads.MAX_LAYER_ORDER_ENTRIES)) {
             return;
         }
-        editor.setCanvasLayerOrder(player, EditorCommandPayloads.group(payload), EditorCommandPayloads.nonBlankStringsFrom(order));
+        editor.setCanvasLayerOrder(player, EditorCommandPayloads.chapter(payload), EditorCommandPayloads.nonBlankStringsFrom(order));
     }
 }

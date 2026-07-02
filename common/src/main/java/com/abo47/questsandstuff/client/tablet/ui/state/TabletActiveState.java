@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.ui.state;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -40,7 +40,7 @@ public final class TabletActiveState {
         ClientSyncUiBridge.registerTabletCallbacks(
                 TabletActiveState::refreshActiveTablet,
                 TabletActiveState::syncActiveCanvasStateFromCache,
-                TabletActiveState::activeSelectedGroup,
+                TabletActiveState::activeSelectedChapter,
                 TabletActiveState::selectPastedQuests);
     }
 
@@ -48,22 +48,22 @@ public final class TabletActiveState {
         activeTabletRefresh.run();
     }
 
-    public static String activeSelectedGroup() {
-        return activeTabletState == null ? "" : EditorGroupCommandClient.selectedGroupName(activeTabletState);
+    public static String activeSelectedChapter() {
+        return activeTabletState == null ? "" : EditorChapterCommandClient.selectedChapterName(activeTabletState);
     }
 
     public static void syncCanvasStateFromCache(TabletUiState state) {
         if (state == null) {
             return;
         }
-        state.canvas.canvasImagesByGroup.clear();
-        state.canvas.canvasImagesByGroup.putAll(ClientQuestStateFacade.canvasImagesByGroup());
-        state.canvas.canvasTextsByGroup.clear();
-        state.canvas.canvasTextsByGroup.putAll(ClientQuestStateFacade.canvasTextsByGroup());
-        state.canvas.canvasExclusiveChoicesByGroup.clear();
-        state.canvas.canvasExclusiveChoicesByGroup.putAll(ClientQuestStateFacade.canvasExclusiveChoicesByGroup());
-        state.canvas.canvasLayerOrderByGroup.clear();
-        state.canvas.canvasLayerOrderByGroup.putAll(ClientQuestStateFacade.canvasLayerOrderByGroup());
+        state.canvas.canvasImagesByChapter.clear();
+        state.canvas.canvasImagesByChapter.putAll(ClientQuestStateFacade.canvasImagesByChapter());
+        state.canvas.canvasTextsByChapter.clear();
+        state.canvas.canvasTextsByChapter.putAll(ClientQuestStateFacade.canvasTextsByChapter());
+        state.canvas.canvasExclusiveChoicesByChapter.clear();
+        state.canvas.canvasExclusiveChoicesByChapter.putAll(ClientQuestStateFacade.canvasExclusiveChoicesByChapter());
+        state.canvas.canvasLayerOrderByChapter.clear();
+        state.canvas.canvasLayerOrderByChapter.putAll(ClientQuestStateFacade.canvasLayerOrderByChapter());
     }
 
     public static void syncActiveCanvasStateFromCache() {
@@ -90,13 +90,13 @@ public final class TabletActiveState {
             refreshActiveTablet();
             return;
         }
-        String group = payload == null ? "" : payload.getString("group").trim();
+        String group = payload == null ? "" : payload.getString("chapter").trim();
         if (!group.isBlank()) {
-            ClientQuestStateFacade.createGroupLocal(group);
-            activeTabletState.root.selectedGroup = group;
-            activeTabletState.chapterPanel.groupDraft = group;
+            ClientQuestStateFacade.createChapterLocal(group);
+            activeTabletState.root.selectedChapter = group;
+            activeTabletState.chapterPanel.chapterDraft = group;
             activeTabletState.chapterPanel.chapterDraftName = group;
-            activeTabletState.chapterPanel.recentlyCreatedGroups.remove(group);
+            activeTabletState.chapterPanel.recentlyCreatedChapters.remove(group);
             TabletPersistence.persistUiState(activeTabletState);
         }
         activeTabletState.canvas.canvasSelection.questIds().clear();
@@ -141,7 +141,7 @@ public final class TabletActiveState {
             for (String oldId : allocatedIds.getAllKeys()) {
                 oldToNew.put(oldId, allocatedIds.getString(oldId));
             }
-            List<CanvasExclusiveChoice> existingEcs = activeTabletState.canvas.canvasExclusiveChoicesByGroup.get(group);
+            List<CanvasExclusiveChoice> existingEcs = activeTabletState.canvas.canvasExclusiveChoicesByChapter.get(group);
             List<CanvasExclusiveChoice> updatedEcs = new ArrayList<>();
             boolean anyUpdated = false;
             if (existingEcs != null) {
@@ -166,7 +166,7 @@ public final class TabletActiveState {
                 }
             }
             if (anyUpdated) {
-                activeTabletState.canvas.canvasExclusiveChoicesByGroup.put(group, updatedEcs);
+                activeTabletState.canvas.canvasExclusiveChoicesByChapter.put(group, updatedEcs);
             }
             activeTabletState.canvas.canvasSelection.ecIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedEcIds());
             String pendingEc = activeTabletState.clipboard.canvasClipboard.lastPendingPastedEcId();
@@ -186,9 +186,9 @@ public final class TabletActiveState {
         }
 
         activeTabletState.clipboard.canvasClipboard.clearPendingPastedLayers();
-        activeTabletState.chapterPanel.recentlyCreatedGroups.remove(EditorGroupCommandClient.selectedGroupName(activeTabletState));
+        activeTabletState.chapterPanel.recentlyCreatedChapters.remove(EditorChapterCommandClient.selectedChapterName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={} ecs={}",
-                EditorGroupCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
+                EditorChapterCommandClient.selectedChapterName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
         refreshActiveTablet();
     }
 

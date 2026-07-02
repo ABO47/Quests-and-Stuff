@@ -125,7 +125,7 @@ record EntityVariantPickerModel(
             return quest == null ? "" : quest.getString("icon");
         }
         if (parsed.hasAtLeast(2) && parsed.isChapterIcon()) {
-            return ClientQuestStateFacade.groupIcon(parsed.questId());
+            return ClientQuestStateFacade.chapterIcon(parsed.questId());
         }
         if (parsed.hasAtLeast(3) && parsed.isTaskTask()) {
             return QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), true);

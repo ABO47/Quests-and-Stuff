@@ -42,7 +42,7 @@ public final class ClientSyncPacketHandler {
     public static void handleQuestEvent(long sequence, String eventType, String questId, String rewardId) {
         ClientQuestStateFacade.applyQuestEvent(sequence, eventType, questId, rewardId);
         if ("quest_completed".equals(eventType)) {
-            ClientQuestStateFacade.noteQuestCompletedForChapterNotices(questId, ClientSyncUiBridge.activeSelectedGroup());
+            ClientQuestStateFacade.noteQuestCompletedForChapterNotices(questId, ClientSyncUiBridge.activeSelectedChapter());
             QuestCompletionNotificationOverlay.push(questId);
             if (QuestsAndStuffConfig.autoClaimRewardsEnabled() && questId != null && !questId.isBlank()) {
                 ModNetwork.sendToServer(new C2SClaimAllRewardsPacket(""));
@@ -54,7 +54,7 @@ public final class ClientSyncPacketHandler {
 
     public static void handleEditorMutation(long sequence, String action, String questId, CompoundTag questTag) {
         if (SyncKeys.EditorAction.PASTE_SELECT.equals(action)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select group={} ids={}", questTag.getString(SyncKeys.EditorSelection.GROUP), questTag.getList(SyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select group={} ids={}", questTag.getString(SyncKeys.EditorSelection.CHAPTER), questTag.getList(SyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
             ClientSyncUiBridge.selectPastedQuests(questTag);
             return;
         }

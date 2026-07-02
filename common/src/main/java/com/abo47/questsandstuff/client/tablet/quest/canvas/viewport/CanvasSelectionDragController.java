@@ -47,18 +47,18 @@ final class CanvasSelectionDragController {
                 state.canvas.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             }
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        String group = TabletStateQueries.selectedChapterName(state);
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
                 state.canvas.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
             }
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isTextSelected(state, text.id())) {
                 state.canvas.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.dragStartEcLayers.put(ec.id(), ec);
             }
@@ -116,7 +116,7 @@ final class CanvasSelectionDragController {
             populateTransientQuestPositions(dx, dy);
         }
         state.canvas.transientQuestScales.clear();
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
@@ -152,7 +152,7 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String group = TabletStateQueries.selectedChapterName(state);
         return CanvasSmartSnapper.snap(
                 state,
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),

@@ -5,8 +5,8 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.persistence.group.GroupMetadataSnapshot;
-import com.abo47.questsandstuff.quest.persistence.group.GroupMetadataStore;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -29,7 +29,7 @@ public final class QuestDefinitionStore {
     private final Path questsDir;
     private final Path chaptersDir;
     private final Map<String, QuestDefinition> quests = new HashMap<>();
-    private final GroupMetadataStore chapters;
+    private final ChapterMetadataStore chapters;
     private final QuestlineManifestStore manifest;
     private final QuestDefinitionSaveQueue saveQueue;
     private final QuestDefinitionMutations mutations;
@@ -38,7 +38,7 @@ public final class QuestDefinitionStore {
         this.root = root;
         this.questsDir = root.resolve("quests");
         this.chaptersDir = root.resolve("chapters");
-        this.chapters = new GroupMetadataStore(chaptersDir);
+        this.chapters = new ChapterMetadataStore(chaptersDir);
         this.manifest = new QuestlineManifestStore(root);
         this.saveQueue = new QuestDefinitionSaveQueue(questsDir, GSON);
         this.mutations = new QuestDefinitionMutations(questsDir, quests, chapters, saveQueue);
@@ -80,140 +80,140 @@ public final class QuestDefinitionStore {
         return new EditorSnapshot(snapshot(), chapters.snapshot());
     }
 
-    public List<String> groupOrder() {
-        return chapters.groupOrder();
+    public List<String> chapterOrder() {
+        return chapters.chapterOrder();
     }
 
-    public void setGroupOrder(List<String> groups) {
-        chapters.setGroupOrder(groups, mutations.discoverGroups());
+    public void setChapterOrder(List<String> chapters) {
+        this.chapters.setChapterOrder(chapters, mutations.discoverChapters());
     }
 
-    public void renameGroupMetadata(String fromName, String toName) {
-        chapters.renameGroup(fromName, toName, mutations.discoverGroups());
+    public void renameChapterMetadata(String fromName, String toName) {
+        this.chapters.renameChapter(fromName, toName, mutations.discoverChapters());
     }
 
-    public String groupIcon(String group) {
-        return chapters.groupIcon(group);
+    public String chapterIcon(String chapter) {
+        return chapters.chapterIcon(chapter);
     }
 
-    public String groupBackground(String group) {
-        return chapters.groupBackground(group);
+    public String chapterBackground(String chapter) {
+        return chapters.chapterBackground(chapter);
     }
-    public String groupCanvasBackground(String group) {
-        return chapters.groupCanvasBackground(group);
+    public String chapterCanvasBackground(String chapter) {
+        return chapters.chapterCanvasBackground(chapter);
     }
-    public String groupTextAlign(String group) {
-        return chapters.groupTextAlign(group);
+    public String chapterTextAlign(String chapter) {
+        return chapters.chapterTextAlign(chapter);
     }
-    public int groupTextColor(String group) {
-        return chapters.groupTextColor(group);
+    public int chapterTextColor(String chapter) {
+        return chapters.chapterTextColor(chapter);
     }
-    public String groupTextStyle(String group) {
-        return chapters.groupTextStyle(group);
-    }
-
-    public int groupTextSize(String group) {
-        return chapters.groupTextSize(group);
+    public String chapterTextStyle(String chapter) {
+        return chapters.chapterTextStyle(chapter);
     }
 
-    public boolean groupLockUntilUnlocked(String group) {
-        return chapters.groupLockUntilUnlocked(group);
+    public int chapterTextSize(String chapter) {
+        return chapters.chapterTextSize(chapter);
     }
 
-    public boolean groupHideUntilUnlocked(String group) {
-        return chapters.groupHideUntilUnlocked(group);
+    public boolean chapterLockUntilUnlocked(String chapter) {
+        return chapters.chapterLockUntilUnlocked(chapter);
     }
 
-    public Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {
-        return chapters.canvasImagesByGroup();
+    public boolean chapterHideUntilUnlocked(String chapter) {
+        return chapters.chapterHideUntilUnlocked(chapter);
     }
 
-    public Map<String, List<CanvasTextLayer>> canvasTextsByGroup() {
-        return chapters.canvasTextsByGroup();
+    public Map<String, List<CanvasImageLayer>> canvasImagesByChapter() {
+        return chapters.canvasImagesByChapter();
     }
 
-    public Map<String, List<String>> canvasLayerOrderByGroup() {
-        return chapters.canvasLayerOrderByGroup();
+    public Map<String, List<CanvasTextLayer>> canvasTextsByChapter() {
+        return chapters.canvasTextsByChapter();
     }
 
-    public List<CanvasImageLayer> canvasImages(String group) {
-        return chapters.canvasImages(group);
+    public Map<String, List<String>> canvasLayerOrderByChapter() {
+        return chapters.canvasLayerOrderByChapter();
     }
 
-    public List<CanvasTextLayer> canvasTexts(String group) {
-        return chapters.canvasTexts(group);
+    public List<CanvasImageLayer> canvasImages(String chapter) {
+        return chapters.canvasImages(chapter);
     }
 
-    public List<CanvasExclusiveChoice> canvasExclusiveChoices(String group) {
-        return chapters.canvasExclusiveChoices(group);
+    public List<CanvasTextLayer> canvasTexts(String chapter) {
+        return chapters.canvasTexts(chapter);
     }
 
-    public List<String> canvasLayerOrder(String group) {
-        return chapters.canvasLayerOrder(group);
+    public List<CanvasExclusiveChoice> canvasExclusiveChoices(String chapter) {
+        return chapters.canvasExclusiveChoices(chapter);
     }
 
-    public void setGroupIcon(String group, String icon) {
-        chapters.setGroupIcon(group, icon);
+    public List<String> canvasLayerOrder(String chapter) {
+        return chapters.canvasLayerOrder(chapter);
     }
 
-    public void setGroupBackground(String group, String background) {
-        chapters.setGroupBackground(group, background);
-    }
-    public void setGroupCanvasBackground(String group, String background) {
-        chapters.setGroupCanvasBackground(group, background);
-    }
-    public void setGroupTextAlign(String group, String align) {
-        chapters.setGroupTextAlign(group, align);
-    }
-    public void setGroupTextColor(String group, int color) {
-        chapters.setGroupTextColor(group, color);
-    }
-    public void setGroupTextStyle(String group, String style) {
-        chapters.setGroupTextStyle(group, style);
+    public void setChapterIcon(String chapter, String icon) {
+        chapters.setChapterIcon(chapter, icon);
     }
 
-    public void setGroupTextSize(String group, int size) {
-        chapters.setGroupTextSize(group, size);
+    public void setChapterBackground(String chapter, String background) {
+        chapters.setChapterBackground(chapter, background);
+    }
+    public void setChapterCanvasBackground(String chapter, String background) {
+        chapters.setChapterCanvasBackground(chapter, background);
+    }
+    public void setChapterTextAlign(String chapter, String align) {
+        chapters.setChapterTextAlign(chapter, align);
+    }
+    public void setChapterTextColor(String chapter, int color) {
+        chapters.setChapterTextColor(chapter, color);
+    }
+    public void setChapterTextStyle(String chapter, String style) {
+        chapters.setChapterTextStyle(chapter, style);
     }
 
-    public void setGroupLockUntilUnlocked(String group, boolean lockUntilUnlocked) {
-        chapters.setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+    public void setChapterTextSize(String chapter, int size) {
+        chapters.setChapterTextSize(chapter, size);
     }
 
-    public void setGroupHideUntilUnlocked(String group, boolean hideUntilUnlocked) {
-        chapters.setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+    public void setChapterLockUntilUnlocked(String chapter, boolean lockUntilUnlocked) {
+        chapters.setChapterLockUntilUnlocked(chapter, lockUntilUnlocked);
     }
 
-    public void putCanvasImage(String group, CanvasImageLayer image) {
-        chapters.putCanvasImage(group, image);
+    public void setChapterHideUntilUnlocked(String chapter, boolean hideUntilUnlocked) {
+        chapters.setChapterHideUntilUnlocked(chapter, hideUntilUnlocked);
     }
 
-    public boolean removeCanvasImage(String group, String imageId) {
-        return chapters.removeCanvasImage(group, imageId);
+    public void putCanvasImage(String chapter, CanvasImageLayer image) {
+        chapters.putCanvasImage(chapter, image);
     }
 
-    public void putCanvasText(String group, CanvasTextLayer text) {
-        chapters.putCanvasText(group, text);
+    public boolean removeCanvasImage(String chapter, String imageId) {
+        return chapters.removeCanvasImage(chapter, imageId);
     }
 
-    public boolean removeCanvasText(String group, String textId) {
-        return chapters.removeCanvasText(group, textId);
+    public void putCanvasText(String chapter, CanvasTextLayer text) {
+        chapters.putCanvasText(chapter, text);
     }
 
-    public void putCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
-        chapters.putCanvasExclusiveChoice(group, ec);
+    public boolean removeCanvasText(String chapter, String textId) {
+        return chapters.removeCanvasText(chapter, textId);
     }
 
-    public boolean removeCanvasExclusiveChoice(String group, String ecId) {
-        return chapters.removeCanvasExclusiveChoice(group, ecId);
+    public void putCanvasExclusiveChoice(String chapter, CanvasExclusiveChoice ec) {
+        chapters.putCanvasExclusiveChoice(chapter, ec);
     }
 
-    public void setCanvasLayerOrder(String group, List<String> order) {
-        chapters.setCanvasLayerOrder(group, order);
+    public boolean removeCanvasExclusiveChoice(String chapter, String ecId) {
+        return chapters.removeCanvasExclusiveChoice(chapter, ecId);
     }
 
-    public void putCanvasLayers(String group, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> order) {
-        chapters.putCanvasLayers(group, images, texts, order);
+    public void setCanvasLayerOrder(String chapter, List<String> order) {
+        chapters.setCanvasLayerOrder(chapter, order);
+    }
+
+    public void putCanvasLayers(String chapter, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<String> order) {
+        chapters.putCanvasLayers(chapter, images, texts, order);
     }
 
     public void replaceAll(Map<String, QuestDefinition> replacement) {
@@ -226,7 +226,7 @@ public final class QuestDefinitionStore {
         }
         replaceAll(replacement.quests());
         chapters.restore(replacement.chapters());
-        chapters.reconcile(mutations.discoverGroups());
+        chapters.reconcile(mutations.discoverChapters());
         chapters.save();
     }
 
@@ -238,7 +238,7 @@ public final class QuestDefinitionStore {
 
             quests.clear();
             quests.putAll(loaded);
-            chapters.load(mutations.discoverGroups());
+            chapters.load(mutations.discoverChapters());
             manifest.ensureExists();
 
             QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
@@ -282,7 +282,7 @@ public final class QuestDefinitionStore {
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
     }
 
-    public record EditorSnapshot(Map<String, QuestDefinition> quests, GroupMetadataSnapshot chapters) {
+    public record EditorSnapshot(Map<String, QuestDefinition> quests, ChapterMetadataSnapshot chapters) {
     }
 
 }

@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasTextStyleMenu {
     private CanvasTextStyleMenu() {
@@ -29,7 +29,7 @@ public final class CanvasTextStyleMenu {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return;
         }
-        String group = selectedGroupName(state);
+        String group = selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             TextStyleSession.closeMainCanvas(state);

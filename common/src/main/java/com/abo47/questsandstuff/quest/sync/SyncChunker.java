@@ -24,8 +24,8 @@ final class SyncChunker {
         for (int i = 0; i < chunkIds.size(); i++) {
             CompoundTag payload = new CompoundTag();
             payload.putInt(SyncKeys.SCHEMA, QuestDefinition.CURRENT_SCHEMA);
-            payload.put(SyncKeys.GROUPS, payloads.groupsTag(syncedQuestIds, editorGraphVisible));
-            payload.put(SyncKeys.GROUP_PROPS, payloads.groupPropsTag(syncedQuestIds, editorGraphVisible));
+            payload.put(SyncKeys.GROUPS, payloads.chaptersTag(syncedQuestIds, editorGraphVisible));
+            payload.put(SyncKeys.CHAPTER_PROPS, payloads.chapterPropsTag(syncedQuestIds, editorGraphVisible));
             payload.put(SyncKeys.QUESTS, payloads.questPayload(playerState, chunkIds.get(i)));
             chunks.add(new SyncChunk(i, chunkIds.size(), payload));
         }
@@ -36,7 +36,7 @@ final class SyncChunker {
             PlayerQuestState playerState,
             Set<String> changedQuestIds,
             Set<String> removedQuestIds,
-            Set<String> changedGroups,
+            Set<String> changedChapters,
             boolean includeMetadata
     ) {
         List<Set<String>> chunkIds = partitionQuestIds(changedQuestIds);
@@ -47,8 +47,8 @@ final class SyncChunker {
 
             Set<String> changedIds = i < chunkIds.size() ? chunkIds.get(i) : Set.of();
             if (i == 0 && includeMetadata) {
-                payload.put(SyncKeys.GROUPS, payloads.groupsTag());
-                payload.put(SyncKeys.GROUP_PROPS, payloads.groupPropsTagForGroups(changedGroups));
+                payload.put(SyncKeys.GROUPS, payloads.chaptersTag());
+                payload.put(SyncKeys.CHAPTER_PROPS, payloads.chapterPropsTagForChapters(changedChapters));
             }
             payload.put(SyncKeys.CHANGED, payloads.questPayload(playerState, changedIds));
 

@@ -4,9 +4,9 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanel;
-import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanelInteractionWidget;
-import com.abo47.questsandstuff.client.tablet.quest.group.GroupSplitterWidget;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanelInteractionWidget;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsLayerWidget;
@@ -235,8 +235,8 @@ public final class QuestAppComposer {
         };
         refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
-            TabletUiPerfProfiler.profile("ui.rebuildChapterList", () -> GroupPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
-            TabletUiPerfProfiler.profile("ui.rebuildChapterMenu", () -> GroupPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
+            TabletUiPerfProfiler.profile("ui.rebuildChapterList", () -> ChapterPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
+            TabletUiPerfProfiler.profile("ui.rebuildChapterMenu", () -> ChapterPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
         };
         root.setRefresher(refresh[0]);
         canvasViewport.setRefresher(refresh[0]);
@@ -248,7 +248,7 @@ public final class QuestAppComposer {
         root.setCanvasViewport(canvasViewport);
 
         root.setUndoRedoActions(TabletBootstrap.undoAction(state, player), TabletBootstrap.redoAction(state, player));
-        chapterPanel = new GroupPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
+        chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;
 
@@ -258,7 +258,7 @@ public final class QuestAppComposer {
         canvasPanel.addWidget(viewportBg);
         headers.addToCanvas(canvasPanel);
 
-        WidgetGroup splitter = new GroupSplitterWidget(state, refresh[0], SplitPanelLayout.splitterX(CHAPTER_X, initialChapterW));
+        WidgetGroup splitter = new ChapterSplitterWidget(state, refresh[0], SplitPanelLayout.splitterX(CHAPTER_X, initialChapterW));
         splitterRef[0] = splitter;
 
         root.addWidgets(

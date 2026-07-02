@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncChunkAccumulator;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -44,7 +44,7 @@ class SyncPayloadBuilderTest {
                         "Title",
                         "Subtitle",
                         java.util.List.of(),
-                        Map.of("main", GroupDef.DEFAULT),
+                        Map.of("main", ChapterDef.DEFAULT),
                         QuestDisplay.DEFAULT_ICON,
                         QuestDisplay.DEFAULT_ICON_BACKGROUND,
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,
@@ -84,7 +84,7 @@ class SyncPayloadBuilderTest {
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 "quest/keyed",
-                QuestDisplay.forNewQuest("Keyed", Map.of("main", new GroupDef(true, 12, 34, 1.25f))),
+                QuestDisplay.forNewQuest("Keyed", Map.of("main", new ChapterDef(true, 12, 34, 1.25f))),
                 QuestSettings.DEFAULT,
                 Set.of("quest/parent"),
                 Map.of("quest/parent", 0x112233),
@@ -128,7 +128,7 @@ class SyncPayloadBuilderTest {
         assertTrue(payload.contains(SyncKeys.Quest.CONNECTION_COLORS, Tag.TAG_COMPOUND));
         assertTrue(payload.contains(SyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND));
         assertTrue(payload.contains(SyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST));
-        assertTrue(payload.contains(SyncKeys.Quest.GROUPS, Tag.TAG_COMPOUND));
+        assertTrue(payload.contains(SyncKeys.Quest.CHAPTERS, Tag.TAG_COMPOUND));
 
         assertEquals("task/check", payload.getList(SyncKeys.Quest.TASKS_ORDER, Tag.TAG_STRING).getString(0));
         CompoundTag task = payload.getCompound(SyncKeys.Quest.TASKS).getCompound("task/check");
@@ -145,23 +145,23 @@ class SyncPayloadBuilderTest {
         assertTrue(reward.contains(SyncKeys.Task.SELECTABLE, Tag.TAG_BYTE));
         assertTrue(reward.contains(SyncKeys.Task.MASS_CLAIMABLE, Tag.TAG_BYTE));
 
-        CompoundTag groupView = payload.getCompound(SyncKeys.Quest.GROUPS).getCompound("main");
-        assertTrue(groupView.getBoolean(SyncKeys.ChapterView.VISIBLE));
-        assertEquals(12, groupView.getInt(SyncKeys.ChapterView.X));
-        assertEquals(34, groupView.getInt(SyncKeys.ChapterView.Y));
-        assertEquals(1.25f, groupView.getFloat(SyncKeys.ChapterView.SCALE), 0.0001f);
+        CompoundTag chapterView = payload.getCompound(SyncKeys.Quest.CHAPTERS).getCompound("main");
+        assertTrue(chapterView.getBoolean(SyncKeys.ChapterView.VISIBLE));
+        assertEquals(12, chapterView.getInt(SyncKeys.ChapterView.X));
+        assertEquals(34, chapterView.getInt(SyncKeys.ChapterView.Y));
+        assertEquals(1.25f, chapterView.getFloat(SyncKeys.ChapterView.SCALE), 0.0001f);
     }
 
     @Test
     void chunkAccumulatorJoinsPayloadsThroughSharedSyncKeys() {
         ClientSyncChunkAccumulator full = new ClientSyncChunkAccumulator(2);
         CompoundTag fullPartA = new CompoundTag();
-        ListTag groups = new ListTag();
-        groups.add(StringTag.valueOf("main"));
-        fullPartA.put(SyncKeys.GROUPS, groups);
-        CompoundTag groupProps = new CompoundTag();
-        groupProps.put("main", new CompoundTag());
-        fullPartA.put(SyncKeys.GROUP_PROPS, groupProps);
+        ListTag chapters = new ListTag();
+        chapters.add(StringTag.valueOf("main"));
+        fullPartA.put(SyncKeys.CHAPTERS, chapters);
+        CompoundTag chapterProps = new CompoundTag();
+        chapterProps.put("main", new CompoundTag());
+        fullPartA.put(SyncKeys.CHAPTER_PROPS, chapterProps);
         fullPartA.put(SyncKeys.QUESTS, keyedCompound("quest/a"));
 
         CompoundTag fullPartB = new CompoundTag();
@@ -171,15 +171,15 @@ class SyncPayloadBuilderTest {
 
         CompoundTag joinedFull = full.joinFullPayload();
         assertEquals(QuestDefinition.CURRENT_SCHEMA, joinedFull.getInt(SyncKeys.SCHEMA));
-        assertTrue(containsString(joinedFull.getList(SyncKeys.GROUPS, Tag.TAG_STRING), "main"));
-        assertTrue(joinedFull.getCompound(SyncKeys.GROUP_PROPS).contains("main", Tag.TAG_COMPOUND));
+        assertTrue(containsString(joinedFull.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING), "main"));
+        assertTrue(joinedFull.getCompound(SyncKeys.CHAPTER_PROPS).contains("main", Tag.TAG_COMPOUND));
         assertTrue(joinedFull.getCompound(SyncKeys.QUESTS).contains("quest/a", Tag.TAG_COMPOUND));
         assertTrue(joinedFull.getCompound(SyncKeys.QUESTS).contains("quest/b", Tag.TAG_COMPOUND));
 
         ClientSyncChunkAccumulator delta = new ClientSyncChunkAccumulator(2);
         CompoundTag deltaPartA = new CompoundTag();
-        deltaPartA.put(SyncKeys.GROUPS, groups.copy());
-        deltaPartA.put(SyncKeys.GROUP_PROPS, groupProps.copy());
+        deltaPartA.put(SyncKeys.CHAPTERS, chapters.copy());
+        deltaPartA.put(SyncKeys.CHAPTER_PROPS, chapterProps.copy());
         deltaPartA.put(SyncKeys.CHANGED, keyedCompound("quest/a"));
         deltaPartA.put(SyncKeys.REMOVED, removedCompound("quest/old"));
         CompoundTag deltaPartB = new CompoundTag();
@@ -189,8 +189,8 @@ class SyncPayloadBuilderTest {
         delta.add(1, deltaPartB);
 
         CompoundTag joinedDelta = delta.joinDeltaPayload();
-        assertTrue(containsString(joinedDelta.getList(SyncKeys.GROUPS, Tag.TAG_STRING), "main"));
-        assertTrue(joinedDelta.getCompound(SyncKeys.GROUP_PROPS).contains("main", Tag.TAG_COMPOUND));
+        assertTrue(containsString(joinedDelta.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING), "main"));
+        assertTrue(joinedDelta.getCompound(SyncKeys.CHAPTER_PROPS).contains("main", Tag.TAG_COMPOUND));
         assertTrue(joinedDelta.getCompound(SyncKeys.CHANGED).contains("quest/a", Tag.TAG_COMPOUND));
         assertTrue(joinedDelta.getCompound(SyncKeys.CHANGED).contains("quest/b", Tag.TAG_COMPOUND));
         assertTrue(joinedDelta.getCompound(SyncKeys.REMOVED).getBoolean("quest/old"));
@@ -210,18 +210,18 @@ class SyncPayloadBuilderTest {
         QuestDefinitionStore store = new QuestDefinitionStore(root);
         store.upsert(quest("quest/locked", "locked_chapter"));
         store.upsert(quest("quest/open", "open_chapter"));
-        store.setGroupLockUntilUnlocked("locked_chapter", true);
+        store.setChapterLockUntilUnlocked("locked_chapter", true);
 
         SyncPayloadBuilder builder = new SyncPayloadBuilder(store);
-        ListTag lockedGroups = builder.groupsTag(Set.of("quest/open"), false);
-        CompoundTag lockedProps = builder.groupPropsTag(Set.of("quest/open"), false);
-        assertTrue(containsString(lockedGroups, "locked_chapter"));
-        assertTrue(lockedProps.getCompound("locked_chapter").getBoolean(SyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED));
+        ListTag lockedChapters = builder.chaptersTag(Set.of("quest/open"), false);
+        CompoundTag lockedChapterProps = builder.chapterPropsTag(Set.of("quest/open"), false);
+        assertTrue(containsString(lockedChapters, "locked_chapter"));
+        assertTrue(lockedChapterProps.getCompound("locked_chapter").getBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED));
 
-        ListTag visibleGroups = builder.groupsTag(Set.of("quest/open", "quest/locked"), false);
-        CompoundTag visibleProps = builder.groupPropsTag(Set.of("quest/open", "quest/locked"), false);
-        assertTrue(containsString(visibleGroups, "locked_chapter"));
-        assertTrue(visibleProps.getCompound("locked_chapter").getBoolean(SyncKeys.GroupProps.LOCK_UNTIL_UNLOCKED));
+        ListTag visibleChapters = builder.chaptersTag(Set.of("quest/open", "quest/locked"), false);
+        CompoundTag visibleChapterProps = builder.chapterPropsTag(Set.of("quest/open", "quest/locked"), false);
+        assertTrue(containsString(visibleChapters, "locked_chapter"));
+        assertTrue(visibleChapterProps.getCompound("locked_chapter").getBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED));
     }
 
     @Test
@@ -236,7 +236,7 @@ class SyncPayloadBuilderTest {
         CompoundTag server = new SyncPayloadBuilder(new QuestDefinitionStore(root)).editorQuestPayload(definition, playerState);
 
         assertDefaultSnapshotFields(server, client);
-        assertGroupView(client, "main", 42, 77, 1.0f);
+        assertChapterView(client, "main", 42, 77, 1.0f);
         assertTrue(client.getCompound(SyncKeys.Quest.TASKS).isEmpty());
         assertTrue(client.getList(SyncKeys.Quest.TASKS_ORDER, Tag.TAG_STRING).isEmpty());
         assertTrue(client.getCompound(SyncKeys.Quest.REWARDS).isEmpty());
@@ -268,7 +268,7 @@ class SyncPayloadBuilderTest {
 
         CompoundTag copy = ClientQuestStateFacade.quest("quest/copy");
         assertDisplayDefaultsEqual(ClientQuestStateFacade.quest("quest/source"), copy);
-        assertGroupView(copy, "copied", 100, 120, 1.5f);
+        assertChapterView(copy, "copied", 100, 120, 1.5f);
         assertFalse(copy.getBoolean(SyncKeys.Quest.COMPLETED));
         assertFalse(copy.getBoolean(SyncKeys.Quest.UNLOCKED));
         assertFalse(copy.getBoolean(SyncKeys.Quest.CLAIMED));
@@ -316,22 +316,22 @@ class SyncPayloadBuilderTest {
         assertEquals(source.display().visualHidden(), copy.display().visualHidden());
         assertEquals(source.display().questBackground(), copy.display().questBackground());
         assertEquals(source.display().questBackgroundGrayscale(), copy.display().questBackgroundGrayscale());
-        assertEquals(Set.of("copied"), copy.display().groups().keySet());
-        GroupDef copiedView = copy.display().groups().get("copied");
+        assertEquals(Set.of("copied"), copy.display().chapters().keySet());
+        ChapterDef copiedView = copy.display().chapters().get("copied");
         assertEquals(30, copiedView.x());
         assertEquals(40, copiedView.y());
         assertEquals(1.25f, copiedView.scale(), 0.0001f);
     }
 
-    private static QuestDefinition quest(String id, String group) {
-        return quest(id, group, 0, 0, 1.0f, id);
+    private static QuestDefinition quest(String id, String chapter) {
+        return quest(id, chapter, 0, 0, 1.0f, id);
     }
 
-    private static QuestDefinition quest(String id, String group, int x, int y, float scale, String title) {
+    private static QuestDefinition quest(String id, String chapter, int x, int y, float scale, String title) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(title, Map.of(group, new GroupDef(true, x, y, scale))),
+                QuestDisplay.forNewQuest(title, Map.of(chapter, new ChapterDef(true, x, y, scale))),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),
@@ -400,10 +400,10 @@ class SyncPayloadBuilderTest {
         assertEquals(expected.getBoolean(SyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE), actual.getBoolean(SyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE));
     }
 
-    private static void assertGroupView(CompoundTag quest, String group, int x, int y, float scale) {
-        CompoundTag groups = quest.getCompound(SyncKeys.Quest.GROUPS);
-        assertEquals(Set.of(group), groups.getAllKeys());
-        CompoundTag view = groups.getCompound(group);
+    private static void assertChapterView(CompoundTag quest, String chapter, int x, int y, float scale) {
+        CompoundTag chapters = quest.getCompound(SyncKeys.Quest.CHAPTERS);
+        assertEquals(Set.of(chapter), chapters.getAllKeys());
+        CompoundTag view = chapters.getCompound(chapter);
         assertTrue(view.getBoolean(SyncKeys.ChapterView.VISIBLE));
         assertEquals(x, view.getInt(SyncKeys.ChapterView.X));
         assertEquals(y, view.getInt(SyncKeys.ChapterView.Y));

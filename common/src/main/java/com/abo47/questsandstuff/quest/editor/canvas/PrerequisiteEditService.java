@@ -207,7 +207,7 @@ public final class PrerequisiteEditService {
 
     public void connectToNext(ServerPlayer player) {
         EditorSessionService.EditorSession session = owner.session(player);
-        List<String> questIds = owner.questIdsInGroup(session.currentGroup);
+        List<String> questIds = owner.questIdsInChapter(session.currentChapter);
         if (questIds.size() < 2) {
             return;
         }
@@ -236,7 +236,7 @@ public final class PrerequisiteEditService {
 
     public void disconnectFromNext(ServerPlayer player) {
         EditorSessionService.EditorSession session = owner.session(player);
-        List<String> questIds = owner.questIdsInGroup(session.currentGroup);
+        List<String> questIds = owner.questIdsInChapter(session.currentChapter);
         if (questIds.size() < 2) {
             return;
         }

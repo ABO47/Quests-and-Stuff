@@ -27,20 +27,20 @@ public final class EditorCanvasCommandClient {
         if (positions == null || positions.isEmpty()) {
             return;
         }
-        String groupName = EditorGroupCommandClient.selectedGroupName(state);
-        if (groupName.isBlank()) {
+        String chapterName = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapterName.isBlank()) {
             return;
         }
         Map<String, int[]> moves = new HashMap<>();
         for (Map.Entry<String, CanvasPoint> entry : positions.entrySet()) {
-            ClientQuestStateFacade.setQuestPositionInGroupLocal(entry.getKey(), groupName, entry.getValue().x, entry.getValue().y);
+            ClientQuestStateFacade.setQuestPositionInChapterLocal(entry.getKey(), chapterName, entry.getValue().x, entry.getValue().y);
             moves.put(entry.getKey(), new int[]{entry.getValue().x, entry.getValue().y});
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).moveQuestsInGroup(serverPlayer, groupName, moves),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).moveQuestsInChapter(serverPlayer, chapterName, moves),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.moveMany(groupName, moves);
+                    CompoundTag payload = EditorCommandPayloads.moveMany(chapterName, moves);
                     EditorCommandSender.send(EditorCommandType.MOVE_MANY, payload);
                 });
     }
@@ -49,8 +49,8 @@ public final class EditorCanvasCommandClient {
         if (scales == null || scales.isEmpty()) {
             return;
         }
-        String groupName = EditorGroupCommandClient.selectedGroupName(state);
-        if (groupName.isBlank()) {
+        String chapterName = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapterName.isBlank()) {
             return;
         }
         Map<String, Float> normalized = new HashMap<>();
@@ -62,7 +62,7 @@ public final class EditorCanvasCommandClient {
             }
             float scale = Math.max(0.5f, rawScale);
             normalized.put(questId, scale);
-            ClientQuestStateFacade.setQuestScaleInGroupLocal(questId, groupName, scale);
+            ClientQuestStateFacade.setQuestScaleInChapterLocal(questId, chapterName, scale);
         }
         if (normalized.isEmpty()) {
             return;
@@ -70,20 +70,20 @@ public final class EditorCanvasCommandClient {
 
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).scaleQuestsInGroup(serverPlayer, groupName, normalized),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).scaleQuestsInChapter(serverPlayer, chapterName, normalized),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.scaleMany(groupName, normalized);
+                    CompoundTag payload = EditorCommandPayloads.scaleMany(chapterName, normalized);
                     EditorCommandSender.send(EditorCommandType.SCALE_MANY, payload);
                 });
     }
 
-    public static void runCanvasCopyAction(Player player, String groupName, Set<String> questIds) {
+    public static void runCanvasCopyAction(Player player, String chapterName, Set<String> questIds) {
         if (questIds == null || questIds.isEmpty()) {
             return;
         }
-        String group = groupName == null ? "" : groupName.trim();
+        String chapter = chapterName == null ? "" : chapterName.trim();
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy request group={} ids={} integratedServer={}",
-                group, questIds, IntegratedServerActions.canRunLocally(player));
+                chapter, questIds, IntegratedServerActions.canRunLocally(player));
         Set<String> normalizedQuestIds = new HashSet<>();
         for (String questId : questIds) {
             String normalized = questId == null ? "" : questId.trim();
@@ -96,41 +96,41 @@ public final class EditorCanvasCommandClient {
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, group, normalizedQuestIds),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, chapter, normalizedQuestIds),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.copyMany(group, normalizedQuestIds);
+                    CompoundTag payload = EditorCommandPayloads.copyMany(chapter, normalizedQuestIds);
                     EditorCommandSender.send(EditorCommandType.COPY_MANY, payload);
                 });
     }
 
-    public static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
-        String group = groupName == null ? "" : groupName.trim();
-        if (group.isBlank()) {
+    public static void runCanvasPasteClipboardAction(Player player, String chapterName, int x, int y) {
+        String chapter = chapterName == null ? "" : chapterName.trim();
+        if (chapter.isBlank()) {
             return;
         }
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste request group={} anchor={},{} integratedServer={}",
-                group, x, y, IntegratedServerActions.canRunLocally(player));
+                chapter, x, y, IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteClipboardInGroup(serverPlayer, group, x, y),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteClipboardInChapter(serverPlayer, chapter, x, y),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.pasteClipboard(group, x, y);
+                    CompoundTag payload = EditorCommandPayloads.pasteClipboard(chapter, x, y);
                     EditorCommandSender.send(EditorCommandType.PASTE_CLIPBOARD, payload);
                 });
     }
 
     public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
-        String group = EditorGroupCommandClient.selectedGroupName(state);
-        if (group.isBlank() || blueprint == null || blueprint.isEmpty()) {
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapter.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
         }
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request group={} anchor={},{} entries={} integratedServer={}",
-                group, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
+                chapter, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteBlueprintInGroup(serverPlayer, group, x, y, blueprint),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteBlueprintInChapter(serverPlayer, chapter, x, y, blueprint),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.pasteBlueprint(group, x, y, blueprint);
+                    CompoundTag payload = EditorCommandPayloads.pasteBlueprint(chapter, x, y, blueprint);
                     EditorCommandSender.send(EditorCommandType.PASTE_BLUEPRINT, payload);
                 });
     }
@@ -212,9 +212,9 @@ public final class EditorCanvasCommandClient {
                 });
     }
 
-    private static String resolveEcId(TabletUiState state, String group, String idA, String idB) {
-        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idA) != null) return idA;
-        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idB) != null) return idB;
+    private static String resolveEcId(TabletUiState state, String chapter, String idA, String idB) {
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idA) != null) return idA;
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idB) != null) return idB;
         return "";
     }
 
@@ -224,40 +224,40 @@ public final class EditorCanvasCommandClient {
 
     @FunctionalInterface
     private interface EcConnectionAction {
-        void run(String group, String ecId, String questId);
+        void run(String chapter, String ecId, String questId);
     }
 
     private static void runEcConnectionAction(TabletUiState state, String sourceId, String targetId, EcConnectionAction action) {
-        String group = EditorGroupCommandClient.selectedGroupName(state);
-        if (group.isBlank()) return;
-        String ecId = resolveEcId(state, group, sourceId, targetId);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapter.isBlank()) return;
+        String ecId = resolveEcId(state, chapter, sourceId, targetId);
         if (ecId.isBlank()) return;
         String questId = resolveQuestId(ecId, sourceId, targetId);
-        action.run(group, ecId, questId);
+        action.run(chapter, ecId, questId);
     }
 
     public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color));
     }
 
     public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionMode(state, chapter, ecId, questId, direct));
     }
 
     public static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionHidden(state, group, ecId, questId, hidden));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionHidden(state, chapter, ecId, questId, hidden));
     }
 
     public static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTexture(state, group, ecId, questId, texture));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionTexture(state, chapter, ecId, questId, texture));
     }
 
     public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTextureSpacing(state, group, ecId, questId, spacing));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionTextureSpacing(state, chapter, ecId, questId, spacing));
     }
 }

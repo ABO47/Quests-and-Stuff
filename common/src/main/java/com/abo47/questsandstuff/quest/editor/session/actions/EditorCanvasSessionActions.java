@@ -21,63 +21,63 @@ public final class EditorCanvasSessionActions {
         this.clipboardEdits = clipboardEdits;
     }
 
-    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
-        canvasEdits.putCanvasExclusiveChoice(player, groupName, ec);
+    public void putCanvasExclusiveChoice(ServerPlayer player, String chapterName, CanvasExclusiveChoice ec) {
+        canvasEdits.putCanvasExclusiveChoice(player, chapterName, ec);
     }
 
-    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
-        canvasEdits.putCanvasExclusiveChoices(player, groupName, ecs);
+    public void putCanvasExclusiveChoices(ServerPlayer player, String chapterName, List<CanvasExclusiveChoice> ecs) {
+        canvasEdits.putCanvasExclusiveChoices(player, chapterName, ecs);
     }
 
-    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
-        canvasEdits.removeCanvasExclusiveChoice(player, groupName, ecId);
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String ecId) {
+        canvasEdits.removeCanvasExclusiveChoice(player, chapterName, ecId);
     }
 
-    public void ecConnectionHidden(ServerPlayer player, String groupName, String sourceId, String targetId, boolean hidden) {
-        canvasEdits.ecConnectionHidden(player, groupName, sourceId, targetId, hidden);
+    public void ecConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
+        canvasEdits.ecConnectionHidden(player, chapterName, sourceId, targetId, hidden);
     }
 
-    public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
-        canvasEdits.putCanvasImage(player, groupName, image);
+    public void putCanvasImage(ServerPlayer player, String chapterName, CanvasImageLayer image) {
+        canvasEdits.putCanvasImage(player, chapterName, image);
     }
 
-    public void removeCanvasImage(ServerPlayer player, String groupName, String imageId) {
-        canvasEdits.removeCanvasImage(player, groupName, imageId);
+    public void removeCanvasImage(ServerPlayer player, String chapterName, String imageId) {
+        canvasEdits.removeCanvasImage(player, chapterName, imageId);
     }
 
-    public void putCanvasText(ServerPlayer player, String groupName, CanvasTextLayer text) {
-        canvasEdits.putCanvasText(player, groupName, text);
+    public void putCanvasText(ServerPlayer player, String chapterName, CanvasTextLayer text) {
+        canvasEdits.putCanvasText(player, chapterName, text);
     }
 
-    public void removeCanvasText(ServerPlayer player, String groupName, String textId) {
-        canvasEdits.removeCanvasText(player, groupName, textId);
+    public void removeCanvasText(ServerPlayer player, String chapterName, String textId) {
+        canvasEdits.removeCanvasText(player, chapterName, textId);
     }
 
-    public void setCanvasLayerOrder(ServerPlayer player, String groupName, List<String> layerOrder) {
-        canvasEdits.setCanvasLayerOrder(player, groupName, layerOrder);
+    public void setCanvasLayerOrder(ServerPlayer player, String chapterName, List<String> layerOrder) {
+        canvasEdits.setCanvasLayerOrder(player, chapterName, layerOrder);
     }
 
-    public void moveQuestsInGroup(ServerPlayer player, String groupName, Map<String, int[]> positions) {
-        canvasEdits.moveQuestsInGroup(player, groupName, positions);
+    public void moveQuestsInChapter(ServerPlayer player, String chapterName, Map<String, int[]> positions) {
+        canvasEdits.moveQuestsInChapter(player, chapterName, positions);
     }
 
-    public void scaleQuestsInGroup(ServerPlayer player, String groupName, Map<String, Float> scales) {
-        canvasEdits.scaleQuestsInGroup(player, groupName, scales);
+    public void scaleQuestsInChapter(ServerPlayer player, String chapterName, Map<String, Float> scales) {
+        canvasEdits.scaleQuestsInChapter(player, chapterName, scales);
     }
 
     public void copyQuestsToClipboard(ServerPlayer player, Set<String> questIds) {
         clipboardEdits.copyQuestsToClipboard(player, questIds);
     }
 
-    public void copyQuestsToClipboard(ServerPlayer player, String groupName, Set<String> questIds) {
-        clipboardEdits.copyQuestsToClipboard(player, groupName, questIds);
+    public void copyQuestsToClipboard(ServerPlayer player, String chapterName, Set<String> questIds) {
+        clipboardEdits.copyQuestsToClipboard(player, chapterName, questIds);
     }
 
-    public void pasteClipboardInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY) {
-        clipboardEdits.pasteClipboardInGroup(player, groupName, anchorX, anchorY);
+    public void pasteClipboardInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY) {
+        clipboardEdits.pasteClipboardInChapter(player, chapterName, anchorX, anchorY);
     }
 
-    public void pasteBlueprintInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
-        clipboardEdits.pasteBlueprintInGroup(player, groupName, anchorX, anchorY, blueprint);
+    public void pasteBlueprintInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
+        clipboardEdits.pasteBlueprintInChapter(player, chapterName, anchorX, anchorY, blueprint);
     }
 }

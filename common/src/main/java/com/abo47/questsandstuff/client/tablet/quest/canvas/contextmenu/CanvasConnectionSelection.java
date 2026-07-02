@@ -25,7 +25,7 @@ public final class CanvasConnectionSelection {
         for (Map.Entry<String, CompoundTag> entry : ClientQuestStateFacade.questEntries()) {
             String questId = entry.getKey();
             CompoundTag quest = entry.getValue();
-            if (quest == null || !quest.getCompound("groups").contains(group)) {
+            if (quest == null || !quest.getCompound("chapters").contains(group)) {
                 continue;
             }
             ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
@@ -36,7 +36,7 @@ public final class CanvasConnectionSelection {
                 }
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             for (String connectedQuestId : ec.connectionQuestIds()) {
                 if (selected.contains(connectedQuestId)) {
                     edges.add(new CanvasContextMenuController.EdgeRef(ec.id(), connectedQuestId));

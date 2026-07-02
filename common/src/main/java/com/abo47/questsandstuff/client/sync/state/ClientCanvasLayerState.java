@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.Map;
 
 public final class ClientCanvasLayerState {
-    private static final Map<String, List<CanvasExclusiveChoice>> GROUP_CANVAS_EXCLUSIVE_CHOICES = new HashMap<>();
-    private static final Map<String, List<CanvasImageLayer>> GROUP_CANVAS_IMAGES = new HashMap<>();
-    private static final Map<String, List<CanvasTextLayer>> GROUP_CANVAS_TEXTS = new HashMap<>();
-    private static final Map<String, List<String>> GROUP_CANVAS_LAYER_ORDER = new HashMap<>();
+    private static final Map<String, List<CanvasExclusiveChoice>> CHAPTER_CANVAS_EXCLUSIVE_CHOICES = new HashMap<>();
+    private static final Map<String, List<CanvasImageLayer>> CHAPTER_CANVAS_IMAGES = new HashMap<>();
+    private static final Map<String, List<CanvasTextLayer>> CHAPTER_CANVAS_TEXTS = new HashMap<>();
+    private static final Map<String, List<String>> CHAPTER_CANVAS_LAYER_ORDER = new HashMap<>();
 
     private ClientCanvasLayerState() {
     }
 
     public static void reset() {
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.clear();
-        GROUP_CANVAS_IMAGES.clear();
-        GROUP_CANVAS_TEXTS.clear();
-        GROUP_CANVAS_LAYER_ORDER.clear();
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.clear();
+        CHAPTER_CANVAS_IMAGES.clear();
+        CHAPTER_CANVAS_TEXTS.clear();
+        CHAPTER_CANVAS_LAYER_ORDER.clear();
     }
 
     public static void loadFromFullPayload(CompoundTag payload) {
@@ -39,105 +39,105 @@ public final class ClientCanvasLayerState {
             return;
         }
         if (payload.contains(SyncKeys.GROUPS, Tag.TAG_LIST)) {
-            List<String> groups = ClientChapterState.groupOrderSnapshot();
-            GROUP_CANVAS_EXCLUSIVE_CHOICES.keySet().removeIf(group -> !groups.contains(group));
-            GROUP_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
-            GROUP_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
-            GROUP_CANVAS_LAYER_ORDER.keySet().removeIf(group -> !groups.contains(group));
+            List<String> groups = ClientChapterState.chapterOrderSnapshot();
+            CHAPTER_CANVAS_EXCLUSIVE_CHOICES.keySet().removeIf(group -> !groups.contains(group));
+            CHAPTER_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
+            CHAPTER_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
+            CHAPTER_CANVAS_LAYER_ORDER.keySet().removeIf(group -> !groups.contains(group));
             for (String group : groups) {
-                ensureGroup(group);
+                ensureChapter(group);
             }
         }
-        CompoundTag groupProps = payload.getCompound(SyncKeys.GROUP_PROPS);
+        CompoundTag groupProps = payload.getCompound(SyncKeys.CHAPTER_PROPS);
         for (String group : groupProps.getAllKeys()) {
             CompoundTag props = groupProps.getCompound(group);
-            String normalized = ClientChapterState.normalizeGroup(group);
+            String normalized = ClientChapterState.normalizeChapter(group);
             if (normalized.isBlank()) {
                 continue;
             }
-            GROUP_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(CanvasLayerNbtCodec.exclusiveChoicesFromListTag(props.getList(SyncKeys.GroupProps.CANVAS_EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbtCodec.imagesFromListTag(props.getList(SyncKeys.GroupProps.CANVAS_IMAGES, Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbtCodec.textsFromListTag(props.getList(SyncKeys.GroupProps.CANVAS_TEXTS, Tag.TAG_COMPOUND))));
-            GROUP_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbtCodec.stringsFromListTag(props.getList(SyncKeys.GroupProps.CANVAS_LAYER_ORDER, Tag.TAG_STRING))));
+            CHAPTER_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(CanvasLayerNbtCodec.exclusiveChoicesFromListTag(props.getList(SyncKeys.ChapterProps.CANVAS_EXCLUSIVE_CHOICES, Tag.TAG_COMPOUND))));
+            CHAPTER_CANVAS_IMAGES.put(normalized, List.copyOf(CanvasLayerNbtCodec.imagesFromListTag(props.getList(SyncKeys.ChapterProps.CANVAS_IMAGES, Tag.TAG_COMPOUND))));
+            CHAPTER_CANVAS_TEXTS.put(normalized, List.copyOf(CanvasLayerNbtCodec.textsFromListTag(props.getList(SyncKeys.ChapterProps.CANVAS_TEXTS, Tag.TAG_COMPOUND))));
+            CHAPTER_CANVAS_LAYER_ORDER.put(normalized, List.copyOf(CanvasLayerNbtCodec.stringsFromListTag(props.getList(SyncKeys.ChapterProps.CANVAS_LAYER_ORDER, Tag.TAG_STRING))));
         }
     }
 
-    public static Map<String, List<CanvasExclusiveChoice>> exclusiveChoicesByGroup() {
-        return copyLayerMap(GROUP_CANVAS_EXCLUSIVE_CHOICES);
+    public static Map<String, List<CanvasExclusiveChoice>> exclusiveChoicesByChapter() {
+        return copyLayerMap(CHAPTER_CANVAS_EXCLUSIVE_CHOICES);
     }
 
-    public static Map<String, List<CanvasImageLayer>> imagesByGroup() {
-        return copyLayerMap(GROUP_CANVAS_IMAGES);
+    public static Map<String, List<CanvasImageLayer>> imagesByChapter() {
+        return copyLayerMap(CHAPTER_CANVAS_IMAGES);
     }
 
-    public static Map<String, List<CanvasTextLayer>> textsByGroup() {
-        return copyLayerMap(GROUP_CANVAS_TEXTS);
+    public static Map<String, List<CanvasTextLayer>> textsByChapter() {
+        return copyLayerMap(CHAPTER_CANVAS_TEXTS);
     }
 
-    public static Map<String, List<String>> layerOrderByGroup() {
-        return copyLayerMap(GROUP_CANVAS_LAYER_ORDER);
+    public static Map<String, List<String>> layerOrderByChapter() {
+        return copyLayerMap(CHAPTER_CANVAS_LAYER_ORDER);
     }
 
-    public static List<CanvasExclusiveChoice> exclusiveChoices(String group) {
-        return List.copyOf(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(ClientChapterState.normalizeGroup(group), List.of()));
+    public static List<CanvasExclusiveChoice> exclusiveChoices(String chapter) {
+        return List.copyOf(CHAPTER_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(ClientChapterState.normalizeChapter(chapter), List.of()));
     }
 
-    public static List<CanvasImageLayer> images(String group) {
-        return List.copyOf(GROUP_CANVAS_IMAGES.getOrDefault(ClientChapterState.normalizeGroup(group), List.of()));
+    public static List<CanvasImageLayer> images(String chapter) {
+        return List.copyOf(CHAPTER_CANVAS_IMAGES.getOrDefault(ClientChapterState.normalizeChapter(chapter), List.of()));
     }
 
-    public static List<CanvasTextLayer> texts(String group) {
-        return List.copyOf(GROUP_CANVAS_TEXTS.getOrDefault(ClientChapterState.normalizeGroup(group), List.of()));
+    public static List<CanvasTextLayer> texts(String chapter) {
+        return List.copyOf(CHAPTER_CANVAS_TEXTS.getOrDefault(ClientChapterState.normalizeChapter(chapter), List.of()));
     }
 
-    public static List<String> layerOrder(String group) {
-        return List.copyOf(GROUP_CANVAS_LAYER_ORDER.getOrDefault(ClientChapterState.normalizeGroup(group), List.of()));
+    public static List<String> layerOrder(String chapter) {
+        return List.copyOf(CHAPTER_CANVAS_LAYER_ORDER.getOrDefault(ClientChapterState.normalizeChapter(chapter), List.of()));
     }
 
-    public static void ensureGroup(String group) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void ensureChapter(String chapter) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank()) {
             return;
         }
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.putIfAbsent(normalized, List.of());
-        GROUP_CANVAS_IMAGES.putIfAbsent(normalized, List.of());
-        GROUP_CANVAS_TEXTS.putIfAbsent(normalized, List.of());
-        GROUP_CANVAS_LAYER_ORDER.putIfAbsent(normalized, List.of());
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.putIfAbsent(normalized, List.of());
+        CHAPTER_CANVAS_IMAGES.putIfAbsent(normalized, List.of());
+        CHAPTER_CANVAS_TEXTS.putIfAbsent(normalized, List.of());
+        CHAPTER_CANVAS_LAYER_ORDER.putIfAbsent(normalized, List.of());
     }
 
-    public static void renameGroup(String from, String to) {
-        String source = ClientChapterState.normalizeGroup(from);
-        String target = ClientChapterState.normalizeGroup(to);
+    public static void renameChapter(String from, String to) {
+        String source = ClientChapterState.normalizeChapter(from);
+        String target = ClientChapterState.normalizeChapter(to);
         if (source.isBlank() || target.isBlank() || source.equals(target)) {
             return;
         }
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.put(target, GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(source, List.of()));
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.remove(source);
-        GROUP_CANVAS_IMAGES.put(target, GROUP_CANVAS_IMAGES.getOrDefault(source, List.of()));
-        GROUP_CANVAS_IMAGES.remove(source);
-        GROUP_CANVAS_TEXTS.put(target, GROUP_CANVAS_TEXTS.getOrDefault(source, List.of()));
-        GROUP_CANVAS_TEXTS.remove(source);
-        GROUP_CANVAS_LAYER_ORDER.put(target, GROUP_CANVAS_LAYER_ORDER.getOrDefault(source, List.of()));
-        GROUP_CANVAS_LAYER_ORDER.remove(source);
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.put(target, CHAPTER_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(source, List.of()));
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.remove(source);
+        CHAPTER_CANVAS_IMAGES.put(target, CHAPTER_CANVAS_IMAGES.getOrDefault(source, List.of()));
+        CHAPTER_CANVAS_IMAGES.remove(source);
+        CHAPTER_CANVAS_TEXTS.put(target, CHAPTER_CANVAS_TEXTS.getOrDefault(source, List.of()));
+        CHAPTER_CANVAS_TEXTS.remove(source);
+        CHAPTER_CANVAS_LAYER_ORDER.put(target, CHAPTER_CANVAS_LAYER_ORDER.getOrDefault(source, List.of()));
+        CHAPTER_CANVAS_LAYER_ORDER.remove(source);
     }
 
-    public static void removeGroup(String group) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void removeChapter(String chapter) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank()) {
             return;
         }
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.remove(normalized);
-        GROUP_CANVAS_IMAGES.remove(normalized);
-        GROUP_CANVAS_TEXTS.remove(normalized);
-        GROUP_CANVAS_LAYER_ORDER.remove(normalized);
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.remove(normalized);
+        CHAPTER_CANVAS_IMAGES.remove(normalized);
+        CHAPTER_CANVAS_TEXTS.remove(normalized);
+        CHAPTER_CANVAS_LAYER_ORDER.remove(normalized);
     }
 
-    public static void putExclusiveChoice(String group, CanvasExclusiveChoice ec) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void putExclusiveChoice(String chapter, CanvasExclusiveChoice ec) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || ec == null || ec.id().isBlank()) {
             return;
         }
-        List<CanvasExclusiveChoice> choices = new ArrayList<>(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(CHAPTER_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
         boolean replaced = false;
         for (int i = 0; i < choices.size(); i++) {
             if (choices.get(i).id().equals(ec.id())) {
@@ -149,30 +149,30 @@ public final class ClientCanvasLayerState {
         if (!replaced) {
             choices.add(ec);
         }
-        GROUP_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(choices));
+        CHAPTER_CANVAS_EXCLUSIVE_CHOICES.put(normalized, List.copyOf(choices));
         ensureLayerOrder(normalized, "exclusive_choice:" + ec.id());
     }
 
-    public static boolean removeExclusiveChoice(String group, String ecId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static boolean removeExclusiveChoice(String chapter, String ecId) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
             return false;
         }
-        List<CanvasExclusiveChoice> choices = new ArrayList<>(GROUP_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
+        List<CanvasExclusiveChoice> choices = new ArrayList<>(CHAPTER_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
         if (!choices.removeIf(ec -> ec.id().equals(ecId))) {
             return false;
         }
-        putOrRemove(GROUP_CANVAS_EXCLUSIVE_CHOICES, normalized, choices);
+        putOrRemove(CHAPTER_CANVAS_EXCLUSIVE_CHOICES, normalized, choices);
         removeLayerOrder(normalized, "exclusive_choice:" + ecId);
         return true;
     }
 
-    public static void putImage(String group, CanvasImageLayer image) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void putImage(String chapter, CanvasImageLayer image) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || image == null || image.id().isBlank()) {
             return;
         }
-        List<CanvasImageLayer> images = new ArrayList<>(GROUP_CANVAS_IMAGES.getOrDefault(normalized, List.of()));
+        List<CanvasImageLayer> images = new ArrayList<>(CHAPTER_CANVAS_IMAGES.getOrDefault(normalized, List.of()));
         boolean replaced = false;
         for (int i = 0; i < images.size(); i++) {
             if (images.get(i).id().equals(image.id())) {
@@ -184,30 +184,30 @@ public final class ClientCanvasLayerState {
         if (!replaced) {
             images.add(image);
         }
-        GROUP_CANVAS_IMAGES.put(normalized, List.copyOf(images));
+        CHAPTER_CANVAS_IMAGES.put(normalized, List.copyOf(images));
         ensureLayerOrder(normalized, "image:" + image.id());
     }
 
-    public static boolean removeImage(String group, String imageId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static boolean removeImage(String chapter, String imageId) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || imageId == null || imageId.isBlank()) {
             return false;
         }
-        List<CanvasImageLayer> images = new ArrayList<>(GROUP_CANVAS_IMAGES.getOrDefault(normalized, List.of()));
+        List<CanvasImageLayer> images = new ArrayList<>(CHAPTER_CANVAS_IMAGES.getOrDefault(normalized, List.of()));
         if (!images.removeIf(image -> image.id().equals(imageId))) {
             return false;
         }
-        putOrRemove(GROUP_CANVAS_IMAGES, normalized, images);
+        putOrRemove(CHAPTER_CANVAS_IMAGES, normalized, images);
         removeLayerOrder(normalized, "image:" + imageId);
         return true;
     }
 
-    public static void putText(String group, CanvasTextLayer text) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void putText(String chapter, CanvasTextLayer text) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || text == null || text.id().isBlank()) {
             return;
         }
-        List<CanvasTextLayer> texts = new ArrayList<>(GROUP_CANVAS_TEXTS.getOrDefault(normalized, List.of()));
+        List<CanvasTextLayer> texts = new ArrayList<>(CHAPTER_CANVAS_TEXTS.getOrDefault(normalized, List.of()));
         boolean replaced = false;
         for (int i = 0; i < texts.size(); i++) {
             if (texts.get(i).id().equals(text.id())) {
@@ -219,26 +219,26 @@ public final class ClientCanvasLayerState {
         if (!replaced) {
             texts.add(text);
         }
-        GROUP_CANVAS_TEXTS.put(normalized, List.copyOf(texts));
+        CHAPTER_CANVAS_TEXTS.put(normalized, List.copyOf(texts));
         ensureLayerOrder(normalized, "text:" + text.id());
     }
 
-    public static boolean removeText(String group, String textId) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static boolean removeText(String chapter, String textId) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank() || textId == null || textId.isBlank()) {
             return false;
         }
-        List<CanvasTextLayer> texts = new ArrayList<>(GROUP_CANVAS_TEXTS.getOrDefault(normalized, List.of()));
+        List<CanvasTextLayer> texts = new ArrayList<>(CHAPTER_CANVAS_TEXTS.getOrDefault(normalized, List.of()));
         if (!texts.removeIf(text -> text.id().equals(textId))) {
             return false;
         }
-        putOrRemove(GROUP_CANVAS_TEXTS, normalized, texts);
+        putOrRemove(CHAPTER_CANVAS_TEXTS, normalized, texts);
         removeLayerOrder(normalized, "text:" + textId);
         return true;
     }
 
-    public static void setLayerOrder(String group, List<String> order) {
-        String normalized = ClientChapterState.normalizeGroup(group);
+    public static void setLayerOrder(String chapter, List<String> order) {
+        String normalized = ClientChapterState.normalizeChapter(chapter);
         if (normalized.isBlank()) {
             return;
         }
@@ -250,29 +250,29 @@ public final class ClientCanvasLayerState {
                 }
             }
         }
-        putOrRemove(GROUP_CANVAS_LAYER_ORDER, normalized, sanitized);
+        putOrRemove(CHAPTER_CANVAS_LAYER_ORDER, normalized, sanitized);
     }
 
-    private static void ensureLayerOrder(String group, String key) {
-        List<String> order = new ArrayList<>(GROUP_CANVAS_LAYER_ORDER.getOrDefault(group, List.of()));
+    private static void ensureLayerOrder(String chapter, String key) {
+        List<String> order = new ArrayList<>(CHAPTER_CANVAS_LAYER_ORDER.getOrDefault(chapter, List.of()));
         if (!order.contains(key)) {
             order.add(key);
-            GROUP_CANVAS_LAYER_ORDER.put(group, List.copyOf(order));
+            CHAPTER_CANVAS_LAYER_ORDER.put(chapter, List.copyOf(order));
         }
     }
 
-    private static void removeLayerOrder(String group, String key) {
-        List<String> order = new ArrayList<>(GROUP_CANVAS_LAYER_ORDER.getOrDefault(group, List.of()));
+    private static void removeLayerOrder(String chapter, String key) {
+        List<String> order = new ArrayList<>(CHAPTER_CANVAS_LAYER_ORDER.getOrDefault(chapter, List.of()));
         if (order.remove(key)) {
-            putOrRemove(GROUP_CANVAS_LAYER_ORDER, group, order);
+            putOrRemove(CHAPTER_CANVAS_LAYER_ORDER, chapter, order);
         }
     }
 
-    private static <T> void putOrRemove(Map<String, List<T>> target, String group, List<T> values) {
+    private static <T> void putOrRemove(Map<String, List<T>> target, String chapter, List<T> values) {
         if (values == null || values.isEmpty()) {
-            target.remove(group);
+            target.remove(chapter);
         } else {
-            target.put(group, List.copyOf(values));
+            target.put(chapter, List.copyOf(values));
         }
     }
 

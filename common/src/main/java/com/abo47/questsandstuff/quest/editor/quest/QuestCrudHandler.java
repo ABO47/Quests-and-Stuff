@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.editor.canvas.EditorPlacementService;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -27,7 +27,7 @@ public final class QuestCrudHandler {
     }
 
     public void addQuest(ServerPlayer player) {
-        addQuest(player, service.session(player).currentGroup);
+        addQuest(player, service.session(player).currentChapter);
     }
 
     public void addQuest(ServerPlayer player, String preferredGroup) {
@@ -36,9 +36,9 @@ public final class QuestCrudHandler {
 
     public void addQuest(ServerPlayer player, String preferredGroup, String preferredQuestId, int x, int y, String preferredTitle) {
         EditorSessionService.EditorSession session = service.session(player);
-        String group = preferredGroup == null || preferredGroup.isBlank() ? session.currentGroup : preferredGroup;
+        String group = preferredGroup == null || preferredGroup.isBlank() ? session.currentChapter : preferredGroup;
         if (group == null || group.isBlank()) {
-            List<String> groups = service.groups();
+            List<String> groups = service.chapters();
             if (!groups.isEmpty()) {
                 group = groups.get(0);
             }
@@ -48,8 +48,8 @@ public final class QuestCrudHandler {
             return;
         }
         service.captureUndo(session);
-        service.ensureGroupExists(group);
-        session.currentGroup = group;
+        service.ensureChapterExists(group);
+        session.currentChapter = group;
         String id = EditorSessionService.normalizeQuestId(preferredQuestId);
         if (id.isBlank() || service.definitionStore().quests().containsKey(id) || !QuestNaming.isAutoQuestId(id)) {
             id = service.nextQuestId(group);
@@ -59,14 +59,14 @@ public final class QuestCrudHandler {
         int finalX = freePosition[0];
         int finalY = freePosition[1];
         QuestsAndStuffMod.debugLog("[QnS:Editor] add quest request group={} reqId={} assignedId={} reqPos={},{} finalPos={},{}", group, preferredQuestId, id, x, y, finalX, finalY);
-        QuestSettings settings = service.definitionStore().groupLockUntilUnlocked(group)
+        QuestSettings settings = service.definitionStore().chapterLockUntilUnlocked(group)
                 ? questSettingsWithHiddenMode(QuestVisibilityMode.LOCKED)
                 : QuestSettings.DEFAULT;
 
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(title, Map.of(group, new GroupDef(true, finalX, finalY, 1.0f))),
+                QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDef(true, finalX, finalY, 1.0f))),
                 settings,
                 Set.of(),
                 Map.of(),
@@ -108,7 +108,7 @@ public final class QuestCrudHandler {
             service.definitionStore().upsert(next);
             removedReferences++;
         }
-        for (String group : service.definitionStore().groupOrder()) {
+        for (String group : service.definitionStore().chapterOrder()) {
             for (CanvasExclusiveChoice ec : new ArrayList<>(service.definitionStore().canvasExclusiveChoices(group))) {
                 boolean changed = false;
                 if (ec.connectionQuestIds().contains(removedQuestId)) {
@@ -128,16 +128,16 @@ public final class QuestCrudHandler {
         return removedReferences;
     }
 
-    public void openGroup(ServerPlayer player, String groupName) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank()) {
+    public void openChapter(ServerPlayer player, String chapterName) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank()) {
             return;
         }
-        if (!service.definitionStore().groupOrder().contains(group)) {
+        if (!service.definitionStore().chapterOrder().contains(chapter)) {
             return;
         }
         EditorSessionService.EditorSession session = service.session(player);
-        session.currentGroup = group;
+        session.currentChapter = chapter;
         service.normalizeQuestSelection(session);
     }
 
@@ -148,8 +148,8 @@ public final class QuestCrudHandler {
         }
         EditorSessionService.EditorSession session = service.session(player);
         session.currentQuest = questId;
-        if (!definition.display().groups().isEmpty()) {
-            session.currentGroup = definition.display().groups().keySet().stream().sorted().findFirst().orElse(session.currentGroup);
+        if (!definition.display().chapters().isEmpty()) {
+            session.currentChapter = definition.display().chapters().keySet().stream().sorted().findFirst().orElse(session.currentChapter);
         }
     }
 

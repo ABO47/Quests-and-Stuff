@@ -74,12 +74,12 @@ public final class SyncService {
         syncDelta(player, changedQuests, false);
     }
 
-    public void syncDeltaWithMetadata(List<ServerPlayer> players, Set<String> changedQuests, Set<String> changedGroups) {
+    public void syncDeltaWithMetadata(List<ServerPlayer> players, Set<String> changedQuests, Set<String> changedChapters) {
         if (players == null || players.isEmpty()) {
             return;
         }
         for (ServerPlayer player : players) {
-            syncDelta(player, changedQuests, changedGroups, true);
+            syncDelta(player, changedQuests, changedChapters, true);
         }
     }
 
@@ -87,9 +87,9 @@ public final class SyncService {
         syncDelta(player, changedQuests, Set.of(), forceMetadata);
     }
 
-    private void syncDelta(ServerPlayer player, Set<String> changedQuests, Set<String> changedGroups, boolean forceMetadata) {
+    private void syncDelta(ServerPlayer player, Set<String> changedQuests, Set<String> changedChapters, boolean forceMetadata) {
         Set<String> safeChangedQuests = changedQuests == null ? Set.of() : changedQuests;
-        Set<String> safeChangedGroups = changedGroups == null ? Set.of() : changedGroups;
+        Set<String> safeChangedGroups = changedChapters == null ? Set.of() : changedChapters;
         boolean includeMetadata = forceMetadata && !safeChangedGroups.isEmpty();
         if (safeChangedQuests.isEmpty() && !includeMetadata) {
             return;

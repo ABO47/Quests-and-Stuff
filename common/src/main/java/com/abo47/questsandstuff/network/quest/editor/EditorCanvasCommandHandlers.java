@@ -21,7 +21,7 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void moveMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         Map<String, int[]> moves = new HashMap<>();
         ListTag moveTags = EditorCommandPayloads.moves(payload);
         if (EditorCommandPayloads.exceedsLimit(moveTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
@@ -35,11 +35,11 @@ final class EditorCanvasCommandHandlers {
                     moveTag.getInt(EditorCommandPayloads.Y)
             });
         }
-        editor.moveQuestsInGroup(player, group, moves);
+        editor.moveQuestsInChapter(player, group, moves);
     }
 
     private static void scaleMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.group(payload);
+        String group = EditorCommandPayloads.chapter(payload);
         Map<String, Float> scales = new HashMap<>();
         ListTag scaleTags = EditorCommandPayloads.scales(payload);
         if (EditorCommandPayloads.exceedsLimit(scaleTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
@@ -50,6 +50,6 @@ final class EditorCanvasCommandHandlers {
             String questId = scaleTag.getString(EditorCommandPayloads.QUEST);
             scales.put(questId, scaleTag.getFloat(EditorCommandPayloads.SCALE));
         }
-        editor.scaleQuestsInGroup(player, group, scales);
+        editor.scaleQuestsInChapter(player, group, scales);
     }
 }

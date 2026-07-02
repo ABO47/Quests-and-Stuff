@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.canvas;
 
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class EditorPlacementService {
 
     private static boolean isOccupiedInGroup(Map<String, QuestDefinition> quests, String group, int x, int y) {
         for (QuestDefinition definition : quests.values()) {
-            GroupDef view = definition.display().groups().get(group);
+            ChapterDef view = definition.display().chapters().get(group);
             if (view != null && view.x() == x && view.y() == y) {
                 return true;
             }

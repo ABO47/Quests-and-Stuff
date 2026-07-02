@@ -504,7 +504,7 @@ public final class TabletAssetPickerModal {
                 }
             }
             if (!group.isBlank()) {
-                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, java.util.List.of())) {
                     for (String connectedId : ec.connectionQuestIds()) {
                         if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
                             EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);

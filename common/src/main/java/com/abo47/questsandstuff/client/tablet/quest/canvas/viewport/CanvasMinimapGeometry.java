@@ -60,7 +60,7 @@ public final class CanvasMinimapGeometry {
         }
 
         if (group != null && !group.isBlank()) {
-            for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+            for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
                 minX = Math.min(minX, ec.x());
                 minY = Math.min(minY, ec.y());
                 maxX = Math.max(maxX, ec.x() + ec.w());

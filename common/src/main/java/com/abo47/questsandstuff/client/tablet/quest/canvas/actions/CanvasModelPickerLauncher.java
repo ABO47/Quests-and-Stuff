@@ -110,7 +110,7 @@ public final class CanvasModelPickerLauncher {
 
     private static List<String> canvasImageIds(TabletUiState state, String group) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             ids.add(image.id());
         }
         return ids;

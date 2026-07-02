@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.quest.editor.canvas;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -24,19 +24,19 @@ public final class CanvasEditService {
         this.owner = owner;
     }
 
-    public void putCanvasExclusiveChoice(ServerPlayer player, String groupName, CanvasExclusiveChoice ec) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || ec == null || ec.id().isBlank()) {
+    public void putCanvasExclusiveChoice(ServerPlayer player, String chapterName, CanvasExclusiveChoice ec) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || ec == null || ec.id().isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+        owner.definitionStore().putCanvasExclusiveChoice(chapter, ec);
         owner.postMutation(player);
     }
 
-    public void putCanvasExclusiveChoices(ServerPlayer player, String groupName, List<CanvasExclusiveChoice> ecs) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || ecs == null || ecs.isEmpty()) {
+    public void putCanvasExclusiveChoices(ServerPlayer player, String chapterName, List<CanvasExclusiveChoice> ecs) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || ecs == null || ecs.isEmpty()) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
@@ -49,24 +49,24 @@ public final class CanvasEditService {
                 owner.captureUndo(session);
                 changed = true;
             }
-            owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+            owner.definitionStore().putCanvasExclusiveChoice(chapter, ec);
         }
         if (changed) {
             owner.postMutation(player);
         }
     }
 
-    public void removeCanvasExclusiveChoice(ServerPlayer player, String groupName, String ecId) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || ecId == null || ecId.isBlank()) {
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String ecId) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || ecId == null || ecId.isBlank()) {
             return;
         }
-        CanvasExclusiveChoice removed = owner.definitionStore().canvasExclusiveChoices(group).stream()
+        CanvasExclusiveChoice removed = owner.definitionStore().canvasExclusiveChoices(chapter).stream()
                 .filter(ec -> ec.id().equals(ecId))
                 .findFirst()
                 .orElse(null);
         owner.captureUndo(owner.session(player));
-        if (owner.definitionStore().removeCanvasExclusiveChoice(group, ecId)) {
+        if (owner.definitionStore().removeCanvasExclusiveChoice(chapter, ecId)) {
             if (removed != null && !removed.connectionQuestIds().isEmpty()) {
                 owner.runtimeEngine().clearExclusiveChoiceDisabled(new HashSet<>(removed.connectionQuestIds()));
             }
@@ -74,85 +74,85 @@ public final class CanvasEditService {
         }
     }
 
-    public void ecConnectionHidden(ServerPlayer player, String groupName, String sourceId, String targetId, boolean hidden) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || sourceId.isBlank() || targetId.isBlank()) {
+    public void ecConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || sourceId.isBlank() || targetId.isBlank()) {
             return;
         }
-        CanvasExclusiveChoice ec = owner.definitionStore().canvasExclusiveChoices(group).stream()
+        CanvasExclusiveChoice ec = owner.definitionStore().canvasExclusiveChoices(chapter).stream()
                 .filter(e -> e.id().equals(sourceId))
                 .findFirst()
                 .orElse(null);
         if (ec == null) {
-            ec = owner.definitionStore().canvasExclusiveChoices(group).stream()
+            ec = owner.definitionStore().canvasExclusiveChoices(chapter).stream()
                     .filter(e -> e.id().equals(targetId))
                     .findFirst()
                     .orElse(null);
             if (ec == null) return;
             owner.captureUndo(owner.session(player));
-            owner.definitionStore().putCanvasExclusiveChoice(group, ec.withHiddenConnection(sourceId, hidden));
+            owner.definitionStore().putCanvasExclusiveChoice(chapter, ec.withHiddenConnection(sourceId, hidden));
         } else {
             owner.captureUndo(owner.session(player));
-            owner.definitionStore().putCanvasExclusiveChoice(group, ec.withHiddenConnection(targetId, hidden));
+            owner.definitionStore().putCanvasExclusiveChoice(chapter, ec.withHiddenConnection(targetId, hidden));
         }
         owner.postMutation(player);
     }
 
-    public void putCanvasImage(ServerPlayer player, String groupName, CanvasImageLayer image) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || image == null || image.id().isBlank()) {
+    public void putCanvasImage(ServerPlayer player, String chapterName, CanvasImageLayer image) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || image == null || image.id().isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().putCanvasImage(group, image);
+        owner.definitionStore().putCanvasImage(chapter, image);
         owner.postMutation(player);
     }
 
-    public void removeCanvasImage(ServerPlayer player, String groupName, String imageId) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || imageId == null || imageId.isBlank()) {
+    public void removeCanvasImage(ServerPlayer player, String chapterName, String imageId) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || imageId == null || imageId.isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        if (owner.definitionStore().removeCanvasImage(group, imageId)) {
+        if (owner.definitionStore().removeCanvasImage(chapter, imageId)) {
             owner.postMutation(player);
         }
     }
 
-    public void putCanvasText(ServerPlayer player, String groupName, CanvasTextLayer text) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || text == null || text.id().isBlank()) {
+    public void putCanvasText(ServerPlayer player, String chapterName, CanvasTextLayer text) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || text == null || text.id().isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().putCanvasText(group, text);
+        owner.definitionStore().putCanvasText(chapter, text);
         owner.postMutation(player);
     }
 
-    public void removeCanvasText(ServerPlayer player, String groupName, String textId) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || textId == null || textId.isBlank()) {
+    public void removeCanvasText(ServerPlayer player, String chapterName, String textId) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || textId == null || textId.isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        if (owner.definitionStore().removeCanvasText(group, textId)) {
+        if (owner.definitionStore().removeCanvasText(chapter, textId)) {
             owner.postMutation(player);
         }
     }
 
-    public void setCanvasLayerOrder(ServerPlayer player, String groupName, List<String> layerOrder) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank()) {
+    public void setCanvasLayerOrder(ServerPlayer player, String chapterName, List<String> layerOrder) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank()) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setCanvasLayerOrder(group, layerOrder);
+        owner.definitionStore().setCanvasLayerOrder(chapter, layerOrder);
         owner.postMutation(player);
     }
 
-    public void moveQuestsInGroup(ServerPlayer player, String groupName, Map<String, int[]> positions) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || positions == null || positions.isEmpty()) {
+    public void moveQuestsInChapter(ServerPlayer player, String chapterName, Map<String, int[]> positions) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || positions == null || positions.isEmpty()) {
             return;
         }
 
@@ -168,7 +168,7 @@ public final class CanvasEditService {
             if (source == null) {
                 continue;
             }
-            GroupDef existingView = source.display().groups().get(group);
+            ChapterDef existingView = source.display().chapters().get(chapter);
             if (existingView == null) {
                 continue;
             }
@@ -183,9 +183,9 @@ public final class CanvasEditService {
                 changed = true;
             }
 
-            Map<String, GroupDef> groups = new HashMap<>(source.display().groups());
-            groups.put(group, new GroupDef(existingView.visible(), targetX, targetY, existingView.scale()));
-            owner.definitionStore().upsert(withGroups(source, groups));
+            Map<String, ChapterDef> chapters = new HashMap<>(source.display().chapters());
+            chapters.put(chapter, new ChapterDef(existingView.visible(), targetX, targetY, existingView.scale()));
+            owner.definitionStore().upsert(withGroups(source, chapters));
         }
 
         if (changed) {
@@ -193,9 +193,9 @@ public final class CanvasEditService {
         }
     }
 
-    public void scaleQuestsInGroup(ServerPlayer player, String groupName, Map<String, Float> scales) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || scales == null || scales.isEmpty()) {
+    public void scaleQuestsInChapter(ServerPlayer player, String chapterName, Map<String, Float> scales) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || scales == null || scales.isEmpty()) {
             return;
         }
 
@@ -211,7 +211,7 @@ public final class CanvasEditService {
             if (source == null) {
                 continue;
             }
-            GroupDef existingView = source.display().groups().get(group);
+            ChapterDef existingView = source.display().chapters().get(chapter);
             if (existingView == null) {
                 continue;
             }
@@ -229,9 +229,9 @@ public final class CanvasEditService {
                 changed = true;
             }
 
-            Map<String, GroupDef> groups = new HashMap<>(source.display().groups());
-            groups.put(group, new GroupDef(existingView.visible(), existingView.x(), existingView.y(), targetScale));
-            owner.definitionStore().upsert(withGroups(source, groups));
+            Map<String, ChapterDef> chapters = new HashMap<>(source.display().chapters());
+            chapters.put(chapter, new ChapterDef(existingView.visible(), existingView.x(), existingView.y(), targetScale));
+            owner.definitionStore().upsert(withGroups(source, chapters));
         }
 
         if (changed) {

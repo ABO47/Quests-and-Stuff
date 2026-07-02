@@ -46,10 +46,10 @@ class ClientIdentityNormalizationTest {
 
     @Test
     void clientChapterStateUsesSharedGroupNameNormalization() {
-        assertTrue(ClientChapterState.addGroup(" Main Chapter "));
+        assertTrue(ClientChapterState.addChapter(" Main Chapter "));
 
-        assertTrue(ClientChapterState.containsGroup("Main Chapter"));
-        assertFalse(ClientChapterState.containsGroup("main chapter"));
-        assertEquals("Main Chapter", ClientChapterState.groupOrderSnapshot().get(0));
+        assertTrue(ClientChapterState.containsChapter("Main Chapter"));
+        assertFalse(ClientChapterState.containsChapter("main chapter"));
+        assertEquals("Main Chapter", ClientChapterState.chapterOrderSnapshot().get(0));
     }
 }

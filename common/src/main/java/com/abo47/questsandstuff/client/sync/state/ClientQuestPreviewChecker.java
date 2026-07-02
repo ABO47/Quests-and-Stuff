@@ -11,42 +11,42 @@ final class ClientQuestPreviewChecker {
     private ClientQuestPreviewChecker() {
     }
 
-    static boolean groupLocked(String group) {
-        return ClientChapterState.groupLockUntilUnlocked(group) && groupHasNoUnlockedOrCompletedQuest(group);
+    static boolean chapterLocked(String chapter) {
+        return ClientChapterState.chapterLockUntilUnlocked(chapter) && chapterHasNoUnlockedOrCompletedQuest(chapter);
     }
 
-    static boolean groupHidden(String group) {
-        return ClientChapterState.groupHideUntilUnlocked(group) && groupHasNoUnlockedOrCompletedQuest(group);
+    static boolean chapterHidden(String chapter) {
+        return ClientChapterState.chapterHideUntilUnlocked(chapter) && chapterHasNoUnlockedOrCompletedQuest(chapter);
     }
 
-    static boolean groupOpenable(String group) {
-        return !groupLocked(group) && !groupHidden(group);
+    static boolean chapterOpenable(String chapter) {
+        return !chapterLocked(chapter) && !chapterHidden(chapter);
     }
 
-    static List<String> selectableGroupOrder(boolean canEdit) {
+    static List<String> selectableChapterOrder(boolean canEdit) {
         if (canEdit) {
-            return ClientChapterState.groupOrderSnapshot();
+            return ClientChapterState.chapterOrderSnapshot();
         }
-        List<String> groups = new ArrayList<>();
-        for (String group : ClientChapterState.groupOrderSnapshot()) {
-            if (groupOpenable(group)) {
-                groups.add(group);
+        List<String> chapters = new ArrayList<>();
+        for (String chapter : ClientChapterState.chapterOrderSnapshot()) {
+            if (chapterOpenable(chapter)) {
+                chapters.add(chapter);
             }
         }
-        return List.copyOf(groups);
+        return List.copyOf(chapters);
     }
 
-    static List<String> visibleGroupOrder(boolean canEdit) {
+    static List<String> visibleChapterOrder(boolean canEdit) {
         if (canEdit) {
-            return ClientChapterState.groupOrderSnapshot();
+            return ClientChapterState.chapterOrderSnapshot();
         }
-        List<String> groups = new ArrayList<>();
-        for (String group : ClientChapterState.groupOrderSnapshot()) {
-            if (!groupHidden(group)) {
-                groups.add(group);
+        List<String> chapters = new ArrayList<>();
+        for (String chapter : ClientChapterState.chapterOrderSnapshot()) {
+            if (!chapterHidden(chapter)) {
+                chapters.add(chapter);
             }
         }
-        return List.copyOf(groups);
+        return List.copyOf(chapters);
     }
 
     static boolean questLocked(CompoundTag quest) {
@@ -63,10 +63,10 @@ final class ClientQuestPreviewChecker {
                 && !quest.getBoolean(SyncKeys.Quest.COMPLETED);
     }
 
-    private static boolean groupHasNoUnlockedOrCompletedQuest(String group) {
+    private static boolean chapterHasNoUnlockedOrCompletedQuest(String chapter) {
         for (Map.Entry<String, CompoundTag> entry : ClientQuestState.questEntries()) {
             CompoundTag quest = entry.getValue();
-            if (!quest.getCompound(SyncKeys.Quest.GROUPS).contains(group)) {
+            if (!quest.getCompound(SyncKeys.Quest.CHAPTERS).contains(chapter)) {
                 continue;
             }
             if (quest.getBoolean(SyncKeys.Quest.UNLOCKED) || quest.getBoolean(SyncKeys.Quest.COMPLETED)) {

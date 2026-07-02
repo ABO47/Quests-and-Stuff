@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.ClientQuestDefinitionSnapshots;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
@@ -163,12 +163,12 @@ final class PrerequisitePreviewBuilder {
     }
 
     private static QuestPlacement actualPlacement(QuestDefinition definition, String preferredGroup) {
-        GroupDef preferred = definition.display().groups().get(preferredGroup);
+        ChapterDef preferred = definition.display().chapters().get(preferredGroup);
         if (preferred != null) {
-            return new QuestPlacement(preferredGroup, preferred.x(), preferred.y(), preferred.scale());
+            preferredGroupLayout = new ChapterDef(preferred.visible(), preferred.x(), preferred.y(), preferred.scale());
         }
-        for (Map.Entry<String, GroupDef> entry : definition.display().groups().entrySet()) {
-            GroupDef view = entry.getValue();
+        for (Map.Entry<String, ChapterDef> entry : definition.display().chapters().entrySet()) {
+            ChapterDef view = entry.getValue();
             return new QuestPlacement(entry.getKey(), view.x(), view.y(), view.scale());
         }
         return new QuestPlacement(preferredGroup, 0, 0, 1.0f);
@@ -234,7 +234,7 @@ final class PrerequisitePreviewBuilder {
         if (group == null || group.isBlank()) {
             return null;
         }
-        List<CanvasExclusiveChoice> ecs = ClientQuestStateFacade.canvasExclusiveChoicesByGroup().get(group);
+        List<CanvasExclusiveChoice> ecs = ClientQuestStateFacade.canvasExclusiveChoicesByChapter().get(group);
         if (ecs == null) {
             return null;
         }

@@ -36,7 +36,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runQuestIconAction;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedGroupName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletIconPickerModal {
@@ -54,7 +54,7 @@ public final class TabletIconPickerModal {
         boolean itemModelPicker = canvasModel.isItemModelPickerTarget() || details.isItemModelPickerTarget();
         boolean useItemPicker = IconPickerMode.isUseItemPickerTarget(details);
         String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modal.modalChapterTarget);
-        final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedGroupName(state) : resolvedChapterTarget;
+        final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedChapterName(state) : resolvedChapterTarget;
         String questTarget = ModalTargetState.target(state, QUEST, state.modal.modalQuestTarget);
         boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, questTarget, chapterTarget);
         boolean supportsInventoryIcons = supportsInventoryIconSelection(detailsTarget, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);

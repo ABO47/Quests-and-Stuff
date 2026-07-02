@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -51,7 +51,7 @@ public final class ClientQuestDefinitionSnapshots {
                 tag.getString("title"),
                 tag.getString("subtitle"),
                 stringList(tag.getList("description", Tag.TAG_STRING)),
-                groups(tag.getCompound("groups")),
+                chapters(tag.getCompound("chapters")),
                 tag.getString("icon"),
                 tag.getString("icon_background"),
                 tag.getString("completion_sound"),
@@ -78,18 +78,18 @@ public final class ClientQuestDefinitionSnapshots {
         );
     }
 
-    private static Map<String, GroupDef> groups(CompoundTag groupsTag) {
-        Map<String, GroupDef> groups = new LinkedHashMap<>();
-        for (String group : groupsTag.getAllKeys()) {
-            CompoundTag view = groupsTag.getCompound(group);
-            groups.put(group, new GroupDef(
+    private static Map<String, ChapterDef> chapters(CompoundTag chaptersTag) {
+        Map<String, ChapterDef> chapters = new LinkedHashMap<>();
+        for (String chapter : chaptersTag.getAllKeys()) {
+            CompoundTag view = chaptersTag.getCompound(chapter);
+            chapters.put(chapter, new ChapterDef(
                     !view.contains("visible") || view.getBoolean("visible"),
                     view.getInt("x"),
                     view.getInt("y"),
                     view.contains("scale", Tag.TAG_FLOAT) ? view.getFloat("scale") : 1.0f
             ));
         }
-        return groups;
+        return chapters;
     }
 
     private static Map<String, QuestTaskDefinition> tasks(CompoundTag tasksTag) {

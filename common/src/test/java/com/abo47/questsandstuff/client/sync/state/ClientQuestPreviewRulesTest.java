@@ -18,45 +18,45 @@ class ClientQuestPreviewRulesTest {
     }
 
     @Test
-    void lockedGroupIsNotSelectableUntilAQuestInsideIsUnlockedOrCompleted() {
-        ClientQuestStateFacade.createGroupLocal("locked");
-        ClientQuestStateFacade.createGroupLocal("open");
+    void lockedChapterIsNotSelectableUntilAQuestInsideIsUnlockedOrCompleted() {
+        ClientQuestStateFacade.createChapterLocal("locked");
+        ClientQuestStateFacade.createChapterLocal("open");
         ClientQuestStateFacade.createEditorQuestLocal("quest/locked", "locked", 0, 0, "Locked");
         ClientQuestStateFacade.createEditorQuestLocal("quest/open", "open", 0, 0, "Open");
-        ClientQuestStateFacade.setGroupLockUntilUnlockedLocal("locked", true);
+        ClientQuestStateFacade.setChapterLockUntilUnlockedLocal("locked", true);
         setQuestState("quest/locked", false, false);
 
-        assertTrue(ClientQuestStateFacade.groupLockedPreview("locked"));
-        assertFalse(ClientQuestStateFacade.groupOpenablePreview("locked"));
-        assertEquals(List.of("open"), ClientQuestStateFacade.selectableGroupOrder(false));
-        assertEquals(List.of("locked", "open"), ClientQuestStateFacade.selectableGroupOrder(true));
+        assertTrue(ClientQuestStateFacade.chapterLockedPreview("locked"));
+        assertFalse(ClientQuestStateFacade.chapterOpenablePreview("locked"));
+        assertEquals(List.of("open"), ClientQuestStateFacade.selectableChapterOrder(false));
+        assertEquals(List.of("locked", "open"), ClientQuestStateFacade.selectableChapterOrder(true));
 
         setQuestState("quest/locked", true, false);
 
-        assertFalse(ClientQuestStateFacade.groupLockedPreview("locked"));
-        assertTrue(ClientQuestStateFacade.groupOpenablePreview("locked"));
-        assertEquals(List.of("locked", "open"), ClientQuestStateFacade.selectableGroupOrder(false));
+        assertFalse(ClientQuestStateFacade.chapterLockedPreview("locked"));
+        assertTrue(ClientQuestStateFacade.chapterOpenablePreview("locked"));
+        assertEquals(List.of("locked", "open"), ClientQuestStateFacade.selectableChapterOrder(false));
     }
 
     @Test
-    void hiddenGroupIsInvisibleUntilAQuestInsideIsUnlockedOrCompleted() {
-        ClientQuestStateFacade.createGroupLocal("hidden");
-        ClientQuestStateFacade.createGroupLocal("open");
+    void hiddenChapterIsInvisibleUntilAQuestInsideIsUnlockedOrCompleted() {
+        ClientQuestStateFacade.createChapterLocal("hidden");
+        ClientQuestStateFacade.createChapterLocal("open");
         ClientQuestStateFacade.createEditorQuestLocal("quest/hidden", "hidden", 0, 0, "Hidden");
         ClientQuestStateFacade.createEditorQuestLocal("quest/open", "open", 0, 0, "Open");
-        ClientQuestStateFacade.setGroupHideUntilUnlockedLocal("hidden", true);
+        ClientQuestStateFacade.setChapterHideUntilUnlockedLocal("hidden", true);
         setQuestState("quest/hidden", false, false);
 
-        assertTrue(ClientQuestStateFacade.groupHiddenPreview("hidden"));
-        assertFalse(ClientQuestStateFacade.groupOpenablePreview("hidden"));
-        assertEquals(List.of("open"), ClientQuestStateFacade.visibleGroupOrder(false));
-        assertEquals(List.of("hidden", "open"), ClientQuestStateFacade.visibleGroupOrder(true));
+        assertTrue(ClientQuestStateFacade.chapterHiddenPreview("hidden"));
+        assertFalse(ClientQuestStateFacade.chapterOpenablePreview("hidden"));
+        assertEquals(List.of("open"), ClientQuestStateFacade.visibleChapterOrder(false));
+        assertEquals(List.of("hidden", "open"), ClientQuestStateFacade.visibleChapterOrder(true));
 
         setQuestState("quest/hidden", false, true);
 
-        assertFalse(ClientQuestStateFacade.groupHiddenPreview("hidden"));
-        assertTrue(ClientQuestStateFacade.groupOpenablePreview("hidden"));
-        assertEquals(List.of("hidden", "open"), ClientQuestStateFacade.visibleGroupOrder(false));
+        assertFalse(ClientQuestStateFacade.chapterHiddenPreview("hidden"));
+        assertTrue(ClientQuestStateFacade.chapterOpenablePreview("hidden"));
+        assertEquals(List.of("hidden", "open"), ClientQuestStateFacade.visibleChapterOrder(false));
     }
 
     @Test

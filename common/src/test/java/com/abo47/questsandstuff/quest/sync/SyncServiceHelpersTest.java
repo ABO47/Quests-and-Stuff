@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.quest.model.GroupDef;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -33,7 +33,7 @@ class SyncServiceHelpersTest {
             for (int i = 0; i < 129; i++) {
                 store.upsert(quest("quest_" + threeDigits(i), "main"));
             }
-            store.setGroupOrder(List.of("main"));
+            store.setChapterOrder(List.of("main"));
             SyncChunker chunker = new SyncChunker(new SyncPayloadBuilder(store));
 
             List<SyncChunker.SyncChunk> chunks = chunker.fullChunks(new PlayerQuestState(), store.questIds(), true);
@@ -46,7 +46,7 @@ class SyncServiceHelpersTest {
             assertEquals(QuestDefinition.CURRENT_SCHEMA, chunks.get(0).payload().getInt(SyncKeys.SCHEMA));
             assertEquals(128, chunks.get(0).payload().getCompound(SyncKeys.QUESTS).getAllKeys().size());
             assertEquals(1, chunks.get(1).payload().getCompound(SyncKeys.QUESTS).getAllKeys().size());
-            assertTrue(containsString(chunks.get(0).payload().getList(SyncKeys.GROUPS, Tag.TAG_STRING), "main"));
+            assertTrue(containsString(chunks.get(0).payload().getList(SyncKeys.CHAPTERS, Tag.TAG_STRING), "main"));
         } finally {
             store.shutdown();
         }
@@ -59,7 +59,7 @@ class SyncServiceHelpersTest {
             for (int i = 0; i < 129; i++) {
                 store.upsert(quest("quest_" + threeDigits(i), "main"));
             }
-            store.setGroupOrder(List.of("main"));
+            store.setChapterOrder(List.of("main"));
             SyncChunker chunker = new SyncChunker(new SyncPayloadBuilder(store));
 
             List<SyncChunker.SyncChunk> chunks = chunker.deltaChunks(
@@ -73,12 +73,12 @@ class SyncServiceHelpersTest {
             assertEquals(2, chunks.size());
             CompoundTag first = chunks.get(0).payload();
             CompoundTag second = chunks.get(1).payload();
-            assertTrue(first.contains(SyncKeys.GROUPS, Tag.TAG_LIST));
-            assertTrue(first.contains(SyncKeys.GROUP_PROPS, Tag.TAG_COMPOUND));
+            assertTrue(first.contains(SyncKeys.CHAPTERS, Tag.TAG_LIST));
+            assertTrue(first.contains(SyncKeys.CHAPTER_PROPS, Tag.TAG_COMPOUND));
             assertEquals(128, first.getCompound(SyncKeys.CHANGED).getAllKeys().size());
             assertTrue(first.getCompound(SyncKeys.REMOVED).getBoolean("quest_removed"));
-            assertFalse(second.contains(SyncKeys.GROUPS));
-            assertFalse(second.contains(SyncKeys.GROUP_PROPS));
+            assertFalse(second.contains(SyncKeys.CHAPTERS));
+            assertFalse(second.contains(SyncKeys.CHAPTER_PROPS));
             assertEquals(1, second.getCompound(SyncKeys.CHANGED).getAllKeys().size());
             assertTrue(second.getCompound(SyncKeys.REMOVED).isEmpty());
         } finally {
@@ -188,7 +188,7 @@ class SyncServiceHelpersTest {
                         id,
                         "",
                         description,
-                        Map.of(group, GroupDef.DEFAULT),
+                        Map.of(group, ChapterDef.DEFAULT),
                         QuestDisplay.DEFAULT_ICON,
                         QuestDisplay.DEFAULT_ICON_BACKGROUND,
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,
