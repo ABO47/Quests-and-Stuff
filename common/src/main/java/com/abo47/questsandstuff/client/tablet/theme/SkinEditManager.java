@@ -26,7 +26,13 @@ public final class SkinEditManager {
 
     public static boolean handleClick(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY, int button) {
         if (state == null || !state.root.skinEditMode) return false;
-        if (ModalStateQueries.anyOpen(state)) return false;
+        if (ModalStateQueries.anyOpen(state)) {
+            if (!state.root.skinEditSelectedTarget.isEmpty()) {
+                state.root.skinEditSelectedTarget = "";
+                root.closeContextMenu();
+            }
+            return false;
+        }
 
         if (root.isContextMenuOpen()) {
             if (root.isContextMenuAt(mouseX, mouseY)) {

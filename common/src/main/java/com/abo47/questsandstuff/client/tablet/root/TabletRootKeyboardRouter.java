@@ -56,6 +56,25 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (state.root.skinEditMode) {
+                if (root.isContextMenuOpen()) {
+                    root.closeContextMenu();
+                    return true;
+                }
+                if (!state.root.skinEditSelectedTarget.isEmpty()) {
+                    state.root.skinEditSelectedTarget = "";
+                    refresher.run();
+                    return true;
+                }
+                state.root.skinEditMode = false;
+                TabletUiFactory.persistSkinState(state);
+                refresher.run();
+                return true;
+            }
+            if (root.isFrontWindowOpen() && frontWindowLayer != null) {
+                frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
+                return true;
+            }
             TabletClientHooks.closeTabletUi(state, false, "escape");
             return true;
         }

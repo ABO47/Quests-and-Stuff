@@ -188,6 +188,12 @@ public final class TabletClientHooks {
             } else if ("home".equals(app)) {
                 saveLastApp("");
             }
+            if (state.root.skinEditMode) {
+                state.root.skinEditMode = false;
+                state.root.skinEditSelectedTarget = "";
+                TabletUiFactory.persistSkinState(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode cleared on ui close");
+            }
         }
         if (suppressOpenClick) {
             suppressNextOpenClick();
