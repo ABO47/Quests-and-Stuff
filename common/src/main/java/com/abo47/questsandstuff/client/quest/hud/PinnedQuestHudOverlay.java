@@ -4,7 +4,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveHudDisplay;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskHudDisplay;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.mojang.blaze3d.platform.Window;
@@ -28,7 +28,7 @@ public final class PinnedQuestHudOverlay {
     private static final int PAD = 6;
     private static final int STACK_GAP = 4;
     private static final int MAX_QUESTS = 3;
-    private static final int MAX_REQUIREMENT_ROWS = 4;
+    private static final int MAX_TASK_ROWS = 4;
 
     private PinnedQuestHudOverlay() {
     }
@@ -150,17 +150,17 @@ public final class PinnedQuestHudOverlay {
             QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), TabletColors.SUCCESS, 230);
         }
 
-        List<RequirementLine> lines = requirementLines(quest);
+        List<TaskLine> lines = taskLines(quest);
         int maxRowsByHeight = Math.max(0, (y + safeH - 2 - (y + HEADER_HEIGHT + 2)) / ROW_HEIGHT);
-        int shown = Math.min(Math.min(MAX_REQUIREMENT_ROWS, lines.size()), maxRowsByHeight);
+        int shown = Math.min(Math.min(MAX_TASK_ROWS, lines.size()), maxRowsByHeight);
         int more = Math.max(0, lines.size() - shown);
         int lineY = y + HEADER_HEIGHT + 2;
         if (lines.isEmpty() && maxRowsByHeight > 0) {
-            graphics.drawString(font, Component.translatable("ui.questsandstuff.hud.no_requirements").getString(), x + PAD, lineY, muted, false);
+            graphics.drawString(font, Component.translatable("ui.questsandstuff.hud.no_tasks").getString(), x + PAD, lineY, muted, false);
             return;
         }
         for (int i = 0; i < shown; i++) {
-            RequirementLine line = lines.get(i);
+            TaskLine line = lines.get(i);
             String progress = line.progress();
             int progressW = progress.isBlank() ? 0 : font.width(progress);
             int titleW = safeW - PAD * 2 - 13 - progressW - 5;
@@ -173,7 +173,7 @@ public final class PinnedQuestHudOverlay {
             lineY += ROW_HEIGHT;
         }
         if (more > 0 && lineY + 8 <= y + safeH - 2) {
-            String moreText = Component.translatable("ui.questsandstuff.hud.more_requirements", more).getString();
+            String moreText = Component.translatable("ui.questsandstuff.hud.more_tasks", more).getString();
             graphics.drawString(font, cropToWidth(font, moreText, contentW), x + PAD, lineY, muted, false);
         }
     }
@@ -221,16 +221,16 @@ public final class PinnedQuestHudOverlay {
     }
 
     private static int heightForQuest(CompoundTag quest) {
-        List<RequirementLine> lines = requirementLines(quest);
-        int rows = Math.max(1, Math.min(MAX_REQUIREMENT_ROWS, lines.size()));
+        List<TaskLine> lines = taskLines(quest);
+        int rows = Math.max(1, Math.min(MAX_TASK_ROWS, lines.size()));
         if (lines.size() > rows) {
             rows++;
         }
         return HEADER_HEIGHT + PAD + rows * ROW_HEIGHT + 1;
     }
 
-    private static List<RequirementLine> requirementLines(CompoundTag quest) {
-        List<RequirementLine> lines = new ArrayList<>();
+    private static List<TaskLine> taskLines(CompoundTag quest) {
+        List<TaskLine> lines = new ArrayList<>();
         if (quest == null) {
             return lines;
         }
@@ -238,17 +238,17 @@ public final class PinnedQuestHudOverlay {
         ListTag order = quest.getList("tasks_order", Tag.TAG_STRING);
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < order.size(); i++) {
-            addRequirementLine(lines, seen, tasks, order.getString(i));
+            addTaskLine(lines, seen, tasks, order.getString(i));
         }
         List<String> unordered = new ArrayList<>(tasks.getAllKeys());
         unordered.sort(String::compareTo);
         for (String id : unordered) {
-            addRequirementLine(lines, seen, tasks, id);
+            addTaskLine(lines, seen, tasks, id);
         }
         return lines;
     }
 
-    private static void addRequirementLine(List<RequirementLine> lines, Set<String> seen, CompoundTag tasks, String id) {
+    private static void addTaskLine(List<TaskLine> lines, Set<String> seen, CompoundTag tasks, String id) {
         if (id == null || id.isBlank() || !seen.add(id)) {
             return;
         }
@@ -256,12 +256,12 @@ public final class PinnedQuestHudOverlay {
         if (taskTag.isEmpty()) {
             return;
         }
-        String title = QuestObjectiveHudDisplay.title(taskTag);
-        lines.add(new RequirementLine(
+        String title = QuestTaskHudDisplay.title(taskTag);
+        lines.add(new TaskLine(
                 title == null || title.isBlank() ? id : title,
-                QuestObjectiveHudDisplay.progressText(taskTag),
+                QuestTaskHudDisplay.progressText(taskTag),
                 taskTag.getBoolean("complete"),
-                QuestObjectiveHudDisplay.icon(taskTag)
+                QuestTaskHudDisplay.icon(taskTag)
         ));
     }
 
@@ -289,6 +289,6 @@ public final class PinnedQuestHudOverlay {
         return cropped.isEmpty() ? "..." : cropped + "...";
     }
 
-    private record RequirementLine(String title, String progress, boolean complete, String icon) {
+    private record TaskLine(String title, String progress, boolean complete, String icon) {
     }
 }

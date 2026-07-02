@@ -236,9 +236,9 @@ public final class ClientQuestPropertyMutations {
         CompoundTag tasks = quest.getCompound(SyncKeys.Quest.TASKS);
         for (String taskId : tasks.getAllKeys()) {
             CompoundTag task = tasks.getCompound(taskId);
-            task.putFloat(SyncKeys.Objective.PROGRESS, 0.0f);
-            task.putBoolean(SyncKeys.Objective.COMPLETE, false);
-            task.putInt(SyncKeys.Objective.COUNT, 0);
+            task.putFloat(SyncKeys.Task.PROGRESS, 0.0f);
+            task.putBoolean(SyncKeys.Task.COMPLETE, false);
+            task.putInt(SyncKeys.Task.COUNT, 0);
             tasks.put(taskId, task);
         }
         ClientQuestState.forEachQuest(ClientQuestConnectionMutator::refreshLocalUnlockState);

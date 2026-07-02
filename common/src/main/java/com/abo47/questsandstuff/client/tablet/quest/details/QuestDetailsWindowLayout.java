@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -63,8 +63,8 @@ final class QuestDetailsWindowLayout {
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
         WidgetGroup modal = addModal(layer, state, frame, fillsLayer);
-        WidgetGroup objectivePanel = addObjectivePanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
-        SkinAnchorRegistry.register("quest_details_objectives", objectivePanel);
+        WidgetGroup taskPanel = addTaskPanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
+        SkinAnchorRegistry.register("quest_details_tasks", taskPanel);
         WidgetGroup questDetailsSplitter = new QuestDetailsSplitterWidget(splitterX, 0, frame.h(), state, refresh);
         modal.addWidget(questDetailsSplitter);
 
@@ -85,8 +85,8 @@ final class QuestDetailsWindowLayout {
 
         int toolsX = QuestDetailsHeader.renderCanvasHeader(canvasPanel, state, player, refresh, questId, viewport[0], viewport[2]);
         QuestDetailsDescriptionPanel.rebuild(viewportBg, state, player, refresh, questId, quest, 0, 0, viewport[2], viewport[3]);
-        QuestDetailsObjectivesPanel.renderContextMenu(modal, state, player, refresh, questId);
-        QuestDetailsObjectivesPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
+        QuestDetailsTasksPanel.renderContextMenu(modal, state, player, refresh, questId);
+        QuestDetailsTasksPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
         TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
     }
 
@@ -166,15 +166,15 @@ final class QuestDetailsWindowLayout {
         );
     }
 
-    private static WidgetGroup addObjectivePanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW, int frameH) {
-        WidgetGroup objectivePanel = SplitPanelLayout.leftPanel(0, 0, leftW, frameH, state);
-        modal.addWidget(objectivePanel);
+    private static WidgetGroup addTaskPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW, int frameH) {
+        WidgetGroup taskPanel = SplitPanelLayout.leftPanel(0, 0, leftW, frameH, state);
+        modal.addWidget(taskPanel);
         int contentX = CHAPTER_PANEL_GUTTER_X;
         int contentY = QuestDetailsWindow.CONTENT_INSET;
         int contentW = Math.max(1, leftW - contentX * 2);
         int contentH = Math.max(1, frameH - contentY - CHAPTER_PANEL_GUTTER_BOTTOM);
-        QuestDetailsObjectivesPanel.rebuild(
-                objectivePanel,
+        QuestDetailsTasksPanel.rebuild(
+                taskPanel,
                 state,
                 player,
                 refresh,
@@ -185,7 +185,7 @@ final class QuestDetailsWindowLayout {
                 contentW,
                 contentH
         );
-        return objectivePanel;
+        return taskPanel;
     }
 
     private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasY, int canvasW, int canvasH, int[] viewport) {

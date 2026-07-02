@@ -82,7 +82,7 @@ public record GatherItemQuestTaskDefinition(
             if (signal.type() != QuestSignalType.ITEM_COLLECTED && signal.type() != QuestSignalType.INVENTORY_CHANGED) {
                 return current;
             }
-            if (isFluidRequirement() && signal.type() == QuestSignalType.INVENTORY_CHANGED) {
+            if (isFluidTask() && signal.type() == QuestSignalType.INVENTORY_CHANGED) {
                 return automaticInventoryProgress(current, signal);
             }
             if (!matchesItemKey(signal.key())) {
@@ -101,7 +101,7 @@ public record GatherItemQuestTaskDefinition(
     }
 
     public boolean matchesItemKey(String itemKey) {
-        if (isFluidRequirement()) {
+        if (isFluidTask()) {
             return QuestInventoryTasks.itemContainsFluid(itemKey, icon);
         }
         if (usesTag()) {
@@ -111,7 +111,7 @@ public record GatherItemQuestTaskDefinition(
     }
 
     public int countMatching(ServerPlayer player) {
-        if (isFluidRequirement()) {
+        if (isFluidTask()) {
             return QuestInventoryTasks.countFluidContainers(player, icon);
         }
         if (usesTag()) {
@@ -121,7 +121,7 @@ public record GatherItemQuestTaskDefinition(
     }
 
     public int consumeMatching(ServerPlayer player, int max) {
-        if (isFluidRequirement()) {
+        if (isFluidTask()) {
             return 0;
         }
         if (usesTag()) {
@@ -137,7 +137,7 @@ public record GatherItemQuestTaskDefinition(
         return IntegerTaskStorage.INSTANCE.max(current, Math.max(0, signal.amount()), safeGoal());
     }
 
-    private boolean isFluidRequirement() {
+    private boolean isFluidTask() {
         return QuestInventoryTasks.isFluidIcon(icon);
     }
 }

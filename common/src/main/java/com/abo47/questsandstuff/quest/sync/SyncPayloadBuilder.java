@@ -209,13 +209,13 @@ final class SyncPayloadBuilder {
         for (Map.Entry<String, QuestTaskDefinition> entry : definition.tasks().entrySet()) {
             QuestTaskDefinition task = entry.getValue();
             CompoundTag taskTag = new CompoundTag();
-            taskTag.putString(SyncKeys.Objective.TYPE, task.type().toString());
-            taskTag.putString(SyncKeys.Objective.JSON, encodeTask(definition.id(), entry.getKey(), task));
+            taskTag.putString(SyncKeys.Task.TYPE, task.type().toString());
+            taskTag.putString(SyncKeys.Task.JSON, encodeTask(definition.id(), entry.getKey(), task));
             if (progress != null) {
                 var taskProgress = progress.getTaskProgress(entry.getKey(), task);
-                taskTag.putFloat(SyncKeys.Objective.PROGRESS, task.getProgress(taskProgress));
-                taskTag.putBoolean(SyncKeys.Objective.COMPLETE, task.isComplete(taskProgress));
-                taskTag.putInt(SyncKeys.Objective.COUNT, progress.getTaskCount(entry.getKey()));
+                taskTag.putFloat(SyncKeys.Task.PROGRESS, task.getProgress(taskProgress));
+                taskTag.putBoolean(SyncKeys.Task.COMPLETE, task.isComplete(taskProgress));
+                taskTag.putInt(SyncKeys.Task.COUNT, progress.getTaskCount(entry.getKey()));
             }
             tasksTag.put(entry.getKey(), taskTag);
         }
@@ -227,10 +227,10 @@ final class SyncPayloadBuilder {
         for (Map.Entry<String, QuestRewardDefinition> entry : definition.rewards().entrySet()) {
             QuestRewardDefinition reward = entry.getValue();
             CompoundTag rewardTag = new CompoundTag();
-            rewardTag.putString(SyncKeys.Objective.TYPE, reward.type().toString());
-            rewardTag.putString(SyncKeys.Objective.JSON, encodeReward(definition.id(), entry.getKey(), reward));
-            rewardTag.putBoolean(SyncKeys.Objective.SELECTABLE, reward.selectable());
-            rewardTag.putBoolean(SyncKeys.Objective.MASS_CLAIMABLE, reward.canBeMassClaimed());
+            rewardTag.putString(SyncKeys.Task.TYPE, reward.type().toString());
+            rewardTag.putString(SyncKeys.Task.JSON, encodeReward(definition.id(), entry.getKey(), reward));
+            rewardTag.putBoolean(SyncKeys.Task.SELECTABLE, reward.selectable());
+            rewardTag.putBoolean(SyncKeys.Task.MASS_CLAIMABLE, reward.canBeMassClaimed());
             rewardsTag.put(entry.getKey(), rewardTag);
         }
         return rewardsTag;

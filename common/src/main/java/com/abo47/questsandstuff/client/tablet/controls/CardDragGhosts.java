@@ -23,7 +23,7 @@ public final class CardDragGhosts {
         renderVeil(parent, x, y, w, TabletUiFactory.CHAPTER_CARD_H);
     }
 
-    public static void renderObjective(WidgetGroup parent, int x, int y, int w, int h, String icon, String title, String amount, float progress) {
+    public static void renderTask(WidgetGroup parent, int x, int y, int w, int h, String icon, String title, String amount, float progress) {
         renderBase(parent, x, y, w, h, null, progress);
         if (icon != null && !icon.isBlank()) {
             parent.addWidget(new DisplayIconWidget(x + 8, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, icon));

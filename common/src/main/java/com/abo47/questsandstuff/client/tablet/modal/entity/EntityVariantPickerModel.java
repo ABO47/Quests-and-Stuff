@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
@@ -127,11 +127,11 @@ record EntityVariantPickerModel(
         if (parsed.hasAtLeast(2) && parsed.isChapterIcon()) {
             return ClientQuestStateFacade.groupIcon(parsed.questId());
         }
-        if (parsed.hasAtLeast(3) && parsed.isObjectiveTask()) {
-            return QuestObjectiveEditActions.objectiveIcon(parsed.questId(), parsed.entryId(), true);
+        if (parsed.hasAtLeast(3) && parsed.isTaskTask()) {
+            return QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), true);
         }
-        if (parsed.hasAtLeast(3) && parsed.isObjectiveReward()) {
-            return QuestObjectiveEditActions.objectiveIcon(parsed.questId(), parsed.entryId(), false);
+        if (parsed.hasAtLeast(3) && parsed.isTaskReward()) {
+            return QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), false);
         }
         return "";
     }

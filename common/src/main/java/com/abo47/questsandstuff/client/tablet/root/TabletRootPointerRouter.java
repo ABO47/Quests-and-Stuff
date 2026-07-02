@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanel;
 import com.abo47.questsandstuff.client.tablet.quest.group.GroupDragController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveDragDispatcher;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
@@ -66,7 +66,7 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
             }
-            if (QuestObjectiveDragDispatcher.handleDrag(root.resolvePlayer(), state, refresher, mouseX, mouseY, button)) {
+            if (QuestTaskDragDispatcher.handleDrag(root.resolvePlayer(), state, refresher, mouseX, mouseY, button)) {
                 return true;
             }
             if (frontWindowLayer != null) {
@@ -99,7 +99,7 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
             }
-            if (QuestObjectiveDragDispatcher.handleRelease(root.resolvePlayer(), state, refresher)) {
+            if (QuestTaskDragDispatcher.handleRelease(root.resolvePlayer(), state, refresher)) {
                 return true;
             }
             if (frontWindowLayer != null) {

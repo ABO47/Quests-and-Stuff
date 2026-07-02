@@ -93,10 +93,10 @@ final class QuestlineManifestStore {
 
     private static JsonArray requiredMods() {
         JsonArray required = new JsonArray();
-        required.add(modRequirement("minecraft", minecraftVersion()));
-        required.add(modRequirement(Services.platform().loaderName(), loaderVersion()));
-        required.add(modRequirement("ldlib", modVersion("ldlib")));
-        required.add(modRequirement(QuestsAndStuffMod.MODID, modVersion(QuestsAndStuffMod.MODID)));
+        required.add(modTask("minecraft", minecraftVersion()));
+        required.add(modTask(Services.platform().loaderName(), loaderVersion()));
+        required.add(modTask("ldlib", modVersion("ldlib")));
+        required.add(modTask(QuestsAndStuffMod.MODID, modVersion(QuestsAndStuffMod.MODID)));
         return required;
     }
 
@@ -114,7 +114,7 @@ final class QuestlineManifestStore {
         return null;
     }
 
-    private static JsonObject modRequirement(String id, String version) {
+    private static JsonObject modTask(String id, String version) {
         JsonObject mod = new JsonObject();
         mod.addProperty("id", id);
         mod.addProperty("version", version == null || version.isBlank() ? UNKNOWN_VERSION : version);

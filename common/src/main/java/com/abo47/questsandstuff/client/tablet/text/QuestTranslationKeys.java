@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.text;
 
 public final class QuestTranslationKeys {
-    public static final String REQUIREMENT = "ui.questsandstuff.quest.requirement";
-    public static final String REQUIREMENTS = "ui.questsandstuff.quest.requirements";
+    public static final String TASK = "ui.questsandstuff.quest.task";
+    public static final String TASKS = "ui.questsandstuff.quest.tasks";
     public static final String REWARD = "ui.questsandstuff.quest.reward";
     public static final String REWARDS = "ui.questsandstuff.quest.rewards";
     public static final String PREREQUISITES = "ui.questsandstuff.quest.prerequisites";
@@ -18,19 +18,19 @@ public final class QuestTranslationKeys {
     public static final String PREREQUISITES_REMOVE_CONNECTION = "ui.questsandstuff.prerequisites.remove_connection";
     public static final String PREREQUISITES_EXCLUSIVE_CHOICE = "ui.questsandstuff.prerequisites.exclusive_choice";
 
-    public static final String ADD_REQUIREMENT = "ui.questsandstuff.quest.add_requirement";
+    public static final String ADD_TASK = "ui.questsandstuff.quest.add_task";
     public static final String ADD_REWARD = "ui.questsandstuff.quest.add_reward";
     public static final String AUTO_CLAIM_REWARDS = "ui.questsandstuff.quest.auto_claim_rewards";
-    public static final String CHANGE_REQUIREMENT = "ui.questsandstuff.quest.change_requirement";
+    public static final String CHANGE_TASK = "ui.questsandstuff.quest.change_task";
     public static final String CHANGE_REWARD = "ui.questsandstuff.quest.change_reward";
     public static final String CLAIM = "ui.questsandstuff.quest.claim";
     public static final String CLAIM_ALL_REWARDS = "ui.questsandstuff.quest.claim_all_rewards";
     public static final String CLAIMED = "ui.questsandstuff.quest.claimed";
     public static final String ENTER_COMMAND = "ui.questsandstuff.quest.enter_command";
     public static final String EDIT_COMMAND_REWARD = "ui.questsandstuff.quest.edit_command_reward";
-    public static final String MARK_REQUIREMENT_DONE = "ui.questsandstuff.quest.mark_requirement_done";
-    public static final String SUBMIT_XP_REQUIREMENT = "ui.questsandstuff.quest.submit_xp_requirement";
-    public static final String RENAME_REQUIREMENT = "ui.questsandstuff.quest.rename_requirement";
+    public static final String MARK_TASK_DONE = "ui.questsandstuff.quest.mark_task_done";
+    public static final String SUBMIT_XP_TASK = "ui.questsandstuff.quest.submit_xp_task";
+    public static final String RENAME_TASK = "ui.questsandstuff.quest.rename_task";
     public static final String RENAME_REWARD = "ui.questsandstuff.quest.rename_reward";
 
     public static final String ANY_ITEM = "ui.questsandstuff.quest.any_item";
@@ -174,12 +174,12 @@ public final class QuestTranslationKeys {
     private QuestTranslationKeys() {
     }
 
-    public static String requirement() {
-        return TabletTranslationKeys.text(REQUIREMENT);
+    public static String task() {
+        return TabletTranslationKeys.text(TASK);
     }
 
-    public static String requirements() {
-        return TabletTranslationKeys.text(REQUIREMENTS);
+    public static String tasks() {
+        return TabletTranslationKeys.text(TASKS);
     }
 
     public static String reward() {

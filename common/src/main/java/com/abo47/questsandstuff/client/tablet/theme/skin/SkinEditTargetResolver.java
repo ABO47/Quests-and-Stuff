@@ -106,7 +106,7 @@ public final class SkinEditTargetResolver {
 
         if ("SplitPanelLayout".equals(simpleName) || cls.getName().contains("SplitPanelLayout")) {
             if (isInsideQuestDetailsLayer(widget)) {
-                return widget.getSizeWidth() > 200 ? "quest_details_canvas_panel" : "quest_details_objectives";
+                return widget.getSizeWidth() > 200 ? "quest_details_canvas_panel" : "quest_details_tasks";
             }
             return widget.getSizeWidth() > 200 ? "quests_canvas" : "teams_member_list";
         }

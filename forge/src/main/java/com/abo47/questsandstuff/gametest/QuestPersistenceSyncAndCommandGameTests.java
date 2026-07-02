@@ -216,7 +216,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                 throw new GameTestAssertException("Manifest should include mod, targets, required mods, and optional mods");
             }
             if (manifest.getAsJsonArray("required_mods").size() < 4 || manifest.getAsJsonArray("optional_mods").size() != 1) {
-                throw new GameTestAssertException("Manifest mod requirements should be written");
+                throw new GameTestAssertException("Manifest mod tasks should be written");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Manifest test setup failed: " + e.getMessage());

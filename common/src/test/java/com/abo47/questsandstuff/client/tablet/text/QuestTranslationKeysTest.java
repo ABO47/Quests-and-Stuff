@@ -19,10 +19,8 @@ class QuestTranslationVocabularyTest {
     private static final String OLD_MEDIA_NODE = "pictur";
     private static final String OLD_EDGE_VERB = "lin";
     private static final Set<String> RETIRED_VISIBLE_TERMS = Set.of(
-            "task",
-            "tasks",
-            "objective",
-            "objectives",
+            "requirement",
+            "requirements",
             OLD_UNLOCK_EDGE + "y",
             OLD_UNLOCK_EDGE + "ies",
             OLD_MEDIA_NODE + "e",
@@ -45,7 +43,7 @@ class QuestTranslationVocabularyTest {
         }
         assertTrue(
                 drift.isEmpty(),
-                "Use Requirement, Reward, Prerequisite, Image, and Connect/Connection in visible translations: " + drift
+                "Use Task, Reward, Prerequisite, Image, and Connect/Connection in visible translations: " + drift
         );
     }
 

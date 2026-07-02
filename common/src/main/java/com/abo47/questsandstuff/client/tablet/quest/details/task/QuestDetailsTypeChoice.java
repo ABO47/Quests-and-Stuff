@@ -10,7 +10,7 @@ record QuestDetailsTypeChoice(
         String labelKey,
         String type,
         String icon,
-        QuestObjectiveEditFlow editFlow,
+        QuestTaskEditFlow editFlow,
         Function<String, JsonObject> defaultJsonFactory,
         List<String> requiredJsonFields
 ) {

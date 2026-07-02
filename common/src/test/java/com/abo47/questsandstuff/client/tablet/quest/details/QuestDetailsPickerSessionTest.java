@@ -13,13 +13,13 @@ class QuestDetailsPickerSessionTest {
     void typePickerUsesSingleTypedSession() {
         TabletUiState state = contextAt(24, 36);
 
-        QuestDetailsTransientManager.openTypePicker(state, "requirement_change", "task_a");
+        QuestDetailsTransientManager.openTypePicker(state, "task_change", "task_a");
 
         QuestDetailsPickerSession session = state.questDetails.questDetailsPickerSession;
         assertTrue(session.typePicker());
         assertFalse(session.itemSourcePicker());
         assertFalse(session.xpPicker());
-        assertEquals("requirement_change", session.kind());
+        assertEquals("task_change", session.kind());
         assertEquals("task_a", session.targetId());
         assertEquals(24, session.x());
         assertEquals(36, session.y());
@@ -29,7 +29,7 @@ class QuestDetailsPickerSessionTest {
     void itemSourceAndXpReplaceActivePickerSession() {
         TabletUiState state = contextAt(12, 18);
 
-        QuestDetailsTransientManager.openTypePicker(state, "requirement", "");
+        QuestDetailsTransientManager.openTypePicker(state, "task", "");
         QuestDetailsTransientManager.openItemSourcePicker(state, "task_item|quest_a|task_a|questsandstuff:item");
 
         QuestDetailsPickerSession itemSource = state.questDetails.questDetailsPickerSession;

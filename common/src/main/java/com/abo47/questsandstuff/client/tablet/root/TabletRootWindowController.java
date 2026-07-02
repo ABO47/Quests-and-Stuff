@@ -105,7 +105,7 @@ public final class TabletRootWindowController {
                 || state.questDetails.questDetailsTitleFocused
                 || state.pickers.assetRenameOpen
                 || state.questDetails.questDetailsCommandRewardEditorOpen
-                || state.questDetails.questDetailsObjectiveRenameOpen
+                || state.questDetails.questDetailsTaskRenameOpen
                 || isFontSizeFieldOpen(state)
                 || TextEditSession.isAnyEditing(state)
                 || !state.questDetails.pendingQuestTitleChangeId.isBlank()

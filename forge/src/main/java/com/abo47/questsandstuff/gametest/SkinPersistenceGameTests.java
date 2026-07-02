@@ -207,7 +207,7 @@ public final class SkinPersistenceGameTests {
             "quest_details_description_canvas",
             "quest_details_canvas_panel",
             "quest_details_canvas_background",
-            "quest_details_objectives",
+            "quest_details_tasks",
             "teams_member_list",
             "home_inner",
             "root"

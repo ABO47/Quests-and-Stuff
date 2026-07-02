@@ -75,16 +75,16 @@ final class TabletShortcutActions {
             CanvasTransformSessions.clearQuestDetailsSession(state);
             changed = true;
         }
-        if (state.chapterPanel.chapterDragPending || state.chapterPanel.chapterDragActive || state.questDetails.questDetailsObjectiveDragPending || state.questDetails.questDetailsObjectiveDragActive) {
+        if (state.chapterPanel.chapterDragPending || state.chapterPanel.chapterDragActive || state.questDetails.questDetailsTaskDragPending || state.questDetails.questDetailsTaskDragActive) {
             state.chapterPanel.chapterDragPending = false;
             state.chapterPanel.chapterDragActive = false;
             state.chapterPanel.chapterDragName = "";
             state.chapterPanel.chapterDragTargetIndex = -1;
-            state.questDetails.questDetailsObjectiveDragPending = false;
-            state.questDetails.questDetailsObjectiveDragActive = false;
-            state.questDetails.questDetailsObjectiveDragKind = "";
-            state.questDetails.questDetailsObjectiveDragId = "";
-            state.questDetails.questDetailsObjectiveDragTargetIndex = -1;
+            state.questDetails.questDetailsTaskDragPending = false;
+            state.questDetails.questDetailsTaskDragActive = false;
+            state.questDetails.questDetailsTaskDragKind = "";
+            state.questDetails.questDetailsTaskDragId = "";
+            state.questDetails.questDetailsTaskDragTargetIndex = -1;
             changed = true;
         }
         return changed;

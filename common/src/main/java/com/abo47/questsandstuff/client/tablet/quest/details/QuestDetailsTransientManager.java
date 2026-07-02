@@ -28,7 +28,7 @@ public final class QuestDetailsTransientManager {
         closeItemSourcePicker(state);
         closeXpPicker(state);
         closeCommandRewardEditor(state);
-        closeObjectiveRename(state);
+        closeTaskRename(state);
         ContextMenuController.clearDeleteConfirm(state);
     }
 
@@ -74,7 +74,7 @@ public final class QuestDetailsTransientManager {
         int y = active.typePicker() ? active.y() : state.questDetails.questDetailsContextY;
         state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.xp(questId, id, task, x, y);
         closeCommandRewardEditor(state);
-        closeObjectiveRename(state);
+        closeTaskRename(state);
         closeContext(state);
     }
 
@@ -97,13 +97,13 @@ public final class QuestDetailsTransientManager {
         closeContext(state);
     }
 
-    public static void openObjectiveRename(TabletUiState state, String questId, String id, boolean task, String draft) {
-        state.questDetails.questDetailsObjectiveRenameOpen = true;
-        state.questDetails.questDetailsObjectiveRenameTask = task;
-        state.questDetails.questDetailsObjectiveRenameQuestId = questId == null ? "" : questId;
-        state.questDetails.questDetailsObjectiveRenameId = id == null ? "" : id;
-        state.questDetails.questDetailsObjectiveRenameDraft = draft == null ? "" : draft;
-        state.questDetails.questDetailsObjectiveRenameFocusPending = true;
+    public static void openTaskRename(TabletUiState state, String questId, String id, boolean task, String draft) {
+        state.questDetails.questDetailsTaskRenameOpen = true;
+        state.questDetails.questDetailsTaskRenameTask = task;
+        state.questDetails.questDetailsTaskRenameQuestId = questId == null ? "" : questId;
+        state.questDetails.questDetailsTaskRenameId = id == null ? "" : id;
+        state.questDetails.questDetailsTaskRenameDraft = draft == null ? "" : draft;
+        state.questDetails.questDetailsTaskRenameFocusPending = true;
         closeTypePicker(state);
         closeItemSourcePicker(state);
         closeXpPicker(state);
@@ -119,13 +119,13 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsCommandRewardIcon = "";
     }
 
-    public static void closeObjectiveRename(TabletUiState state) {
-        state.questDetails.questDetailsObjectiveRenameOpen = false;
-        state.questDetails.questDetailsObjectiveRenameTask = false;
-        state.questDetails.questDetailsObjectiveRenameQuestId = "";
-        state.questDetails.questDetailsObjectiveRenameId = "";
-        state.questDetails.questDetailsObjectiveRenameDraft = "";
-        state.questDetails.questDetailsObjectiveRenameFocusPending = false;
+    public static void closeTaskRename(TabletUiState state) {
+        state.questDetails.questDetailsTaskRenameOpen = false;
+        state.questDetails.questDetailsTaskRenameTask = false;
+        state.questDetails.questDetailsTaskRenameQuestId = "";
+        state.questDetails.questDetailsTaskRenameId = "";
+        state.questDetails.questDetailsTaskRenameDraft = "";
+        state.questDetails.questDetailsTaskRenameFocusPending = false;
     }
 
     public static boolean closeFloatingPopups(TabletUiState state) {
@@ -138,8 +138,8 @@ public final class QuestDetailsTransientManager {
             closeCommandRewardEditor(state);
             changed = true;
         }
-        if (state.questDetails.questDetailsObjectiveRenameOpen) {
-            closeObjectiveRename(state);
+        if (state.questDetails.questDetailsTaskRenameOpen) {
+            closeTaskRename(state);
             changed = true;
         }
         if (state.questDetails.questDetailsContextOpen) {

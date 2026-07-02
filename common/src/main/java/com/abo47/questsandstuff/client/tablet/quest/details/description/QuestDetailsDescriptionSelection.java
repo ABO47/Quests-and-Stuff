@@ -40,8 +40,8 @@ public final class QuestDetailsDescriptionSelection {
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
         state.questDetails.questDetailsDescriptionSelection.textIds().clear();
         state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.canvas.selectionBoundsVisible = false;
     }
 

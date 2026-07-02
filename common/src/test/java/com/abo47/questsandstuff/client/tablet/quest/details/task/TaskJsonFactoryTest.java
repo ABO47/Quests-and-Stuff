@@ -35,7 +35,7 @@ class TaskJsonFactoryTest {
     }
 
     @Test
-    void readResultAcceptsValidObjectiveObjects() {
+    void readResultAcceptsValidTaskObjects() {
         TaskJsonFactory.ParseResult result = TaskJsonFactory.readResult("{\"id\":\"task_a\",\"type\":\"questsandstuff:check\"}");
 
         assertTrue(result.valid());

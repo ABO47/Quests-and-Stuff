@@ -69,7 +69,7 @@ public final class SyncKeys {
         }
     }
 
-    public static final class Objective {
+    public static final class Task {
         public static final String TYPE = "type";
         public static final String JSON = "json";
         public static final String PROGRESS = Quest.PROGRESS;
@@ -78,7 +78,7 @@ public final class SyncKeys {
         public static final String SELECTABLE = "selectable";
         public static final String MASS_CLAIMABLE = "mass_claimable";
 
-        private Objective() {
+        private Task() {
         }
     }
 

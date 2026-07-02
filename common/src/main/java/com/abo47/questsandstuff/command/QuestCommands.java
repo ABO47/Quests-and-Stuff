@@ -96,36 +96,36 @@ public final class QuestCommands {
     private static LiteralArgumentBuilder<CommandSourceStack> manual() {
         return Commands.literal("manual")
                 .requires(source -> source.hasPermission(2))
-                .then(Commands.argument("requirement_key", StringArgumentType.string())
+                .then(Commands.argument("task_key", StringArgumentType.string())
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             QuestServiceRegistry.engine(context.getSource().getServer())
-                                    .runManualTask(player, StringArgumentType.getString(context, "requirement_key"));
+                                    .runManualTask(player, StringArgumentType.getString(context, "task_key"));
                             return 1;
                         }))
                 .then(Commands.literal("item_submit")
                         .then(Commands.argument("quest", StringArgumentType.string())
                                 .suggests(QUEST_IDS)
-                                .then(Commands.argument("requirement", StringArgumentType.string())
+                                .then(Commands.argument("task", StringArgumentType.string())
                                         .executes(context -> {
                                             ServerPlayer player = context.getSource().getPlayerOrException();
                                             QuestServiceRegistry.engine(context.getSource().getServer()).submitManualItemTask(
                                                     player,
                                                     StringArgumentType.getString(context, "quest"),
-                                                    StringArgumentType.getString(context, "requirement")
+                                                    StringArgumentType.getString(context, "task")
                                             );
                                             return 1;
                                         }))))
                 .then(Commands.literal("xp_submit")
                         .then(Commands.argument("quest", StringArgumentType.string())
                                 .suggests(QUEST_IDS)
-                                .then(Commands.argument("requirement", StringArgumentType.string())
+                                .then(Commands.argument("task", StringArgumentType.string())
                                         .executes(context -> {
                                             ServerPlayer player = context.getSource().getPlayerOrException();
                                             QuestServiceRegistry.engine(context.getSource().getServer()).submitManualXpTask(
                                                     player,
                                                     StringArgumentType.getString(context, "quest"),
-                                                    StringArgumentType.getString(context, "requirement")
+                                                    StringArgumentType.getString(context, "task")
                                             );
                                             return 1;
                                         }))));

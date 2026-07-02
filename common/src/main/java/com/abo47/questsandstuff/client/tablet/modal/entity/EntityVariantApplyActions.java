@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -29,7 +29,7 @@ final class EntityVariantApplyActions {
         if (applyChapterIcon(player, state, parsed, variantKey)) {
             return;
         }
-        if (applyObjectiveIcon(player, parsed, variantKey)) {
+        if (applyTaskIcon(player, parsed, variantKey)) {
             return;
         }
         if (!parsed.hasAtLeast(3)) {
@@ -81,17 +81,17 @@ final class EntityVariantApplyActions {
         return true;
     }
 
-    private static boolean applyObjectiveIcon(Player player, ModalTargetParser.Target parsed, String variantKey) {
-        if (!parsed.hasAtLeast(3) || (!parsed.isObjectiveTask() && !parsed.isObjectiveReward())) {
+    private static boolean applyTaskIcon(Player player, ModalTargetParser.Target parsed, String variantKey) {
+        if (!parsed.hasAtLeast(3) || (!parsed.isTaskTask() && !parsed.isTaskReward())) {
             return false;
         }
-        boolean task = parsed.isObjectiveTask();
-        String icon = QuestObjectiveEditActions.objectiveIcon(parsed.questId(), parsed.entryId(), task);
+        boolean task = parsed.isTaskTask();
+        String icon = QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), task);
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return true;
         }
-        QuestObjectiveEditActions.putObjectiveIcon(player, parsed.questId(), parsed.entryId(), EntityPreviewRenderer.withEntityVariant(icon, variantKey), task);
-        QuestsAndStuffMod.debugLog("[QnS:UI] objective entity variant picked quest={} objective={} task={} variant={}", parsed.questId(), parsed.entryId(), task, variantKey);
+        QuestTaskEditActions.putTaskIcon(player, parsed.questId(), parsed.entryId(), EntityPreviewRenderer.withEntityVariant(icon, variantKey), task);
+        QuestsAndStuffMod.debugLog("[QnS:UI] task entity variant picked quest={} task={} task={} variant={}", parsed.questId(), parsed.entryId(), task, variantKey);
         return true;
     }
 }

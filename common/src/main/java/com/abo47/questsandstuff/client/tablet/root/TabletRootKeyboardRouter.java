@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
@@ -169,11 +169,11 @@ final class TabletRootKeyboardRouter {
         if (handleQuestDetailsHistoryShortcut(root, state, refresher, undoAction, redoAction, keyCode)) {
             return true;
         }
-        String renameDraftBefore = state.questDetails.questDetailsObjectiveRenameDraft;
+        String renameDraftBefore = state.questDetails.questDetailsTaskRenameDraft;
         if (frontWindowLayer != null) {
             frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
         }
-        if (QuestDetailsObjectivesPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetails.questDetailsObjectiveRenameDraft))) {
+        if (QuestDetailsTasksPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
             refresher.run();
         }
         return true;
@@ -260,7 +260,7 @@ final class TabletRootKeyboardRouter {
 
     private static boolean handleQuestDetailsRecipeViewerShortcut(TabletUiState state, int keyCode, int scanCode) {
         double[] mouse = currentMousePosition();
-        return QuestDetailsObjectivesPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
+        return QuestDetailsTasksPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
     }
 
     private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
@@ -365,11 +365,11 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isFrontWindowOpen()) {
-            String renameDraftBefore = state.questDetails.questDetailsObjectiveRenameDraft;
+            String renameDraftBefore = state.questDetails.questDetailsTaskRenameDraft;
             if (frontWindowLayer != null) {
                 frontWindowLayer.charTyped(c, modifiers);
             }
-            if (QuestDetailsObjectivesPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetails.questDetailsObjectiveRenameDraft))) {
+            if (QuestDetailsTasksPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
                 refresher.run();
             }
             return true;

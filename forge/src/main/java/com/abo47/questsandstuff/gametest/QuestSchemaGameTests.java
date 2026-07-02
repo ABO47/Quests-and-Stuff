@@ -95,7 +95,7 @@ public final class QuestSchemaGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
-    public static void objectiveUiFieldsRoundtrip(GameTestHelper helper) {
+    public static void taskUiFieldsRoundtrip(GameTestHelper helper) {
         QuestTaskDefinition itemTask = new GatherItemQuestTaskDefinition(
                 "item",
                 QuestTasks.id("item"),
@@ -157,8 +157,8 @@ public final class QuestSchemaGameTests {
 
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
-                "test/objective_ui",
-                new QuestDisplay("Objective UI", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                "test/task_ui",
+                new QuestDisplay("Task UI", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(itemTask.id(), itemTask, checkTask.id(), checkTask, biomeTask.id(), biomeTask),
@@ -186,7 +186,7 @@ public final class QuestSchemaGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
-    public static void objectiveOrderRoundtrip(GameTestHelper helper) {
+    public static void taskOrderRoundtrip(GameTestHelper helper) {
         QuestTaskDefinition firstTask = QuestGameTestDefinitions.task("first", "check", 1, "a", Map.of());
         QuestTaskDefinition secondTask = QuestGameTestDefinitions.task("second", "check", 1, "b", Map.of());
         QuestRewardDefinition firstReward = QuestGameTestDefinitions.reward("first_reward", "xp", 3, "", false, Map.of());
@@ -200,8 +200,8 @@ public final class QuestSchemaGameTests {
 
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
-                "test/objective_order",
-                new QuestDisplay("Objective Order", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
+                "test/task_order",
+                new QuestDisplay("Task Order", "", List.of(), Map.of("Main", GroupDef.DEFAULT), "minecraft:book", "minecraft:barrier"),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 tasks,
@@ -220,7 +220,7 @@ public final class QuestSchemaGameTests {
         if (!List.of("second", "first").equals(decoded.tasksOrder())
                 || !List.of("second_reward", "first_reward").equals(decoded.rewardsOrder())
                 || !List.of("second", "first").equals(new java.util.ArrayList<>(decoded.tasks().keySet()))) {
-            throw new GameTestAssertException("Objective order did not roundtrip");
+            throw new GameTestAssertException("Task order did not roundtrip");
         }
         helper.succeed();
     }
@@ -297,7 +297,7 @@ public final class QuestSchemaGameTests {
             matches = title.equals(reward.title()) && icon.equals(reward.icon());
         }
         if (!matches) {
-            throw new GameTestAssertException("Objective UI fields did not roundtrip for " + value);
+            throw new GameTestAssertException("Task UI fields did not roundtrip for " + value);
         }
     }
 

@@ -312,16 +312,16 @@ public final class QuestRewardAndTeamGameTests {
             new C2SManualTaskPacket(visible.id(), "clicked").handle(immediateContext(player));
             var visibleState = bundle.progressData.state(player.getUUID()).quest(visible.id());
             if (visibleState.getTaskCount("clicked") != 1) {
-                throw new GameTestAssertException("Manual check packet should complete the clicked requirement");
+                throw new GameTestAssertException("Manual check packet should complete the clicked task");
             }
             if (visibleState.getTaskCount("same_key") != 0) {
-                throw new GameTestAssertException("Manual check packet should not complete another requirement sharing the same target key");
+                throw new GameTestAssertException("Manual check packet should not complete another task sharing the same target key");
             }
 
             new C2SManualTaskPacket(hidden.id(), "hidden").handle(immediateContext(player));
             var hiddenState = bundle.progressData.state(player.getUUID()).quest(hidden.id());
             if (hiddenState.getTaskCount("hidden") != 0 || hiddenState.completed()) {
-                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible requirements");
+                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible tasks");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());

@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsObjectivesPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -23,15 +23,15 @@ final class QuestDetailsWindowActions {
         if (QuestDetailsDescriptionPanel.applyIconPick(player, state, entry)) {
             return;
         }
-        QuestDetailsObjectivesPanel.applyIconPick(player, state, entry);
+        QuestDetailsTasksPanel.applyIconPick(player, state, entry);
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
-        QuestDetailsObjectivesPanel.applyBiomePick(player, state, biome);
+        QuestDetailsTasksPanel.applyBiomePick(player, state, biome);
     }
 
     static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
-        QuestDetailsObjectivesPanel.applyAdvancementPick(player, state, advancement);
+        QuestDetailsTasksPanel.applyAdvancementPick(player, state, advancement);
     }
 
     static void applyRecipePick(Player player, TabletUiState state, String recipe) {
@@ -41,34 +41,34 @@ final class QuestDetailsWindowActions {
         if (CanvasRecipeCardActions.applyRecipePick(player, state, recipe)) {
             return;
         }
-        QuestDetailsObjectivesPanel.applyRecipePick(player, state, recipe);
+        QuestDetailsTasksPanel.applyRecipePick(player, state, recipe);
     }
 
     static void applyStructurePick(Player player, TabletUiState state, String structure) {
-        QuestDetailsObjectivesPanel.applyStructurePick(player, state, structure);
+        QuestDetailsTasksPanel.applyStructurePick(player, state, structure);
     }
 
     static void applyBlockPick(Player player, TabletUiState state, String block) {
         if (QuestDetailsDescriptionPanel.applyBlockPick(player, state, block)) {
             return;
         }
-        QuestDetailsObjectivesPanel.applyBlockPick(player, state, block);
+        QuestDetailsTasksPanel.applyBlockPick(player, state, block);
     }
 
     static void applyStatPick(Player player, TabletUiState state, String stat) {
-        QuestDetailsObjectivesPanel.applyStatPick(player, state, stat);
+        QuestDetailsTasksPanel.applyStatPick(player, state, stat);
     }
 
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
-        QuestDetailsObjectivesPanel.applyDimensionPick(player, state, dimension);
+        QuestDetailsTasksPanel.applyDimensionPick(player, state, dimension);
     }
 
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
-        QuestDetailsObjectivesPanel.applyLootTablePick(player, state, lootTable);
+        QuestDetailsTasksPanel.applyLootTablePick(player, state, lootTable);
     }
 
     static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
-        QuestDetailsObjectivesPanel.applyInventoryItemPick(player, state, stack);
+        QuestDetailsTasksPanel.applyInventoryItemPick(player, state, stack);
     }
 
     static void applyAssetPick(Player player, TabletUiState state, String asset) {
@@ -116,12 +116,12 @@ final class QuestDetailsWindowActions {
             return false;
         }
         String questId = questId(state);
-        if (!state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
-            QuestDetailsObjectivesPanel.openObjectiveRenameEditor(
+        if (!state.questDetails.questDetailsSelectedTaskId.isBlank()) {
+            QuestDetailsTasksPanel.openTaskRenameEditor(
                     state,
                     questId,
-                    state.questDetails.questDetailsSelectedObjectiveId,
-                    "requirement".equals(state.questDetails.questDetailsSelectedObjectiveKind)
+                    state.questDetails.questDetailsSelectedTaskId,
+                    "task".equals(state.questDetails.questDetailsSelectedTaskKind)
             );
             return true;
         }
@@ -141,7 +141,7 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank()) {
             return false;
         }
-        if (QuestDetailsObjectivesPanel.deleteSelectedObjective(player, state, questId)) {
+        if (QuestDetailsTasksPanel.deleteSelectedTask(player, state, questId)) {
             return true;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
@@ -153,7 +153,7 @@ final class QuestDetailsWindowActions {
             return false;
         }
         String questId = questId(state);
-        if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedTaskId.isBlank()) {
             return false;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
@@ -170,8 +170,8 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank()) {
             return false;
         }
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         return QuestDetailsDescriptionPanel.selectAllDescription(state, model);
     }
@@ -181,7 +181,7 @@ final class QuestDetailsWindowActions {
             return false;
         }
         String questId = questId(state);
-        if (questId.isBlank() || !state.questDetails.questDetailsSelectedObjectiveId.isBlank()) {
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedTaskId.isBlank()) {
             return false;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));

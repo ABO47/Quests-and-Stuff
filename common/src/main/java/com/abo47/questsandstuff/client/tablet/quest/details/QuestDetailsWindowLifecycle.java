@@ -221,8 +221,8 @@ final class QuestDetailsWindowLifecycle {
     }
 
     private static void clearSelectionState(TabletUiState state) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.questDetails.questDetailsSelectableRewardChoices.clear();
         state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");

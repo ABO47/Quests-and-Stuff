@@ -16,14 +16,14 @@ public final class ClientQuestTaskMutations {
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
-        putObjectiveJsonLocal(questId, taskJson, SyncKeys.Quest.TASKS, SyncKeys.Quest.TASKS_ORDER);
+        putTaskJsonLocal(questId, taskJson, SyncKeys.Quest.TASKS, SyncKeys.Quest.TASKS_ORDER);
     }
 
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
-        putObjectiveJsonLocal(questId, rewardJson, SyncKeys.Quest.REWARDS, SyncKeys.Quest.REWARDS_ORDER);
+        putTaskJsonLocal(questId, rewardJson, SyncKeys.Quest.REWARDS, SyncKeys.Quest.REWARDS_ORDER);
     }
 
-    private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
+    private static void putTaskJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
         String normalizedQuest = normalizeQuestId(questId);
         if (normalizedQuest.isBlank() || jsonValue == null || jsonValue.isBlank()) {
             return;
@@ -32,20 +32,20 @@ public final class ClientQuestTaskMutations {
         if (quest == null) {
             return;
         }
-        String id = objectiveId(normalizedQuest, bucketName, jsonValue);
+        String id = taskId(normalizedQuest, bucketName, jsonValue);
         if (id.isBlank()) {
             return;
         }
         CompoundTag bucket = quest.getCompound(bucketName);
         CompoundTag entry = bucket.getCompound(id);
-        entry.putString(SyncKeys.Objective.JSON, jsonValue);
-        entry.putString(SyncKeys.Objective.TYPE, objectiveType(normalizedQuest, id, bucketName, jsonValue, entry.getString(SyncKeys.Objective.TYPE)));
+        entry.putString(SyncKeys.Task.JSON, jsonValue);
+        entry.putString(SyncKeys.Task.TYPE, taskType(normalizedQuest, id, bucketName, jsonValue, entry.getString(SyncKeys.Task.TYPE)));
         bucket.put(id, entry);
         quest.put(bucketName, bucket);
-        appendObjectiveOrder(quest, orderName, id);
+        appendTaskOrder(quest, orderName, id);
     }
 
-    private static void appendObjectiveOrder(CompoundTag quest, String orderName, String id) {
+    private static void appendTaskOrder(CompoundTag quest, String orderName, String id) {
         if (quest == null || orderName == null || orderName.isBlank() || id == null || id.isBlank()) {
             return;
         }
@@ -65,13 +65,13 @@ public final class ClientQuestTaskMutations {
         quest.put(orderName, next);
     }
 
-    private static String objectiveId(String questId, String bucketName, String jsonValue) {
+    private static String taskId(String questId, String bucketName, String jsonValue) {
         try {
             JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
             return json.has("id") && !json.get("id").isJsonNull() ? json.get("id").getAsString().trim() : "";
         } catch (RuntimeException exception) {
             QuestsAndStuffMod.LOGGER.warn(
-                    "[QnS:Sync] Failed reading optimistic objective id quest={} bucket={} json={}",
+                    "[QnS:Sync] Failed reading optimistic task id quest={} bucket={} json={}",
                     questId,
                     bucketName,
                     abbreviateJson(jsonValue),
@@ -81,15 +81,15 @@ public final class ClientQuestTaskMutations {
         }
     }
 
-    private static String objectiveType(String questId, String objectiveId, String bucketName, String jsonValue, String fallback) {
+    private static String taskType(String questId, String taskId, String bucketName, String jsonValue, String fallback) {
         try {
             JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
             return json.has("type") && !json.get("type").isJsonNull() ? json.get("type").getAsString().trim() : fallback;
         } catch (RuntimeException exception) {
             QuestsAndStuffMod.LOGGER.warn(
-                    "[QnS:Sync] Failed reading optimistic objective type quest={} objective={} bucket={} json={}",
+                    "[QnS:Sync] Failed reading optimistic task type quest={} task={} bucket={} json={}",
                     questId,
-                    objectiveId,
+                    taskId,
                     bucketName,
                     abbreviateJson(jsonValue),
                     exception

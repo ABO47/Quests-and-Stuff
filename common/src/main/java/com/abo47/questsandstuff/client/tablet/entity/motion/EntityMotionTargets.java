@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -23,10 +23,10 @@ final class EntityMotionTargets {
     static final String SCOPE_QUEST_DETAILS = "quest_details";
     static final String SCOPE_CHAPTER_ICON = "chapter_icon";
     static final String SCOPE_QUEST_ICON = "quest_icon";
-    static final String SCOPE_OBJECTIVE_ICON = "objective_icon";
+    static final String SCOPE_TASK_ICON = "task_icon";
 
-    private static final String OBJECTIVE_TASK = "task";
-    private static final String OBJECTIVE_REWARD = "reward";
+    private static final String TASK_TASK = "task";
+    private static final String TASK_REWARD = "reward";
 
     private EntityMotionTargets() {
     }
@@ -72,8 +72,8 @@ final class EntityMotionTargets {
     }
 
     static EntityMotionValues questDetailsMotion(TabletUiState state) {
-        if (SCOPE_OBJECTIVE_ICON.equals(state.questDetails.entityMotionEditorScope)) {
-            EntityIconMotion icon = currentObjectiveIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, objectiveMotionTask(state));
+        if (SCOPE_TASK_ICON.equals(state.questDetails.entityMotionEditorScope)) {
+            EntityIconMotion icon = currentTaskIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, taskMotionTask(state));
             return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(state.questDetails.entityMotionEditorQuestId));
@@ -88,7 +88,7 @@ final class EntityMotionTargets {
         return switch (state.questDetails.entityMotionEditorScope) {
             case SCOPE_CANVAS, SCOPE_QUEST_ICON -> mainCanvasMotion(state);
             case SCOPE_CHAPTER_ICON -> chapterMotion(state);
-            case SCOPE_QUEST_DETAILS, SCOPE_OBJECTIVE_ICON -> questDetailsMotion(state);
+            case SCOPE_QUEST_DETAILS, SCOPE_TASK_ICON -> questDetailsMotion(state);
             default -> null;
         };
     }
@@ -105,7 +105,7 @@ final class EntityMotionTargets {
             case SCOPE_CANVAS -> applyCanvasMotion(state, yaw, spin, sync);
             case SCOPE_QUEST_ICON -> applyQuestIconMotion(player, state, yaw, spin, sync);
             case SCOPE_CHAPTER_ICON -> applyChapterIconMotion(player, state, yaw, spin, sync);
-            case SCOPE_OBJECTIVE_ICON -> applyObjectiveIconMotion(player, state, yaw, spin, sync);
+            case SCOPE_TASK_ICON -> applyTaskIconMotion(player, state, yaw, spin, sync);
             default -> applyQuestDetailsMotion(player, state, yaw, spin, sync);
         }
     }
@@ -155,20 +155,20 @@ final class EntityMotionTargets {
         return new EntityIconMotion(icon, EntityPreviewRenderer.entityYaw(icon), EntityPreviewRenderer.entitySpinSpeed(icon), true);
     }
 
-    static EntityIconMotion currentObjectiveIconMotion(String questId, String objectiveId, boolean task) {
-        String icon = QuestObjectiveEditActions.objectiveIcon(questId, objectiveId, task);
+    static EntityIconMotion currentTaskIconMotion(String questId, String taskId, boolean task) {
+        String icon = QuestTaskEditActions.taskIcon(questId, taskId, task);
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return new EntityIconMotion(icon, 0, 0, false);
         }
         return new EntityIconMotion(icon, EntityPreviewRenderer.entityYaw(icon), EntityPreviewRenderer.entitySpinSpeed(icon), true);
     }
 
-    static boolean objectiveMotionTask(TabletUiState state) {
-        return state != null && OBJECTIVE_TASK.equals(state.questDetails.entityMotionEditorGroup);
+    static boolean taskMotionTask(TabletUiState state) {
+        return state != null && TASK_TASK.equals(state.questDetails.entityMotionEditorGroup);
     }
 
-    static String objectiveGroup(boolean task) {
-        return task ? OBJECTIVE_TASK : OBJECTIVE_REWARD;
+    static String taskGroup(boolean task) {
+        return task ? TASK_TASK : TASK_REWARD;
     }
 
     private static void resetTransientState(TabletUiState state) {
@@ -227,14 +227,14 @@ final class EntityMotionTargets {
         }
     }
 
-    private static void applyObjectiveIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
-        EntityIconMotion icon = currentObjectiveIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, objectiveMotionTask(state));
+    private static void applyTaskIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
+        EntityIconMotion icon = currentTaskIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, taskMotionTask(state));
         if (!icon.editable()) {
             EntityMotionEditor.close(state);
             return;
         }
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
-        QuestObjectiveEditActions.putObjectiveIcon(player, state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, nextIcon, objectiveMotionTask(state), sync);
+        QuestTaskEditActions.putTaskIcon(player, state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, nextIcon, taskMotionTask(state), sync);
     }
 
     private static void applyQuestDetailsMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {

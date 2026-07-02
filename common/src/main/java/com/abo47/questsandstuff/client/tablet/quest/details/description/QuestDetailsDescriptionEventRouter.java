@@ -361,8 +361,8 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void select(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.questDetails.questDetailsDescRangeAnchorKind = hit.kind();
         state.questDetails.questDetailsDescRangeAnchorId = hit.id();
         if ("desc_text".equals(hit.kind())) {
@@ -390,8 +390,8 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void toggleSelection(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         if ("desc_text".equals(hit.kind())) {
             toggle(state.questDetails.questDetailsDescriptionSelection.textIds(), hit.id());
             state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(state.questDetails.questDetailsDescriptionSelection.textIds().contains(hit.id()) ? hit.id() : state.questDetails.questDetailsDescriptionSelection.textIds().stream().findFirst().orElse(""));

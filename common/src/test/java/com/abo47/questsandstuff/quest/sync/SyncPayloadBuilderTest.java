@@ -132,18 +132,18 @@ class SyncPayloadBuilderTest {
 
         assertEquals("task/check", payload.getList(SyncKeys.Quest.TASKS_ORDER, Tag.TAG_STRING).getString(0));
         CompoundTag task = payload.getCompound(SyncKeys.Quest.TASKS).getCompound("task/check");
-        assertTrue(task.contains(SyncKeys.Objective.TYPE, Tag.TAG_STRING));
-        assertTrue(task.contains(SyncKeys.Objective.JSON, Tag.TAG_STRING));
-        assertTrue(task.contains(SyncKeys.Objective.PROGRESS, Tag.TAG_FLOAT));
-        assertTrue(task.contains(SyncKeys.Objective.COMPLETE, Tag.TAG_BYTE));
-        assertTrue(task.contains(SyncKeys.Objective.COUNT, Tag.TAG_INT));
+        assertTrue(task.contains(SyncKeys.Task.TYPE, Tag.TAG_STRING));
+        assertTrue(task.contains(SyncKeys.Task.JSON, Tag.TAG_STRING));
+        assertTrue(task.contains(SyncKeys.Task.PROGRESS, Tag.TAG_FLOAT));
+        assertTrue(task.contains(SyncKeys.Task.COMPLETE, Tag.TAG_BYTE));
+        assertTrue(task.contains(SyncKeys.Task.COUNT, Tag.TAG_INT));
 
         assertEquals("reward/xp", payload.getList(SyncKeys.Quest.REWARDS_ORDER, Tag.TAG_STRING).getString(0));
         CompoundTag reward = payload.getCompound(SyncKeys.Quest.REWARDS).getCompound("reward/xp");
-        assertTrue(reward.contains(SyncKeys.Objective.TYPE, Tag.TAG_STRING));
-        assertTrue(reward.contains(SyncKeys.Objective.JSON, Tag.TAG_STRING));
-        assertTrue(reward.contains(SyncKeys.Objective.SELECTABLE, Tag.TAG_BYTE));
-        assertTrue(reward.contains(SyncKeys.Objective.MASS_CLAIMABLE, Tag.TAG_BYTE));
+        assertTrue(reward.contains(SyncKeys.Task.TYPE, Tag.TAG_STRING));
+        assertTrue(reward.contains(SyncKeys.Task.JSON, Tag.TAG_STRING));
+        assertTrue(reward.contains(SyncKeys.Task.SELECTABLE, Tag.TAG_BYTE));
+        assertTrue(reward.contains(SyncKeys.Task.MASS_CLAIMABLE, Tag.TAG_BYTE));
 
         CompoundTag groupView = payload.getCompound(SyncKeys.Quest.GROUPS).getCompound("main");
         assertTrue(groupView.getBoolean(SyncKeys.ChapterView.VISIBLE));
@@ -257,11 +257,11 @@ class SyncPayloadBuilderTest {
         source.putBoolean(SyncKeys.Quest.CLAIMED, true);
         source.putFloat(SyncKeys.Quest.PROGRESS, 1.0f);
         CompoundTag task = new CompoundTag();
-        task.putString(SyncKeys.Objective.TYPE, "questsandstuff:check");
-        task.putString(SyncKeys.Objective.JSON, "{}");
-        task.putFloat(SyncKeys.Objective.PROGRESS, 1.0f);
-        task.putBoolean(SyncKeys.Objective.COMPLETE, true);
-        task.putInt(SyncKeys.Objective.COUNT, 4);
+        task.putString(SyncKeys.Task.TYPE, "questsandstuff:check");
+        task.putString(SyncKeys.Task.JSON, "{}");
+        task.putFloat(SyncKeys.Task.PROGRESS, 1.0f);
+        task.putBoolean(SyncKeys.Task.COMPLETE, true);
+        task.putInt(SyncKeys.Task.COUNT, 4);
         source.getCompound(SyncKeys.Quest.TASKS).put("task/a", task);
 
         ClientQuestStateFacade.copyQuestLocal("quest/source", "quest/copy", "copied", 100, 120, 1.5f, Map.of());
@@ -274,9 +274,9 @@ class SyncPayloadBuilderTest {
         assertFalse(copy.getBoolean(SyncKeys.Quest.CLAIMED));
         assertEquals(0.0f, copy.getFloat(SyncKeys.Quest.PROGRESS), 0.0001f);
         CompoundTag copiedTask = copy.getCompound(SyncKeys.Quest.TASKS).getCompound("task/a");
-        assertEquals(0.0f, copiedTask.getFloat(SyncKeys.Objective.PROGRESS), 0.0001f);
-        assertFalse(copiedTask.getBoolean(SyncKeys.Objective.COMPLETE));
-        assertEquals(0, copiedTask.getInt(SyncKeys.Objective.COUNT));
+        assertEquals(0.0f, copiedTask.getFloat(SyncKeys.Task.PROGRESS), 0.0001f);
+        assertFalse(copiedTask.getBoolean(SyncKeys.Task.COMPLETE));
+        assertEquals(0, copiedTask.getInt(SyncKeys.Task.COUNT));
     }
 
     @Test

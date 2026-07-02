@@ -18,8 +18,8 @@ public final class ModalTargets {
     public static final String REWARD_LOOT_TABLE = "reward_loot_table";
     public static final String REWARD_ICON = "reward_icon";
     public static final String REWARD_COMMAND_EDITOR_ICON = "reward_command_editor_icon";
-    public static final String OBJECTIVE_TASK = "objective_task";
-    public static final String OBJECTIVE_REWARD = "objective_reward";
+    public static final String TASK_TASK = "task_task";
+    public static final String TASK_REWARD = "task_reward";
     public static final String QUEST_ICON = "quest_icon";
     public static final String CHAPTER_ICON = "chapter_icon";
     public static final String QUEST_DETAILS = "quest_details";
@@ -131,12 +131,12 @@ public final class ModalTargets {
         return of(REWARD_COMMAND_EDITOR_ICON, questId, rewardId, "icon");
     }
 
-    public static String objectiveTask(String questId, String taskId) {
-        return of(OBJECTIVE_TASK, questId, taskId);
+    public static String taskTask(String questId, String taskId) {
+        return of(TASK_TASK, questId, taskId);
     }
 
-    public static String objectiveReward(String questId, String rewardId) {
-        return of(OBJECTIVE_REWARD, questId, rewardId);
+    public static String taskReward(String questId, String rewardId) {
+        return of(TASK_REWARD, questId, rewardId);
     }
 
     public static String questIcon(String questId) {

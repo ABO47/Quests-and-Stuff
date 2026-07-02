@@ -43,7 +43,7 @@ final class TaskJsonFactory {
         ParseResult result = readResult(value);
         if (!result.valid()) {
             QuestsAndStuffMod.debugLog(
-                    "[QnS:UI] malformed objective json quest={} {}={} diagnostic={}",
+                    "[QnS:UI] malformed task json quest={} {}={} diagnostic={}",
                     safeId(questId),
                     task ? "task" : "reward",
                     safeId(entryId),
@@ -61,7 +61,7 @@ final class TaskJsonFactory {
             return json.get(key).getAsString();
         } catch (RuntimeException exception) {
             QuestsAndStuffMod.debugLog(
-                    "[QnS:UI] objective json string fallback key={} fallback={} diagnostic={}",
+                    "[QnS:UI] task json string fallback key={} fallback={} diagnostic={}",
                     key,
                     fallback,
                     exception.toString()
@@ -78,7 +78,7 @@ final class TaskJsonFactory {
             return json.get(key).getAsBoolean();
         } catch (RuntimeException exception) {
             QuestsAndStuffMod.debugLog(
-                    "[QnS:UI] objective json boolean fallback key={} fallback={} diagnostic={}",
+                    "[QnS:UI] task json boolean fallback key={} fallback={} diagnostic={}",
                     key,
                     fallback,
                     exception.toString()
@@ -107,12 +107,12 @@ final class TaskJsonFactory {
     }
 
     static JsonObject defaultTask(String id, String typePath) {
-        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.taskChoice(typePath);
+        QuestDetailsTypeChoice choice = QuestTaskTypeCatalog.taskChoice(typePath);
         return choice == null ? simpleDefaultTask(id, typePath) : choice.defaultJson(id);
     }
 
     static JsonObject defaultReward(String id, String typePath) {
-        QuestDetailsTypeChoice choice = QuestObjectiveTypeCatalog.rewardChoice(typePath);
+        QuestDetailsTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
         return choice == null ? base(id, MOD + typePath) : choice.defaultJson(id);
     }
 

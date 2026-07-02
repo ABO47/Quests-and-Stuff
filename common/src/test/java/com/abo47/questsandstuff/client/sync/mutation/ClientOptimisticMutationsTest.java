@@ -29,7 +29,7 @@ class ClientOptimisticMutationsTest {
     }
 
     @Test
-    void questFieldAndObjectiveMutationsKeepLocalSnapshotCoherent() {
+    void questFieldAndTaskMutationsKeepLocalSnapshotCoherent() {
         ClientQuestMutator.createEditorQuestLocal("quest/new", "main", 12, 34, " New Quest ");
 
         ClientQuestMutator.setQuestDisplayLocal("quest/new", "Better Title", "Better Subtitle");
@@ -68,14 +68,14 @@ class ClientOptimisticMutationsTest {
         assertEquals(0.5f, mainView.getFloat(SyncKeys.ChapterView.SCALE), 0.0001f);
 
         CompoundTag tasks = quest.getCompound(SyncKeys.Quest.TASKS);
-        assertEquals(taskJson("task/a", "Updated"), tasks.getCompound("task/a").getString(SyncKeys.Objective.JSON));
-        assertEquals("questsandstuff:check", tasks.getCompound("task/a").getString(SyncKeys.Objective.TYPE));
-        assertEquals(taskJson("task/b", "Second"), tasks.getCompound("task/b").getString(SyncKeys.Objective.JSON));
+        assertEquals(taskJson("task/a", "Updated"), tasks.getCompound("task/a").getString(SyncKeys.Task.JSON));
+        assertEquals("questsandstuff:check", tasks.getCompound("task/a").getString(SyncKeys.Task.TYPE));
+        assertEquals(taskJson("task/b", "Second"), tasks.getCompound("task/b").getString(SyncKeys.Task.JSON));
         assertIterableEquals(List.of("task/a", "task/b"), strings(quest.getList(SyncKeys.Quest.TASKS_ORDER, Tag.TAG_STRING)));
 
         CompoundTag rewards = quest.getCompound(SyncKeys.Quest.REWARDS);
-        assertEquals(rewardJson("reward/a"), rewards.getCompound("reward/a").getString(SyncKeys.Objective.JSON));
-        assertEquals("questsandstuff:xp", rewards.getCompound("reward/a").getString(SyncKeys.Objective.TYPE));
+        assertEquals(rewardJson("reward/a"), rewards.getCompound("reward/a").getString(SyncKeys.Task.JSON));
+        assertEquals("questsandstuff:xp", rewards.getCompound("reward/a").getString(SyncKeys.Task.TYPE));
         assertIterableEquals(List.of("reward/a"), strings(quest.getList(SyncKeys.Quest.REWARDS_ORDER, Tag.TAG_STRING)));
     }
 
