@@ -4,7 +4,6 @@ import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
 import com.abo47.questsandstuff.client.sync.mutation.ClientQuestLocalMutations;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
-import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncStore;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;

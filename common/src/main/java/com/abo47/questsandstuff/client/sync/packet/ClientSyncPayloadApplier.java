@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.sync.packet;
 import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientRawSyncStore;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,7 +17,7 @@ public final class ClientSyncPayloadApplier {
 
     public static void applyFullSync(CompoundTag payload) {
         ClientQuestState.clearQuests();
-        ClientRawSyncPayload.replace(payload);
+        ClientRawSyncStore.replace(payload);
         ClientChapterState.loadFromFullPayload(payload);
         ClientCanvasLayerState.loadFromFullPayload(payload);
 
@@ -41,7 +42,7 @@ public final class ClientSyncPayloadApplier {
         for (String questId : removed.getAllKeys()) {
             ClientQuestState.removeQuest(questId);
         }
-        ClientRawSyncPayload.merge(payload);
+        ClientRawSyncStore.merge(payload);
         if (chapterPayload) {
             ClientSyncUiBridge.requestActiveCanvasRefresh();
         }
