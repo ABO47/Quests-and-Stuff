@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import com.abo47.questsandstuff.client.tablet.layout.BaseSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
@@ -16,10 +16,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
-public final class ChapterSplitterWidget extends BaseSplitterWidget {
+public final class GroupSplitterWidget extends BaseSplitterWidget {
     private static final int DRAG_THRESHOLD_PX = 3;
 
-    public ChapterSplitterWidget(TabletUiState state, Runnable refresh, int x) {
+    public GroupSplitterWidget(TabletUiState state, Runnable refresh, int x) {
         super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
     }
 

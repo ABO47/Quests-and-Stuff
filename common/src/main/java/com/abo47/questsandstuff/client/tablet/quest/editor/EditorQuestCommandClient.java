@@ -185,11 +185,11 @@ public final class EditorQuestCommandClient {
     }
 
     public static String predictNextQuestId(TabletUiState state) {
-        return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedGroupName(state), ClientQuestCache.questIds());
+        return QuestNaming.nextQuestId(EditorGroupCommandClient.selectedGroupName(state), ClientQuestCache.questIds());
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
+        String group = EditorGroupCommandClient.selectedGroupName(state);
         if (group.isBlank()) {
             return;
         }

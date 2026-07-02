@@ -1,7 +1,7 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
+import com.abo47.questsandstuff.client.tablet.quest.group.menu.GroupContextMenuLayout;
+import com.abo47.questsandstuff.client.tablet.quest.group.menu.GroupContextMenuRows;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
@@ -13,8 +13,8 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-public final class ChapterContextMenu {
-    private ChapterContextMenu() {
+public final class GroupContextMenu {
+    private GroupContextMenu() {
     }
 
     public static void rebuild(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
@@ -22,10 +22,10 @@ public final class ChapterContextMenu {
         if (!state.chapterPanel.chapterMenuOpen) {
             return;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height);
+        GroupContextMenuLayout layout = GroupContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height);
         state.chapterPanel.chapterMenuX = layout.menuX();
         state.chapterPanel.chapterMenuY = layout.menuY();
-        List<ContextAction> actions = ChapterContextMenuRows.actions(layout, state, player, refresh);
+        List<ContextAction> actions = GroupContextMenuRows.actions(layout, state, player, refresh);
         overlay.addWidget(ContextMenuPanel.build(
                 layout.menuX(),
                 layout.menuY(),
@@ -41,14 +41,14 @@ public final class ChapterContextMenu {
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
-        return ChapterContextMenuLayout.width(state, maxAvailableWidth);
+        return GroupContextMenuLayout.width(state, maxAvailableWidth);
     }
 
     public static boolean click(TabletUiState state, Player player, Runnable refresh, int x, int y) {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
-        return ChapterContextMenuRows.click(layout, state, player, refresh, x, y);
+        GroupContextMenuLayout layout = GroupContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        return GroupContextMenuRows.click(layout, state, player, refresh, x, y);
     }
 }

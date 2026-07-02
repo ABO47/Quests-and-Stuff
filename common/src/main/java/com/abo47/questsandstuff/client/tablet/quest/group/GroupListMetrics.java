@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -11,10 +11,10 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-final class ChapterListMetrics {
+final class GroupListMetrics {
     private static final int COLLAPSED_TILE_W = 28;
 
-    private ChapterListMetrics() {
+    private GroupListMetrics() {
     }
 
     static List<String> filteredGroups(List<String> groups, String queryText) {

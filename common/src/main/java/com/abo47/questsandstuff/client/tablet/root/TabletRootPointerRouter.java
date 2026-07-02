@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterDragController;
+import com.abo47.questsandstuff.client.tablet.quest.group.GroupPanel;
+import com.abo47.questsandstuff.client.tablet.quest.group.GroupDragController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveDragDispatcher;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -30,10 +30,10 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (EntityMotionEditor.isChapterPanelOpen(state)) {
+        if (EntityMotionEditor.isGroupPanelOpen(state)) {
             int localX = localRootX(root, mouseX);
             int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isChapterPanelHit(state, localX, localY)) {
+            if (EntityMotionEditor.isGroupPanelHit(state, localX, localY)) {
                 selfClick.invoke(mouseX, mouseY, button);
                 return true;
             }
@@ -46,7 +46,7 @@ final class TabletRootPointerRouter {
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
         }
         if (button == 0 && dismissState.chapterMenuHit()) {
-            boolean handled = ChapterPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY));
+            boolean handled = GroupPanel.clickChapterMenu(state, root.resolvePlayer(), refresher, localRootX(root, mouseX), localRootY(root, mouseY));
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, handled);
         }
         boolean handled = selfClick.invoke(mouseX, mouseY, button);
@@ -80,7 +80,7 @@ final class TabletRootPointerRouter {
             selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
             return true;
         }
-        if (ChapterDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
+        if (GroupDragController.handleDrag(state, root.resolvePlayer(), refresher, TabletWidgetCoordinates.rootY(root), mouseX, mouseY, button)) {
             return true;
         }
         return selfDrag.invoke(mouseX, mouseY, button, dragX, dragY);
@@ -114,7 +114,7 @@ final class TabletRootPointerRouter {
             selfRelease.invoke(mouseX, mouseY, button);
             return true;
         }
-        if (ChapterDragController.finish(state, root.resolvePlayer(), refresher)) {
+        if (GroupDragController.finish(state, root.resolvePlayer(), refresher)) {
             return true;
         }
         return selfRelease.invoke(mouseX, mouseY, button);
@@ -134,10 +134,10 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (EntityMotionEditor.isChapterPanelOpen(state)) {
+        if (EntityMotionEditor.isGroupPanelOpen(state)) {
             int localX = localRootX(root, mouseX);
             int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isChapterPanelHit(state, localX, localY)) {
+            if (EntityMotionEditor.isGroupPanelHit(state, localX, localY)) {
                 selfWheel.invoke(mouseX, mouseY, wheelDelta);
             }
             return true;
@@ -146,7 +146,7 @@ final class TabletRootPointerRouter {
     }
 
     private static boolean beginChapterScrollDrag(TabletRootWidget root, TabletUiState state, Runnable refresher, double mouseX, double mouseY) {
-        if (!TabletRootHitTest.isInsideChapterPanel(state, TabletWidgetCoordinates.rootX(root), TabletWidgetCoordinates.rootY(root), mouseX, mouseY)) {
+        if (!TabletRootHitTest.isInsideGroupPanel(state, TabletWidgetCoordinates.rootX(root), TabletWidgetCoordinates.rootY(root), mouseX, mouseY)) {
             return false;
         }
         int localX = localChapterX(root, mouseX);

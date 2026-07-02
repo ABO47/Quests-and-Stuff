@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.Surfaces;
 import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
@@ -26,16 +26,16 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-final class ChapterRowRenderer {
+final class GroupRowRenderer {
     private static final int COLLAPSED_TILE_SIZE = 28;
     private static final int COLLAPSED_ICON_SIZE = 16;
     private static final int NOTICE_ICON_SIZE = 9;
     private static final int FONT_LINE_HEIGHT = 9;
 
-    private ChapterRowRenderer() {
+    private GroupRowRenderer() {
     }
 
-    static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
+    static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, GroupListMetrics.Layout layout, boolean collapsed) {
         boolean lockedPreview = ClientQuestCache.groupLockedPreview(group);
         boolean selected = group.equals(TabletStateQueries.selectedGroupName(state));
         String rowLabel = group.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : group;
@@ -76,8 +76,8 @@ final class ChapterRowRenderer {
         addChapterIconChangeHit(chapterList, state, refresh, group, iconDrawX, y + 8);
     }
 
-    static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout) {
-        ChapterInlineRenameRows.add(
+    static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String group, int y, GroupListMetrics.Layout layout) {
+        GroupInlineRenameRows.add(
                 chapterList,
                 layout.cardX(),
                 y,
@@ -85,8 +85,8 @@ final class ChapterRowRenderer {
                 layout.iconX(),
                 ClientQuestCache.groupIcon(group),
                 () -> state.chapterPanel.chapterDraftName,
-                value -> state.chapterPanel.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
-                value -> ChapterRenameActions.commitRename(player, state, refresh, group, value),
+                value -> state.chapterPanel.chapterDraftName = GroupRenameActions.sanitizeInlineTitle(value),
+                value -> GroupRenameActions.commitRename(player, state, refresh, group, value),
                 () -> {
                     state.canvas.pendingChapterRename = "";
                     state.chapterPanel.chapterDraftName = group;
@@ -95,8 +95,8 @@ final class ChapterRowRenderer {
         );
     }
 
-    static void addDraftRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, int y, ChapterListMetrics.Layout layout) {
-        ChapterInlineRenameRows.add(
+    static void addDraftRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, int y, GroupListMetrics.Layout layout) {
+        GroupInlineRenameRows.add(
                 chapterList,
                 layout.cardX(),
                 y,
@@ -104,8 +104,8 @@ final class ChapterRowRenderer {
                 layout.iconX(),
                 "",
                 () -> state.chapterPanel.chapterDraftName,
-                value -> state.chapterPanel.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
-                value -> ChapterRenameActions.commitDraft(player, state, refresh, value),
+                value -> state.chapterPanel.chapterDraftName = GroupRenameActions.sanitizeInlineTitle(value),
+                value -> GroupRenameActions.commitDraft(player, state, refresh, value),
                 () -> {
                     state.canvas.pendingChapterRename = "";
                     state.chapterPanel.chapterDraftName = state.root.selectedGroup;
@@ -129,7 +129,7 @@ final class ChapterRowRenderer {
         chapterList.addWidget(chapterStyledLabel(cardX + 24, chapterTextY(y, textSize), textW, chapterLabelHeight(textSize), rowLabel, textColor, textStyle, textSize, chapterTextType(align)));
     }
 
-    private static void addCollapsedChapterRow(WidgetGroup chapterList, String group, String rowLabel, int y, ChapterListMetrics.Layout layout, boolean selected) {
+    private static void addCollapsedChapterRow(WidgetGroup chapterList, String group, String rowLabel, int y, GroupListMetrics.Layout layout, boolean selected) {
         String groupIcon = ClientQuestCache.groupIcon(group);
         String initial = "";
         if (groupIcon == null || groupIcon.isBlank()) {
@@ -145,7 +145,7 @@ final class ChapterRowRenderer {
         }
     }
 
-    private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
+    private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, GroupListMetrics.Layout layout, boolean collapsed, int textW) {
         final int rowY = y;
         var menuHit = TabletUiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
             if (!canOpenChapter(state, group)) {
@@ -249,7 +249,7 @@ final class ChapterRowRenderer {
         return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_TILE_SIZE) / 2);
     }
 
-    private static int collapsedIconX(ChapterListMetrics.Layout layout) {
+    private static int collapsedIconX(GroupListMetrics.Layout layout) {
         return layout.cardX() + Math.max(0, (layout.cardW() - COLLAPSED_ICON_SIZE) / 2);
     }
 
@@ -276,7 +276,7 @@ final class ChapterRowRenderer {
     }
 
     private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String group, int x, int y) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {

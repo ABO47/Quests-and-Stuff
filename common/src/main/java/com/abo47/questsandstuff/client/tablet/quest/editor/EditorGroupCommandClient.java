@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class EditorChapterCommandClient {
-    private EditorChapterCommandClient() {
+public final class EditorGroupCommandClient {
+    private EditorGroupCommandClient() {
     }
 
     public static void cycleGroup(TabletUiState state, int dir) {
@@ -159,7 +159,7 @@ public final class EditorChapterCommandClient {
         IntegratedServerActions.run(
                 player,
                 integratedServerGroupAction(state, op, from, to, offset),
-                () -> EditorPreviewBus.dispatch("group:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
+                () -> EditorPreviewDeduplicator.dispatch("group:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
     }
 
     private static IntegratedServerActions.LocalAction integratedServerGroupAction(TabletUiState state, String op, String from, String to, int offset) {

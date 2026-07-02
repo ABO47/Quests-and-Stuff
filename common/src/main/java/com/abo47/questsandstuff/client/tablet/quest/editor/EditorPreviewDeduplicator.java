@@ -6,11 +6,11 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class EditorPreviewBus {
+public final class EditorPreviewDeduplicator {
     private static final Map<String, Long> LAST_MUTATION_NS = new HashMap<>();
     private static final long DEDUPE_NS = 20_000_000L;
 
-    private EditorPreviewBus() {
+    private EditorPreviewDeduplicator() {
     }
 
     public static void dispatch(String mutationKey, Runnable optimisticApply, Runnable sendToServer) {

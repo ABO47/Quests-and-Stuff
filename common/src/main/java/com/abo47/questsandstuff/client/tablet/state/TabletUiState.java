@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class TabletUiState {
     public final RootState root = new RootState();
-    public final ChapterPanelState chapterPanel = new ChapterPanelState();
+    public final GroupPanelState chapterPanel = new GroupPanelState();
     public final ModalState modal = new ModalState();
     public final PickerState pickers = new PickerState();
     public final CanvasState canvas = new CanvasState();
@@ -51,7 +51,7 @@ public class TabletUiState {
         public final Map<String, String> skinFillOverrides = new HashMap<>();
     }
 
-    public static final class ChapterPanelState {
+    public static final class GroupPanelState {
         public String chapterSearch = "";
         public boolean chapterSearchFocused;
         public String groupDraft = "";

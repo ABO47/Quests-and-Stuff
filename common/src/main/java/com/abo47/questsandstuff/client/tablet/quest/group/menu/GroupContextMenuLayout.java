@@ -1,14 +1,14 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
+package com.abo47.questsandstuff.client.tablet.quest.group.menu;
 
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
-public record ChapterContextMenuLayout(
+public record GroupContextMenuLayout(
         String target,
         boolean hasTarget,
         boolean entityIcon,
@@ -22,7 +22,7 @@ public record ChapterContextMenuLayout(
     public static final int ROW_TOP_PAD = 4;
     public static final int ROW_STEP = TabletUiFactory.CONTEXT_ROW_H;
 
-    public static ChapterContextMenuLayout resolve(TabletUiState state, int availableW, int availableH) {
+    public static GroupContextMenuLayout resolve(TabletUiState state, int availableW, int availableH) {
         String target = resolveTarget(state);
         boolean hasTarget = target != null && !target.isBlank();
         boolean entityIcon = hasTarget && isEntityChapterIcon(target);
@@ -32,11 +32,11 @@ public record ChapterContextMenuLayout(
         int menuH = height(hasTarget, rowCount);
         int menuX = Math.max(4, Math.min(state.chapterPanel.chapterMenuX, availableW - menuW - 4));
         int menuY = Math.max(4, Math.min(state.chapterPanel.chapterMenuY, availableH - menuH - 4));
-        return new ChapterContextMenuLayout(target, hasTarget, entityIcon, entityVariants, menuW, menuH, menuX, menuY, rowCount);
+        return new GroupContextMenuLayout(target, hasTarget, entityIcon, entityVariants, menuW, menuH, menuX, menuY, rowCount);
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return ContextMenuPanel.CONTEXT_MENU_WIDTH;
     }
 
     public boolean contains(int x, int y) {
@@ -91,7 +91,7 @@ public record ChapterContextMenuLayout(
     }
 
     private static String resolveTarget(TabletUiState state) {
-        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorChapterCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
+        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorGroupCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
     }
 
     private static int height(boolean hasTarget, int rowCount) {

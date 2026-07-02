@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -7,8 +7,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import net.minecraft.world.entity.player.Player;
 
-public final class ChapterDragController {
-    private ChapterDragController() {
+public final class GroupDragController {
+    private GroupDragController() {
     }
 
     public static boolean handleDrag(TabletUiState state, Player player, Runnable refresh, int rootY, double mouseX, double mouseY, int button) {

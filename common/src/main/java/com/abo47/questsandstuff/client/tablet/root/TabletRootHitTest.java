@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
+import com.abo47.questsandstuff.client.tablet.quest.group.menu.GroupContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -33,7 +33,7 @@ public final class TabletRootHitTest {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        GroupContextMenuLayout layout = GroupContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
         int absMenuX = rootX + layout.menuX();
         int absMenuY = rootY + layout.menuY();
         return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()

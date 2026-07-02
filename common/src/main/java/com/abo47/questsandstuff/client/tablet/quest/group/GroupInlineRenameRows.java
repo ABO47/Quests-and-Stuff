@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
@@ -15,8 +15,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-final class ChapterInlineRenameRows {
-    private ChapterInlineRenameRows() {
+final class GroupInlineRenameRows {
+    private GroupInlineRenameRows() {
     }
 
     static void add(

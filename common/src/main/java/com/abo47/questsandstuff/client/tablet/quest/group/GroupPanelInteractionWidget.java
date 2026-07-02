@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter;
+package com.abo47.questsandstuff.client.tablet.quest.group;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -30,13 +30,13 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.updateChapterScrollByMouse;
 
-public final class ChapterPanelInteractionWidget extends WidgetGroup {
+public final class GroupPanelInteractionWidget extends WidgetGroup {
     private final TabletUiState state;
     private final Player player;
     private final Runnable refresh;
     private final Runnable refreshChapterViews;
 
-    public ChapterPanelInteractionWidget(int x, int y, int width, int height, TabletUiState state, Player player, Runnable refresh, Runnable refreshChapterViews) {
+    public GroupPanelInteractionWidget(int x, int y, int width, int height, TabletUiState state, Player player, Runnable refresh, Runnable refreshChapterViews) {
         super(x, y, width, height);
         this.state = state;
         this.player = player;
@@ -195,7 +195,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             }
             selectChapterDirect(hit);
             state.chapterPanel.chapterMenuOpen = false;
-            if (EditorChapterCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
+            if (EditorGroupCommandClient.canManageGroups(state) && (state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank())) {
                 state.chapterPanel.chapterDragPending = true;
                 state.chapterPanel.chapterDragStartX = (int) Math.round(mouseX);
                 state.chapterPanel.chapterDragStartY = (int) Math.round(mouseY);
@@ -216,7 +216,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private boolean openIconPickerAt(int localX, int localY) {
-        if (!EditorChapterCommandClient.canManageGroups(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
+        if (!EditorGroupCommandClient.canManageGroups(state) || !isChapterCardAreaHit(localX, localY, state) || !isChapterIconHit(localX, localY)) {
             return false;
         }
         String hit = chapterAtY(localY, state);

@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -76,7 +76,7 @@ final class EntityVariantApplyActions {
             return true;
         }
         String nextIcon = EntityPreviewRenderer.withEntityVariant(icon, variantKey);
-        EditorChapterCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), nextIcon, 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), nextIcon, 0);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon entity variant picked chapter={} variant={}", parsed.questId(), variantKey);
         return true;
     }

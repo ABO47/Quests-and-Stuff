@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.google.gson.JsonObject;
@@ -116,7 +116,7 @@ final class QuestObjectivePickerApplyActions {
             return;
         }
         if (parsed.isChapterIcon() && ModalTargetState.requireParts("inventory_chapter_icon", parsed, 2)) {
-            EditorChapterCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
+            EditorGroupCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter inventory icon picked chapter={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;

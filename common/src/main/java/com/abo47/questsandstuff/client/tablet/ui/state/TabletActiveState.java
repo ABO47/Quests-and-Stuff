@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.ui.state;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -49,7 +49,7 @@ public final class TabletActiveState {
     }
 
     public static String activeSelectedGroup() {
-        return activeTabletState == null ? "" : EditorChapterCommandClient.selectedGroupName(activeTabletState);
+        return activeTabletState == null ? "" : EditorGroupCommandClient.selectedGroupName(activeTabletState);
     }
 
     public static void syncCanvasStateFromCache(TabletUiState state) {
@@ -186,9 +186,9 @@ public final class TabletActiveState {
         }
 
         activeTabletState.clipboard.canvasClipboard.clearPendingPastedLayers();
-        activeTabletState.chapterPanel.recentlyCreatedGroups.remove(EditorChapterCommandClient.selectedGroupName(activeTabletState));
+        activeTabletState.chapterPanel.recentlyCreatedGroups.remove(EditorGroupCommandClient.selectedGroupName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={} ecs={}",
-                EditorChapterCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
+                EditorGroupCommandClient.selectedGroupName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
         refreshActiveTablet();
     }
 

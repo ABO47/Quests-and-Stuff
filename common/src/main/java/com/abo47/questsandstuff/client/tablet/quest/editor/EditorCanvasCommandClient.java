@@ -27,7 +27,7 @@ public final class EditorCanvasCommandClient {
         if (positions == null || positions.isEmpty()) {
             return;
         }
-        String groupName = EditorChapterCommandClient.selectedGroupName(state);
+        String groupName = EditorGroupCommandClient.selectedGroupName(state);
         if (groupName.isBlank()) {
             return;
         }
@@ -49,7 +49,7 @@ public final class EditorCanvasCommandClient {
         if (scales == null || scales.isEmpty()) {
             return;
         }
-        String groupName = EditorChapterCommandClient.selectedGroupName(state);
+        String groupName = EditorGroupCommandClient.selectedGroupName(state);
         if (groupName.isBlank()) {
             return;
         }
@@ -120,7 +120,7 @@ public final class EditorCanvasCommandClient {
     }
 
     public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
+        String group = EditorGroupCommandClient.selectedGroupName(state);
         if (group.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
         }
@@ -228,7 +228,7 @@ public final class EditorCanvasCommandClient {
     }
 
     private static void runEcConnectionAction(TabletUiState state, String sourceId, String targetId, EcConnectionAction action) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
+        String group = EditorGroupCommandClient.selectedGroupName(state);
         if (group.isBlank()) return;
         String ecId = resolveEcId(state, group, sourceId, targetId);
         if (ecId.isBlank()) return;

@@ -1,9 +1,9 @@
-package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
+package com.abo47.questsandstuff.client.tablet.quest.group.menu;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorGroupCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
@@ -19,12 +19,12 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-public final class ChapterContextMenuActions {
-    private ChapterContextMenuActions() {
+public final class GroupContextMenuActions {
+    private GroupContextMenuActions() {
     }
 
     public static void rename(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         state.chapterPanel.chapterMenuOpen = false;
@@ -38,10 +38,10 @@ public final class ChapterContextMenuActions {
     }
 
     public static void addChapter(TabletUiState state, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        String drafted = EditorChapterCommandClient.uniqueGroupName(tr("ui.questsandstuff.chapter.default_name"), "");
+        String drafted = EditorGroupCommandClient.uniqueGroupName(tr("ui.questsandstuff.chapter.default_name"), "");
         state.canvas.pendingChapterRename = TabletUiFactory.DRAFT_CHAPTER;
         state.chapterPanel.chapterDraftName = drafted;
         state.chapterPanel.groupDraft = drafted;
@@ -51,16 +51,16 @@ public final class ChapterContextMenuActions {
     }
 
     public static void delete(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        String deleteKey = ChapterContextMenuLayout.deleteKey(target);
+        String deleteKey = GroupContextMenuLayout.deleteKey(target);
         if (!TabletUiFactory.confirmDeleteClick(state, deleteKey)) {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter delete armed target={}", target);
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "delete", target, "", 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "delete", target, "", 0);
         if (target.equals(state.root.selectedGroup)) {
             state.root.selectedGroup = ClientQuestCache.groupOrder().isEmpty() ? "" : ClientQuestCache.groupOrder().get(0);
             state.chapterPanel.groupDraft = state.root.selectedGroup;
@@ -71,7 +71,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeIcon(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(target));
@@ -80,17 +80,17 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeVariant(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        EntityIconControls.openVariantPicker(state, ModalTargets.chapterIcon(target), ChapterContextMenuLayout.chapterIcon(target));
+        EntityIconControls.openVariantPicker(state, ModalTargets.chapterIcon(target), GroupContextMenuLayout.chapterIcon(target));
         state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon entity variant picker open chapter={}", target);
         refresh.run();
     }
 
     public static void editMotion(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         EntityMotionEditor.openChapterIcon(state, target, state.chapterPanel.chapterMenuX, state.chapterPanel.chapterMenuY);
@@ -100,20 +100,20 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeIcon(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        if (!EntityIconControls.confirmRemoveIcon(state, ChapterContextMenuLayout.removeIconKey(target))) {
+        if (!EntityIconControls.confirmRemoveIcon(state, GroupContextMenuLayout.removeIconKey(target))) {
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_icon", target, "", 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "set_icon", target, "", 0);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
     public static void changeBackground(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestCache.groupBackground(target));
@@ -122,20 +122,20 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeBackground(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        if (!TabletUiFactory.confirmDeleteClick(state, ChapterContextMenuLayout.removeBackgroundKey(target))) {
+        if (!TabletUiFactory.confirmDeleteClick(state, GroupContextMenuLayout.removeBackgroundKey(target))) {
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
     public static void changeCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         List<String> questIds = ClientQuestCache.questIdsInGroup(target);
@@ -149,7 +149,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeCompletionSoundGame(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         List<String> questIds = ClientQuestCache.questIdsInGroup(target);
@@ -163,7 +163,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeCompletionSoundCustom(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         List<String> questIds = ClientQuestCache.questIdsInGroup(target);
@@ -177,7 +177,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void changeConnectionTexture(TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         List<String> questIds = ClientQuestCache.questIdsInGroup(target);
@@ -195,7 +195,7 @@ public final class ChapterContextMenuActions {
     }
 
     public static void removeConnectionTexture(Player player, TabletUiState state, String target, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
         List<String> questIds = ClientQuestCache.questIdsInGroup(target);
@@ -240,20 +240,20 @@ public final class ChapterContextMenuActions {
     }
 
     public static void setLockUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
         state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=lock_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
     }
 
     public static void setHideUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
+        EditorGroupCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
         state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=hide_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
@@ -267,10 +267,10 @@ public final class ChapterContextMenuActions {
     }
 
     public static void move(Player player, TabletUiState state, String target, int offset, Runnable refresh) {
-        if (!EditorChapterCommandClient.canManageGroups(state)) {
+        if (!EditorGroupCommandClient.canManageGroups(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "move", target, "", offset);
+        EditorGroupCommandClient.runGroupAction(player, state, "move", target, "", offset);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
