@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.quest.hud;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.Surfaces.withAlpha;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveHudDisplay;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.ModColors;

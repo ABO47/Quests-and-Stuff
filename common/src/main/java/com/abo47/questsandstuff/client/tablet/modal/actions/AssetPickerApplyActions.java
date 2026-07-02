@@ -161,14 +161,14 @@ public final class AssetPickerApplyActions {
                     ? connectionTextureTarget.split("\\|")[1] : "";
             java.util.Map<String, java.util.Map<String, String>> questTextures = new java.util.HashMap<>();
             for (String chapterQuestId : connectionTextureChapterTargets) {
-                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(chapterQuestId);
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(chapterQuestId);
                 if (questTag == null) continue;
                 java.util.Map<String, String> prereqTextures = new java.util.HashMap<>();
                 net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {
                     String prerequisiteId = prereqs.getString(i);
                     prereqTextures.put(prerequisiteId, background);
-                    com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
+                    com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
                     if (!group.isBlank()) {
                         ConnectionRenderer.setConnectionTexture(state, group, prerequisiteId, chapterQuestId, background);
                     }

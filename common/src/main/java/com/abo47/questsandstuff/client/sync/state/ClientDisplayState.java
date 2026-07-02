@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.sync.cache;
+package com.abo47.questsandstuff.client.sync.state;
 
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;

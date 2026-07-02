@@ -495,7 +495,7 @@ public final class TabletAssetPickerModal {
             String[] parts = target.split("\\|");
             String group = parts.length >= 2 ? parts[1] : "";
             for (String questId : chapterTargets) {
-                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(questId);
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(questId);
                 if (questTag == null) continue;
                 net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {

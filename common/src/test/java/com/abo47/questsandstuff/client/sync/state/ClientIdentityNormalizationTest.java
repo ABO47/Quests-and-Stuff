@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.client.sync.cache;
+package com.abo47.questsandstuff.client.sync.state;
 
 import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.AfterEach;

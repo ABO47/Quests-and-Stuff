@@ -1,10 +1,10 @@
-package com.abo47.questsandstuff.client.sync.cache;
+package com.abo47.questsandstuff.client.sync.state;
 
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
 import com.abo47.questsandstuff.client.sync.mutation.ClientQuestLocalMutations;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
-import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncPayload;
+import com.abo47.questsandstuff.client.sync.packet.ClientRawSyncStore;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class ClientQuestCache {
-    private ClientQuestCache() {
+public final class ClientQuestStateFacade {
+    private ClientQuestStateFacade() {
     }
 
     public static void resetStateForTests() {
@@ -26,7 +26,7 @@ public final class ClientQuestCache {
         ClientChapterState.reset();
         ClientCanvasLayerState.reset();
         ClientDisplayState.reset();
-        ClientRawSyncPayload.reset();
+        ClientRawSyncStore.reset();
         ClientSyncInbox.reset();
         ClientSyncUiBridge.resetForTests();
     }
@@ -196,31 +196,31 @@ public final class ClientQuestCache {
     }
 
     public static boolean groupLockedPreview(String group) {
-        return ClientQuestPreviewRules.groupLocked(group);
+        return ClientQuestPreviewChecker.groupLocked(group);
     }
 
     public static boolean groupHiddenPreview(String group) {
-        return ClientQuestPreviewRules.groupHidden(group);
+        return ClientQuestPreviewChecker.groupHidden(group);
     }
 
     public static boolean groupOpenablePreview(String group) {
-        return ClientQuestPreviewRules.groupOpenable(group);
+        return ClientQuestPreviewChecker.groupOpenable(group);
     }
 
     public static List<String> selectableGroupOrder(boolean canEdit) {
-        return ClientQuestPreviewRules.selectableGroupOrder(canEdit);
+        return ClientQuestPreviewChecker.selectableGroupOrder(canEdit);
     }
 
     public static List<String> visibleGroupOrder(boolean canEdit) {
-        return ClientQuestPreviewRules.visibleGroupOrder(canEdit);
+        return ClientQuestPreviewChecker.visibleGroupOrder(canEdit);
     }
 
     public static boolean questLockedPreview(CompoundTag quest) {
-        return ClientQuestPreviewRules.questLocked(quest);
+        return ClientQuestPreviewChecker.questLocked(quest);
     }
 
     public static boolean questHiddenPreview(CompoundTag quest) {
-        return ClientQuestPreviewRules.questHidden(quest);
+        return ClientQuestPreviewChecker.questHidden(quest);
     }
 
     public static Map<String, List<CanvasImageLayer>> canvasImagesByGroup() {

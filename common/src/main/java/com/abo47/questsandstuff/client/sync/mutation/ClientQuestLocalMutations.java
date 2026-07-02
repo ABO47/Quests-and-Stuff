@@ -1,21 +1,9 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
-import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
-import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
 import java.util.List;
 import java.util.Map;
@@ -25,452 +13,202 @@ public final class ClientQuestLocalMutations {
     }
 
     public static void createGroupLocal(String group) {
-        ClientChapterLocalMutations.createGroupLocal(group);
+        ClientQuestPropertyMutations.createGroupLocal(group);
     }
 
     public static void renameGroupLocal(String from, String to) {
-        ClientChapterLocalMutations.renameGroupLocal(from, to);
+        ClientQuestPropertyMutations.renameGroupLocal(from, to);
     }
 
     public static void deleteGroupLocal(String group) {
-        ClientChapterLocalMutations.deleteGroupLocal(group);
+        ClientQuestPropertyMutations.deleteGroupLocal(group);
     }
 
     public static void moveGroupLocal(String group, int offset) {
-        ClientChapterLocalMutations.moveGroupLocal(group, offset);
+        ClientQuestPropertyMutations.moveGroupLocal(group, offset);
     }
 
     public static void moveGroupToIndexLocal(String group, int targetIndex) {
-        ClientChapterLocalMutations.moveGroupToIndexLocal(group, targetIndex);
+        ClientQuestPropertyMutations.moveGroupToIndexLocal(group, targetIndex);
     }
 
     public static void setGroupIconLocal(String group, String icon) {
-        ClientChapterLocalMutations.setGroupIconLocal(group, icon);
+        ClientQuestPropertyMutations.setGroupIconLocal(group, icon);
     }
 
     public static void setGroupBackgroundLocal(String group, String background) {
-        ClientChapterLocalMutations.setGroupBackgroundLocal(group, background);
+        ClientQuestPropertyMutations.setGroupBackgroundLocal(group, background);
     }
 
     public static void setGroupCanvasBackgroundLocal(String group, String background) {
-        ClientChapterLocalMutations.setGroupCanvasBackgroundLocal(group, background);
+        ClientQuestPropertyMutations.setGroupCanvasBackgroundLocal(group, background);
     }
 
     public static void setGroupTextAlignLocal(String group, String align) {
-        ClientChapterLocalMutations.setGroupTextAlignLocal(group, align);
+        ClientQuestPropertyMutations.setGroupTextAlignLocal(group, align);
     }
 
     public static void setGroupTextColorLocal(String group, int color) {
-        ClientChapterLocalMutations.setGroupTextColorLocal(group, color);
+        ClientQuestPropertyMutations.setGroupTextColorLocal(group, color);
     }
 
     public static void setGroupTextStyleLocal(String group, String style) {
-        ClientChapterLocalMutations.setGroupTextStyleLocal(group, style);
+        ClientQuestPropertyMutations.setGroupTextStyleLocal(group, style);
     }
 
     public static void setGroupTextSizeLocal(String group, int size) {
-        ClientChapterLocalMutations.setGroupTextSizeLocal(group, size);
+        ClientQuestPropertyMutations.setGroupTextSizeLocal(group, size);
     }
 
     public static void setGroupLockUntilUnlockedLocal(String group, boolean lockUntilUnlocked) {
-        String normalizedGroup = ClientChapterState.normalizeGroup(group);
-        if (normalizedGroup.isBlank()) {
-            return;
-        }
-        ClientChapterLocalMutations.setGroupLockUntilUnlockedLocal(normalizedGroup, lockUntilUnlocked);
-        String mode = (lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE).serializedName();
-        ClientQuestState.forEachQuestEntry((questId, quest) -> {
-            if (quest.getCompound(QuestSyncKeys.Quest.GROUPS).contains(normalizedGroup)) {
-                setQuestHiddenModeLocal(questId, mode);
-            }
-        });
+        ClientQuestPropertyMutations.setGroupLockUntilUnlockedLocal(group, lockUntilUnlocked);
     }
 
     public static void setGroupHideUntilUnlockedLocal(String group, boolean hideUntilUnlocked) {
-        ClientChapterLocalMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
-    }
-
-    public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
-        ClientCanvasLocalMutations.putCanvasImageLocal(group, image);
-    }
-
-    public static void removeCanvasImageLocal(String group, String imageId) {
-        ClientCanvasLocalMutations.removeCanvasImageLocal(group, imageId);
-    }
-
-    public static void putCanvasTextLocal(String group, CanvasTextLayer text) {
-        ClientCanvasLocalMutations.putCanvasTextLocal(group, text);
-    }
-
-    public static void removeCanvasTextLocal(String group, String textId) {
-        ClientCanvasLocalMutations.removeCanvasTextLocal(group, textId);
+        ClientQuestPropertyMutations.setGroupHideUntilUnlockedLocal(group, hideUntilUnlocked);
     }
 
     public static void putCanvasExclusiveChoiceLocal(String group, CanvasExclusiveChoice ec) {
-        ClientCanvasLocalMutations.putCanvasExclusiveChoiceLocal(group, ec);
+        ClientQuestPropertyMutations.putCanvasExclusiveChoiceLocal(group, ec);
     }
 
     public static void removeCanvasExclusiveChoiceLocal(String group, String ecId) {
-        ClientCanvasLocalMutations.removeCanvasExclusiveChoiceLocal(group, ecId);
+        ClientQuestPropertyMutations.removeCanvasExclusiveChoiceLocal(group, ecId);
+    }
+
+    public static void putCanvasImageLocal(String group, CanvasImageLayer image) {
+        ClientQuestPropertyMutations.putCanvasImageLocal(group, image);
+    }
+
+    public static void removeCanvasImageLocal(String group, String imageId) {
+        ClientQuestPropertyMutations.removeCanvasImageLocal(group, imageId);
+    }
+
+    public static void putCanvasTextLocal(String group, CanvasTextLayer text) {
+        ClientQuestPropertyMutations.putCanvasTextLocal(group, text);
+    }
+
+    public static void removeCanvasTextLocal(String group, String textId) {
+        ClientQuestPropertyMutations.removeCanvasTextLocal(group, textId);
     }
 
     public static void setCanvasLayerOrderLocal(String group, List<String> order) {
-        ClientCanvasLocalMutations.setCanvasLayerOrderLocal(group, order);
+        ClientQuestPropertyMutations.setCanvasLayerOrderLocal(group, order);
     }
 
     public static int completedCount() {
-        return ClientQuestState.completedCount();
+        return ClientQuestPropertyMutations.completedCount();
     }
 
     public static int totalCount() {
-        return ClientQuestState.totalCount();
+        return ClientQuestPropertyMutations.totalCount();
     }
 
     public static void setQuestDisplayLocal(String questId, String title, String subtitle) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        if (title != null) {
-            quest.putString(QuestSyncKeys.Quest.TITLE, title);
-        }
-        if (subtitle != null) {
-            quest.putString(QuestSyncKeys.Quest.SUBTITLE, subtitle);
-        }
+        ClientQuestPropertyMutations.setQuestDisplayLocal(questId, title, subtitle);
     }
 
     public static void setQuestDescriptionLocal(String questId, List<String> description) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        ListTag lines = new ListTag();
-        if (description != null) {
-            for (String line : description) {
-                if (line != null) {
-                    lines.add(net.minecraft.nbt.StringTag.valueOf(line));
-                }
-            }
-        }
-        quest.put(QuestSyncKeys.Quest.DESCRIPTION, lines);
+        ClientQuestPropertyMutations.setQuestDescriptionLocal(questId, description);
     }
 
     public static void setQuestIconLocal(String questId, String icon) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putString(QuestSyncKeys.Quest.ICON, QuestDisplay.normalizeIcon(icon));
+        ClientQuestPropertyMutations.setQuestIconLocal(questId, icon);
     }
 
     public static void setQuestRepeatableLocal(String questId, boolean enabled) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putBoolean(QuestSyncKeys.Quest.REPEATABLE, enabled);
+        ClientQuestPropertyMutations.setQuestRepeatableLocal(questId, enabled);
     }
 
     public static void setQuestHiddenModeLocal(String questId, String hiddenMode) {
-        if (hiddenMode == null || hiddenMode.isBlank()) {
-            return;
-        }
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putString(QuestSyncKeys.Quest.HIDDEN_MODE, hiddenMode.trim());
+        ClientQuestPropertyMutations.setQuestHiddenModeLocal(questId, hiddenMode);
     }
 
     public static void setQuestVisualHiddenLocal(String questId, boolean hidden) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putBoolean(QuestSyncKeys.Quest.VISUAL_HIDDEN, hidden);
+        ClientQuestPropertyMutations.setQuestVisualHiddenLocal(questId, hidden);
     }
 
     public static void setQuestCompletionSoundLocal(String questId, String sound) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        String normalizedSound = sound == null || sound.isBlank() ? QuestDisplay.DEFAULT_COMPLETION_SOUND : sound.trim();
-        quest.putString(QuestSyncKeys.Quest.COMPLETION_SOUND, normalizedSound);
+        ClientQuestPropertyMutations.setQuestCompletionSoundLocal(questId, sound);
     }
 
     public static void setQuestCompletionSoundVolumeLocal(String questId, int volume) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putInt(QuestSyncKeys.Quest.COMPLETION_SOUND_VOLUME, QuestDisplay.normalizeCompletionSoundVolume(volume));
+        ClientQuestPropertyMutations.setQuestCompletionSoundVolumeLocal(questId, volume);
     }
 
     public static void setQuestCompletionHudBackgroundLocal(String questId, String background) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putString(QuestSyncKeys.Quest.COMPLETION_HUD_BACKGROUND, QuestDisplay.normalizeCompletionHudBackground(background));
+        ClientQuestPropertyMutations.setQuestCompletionHudBackgroundLocal(questId, background);
     }
 
     public static void setQuestBackgroundLocal(String questId, String background, boolean grayscale) {
-        CompoundTag quest = mutableQuest(questId);
-        if (quest == null) {
-            return;
-        }
-        quest.putString(QuestSyncKeys.Quest.QUEST_BACKGROUND, QuestDisplay.normalizeQuestBackground(background));
-        quest.putBoolean(QuestSyncKeys.Quest.QUEST_BACKGROUND_GRAYSCALE, grayscale);
+        ClientQuestPropertyMutations.setQuestBackgroundLocal(questId, background, grayscale);
     }
 
     public static void resetQuestProgressLocal(String questId) {
-        String normalized = normalizeQuestId(questId);
-        if (normalized.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(normalized);
-        if (quest == null) {
-            return;
-        }
-        quest.putBoolean(QuestSyncKeys.Quest.COMPLETED, false);
-        quest.putBoolean(QuestSyncKeys.Quest.CLAIMED, false);
-        quest.putFloat(QuestSyncKeys.Quest.PROGRESS, 0.0f);
-        CompoundTag tasks = quest.getCompound(QuestSyncKeys.Quest.TASKS);
-        for (String taskId : tasks.getAllKeys()) {
-            CompoundTag task = tasks.getCompound(taskId);
-            task.putFloat(QuestSyncKeys.Objective.PROGRESS, 0.0f);
-            task.putBoolean(QuestSyncKeys.Objective.COMPLETE, false);
-            task.putInt(QuestSyncKeys.Objective.COUNT, 0);
-            tasks.put(taskId, task);
-        }
-        ClientQuestState.forEachQuest(ClientQuestConnectionMutations::refreshLocalUnlockState);
+        ClientQuestPropertyMutations.resetQuestProgressLocal(questId);
     }
 
     public static void setQuestClaimedLocal(String questId, boolean claimed) {
-        String normalized = normalizeQuestId(questId);
-        if (normalized.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(normalized);
-        if (quest == null) {
-            return;
-        }
-        quest.putBoolean(QuestSyncKeys.Quest.CLAIMED, claimed);
+        ClientQuestPropertyMutations.setQuestClaimedLocal(questId, claimed);
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
-        putObjectiveJsonLocal(questId, taskJson, QuestSyncKeys.Quest.TASKS, QuestSyncKeys.Quest.TASKS_ORDER);
+        ClientQuestTaskMutations.putQuestTaskJsonLocal(questId, taskJson);
     }
 
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
-        putObjectiveJsonLocal(questId, rewardJson, QuestSyncKeys.Quest.REWARDS, QuestSyncKeys.Quest.REWARDS_ORDER);
+        ClientQuestTaskMutations.putQuestRewardJsonLocal(questId, rewardJson);
     }
 
     public static void setQuestPrerequisiteLocal(String questId, String prerequisiteId, boolean add) {
-        ClientQuestConnectionMutations.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
+        ClientQuestPropertyMutations.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
     }
 
     public static void setConnectionColorLocal(String questId, String prerequisiteId, int color) {
-        ClientQuestConnectionMutations.setConnectionColorLocal(questId, prerequisiteId, color);
+        ClientQuestPropertyMutations.setConnectionColorLocal(questId, prerequisiteId, color);
     }
 
     public static void setConnectionModeLocal(String questId, String prerequisiteId, boolean gridMode) {
-        ClientQuestConnectionMutations.setConnectionModeLocal(questId, prerequisiteId, gridMode);
+        ClientQuestPropertyMutations.setConnectionModeLocal(questId, prerequisiteId, gridMode);
     }
 
     public static void setConnectionHiddenLocal(String questId, String prerequisiteId, boolean hidden) {
-        ClientQuestConnectionMutations.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
+        ClientQuestPropertyMutations.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
     }
 
     public static void setConnectionTextureLocal(String questId, String prerequisiteId, String texture) {
-        ClientQuestConnectionMutations.setConnectionTextureLocal(questId, prerequisiteId, texture);
+        ClientQuestPropertyMutations.setConnectionTextureLocal(questId, prerequisiteId, texture);
     }
 
     public static void setConnectionTextureSpacingLocal(String questId, String prerequisiteId, int spacing) {
-        ClientQuestConnectionMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+        ClientQuestPropertyMutations.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
     }
 
     public static void setQuestPositionInGroupLocal(String questId, String group, int x, int y) {
-        CompoundTag groupTag = mutableGroupView(questId, group);
-        if (groupTag == null) {
-            return;
-        }
-        groupTag.putInt(QuestSyncKeys.ChapterView.X, x);
-        groupTag.putInt(QuestSyncKeys.ChapterView.Y, y);
+        ClientQuestPropertyMutations.setQuestPositionInGroupLocal(questId, group, x, y);
     }
 
     public static void setQuestScaleInGroupLocal(String questId, String group, float scale) {
-        CompoundTag groupTag = mutableGroupView(questId, group);
-        if (groupTag == null) {
-            return;
-        }
-        float normalized = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
-        groupTag.putFloat(QuestSyncKeys.ChapterView.SCALE, Math.max(0.5f, normalized));
+        ClientQuestPropertyMutations.setQuestScaleInGroupLocal(questId, group, scale);
     }
 
     public static void createEditorQuestLocal(String questId, String group, int x, int y, String title) {
-        String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeGroup(group);
-        if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
-            return;
-        }
-
-        String normalizedTitle = title == null ? "" : title.trim();
-
-        QuestVisibilityMode hiddenMode = ClientChapterState.groupLockUntilUnlocked(normalizedGroup)
-                ? QuestVisibilityMode.LOCKED
-                : QuestVisibilityMode.PREREQUISITES_VISIBLE;
-        CompoundTag quest = ClientQuestSnapshotBuilder.newEditorQuest(normalizedTitle, normalizedGroup, x, y, hiddenMode);
-
-        ClientQuestState.putQuest(normalizedQuest, quest);
+        ClientQuestPropertyMutations.createEditorQuestLocal(questId, group, x, y, title);
     }
 
     public static void copyQuestLocal(String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestCopyMutations.copyQuestLocal(sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+        ClientQuestPropertyMutations.copyQuestLocal(sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
     }
 
     public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestCopyMutations.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+        ClientQuestPropertyMutations.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
     }
 
     public static void remapCopiedQuestPrerequisitesLocal(Map<String, String> copiedIds, Map<String, CompoundTag> snapshots) {
-        ClientQuestCopyMutations.remapCopiedQuestPrerequisitesLocal(copiedIds, snapshots);
+        ClientQuestPropertyMutations.remapCopiedQuestPrerequisitesLocal(copiedIds, snapshots);
     }
 
     public static void removeQuestLocal(String questId) {
-        String normalized = normalizeQuestId(questId);
-        if (normalized.isBlank() || !ClientQuestState.removeQuest(normalized)) {
-            return;
-        }
-        ClientQuestState.removePinned(normalized);
-        ClientQuestConnectionMutations.removeQuestReferences(normalized);
-        for (Map.Entry<String, List<CanvasExclusiveChoice>> entry : ClientCanvasLayerState.exclusiveChoicesByGroup().entrySet()) {
-            String group = entry.getKey();
-            for (CanvasExclusiveChoice ec : entry.getValue()) {
-                boolean changed = false;
-                if (ec.connectionQuestIds().contains(normalized)) {
-                    ec = ec.removeConnection(normalized);
-                    changed = true;
-                }
-                if (ec.prerequisiteQuestIds().contains(normalized)) {
-                    ec = ec.removePrerequisite(normalized);
-                    changed = true;
-                }
-                if (changed) {
-                    ClientCanvasLayerState.putExclusiveChoice(group, ec);
-                }
-            }
-        }
+        ClientQuestPropertyMutations.removeQuestLocal(questId);
     }
-
-    private static void putObjectiveJsonLocal(String questId, String jsonValue, String bucketName, String orderName) {
-        String normalizedQuest = normalizeQuestId(questId);
-        if (normalizedQuest.isBlank() || jsonValue == null || jsonValue.isBlank()) {
-            return;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
-        if (quest == null) {
-            return;
-        }
-        String id = objectiveId(normalizedQuest, bucketName, jsonValue);
-        if (id.isBlank()) {
-            return;
-        }
-        CompoundTag bucket = quest.getCompound(bucketName);
-        CompoundTag entry = bucket.getCompound(id);
-        entry.putString(QuestSyncKeys.Objective.JSON, jsonValue);
-        entry.putString(QuestSyncKeys.Objective.TYPE, objectiveType(normalizedQuest, id, bucketName, jsonValue, entry.getString(QuestSyncKeys.Objective.TYPE)));
-        bucket.put(id, entry);
-        quest.put(bucketName, bucket);
-        appendObjectiveOrder(quest, orderName, id);
-    }
-
-    private static void appendObjectiveOrder(CompoundTag quest, String orderName, String id) {
-        if (quest == null || orderName == null || orderName.isBlank() || id == null || id.isBlank()) {
-            return;
-        }
-        ListTag current = quest.getList(orderName, Tag.TAG_STRING);
-        ListTag next = new ListTag();
-        boolean found = false;
-        for (int i = 0; i < current.size(); i++) {
-            String value = current.getString(i);
-            if (id.equals(value)) {
-                found = true;
-            }
-            next.add(current.get(i).copy());
-        }
-        if (!found) {
-            next.add(net.minecraft.nbt.StringTag.valueOf(id));
-        }
-        quest.put(orderName, next);
-    }
-
-    private static String objectiveId(String questId, String bucketName, String jsonValue) {
-        try {
-            JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
-            return json.has("id") && !json.get("id").isJsonNull() ? json.get("id").getAsString().trim() : "";
-        } catch (RuntimeException exception) {
-            QuestsAndStuffMod.LOGGER.warn(
-                    "[QnS:Sync] Failed reading optimistic objective id quest={} bucket={} json={}",
-                    questId,
-                    bucketName,
-                    abbreviateJson(jsonValue),
-                    exception
-            );
-            return "";
-        }
-    }
-
-    private static String objectiveType(String questId, String objectiveId, String bucketName, String jsonValue, String fallback) {
-        try {
-            JsonObject json = JsonParser.parseString(jsonValue).getAsJsonObject();
-            return json.has("type") && !json.get("type").isJsonNull() ? json.get("type").getAsString().trim() : fallback;
-        } catch (RuntimeException exception) {
-            QuestsAndStuffMod.LOGGER.warn(
-                    "[QnS:Sync] Failed reading optimistic objective type quest={} objective={} bucket={} json={}",
-                    questId,
-                    objectiveId,
-                    bucketName,
-                    abbreviateJson(jsonValue),
-                    exception
-            );
-            return fallback == null ? "" : fallback;
-        }
-    }
-
-    private static String abbreviateJson(String jsonValue) {
-        String value = jsonValue == null ? "" : jsonValue.replace('\n', ' ').replace('\r', ' ').trim();
-        return value.length() <= 120 ? value : value.substring(0, 117) + "...";
-    }
-
-    private static CompoundTag mutableGroupView(String questId, String group) {
-        String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeGroup(group);
-        if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
-            return null;
-        }
-        CompoundTag quest = ClientQuestState.mutableQuest(normalizedQuest);
-        if (quest == null) {
-            return null;
-        }
-        CompoundTag groups = quest.getCompound(QuestSyncKeys.Quest.GROUPS);
-        CompoundTag groupTag = groups.getCompound(normalizedGroup).copy();
-        groups.put(normalizedGroup, groupTag);
-        return groupTag;
-    }
-
-    private static CompoundTag mutableQuest(String questId) {
-        String normalized = normalizeQuestId(questId);
-        return normalized.isBlank() ? null : ClientQuestState.mutableQuest(normalized);
-    }
-
-    private static String normalizeQuestId(String value) {
-        return QuestIdentity.questId(value);
-    }
-
-    private static String normalizeGroup(String value) {
-        return QuestIdentity.groupName(value);
-    }
-
 }

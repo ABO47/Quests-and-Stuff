@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal.entity;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestObjectiveEditActions;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;

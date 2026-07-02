@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.ui.state;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;

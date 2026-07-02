@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncChunkAccumulator;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier;
 import com.abo47.questsandstuff.quest.model.ChapterDefinition;

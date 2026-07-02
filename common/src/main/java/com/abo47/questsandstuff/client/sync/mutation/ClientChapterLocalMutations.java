@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientCanvasLayerState;
-import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
+import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 

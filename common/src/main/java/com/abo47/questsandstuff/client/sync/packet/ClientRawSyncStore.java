@@ -4,10 +4,10 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
 
-public final class ClientRawSyncPayload {
+public final class ClientRawSyncStore {
     private static final CompoundTag RAW = new CompoundTag();
 
-    private ClientRawSyncPayload() {
+    private ClientRawSyncStore() {
     }
 
     public static void reset() {
