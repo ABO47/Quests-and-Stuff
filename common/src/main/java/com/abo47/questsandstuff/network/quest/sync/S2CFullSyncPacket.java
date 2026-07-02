@@ -6,23 +6,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 
-public record S2CFullSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
+public final class S2CFullSyncPacket extends ChunkedSyncPacket {
+    public S2CFullSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
+        super(sequence, chunkIndex, chunkCount, payload);
+    }
+
     public static S2CFullSyncPacket decode(FriendlyByteBuf buf) {
-        long sequence = buf.readLong();
-        int chunkIndex = buf.readVarInt();
-        int chunkCount = buf.readVarInt();
-        SyncPacketPayloadLimits.requireValidChunkMetadata(chunkIndex, chunkCount);
-        return new S2CFullSyncPacket(sequence, chunkIndex, chunkCount, SyncPacketPayloadLimits.readNbt(buf));
+        Data d = ChunkedSyncPacket.decode(buf);
+        return new S2CFullSyncPacket(d.sequence(), d.chunkIndex(), d.chunkCount(), d.payload());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        SyncPacketPayloadLimits.requireValidChunkMetadata(chunkIndex, chunkCount);
-        buf.writeLong(sequence);
-        buf.writeVarInt(chunkIndex);
-        buf.writeVarInt(chunkCount);
-        buf.writeNbt(payload);
-    }
-
+    @Override
     public void handle(ModPacketContext context) {
         context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleFull(sequence, chunkIndex, chunkCount, payload));
     }

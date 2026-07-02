@@ -32,7 +32,7 @@ public record C2STeamJoinPacket(String inviteCode) {
             if (error != null) {
                 TeamData existing = manager.getTeamByPlayer(player.getUUID());
                 if (existing != null) {
-                    S2CTeamSyncPacket.send(player, existing);
+                    TeamPacketHelper.send(player, existing);
                 }
                 S2CTeamJoinResultPacket.send(player, "ui.questsandstuff.teams.join_error." + error, false);
                 return;
@@ -42,7 +42,7 @@ public record C2STeamJoinPacket(String inviteCode) {
                 S2CTeamJoinResultPacket.send(player, "ui.questsandstuff.teams.invite_invalid", false);
                 return;
             }
-            S2CTeamSyncPacket.broadcastToMembers(level, team);
+            TeamPacketHelper.broadcastToMembers(level, team);
             S2CTeamJoinResultPacket.send(player, "", true);
         });
     }

@@ -25,7 +25,7 @@ public record C2STeamCreatePacket() {
             ServerLevel level = player.serverLevel();
             TeamManager manager = new TeamManager(level, QuestServices.engine(player.server));
             TeamData team = manager.createTeam(player);
-            S2CTeamSyncPacket.send(player, team);
+            TeamPacketHelper.send(player, team);
         });
     }
 }

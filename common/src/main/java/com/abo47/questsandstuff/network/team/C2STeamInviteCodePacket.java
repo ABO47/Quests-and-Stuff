@@ -29,7 +29,7 @@ public record C2STeamInviteCodePacket() {
                 return;
             }
             TeamData team = manager.getTeam(player);
-            S2CTeamSyncPacket.send(player, team);
+            TeamPacketHelper.send(player, team);
         });
     }
 }

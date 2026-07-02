@@ -18,7 +18,7 @@ final class ClientboundTeamPacketDispatch {
     }
 
     static void handle(CompoundTag payload) {
-        TeamData team = S2CTeamSyncPacket.fromPayload(payload);
+        TeamData team = TeamPacketHelper.fromPayload(payload);
         if (team == null) {
             ClientTeamCache.INSTANCE.clear();
             QuestsAndStuffMod.debugLog("[QnS:Team] received empty team sync");

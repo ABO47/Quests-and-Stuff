@@ -47,19 +47,19 @@ public record C2STeamActionPacket(Action action, UUID targetUuid) {
             if (success) {
                 TeamData after = manager.getTeamByPlayer(player.getUUID());
                 if (after != null) {
-                    S2CTeamSyncPacket.broadcastToMembers(level, after);
+                    TeamPacketHelper.broadcastToMembers(level, after);
                 }
                 if (before != null) {
                     for (TeamMember m : before.members()) {
                         if (after == null || !after.isMember(m.uuid())) {
-                            S2CTeamSyncPacket.clearPlayer(level, m.uuid());
+                            TeamPacketHelper.clearPlayer(level, m.uuid());
                         }
                     }
                 }
                 if (after == null && before != null) {
                     TeamData remaining = manager.getTeamById(before.teamId());
                     if (remaining != null) {
-                        S2CTeamSyncPacket.broadcastToMembers(level, remaining);
+                        TeamPacketHelper.broadcastToMembers(level, remaining);
                     }
                 }
             }
