@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.sync.state;
 
 import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -11,6 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClientIdentityNormalizationTest {
+    @BeforeEach
+    void setUp() {
+        ClientQuestState.reset();
+        ClientChapterState.reset();
+    }
+
     @AfterEach
     void tearDown() {
         ClientQuestState.reset();
