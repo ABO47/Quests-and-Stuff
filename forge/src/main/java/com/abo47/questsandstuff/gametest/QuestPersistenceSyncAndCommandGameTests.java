@@ -887,13 +887,13 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             throw new GameTestAssertException("Pasted source/b should use only pasted source/a as a prerequisite, got " + pastedB.prerequisites());
         }
         if (!pastedB.connectionColors().keySet().equals(Set.of(pastedA.id()))) {
-            throw new GameTestAssertException("Connection colors should only keep the remapped internal edge");
+            throw new GameTestAssertException("Connection colors should only keep the remapped internal connection");
         }
         if (!pastedB.connectionModes().equals(Map.of(pastedA.id(), "grid"))) {
-            throw new GameTestAssertException("Connection mode should follow the remapped internal edge");
+            throw new GameTestAssertException("Connection mode should follow the remapped internal connection");
         }
         if (!pastedB.hiddenConnections().equals(Set.of(pastedA.id()))) {
-            throw new GameTestAssertException("Hidden connection should follow the remapped internal edge");
+            throw new GameTestAssertException("Hidden connection should follow the remapped internal connection");
         }
     }
 
