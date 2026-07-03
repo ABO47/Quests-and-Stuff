@@ -17,8 +17,8 @@ import net.minecraft.nbt.StringTag;
 import java.util.List;
 import java.util.Map;
 
-public final class ClientQuestPropertyMutations {
-    private ClientQuestPropertyMutations() {
+public final class ClientQuestPropertyMutator {
+    private ClientQuestPropertyMutator() {
     }
 
     public static void createChapterLocal(String chapter) {

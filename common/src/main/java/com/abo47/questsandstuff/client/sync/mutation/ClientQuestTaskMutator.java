@@ -11,8 +11,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
-public final class ClientQuestTaskMutations {
-    private ClientQuestTaskMutations() {
+public final class ClientQuestTaskMutator {
+    private ClientQuestTaskMutator() {
     }
 
     public static void putQuestTaskJsonLocal(String questId, String taskJson) {
