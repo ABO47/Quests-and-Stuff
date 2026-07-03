@@ -137,15 +137,15 @@ public final class CanvasRenderer {
         return ConnectionRenderer.connectionKey(sourceQuestId, targetQuestId);
     }
 
-    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    public static int connectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         return ConnectionRenderer.connectionColor(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    public static boolean isConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         return ConnectionRenderer.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    public static boolean isConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         return ConnectionRenderer.isConnectionDirect(state, group, sourceQuestId, targetQuestId);
     }
 
@@ -226,8 +226,8 @@ public final class CanvasRenderer {
     }
 
 
-    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        return CanvasHitTester.hitTestEdge(state, cards, byQuestId, x, y);
+    public static ConnectionHit hitTestConnection(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+        return CanvasHitTester.hitTestConnection(state, cards, byQuestId, x, y);
     }
 
     public static boolean jumpToBestMatch(TabletUiState state) {

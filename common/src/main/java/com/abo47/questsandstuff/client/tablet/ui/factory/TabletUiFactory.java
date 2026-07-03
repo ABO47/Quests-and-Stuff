@@ -172,8 +172,8 @@ public final class TabletUiFactory {
         return EditorChapterCommandClient.sanitizeChapterName(value);
     }
 
-    public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
-        EditorChapterCommandClient.runGroupAction(player, state, action, group, value, offset);
+    public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
+        EditorChapterCommandClient.runChapterAction(player, state, action, group, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
@@ -204,8 +204,8 @@ public final class TabletUiFactory {
         return CanvasRenderer.hitTestCard(cards, x, y);
     }
 
-    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        return CanvasRenderer.hitTestEdge(state, cards, byQuestId, x, y);
+    public static ConnectionHit hitTestConnection(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+        return CanvasRenderer.hitTestConnection(state, cards, byQuestId, x, y);
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {

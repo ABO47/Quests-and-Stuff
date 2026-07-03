@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 
-public record C2SEditorOpenChapterPacket(String group) {
+public record C2SEditorOpenChapterPacket(String chapter) {
     public static C2SEditorOpenChapterPacket decode(FriendlyByteBuf buf) {
         return new C2SEditorOpenChapterPacket(buf.readUtf());
     }

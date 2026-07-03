@@ -20,12 +20,12 @@ public final class CanvasGridFitController {
     private CanvasGridFitController() {
     }
 
-    public static boolean canFitImageToGrid(TabletUiState state, String group, String imageId) {
+    public static boolean canFitImageToGrid(TabletUiState state, String chapter, String imageId) {
         CanvasImageLayer image = findImage(state, group, imageId);
         return image != null && !image.equals(fittedImage(state, image));
     }
 
-    public static boolean fitImageToGrid(TabletUiState state, String group, String imageId) {
+    public static boolean fitImageToGrid(TabletUiState state, String chapter, String imageId) {
         CanvasImageLayer image = findImage(state, group, imageId);
         if (image == null) {
             return false;
@@ -44,12 +44,12 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitTextToGrid(TabletUiState state, String group, String textId) {
+    public static boolean canFitTextToGrid(TabletUiState state, String chapter, String textId) {
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
         return text != null && !text.equals(fittedText(state, text));
     }
 
-    public static boolean fitTextToGrid(TabletUiState state, String group, String textId) {
+    public static boolean fitTextToGrid(TabletUiState state, String chapter, String textId) {
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
         if (text == null) {
             return false;
@@ -97,7 +97,7 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitSelectionToGrid(TabletUiState state, String group, Map<String, QuestCardLayout> byQuestId) {
+    public static boolean canFitSelectionToGrid(TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
         if (state == null || group == null || group.isBlank()) {
             return false;
         }
@@ -125,7 +125,7 @@ public final class CanvasGridFitController {
         return false;
     }
 
-    public static boolean fitSelectionToGrid(Player player, TabletUiState state, String group, Map<String, QuestCardLayout> byQuestId) {
+    public static boolean fitSelectionToGrid(Player player, TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
         if (state == null || group == null || group.isBlank()) {
             return false;
         }
@@ -193,12 +193,12 @@ public final class CanvasGridFitController {
         return changed;
     }
 
-    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
+    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
         CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
         return ec != null && !ec.equals(fittedExclusiveChoice(state, ec));
     }
 
-    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
+    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
         CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
         if (ec == null) {
             return false;
@@ -253,7 +253,7 @@ public final class CanvasGridFitController {
         return new FittedQuest(clamped.x, clamped.y, scale);
     }
 
-    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String group, String ecId) {
+    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return null;
         }
@@ -263,7 +263,7 @@ public final class CanvasGridFitController {
                 .orElse(null);
     }
 
-    private static CanvasImageLayer findImage(TabletUiState state, String group, String imageId) {
+    private static CanvasImageLayer findImage(TabletUiState state, String chapter, String imageId) {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }

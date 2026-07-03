@@ -83,7 +83,7 @@ public final class CanvasSelectionActions {
         if (state == null || totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank()) {
             return false;
         }
@@ -157,7 +157,7 @@ public final class CanvasSelectionActions {
         return changed;
     }
 
-    private static SelectionBounds selectedBounds(TabletUiState state, String group) {
+    private static SelectionBounds selectedBounds(TabletUiState state, String chapter) {
         SelectionBounds bounds = new SelectionBounds();
         for (String questId : state.canvas.canvasSelection.questIds()) {
             if (!ClientQuestStateFacade.containsQuest(questId)) {

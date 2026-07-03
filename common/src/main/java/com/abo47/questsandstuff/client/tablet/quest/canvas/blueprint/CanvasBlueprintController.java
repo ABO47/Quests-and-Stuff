@@ -127,7 +127,7 @@ public final class CanvasBlueprintController {
         if (canvasViewport == null || state == null) {
             return CanvasBlueprint.empty();
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank()) {
             return CanvasBlueprint.empty();
         }
@@ -147,7 +147,7 @@ public final class CanvasBlueprintController {
         return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, group, selection), ecs);
     }
 
-    private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String group) {
+    private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String chapter) {
         if (questIds.isEmpty()) {
             return List.of();
         }
@@ -167,7 +167,7 @@ public final class CanvasBlueprintController {
         return quests;
     }
 
-    private static List<CanvasImageLayer> selectedImages(TabletUiState state, String group, Set<String> imageIds) {
+    private static List<CanvasImageLayer> selectedImages(TabletUiState state, String chapter, Set<String> imageIds) {
         if (imageIds.isEmpty()) {
             return List.of();
         }
@@ -180,7 +180,7 @@ public final class CanvasBlueprintController {
         return images;
     }
 
-    private static List<CanvasTextLayer> selectedTexts(TabletUiState state, String group, Set<String> textIds) {
+    private static List<CanvasTextLayer> selectedTexts(TabletUiState state, String chapter, Set<String> textIds) {
         if (textIds.isEmpty()) {
             return List.of();
         }
@@ -193,7 +193,7 @@ public final class CanvasBlueprintController {
         return texts;
     }
 
-    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String group, Set<String> ecIds) {
+    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String chapter, Set<String> ecIds) {
         if (ecIds.isEmpty()) {
             return List.of();
         }
@@ -235,7 +235,7 @@ public final class CanvasBlueprintController {
         return new CanvasPoint(minX, minY);
     }
 
-    private static List<String> selectedLayerOrder(TabletUiState state, String group, CanvasSelectionSet selection) {
+    private static List<String> selectedLayerOrder(TabletUiState state, String chapter, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
         for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of())) {
@@ -247,7 +247,7 @@ public final class CanvasBlueprintController {
         return order;
     }
 
-    private static String preferredName(String group, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts) {
+    private static String preferredName(String chapter, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts) {
         for (CanvasBlueprint.QuestEntry quest : quests) {
             String title = quest.definition().display().title();
             if (title != null && !title.isBlank()) {

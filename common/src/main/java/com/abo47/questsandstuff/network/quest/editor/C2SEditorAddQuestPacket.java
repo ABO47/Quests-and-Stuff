@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 
-public record C2SEditorAddQuestPacket(String group, String questId, int x, int y, String title) {
+public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int y, String title) {
     public static C2SEditorAddQuestPacket decode(FriendlyByteBuf buf) {
         return new C2SEditorAddQuestPacket(
                 buf.readUtf(),

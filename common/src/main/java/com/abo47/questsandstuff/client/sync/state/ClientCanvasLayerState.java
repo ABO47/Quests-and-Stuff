@@ -44,12 +44,12 @@ public final class ClientCanvasLayerState {
             CHAPTER_CANVAS_IMAGES.keySet().removeIf(group -> !groups.contains(group));
             CHAPTER_CANVAS_TEXTS.keySet().removeIf(group -> !groups.contains(group));
             CHAPTER_CANVAS_LAYER_ORDER.keySet().removeIf(group -> !groups.contains(group));
-            for (String group : groups) {
+            for (String chapter : groups) {
                 ensureChapter(group);
             }
         }
         CompoundTag groupProps = payload.getCompound(SyncKeys.CHAPTER_PROPS);
-        for (String group : groupProps.getAllKeys()) {
+        for (String chapter : groupProps.getAllKeys()) {
             CompoundTag props = groupProps.getCompound(group);
             String normalized = ClientChapterState.normalizeChapter(group);
             if (normalized.isBlank()) {

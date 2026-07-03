@@ -16,101 +16,101 @@ public final class CanvasLayerMutations {
     private CanvasLayerMutations() {
     }
 
-    public static void moveQuestLayer(TabletUiState state, String group, String questId, boolean front) {
+    public static void moveQuestLayer(TabletUiState state, String chapter, String questId, boolean front) {
         CanvasLayerOrdering.moveQuestLayer(state, group, questId, front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void moveImageLayer(TabletUiState state, String group, String imageId, boolean front) {
+    public static void moveImageLayer(TabletUiState state, String chapter, String imageId, boolean front) {
         CanvasLayerOrdering.moveImageLayer(state, group, imageId, front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
+    public static void moveTextLayer(TabletUiState state, String chapter, String textId, boolean front) {
         CanvasLayerOrdering.moveTextLayer(state, group, textId, front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void moveConnectionLayer(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean front) {
+    public static void moveConnectionLayer(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, boolean front) {
         CanvasLayerOrdering.moveConnectionLayer(state, group, QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId), front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void moveCanvasLayers(TabletUiState state, String group, List<String> layerKeys, boolean front) {
+    public static void moveCanvasLayers(TabletUiState state, String chapter, List<String> layerKeys, boolean front) {
         CanvasLayerOrdering.moveLayers(state, group, layerKeys, front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void moveExclusiveChoiceLayer(TabletUiState state, String group, String ecId, boolean front) {
+    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String ecId, boolean front) {
         CanvasLayerOrdering.moveExclusiveChoiceLayer(state, group, ecId, front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 
-    public static void putCanvasExclusiveChoice(TabletUiState state, String group, CanvasExclusiveChoice ec) {
+    public static void putCanvasExclusiveChoice(TabletUiState state, String chapter, CanvasExclusiveChoice ec) {
         CanvasElementStore.putCanvasExclusiveChoice(state, group, ec);
     }
 
-    public static void putCanvasExclusiveChoice(TabletUiState state, String group, CanvasExclusiveChoice ec, boolean syncServer) {
+    public static void putCanvasExclusiveChoice(TabletUiState state, String chapter, CanvasExclusiveChoice ec, boolean syncServer) {
         CanvasElementStore.putCanvasExclusiveChoice(state, group, ec, syncServer);
     }
 
-    public static void putCanvasExclusiveChoices(TabletUiState state, String group, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
+    public static void putCanvasExclusiveChoices(TabletUiState state, String chapter, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
         CanvasElementStore.putCanvasExclusiveChoices(state, group, ecs, syncServer);
     }
 
-    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         return CanvasElementStore.removeCanvasExclusiveChoice(state, group, ecId);
     }
 
-    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         return CanvasElementStore.findCanvasExclusiveChoice(state, group, ecId);
     }
 
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image) {
+    public static void putCanvasImage(TabletUiState state, String chapter, CanvasImageLayer image) {
         CanvasElementStore.putCanvasImage(state, group, image);
     }
 
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image, boolean syncServer) {
+    public static void putCanvasImage(TabletUiState state, String chapter, CanvasImageLayer image, boolean syncServer) {
         CanvasElementStore.putCanvasImage(state, group, image, syncServer);
     }
 
-    public static boolean removeCanvasImage(TabletUiState state, String group, String imageId) {
+    public static boolean removeCanvasImage(TabletUiState state, String chapter, String imageId) {
         return CanvasElementStore.removeCanvasImage(state, group, imageId);
     }
 
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text) {
+    public static void putCanvasText(TabletUiState state, String chapter, CanvasTextLayer text) {
         CanvasElementStore.putCanvasText(state, group, text);
     }
 
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text, boolean syncServer) {
+    public static void putCanvasText(TabletUiState state, String chapter, CanvasTextLayer text, boolean syncServer) {
         CanvasElementStore.putCanvasText(state, group, text, syncServer);
     }
 
-    public static boolean removeCanvasText(TabletUiState state, String group, String textId) {
+    public static boolean removeCanvasText(TabletUiState state, String chapter, String textId) {
         return CanvasElementStore.removeCanvasText(state, group, textId);
     }
 
-    public static CanvasTextLayer findCanvasText(TabletUiState state, String group, String textId) {
+    public static CanvasTextLayer findCanvasText(TabletUiState state, String chapter, String textId) {
         return CanvasElementStore.findCanvasText(state, group, textId);
     }
 
-    public static CanvasImageLayer findCanvasImage(TabletUiState state, String group, String imageId) {
+    public static CanvasImageLayer findCanvasImage(TabletUiState state, String chapter, String imageId) {
         return CanvasElementStore.findCanvasImage(state, group, imageId);
     }
 
-    public static void updateCanvasText(TabletUiState state, String group, String textId, UnaryOperator<CanvasTextLayer> updater) {
+    public static void updateCanvasText(TabletUiState state, String chapter, String textId, UnaryOperator<CanvasTextLayer> updater) {
         CanvasElementStore.updateCanvasText(state, group, textId, updater);
     }
 
-    public static void persistCanvasImage(TabletUiState state, String group, String imageId) {
+    public static void persistCanvasImage(TabletUiState state, String chapter, String imageId) {
         CanvasElementStore.persistCanvasImage(state, group, imageId);
     }
 
-    public static void persistCanvasText(TabletUiState state, String group, String textId) {
+    public static void persistCanvasText(TabletUiState state, String chapter, String textId) {
         CanvasElementStore.persistCanvasText(state, group, textId);
     }
 
-    public static void persistCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         CanvasElementStore.persistCanvasExclusiveChoice(state, group, ecId);
     }
 
@@ -184,7 +184,7 @@ public final class CanvasLayerMutations {
         state.questDetails.questDetailsTransientTexts.put(text.id(), text);
     }
 
-    public static boolean commitTransientCanvasImage(TabletUiState state, String group, String imageId) {
+    public static boolean commitTransientCanvasImage(TabletUiState state, String chapter, String imageId) {
         if (state == null || group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return false;
         }
@@ -196,7 +196,7 @@ public final class CanvasLayerMutations {
         return true;
     }
 
-    public static boolean commitTransientCanvasText(TabletUiState state, String group, String textId) {
+    public static boolean commitTransientCanvasText(TabletUiState state, String chapter, String textId) {
         if (state == null || group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return false;
         }
@@ -208,7 +208,7 @@ public final class CanvasLayerMutations {
         return true;
     }
 
-    public static boolean commitTransientCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static boolean commitTransientCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         if (state == null || group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return false;
         }
@@ -220,7 +220,7 @@ public final class CanvasLayerMutations {
         return true;
     }
 
-    public static void commitSelectedTransientCanvasLayers(TabletUiState state, String group) {
+    public static void commitSelectedTransientCanvasLayers(TabletUiState state, String chapter) {
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             commitTransientCanvasImage(state, group, imageId);
         }

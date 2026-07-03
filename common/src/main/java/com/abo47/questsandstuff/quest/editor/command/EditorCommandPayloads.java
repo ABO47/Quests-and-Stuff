@@ -216,7 +216,7 @@ public final class EditorCommandPayloads {
         return values;
     }
 
-    public static CompoundTag moveMany(String group, Map<String, int[]> moves) {
+    public static CompoundTag moveMany(String chapter, Map<String, int[]> moves) {
         CompoundTag payload = chapter(group);
         ListTag tags = new ListTag();
         if (moves != null) {
@@ -237,7 +237,7 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag scaleMany(String group, Map<String, Float> scales) {
+    public static CompoundTag scaleMany(String chapter, Map<String, Float> scales) {
         CompoundTag payload = chapter(group);
         ListTag tags = new ListTag();
         if (scales != null) {
@@ -257,17 +257,17 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag copyMany(String group, Collection<String> questIds) {
+    public static CompoundTag copyMany(String chapter, Collection<String> questIds) {
         CompoundTag payload = chapter(group);
         payload.put(QUESTS, strings(questIds));
         return payload;
     }
 
-    public static CompoundTag pasteClipboard(String group, int x, int y) {
+    public static CompoundTag pasteClipboard(String chapter, int x, int y) {
         return chapterPoint(group, x, y);
     }
 
-    public static CompoundTag pasteBlueprint(String group, int x, int y, CanvasBlueprint blueprint) {
+    public static CompoundTag pasteBlueprint(String chapter, int x, int y, CanvasBlueprint blueprint) {
         CompoundTag payload = chapterPoint(group, x, y);
         payload.put(BLUEPRINT, blueprint == null ? new CompoundTag() : blueprint.toPacketTag());
         return payload;
@@ -428,23 +428,23 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag canvasExclusiveChoicePut(String group, CanvasExclusiveChoice ec) {
+    public static CompoundTag canvasExclusiveChoicePut(String chapter, CanvasExclusiveChoice ec) {
         CompoundTag payload = chapter(group);
         payload.put(EXCLUSIVE_CHOICE, CanvasLayerNbtCodec.exclusiveChoiceToTag(ec));
         return payload;
     }
 
-    public static CompoundTag canvasExclusiveChoicesPut(String group, List<CanvasExclusiveChoice> ecs) {
+    public static CompoundTag canvasExclusiveChoicesPut(String chapter, List<CanvasExclusiveChoice> ecs) {
         CompoundTag payload = chapter(group);
         payload.put(EXCLUSIVE_CHOICES, CanvasLayerNbtCodec.exclusiveChoicesToListTag(ecs));
         return payload;
     }
 
-    public static CompoundTag canvasExclusiveChoiceRemove(String group, String ecId) {
+    public static CompoundTag canvasExclusiveChoiceRemove(String chapter, String ecId) {
         return chapterId(group, ecId);
     }
 
-    public static CompoundTag ecConnectionHidden(String group, String sourceId, String targetId, boolean hidden) {
+    public static CompoundTag ecConnectionHidden(String chapter, String sourceId, String targetId, boolean hidden) {
         CompoundTag payload = chapter(group);
         payload.putString(ID, sourceId);
         payload.putString(PREREQUISITE, targetId);
@@ -452,27 +452,27 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag canvasImagePut(String group, CanvasImageLayer image) {
+    public static CompoundTag canvasImagePut(String chapter, CanvasImageLayer image) {
         CompoundTag payload = chapter(group);
         payload.put(IMAGE, CanvasLayerNbtCodec.imageToTag(image));
         return payload;
     }
 
-    public static CompoundTag canvasImageRemove(String group, String imageId) {
+    public static CompoundTag canvasImageRemove(String chapter, String imageId) {
         return chapterId(group, imageId);
     }
 
-    public static CompoundTag canvasTextPut(String group, CanvasTextLayer text) {
+    public static CompoundTag canvasTextPut(String chapter, CanvasTextLayer text) {
         CompoundTag payload = chapter(group);
         payload.put(TEXT, CanvasLayerNbtCodec.textToTag(text));
         return payload;
     }
 
-    public static CompoundTag canvasTextRemove(String group, String textId) {
+    public static CompoundTag canvasTextRemove(String chapter, String textId) {
         return chapterId(group, textId);
     }
 
-    public static CompoundTag canvasLayerOrder(String group, Collection<String> order) {
+    public static CompoundTag canvasLayerOrder(String chapter, Collection<String> order) {
         CompoundTag payload = chapter(group);
         payload.put(ORDER, strings(order));
         return payload;
@@ -490,20 +490,20 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag chapter(String group) {
+    public static CompoundTag chapter(String chapter) {
         CompoundTag payload = new CompoundTag();
         payload.putString(CHAPTER, clean(group));
         return payload;
     }
 
-    private static CompoundTag chapterPoint(String group, int x, int y) {
+    private static CompoundTag chapterPoint(String chapter, int x, int y) {
         CompoundTag payload = chapter(group);
         payload.putInt(X, x);
         payload.putInt(Y, y);
         return payload;
     }
 
-    private static CompoundTag chapterId(String group, String id) {
+    private static CompoundTag chapterId(String chapter, String id) {
         CompoundTag payload = chapter(group);
         payload.putString(ID, clean(id));
         return payload;

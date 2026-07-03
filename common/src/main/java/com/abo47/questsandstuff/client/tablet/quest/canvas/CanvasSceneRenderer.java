@@ -149,7 +149,7 @@ final class CanvasSceneRenderer {
             int viewportH,
             BiConsumer<String, WidgetGroup> questCardLayerSink
     ) {
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
         List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
         List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
@@ -327,7 +327,7 @@ final class CanvasSceneRenderer {
         if (state.root.canEdit) {
             return;
         }
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (drawEc.connectionQuestIds().contains(card.questId()) && !drawEc.prerequisiteQuestIds().isEmpty()) {

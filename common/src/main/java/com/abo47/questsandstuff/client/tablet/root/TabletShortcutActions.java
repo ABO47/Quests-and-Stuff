@@ -113,7 +113,7 @@ final class TabletShortcutActions {
         if (state.questDetails.questDetailsOpen) {
             return QuestDetailsWindow.deleteSelected(player, state);
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         boolean changed = false;
         for (String questId : TabletStateQueries.selectedQuestIdSnapshot(state)) {
             EditorQuestCommandClient.runRemoveQuestAction(player, questId);
@@ -130,7 +130,7 @@ final class TabletShortcutActions {
         }
         if (changed) {
             CanvasSelectionActions.clearCanvasSelection(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] shortcut delete canvas selection group={}", group);
+            QuestsAndStuffMod.debugLog("[QnS:UI] shortcut delete canvas selection chapter={}", group);
         }
         return changed;
     }
@@ -142,7 +142,7 @@ final class TabletShortcutActions {
         if (canvasViewport == null) {
             return false;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
         state.canvas.canvasSelection.imageIds().clear();
@@ -160,7 +160,7 @@ final class TabletShortcutActions {
             state.canvas.canvasSelection.ecIds().add(ec.id());
             state.canvas.canvasSelection.setPrimaryEcId(ec.id());
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas group={} quests={} images={} texts={} ecs={}",
+        QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas chapter={} quests={} images={} texts={} ecs={}",
                 group, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size(), state.canvas.canvasSelection.ecIds().size());
         return true;
     }
@@ -186,7 +186,7 @@ final class TabletShortcutActions {
         int step = shift ? CanvasGeometry.gridSize(state) : 1;
         int dx = nudgeDx(keyCode, false, step);
         int dy = nudgeDy(keyCode, false, step);
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         boolean changed = false;
         Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
         for (String questId : state.canvas.canvasSelection.questIds()) {

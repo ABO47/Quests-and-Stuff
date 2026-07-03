@@ -45,7 +45,7 @@ final class ConnectionLayout {
     ) {
         List<ConnectionLine> lines = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
 
         for (QuestCardLayout quest : cards) {
             CompoundTag questTag = quest.tag();

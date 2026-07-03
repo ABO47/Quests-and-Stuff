@@ -70,51 +70,51 @@ public final class ChapterMetadataStore {
         save();
     }
 
-    public void setChapterOrder(List<String> groups, Set<String> discoveredGroups) {
-        state.setChapterOrder(groups, discoveredGroups);
+    public void setChapterOrder(List<String> chapters, Set<String> discoveredChapters) {
+        state.setChapterOrder(chapters, discoveredChapters);
         save();
     }
 
-    public void renameChapter(String fromName, String toName, Set<String> discoveredGroups) {
+    public void renameChapter(String fromName, String toName, Set<String> discoveredChapters) {
         state.renameChapter(fromName, toName);
-        state.reconcile(discoveredGroups);
+        state.reconcile(discoveredChapters);
         save();
     }
 
-    public String chapterIcon(String group) {
-        return state.chapterIcon(group);
+    public String chapterIcon(String chapter) {
+        return state.chapterIcon(chapter);
     }
 
-    public String chapterBackground(String group) {
-        return state.chapterBackground(group);
+    public String chapterBackground(String chapter) {
+        return state.chapterBackground(chapter);
     }
 
-    public String chapterCanvasBackground(String group) {
-        return state.chapterCanvasBackground(group);
+    public String chapterCanvasBackground(String chapter) {
+        return state.chapterCanvasBackground(chapter);
     }
 
-    public String chapterTextAlign(String group) {
-        return state.chapterTextAlign(group);
+    public String chapterTextAlign(String chapter) {
+        return state.chapterTextAlign(chapter);
     }
 
-    public int chapterTextColor(String group) {
-        return state.chapterTextColor(group);
+    public int chapterTextColor(String chapter) {
+        return state.chapterTextColor(chapter);
     }
 
-    public String chapterTextStyle(String group) {
-        return state.chapterTextStyle(group);
+    public String chapterTextStyle(String chapter) {
+        return state.chapterTextStyle(chapter);
     }
 
-    public int chapterTextSize(String group) {
-        return state.chapterTextSize(group);
+    public int chapterTextSize(String chapter) {
+        return state.chapterTextSize(chapter);
     }
 
-    public boolean chapterLockUntilUnlocked(String group) {
-        return state.chapterLockUntilUnlocked(group);
+    public boolean chapterLockUntilUnlocked(String chapter) {
+        return state.chapterLockUntilUnlocked(chapter);
     }
 
-    public boolean chapterHideUntilUnlocked(String group) {
-        return state.chapterHideUntilUnlocked(group);
+    public boolean chapterHideUntilUnlocked(String chapter) {
+        return state.chapterHideUntilUnlocked(chapter);
     }
 
     public java.util.Map<String, List<CanvasImageLayer>> canvasImagesByChapter() {
@@ -321,14 +321,14 @@ public final class ChapterMetadataStore {
         saveChapter(normalized);
     }
 
-    public void load(Set<String> discoveredGroups) {
+    public void load(Set<String> discoveredChapters) {
         state.clear();
         try {
             boolean migrated = false;
             for (Path path : ChapterMetadataFiles.jsonFiles(chaptersDir)) {
                 migrated |= ChapterMetadataReader.read(path, state);
             }
-            reconcile(discoveredGroups);
+            reconcile(discoveredChapters);
             if (migrated) {
                 save();
             }
@@ -352,8 +352,8 @@ public final class ChapterMetadataStore {
         ChapterMetadataWriter.saveGroups(chaptersDir, state, GSON, chapters);
     }
 
-    public void reconcile(Set<String> discoveredGroups) {
-        state.reconcile(discoveredGroups);
+    public void reconcile(Set<String> discoveredChapters) {
+        state.reconcile(discoveredChapters);
     }
 
     private static <T> Map<String, List<T>> mutableLayerMap(Map<String, List<T>> source) {

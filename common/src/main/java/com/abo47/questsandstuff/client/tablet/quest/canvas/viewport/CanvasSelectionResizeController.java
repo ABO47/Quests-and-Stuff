@@ -59,7 +59,7 @@ final class CanvasSelectionResizeController {
         CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
         state.canvas.resizeStartImageLayers.putAll(snapshot.images());
         state.canvas.resizeStartTextLayers.putAll(snapshot.texts());
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.resizeStartEcLayers.put(ec.id(), ec);

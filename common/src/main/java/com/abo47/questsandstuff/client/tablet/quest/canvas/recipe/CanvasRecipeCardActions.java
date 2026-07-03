@@ -49,18 +49,18 @@ public final class CanvasRecipeCardActions {
         if (!parsed.isCanvasRecipeNew()) {
             return false;
         }
-        String group = parsed.part(1);
+        String chapter = parsed.part(1);
         if (group.isBlank()) {
             return false;
         }
         addRecipeCard(state, group, asset);
         state.questDetails.questDetailsPickTarget = "";
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked group={} recipe={}", group, recipe.trim());
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked chapter={} recipe={}", group, recipe.trim());
         return true;
     }
 
     private static boolean changeRecipe(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
-        String group = parsed.part(1);
+        String chapter = parsed.part(1);
         String imageId = parsed.part(2);
         CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, group, imageId);
         if (current == null) {
@@ -68,11 +68,11 @@ public final class CanvasRecipeCardActions {
         }
         CanvasLayerMutations.putCanvasImage(state, group, current.withAsset(asset));
         selectOnlyImage(state, imageId);
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card changed group={} image={} asset={}", group, imageId, asset);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card changed chapter={} image={} asset={}", group, imageId, asset);
         return true;
     }
 
-    private static void addRecipeCard(TabletUiState state, String group, String asset) {
+    private static void addRecipeCard(TabletUiState state, String chapter, String asset) {
         String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, group));
         int x = state.canvas.canvasImageLogicalX - CARD_W / 2;
         int y = state.canvas.canvasImageLogicalY - CARD_H / 2;
@@ -104,7 +104,7 @@ public final class CanvasRecipeCardActions {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    private static List<String> canvasImageIds(TabletUiState state, String group) {
+    private static List<String> canvasImageIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             ids.add(image.id());

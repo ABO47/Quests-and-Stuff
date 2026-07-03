@@ -54,7 +54,7 @@ public final class ClientSyncPacketHandler {
 
     public static void handleEditorMutation(long sequence, String action, String questId, CompoundTag questTag) {
         if (SyncKeys.EditorAction.PASTE_SELECT.equals(action)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select group={} ids={}", questTag.getString(SyncKeys.EditorSelection.CHAPTER), questTag.getList(SyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] received paste_select chapter={} ids={}", questTag.getString(SyncKeys.EditorSelection.CHAPTER), questTag.getList(SyncKeys.EditorSelection.QUESTS, Tag.TAG_STRING));
             ClientSyncUiBridge.selectPastedQuests(questTag);
             return;
         }

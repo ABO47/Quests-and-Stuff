@@ -126,7 +126,7 @@ public final class EditorChapterCommandClient {
         return TabletStateQueries.sanitizeChapterName(value);
     }
 
-    public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
+    public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
         String op = action == null ? "" : action;
         String from = sanitizeChapterName(group);
         String rawValue = value == null ? "" : value.trim();

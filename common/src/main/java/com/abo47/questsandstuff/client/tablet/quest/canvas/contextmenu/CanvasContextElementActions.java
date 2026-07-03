@@ -49,7 +49,7 @@ final class CanvasContextElementActions {
                 ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card group={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
@@ -57,7 +57,7 @@ final class CanvasContextElementActions {
                 ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity group={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
             EntityIconControls.addEntityVariantAndMotionActions(
@@ -69,7 +69,7 @@ final class CanvasContextElementActions {
                     () -> {
                         state.questDetails.entityMotionEditorBatchImageIds = "";
                         EntityMotionEditor.openMainCanvas(state, selectedChapter, state.contextMenu.contextCanvasImageId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion group={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=edit_entity_motion chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                     },
                     canvasViewport::refresh
             );
@@ -78,7 +78,7 @@ final class CanvasContextElementActions {
                 ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model group={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         } else if (contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
@@ -86,7 +86,7 @@ final class CanvasContextElementActions {
                 ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model group={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         }

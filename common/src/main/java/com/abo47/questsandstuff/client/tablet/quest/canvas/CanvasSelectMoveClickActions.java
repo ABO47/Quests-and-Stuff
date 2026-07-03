@@ -273,7 +273,7 @@ final class CanvasSelectMoveClickActions {
         if (anchorEnumKind == null) {
             return;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
         List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());

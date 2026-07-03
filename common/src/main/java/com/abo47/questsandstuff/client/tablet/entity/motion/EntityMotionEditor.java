@@ -14,13 +14,13 @@ public final class EntityMotionEditor {
     private EntityMotionEditor() {
     }
 
-    public static void openMainCanvas(TabletUiState state, String group, String imageId, int x, int y) {
+    public static void openMainCanvas(TabletUiState state, String chapter, String imageId, int x, int y) {
         CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, group, imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;
         }
         EntityMotionTargets.openImage(state, EntityMotionTargets.SCOPE_CANVAS, group, "", imageId, x, y, image);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas group={} image={} spin={}", group, imageId, image.entitySpinSpeed());
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas chapter={} image={} spin={}", group, imageId, image.entitySpinSpeed());
     }
 
     public static void openQuestDetails(TabletUiState state, String questId, String imageId, int x, int y) {

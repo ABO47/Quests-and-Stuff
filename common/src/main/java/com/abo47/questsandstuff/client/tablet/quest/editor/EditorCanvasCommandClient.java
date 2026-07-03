@@ -82,7 +82,7 @@ public final class EditorCanvasCommandClient {
             return;
         }
         String chapter = chapterName == null ? "" : chapterName.trim();
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy request group={} ids={} integratedServer={}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy request chapter={} ids={} integratedServer={}",
                 chapter, questIds, IntegratedServerActions.canRunLocally(player));
         Set<String> normalizedQuestIds = new HashSet<>();
         for (String questId : questIds) {
@@ -108,7 +108,7 @@ public final class EditorCanvasCommandClient {
         if (chapter.isBlank()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste request group={} anchor={},{} integratedServer={}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste request chapter={} anchor={},{} integratedServer={}",
                 chapter, x, y, IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
@@ -124,7 +124,7 @@ public final class EditorCanvasCommandClient {
         if (chapter.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request group={} anchor={},{} entries={} integratedServer={}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request chapter={} anchor={},{} entries={} integratedServer={}",
                 chapter, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,

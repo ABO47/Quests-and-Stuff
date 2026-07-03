@@ -90,7 +90,7 @@ public final class TabletActiveState {
             refreshActiveTablet();
             return;
         }
-        String group = payload == null ? "" : payload.getString("chapter").trim();
+        String chapter = payload == null ? "" : payload.getString("chapter").trim();
         if (!group.isBlank()) {
             ClientQuestStateFacade.createChapterLocal(group);
             activeTabletState.root.selectedChapter = group;
@@ -187,7 +187,7 @@ public final class TabletActiveState {
 
         activeTabletState.clipboard.canvasClipboard.clearPendingPastedLayers();
         activeTabletState.chapterPanel.recentlyCreatedChapters.remove(EditorChapterCommandClient.selectedChapterName(activeTabletState));
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied group={} quests={} images={} texts={} ecs={}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied chapter={} quests={} images={} texts={} ecs={}",
                 EditorChapterCommandClient.selectedChapterName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
         refreshActiveTablet();
     }

@@ -33,7 +33,7 @@ record PrerequisiteConnectionModel(
         int ecW,
         int ecH
 ) {
-    static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String group, String query, boolean externalMode) {
+    static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String chapter, String query, boolean externalMode) {
         String safeQuestId = safe(questId);
         CompoundTag safeQuestTag = questTag == null ? new CompoundTag() : questTag.copy();
         String title = questTitle(safeQuestId, safeQuestTag);
@@ -52,7 +52,7 @@ record PrerequisiteConnectionModel(
         );
     }
 
-    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String group, String query) {
+    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String chapter, String query) {
         if (ec == null) {
             return new PrerequisiteConnectionModel("", new CompoundTag(), "", List.of(), List.of(), List.of(), false, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         }
@@ -206,7 +206,7 @@ record PrerequisiteConnectionModel(
         return filtered;
     }
 
-    private static List<PrerequisiteConnectionRow> rowsForMode(List<PrerequisiteConnectionRow> rows, String group, boolean externalMode) {
+    private static List<PrerequisiteConnectionRow> rowsForMode(List<PrerequisiteConnectionRow> rows, String chapter, boolean externalMode) {
         List<PrerequisiteConnectionRow> filtered = new ArrayList<>();
         for (PrerequisiteConnectionRow row : rows) {
             if (row.exclusiveChoice()) {
@@ -221,14 +221,14 @@ record PrerequisiteConnectionModel(
         return filtered;
     }
 
-    static boolean isLocalConnection(PrerequisiteConnectionRow row, String group) {
+    static boolean isLocalConnection(PrerequisiteConnectionRow row, String chapter) {
         if (group == null || group.isBlank()) {
             return true;
         }
         return questInGroup(row.sourceId(), group) && questInGroup(row.targetId(), group);
     }
 
-    private static boolean questInGroup(String questId, String group) {
+    private static boolean questInGroup(String questId, String chapter) {
         CompoundTag questTag = ClientQuestStateFacade.quest(questId);
         if (questTag == null || questTag.isEmpty() || group == null || group.isBlank()) {
             return false;

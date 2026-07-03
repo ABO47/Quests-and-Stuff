@@ -30,43 +30,43 @@ public final class QuestCrudHandler {
         addQuest(player, service.session(player).currentChapter);
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup) {
-        addQuest(player, preferredGroup, "", 0, 0, "");
+    public void addQuest(ServerPlayer player, String preferredChapter) {
+        addQuest(player, preferredChapter, "", 0, 0, "");
     }
 
-    public void addQuest(ServerPlayer player, String preferredGroup, String preferredQuestId, int x, int y, String preferredTitle) {
+    public void addQuest(ServerPlayer player, String preferredChapter, String preferredQuestId, int x, int y, String preferredTitle) {
         EditorSessionService.EditorSession session = service.session(player);
-        String group = preferredGroup == null || preferredGroup.isBlank() ? session.currentChapter : preferredGroup;
-        if (group == null || group.isBlank()) {
-            List<String> groups = service.chapters();
-            if (!groups.isEmpty()) {
-                group = groups.get(0);
+        String chapter = preferredChapter == null || preferredChapter.isBlank() ? session.currentChapter : preferredChapter;
+        if (chapter == null || chapter.isBlank()) {
+            List<String> chapters = service.chapters();
+            if (!chapters.isEmpty()) {
+                chapter = chapters.get(0);
             }
         }
-        if (group == null || group.isBlank()) {
+        if (chapter == null || chapter.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:Editor] add quest skipped: no chapter selected/available");
             return;
         }
         service.captureUndo(session);
-        service.ensureChapterExists(group);
-        session.currentChapter = group;
+        service.ensureChapterExists(chapter);
+        session.currentChapter = chapter;
         String id = EditorSessionService.normalizeQuestId(preferredQuestId);
         if (id.isBlank() || service.definitionStore().quests().containsKey(id) || !QuestNaming.isAutoQuestId(id)) {
-            id = service.nextQuestId(group);
+            id = service.nextQuestId(chapter);
         }
         String title = preferredTitle == null ? "" : preferredTitle.trim();
-        int[] freePosition = EditorPlacementService.findNearestFreePosition(service.definitionStore().quests(), group, x, y, 16);
+        int[] freePosition = EditorPlacementService.findNearestFreePosition(service.definitionStore().quests(), chapter, x, y, 16);
         int finalX = freePosition[0];
         int finalY = freePosition[1];
-        QuestsAndStuffMod.debugLog("[QnS:Editor] add quest request group={} reqId={} assignedId={} reqPos={},{} finalPos={},{}", group, preferredQuestId, id, x, y, finalX, finalY);
-        QuestSettings settings = service.definitionStore().chapterLockUntilUnlocked(group)
+        QuestsAndStuffMod.debugLog("[QnS:Editor] add quest request chapter={} reqId={} assignedId={} reqPos={},{} finalPos={},{}", chapter, preferredQuestId, id, x, y, finalX, finalY);
+        QuestSettings settings = service.definitionStore().chapterLockUntilUnlocked(chapter)
                 ? questSettingsWithHiddenMode(QuestVisibilityMode.LOCKED)
                 : QuestSettings.DEFAULT;
 
         QuestDefinition definition = new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDef(true, finalX, finalY, 1.0f))),
+                QuestDisplay.forNewQuest(title, Map.of(chapter, new ChapterDef(true, finalX, finalY, 1.0f))),
                 settings,
                 Set.of(),
                 Map.of(),
@@ -108,7 +108,7 @@ public final class QuestCrudHandler {
             service.definitionStore().upsert(next);
             removedReferences++;
         }
-        for (String group : service.definitionStore().chapterOrder()) {
+        for (String chapter : service.definitionStore().chapterOrder()) {
             for (CanvasExclusiveChoice ec : new ArrayList<>(service.definitionStore().canvasExclusiveChoices(group))) {
                 boolean changed = false;
                 if (ec.connectionQuestIds().contains(removedQuestId)) {

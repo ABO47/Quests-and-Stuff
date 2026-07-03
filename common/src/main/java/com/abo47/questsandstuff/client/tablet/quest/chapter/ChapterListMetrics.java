@@ -24,7 +24,7 @@ final class ChapterListMetrics {
     static List<String> filteredGroups(List<String> groups, String queryText, boolean canEdit) {
         String chapterQuery = SearchFilter.normalize(queryText);
         List<String> chapterList = new ArrayList<>();
-        for (String group : groups) {
+        for (String chapter : groups) {
             if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }

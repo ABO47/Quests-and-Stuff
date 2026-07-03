@@ -8,12 +8,12 @@ import java.util.Map;
 public record ClipboardPasteResult(
         List<QuestDefinition> createdQuests,
         Map<String, String> remappedIds,
-        int droppedExternalPrerequisiteEdges
+        int droppedExternalPrerequisiteConnections
 ) {
     public ClipboardPasteResult {
         createdQuests = createdQuests == null ? List.of() : List.copyOf(createdQuests);
         remappedIds = remappedIds == null ? Map.of() : Map.copyOf(remappedIds);
-        droppedExternalPrerequisiteEdges = Math.max(0, droppedExternalPrerequisiteEdges);
+        droppedExternalPrerequisiteConnections = Math.max(0, droppedExternalPrerequisiteConnections);
     }
 
     public List<String> selectionIds() {

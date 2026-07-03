@@ -137,7 +137,7 @@ public final class TabletBootstrap {
             if (persist) {
                 persistUiState(state);
             }
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} groups={}", selected, ClientQuestStateFacade.chapterOrder());
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} chapters={}", selected, ClientQuestStateFacade.chapterOrder());
             return;
         }
         state.root.selectedChapter = groups.get(0);

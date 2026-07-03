@@ -74,7 +74,7 @@ public record CanvasBlueprint(
         for (QuestEntry quest : quests) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("source_id", quest.sourceId());
-            entryTag.putString("source_group", quest.sourceGroup());
+            entryTag.putString("source_chapter", quest.sourceChapter());
             entryTag.putInt("source_x", quest.sourceX());
             entryTag.putInt("source_y", quest.sourceY());
             entryTag.putFloat("scale", quest.scale());
@@ -103,7 +103,7 @@ public record CanvasBlueprint(
         for (ExclusiveChoiceEntry entry : entries) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("source_id", entry.sourceId());
-            entryTag.putString("source_group", entry.sourceGroup());
+            entryTag.putString("source_chapter", entry.sourceChapter());
             entryTag.putInt("source_x", entry.sourceX());
             entryTag.putInt("source_y", entry.sourceY());
             entryTag.putInt("source_w", entry.sourceW());
@@ -191,7 +191,7 @@ public record CanvasBlueprint(
             Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
             entries.add(new ExclusiveChoiceEntry(
                     entryTag.getString("source_id"),
-                    entryTag.getString("source_group"),
+                    entryTag.getString("source_chapter"),
                     entryTag.getInt("source_x"),
                     entryTag.getInt("source_y"),
                     entryTag.getInt("source_w"),
@@ -224,7 +224,7 @@ public record CanvasBlueprint(
             }
             quests.add(new QuestEntry(
                     entryTag.getString("source_id"),
-                    entryTag.getString("source_group"),
+                    entryTag.getString("source_chapter"),
                     entryTag.getInt("source_x"),
                     entryTag.getInt("source_y"),
                     entryTag.getFloat("scale"),
@@ -254,7 +254,7 @@ public record CanvasBlueprint(
         for (QuestEntry quest : quests) {
             JsonObject entry = new JsonObject();
             entry.addProperty("source_id", quest.sourceId());
-            entry.addProperty("source_group", quest.sourceGroup());
+            entry.addProperty("source_chapter", quest.sourceChapter());
             entry.addProperty("source_x", quest.sourceX());
             entry.addProperty("source_y", quest.sourceY());
             entry.addProperty("scale", quest.scale());
@@ -286,7 +286,7 @@ public record CanvasBlueprint(
         for (ExclusiveChoiceEntry entry : entries) {
             JsonObject obj = new JsonObject();
             obj.addProperty("source_id", entry.sourceId());
-            obj.addProperty("source_group", entry.sourceGroup());
+            obj.addProperty("source_chapter", entry.sourceChapter());
             obj.addProperty("source_x", entry.sourceX());
             obj.addProperty("source_y", entry.sourceY());
             obj.addProperty("source_w", entry.sourceW());
@@ -369,7 +369,7 @@ public record CanvasBlueprint(
                 }
                 quests.add(new QuestEntry(
                         sourceId,
-                        string(entry, "source_group"),
+                        string(entry, "source_chapter"),
                         integer(entry, "source_x", 0, "quest:" + sourceId),
                         integer(entry, "source_y", 0, "quest:" + sourceId),
                         floating(entry, "scale", 1.0f, "quest:" + sourceId),
@@ -489,7 +489,7 @@ public record CanvasBlueprint(
 
             entries.add(new ExclusiveChoiceEntry(
                     string(obj, "source_id"),
-                    string(obj, "source_group"),
+                    string(obj, "source_chapter"),
                     integer(obj, "source_x", 0, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_y", 0, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_w", 79, "ec:" + string(obj, "source_id")),
@@ -707,7 +707,7 @@ public record CanvasBlueprint(
 
     public record QuestEntry(
             String sourceId,
-            String sourceGroup,
+            String sourceChapter,
             int sourceX,
             int sourceY,
             float scale,
@@ -715,7 +715,7 @@ public record CanvasBlueprint(
     ) {
         public QuestEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
-            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceChapter = sourceChapter == null ? "" : sourceChapter.trim();
             if (Float.isNaN(scale) || Float.isInfinite(scale)) {
                 scale = 1.0f;
             }
@@ -725,7 +725,7 @@ public record CanvasBlueprint(
 
     public record ExclusiveChoiceEntry(
             String sourceId,
-            String sourceGroup,
+            String sourceChapter,
             int sourceX,
             int sourceY,
             int sourceW,
@@ -742,7 +742,7 @@ public record CanvasBlueprint(
     ) {
         public ExclusiveChoiceEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
-            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceChapter = sourceChapter == null ? "" : sourceChapter.trim();
             sourceW = Math.max(1, sourceW);
             sourceH = Math.max(1, sourceH);
             connections = connections == null ? List.of() : List.copyOf(connections);

@@ -34,7 +34,7 @@ final class CanvasSmartSnapper {
             TabletUiState state,
             CanvasSnapEngine.Bounds moving,
             List<QuestCardLayout> cards,
-            String group,
+            String chapter,
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
             Set<String> movingTextIds
@@ -46,7 +46,7 @@ final class CanvasSmartSnapper {
             TabletUiState state,
             CanvasSnapEngine.Bounds moving,
             List<QuestCardLayout> cards,
-            String group,
+            String chapter,
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
             Set<String> movingTextIds,
@@ -77,7 +77,7 @@ final class CanvasSmartSnapper {
     private static List<CanvasSnapEngine.Bounds> snapTargets(
             TabletUiState state,
             List<QuestCardLayout> cards,
-            String group,
+            String chapter,
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
             Set<String> movingTextIds,

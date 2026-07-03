@@ -35,6 +35,6 @@ public final class QuestIdentity {
     }
 
     public static String chapterFolderName(String value) {
-        return SafeNames.identifier(chapterName(value), "ungrouped");
+        return SafeNames.identifier(chapterName(value), "default");
     }
 }

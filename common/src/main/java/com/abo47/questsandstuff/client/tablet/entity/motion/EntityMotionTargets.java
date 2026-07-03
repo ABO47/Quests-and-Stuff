@@ -31,7 +31,7 @@ final class EntityMotionTargets {
     private EntityMotionTargets() {
     }
 
-    static void openImage(TabletUiState state, String scope, String group, String questId, String imageId, int x, int y, CanvasImageLayer image) {
+    static void openImage(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, CanvasImageLayer image) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
         state.questDetails.entityMotionEditorGroup = group == null ? "" : group;
@@ -44,7 +44,7 @@ final class EntityMotionTargets {
         resetTransientState(state);
     }
 
-    static void openIcon(TabletUiState state, String scope, String group, String questId, String imageId, int x, int y, EntityIconMotion icon) {
+    static void openIcon(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, EntityIconMotion icon) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
         state.questDetails.entityMotionEditorGroup = group == null ? "" : group;
@@ -223,7 +223,7 @@ final class EntityMotionTargets {
         String nextIcon = EntityPreviewRenderer.withEntityMotion(icon.icon(), yaw, spin);
         ClientQuestStateFacade.setChapterIconLocal(state.questDetails.entityMotionEditorGroup, nextIcon);
         if (sync) {
-            EditorChapterCommandClient.runGroupAction(player, state, "set_icon", state.questDetails.entityMotionEditorGroup, nextIcon, 0);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_icon", state.questDetails.entityMotionEditorGroup, nextIcon, 0);
         }
     }
 

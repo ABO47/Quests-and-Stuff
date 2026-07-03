@@ -21,11 +21,11 @@ public final class CanvasElementStore {
     private CanvasElementStore() {
     }
 
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image) {
+    public static void putCanvasImage(TabletUiState state, String chapter, CanvasImageLayer image) {
         putCanvasImage(state, group, image, true);
     }
 
-    public static void putCanvasImage(TabletUiState state, String group, CanvasImageLayer image, boolean syncServer) {
+    public static void putCanvasImage(TabletUiState state, String chapter, CanvasImageLayer image, boolean syncServer) {
         if (group == null || group.isBlank() || image == null) {
             return;
         }
@@ -50,7 +50,7 @@ public final class CanvasElementStore {
         }
     }
 
-    public static boolean removeCanvasImage(TabletUiState state, String group, String imageId) {
+    public static boolean removeCanvasImage(TabletUiState state, String chapter, String imageId) {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return false;
         }
@@ -75,11 +75,11 @@ public final class CanvasElementStore {
         return true;
     }
 
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text) {
+    public static void putCanvasText(TabletUiState state, String chapter, CanvasTextLayer text) {
         putCanvasText(state, group, text, true);
     }
 
-    public static void putCanvasText(TabletUiState state, String group, CanvasTextLayer text, boolean syncServer) {
+    public static void putCanvasText(TabletUiState state, String chapter, CanvasTextLayer text, boolean syncServer) {
         if (group == null || group.isBlank() || text == null) {
             return;
         }
@@ -104,11 +104,11 @@ public final class CanvasElementStore {
         }
     }
 
-    public static void putCanvasExclusiveChoice(TabletUiState state, String group, CanvasExclusiveChoice ec) {
+    public static void putCanvasExclusiveChoice(TabletUiState state, String chapter, CanvasExclusiveChoice ec) {
         putCanvasExclusiveChoice(state, group, ec, true);
     }
 
-    public static void putCanvasExclusiveChoice(TabletUiState state, String group, CanvasExclusiveChoice ec, boolean syncServer) {
+    public static void putCanvasExclusiveChoice(TabletUiState state, String chapter, CanvasExclusiveChoice ec, boolean syncServer) {
         if (group == null || group.isBlank() || ec == null) {
             return;
         }
@@ -133,7 +133,7 @@ public final class CanvasElementStore {
         }
     }
 
-    public static void putCanvasExclusiveChoices(TabletUiState state, String group, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
+    public static void putCanvasExclusiveChoices(TabletUiState state, String chapter, List<CanvasExclusiveChoice> ecs, boolean syncServer) {
         if (group == null || group.isBlank() || ecs == null || ecs.isEmpty()) {
             return;
         }
@@ -164,7 +164,7 @@ public final class CanvasElementStore {
         }
     }
 
-    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return false;
         }
@@ -189,7 +189,7 @@ public final class CanvasElementStore {
         return true;
     }
 
-    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
             return null;
         }
@@ -199,7 +199,7 @@ public final class CanvasElementStore {
                 .orElse(null);
     }
 
-    public static boolean removeCanvasText(TabletUiState state, String group, String textId) {
+    public static boolean removeCanvasText(TabletUiState state, String chapter, String textId) {
         if (group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return false;
         }
@@ -227,7 +227,7 @@ public final class CanvasElementStore {
         return true;
     }
 
-    public static CanvasTextLayer findCanvasText(TabletUiState state, String group, String textId) {
+    public static CanvasTextLayer findCanvasText(TabletUiState state, String chapter, String textId) {
         if (group == null || group.isBlank() || textId == null || textId.isBlank()) {
             return null;
         }
@@ -237,7 +237,7 @@ public final class CanvasElementStore {
                 .orElse(null);
     }
 
-    public static void updateCanvasText(TabletUiState state, String group, String textId, UnaryOperator<CanvasTextLayer> updater) {
+    public static void updateCanvasText(TabletUiState state, String chapter, String textId, UnaryOperator<CanvasTextLayer> updater) {
         CanvasTextLayer current = findCanvasText(state, group, textId);
         if (current == null || updater == null) {
             return;
@@ -248,7 +248,7 @@ public final class CanvasElementStore {
         }
     }
 
-    public static void persistCanvasImage(TabletUiState state, String group, String imageId) {
+    public static void persistCanvasImage(TabletUiState state, String chapter, String imageId) {
         CanvasImageLayer image = findCanvasImage(state, group, imageId);
         if (image == null) {
             return;
@@ -257,7 +257,7 @@ public final class CanvasElementStore {
         sendCanvasImage(group, image);
     }
 
-    public static void persistCanvasText(TabletUiState state, String group, String textId) {
+    public static void persistCanvasText(TabletUiState state, String chapter, String textId) {
         CanvasTextLayer text = findCanvasText(state, group, textId);
         if (text == null) {
             return;
@@ -266,7 +266,7 @@ public final class CanvasElementStore {
         sendCanvasText(group, text);
     }
 
-    public static void persistCanvasExclusiveChoice(TabletUiState state, String group, String ecId) {
+    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
         CanvasExclusiveChoice ec = findCanvasExclusiveChoice(state, group, ecId);
         if (ec == null) {
             return;
@@ -275,12 +275,12 @@ public final class CanvasElementStore {
         sendCanvasExclusiveChoice(group, ec);
     }
 
-    public static void persistLayerOrder(TabletUiState state, String group) {
+    public static void persistLayerOrder(TabletUiState state, String chapter) {
         persistLayerOrderLocal(state, group);
         sendLayerOrder(state, group);
     }
 
-    public static CanvasImageLayer findCanvasImage(TabletUiState state, String group, String imageId) {
+    public static CanvasImageLayer findCanvasImage(TabletUiState state, String chapter, String imageId) {
         if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
@@ -290,46 +290,46 @@ public final class CanvasElementStore {
                 .orElse(null);
     }
 
-    private static void persistLayerOrderLocal(TabletUiState state, String group) {
+    private static void persistLayerOrderLocal(TabletUiState state, String chapter) {
         ClientQuestStateFacade.setCanvasLayerOrderLocal(group, state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
     }
 
-    private static void sendCanvasExclusiveChoice(String group, CanvasExclusiveChoice ec) {
+    private static void sendCanvasExclusiveChoice(String chapter, CanvasExclusiveChoice ec) {
         CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoicePut(group, ec);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, payload));
     }
 
-    private static void sendCanvasExclusiveChoices(String group, List<CanvasExclusiveChoice> ecs) {
+    private static void sendCanvasExclusiveChoices(String chapter, List<CanvasExclusiveChoice> ecs) {
         CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoicesPut(group, ecs);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, payload));
     }
 
-    private static void sendCanvasExclusiveChoiceRemove(String group, String ecId) {
+    private static void sendCanvasExclusiveChoiceRemove(String chapter, String ecId) {
         CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoiceRemove(group, ecId);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, payload));
     }
 
-    private static void sendCanvasImage(String group, CanvasImageLayer image) {
+    private static void sendCanvasImage(String chapter, CanvasImageLayer image) {
         CompoundTag payload = EditorCommandPayloads.canvasImagePut(group, image);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_IMAGE_PUT, payload));
     }
 
-    private static void sendCanvasImageRemove(String group, String imageId) {
+    private static void sendCanvasImageRemove(String chapter, String imageId) {
         CompoundTag payload = EditorCommandPayloads.canvasImageRemove(group, imageId);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_IMAGE_REMOVE, payload));
     }
 
-    private static void sendCanvasText(String group, CanvasTextLayer text) {
+    private static void sendCanvasText(String chapter, CanvasTextLayer text) {
         CompoundTag payload = EditorCommandPayloads.canvasTextPut(group, text);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_TEXT_PUT, payload));
     }
 
-    private static void sendCanvasTextRemove(String group, String textId) {
+    private static void sendCanvasTextRemove(String chapter, String textId) {
         CompoundTag payload = EditorCommandPayloads.canvasTextRemove(group, textId);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_TEXT_REMOVE, payload));
     }
 
-    private static void sendLayerOrder(TabletUiState state, String group) {
+    private static void sendLayerOrder(TabletUiState state, String chapter) {
         CompoundTag payload = EditorCommandPayloads.canvasLayerOrder(group, state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of()));
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_LAYER_ORDER, payload));
     }

@@ -79,7 +79,7 @@ public final class CanvasClipboardController {
                 return true;
             }
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (selection.imageIds().contains(image.id())) {
                 return true;
@@ -143,13 +143,13 @@ public final class CanvasClipboardController {
         if (state == null || canvasViewport == null || selection.isEmpty()) {
             return false;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, group, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, group, selection.textIds());
         List<CanvasExclusiveChoice> copiedEcs = copiedExclusiveChoices(state, group, selection.ecIds());
         if (copiedQuestIds.isEmpty() && copiedImages.isEmpty() && copiedTexts.isEmpty() && copiedEcs.isEmpty()) {
-            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy skipped source={} group={} reason=no_canvas_selection", source, group);
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy skipped source={} chapter={} reason=no_canvas_selection", source, group);
             return false;
         }
 
@@ -160,7 +160,7 @@ public final class CanvasClipboardController {
         if (!copiedQuestIds.isEmpty()) {
             EditorCanvasCommandClient.runCanvasCopyAction(canvasViewport.player(), group, copiedQuestIds);
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy stored source={} group={} quests={} images={} texts={} ecs={} origin={},{}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy stored source={} chapter={} quests={} images={} texts={} ecs={} origin={},{}",
                 source, group, copiedQuestIds.size(), copiedImages.size(), copiedTexts.size(), copiedEcs.size(), origin.x, origin.y);
         return true;
     }
@@ -180,7 +180,7 @@ public final class CanvasClipboardController {
         return copiedIds;
     }
 
-    private static List<CanvasImageLayer> copiedImages(TabletUiState state, String group, Set<String> imageIds) {
+    private static List<CanvasImageLayer> copiedImages(TabletUiState state, String chapter, Set<String> imageIds) {
         if (imageIds.isEmpty()) {
             return List.of();
         }
@@ -193,7 +193,7 @@ public final class CanvasClipboardController {
         return copied;
     }
 
-    private static List<CanvasTextLayer> copiedTexts(TabletUiState state, String group, Set<String> textIds) {
+    private static List<CanvasTextLayer> copiedTexts(TabletUiState state, String chapter, Set<String> textIds) {
         if (textIds.isEmpty()) {
             return List.of();
         }
@@ -206,7 +206,7 @@ public final class CanvasClipboardController {
         return copied;
     }
 
-    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String group, Set<String> ecIds) {
+    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String chapter, Set<String> ecIds) {
         if (ecIds.isEmpty()) {
             return List.of();
         }
@@ -258,7 +258,7 @@ public final class CanvasClipboardController {
     }
 
     private static boolean pasteAt(Player player, TabletUiState state, int anchorX, int anchorY, String source) {
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         if (group.isBlank() || !hasClipboardContent(state)) {
             return false;
         }
@@ -277,12 +277,12 @@ public final class CanvasClipboardController {
             EditorCanvasCommandClient.runCanvasPasteClipboardAction(player, group, anchorX, anchorY);
         }
 
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste requested source={} group={} quests={} images={} texts={} anchor={},{}",
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste requested source={} chapter={} quests={} images={} texts={} anchor={},{}",
                 source, group, state.clipboard.canvasClipboard.hasQuestClipboard(), state.clipboard.canvasClipboard.imageCount(), state.clipboard.canvasClipboard.textCount(), anchorX, anchorY);
         return state.clipboard.canvasClipboard.hasQuestClipboard() || pastedElements;
     }
 
-    private static boolean pasteCanvasElements(TabletUiState state, String group, int anchorX, int anchorY) {
+    private static boolean pasteCanvasElements(TabletUiState state, String chapter, int anchorX, int anchorY) {
         boolean pasted = false;
         Set<String> existingImageIds = existingImageIds(state, group);
         Set<String> existingTextIds = existingTextIds(state, group);
@@ -339,7 +339,7 @@ public final class CanvasClipboardController {
         return pasted || index > 0;
     }
 
-    private static Set<String> existingImageIds(TabletUiState state, String group) {
+    private static Set<String> existingImageIds(TabletUiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             ids.add(image.id());
@@ -347,7 +347,7 @@ public final class CanvasClipboardController {
         return ids;
     }
 
-    private static Set<String> existingTextIds(TabletUiState state, String group) {
+    private static Set<String> existingTextIds(TabletUiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
             ids.add(text.id());
@@ -355,7 +355,7 @@ public final class CanvasClipboardController {
         return ids;
     }
 
-    private static Set<String> existingExclusiveChoiceIds(TabletUiState state, String group) {
+    private static Set<String> existingExclusiveChoiceIds(TabletUiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
             ids.add(ec.id());
@@ -398,7 +398,7 @@ public final class CanvasClipboardController {
             minX = Math.min(minX, card.logicalX());
             minY = Math.min(minY, card.logicalY());
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (imageIds.contains(image.id())) {

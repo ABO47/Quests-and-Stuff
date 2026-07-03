@@ -52,7 +52,7 @@ final class CanvasContextSelectionActions {
             return;
         }
         int totalCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
-        List<CanvasContextMenuController.ConnectionRef> connectedConnections = CanvasContextMenuController.selectedConnectedEdges(state, selectedChapter);
+        List<CanvasContextMenuController.ConnectionRef> connectedConnections = CanvasContextMenuController.selectedConnections(state, selectedChapter);
         boolean hasConnections = !connectedConnections.isEmpty();
 
         if (totalCount > 0) {
@@ -117,12 +117,12 @@ final class CanvasContextSelectionActions {
                     CanvasContextMenuController.ConnectionRef first = connectedConnections.get(0);
                     int color = CanvasRenderer.connectionColor(state, selectedChapter, first.prerequisiteId(), first.questId());
                     ModalOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedChapter), color);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors group={} connections={}", selectedChapter, connectedConnections.size());
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors chapter={} connections={}", selectedChapter, connectedConnections.size());
                     canvasViewport.refresh();
                 }));
                 actions.add(new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
                     ModalOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures group={} connections={}", selectedChapter, connectedConnections.size());
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
                     canvasViewport.refresh();
                 }));
                 if (selectionHasConnectionTexture(state, selectedChapter, connectedConnections)) {
@@ -139,7 +139,7 @@ final class CanvasContextSelectionActions {
                                 ConnectionRenderer.setConnectionTexture(state, selectedChapter, prereq, quest, "");
                             }
                         }
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_textures group={} connections={}", selectedChapter, connectedConnections.size());
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
                         canvasViewport.refresh();
                     }));
                 }
@@ -323,7 +323,7 @@ final class CanvasContextSelectionActions {
         return false;
     }
 
-    private static boolean selectionHasConnectionTexture(TabletUiState state, String group, List<CanvasContextMenuController.ConnectionRef> connections) {
+    private static boolean selectionHasConnectionTexture(TabletUiState state, String chapter, List<CanvasContextMenuController.ConnectionRef> connections) {
         for (var connection : connections) {
             String prereq = connection.prerequisiteId();
             String quest = connection.questId();

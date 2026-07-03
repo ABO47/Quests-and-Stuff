@@ -22,7 +22,7 @@ final class CanvasSelectionBounds {
             TabletUiState state,
             CanvasElementTransformController elementTransforms,
             Map<String, QuestCardLayout> byQuestId,
-            String group
+            String chapter
     ) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;

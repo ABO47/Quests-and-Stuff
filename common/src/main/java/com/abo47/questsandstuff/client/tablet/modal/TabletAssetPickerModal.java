@@ -493,7 +493,7 @@ public final class TabletAssetPickerModal {
         java.util.Set<String> chapterTargets = state.modal.modalConnectionTextureChapterTargets;
         if (!chapterTargets.isEmpty()) {
             String[] parts = target.split("\\|");
-            String group = parts.length >= 2 ? parts[1] : "";
+            String chapter = parts.length >= 2 ? parts[1] : "";
             for (String questId : chapterTargets) {
                 net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(questId);
                 if (questTag == null) continue;
@@ -522,7 +522,7 @@ public final class TabletAssetPickerModal {
         if (!target.isBlank()) {
             String[] parts = target.split("\\|");
             if (parts.length >= 4) {
-                String group = parts[1];
+                String chapter = parts[1];
                 String prerequisiteId = parts[2];
                 String questId = parts[3];
                 boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)

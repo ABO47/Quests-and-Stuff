@@ -44,11 +44,11 @@ final class ChapterMetadataState {
         canvasLayerOrderByChapter.clear();
     }
 
-    void setChapterOrder(List<String> groups, Set<String> discoveredGroups) {
+    void setChapterOrder(List<String> chapters, Set<String> discoveredChapters) {
         chapterOrder.clear();
-        if (groups != null) {
-            for (String group : groups) {
-                String normalized = normalizeChapterName(group);
+        if (chapters != null) {
+            for (String chapter : chapters) {
+                String normalized = normalizeChapterName(chapter);
                 if (normalized.isBlank()) {
                     continue;
                 }
@@ -57,7 +57,7 @@ final class ChapterMetadataState {
                 }
             }
         }
-        reconcile(discoveredGroups);
+        reconcile(discoveredChapters);
     }
 
     void renameChapter(String fromName, String toName) {
@@ -87,77 +87,77 @@ final class ChapterMetadataState {
         moveValue(canvasLayerOrderByChapter, from, to);
     }
 
-    String chapterIcon(String group) {
-        return chapterIcons.getOrDefault(group, "");
+    String chapterIcon(String chapter) {
+        return chapterIcons.getOrDefault(chapter, "");
     }
 
-    String chapterBackground(String group) {
-        return chapterBackgrounds.getOrDefault(group, "default");
+    String chapterBackground(String chapter) {
+        return chapterBackgrounds.getOrDefault(chapter, "default");
     }
 
-    String chapterCanvasBackground(String group) {
-        return chapterCanvasBackgrounds.getOrDefault(group, "default");
+    String chapterCanvasBackground(String chapter) {
+        return chapterCanvasBackgrounds.getOrDefault(chapter, "default");
     }
 
-    String chapterTextAlign(String group) {
-        return chapterTextAlign.getOrDefault(group, "center");
+    String chapterTextAlign(String chapter) {
+        return chapterTextAlign.getOrDefault(chapter, "center");
     }
 
-    int chapterTextColor(String group) {
-        return chapterTextColor.getOrDefault(group, 0xFFFFFFFF);
+    int chapterTextColor(String chapter) {
+        return chapterTextColor.getOrDefault(chapter, 0xFFFFFFFF);
     }
 
-    String chapterTextStyle(String group) {
-        return chapterTextStyle.getOrDefault(group, "normal");
+    String chapterTextStyle(String chapter) {
+        return chapterTextStyle.getOrDefault(chapter, "normal");
     }
 
-    int chapterTextSize(String group) {
-        return chapterTextSize.getOrDefault(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
+    int chapterTextSize(String chapter) {
+        return chapterTextSize.getOrDefault(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
-    boolean chapterLockUntilUnlocked(String group) {
-        return chapterLockUntilUnlocked.getOrDefault(group, false);
+    boolean chapterLockUntilUnlocked(String chapter) {
+        return chapterLockUntilUnlocked.getOrDefault(chapter, false);
     }
 
-    boolean chapterHideUntilUnlocked(String group) {
-        return chapterHideUntilUnlocked.getOrDefault(group, false);
+    boolean chapterHideUntilUnlocked(String chapter) {
+        return chapterHideUntilUnlocked.getOrDefault(chapter, false);
     }
 
-    void reconcile(Set<String> discoveredGroups) {
-        Set<String> discovered = discoveredGroups == null ? Set.of() : discoveredGroups;
-        chapterOrder.removeIf(group -> group == null || group.isBlank());
-        for (String group : discovered) {
-            if (!chapterOrder.contains(group)) {
-                chapterOrder.add(group);
+    void reconcile(Set<String> discoveredChapters) {
+        Set<String> discovered = discoveredChapters == null ? Set.of() : discoveredChapters;
+        chapterOrder.removeIf(chapter -> chapter == null || chapter.isBlank());
+        for (String chapter : discovered) {
+            if (!chapterOrder.contains(chapter)) {
+                chapterOrder.add(chapter);
             }
         }
-        chapterIcons.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterBackgrounds.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterCanvasBackgrounds.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterTextAlign.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterTextColor.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterTextStyle.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterTextSize.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterLockUntilUnlocked.keySet().removeIf(group -> !chapterOrder.contains(group));
-        chapterHideUntilUnlocked.keySet().removeIf(group -> !chapterOrder.contains(group));
-        canvasExclusiveChoicesByChapter.keySet().removeIf(group -> !chapterOrder.contains(group));
-        canvasImagesByChapter.keySet().removeIf(group -> !chapterOrder.contains(group));
-        canvasTextsByChapter.keySet().removeIf(group -> !chapterOrder.contains(group));
-        canvasLayerOrderByChapter.keySet().removeIf(group -> !chapterOrder.contains(group));
-        for (String group : chapterOrder) {
-            chapterIcons.putIfAbsent(group, "");
-            chapterBackgrounds.putIfAbsent(group, "default");
-            chapterCanvasBackgrounds.putIfAbsent(group, "default");
-            chapterTextAlign.putIfAbsent(group, "center");
-            chapterTextColor.putIfAbsent(group, 0xFFFFFFFF);
-            chapterTextStyle.putIfAbsent(group, "normal");
-            chapterTextSize.putIfAbsent(group, CanvasTextLayer.DEFAULT_FONT_SIZE);
-            chapterLockUntilUnlocked.putIfAbsent(group, false);
-            chapterHideUntilUnlocked.putIfAbsent(group, false);
-            canvasExclusiveChoicesByChapter.putIfAbsent(group, List.of());
-            canvasImagesByChapter.putIfAbsent(group, List.of());
-            canvasTextsByChapter.putIfAbsent(group, List.of());
-            canvasLayerOrderByChapter.putIfAbsent(group, List.of());
+        chapterIcons.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterBackgrounds.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterCanvasBackgrounds.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterTextAlign.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterTextColor.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterTextStyle.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterTextSize.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterLockUntilUnlocked.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        chapterHideUntilUnlocked.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        canvasExclusiveChoicesByChapter.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        canvasImagesByChapter.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        canvasTextsByChapter.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        canvasLayerOrderByChapter.keySet().removeIf(chapter -> !chapterOrder.contains(chapter));
+        for (String chapter : chapterOrder) {
+            chapterIcons.putIfAbsent(chapter, "");
+            chapterBackgrounds.putIfAbsent(chapter, "default");
+            chapterCanvasBackgrounds.putIfAbsent(chapter, "default");
+            chapterTextAlign.putIfAbsent(chapter, "center");
+            chapterTextColor.putIfAbsent(chapter, 0xFFFFFFFF);
+            chapterTextStyle.putIfAbsent(chapter, "normal");
+            chapterTextSize.putIfAbsent(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
+            chapterLockUntilUnlocked.putIfAbsent(chapter, false);
+            chapterHideUntilUnlocked.putIfAbsent(chapter, false);
+            canvasExclusiveChoicesByChapter.putIfAbsent(chapter, List.of());
+            canvasImagesByChapter.putIfAbsent(chapter, List.of());
+            canvasTextsByChapter.putIfAbsent(chapter, List.of());
+            canvasLayerOrderByChapter.putIfAbsent(chapter, List.of());
         }
     }
 
@@ -173,11 +173,11 @@ final class ChapterMetadataState {
         return normalized;
     }
 
-    static <T> void putOrRemove(Map<String, List<T>> target, String group, List<T> values) {
+    static <T> void putOrRemove(Map<String, List<T>> target, String chapter, List<T> values) {
         if (values == null || values.isEmpty()) {
-            target.remove(group);
+            target.remove(chapter);
         } else {
-            target.put(group, List.copyOf(values));
+            target.put(chapter, List.copyOf(values));
         }
     }
 

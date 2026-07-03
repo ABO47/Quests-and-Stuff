@@ -35,7 +35,7 @@ final class ChapterRowRenderer {
     private ChapterRowRenderer() {
     }
 
-    static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
+    static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
         boolean lockedPreview = ClientQuestStateFacade.chapterLockedPreview(group);
         boolean selected = group.equals(TabletStateQueries.selectedChapterName(state));
         String rowLabel = group.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : group;
@@ -76,7 +76,7 @@ final class ChapterRowRenderer {
         addChapterIconChangeHit(chapterList, state, refresh, group, iconDrawX, y + 8);
     }
 
-    static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout) {
+    static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout) {
         ChapterInlineRenameRows.add(
                 chapterList,
                 layout.cardX(),
@@ -114,14 +114,14 @@ final class ChapterRowRenderer {
         );
     }
 
-    static int addGhostIfVisible(WidgetGroup chapterList, String group, int cardX, int y, int cardW, int listH, int rowStep) {
+    static int addGhostIfVisible(WidgetGroup chapterList, String chapter, int cardX, int y, int cardW, int listH, int rowStep) {
         if (y < listH && y + TabletUiFactory.CHAPTER_CARD_H > 0) {
             renderChapterGhost(chapterList, group, cardX, y, cardW);
         }
         return y + rowStep;
     }
 
-    private static void addChapterLabel(WidgetGroup chapterList, String group, String rowLabel, int y, int cardX, int textW) {
+    private static void addChapterLabel(WidgetGroup chapterList, String chapter, String rowLabel, int y, int cardX, int textW) {
         int textColor = ClientQuestStateFacade.chapterTextColor(group);
         String align = ClientQuestStateFacade.chapterTextAlign(group);
         String textStyle = ClientQuestStateFacade.chapterTextStyle(group);
@@ -129,7 +129,7 @@ final class ChapterRowRenderer {
         chapterList.addWidget(chapterStyledLabel(cardX + 24, chapterTextY(y, textSize), textW, chapterLabelHeight(textSize), rowLabel, textColor, textStyle, textSize, chapterTextType(align)));
     }
 
-    private static void addCollapsedChapterRow(WidgetGroup chapterList, String group, String rowLabel, int y, ChapterListMetrics.Layout layout, boolean selected) {
+    private static void addCollapsedChapterRow(WidgetGroup chapterList, String chapter, String rowLabel, int y, ChapterListMetrics.Layout layout, boolean selected) {
         String chapterIcon = ClientQuestStateFacade.chapterIcon(group);
         String initial = "";
         if (chapterIcon == null || chapterIcon.isBlank()) {
@@ -145,7 +145,7 @@ final class ChapterRowRenderer {
         }
     }
 
-    private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String group, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
+    private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
         final int rowY = y;
         var menuHit = TabletUiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
             if (!canOpenChapter(state, group)) {
@@ -172,11 +172,11 @@ final class ChapterRowRenderer {
         chapterList.addWidget(rowHit);
     }
 
-    private static boolean canOpenChapter(TabletUiState state, String group) {
+    private static boolean canOpenChapter(TabletUiState state, String chapter) {
         return state != null && (state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(group));
     }
 
-    private static void selectChapter(TabletUiState state, String group) {
+    private static void selectChapter(TabletUiState state, String chapter) {
         state.root.selectedChapter = group;
         state.chapterPanel.chapterDraft = group;
         state.chapterPanel.chapterDraftName = group;
@@ -206,7 +206,7 @@ final class ChapterRowRenderer {
         return group;
     }
 
-    private static void renderChapterGhost(WidgetGroup chapterList, String group, int x, int y, int w) {
+    private static void renderChapterGhost(WidgetGroup chapterList, String chapter, int x, int y, int w) {
         CardDragGhosts.renderChapter(
                 chapterList,
                 x,
@@ -224,7 +224,7 @@ final class ChapterRowRenderer {
         chapterList.addWidget(filter);
     }
 
-    private static void addCompletionNotice(WidgetGroup chapterList, String group, int x, int y) {
+    private static void addCompletionNotice(WidgetGroup chapterList, String chapter, int x, int y) {
         if (!ClientQuestStateFacade.chapterHasCompletionNotice(group)) {
             return;
         }
@@ -275,7 +275,7 @@ final class ChapterRowRenderer {
         };
     }
 
-    private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String group, int x, int y) {
+    private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String chapter, int x, int y) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }

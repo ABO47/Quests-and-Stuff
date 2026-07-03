@@ -68,7 +68,7 @@ public final class ChapterDragController {
         target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
         if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
-            TabletUiFactory.runGroupAction(player, state, "move_to", moving, "", target);
+            TabletUiFactory.runChapterAction(player, state, "move_to", moving, "", target);
         }
         state.root.selectedChapter = moving;
         TabletUiFactory.persistUiState(state);

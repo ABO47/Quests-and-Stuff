@@ -323,8 +323,8 @@ final class ChapterMetadataJsonCodec {
         };
     }
 
-    static String chapterFileName(String group) {
-        return SafeNames.identifier(group, "ungrouped");
+    static String chapterFileName(String chapter) {
+        return SafeNames.identifier(group, "default");
     }
 
     private static List<CanvasTextStyleSpan> readTextSpans(JsonElement element) {

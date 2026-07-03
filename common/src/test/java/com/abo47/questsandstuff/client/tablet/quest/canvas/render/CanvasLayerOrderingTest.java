@@ -17,7 +17,7 @@ class CanvasLayerOrderingTest {
     @Test
     void normalizedOrderProvidesRenderOrderAndHitPriority() {
         TabletUiState state = new TabletUiState();
-        String group = "main";
+        String chapter = "main";
         QuestCardLayout quest = card("quest_a");
         CanvasImageLayer image = image("image_a");
         CanvasTextLayer text = text("text_a");

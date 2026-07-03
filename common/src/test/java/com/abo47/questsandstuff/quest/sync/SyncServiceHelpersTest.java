@@ -176,11 +176,11 @@ class SyncServiceHelpersTest {
         }
     }
 
-    private static QuestDefinition quest(String id, String group) {
+    private static QuestDefinition quest(String id, String chapter) {
         return quest(id, group, defaultSettings(), List.of());
     }
 
-    private static QuestDefinition quest(String id, String group, QuestSettings settings, List<String> description) {
+    private static QuestDefinition quest(String id, String chapter, QuestSettings settings, List<String> description) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,

@@ -22,7 +22,7 @@ final class PrerequisitePreviewBuilder {
     private PrerequisitePreviewBuilder() {
     }
 
-    static CanvasBlueprint build(String group, PrerequisiteConnectionModel model, boolean externalMode) {
+    static CanvasBlueprint build(String chapter, PrerequisiteConnectionModel model, boolean externalMode) {
         if (model == null) {
             return CanvasBlueprint.empty();
         }
@@ -119,7 +119,7 @@ final class PrerequisitePreviewBuilder {
         }
     }
 
-    private static Map<String, QuestPlacement> placementsForPreview(String group, String focusId, Map<String, QuestDefinition> definitions, List<PrerequisiteConnectionRow> rows, boolean externalMode) {
+    private static Map<String, QuestPlacement> placementsForPreview(String chapter, String focusId, Map<String, QuestDefinition> definitions, List<PrerequisiteConnectionRow> rows, boolean externalMode) {
         if (externalMode) {
             return compactPlacements(group, focusId, definitions, rows);
         }
@@ -130,7 +130,7 @@ final class PrerequisitePreviewBuilder {
         return placements;
     }
 
-    private static Map<String, QuestPlacement> compactPlacements(String group, String focusId, Map<String, QuestDefinition> definitions, List<PrerequisiteConnectionRow> rows) {
+    private static Map<String, QuestPlacement> compactPlacements(String chapter, String focusId, Map<String, QuestDefinition> definitions, List<PrerequisiteConnectionRow> rows) {
         Map<String, QuestPlacement> placements = new LinkedHashMap<>();
         placements.put(focusId, new QuestPlacement(group, 0, 0, 1.0f));
         List<String> incoming = uniqueOtherIds(rows, focusId, PrerequisiteConnectionKind.INCOMING);
@@ -154,7 +154,7 @@ final class PrerequisitePreviewBuilder {
         return List.copyOf(values);
     }
 
-    private static void addCompactColumn(Map<String, QuestPlacement> placements, String group, List<String> ids, int x) {
+    private static void addCompactColumn(Map<String, QuestPlacement> placements, String chapter, List<String> ids, int x) {
         int count = ids.size();
         for (int i = 0; i < ids.size(); i++) {
             int y = Math.round((i - (count - 1) / 2.0f) * COMPACT_Y_STEP);
@@ -230,7 +230,7 @@ final class PrerequisitePreviewBuilder {
         return ecIds;
     }
 
-    private static CanvasExclusiveChoice findEcById(String id, String group) {
+    private static CanvasExclusiveChoice findEcById(String id, String chapter) {
         if (group == null || group.isBlank()) {
             return null;
         }
@@ -246,7 +246,7 @@ final class PrerequisitePreviewBuilder {
         return null;
     }
 
-    private record QuestPlacement(String group, int x, int y, float scale) {
+    private record QuestPlacement(String chapter, int x, int y, float scale) {
     }
 
     private record Origin(int x, int y) {

@@ -186,7 +186,7 @@ final class TabletRootKeyboardRouter {
         if (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
             String typed = TabletUiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
             String created = TabletUiFactory.uniqueChapterName(typed.isBlank() ? tr("ui.questsandstuff.chapter.default_name") : typed, "");
-            TabletUiFactory.runGroupAction(root.resolvePlayer(), state, "create", created, created, 0);
+            TabletUiFactory.runChapterAction(root.resolvePlayer(), state, "create", created, created, 0);
             state.root.selectedChapter = created;
             state.chapterPanel.chapterDraft = created;
             state.chapterPanel.chapterDraftName = created;
@@ -199,7 +199,7 @@ final class TabletRootKeyboardRouter {
             String typed = TabletUiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
             String renamed = TabletUiFactory.uniqueChapterName(typed, from);
             if (!renamed.equals(from)) {
-                TabletUiFactory.runGroupAction(root.resolvePlayer(), state, "rename", from, renamed, 0);
+                TabletUiFactory.runChapterAction(root.resolvePlayer(), state, "rename", from, renamed, 0);
             }
             state.root.selectedChapter = renamed;
             state.chapterPanel.chapterDraft = renamed;

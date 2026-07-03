@@ -142,8 +142,8 @@ final class QuestDefinitionNormalizer {
                 && !definition.display().chapters().isEmpty();
     }
 
-    static String chapterFolderName(String group) {
-        return QuestIdentity.chapterFolderName(group);
+    static String chapterFolderName(String chapter) {
+        return QuestIdentity.chapterFolderName(chapter);
     }
 
     static String primaryChapter(QuestDefinition definition) {

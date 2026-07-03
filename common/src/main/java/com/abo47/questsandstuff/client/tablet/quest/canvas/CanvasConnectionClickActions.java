@@ -90,7 +90,7 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean connectEcToQuest(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
-        String group = EditorChapterCommandClient.selectedChapterName(state);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.quickConnectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
@@ -107,7 +107,7 @@ final class CanvasConnectionClickActions {
 
     private static boolean connectQuestToEc(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
         if (!state.canvas.quickConnectSourceQuestId.isBlank()) {
-            String group = EditorChapterCommandClient.selectedChapterName(state);
+            String chapter = EditorChapterCommandClient.selectedChapterName(state);
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
             if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.quickConnectSourceQuestId)) {
                 CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.quickConnectSourceQuestId);
@@ -161,7 +161,7 @@ final class CanvasConnectionClickActions {
             refresher.run();
             return true;
         }
-        String group = EditorChapterCommandClient.selectedChapterName(state);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.connectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
@@ -178,7 +178,7 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean handlePendingEcPrerequisite(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
-        String group = EditorChapterCommandClient.selectedChapterName(state);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
         if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.connectSourceQuestId)) {
             CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.connectSourceQuestId);

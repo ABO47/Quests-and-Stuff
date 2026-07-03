@@ -18,7 +18,7 @@ public final class CanvasConnectionSelection {
     private CanvasConnectionSelection() {
     }
 
-    public static List<ConnectionRef> selectedConnectedEdges(TabletUiState state, String group) {
+    public static List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
         if (state == null || group == null || group.isBlank() || state.canvas.canvasSelection.questIds().isEmpty()) {
             return List.of();
         }

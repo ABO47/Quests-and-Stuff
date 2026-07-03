@@ -199,58 +199,58 @@ public final class ModalTargets {
         return of(QUEST_DESC_TEXT, questId, textId);
     }
 
-    public static String canvasEntityNew(String group) {
+    public static String canvasEntityNew(String chapter) {
         return of(CANVAS_ENTITY_NEW, group);
     }
 
-    public static String canvasEntityChange(String group, String imageId) {
+    public static String canvasEntityChange(String chapter, String imageId) {
         return of(CANVAS_ENTITY_CHANGE, group, imageId);
     }
 
-    public static String canvasEntityChangeBatch(String group, String... imageIds) {
+    public static String canvasEntityChangeBatch(String chapter, String... imageIds) {
         String[] all = new String[imageIds.length + 1];
         all[0] = clean(group);
         System.arraycopy(imageIds, 0, all, 1, imageIds.length);
         return of(CANVAS_ENTITY_CHANGE_BATCH, (Object[]) all);
     }
 
-    public static String canvasItemNew(String group) {
+    public static String canvasItemNew(String chapter) {
         return of(CANVAS_ITEM_NEW, group);
     }
 
-    public static String canvasItemChange(String group, String imageId) {
+    public static String canvasItemChange(String chapter, String imageId) {
         return of(CANVAS_ITEM_CHANGE, group, imageId);
     }
 
-    public static String canvasBlockNew(String group) {
+    public static String canvasBlockNew(String chapter) {
         return of(CANVAS_BLOCK_NEW, group);
     }
 
-    public static String canvasBlockChange(String group, String imageId) {
+    public static String canvasBlockChange(String chapter, String imageId) {
         return of(CANVAS_BLOCK_CHANGE, group, imageId);
     }
 
-    public static String canvasRecipeNew(String group) {
+    public static String canvasRecipeNew(String chapter) {
         return of(CANVAS_RECIPE_NEW, group);
     }
 
-    public static String canvasRecipeChange(String group, String imageId) {
+    public static String canvasRecipeChange(String chapter, String imageId) {
         return of(CANVAS_RECIPE_CHANGE, group, imageId);
     }
 
-    public static String canvasImage(String group, String imageId) {
+    public static String canvasImage(String chapter, String imageId) {
         return of(CANVAS_IMAGE, group, imageId);
     }
 
-    public static String canvasText(String group, String textId) {
+    public static String canvasText(String chapter, String textId) {
         return of(CANVAS_TEXT, group, textId);
     }
 
-    public static String connection(String group, String sourceQuestId, String targetQuestId) {
+    public static String connection(String chapter, String sourceQuestId, String targetQuestId) {
         return of(CONNECTION, group, sourceQuestId, targetQuestId);
     }
 
-    public static String connectionSelection(String group) {
+    public static String connectionSelection(String chapter) {
         return of(CONNECTION_SELECTION, group);
     }
 

@@ -60,7 +60,7 @@ public final class QuestPrerequisitesModal {
         addHeader(modal, state, refresh, w);
         ModalPreviewLayout.Metrics layout = ModalPreviewLayout.calculate(w, h);
 
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         PrerequisiteConnectionModel model;
         if (state.modal.prerequisitesManagerEcMode) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
@@ -121,7 +121,7 @@ public final class QuestPrerequisitesModal {
         return closeRenderX - HEADER_BUTTON_SIZE - HEADER_BUTTON_TO_CLOSE_GAP;
     }
 
-    private static void addPreview(WidgetGroup modal, TabletUiState state, PrerequisiteConnectionModel model, ModalPreviewLayout.Metrics layout, String group, boolean externalMode) {
+    private static void addPreview(WidgetGroup modal, TabletUiState state, PrerequisiteConnectionModel model, ModalPreviewLayout.Metrics layout, String chapter, boolean externalMode) {
         WidgetGroup preview = ModalPreviewLayout.previewPanel(layout);
         preview.addWidget(label(8, 8, crop(model.targetTitle(), 22), TabletColors.TEXT_SECONDARY));
         String countKey = externalMode ? QuestTranslationKeys.CONNECTIONS_EXTERNAL_COUNT : QuestTranslationKeys.CONNECTIONS_LOCAL_COUNT;
@@ -164,7 +164,7 @@ public final class QuestPrerequisitesModal {
             return;
         }
         List<ContextAction> actions = new java.util.ArrayList<>();
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         String sourceId = row.sourceId();
         String targetId = row.targetId();
         if (!row.exclusiveChoice()) {
@@ -226,7 +226,7 @@ public final class QuestPrerequisitesModal {
         if (!PrerequisiteConnectionRemover.canRemove(row)) {
             return;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         if (state.modal.prerequisitesManagerEcMode) {
             removeEcConnection(player, state, row);
         } else {
@@ -238,7 +238,7 @@ public final class QuestPrerequisitesModal {
     }
 
     private static void removeEcConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
         if (ec == null) {
             return;

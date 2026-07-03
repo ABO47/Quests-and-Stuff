@@ -51,7 +51,7 @@ final class EditorCanvasLayerCommandHandlers {
     }
 
     private static void ecConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.chapter(payload);
+        String chapter = EditorCommandPayloads.chapter(payload);
         String sourceId = EditorCommandPayloads.string(payload, EditorCommandPayloads.ID);
         String targetId = EditorCommandPayloads.string(payload, EditorCommandPayloads.PREREQUISITE);
         boolean hidden = EditorCommandPayloads.bool(payload, EditorCommandPayloads.HIDDEN);

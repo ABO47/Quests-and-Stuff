@@ -189,7 +189,7 @@ public final class EditorQuestCommandClient {
     }
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
-        String group = EditorChapterCommandClient.selectedChapterName(state);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
         if (group.isBlank()) {
             return;
         }
@@ -387,7 +387,7 @@ public final class EditorQuestCommandClient {
         return targets;
     }
 
-    private static int[] findNearestFreeCell(TabletUiState state, String group, int startX, int startY) {
+    private static int[] findNearestFreeCell(TabletUiState state, String chapter, int startX, int startY) {
         int step = CanvasGeometry.gridSize(state);
         int x = TabletUiFactory.snapToGrid(state, startX);
         int y = TabletUiFactory.snapToGrid(state, startY);
@@ -415,7 +415,7 @@ public final class EditorQuestCommandClient {
         return new int[]{x, y};
     }
 
-    private static boolean isOccupied(String group, int x, int y) {
+    private static boolean isOccupied(String chapter, int x, int y) {
         for (var entry : ClientQuestStateFacade.questEntries()) {
             CompoundTag quest = entry.getValue();
             CompoundTag groups = quest.getCompound("chapters");

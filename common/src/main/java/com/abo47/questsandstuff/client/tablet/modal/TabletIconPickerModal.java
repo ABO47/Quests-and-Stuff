@@ -34,7 +34,7 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSl
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTENT_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runQuestIconAction;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -191,7 +191,7 @@ public final class TabletIconPickerModal {
                         if (TabletModalPanel.runCanvasEntityAction(player, state, canvasEntityTarget, entry)) {
                             closeAll(state);
                         }
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity picked group={} item={}", canvasEntityTarget, entry);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity picked chapter={} item={}", canvasEntityTarget, entry);
                     } else if (!detailsTarget.isBlank()) {
                         String detailsPick = entityPicker ? entry : (pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry);
                         QuestDetailsWindow.applyIconPick(player, state, detailsPick);
@@ -202,7 +202,7 @@ public final class TabletIconPickerModal {
                         closeAll(state);
                         QuestsAndStuffMod.debugLog("[QnS:UI] icon picked target={} quest={} icon={}", chapterTarget, questTarget, previewIcon);
                     } else {
-                        runGroupAction(player, state, "set_icon", chapterTarget, pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry, 0);
+                        runChapterAction(player, state, "set_icon", chapterTarget, pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry, 0);
                         if (doubleClick) {
                             closeAll(state);
                         }

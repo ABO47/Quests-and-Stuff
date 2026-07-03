@@ -17,7 +17,7 @@ public final class ClientQuestCopyMutator {
     private ClientQuestCopyMutator() {
     }
 
-    public static void copyQuestLocal(String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
+    public static void copyQuestLocal(String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
         String sourceId = QuestIdentity.questId(sourceQuestId);
         String targetId = QuestIdentity.questId(newQuestId);
         String normalizedGroup = normalizeChapter(group);
@@ -51,7 +51,7 @@ public final class ClientQuestCopyMutator {
         ClientQuestState.putQuest(targetId, quest);
     }
 
-    public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String group, int x, int y, float scale, Map<String, String> copiedIds) {
+    public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
         String targetId = QuestIdentity.questId(newQuestId);
         String normalizedGroup = normalizeChapter(group);
         if (targetId.isBlank() || normalizedGroup.isBlank()) {

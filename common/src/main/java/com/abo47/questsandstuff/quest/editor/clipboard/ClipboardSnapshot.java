@@ -47,7 +47,7 @@ public record ClipboardSnapshot(List<Entry> entries) {
         return entries.stream().mapToInt(Entry::sourceY).min().orElse(0);
     }
 
-    public int countExternalPrerequisiteEdges() {
+    public int countExternalPrerequisiteConnections() {
         Set<String> copied = sourceIds();
         int dropped = 0;
         for (Entry entry : entries) {
@@ -65,7 +65,7 @@ public record ClipboardSnapshot(List<Entry> entries) {
 
     public record Entry(
             String sourceId,
-            String sourceGroup,
+            String sourceChapter,
             int sourceX,
             int sourceY,
             float scale,
@@ -73,7 +73,7 @@ public record ClipboardSnapshot(List<Entry> entries) {
     ) {
         public Entry {
             sourceId = sourceId == null ? "" : sourceId.trim();
-            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceChapter = sourceChapter == null ? "" : sourceChapter.trim();
             if (Float.isNaN(scale) || Float.isInfinite(scale)) {
                 scale = 1.0f;
             }

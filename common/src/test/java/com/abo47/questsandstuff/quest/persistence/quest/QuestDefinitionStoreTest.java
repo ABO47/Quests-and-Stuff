@@ -56,7 +56,7 @@ class QuestDefinitionStoreTest {
         }
     }
 
-    private static QuestDefinition connectedQuest(String id, String group) {
+    private static QuestDefinition connectedQuest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
@@ -71,7 +71,7 @@ class QuestDefinitionStoreTest {
         );
     }
 
-    private static QuestDefinition quest(String id, String group) {
+    private static QuestDefinition quest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
@@ -95,7 +95,7 @@ class QuestDefinitionStoreTest {
         );
     }
 
-    private static QuestDisplay display(String title, String group) {
+    private static QuestDisplay display(String title, String chapter) {
         return QuestDisplay.forNewQuest(title, Map.of(group, ChapterDef.DEFAULT));
     }
 }

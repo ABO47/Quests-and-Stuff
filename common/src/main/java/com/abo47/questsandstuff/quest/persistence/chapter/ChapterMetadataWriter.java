@@ -20,7 +20,7 @@ final class ChapterMetadataWriter {
             Files.createDirectories(chaptersDir);
             Set<Path> expected = new HashSet<>();
             for (int i = 0; i < state.chapterOrder.size(); i++) {
-                String group = state.chapterOrder.get(i);
+                String chapter = state.chapterOrder.get(i);
                 Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(group) + ".json");
                 expected.add(target.toAbsolutePath().normalize());
                 ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, group, i)));
@@ -39,7 +39,7 @@ final class ChapterMetadataWriter {
         }
         try {
             Files.createDirectories(chaptersDir);
-            for (String group : groups) {
+            for (String chapter : groups) {
                 if (group == null || group.isBlank()) {
                     continue;
                 }
@@ -55,7 +55,7 @@ final class ChapterMetadataWriter {
         }
     }
 
-    private static JsonObject chapterJson(ChapterMetadataState state, String group, int order) {
+    private static JsonObject chapterJson(ChapterMetadataState state, String chapter, int order) {
         JsonObject json = new JsonObject();
         json.addProperty("schema_version", ChapterMetadataMigrator.CURRENT_SCHEMA);
         json.addProperty("name", group);

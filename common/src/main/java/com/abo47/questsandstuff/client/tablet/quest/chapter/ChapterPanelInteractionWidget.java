@@ -27,7 +27,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterCardAreaHit;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterScrollBarHit;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runGroupAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.updateChapterScrollByMouse;
 
 public final class ChapterPanelInteractionWidget extends WidgetGroup {
@@ -256,7 +256,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     private java.util.List<String> visibleChapterGroups() {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
-        for (String group : ClientQuestStateFacade.chapterOrder()) {
+        for (String chapter : ClientQuestStateFacade.chapterOrder()) {
             if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
                 continue;
             }
@@ -283,7 +283,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
             if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
-                runGroupAction(player, state, "move_to", moving, "", target);
+                runChapterAction(player, state, "move_to", moving, "", target);
             }
             state.root.selectedChapter = moving;
             persistUiState(state);
@@ -303,7 +303,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         persistUiState(state);
     }
 
-    private void selectChapterDirect(String group) {
+    private void selectChapterDirect(String chapter) {
         if (group == null || group.isBlank()) {
             return;
         }
@@ -322,7 +322,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         persistUiState(state);
     }
 
-    private boolean canOpenChapter(String group) {
+    private boolean canOpenChapter(String chapter) {
         return state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(group);
     }
 }

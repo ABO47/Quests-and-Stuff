@@ -16,7 +16,7 @@ final class ConnectionStateMutations {
     private ConnectionStateMutations() {
     }
 
-    private static void modifyEcConnection(TabletUiState state, String group, String ecId, String questId, Function<CanvasExclusiveChoice, CanvasExclusiveChoice> modifier) {
+    private static void modifyEcConnection(TabletUiState state, String chapter, String ecId, String questId, Function<CanvasExclusiveChoice, CanvasExclusiveChoice> modifier) {
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecId);
         if (ec == null) {
             CanvasExclusiveChoice other = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, questId);
@@ -27,13 +27,13 @@ final class ConnectionStateMutations {
         CanvasLayerMutations.putCanvasExclusiveChoice(state, group, modifier.apply(ec));
     }
 
-    static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
+    static void setConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, int color) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Map<String, Integer> colors = state.canvas.connectionColorsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
 		colors.put(key, color);
     }
 
-    static void setConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean hidden) {
+    static void setConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, boolean hidden) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Set<String> groupHidden = state.canvas.hiddenConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (hidden) {
@@ -46,12 +46,12 @@ final class ConnectionStateMutations {
         }
     }
 
-    static void toggleConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    static void toggleConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         boolean hidden = ConnectionStyleResolver.isConnectionHidden(state, group, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId));
         setConnectionHidden(state, group, sourceQuestId, targetQuestId, !hidden);
     }
 
-    static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    static void toggleConnectionMode(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId))) {
@@ -64,28 +64,28 @@ final class ConnectionStateMutations {
         }
     }
 
-    static void setEcConnectionColor(TabletUiState state, String group, String ecId, String questId, int color) {
+    static void setEcConnectionColor(TabletUiState state, String chapter, String ecId, String questId, int color) {
         modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionColor(questId, color));
     }
 
-    static void setEcConnectionMode(TabletUiState state, String group, String ecId, String questId, boolean direct) {
+    static void setEcConnectionMode(TabletUiState state, String chapter, String ecId, String questId, boolean direct) {
         String mode = direct ? "direct" : "grid";
         modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionMode(questId, mode));
     }
 
-    static void setEcConnectionTexture(TabletUiState state, String group, String ecId, String questId, String texture) {
+    static void setEcConnectionTexture(TabletUiState state, String chapter, String ecId, String questId, String texture) {
         modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionTexture(questId, texture));
     }
 
-    static void setEcConnectionTextureSpacing(TabletUiState state, String group, String ecId, String questId, int spacing) {
+    static void setEcConnectionTextureSpacing(TabletUiState state, String chapter, String ecId, String questId, int spacing) {
         modifyEcConnection(state, group, ecId, questId, ec -> ec.withConnectionTextureSpacing(questId, spacing));
     }
 
-    static void setEcConnectionHidden(TabletUiState state, String group, String ecId, String questId, boolean hidden) {
+    static void setEcConnectionHidden(TabletUiState state, String chapter, String ecId, String questId, boolean hidden) {
         modifyEcConnection(state, group, ecId, questId, ec -> ec.withHiddenConnection(questId, hidden));
     }
 
-    static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
+    static void setConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, String texture) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Map<String, String> textures = state.canvas.connectionTexturesByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
         if (texture == null || texture.isBlank()) {
@@ -95,7 +95,7 @@ final class ConnectionStateMutations {
         }
     }
 
-    static void setConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int spacing) {
+    static void setConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, int spacing) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
         if (spacing <= 0) {
@@ -105,7 +105,7 @@ final class ConnectionStateMutations {
         }
     }
 
-	static void removeConnectionTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+	static void removeConnectionTransientState(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		removeFromMap(state.canvas.connectionTexturesByGroup, group, key);
         removeFromMap(state.canvas.connectionTextureSpacingsByGroup, group, key);
@@ -114,14 +114,14 @@ final class ConnectionStateMutations {
         removeFromSet(state.canvas.hiddenConnectionsByGroup, group, key);
     }
 
-    private static <V> void removeFromMap(Map<String, Map<String, V>> groupMap, String group, String key) {
+    private static <V> void removeFromMap(Map<String, Map<String, V>> groupMap, String chapter, String key) {
         Map<String, V> map = groupMap.get(group);
         if (map == null) return;
         map.remove(key);
         if (map.isEmpty()) groupMap.remove(group);
     }
 
-    private static void removeFromSet(Map<String, Set<String>> groupMap, String group, String key) {
+    private static void removeFromSet(Map<String, Set<String>> groupMap, String chapter, String key) {
         Set<String> set = groupMap.get(group);
         if (set == null) return;
         set.remove(key);

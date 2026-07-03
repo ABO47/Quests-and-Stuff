@@ -44,7 +44,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasImageLayer hitTestCanvasImage(TabletUiState state, int x, int y) {
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         List<CanvasImageLayer> images = orderedCanvasImages(state, group);
         for (int i = images.size() - 1; i >= 0; i--) {
             CanvasImageLayer image = CanvasLayerMutations.effectiveCanvasImage(state, images.get(i));
@@ -81,8 +81,8 @@ public final class CanvasHitTester {
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? image : null;
     }
 
-    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        String group = selectedChapterName(state);
+    public static ConnectionHit hitTestConnection(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+        String chapter = selectedChapterName(state);
         int tolerance = 4;
         for (QuestCardLayout quest : cards) {
             if (!quest.tag().getBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD)) {
@@ -163,7 +163,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasTextLayer hitTestCanvasText(TabletUiState state, int x, int y) {
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
         for (int i = texts.size() - 1; i >= 0; i--) {
             CanvasTextLayer text = CanvasLayerMutations.effectiveCanvasText(state, texts.get(i));
@@ -177,7 +177,7 @@ public final class CanvasHitTester {
     }
 
     public static CanvasExclusiveChoice hitTestCanvasExclusiveChoice(TabletUiState state, int x, int y) {
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, group);
         for (int i = ecs.size() - 1; i >= 0; i--) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ecs.get(i));
@@ -313,7 +313,7 @@ public final class CanvasHitTester {
         return new double[]{localX, localY};
     }
 
-    private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String group) {
+    private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String chapter) {
         List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()));
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
@@ -321,7 +321,7 @@ public final class CanvasHitTester {
         return images;
     }
 
-    private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String group) {
+    private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String chapter) {
         List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
@@ -329,7 +329,7 @@ public final class CanvasHitTester {
         return ecs;
     }
 
-    private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String group) {
+    private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String chapter) {
         List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()));
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);

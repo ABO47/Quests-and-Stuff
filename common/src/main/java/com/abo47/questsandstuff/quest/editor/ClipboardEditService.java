@@ -70,10 +70,10 @@ public final class ClipboardEditService {
                 if (view == null) {
                     view = firstVisibleChapterView(definition);
                 }
-                String sourceGroup = chapter.isBlank() || !definition.display().chapters().containsKey(chapter) ? firstVisibleChapter(definition) : chapter;
-                entries.add(new ClipboardSnapshot.Entry(sourceId, sourceGroup, view == null ? 0 : view.x(), view == null ? 0 : view.y(), view == null ? 1.0f : view.scale(), snapshot));
+                String sourceChapter = chapter.isBlank() || !definition.display().chapters().containsKey(chapter) ? firstVisibleChapter(definition) : chapter;
+                entries.add(new ClipboardSnapshot.Entry(sourceId, sourceChapter, view == null ? 0 : view.x(), view == null ? 0 : view.y(), view == null ? 1.0f : view.scale(), snapshot));
                 owner.clipboardDebug("COPY entry source=" + sourceId
-                        + " sourceGroup=" + sourceGroup
+                        + " sourceChapter=" + sourceChapter
                         + " pos=" + (view == null ? "<none>" : view.x() + "," + view.y())
                         + " scale=" + (view == null ? 1.0f : view.scale())
                         + " prerequisites=" + sortedStrings(definition.prerequisites())
@@ -97,8 +97,8 @@ public final class ClipboardEditService {
                 + " requested=" + questIds.size()
                 + " sessionEntries=" + snapshot.entries().size()
                 + " sourceIds=" + sortedStrings(snapshot.sourceIds())
-                + " externalPrerequisiteEdges=" + snapshot.countExternalPrerequisiteEdges());
-        QuestsAndStuffMod.debugLog("[QnS:Editor] copy_many player={} chapter={} requested={} stored={} external_prerequisite_edges={}", player.getGameProfile().getName(), chapter, questIds.size(), snapshot.entries().size(), snapshot.countExternalPrerequisiteEdges());
+                + " externalPrerequisiteEdges=" + snapshot.countExternalPrerequisiteConnections());
+        QuestsAndStuffMod.debugLog("[QnS:Editor] copy_many player={} chapter={} requested={} stored={} external_prerequisite_connections={}", player.getGameProfile().getName(), chapter, questIds.size(), snapshot.entries().size(), snapshot.countExternalPrerequisiteConnections());
     }
 
     public void pasteClipboardInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY) {
@@ -117,8 +117,8 @@ public final class ClipboardEditService {
             return;
         }
         owner.ensureChapterExists(request.targetChapter());
-        int droppedExternalPrerequisiteEdges = snapshot.countExternalPrerequisiteEdges();
-        owner.clipboardDebug("PASTE read entries=" + entries.size() + " sources=" + clipboardSourceSummary(entries) + " droppedExternalPrerequisiteEdges=" + droppedExternalPrerequisiteEdges);
+        int droppedExternalPrerequisiteConnections = snapshot.countExternalPrerequisiteConnections();
+        owner.clipboardDebug("PASTE read entries=" + entries.size() + " sources=" + clipboardSourceSummary(entries) + " droppedExternalPrerequisiteConnections=" + droppedExternalPrerequisiteConnections);
 
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>(owner.definitionStore().questIds());
@@ -186,7 +186,7 @@ public final class ClipboardEditService {
                     + " hiddenConnections=" + sortedStrings(saved.hiddenConnections())
                     + " chapters=" + sortedStrings(saved.display().chapters().keySet()));
         }
-        ClipboardPasteResult result = new ClipboardPasteResult(created, allocatedIds, droppedExternalPrerequisiteEdges);
+        ClipboardPasteResult result = new ClipboardPasteResult(created, allocatedIds, droppedExternalPrerequisiteConnections);
         owner.definitionStore().saveNow(result.selectionIds());
         owner.clipboardDebug("PASTE flushed files created=" + result.selectionIds().stream().sorted().toList());
         session.currentChapter = request.targetChapter();
@@ -205,7 +205,7 @@ public final class ClipboardEditService {
         }
         selection.putString("chapter", request.targetChapter());
         selection.putInt("created_count", result.createdQuests().size());
-        selection.putInt("dropped_external_edges", result.droppedExternalPrerequisiteEdges());
+        selection.putInt("dropped_external_connections", result.droppedExternalPrerequisiteConnections());
         selection.put("quests", ids);
         CompoundTag allocated = new CompoundTag();
         for (Map.Entry<String, String> a : allocatedIds.entrySet()) {
@@ -217,8 +217,8 @@ public final class ClipboardEditService {
                 + " chapter=" + request.targetChapter()
                 + " created=" + result.selectionIds().stream().sorted().toList()
                 + " selectionCount=" + ids.size()
-                + " droppedExternalPrerequisiteEdges=" + result.droppedExternalPrerequisiteEdges());
-        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard chapter={} copies={} anchor={},{} dropped_external_prerequisite_edges={}", request.targetChapter(), result.createdQuests().size(), request.anchorX(), request.anchorY(), result.droppedExternalPrerequisiteEdges());
+                + " droppedExternalPrerequisiteConnections=" + result.droppedExternalPrerequisiteConnections());
+        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard chapter={} copies={} anchor={},{} dropped_external_prerequisite_connections={}", request.targetChapter(), result.createdQuests().size(), request.anchorX(), request.anchorY(), result.droppedExternalPrerequisiteConnections());
     }
 
     public void pasteBlueprintInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY, CanvasBlueprint blueprint) {

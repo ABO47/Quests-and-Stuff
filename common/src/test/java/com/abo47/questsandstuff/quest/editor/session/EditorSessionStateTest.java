@@ -110,7 +110,7 @@ class EditorSessionStateTest {
         return store;
     }
 
-    private static QuestDefinition quest(String id, String group) {
+    private static QuestDefinition quest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,

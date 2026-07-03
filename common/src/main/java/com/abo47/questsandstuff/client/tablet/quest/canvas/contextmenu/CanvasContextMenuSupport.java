@@ -158,7 +158,7 @@ public final class CanvasContextMenuSupport {
         return false;
     }
 
-    public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String group, String key, boolean front) {
+    public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String chapter, String key, boolean front) {
         if (group == null || group.isBlank() || key == null || key.isBlank()) {
             return false;
         }

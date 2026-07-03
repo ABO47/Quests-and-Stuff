@@ -38,8 +38,8 @@ public final class CanvasContextMenuController {
         return state.contextMenu.contextQuestCompletionSoundMenuOpen;
     }
 
-    public static List<ConnectionRef> selectedConnectedEdges(TabletUiState state, String group) {
-        return CanvasConnectionSelection.selectedConnectedEdges(state, group);
+    public static List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
+        return CanvasConnectionSelection.selectedConnections(state, group);
     }
 
     public record ConnectionRef(String prerequisiteId, String questId) {

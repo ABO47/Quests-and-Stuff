@@ -16,7 +16,7 @@ final class QuestDefinitionPaths {
 
     static Path questPath(Path questsDir, QuestDefinition definition) throws IOException {
         String canonicalId = normalizeQuestId(definition.id());
-        String group = primaryChapter(definition);
+        String chapter = primaryChapter(definition);
         String managedFileName = QuestNaming.managedQuestFileName(canonicalId, group);
         Path relative;
         if (!managedFileName.isBlank()) {

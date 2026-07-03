@@ -47,7 +47,7 @@ final class CanvasSelectionDragController {
                 state.canvas.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             }
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
                 state.canvas.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
@@ -116,7 +116,7 @@ final class CanvasSelectionDragController {
             populateTransientQuestPositions(dx, dy);
         }
         state.canvas.transientQuestScales.clear();
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
             if (image != null) {
@@ -152,7 +152,7 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         return CanvasSmartSnapper.snap(
                 state,
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),

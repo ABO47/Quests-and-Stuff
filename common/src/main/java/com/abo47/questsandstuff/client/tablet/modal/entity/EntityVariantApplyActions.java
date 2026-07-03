@@ -44,7 +44,7 @@ final class EntityVariantApplyActions {
             state.canvas.canvasSelection.setPrimaryImageId(image.id());
             state.canvas.canvasSelection.imageIds().clear();
             state.canvas.canvasSelection.imageIds().add(image.id());
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity variant picked group={} image={} variant={}", parsed.questId(), image.id(), variantKey);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity variant picked chapter={} image={} variant={}", parsed.questId(), image.id(), variantKey);
             return;
         }
         if (parsed.isQuestDetailsImage()) {
@@ -76,7 +76,7 @@ final class EntityVariantApplyActions {
             return true;
         }
         String nextIcon = EntityPreviewRenderer.withEntityVariant(icon, variantKey);
-        EditorChapterCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), nextIcon, 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "set_icon", parsed.questId(), nextIcon, 0);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon entity variant picked chapter={} variant={}", parsed.questId(), variantKey);
         return true;
     }

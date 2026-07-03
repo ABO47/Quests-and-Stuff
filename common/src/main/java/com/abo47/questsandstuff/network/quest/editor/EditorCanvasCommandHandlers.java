@@ -21,7 +21,7 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void moveMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.chapter(payload);
+        String chapter = EditorCommandPayloads.chapter(payload);
         Map<String, int[]> moves = new HashMap<>();
         ListTag moveTags = EditorCommandPayloads.moves(payload);
         if (EditorCommandPayloads.exceedsLimit(moveTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
@@ -39,7 +39,7 @@ final class EditorCanvasCommandHandlers {
     }
 
     private static void scaleMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloads.chapter(payload);
+        String chapter = EditorCommandPayloads.chapter(payload);
         Map<String, Float> scales = new HashMap<>();
         ListTag scaleTags = EditorCommandPayloads.scales(payload);
         if (EditorCommandPayloads.exceedsLimit(scaleTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {

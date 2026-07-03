@@ -39,7 +39,7 @@ final class CanvasViewportContextRouter {
             CanvasTextLayer textHit,
             CanvasExclusiveChoice ecHit
     ) {
-        ConnectionHit connectionHit = TabletUiFactory.hitTestEdge(state, cards, byQuestId, localX, localY);
+        ConnectionHit connectionHit = TabletUiFactory.hitTestConnection(state, cards, byQuestId, localX, localY);
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
         int logicalX = anchor.x;
         int logicalY = anchor.y;
@@ -116,7 +116,7 @@ final class CanvasViewportContextRouter {
         if (state == null || connectionHit == null) {
             return false;
         }
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
         String connectionLayerKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.connectionKey(connectionHit.sourceQuestId(), connectionHit.targetQuestId()));
         int connectionIndex = order.indexOf(connectionLayerKey);

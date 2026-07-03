@@ -60,7 +60,7 @@ public final class ChapterContextMenuActions {
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "delete", target, "", 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "delete", target, "", 0);
         if (target.equals(state.root.selectedChapter)) {
             state.root.selectedChapter = ClientQuestStateFacade.chapterOrder().isEmpty() ? "" : ClientQuestStateFacade.chapterOrder().get(0);
             state.chapterPanel.chapterDraft = state.root.selectedChapter;
@@ -107,7 +107,7 @@ public final class ChapterContextMenuActions {
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_icon", target, "", 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "set_icon", target, "", 0);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -129,7 +129,7 @@ public final class ChapterContextMenuActions {
             refresh.run();
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_background", target, "default", 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, "default", 0);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -199,7 +199,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
-        String group = target;
+        String chapter = target;
         for (String questId : questIds) {
             CompoundTag quest = ClientQuestStateFacade.quest(questId);
             if (quest == null) continue;
@@ -243,7 +243,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
         state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=lock_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
@@ -253,7 +253,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
         state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=hide_until_unlocked chapter={} enabled={}", target, enabled);
         refresh.run();
@@ -270,7 +270,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        EditorChapterCommandClient.runGroupAction(player, state, "move", target, "", offset);
+        EditorChapterCommandClient.runChapterAction(player, state, "move", target, "", offset);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }

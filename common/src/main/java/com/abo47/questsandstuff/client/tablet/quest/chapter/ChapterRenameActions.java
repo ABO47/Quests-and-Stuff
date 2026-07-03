@@ -14,16 +14,16 @@ final class ChapterRenameActions {
         return value == null ? "" : value.replace('\n', ' ').replace('\r', ' ');
     }
 
-    static void commitRename(Player player, TabletUiState state, Runnable refresh, String group, String currentString) {
+    static void commitRename(Player player, TabletUiState state, Runnable refresh, String chapter, String currentString) {
         String raw = EditorChapterCommandClient.sanitizeChapterName(currentString);
         if (raw.isBlank()) {
             raw = tr("ui.questsandstuff.chapter.default_name");
         }
         String renamed = EditorChapterCommandClient.uniqueChapterName(raw, group);
         if (!renamed.equals(group)) {
-            EditorChapterCommandClient.runGroupAction(player, state, "rename", group, renamed, 0);
+            EditorChapterCommandClient.runChapterAction(player, state, "rename", group, renamed, 0);
         } else if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
-            EditorChapterCommandClient.runGroupAction(player, state, "create", group, group, 0);
+            EditorChapterCommandClient.runChapterAction(player, state, "create", group, group, 0);
         }
         state.canvas.pendingChapterRename = "";
         state.root.selectedChapter = renamed;
@@ -39,7 +39,7 @@ final class ChapterRenameActions {
             typed = tr("ui.questsandstuff.chapter.default_name");
         }
         String created = EditorChapterCommandClient.uniqueChapterName(typed, "");
-        EditorChapterCommandClient.runGroupAction(player, state, "create", created, created, 0);
+        EditorChapterCommandClient.runChapterAction(player, state, "create", created, created, 0);
         state.root.selectedChapter = created;
         state.chapterPanel.chapterDraft = created;
         state.chapterPanel.chapterDraftName = created;

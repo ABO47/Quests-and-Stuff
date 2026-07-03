@@ -77,9 +77,9 @@ public final class EditorUndoRedoActions {
             Collection<String> questIds,
             Collection<String> imageIds,
             Collection<String> textIds,
-            String group
+            String chapter
     ) {
-        session.undo.push(new PasteUndoEntry(questIds, imageIds, textIds, group));
+        session.undo.push(new PasteUndoEntry(questIds, imageIds, textIds, chapter));
         while (session.undo.size() > MAX_HISTORY) {
             session.undo.removeLast();
         }
@@ -111,10 +111,10 @@ public final class EditorUndoRedoActions {
             Set<String> questIds,
             Set<String> imageIds,
             Set<String> textIds,
-            String group
+            String chapter
     ) implements EditorHistoryEntry {
-        PasteUndoEntry(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, String group) {
-            this(copyOf(questIds), copyOf(imageIds), copyOf(textIds), group == null ? "" : group.trim());
+        PasteUndoEntry(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, String chapter) {
+            this(copyOf(questIds), copyOf(imageIds), copyOf(textIds), chapter == null ? "" : chapter.trim());
         }
 
         @Override
@@ -122,14 +122,14 @@ public final class EditorUndoRedoActions {
             for (String questId : questIds) {
                 definitionStore.remove(questId);
             }
-            if (group.isBlank()) {
+            if (chapter.isBlank()) {
                 return;
             }
             for (String imageId : imageIds) {
-                definitionStore.removeCanvasImage(group, imageId);
+                definitionStore.removeCanvasImage(chapter, imageId);
             }
             for (String textId : textIds) {
-                definitionStore.removeCanvasText(group, textId);
+                definitionStore.removeCanvasText(chapter, textId);
             }
         }
 

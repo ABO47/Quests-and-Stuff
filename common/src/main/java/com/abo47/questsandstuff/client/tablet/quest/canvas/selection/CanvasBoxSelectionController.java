@@ -87,7 +87,7 @@ public final class CanvasBoxSelectionController {
                 state.canvas.canvasSelection.questIds().add(card.questId());
             }
         }
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().addAll(state.canvas.boxSelectionBaseCanvasImageIds);
         String lastImageId = "";

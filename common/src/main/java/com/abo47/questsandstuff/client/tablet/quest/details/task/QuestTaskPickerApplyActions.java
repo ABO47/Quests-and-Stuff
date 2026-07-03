@@ -116,7 +116,7 @@ final class QuestTaskPickerApplyActions {
             return;
         }
         if (parsed.isChapterIcon() && ModalTargetState.requireParts("inventory_chapter_icon", parsed, 2)) {
-            EditorChapterCommandClient.runGroupAction(player, state, "set_icon", parsed.questId(), icon, 0);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_icon", parsed.questId(), icon, 0);
             state.questDetails.questDetailsPickTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter inventory icon picked chapter={} item={} hasNbt={}", parsed.questId(), itemId, stack.hasTag());
             return;

@@ -23,7 +23,7 @@ public record CanvasSelectionSnapshot(
 
     public static CanvasSelectionSnapshot capture(
             TabletUiState state,
-            String group,
+            String chapter,
             Map<String, QuestCardLayout> byQuestId
     ) {
         CanvasSelectionSet selection = CanvasSelectionSet.current(state);

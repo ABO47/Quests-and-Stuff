@@ -69,7 +69,7 @@ final class ChapterListRenderer {
                 y = ChapterRowRenderer.addGhostIfVisible(list, state.chapterPanel.chapterDragName, layout.cardX(), y, layout.cardW(), listH, rowStep);
             }
 
-            String group = chapters.get(groupIndex);
+            String chapter = chapters.get(groupIndex);
             if (y >= listH || y + TabletUiFactory.CHAPTER_CARD_H <= 0) {
                 y += rowStep;
                 continue;

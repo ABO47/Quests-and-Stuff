@@ -184,7 +184,7 @@ public final class ModalOpenActions {
         });
     }
 
-    public static void openEcBackgroundPicker(TabletUiState state, String group, String ecId, String currentBackground) {
+    public static void openEcBackgroundPicker(TabletUiState state, String chapter, String ecId, String currentBackground) {
         openAssetPickerSession(state, currentBackground, () -> {
             state.modal.modalEcBackgroundTarget = group + ":" + ecId;
         });
@@ -207,7 +207,7 @@ public final class ModalOpenActions {
         openAssetPickerSession(state, currentBackground, () -> state.modal.modalQuestCompletionHudBackgroundTargets.addAll(targets));
     }
 
-    public static void openCanvasBackgroundPicker(TabletUiState state, String group, String currentBackground) {
+    public static void openCanvasBackgroundPicker(TabletUiState state, String chapter, String currentBackground) {
         openAssetPickerSession(state, currentBackground, () -> state.modal.modalCanvasBackgroundTarget = clean(group));
     }
 
@@ -219,7 +219,7 @@ public final class ModalOpenActions {
         });
     }
 
-    public static void openCanvasImagePicker(TabletUiState state, String group, int logicalX, int logicalY) {
+    public static void openCanvasImagePicker(TabletUiState state, String chapter, int logicalX, int logicalY) {
         openAssetPickerSession(state, "", () -> {
             state.modal.modalCanvasImageTarget = clean(group);
             setCanvasPickPoint(state, logicalX, logicalY);
@@ -260,7 +260,7 @@ public final class ModalOpenActions {
         });
     }
 
-    public static void openConnectionTexturePicker(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+    public static void openConnectionTexturePicker(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         openAssetPickerSession(state, "", () -> {
             state.modal.modalConnectionTextureTarget = ModalTargets.connection(group, sourceQuestId, targetQuestId);
         });
@@ -272,7 +272,7 @@ public final class ModalOpenActions {
         });
     }
 
-    public static void openChapterConnectionTexturePicker(TabletUiState state, String group, java.util.Collection<String> questIds) {
+    public static void openChapterConnectionTexturePicker(TabletUiState state, String chapter, java.util.Collection<String> questIds) {
         openAssetPickerSession(state, "", () -> {
             state.modal.modalConnectionTextureTarget = ModalTargets.of(ModalTargets.CONNECTION, group, "", "");
             state.modal.modalConnectionTextureChapterTargets.addAll(questIds);

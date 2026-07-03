@@ -15,6 +15,6 @@ class QuestDefinitionNormalizerTest {
     @Test
     void groupFoldersUseFileSafeNamesNotDisplayNames() {
         assertEquals("main_chapter", QuestDefinitionNormalizer.chapterFolderName(" Main Chapter "));
-        assertEquals("ungrouped", QuestDefinitionNormalizer.chapterFolderName("!!!"));
+        assertEquals("default", QuestDefinitionNormalizer.chapterFolderName("!!!"));
     }
 }

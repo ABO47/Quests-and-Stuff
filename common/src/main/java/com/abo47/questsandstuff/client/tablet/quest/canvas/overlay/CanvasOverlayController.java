@@ -27,7 +27,7 @@ public final class CanvasOverlayController {
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
         return CanvasContextMenuController.isContextMenuHit(state, x, y);
     }
-    public static java.util.List<ConnectionRef> selectedConnectedEdges(TabletUiState state, String group) {
-        return CanvasContextMenuController.selectedConnectedEdges(state, group);
+    public static java.util.List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
+        return CanvasContextMenuController.selectedConnections(state, group);
     }
 }

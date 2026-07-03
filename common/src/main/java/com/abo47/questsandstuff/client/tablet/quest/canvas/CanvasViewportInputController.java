@@ -195,7 +195,7 @@ final class CanvasViewportInputController {
         }
 
         if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
-            String group = TabletStateQueries.selectedChapterName(state);
+            String chapter = TabletStateQueries.selectedChapterName(state);
             CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
             CanvasLayerMutations.persistCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
             CanvasTransformSessions.clearMainCanvasSession(state);
@@ -203,7 +203,7 @@ final class CanvasViewportInputController {
             return true;
         }
         if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
-            String group = TabletStateQueries.selectedChapterName(state);
+            String chapter = TabletStateQueries.selectedChapterName(state);
             CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
             CanvasLayerMutations.persistCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
             CanvasTransformSessions.clearMainCanvasSession(state);
@@ -212,7 +212,7 @@ final class CanvasViewportInputController {
         }
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
-            String group = TabletStateQueries.selectedChapterName(state);
+            String chapter = TabletStateQueries.selectedChapterName(state);
             CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
             CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
             CanvasTransformSessions.clearMainCanvasSession(state);
@@ -231,7 +231,7 @@ final class CanvasViewportInputController {
             if (!state.canvas.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            String group = TabletStateQueries.selectedChapterName(state);
+            String chapter = TabletStateQueries.selectedChapterName(state);
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
                 CanvasLayerMutations.persistCanvasImage(state, group, imageId);
@@ -295,7 +295,7 @@ final class CanvasViewportInputController {
     }
 
     private static void persistSelectedCanvasLayers(TabletUiState state) {
-        String group = TabletStateQueries.selectedChapterName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             CanvasLayerMutations.persistCanvasImage(state, group, imageId);
         }

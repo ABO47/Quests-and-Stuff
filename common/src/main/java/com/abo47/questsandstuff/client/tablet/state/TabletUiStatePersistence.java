@@ -190,7 +190,7 @@ public final class TabletUiStatePersistence {
             return;
         }
         JsonObject cameras = root.getAsJsonObject("canvas_cameras");
-        for (String group : cameras.keySet()) {
+        for (String chapter : cameras.keySet()) {
             if (group == null || group.isBlank()) {
                 continue;
             }
@@ -230,7 +230,7 @@ public final class TabletUiStatePersistence {
         if (state == null) {
             return cameras;
         }
-        for (String group : state.canvas.canvasCameraCentersByGroup.keySet()) {
+        for (String chapter : state.canvas.canvasCameraCentersByGroup.keySet()) {
             if (group == null || group.isBlank()) {
                 continue;
             }

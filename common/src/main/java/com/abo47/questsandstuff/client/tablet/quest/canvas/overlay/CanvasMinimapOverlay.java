@@ -63,7 +63,7 @@ final class CanvasMinimapOverlay {
         CanvasMinimapGeometry.Layout layout = hitLayout.collapsed()
                 ? CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false)
                 : hitLayout;
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, group, canvasViewport.cardCache());
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
         if (!state.canvas.minimapCollapsed) {
@@ -78,7 +78,7 @@ final class CanvasMinimapOverlay {
             CanvasViewport canvasViewport,
             TabletUiState state,
             boolean animationsEnabled,
-            String group,
+            String chapter,
             CanvasMinimapGeometry.Layout layout,
             CanvasMinimapGeometry.Layout collapsedLayout
     ) {
@@ -130,7 +130,7 @@ final class CanvasMinimapOverlay {
 
     private static CanvasMinimapSnapshot snapshot(
             TabletUiState state,
-            String group,
+            String chapter,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
             CanvasMinimapGeometry.Projection projection

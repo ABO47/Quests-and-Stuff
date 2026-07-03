@@ -29,7 +29,7 @@ public final class CanvasTextStyleMenu {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return;
         }
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             TextStyleSession.closeMainCanvas(state);
@@ -45,7 +45,7 @@ public final class CanvasTextStyleMenu {
 
         renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, group, fitCanvasText(state, next)), () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(group, text.id()), CanvasRenderer.activeTextColor(state, text));
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker group={} id={}", group, text.id());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", group, text.id());
             refresh.run();
         });
     }

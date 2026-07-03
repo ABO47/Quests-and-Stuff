@@ -46,7 +46,7 @@ public final class CanvasMinimapGeometry {
         return new Layout(panelX, panelY, panelW, panelH, mapX, mapY, mapW, mapH, toggleX, toggleY, toggleW, toggleH, false);
     }
 
-    public static WorldBounds worldBounds(TabletUiState state, String group, List<QuestCardLayout> cards) {
+    public static WorldBounds worldBounds(TabletUiState state, String chapter, List<QuestCardLayout> cards) {
         int minX = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX, true));
         int minY = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY, true));
         int maxX = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX + Math.max(1, state.canvas.canvasContentW), true));

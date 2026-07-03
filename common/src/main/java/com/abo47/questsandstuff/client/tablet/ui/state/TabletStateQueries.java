@@ -24,7 +24,7 @@ public final class TabletStateQueries {
         if (state == null || state.root.canEdit || selected.isBlank() || ClientQuestStateFacade.chapterOpenablePreview(selected)) {
             return selected;
         }
-        for (String group : ClientQuestStateFacade.selectableChapterOrder(false)) {
+        for (String chapter : ClientQuestStateFacade.selectableChapterOrder(false)) {
             String sanitized = sanitizeChapterName(group);
             if (!sanitized.isBlank()) {
                 return sanitized;

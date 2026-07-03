@@ -83,7 +83,7 @@ public final class CanvasSelectionRenderer {
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         int count = 0;
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         for (QuestCardLayout card : cards) {
             if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
                 continue;
@@ -255,7 +255,7 @@ public final class CanvasSelectionRenderer {
                     border
             );
         }
-        String group = selectedChapterName(state);
+        String chapter = selectedChapterName(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
             CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {

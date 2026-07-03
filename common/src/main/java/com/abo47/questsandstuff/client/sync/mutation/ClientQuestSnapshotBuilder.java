@@ -17,14 +17,14 @@ final class ClientQuestSnapshotBuilder {
     private ClientQuestSnapshotBuilder() {
     }
 
-    static CompoundTag newEditorQuest(String title, String group, int x, int y, QuestVisibilityMode hiddenMode) {
+    static CompoundTag newEditorQuest(String title, String chapter, int x, int y, QuestVisibilityMode hiddenMode) {
         QuestDisplay display = QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDef(true, x, y, 1.0f)));
         CompoundTag quest = emptyEditorQuest(display, hiddenMode);
         setProgressDefaults(quest, true);
         return quest;
     }
 
-    static void prepareCopiedQuest(CompoundTag quest, String group, int x, int y, float scale) {
+    static void prepareCopiedQuest(CompoundTag quest, String chapter, int x, int y, float scale) {
         if (quest == null) {
             return;
         }
@@ -153,7 +153,7 @@ final class ClientQuestSnapshotBuilder {
         }
     }
 
-    private static void replaceSingleGroup(CompoundTag quest, String group, int x, int y, float scale) {
+    private static void replaceSingleGroup(CompoundTag quest, String chapter, int x, int y, float scale) {
         CompoundTag groups = new CompoundTag();
         CompoundTag groupTag = new CompoundTag();
         groupTag.putBoolean(SyncKeys.ChapterView.VISIBLE, true);
