@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -74,24 +75,48 @@ final class CanvasSelectionBounds {
     }
 
     static CanvasPoint clampSelectionDelta(TabletUiState state, int dx, int dy) {
-        if (!state.canvas.gridCanvasLocked || !hasDragStartBounds(state)) {
+        if (!hasDragStartBounds(state)) {
             return new CanvasPoint(dx, dy);
         }
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        int viewportLeft = (int) Math.floor((-state.canvas.canvasContentX - state.canvas.canvasOffsetX) / zoom);
+        int viewportTop = (int) Math.floor((-state.canvas.canvasContentY - state.canvas.canvasOffsetY) / zoom);
+        int viewportRight = (int) Math.ceil((state.canvas.canvasViewportW - state.canvas.canvasContentX - state.canvas.canvasOffsetX) / zoom);
+        int viewportBottom = (int) Math.ceil((state.canvas.canvasViewportH - state.canvas.canvasContentY - state.canvas.canvasOffsetY) / zoom);
         int left = state.canvas.dragStartBoundsLeft + dx;
         int top = state.canvas.dragStartBoundsTop + dy;
         int right = state.canvas.dragStartBoundsRight + dx;
         int bottom = state.canvas.dragStartBoundsBottom + dy;
-        if (left < 0) {
-            dx -= left;
-        }
-        if (top < 0) {
-            dy -= top;
-        }
-        if (right > state.canvas.canvasContentW) {
-            dx -= right - state.canvas.canvasContentW;
-        }
-        if (bottom > state.canvas.canvasContentH) {
-            dy -= bottom - state.canvas.canvasContentH;
+        if (state.canvas.gridCanvasLocked) {
+            if (left < viewportLeft) {
+                dx -= left - viewportLeft;
+            }
+            if (top < viewportTop) {
+                dy -= top - viewportTop;
+            }
+            if (right > viewportRight) {
+                dx -= right - viewportRight;
+            }
+            if (bottom > viewportBottom) {
+                dy -= bottom - viewportBottom;
+            }
+        } else {
+            int selMidX = (state.canvas.dragStartBoundsLeft + state.canvas.dragStartBoundsRight) / 2;
+            int selMidY = (state.canvas.dragStartBoundsTop + state.canvas.dragStartBoundsBottom) / 2;
+            int centerX = selMidX + dx;
+            int centerY = selMidY + dy;
+            if (centerX < viewportLeft) {
+                dx += viewportLeft - centerX;
+            }
+            if (centerY < viewportTop) {
+                dy += viewportTop - centerY;
+            }
+            if (centerX > viewportRight) {
+                dx -= centerX - viewportRight;
+            }
+            if (centerY > viewportBottom) {
+                dy -= centerY - viewportBottom;
+            }
         }
         return new CanvasPoint(dx, dy);
     }

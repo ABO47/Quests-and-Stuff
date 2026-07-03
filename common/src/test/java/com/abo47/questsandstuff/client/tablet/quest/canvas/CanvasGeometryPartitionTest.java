@@ -77,15 +77,54 @@ class CanvasGeometryPartitionTest {
     }
 
     @Test
-    void canvasClampKeepsRotatedBoundsInsideContent() {
+    void clampRotatedAnchorStaysInsideViewport() {
         TabletUiState state = new TabletUiState();
-        state.canvas.gridCanvasLocked = true;
-        state.canvas.canvasContentW = 100;
-        state.canvas.canvasContentH = 100;
+        state.canvas.canvasViewportW = 100;
+        state.canvas.canvasViewportH = 100;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = 0;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
 
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, 90, 90, 20, 10, 10, 5, 90);
 
-        assertEquals(85, clamped.x);
-        assertEquals(85, clamped.y);
+        assertEquals(90, clamped.x);
+        assertEquals(90, clamped.y);
+    }
+
+    @Test
+    void clampRotatedAnchorSlidesUnderEdgeWhenUnlocked() {
+        TabletUiState state = new TabletUiState();
+        state.canvas.canvasViewportW = 100;
+        state.canvas.canvasViewportH = 100;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = 0;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, -10, -20, 20, 10, 10, 5, 0);
+
+        assertEquals(-10, clamped.x);
+        assertEquals(-5, clamped.y);
+    }
+
+    @Test
+    void clampRotatedAnchorStaysFullyInsideWhenLocked() {
+        TabletUiState state = new TabletUiState();
+        state.canvas.gridCanvasLocked = true;
+        state.canvas.canvasViewportW = 100;
+        state.canvas.canvasViewportH = 100;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = 0;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+
+        CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, -10, -20, 20, 10, 10, 5, 0);
+
+        assertEquals(0, clamped.x);
+        assertEquals(0, clamped.y);
     }
 }

@@ -294,7 +294,7 @@ public final class CanvasViewport extends WidgetGroup {
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         CanvasMiniNotificationController.rememberPointer(this, state, mouseX, mouseY);
         drawBackgroundTexture(graphics, mouseX, mouseY);
-        drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+        CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
