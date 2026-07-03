@@ -122,11 +122,11 @@ record PrerequisiteConnectionModel(
                 String ecId = safe(ec.id());
                 if (ecId.isBlank()) continue;
                 if (ec.connectionQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.edgeKey(ecId, questId);
+                    String key = QuestConnectionMetadata.connectionKey(ecId, questId);
                     rows.putIfAbsent(key, new PrerequisiteConnectionRow(ecId, questId, ecId, targetTitle, ecId, "", PrerequisiteConnectionKind.INCOMING, true));
                 }
                 if (ec.prerequisiteQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.edgeKey(questId, ecId);
+                    String key = QuestConnectionMetadata.connectionKey(questId, ecId);
                     rows.putIfAbsent(key, new PrerequisiteConnectionRow(questId, ecId, targetTitle, ecId, ecId, "", PrerequisiteConnectionKind.OUTGOING, true));
                 }
             }

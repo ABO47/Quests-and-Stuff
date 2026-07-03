@@ -61,7 +61,7 @@ final class ConnectionLayout {
                 }
 
                 ConnectionRenderStyle style = ConnectionStyleResolver.style(state, group, prerequisiteId, quest.questId(), questTag);
-                if (!rendered.add(style.edgeId())) {
+                if (!rendered.add(style.connectionId())) {
                     continue;
                 }
                 if (!CanvasLayoutService.intersectsPanRenderWindow(prerequisite, viewportW, viewportH)
@@ -88,8 +88,8 @@ final class ConnectionLayout {
                 if (connectedQuest == null) {
                     continue;
                 }
-                String edgeId = CanvasConnectionAnimation.edgeKey(ec.id(), connectedQuestId);
-                if (!rendered.add(edgeId)) {
+                String connectionId = CanvasConnectionAnimation.connectionKey(ec.id(), connectedQuestId);
+                if (!rendered.add(connectionId)) {
                     continue;
                 }
                 if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
@@ -103,7 +103,7 @@ final class ConnectionLayout {
                 boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, ec.id(), connectedQuestId);
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
-                        edgeId, ec.id(), connectedQuestId,
+                        connectionId, ec.id(), connectedQuestId,
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
@@ -116,8 +116,8 @@ final class ConnectionLayout {
                 if (prerequisiteQuest == null) {
                     continue;
                 }
-                String edgeId = CanvasConnectionAnimation.edgeKey(prerequisiteQuestId, ec.id());
-                if (!rendered.add(edgeId)) {
+                String connectionId = CanvasConnectionAnimation.connectionKey(prerequisiteQuestId, ec.id());
+                if (!rendered.add(connectionId)) {
                     continue;
                 }
                 if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
@@ -131,7 +131,7 @@ final class ConnectionLayout {
                 boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, prerequisiteQuestId, ec.id());
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
-                        edgeId, prerequisiteQuestId, ec.id(),
+                        connectionId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
@@ -153,7 +153,7 @@ final class ConnectionLayout {
         List<ConnectionLine> lines = prerequisiteConnectionLines(state, cards, byQuestId, viewportW, viewportH);
         List<String> keys = new ArrayList<>();
         for (ConnectionLine line : lines) {
-            keys.add(CanvasLayerOrdering.connectionKey(line.edgeId()));
+            keys.add(CanvasLayerOrdering.connectionKey(line.connectionId()));
         }
         return keys;
     }
@@ -210,7 +210,7 @@ final class ConnectionLayout {
 
     private static ConnectionLine lineFromStyle(ConnectionRenderStyle style, QuestCardLayout source, QuestCardLayout target, boolean pending) {
         return new ConnectionLine(
-                style.edgeId(),
+                style.connectionId(),
                 style.sourceQuestId(),
                 style.targetQuestId(),
                 source.x(),

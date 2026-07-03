@@ -188,7 +188,7 @@ final class ConnectionPainter {
             glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
             glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
-        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.edgeId(), now);
+        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);

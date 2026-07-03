@@ -6,7 +6,7 @@ import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
@@ -204,7 +204,7 @@ public final class TabletUiFactory {
         return CanvasRenderer.hitTestCard(cards, x, y);
     }
 
-    public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
         return CanvasRenderer.hitTestEdge(state, cards, byQuestId, x, y);
     }
 

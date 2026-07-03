@@ -687,8 +687,8 @@ public class TabletUiState {
         public long contextMenuAnimationStartMs;
         public String contextMenuAnimationKey = "";
         public String contextQuestId = "";
-        public String contextEdgeSource = "";
-        public String contextEdgeTarget = "";
+        public String contextConnectionSource = "";
+        public String contextConnectionTarget = "";
         public String contextCanvasImageId = "";
         public String contextCanvasTextId = "";
         public String contextCanvasExclusiveChoiceId = "";

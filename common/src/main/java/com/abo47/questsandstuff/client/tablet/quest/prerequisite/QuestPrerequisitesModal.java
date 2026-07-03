@@ -232,7 +232,7 @@ public final class QuestPrerequisitesModal {
         } else {
             EditorCanvasCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
         }
-        ConnectionRenderer.removeEdgeTransientState(state, group, row.sourceId(), row.targetId());
+        ConnectionRenderer.removeConnectionTransientState(state, group, row.sourceId(), row.targetId());
         PrerequisiteConnectionRemover.clearAfterRemove(state, row);
         QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager action=remove_connection source={} target={}", row.sourceId(), row.targetId());
     }

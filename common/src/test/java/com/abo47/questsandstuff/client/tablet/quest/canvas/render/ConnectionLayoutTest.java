@@ -39,7 +39,7 @@ class ConnectionLayoutTest {
 
         assertEquals(1, lines.size());
         ConnectionLine line = lines.get(0);
-        assertEquals("quest/source->quest/target", line.edgeId());
+        assertEquals("quest/source->quest/target", line.connectionId());
         assertEquals("quest/source", line.sourceQuestId());
         assertEquals("quest/target", line.targetQuestId());
         assertEquals(0x446688, line.color());

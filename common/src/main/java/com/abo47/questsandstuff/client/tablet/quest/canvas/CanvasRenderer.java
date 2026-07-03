@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
@@ -133,8 +133,8 @@ public final class CanvasRenderer {
         return ClientQuestStateFacade.questHiddenPreview(questTag);
     }
 
-    public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.edgeKey(sourceQuestId, targetQuestId);
+    public static String connectionKey(String sourceQuestId, String targetQuestId) {
+        return ConnectionRenderer.connectionKey(sourceQuestId, targetQuestId);
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
@@ -226,7 +226,7 @@ public final class CanvasRenderer {
     }
 
 
-    public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
         return CanvasHitTester.hitTestEdge(state, cards, byQuestId, x, y);
     }
 

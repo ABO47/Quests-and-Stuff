@@ -20,22 +20,22 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-final class CanvasContextEdgeActions {
-    private CanvasContextEdgeActions() {
+final class CanvasContextConnectionActions {
+    private CanvasContextConnectionActions() {
     }
 
-    static void addEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
-        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.EDGE || state.contextMenu.contextEdgeSource.isBlank() || state.contextMenu.contextEdgeTarget.isBlank()) {
+    static void addConnectionActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.CONNECTION || state.contextMenu.contextConnectionSource.isBlank() || state.contextMenu.contextConnectionTarget.isBlank()) {
             return;
         }
-        String sourceId = state.contextMenu.contextEdgeSource;
-        String targetId = state.contextMenu.contextEdgeTarget;
-        boolean isEcEdge = ConnectionRenderer.isEcId(state, selectedChapter, sourceId)
+        String sourceId = state.contextMenu.contextConnectionSource;
+        String targetId = state.contextMenu.contextConnectionTarget;
+        boolean isEcConnection = ConnectionRenderer.isEcId(state, selectedChapter, sourceId)
                 || ConnectionRenderer.isEcId(state, selectedChapter, targetId);
-        if (isEcEdge) {
-            addEcEdgeActions(actions, canvasViewport, state, player, selectedChapter, sourceId, targetId);
+        if (isEcConnection) {
+            addConnectionEcActions(actions, canvasViewport, state, player, selectedChapter, sourceId, targetId);
         } else {
-            addQuestEdgeActions(actions, canvasViewport, state, player, selectedChapter, sourceId, targetId);
+            addConnectionQuestActions(actions, canvasViewport, state, player, selectedChapter, sourceId, targetId);
         }
         addConnectionLayerActions(actions, canvasViewport, state, selectedChapter);
         if (CanvasContextDeleteController.canDeleteContext(state)) {
@@ -47,7 +47,7 @@ final class CanvasContextEdgeActions {
         }
     }
 
-    private static void addQuestEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
+    private static void addConnectionQuestActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
         boolean direct = CanvasRenderer.isConnectionDirect(state, selectedChapter, sourceId, targetId);
         actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", TabletColors.INTERACTIVE, () -> {
             EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
@@ -85,7 +85,7 @@ final class CanvasContextEdgeActions {
         }
     }
 
-    private static void addEcEdgeActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
+    private static void addConnectionEcActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
         boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, selectedChapter, sourceId, targetId);
         actions.add(new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", TabletColors.INTERACTIVE, () -> {
             EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
@@ -123,21 +123,21 @@ final class CanvasContextEdgeActions {
     }
 
     private static void addConnectionLayerActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
-        String edgeId = CanvasRenderer.edgeKey(state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
-        String layerKey = CanvasLayerOrdering.connectionKey(edgeId);
+        String connectionId = CanvasRenderer.connectionKey(state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget);
+        String layerKey = CanvasLayerOrdering.connectionKey(connectionId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, true)) {
             actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", TabletColors.INTERACTIVE, () -> {
-                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, true);
+                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget, true);
                 ContextMenuController.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", edgeId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", connectionId);
                 canvasViewport.refresh();
             }));
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, false)) {
             actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", TabletColors.TEXT_MUTED, () -> {
-                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget, false);
+                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget, false);
                 ContextMenuController.clearDeleteConfirm(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", edgeId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", connectionId);
                 canvasViewport.refresh();
             }));
         }

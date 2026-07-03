@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
@@ -81,7 +81,7 @@ public final class CanvasHitTester {
         return local[0] >= -3 && local[0] <= box.width() + 3 && local[1] >= -3 && local[1] <= box.height() + 3 ? image : null;
     }
 
-    public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+    public static ConnectionHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
         String group = selectedChapterName(state);
         int tolerance = 4;
         for (QuestCardLayout quest : cards) {
@@ -110,7 +110,7 @@ public final class CanvasHitTester {
                         ConnectionRenderer.isConnectionDirect(state, group, prerequisiteId, quest.questId(), quest.tag())
                 );
                 if (nearPath(x, y, path, tolerance)) {
-                    return new EdgeHit(prerequisiteId, quest.questId());
+                    return new ConnectionHit(prerequisiteId, quest.questId());
                 }
             }
         }
@@ -136,7 +136,7 @@ public final class CanvasHitTester {
                         ConnectionRenderer.ecIsConnectionDirect(state, group, ec.id(), connectedQuest.questId())
                 );
                 if (nearPath(x, y, path, tolerance)) {
-                    return new EdgeHit(ec.id(), connectedQuest.questId());
+                    return new ConnectionHit(ec.id(), connectedQuest.questId());
                 }
             }
             for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
@@ -155,7 +155,7 @@ public final class CanvasHitTester {
                         ConnectionRenderer.ecIsConnectionDirect(state, group, prerequisiteQuest.questId(), ec.id())
                 );
                 if (nearPath(x, y, path, tolerance)) {
-                    return new EdgeHit(prerequisiteQuest.questId(), ec.id());
+                    return new ConnectionHit(prerequisiteQuest.questId(), ec.id());
                 }
             }
         }

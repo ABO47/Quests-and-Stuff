@@ -8,5 +8,5 @@ public enum ContextMenuTarget {
     IMAGE,
     TEXT,
     EXCLUSIVE_CHOICE,
-    EDGE
+    CONNECTION
 }

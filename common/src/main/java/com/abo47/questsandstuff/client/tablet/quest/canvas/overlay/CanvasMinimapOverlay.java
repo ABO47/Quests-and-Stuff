@@ -172,8 +172,8 @@ final class CanvasMinimapOverlay {
                 if (source == null) {
                     continue;
                 }
-                String edgeKey = ConnectionRenderer.edgeKey(sourceId, target.questId());
-                if (!rendered.add(edgeKey)) {
+                String connectionKey = ConnectionRenderer.connectionKey(sourceId, target.questId());
+                if (!rendered.add(connectionKey)) {
                     continue;
                 }
                 boolean hidden = ConnectionRenderer.isConnectionHidden(state, group, sourceId, target.questId());
@@ -235,8 +235,8 @@ final class CanvasMinimapOverlay {
             for (String connectedId : ec.connectionQuestIds()) {
                 CanvasMinimapRect targetBox = questBoxes.get(connectedId);
                 if (targetBox == null) continue;
-                String edgeKey = "ec:" + ec.id() + "->" + connectedId;
-                if (!rendered.add(edgeKey)) continue;
+                String connectionKey = "ec:" + ec.id() + "->" + connectedId;
+                if (!rendered.add(connectionKey)) continue;
                 int color = ec.connectionColors().getOrDefault(connectedId, TabletColors.TEXT_SECONDARY);
                 boolean direct = isEcDirect(ec, connectedId);
                 double[] tgtCenter = logicalCenters.get(connectedId);
@@ -254,8 +254,8 @@ final class CanvasMinimapOverlay {
             for (String prerequisiteId : ec.prerequisiteQuestIds()) {
                 CanvasMinimapRect sourceBox = questBoxes.get(prerequisiteId);
                 if (sourceBox == null) continue;
-                String edgeKey = "ec:" + prerequisiteId + "->" + ec.id();
-                if (!rendered.add(edgeKey)) continue;
+                String connectionKey = "ec:" + prerequisiteId + "->" + ec.id();
+                if (!rendered.add(connectionKey)) continue;
                 int color = ec.connectionColors().getOrDefault(prerequisiteId, TabletColors.TEXT_SECONDARY);
                 boolean direct = isEcDirect(ec, prerequisiteId);
                 double[] srcCenter = logicalCenters.get(prerequisiteId);

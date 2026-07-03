@@ -65,14 +65,14 @@ public final class ContextMenuController {
         state.contextMenu.contextQuestId = clean(questId);
     }
 
-    public static void targetEdge(TabletUiState state, String sourceQuestId, String targetQuestId) {
+    public static void targetConnection(TabletUiState state, String sourceQuestId, String targetQuestId) {
         if (state == null) {
             return;
         }
         clearTarget(state);
-        state.contextMenu.contextMenuTarget = ContextMenuTarget.EDGE;
-        state.contextMenu.contextEdgeSource = clean(sourceQuestId);
-        state.contextMenu.contextEdgeTarget = clean(targetQuestId);
+        state.contextMenu.contextMenuTarget = ContextMenuTarget.CONNECTION;
+        state.contextMenu.contextConnectionSource = clean(sourceQuestId);
+        state.contextMenu.contextConnectionTarget = clean(targetQuestId);
     }
 
     public static void targetImage(TabletUiState state, String imageId) {
@@ -213,8 +213,8 @@ public final class ContextMenuController {
             return;
         }
         state.contextMenu.contextQuestId = "";
-        state.contextMenu.contextEdgeSource = "";
-        state.contextMenu.contextEdgeTarget = "";
+        state.contextMenu.contextConnectionSource = "";
+        state.contextMenu.contextConnectionTarget = "";
         state.contextMenu.contextCanvasImageId = "";
         state.contextMenu.contextCanvasTextId = "";
         state.contextMenu.contextCanvasExclusiveChoiceId = "";

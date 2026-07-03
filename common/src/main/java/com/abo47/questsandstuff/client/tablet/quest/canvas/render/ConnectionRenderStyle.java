@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 
 record ConnectionRenderStyle(
-        String edgeId,
+        String connectionId,
         String sourceQuestId,
         String targetQuestId,
         int color,
@@ -19,7 +19,7 @@ record ConnectionRenderStyle(
 
     static ConnectionRenderStyle fromMetadata(QuestConnectionMetadata metadata) {
         return new ConnectionRenderStyle(
-                metadata.edgeKey(),
+                metadata.connectionKey(),
                 metadata.sourceQuestId(),
                 metadata.targetQuestId(),
                 metadata.color(),

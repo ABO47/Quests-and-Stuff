@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 public record ConnectionLine(
-        String edgeId,
+        String connectionId,
         String sourceQuestId,
         String targetQuestId,
         int sourceX,

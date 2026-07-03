@@ -218,9 +218,9 @@ public final class AssetPickerApplyActions {
             String[] parts = connectionTextureTarget.split("\\|");
             if (parts.length >= 2) {
                 String group = parts[1];
-                for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
-                    String prereq = edge.prerequisiteId();
-                    String quest = edge.questId();
+                for (var connection : CanvasOverlayController.selectedConnectedEdges(state, group)) {
+                    String prereq = connection.prerequisiteId();
+                    String quest = connection.questId();
                     boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
                     if (isEc) {
                         EditorCanvasCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);

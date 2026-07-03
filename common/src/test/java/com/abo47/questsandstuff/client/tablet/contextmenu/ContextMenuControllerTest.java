@@ -30,8 +30,8 @@ class ContextMenuControllerTest {
         assertFalse(state.contextMenu.contextQuestCompletionSoundMenuOpen);
         assertEquals("", state.contextMenu.contextDeleteConfirmKey);
         assertEquals("", state.contextMenu.contextQuestId);
-        assertEquals("", state.contextMenu.contextEdgeSource);
-        assertEquals("", state.contextMenu.contextEdgeTarget);
+        assertEquals("", state.contextMenu.contextConnectionSource);
+        assertEquals("", state.contextMenu.contextConnectionTarget);
         assertEquals("", state.contextMenu.contextCanvasImageId);
         assertEquals("", state.contextMenu.contextCanvasTextId);
     }
@@ -46,11 +46,11 @@ class ContextMenuControllerTest {
         assertEquals("", state.contextMenu.contextQuestId);
         assertEquals("image_a", state.contextMenu.contextCanvasImageId);
 
-        ContextMenuController.targetEdge(state, "source", "target");
-        assertEquals(ContextMenuTarget.EDGE, state.contextMenu.contextMenuTarget);
+        ContextMenuController.targetConnection(state, "source", "target");
+        assertEquals(ContextMenuTarget.CONNECTION, state.contextMenu.contextMenuTarget);
         assertEquals("", state.contextMenu.contextCanvasImageId);
-        assertEquals("source", state.contextMenu.contextEdgeSource);
-        assertEquals("target", state.contextMenu.contextEdgeTarget);
+        assertEquals("source", state.contextMenu.contextConnectionSource);
+        assertEquals("target", state.contextMenu.contextConnectionTarget);
     }
 
     @Test
@@ -109,8 +109,8 @@ class ContextMenuControllerTest {
         state.contextMenu.contextDeleteConfirmKey = "delete";
         state.contextMenu.contextQuestCompletionSoundMenuOpen = true;
         state.contextMenu.contextQuestId = "quest";
-        state.contextMenu.contextEdgeSource = "source";
-        state.contextMenu.contextEdgeTarget = "target";
+        state.contextMenu.contextConnectionSource = "source";
+        state.contextMenu.contextConnectionTarget = "target";
         state.contextMenu.contextCanvasImageId = "image";
         state.contextMenu.contextCanvasTextId = "text";
         return state;

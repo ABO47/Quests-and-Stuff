@@ -22,8 +22,8 @@ public final class CanvasContextDeleteController {
     }
 
     public static boolean canDeleteContext(TabletUiState state) {
-        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EDGE) {
-            return !state.contextMenu.contextEdgeSource.isBlank() && !state.contextMenu.contextEdgeTarget.isBlank();
+        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.CONNECTION) {
+            return !state.contextMenu.contextConnectionSource.isBlank() && !state.contextMenu.contextConnectionTarget.isBlank();
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.QUEST) {
             return !state.contextMenu.contextQuestId.isBlank();
@@ -46,8 +46,8 @@ public final class CanvasContextDeleteController {
     public static String deleteConfirmKey(TabletUiState state) {
         return state.contextMenu.contextMenuTarget.name()
                 + "|" + state.contextMenu.contextQuestId
-                + "|" + state.contextMenu.contextEdgeSource
-                + "|" + state.contextMenu.contextEdgeTarget
+                + "|" + state.contextMenu.contextConnectionSource
+                + "|" + state.contextMenu.contextConnectionTarget
                 + "|" + state.contextMenu.contextCanvasImageId
                 + "|" + state.contextMenu.contextCanvasTextId
                 + "|" + state.contextMenu.contextCanvasExclusiveChoiceId
@@ -93,17 +93,17 @@ public final class CanvasContextDeleteController {
             return;
         }
 
-        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EDGE
-                && !state.contextMenu.contextEdgeSource.isBlank()
-                && !state.contextMenu.contextEdgeTarget.isBlank()) {
-            String source = state.contextMenu.contextEdgeSource;
-            String target = state.contextMenu.contextEdgeTarget;
+        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.CONNECTION
+                && !state.contextMenu.contextConnectionSource.isBlank()
+                && !state.contextMenu.contextConnectionTarget.isBlank()) {
+            String source = state.contextMenu.contextConnectionSource;
+            String target = state.contextMenu.contextConnectionTarget;
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, source);
             if (ec != null) {
                 CanvasExclusiveChoice updated = ec.removeAllEdgeState(target);
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                 CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                ConnectionRenderer.removeConnectionTransientState(state, group, source, target);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connection delete ec={} quest={}", source, target);
             } else {
                 CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, target);
@@ -111,11 +111,11 @@ public final class CanvasContextDeleteController {
                     CanvasExclusiveChoice updated = ecTarget.removeAllEdgeState(source);
                     CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
                     CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                    ConnectionRenderer.removeConnectionTransientState(state, group, source, target);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec prerequisite delete quest={} ec={}", source, target);
                 } else {
                     runPrerequisiteAction(player, target, source, false);
-                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                    ConnectionRenderer.removeConnectionTransientState(state, group, source, target);
                 }
             }
             return;

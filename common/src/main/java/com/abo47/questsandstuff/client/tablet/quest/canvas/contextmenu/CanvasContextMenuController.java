@@ -27,7 +27,7 @@ public final class CanvasContextMenuController {
         CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedChapter);
         CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedChapter);
         CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedChapter);
-        CanvasContextEdgeActions.addEdgeActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextConnectionActions.addConnectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
         if (!exclusiveSubmenuOpen(state)) {
             CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
         }
@@ -38,11 +38,11 @@ public final class CanvasContextMenuController {
         return state.contextMenu.contextQuestCompletionSoundMenuOpen;
     }
 
-    public static List<EdgeRef> selectedConnectedEdges(TabletUiState state, String group) {
+    public static List<ConnectionRef> selectedConnectedEdges(TabletUiState state, String group) {
         return CanvasConnectionSelection.selectedConnectedEdges(state, group);
     }
 
-    public record EdgeRef(String prerequisiteId, String questId) {
+    public record ConnectionRef(String prerequisiteId, String questId) {
     }
 
     public static boolean isContextMenuHit(TabletUiState state, int x, int y) {

@@ -20,12 +20,12 @@ public final class CanvasConnectionAnimation {
     private CanvasConnectionAnimation() {
     }
 
-    public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
+    public static String connectionKey(String sourceQuestId, String targetQuestId) {
+        return QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
     }
 
-    public static String targetQuestId(String edgeKey) {
-        return QuestConnectionMetadata.targetQuestId(edgeKey);
+    public static String targetQuestId(String connectionKey) {
+        return QuestConnectionMetadata.targetQuestId(connectionKey);
     }
 
     public static void startIfNew(TabletUiState state, String targetQuestId, String sourceQuestId) {
@@ -41,7 +41,7 @@ public final class CanvasConnectionAnimation {
         if (hasPrerequisite(target, source)) {
             return;
         }
-        state.canvas.canvasConnectionAnimationStarts.put(edgeKey(source, target), System.currentTimeMillis());
+        state.canvas.canvasConnectionAnimationStarts.put(connectionKey(source, target), System.currentTimeMillis());
     }
 
     public static boolean finishIfDone(TabletUiState state) {
@@ -65,11 +65,11 @@ public final class CanvasConnectionAnimation {
         return changed;
     }
 
-    public static AnimationState current(TabletUiState state, String edgeKey, long now) {
-        if (state == null || edgeKey == null || edgeKey.isBlank() || !QuestsAndStuffConfig.connectionAnimationsEnabled()) {
+    public static AnimationState current(TabletUiState state, String connectionKey, long now) {
+        if (state == null || connectionKey == null || connectionKey.isBlank() || !QuestsAndStuffConfig.connectionAnimationsEnabled()) {
             return STOPPED;
         }
-        Long startMs = state.canvas.canvasConnectionAnimationStarts.get(edgeKey);
+        Long startMs = state.canvas.canvasConnectionAnimationStarts.get(connectionKey);
         if (startMs == null || !UiAnimationProgress.running(startMs, DURATION_MS, now)) {
             return STOPPED;
         }

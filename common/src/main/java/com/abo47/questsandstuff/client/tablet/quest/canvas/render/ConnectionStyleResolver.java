@@ -33,7 +33,7 @@ final class ConnectionStyleResolver {
         if (colors == null) {
             return TabletColors.TEXT_SECONDARY;
         }
-        return colors.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), TabletColors.TEXT_SECONDARY);
+        return colors.getOrDefault(QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId), TabletColors.TEXT_SECONDARY);
     }
 
     static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -50,7 +50,7 @@ final class ConnectionStyleResolver {
             }
         }
         Set<String> hidden = state.canvas.hiddenConnectionsByGroup.get(group);
-        return hidden != null && hidden.contains(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId));
+        return hidden != null && hidden.contains(QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId));
     }
 
     static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -65,7 +65,7 @@ final class ConnectionStyleResolver {
             }
         }
         Set<String> grid = state.canvas.gridConnectionsByGroup.get(group);
-        return grid == null || !grid.contains(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId));
+        return grid == null || !grid.contains(QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId));
     }
 
     static String connectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -80,7 +80,7 @@ final class ConnectionStyleResolver {
         if (textures == null) {
             return "";
         }
-        return textures.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), "");
+        return textures.getOrDefault(QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId), "");
     }
 
     static int connectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {
@@ -95,7 +95,7 @@ final class ConnectionStyleResolver {
         if (spacings == null) {
             return 5;
         }
-        return spacings.getOrDefault(QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), 5);
+        return spacings.getOrDefault(QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId), 5);
     }
 
     static QuestConnectionMetadata metadata(TabletUiState state, String group, String sourceQuestId, String targetQuestId, CompoundTag target) {

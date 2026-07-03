@@ -176,7 +176,7 @@ final class CanvasSceneRenderer {
         Map<String, ConnectionLine> connectionsByKey = new HashMap<>();
         List<String> connectionKeys = new ArrayList<>();
         for (ConnectionLine connection : connections) {
-            String key = CanvasLayerOrdering.connectionKey(connection.edgeId());
+            String key = CanvasLayerOrdering.connectionKey(connection.connectionId());
             connectionsByKey.put(key, connection);
             connectionKeys.add(key);
         }

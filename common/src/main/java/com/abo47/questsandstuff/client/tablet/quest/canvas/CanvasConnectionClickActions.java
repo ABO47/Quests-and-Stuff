@@ -227,7 +227,7 @@ final class CanvasConnectionClickActions {
             state.chapterPanel.lastJumpQuest = hit.questId();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect completed sources={} target={}", attemptedSources, hit.questId());
         } else {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect ended without new edge sources={} target={}", attemptedSources, hit.questId());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect ended without new connection sources={} target={}", attemptedSources, hit.questId());
         }
         refresher.run();
         return true;

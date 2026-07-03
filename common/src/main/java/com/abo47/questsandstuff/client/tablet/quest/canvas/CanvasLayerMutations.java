@@ -32,7 +32,7 @@ public final class CanvasLayerMutations {
     }
 
     public static void moveConnectionLayer(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean front) {
-        CanvasLayerOrdering.moveConnectionLayer(state, group, QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId), front);
+        CanvasLayerOrdering.moveConnectionLayer(state, group, QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId), front);
         CanvasElementStore.persistLayerOrder(state, group);
     }
 

@@ -89,9 +89,9 @@ public final class ColorPickerApplyActions {
         if (connectionSelection != null) {
             String group = connectionSelection;
             int applied = 0;
-            for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
-                String prereq = edge.prerequisiteId();
-                String quest = edge.questId();
+            for (var connectionRef : CanvasOverlayController.selectedConnectedEdges(state, group)) {
+                String prereq = connectionRef.prerequisiteId();
+                String quest = connectionRef.questId();
                 boolean isEc = ConnectionRenderer.isEcId(state, group, prereq)
                         || ConnectionRenderer.isEcId(state, group, quest);
                 if (isEc) {

@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
@@ -39,7 +39,7 @@ final class CanvasViewportContextRouter {
             CanvasTextLayer textHit,
             CanvasExclusiveChoice ecHit
     ) {
-        EdgeHit edgeHit = TabletUiFactory.hitTestEdge(state, cards, byQuestId, localX, localY);
+        ConnectionHit connectionHit = TabletUiFactory.hitTestEdge(state, cards, byQuestId, localX, localY);
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
         int logicalX = anchor.x;
         int logicalY = anchor.y;
@@ -50,9 +50,9 @@ final class CanvasViewportContextRouter {
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             ContextMenuController.targetSelection(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
-        } else if (edgeHit != null && edgeAboveHits(state, edgeHit, hit, imageHit, textHit, ecHit)) {
-            ContextMenuController.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+        } else if (connectionHit != null && connectionAboveHits(state, connectionHit, hit, imageHit, textHit, ecHit)) {
+            ContextMenuController.targetConnection(state, connectionHit.sourceQuestId(), connectionHit.targetQuestId());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=connection source={} target={}", state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget);
         } else if (ecHit != null) {
             ContextMenuController.targetExclusiveChoice(state, ecHit.id());
             state.canvas.canvasSelection.setPrimaryEcId(ecHit.id());
@@ -99,9 +99,9 @@ final class CanvasViewportContextRouter {
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.textIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=quest quest={}", state.contextMenu.contextQuestId);
-        } else if (edgeHit != null) {
-            ContextMenuController.targetEdge(state, edgeHit.sourceQuestId(), edgeHit.targetQuestId());
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=edge source={} target={}", state.contextMenu.contextEdgeSource, state.contextMenu.contextEdgeTarget);
+        } else if (connectionHit != null) {
+            ContextMenuController.targetConnection(state, connectionHit.sourceQuestId(), connectionHit.targetQuestId());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=connection source={} target={}", state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget);
         } else {
             ContextMenuController.targetCanvas(state);
             CanvasSelectionActions.clearCanvasSelection(state);
@@ -112,28 +112,28 @@ final class CanvasViewportContextRouter {
         refresher.run();
     }
 
-    private static boolean edgeAboveHits(TabletUiState state, EdgeHit edgeHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice ecHit) {
-        if (state == null || edgeHit == null) {
+    private static boolean connectionAboveHits(TabletUiState state, ConnectionHit connectionHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice ecHit) {
+        if (state == null || connectionHit == null) {
             return false;
         }
         String group = TabletStateQueries.selectedChapterName(state);
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
-        String edgeKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.edgeKey(edgeHit.sourceQuestId(), edgeHit.targetQuestId()));
-        int edgeIndex = order.indexOf(edgeKey);
-        if (edgeIndex < 0) {
+        String connectionLayerKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.connectionKey(connectionHit.sourceQuestId(), connectionHit.targetQuestId()));
+        int connectionIndex = order.indexOf(connectionLayerKey);
+        if (connectionIndex < 0) {
             return false;
         }
-        return above(order, edgeIndex, questHit == null ? "" : CanvasLayerOrdering.questKey(questHit.questId()))
-                && above(order, edgeIndex, imageHit == null ? "" : CanvasLayerOrdering.imageKey(imageHit.id()))
-                && above(order, edgeIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()))
-                && above(order, edgeIndex, ecHit == null ? "" : CanvasLayerOrdering.exclusiveChoiceKey(ecHit.id()));
+        return above(order, connectionIndex, questHit == null ? "" : CanvasLayerOrdering.questKey(questHit.questId()))
+                && above(order, connectionIndex, imageHit == null ? "" : CanvasLayerOrdering.imageKey(imageHit.id()))
+                && above(order, connectionIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()))
+                && above(order, connectionIndex, ecHit == null ? "" : CanvasLayerOrdering.exclusiveChoiceKey(ecHit.id()));
     }
 
-    private static boolean above(List<String> order, int edgeIndex, String otherKey) {
+    private static boolean above(List<String> order, int connectionIndex, String otherKey) {
         if (otherKey == null || otherKey.isBlank()) {
             return true;
         }
         int otherIndex = order.indexOf(otherKey);
-        return otherIndex < 0 || edgeIndex > otherIndex;
+            return otherIndex < 0 || connectionIndex > otherIndex;
     }
 }

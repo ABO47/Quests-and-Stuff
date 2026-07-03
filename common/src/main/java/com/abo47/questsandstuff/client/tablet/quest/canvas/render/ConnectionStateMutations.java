@@ -28,14 +28,14 @@ final class ConnectionStateMutations {
     }
 
     static void setConnectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int color) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
-        colors.put(key, color);
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		Map<String, Integer> colors = state.canvas.connectionColorsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+		colors.put(key, color);
     }
 
     static void setConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId, boolean hidden) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Set<String> groupHidden = state.canvas.hiddenConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		Set<String> groupHidden = state.canvas.hiddenConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (hidden) {
             groupHidden.add(key);
         } else {
@@ -52,8 +52,8 @@ final class ConnectionStateMutations {
     }
 
     static void toggleConnectionMode(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		Set<String> groupGrid = state.canvas.gridConnectionsByGroup.computeIfAbsent(group, ignored -> new HashSet<>());
         if (ConnectionStyleResolver.isConnectionDirect(state, group, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId))) {
             groupGrid.add(key);
         } else {
@@ -86,8 +86,8 @@ final class ConnectionStateMutations {
     }
 
     static void setConnectionTexture(TabletUiState state, String group, String sourceQuestId, String targetQuestId, String texture) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Map<String, String> textures = state.canvas.connectionTexturesByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		Map<String, String> textures = state.canvas.connectionTexturesByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
         if (texture == null || texture.isBlank()) {
             textures.remove(key);
         } else {
@@ -96,8 +96,8 @@ final class ConnectionStateMutations {
     }
 
     static void setConnectionTextureSpacing(TabletUiState state, String group, String sourceQuestId, String targetQuestId, int spacing) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.computeIfAbsent(group, ignored -> new HashMap<>());
         if (spacing <= 0) {
             spacings.remove(key);
         } else {
@@ -105,9 +105,9 @@ final class ConnectionStateMutations {
         }
     }
 
-    static void removeEdgeTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        String key = QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
-        removeFromMap(state.canvas.connectionTexturesByGroup, group, key);
+	static void removeConnectionTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
+		removeFromMap(state.canvas.connectionTexturesByGroup, group, key);
         removeFromMap(state.canvas.connectionTextureSpacingsByGroup, group, key);
         removeFromMap(state.canvas.connectionColorsByGroup, group, key);
         removeFromSet(state.canvas.gridConnectionsByGroup, group, key);

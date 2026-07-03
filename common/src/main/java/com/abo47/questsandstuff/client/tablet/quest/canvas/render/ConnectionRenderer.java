@@ -17,8 +17,8 @@ public final class ConnectionRenderer {
     private ConnectionRenderer() {
     }
 
-    public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return QuestConnectionMetadata.edgeKey(sourceQuestId, targetQuestId);
+    public static String connectionKey(String sourceQuestId, String targetQuestId) {
+        return QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
     }
 
     public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
@@ -179,7 +179,7 @@ public final class ConnectionRenderer {
         return ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, sourceQuestId, targetQuestId);
     }
 
-    public static void removeEdgeTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        ConnectionStateMutations.removeEdgeTransientState(state, group, sourceQuestId, targetQuestId);
+    public static void removeConnectionTransientState(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
+        ConnectionStateMutations.removeConnectionTransientState(state, group, sourceQuestId, targetQuestId);
     }
 }
