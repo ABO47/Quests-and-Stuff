@@ -160,6 +160,10 @@ public final class SkinEditManager {
                         state.root.skinFillOverrides.remove(targetKey);
                         reapplyOverrides(state, root);
                         if (refresher != null) refresher.run();
+                        if (!"root".equals(targetKey)) {
+                            Widget w = SkinEditTargetResolver.widgetForKey(root, targetKey);
+                            if (w != null) w.setBackground((IGuiTexture) null);
+                        }
                         TabletUiFactory.persistSkinState(state);
                     }));
         }

@@ -176,6 +176,7 @@ public final class QuestAppComposer {
             canvasPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
             if (viewportBgRef[0] != null) {
                 viewportBgRef[0].setSize(canvasW, canvasH);
+                viewportBgRef[0].setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
             }
             chapterMenuOverlay.setSize(currentRootW, currentRootH);
             toolsMenu.setSize(currentRootW, currentRootH);
@@ -228,6 +229,7 @@ public final class QuestAppComposer {
             SkinAnchorRegistry.register("quests_chapter_list", chapterList);
             SkinAnchorRegistry.register("quests_splitter", splitterRef[0]);
             SkinAnchorRegistry.register("quests_canvas", canvasPanel);
+            SkinAnchorRegistry.register("quest_details_layer", questDetailsLayer);
             if (viewportBgRef[0] != null) {
                 SkinAnchorRegistry.register("quests_canvas_background", viewportBgRef[0]);
             }
