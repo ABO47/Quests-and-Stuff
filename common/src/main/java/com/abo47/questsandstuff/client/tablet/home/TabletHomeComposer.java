@@ -64,7 +64,7 @@ public final class TabletHomeComposer {
         root.addWidget(modalLayer);
         readPersistedUiState(state);
         readPersistedSkinState(state);
-        SkinEditManager.reapplyOverrides(state, root);
+        refresh[0].run();
         return root;
     }
 }
