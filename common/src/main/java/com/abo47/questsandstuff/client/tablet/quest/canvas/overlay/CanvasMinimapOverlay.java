@@ -64,14 +64,14 @@ final class CanvasMinimapOverlay {
                 ? CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), false)
                 : hitLayout;
         String chapter = selectedChapterName(state);
-        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, group, canvasViewport.cardCache());
+        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, chapter, canvasViewport.cardCache());
         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
         if (!state.canvas.minimapCollapsed) {
             applyProjection(state, projection);
         }
 
         CanvasMinimapGeometry.Layout collapsedLayout = CanvasMinimapGeometry.layout(canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), true);
-        canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, group, layout, collapsedLayout));
+        canvasViewport.addWidget(minimapWidget(canvasViewport, state, animationsEnabled, chapter, layout, collapsedLayout));
     }
 
     private static WidgetGroup minimapWidget(
@@ -94,10 +94,10 @@ final class CanvasMinimapOverlay {
                 float bodyProgress = CanvasMinimapPainter.stagedProgress(openProgress, CanvasMinimapPainter.BODY_REVEAL_START, 1.0f);
                 CanvasMinimapPainter.drawPanel(graphics, originX, originY, layout, collapsedLayout, holderProgress, bodyProgress, mouseX, mouseY);
                 if (bodyProgress > 0.02f) {
-                    if (group != null && layout != null) {
-                        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, group, canvasViewport.cardCache());
+                    if (chapter != null && layout != null) {
+                        CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, chapter, canvasViewport.cardCache());
                         CanvasMinimapGeometry.Projection projection = CanvasMinimapGeometry.projection(layout, world);
-                        lastSnapshot = snapshot(state, group, canvasViewport.cardCache(), canvasViewport.cardLookup(), projection);
+                        lastSnapshot = snapshot(state, chapter, canvasViewport.cardCache(), canvasViewport.cardLookup(), projection);
                     }
                     if (lastSnapshot != null) {
                         int clipW = Math.max(1, Math.round((layout.panelW() - layout.toggleW()) * bodyProgress));
@@ -176,11 +176,11 @@ final class CanvasMinimapOverlay {
                 if (!rendered.add(connectionKey)) {
                     continue;
                 }
-                boolean hidden = ConnectionRenderer.isConnectionHidden(state, group, sourceId, target.questId());
+                boolean hidden = ConnectionRenderer.isConnectionHidden(state, chapter, sourceId, target.questId());
                 if (hidden && !state.root.canEdit) {
                     continue;
                 }
-                boolean direct = ConnectionRenderer.isConnectionDirect(state, group, sourceId, target.questId());
+                boolean direct = ConnectionRenderer.isConnectionDirect(state, chapter, sourceId, target.questId());
                 double[] srcCenter = logicalCenters.get(sourceId);
                 double[] tgtCenter = logicalCenters.get(target.questId());
                 if (srcCenter == null || tgtCenter == null) continue;
@@ -190,13 +190,13 @@ final class CanvasMinimapOverlay {
                 float sourceCenterY = srcBox.y() + srcBox.h() / 2.0f;
                 float targetCenterX = tgtBox.x() + tgtBox.w() / 2.0f;
                 float targetCenterY = tgtBox.y() + tgtBox.h() / 2.0f;
-                String tex = ConnectionRenderer.connectionTexture(state, group, sourceId, target.questId());
+                String tex = ConnectionRenderer.connectionTexture(state, chapter, sourceId, target.questId());
                 connections.add(new CanvasMinimapConnection(
                         sourceCenterX,
                         sourceCenterY,
                         targetCenterX,
                         targetCenterY,
-                        ConnectionRenderer.connectionColor(state, group, sourceId, target.questId()),
+                        ConnectionRenderer.connectionColor(state, chapter, sourceId, target.questId()),
                         hidden ? 70 : 190,
                         direct,
                         direct ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1]),
@@ -205,7 +205,7 @@ final class CanvasMinimapOverlay {
             }
         }
 
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             net.minecraft.nbt.CompoundTag ecTag = null;
             if (!ec.background().isBlank()) {

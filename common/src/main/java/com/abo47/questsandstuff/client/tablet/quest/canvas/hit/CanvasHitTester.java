@@ -45,7 +45,7 @@ public final class CanvasHitTester {
 
     public static CanvasImageLayer hitTestCanvasImage(TabletUiState state, int x, int y) {
         String chapter = selectedChapterName(state);
-        List<CanvasImageLayer> images = orderedCanvasImages(state, group);
+        List<CanvasImageLayer> images = orderedCanvasImages(state, chapter);
         for (int i = images.size() - 1; i >= 0; i--) {
             CanvasImageLayer image = CanvasLayerMutations.effectiveCanvasImage(state, images.get(i));
             CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
@@ -95,7 +95,7 @@ public final class CanvasHitTester {
                 if (prerequisite == null) {
                     continue;
                 }
-                if (ConnectionRenderer.isConnectionHidden(state, group, prerequisiteId, quest.questId(), quest.tag()) && !state.root.canEdit) {
+                if (ConnectionRenderer.isConnectionHidden(state, chapter, prerequisiteId, quest.questId(), quest.tag()) && !state.root.canEdit) {
                     continue;
                 }
 
@@ -107,14 +107,14 @@ public final class CanvasHitTester {
                         prerequisite.centerY(),
                         quest.centerX(),
                         quest.centerY(),
-                        ConnectionRenderer.isConnectionDirect(state, group, prerequisiteId, quest.questId(), quest.tag())
+                        ConnectionRenderer.isConnectionDirect(state, chapter, prerequisiteId, quest.questId(), quest.tag())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new ConnectionHit(prerequisiteId, quest.questId());
                 }
             }
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
@@ -133,7 +133,7 @@ public final class CanvasHitTester {
                         ecCenterY,
                         connectedQuest.centerX(),
                         connectedQuest.centerY(),
-                        ConnectionRenderer.ecIsConnectionDirect(state, group, ec.id(), connectedQuest.questId())
+                        ConnectionRenderer.ecIsConnectionDirect(state, chapter, ec.id(), connectedQuest.questId())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new ConnectionHit(ec.id(), connectedQuest.questId());
@@ -152,7 +152,7 @@ public final class CanvasHitTester {
                         prerequisiteQuest.centerY(),
                         ecCenterX,
                         ecCenterY,
-                        ConnectionRenderer.ecIsConnectionDirect(state, group, prerequisiteQuest.questId(), ec.id())
+                        ConnectionRenderer.ecIsConnectionDirect(state, chapter, prerequisiteQuest.questId(), ec.id())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new ConnectionHit(prerequisiteQuest.questId(), ec.id());
@@ -164,7 +164,7 @@ public final class CanvasHitTester {
 
     public static CanvasTextLayer hitTestCanvasText(TabletUiState state, int x, int y) {
         String chapter = selectedChapterName(state);
-        List<CanvasTextLayer> texts = orderedCanvasTexts(state, group);
+        List<CanvasTextLayer> texts = orderedCanvasTexts(state, chapter);
         for (int i = texts.size() - 1; i >= 0; i--) {
             CanvasTextLayer text = CanvasLayerMutations.effectiveCanvasText(state, texts.get(i));
             CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
@@ -178,7 +178,7 @@ public final class CanvasHitTester {
 
     public static CanvasExclusiveChoice hitTestCanvasExclusiveChoice(TabletUiState state, int x, int y) {
         String chapter = selectedChapterName(state);
-        List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, group);
+        List<CanvasExclusiveChoice> ecs = orderedCanvasExclusiveChoices(state, chapter);
         for (int i = ecs.size() - 1; i >= 0; i--) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ecs.get(i));
             CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
@@ -314,24 +314,24 @@ public final class CanvasHitTester {
     }
 
     private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String chapter) {
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
+        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
         return images;
     }
 
     private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String chapter) {
-        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         ecs.sort(Comparator.comparingInt(ec -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()))));
         return ecs;
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String chapter) {
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(group, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
+        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of()));
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
         Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
         texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.textKey(text.id()))));
         return texts;

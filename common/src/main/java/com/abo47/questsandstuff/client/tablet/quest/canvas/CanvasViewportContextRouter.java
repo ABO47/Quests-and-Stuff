@@ -117,7 +117,7 @@ final class CanvasViewportContextRouter {
             return false;
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of());
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
         String connectionLayerKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.connectionKey(connectionHit.sourceQuestId(), connectionHit.targetQuestId()));
         int connectionIndex = order.indexOf(connectionLayerKey);
         if (connectionIndex < 0) {

@@ -177,7 +177,7 @@ class SyncServiceHelpersTest {
     }
 
     private static QuestDefinition quest(String id, String chapter) {
-        return quest(id, group, defaultSettings(), List.of());
+        return quest(id, chapter, defaultSettings(), List.of());
     }
 
     private static QuestDefinition quest(String id, String chapter, QuestSettings settings, List<String> description) {
@@ -188,7 +188,7 @@ class SyncServiceHelpersTest {
                         id,
                         "",
                         description,
-                        Map.of(group, ChapterDef.DEFAULT),
+                        Map.of(chapter, ChapterDef.DEFAULT),
                         QuestDisplay.DEFAULT_ICON,
                         QuestDisplay.DEFAULT_ICON_BACKGROUND,
                         QuestDisplay.DEFAULT_COMPLETION_SOUND,

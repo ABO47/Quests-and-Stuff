@@ -263,16 +263,16 @@ public final class TabletLayout {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         List<String> groups = new ArrayList<>();
         for (String chapter : ClientQuestStateFacade.chapterOrder()) {
-            if (DRAFT_CHAPTER.equals(group)) {
+            if (DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
-            if (!state.root.canEdit && ClientQuestStateFacade.chapterHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {
                 continue;
             }
-            if (!SearchFilter.matches(query, group)) {
+            if (!SearchFilter.matches(query, chapter)) {
                 continue;
             }
-            groups.add(group);
+            groups.add(chapter);
         }
         return groups;
     }

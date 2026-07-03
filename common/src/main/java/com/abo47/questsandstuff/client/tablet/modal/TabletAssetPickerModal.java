@@ -503,8 +503,8 @@ public final class TabletAssetPickerModal {
                     EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
                 }
             }
-            if (!group.isBlank()) {
-                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, java.util.List.of())) {
+            if (!chapter.isBlank()) {
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, java.util.List.of())) {
                     for (String connectedId : ec.connectionQuestIds()) {
                         if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
                             EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
@@ -525,13 +525,13 @@ public final class TabletAssetPickerModal {
                 String chapter = parts[1];
                 String prerequisiteId = parts[2];
                 String questId = parts[3];
-                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
-                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
+                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, questId);
                 if (isEc) {
                     EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
                 } else {
                     EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
-                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, group, prerequisiteId, questId, spacing);
+                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, chapter, prerequisiteId, questId, spacing);
                 }
             }
         }

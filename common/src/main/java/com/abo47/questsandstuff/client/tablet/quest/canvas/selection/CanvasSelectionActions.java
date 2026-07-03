@@ -84,11 +84,11 @@ public final class CanvasSelectionActions {
             return false;
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        if (group.isBlank()) {
+        if (chapter.isBlank()) {
             return false;
         }
 
-        SelectionBounds bounds = selectedBounds(state, group);
+        SelectionBounds bounds = selectedBounds(state, chapter);
         if (!bounds.valid()) {
             return false;
         }
@@ -104,7 +104,7 @@ public final class CanvasSelectionActions {
                 continue;
             }
             CompoundTag tag = ClientQuestStateFacade.quest(questId);
-            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
+            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, chapter);
             CanvasPoint aligned = movedQuestPosition(state, card, offset, verticalCenterLine);
             if (aligned.x != card.logicalX() || aligned.y != card.logicalY()) {
                 questPositions.put(questId, aligned);
@@ -113,37 +113,37 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
             CanvasImageLayer aligned = movedImage(state, image, offset, verticalCenterLine);
             if (!aligned.equals(image)) {
-                CanvasLayerMutations.putCanvasImage(state, group, aligned);
+                CanvasLayerMutations.putCanvasImage(state, chapter, aligned);
                 changed = true;
             }
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
             CanvasTextLayer aligned = movedText(state, text, offset, verticalCenterLine);
             if (!aligned.equals(text)) {
-                CanvasLayerMutations.putCanvasText(state, group, aligned);
+                CanvasLayerMutations.putCanvasText(state, chapter, aligned);
                 changed = true;
             }
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }
             CanvasExclusiveChoice aligned = movedExclusiveChoice(state, ec, offset, verticalCenterLine);
             if (!aligned.equals(ec)) {
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, aligned);
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, aligned);
                 changed = true;
             }
         }
@@ -164,12 +164,12 @@ public final class CanvasSelectionActions {
                 continue;
             }
             CompoundTag tag = ClientQuestStateFacade.quest(questId);
-            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
+            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, chapter);
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -178,7 +178,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -187,7 +187,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }

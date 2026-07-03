@@ -48,23 +48,23 @@ final class CanvasSelectionDragController {
             }
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
                 state.canvas.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
             }
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isTextSelected(state, text.id())) {
                 state.canvas.dragStartTextPositions.put(text.id(), new CanvasPoint(text.x(), text.y()));
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.dragStartEcLayers.put(ec.id(), ec);
             }
         }
         CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
-        CanvasSnapEngine.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, group);
+        CanvasSnapEngine.Bounds bounds = CanvasSelectionBounds.currentSelectionBounds(state, elementTransforms, byQuestId, chapter);
         state.canvas.dragStartBoundsLeft = bounds.left();
         state.canvas.dragStartBoundsTop = bounds.top();
         state.canvas.dragStartBoundsRight = bounds.right();
@@ -118,13 +118,13 @@ final class CanvasSelectionDragController {
         state.canvas.transientQuestScales.clear();
         String chapter = TabletStateQueries.selectedChapterName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartImagePositions.entrySet()) {
-            CanvasImageLayer image = elementTransforms.findImage(group, entry.getKey());
+            CanvasImageLayer image = elementTransforms.findImage(chapter, entry.getKey());
             if (image != null) {
                 CanvasLayerMutations.putTransientCanvasImage(state, image.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartTextPositions.entrySet()) {
-            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, entry.getKey());
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, entry.getKey());
             if (text != null) {
                 CanvasLayerMutations.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
@@ -157,7 +157,7 @@ final class CanvasSelectionDragController {
                 state,
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),
                 cards,
-                group,
+                chapter,
                 state.canvas.canvasSelection.questIds(),
                 state.canvas.dragStartImagePositions.keySet(),
                 state.canvas.dragStartTextPositions.keySet(),

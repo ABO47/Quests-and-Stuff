@@ -59,7 +59,7 @@ final class CanvasSelectionRotateController {
         state.canvas.rotateStartImageLayers.putAll(snapshot.images());
         state.canvas.rotateStartTextLayers.putAll(snapshot.texts());
         String chapter = TabletStateQueries.selectedChapterName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.rotateStartEcLayers.put(ec.id(), ec);
                 CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);

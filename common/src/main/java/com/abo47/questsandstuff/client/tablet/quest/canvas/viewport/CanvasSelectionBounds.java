@@ -39,7 +39,7 @@ final class CanvasSelectionBounds {
             maxY = Math.max(maxY, card.logicalY() + card.slotLogicalHeight());
         }
         for (String imageId : state.canvas.dragStartImagePositions.keySet()) {
-            CanvasImageLayer image = elementTransforms.findImage(group, imageId);
+            CanvasImageLayer image = elementTransforms.findImage(chapter, imageId);
             if (image == null) {
                 continue;
             }
@@ -50,7 +50,7 @@ final class CanvasSelectionBounds {
             maxY = Math.max(maxY, bounds.bottom());
         }
         for (String textId : state.canvas.dragStartTextPositions.keySet()) {
-            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
             if (text == null) {
                 continue;
             }

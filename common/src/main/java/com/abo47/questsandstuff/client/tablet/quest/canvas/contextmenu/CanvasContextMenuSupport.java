@@ -159,19 +159,19 @@ public final class CanvasContextMenuSupport {
     }
 
     public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String chapter, String key, boolean front) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return false;
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
         List<QuestCardLayout> cards = canvasViewport.cardCache();
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : cards) {
             byQuestId.put(card.questId(), card);
         }
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, cards, byQuestId, canvasViewport.getSize().width, canvasViewport.getSize().height);
-        List<String> order = CanvasLayerOrdering.normalize(state, group, cards, images, texts, connectionKeys, ecs);
+        List<String> order = CanvasLayerOrdering.normalize(state, chapter, cards, images, texts, connectionKeys, ecs);
         int index = order.indexOf(key);
         if (index < 0 || order.size() <= 1) {
             return false;

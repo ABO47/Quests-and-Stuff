@@ -28,6 +28,6 @@ public final class CanvasOverlayController {
         return CanvasContextMenuController.isContextMenuHit(state, x, y);
     }
     public static java.util.List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
-        return CanvasContextMenuController.selectedConnections(state, group);
+        return CanvasContextMenuController.selectedConnections(state, chapter);
     }
 }

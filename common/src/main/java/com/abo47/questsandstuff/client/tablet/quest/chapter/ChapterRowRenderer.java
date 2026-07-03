@@ -36,44 +36,44 @@ final class ChapterRowRenderer {
     }
 
     static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
-        boolean lockedPreview = ClientQuestStateFacade.chapterLockedPreview(group);
-        boolean selected = group.equals(TabletStateQueries.selectedChapterName(state));
-        String rowLabel = group.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : group;
+        boolean lockedPreview = ClientQuestStateFacade.chapterLockedPreview(chapter);
+        boolean selected = chapter.equals(TabletStateQueries.selectedChapterName(state));
+        String rowLabel = chapter.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : chapter;
         if (collapsed) {
-            addCollapsedChapterRow(chapterList, group, rowLabel, y, layout, selected);
+            addCollapsedChapterRow(chapterList, chapter, rowLabel, y, layout, selected);
             if (lockedPreview) {
                 renderLockedFilter(chapterList, layout.cardX(), collapsedTileY(y), layout.cardW(), COLLAPSED_TILE_SIZE);
             }
-            addCompletionNotice(chapterList, group, collapsedIconX(layout) - 2, collapsedIconY(y) - 5);
-            addChapterSelectionHits(chapterList, state, refresh, group, y, layout, true, layout.cardW());
-            addChapterIconChangeHit(chapterList, state, refresh, group, collapsedIconX(layout), collapsedIconY(y));
+            addCompletionNotice(chapterList, chapter, collapsedIconX(layout) - 2, collapsedIconY(y) - 5);
+            addChapterSelectionHits(chapterList, state, refresh, chapter, y, layout, true, layout.cardW());
+            addChapterIconChangeHit(chapterList, state, refresh, chapter, collapsedIconX(layout), collapsedIconY(y));
             return;
         }
 
-        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(group), TabletColors.SURFACE_PANEL_ALT);
+        int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(chapter), TabletColors.SURFACE_PANEL_ALT);
         int border = selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
 
-        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(group));
+        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter));
         if (bgTexture != null) {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, bgTexture));
         }
         if (selected) {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82))));
         }
-        String chapterIcon = ClientQuestStateFacade.chapterIcon(group);
+        String chapterIcon = ClientQuestStateFacade.chapterIcon(chapter);
         int iconDrawX = layout.iconX();
         if (chapterIcon != null && !chapterIcon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(iconDrawX, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, chapterIcon));
         }
         int textW = Math.max(8, layout.cardW() - 26);
-        addChapterLabel(chapterList, group, rowLabel, y, layout.cardX(), textW);
+        addChapterLabel(chapterList, chapter, rowLabel, y, layout.cardX(), textW);
         if (lockedPreview) {
             renderLockedFilter(chapterList, layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H);
         }
-        addCompletionNotice(chapterList, group, iconDrawX - 2, y + 3);
-        addChapterSelectionHits(chapterList, state, refresh, group, y, layout, collapsed, textW);
-        addChapterIconChangeHit(chapterList, state, refresh, group, iconDrawX, y + 8);
+        addCompletionNotice(chapterList, chapter, iconDrawX - 2, y + 3);
+        addChapterSelectionHits(chapterList, state, refresh, chapter, y, layout, collapsed, textW);
+        addChapterIconChangeHit(chapterList, state, refresh, chapter, iconDrawX, y + 8);
     }
 
     static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout) {
@@ -83,13 +83,13 @@ final class ChapterRowRenderer {
                 y,
                 layout.cardW(),
                 layout.iconX(),
-                ClientQuestStateFacade.chapterIcon(group),
+                ClientQuestStateFacade.chapterIcon(chapter),
                 () -> state.chapterPanel.chapterDraftName,
                 value -> state.chapterPanel.chapterDraftName = ChapterRenameActions.sanitizeInlineTitle(value),
-                value -> ChapterRenameActions.commitRename(player, state, refresh, group, value),
+                value -> ChapterRenameActions.commitRename(player, state, refresh, chapter, value),
                 () -> {
                     state.canvas.pendingChapterRename = "";
-                    state.chapterPanel.chapterDraftName = group;
+                    state.chapterPanel.chapterDraftName = chapter;
                     refresh.run();
                 }
         );
@@ -116,21 +116,21 @@ final class ChapterRowRenderer {
 
     static int addGhostIfVisible(WidgetGroup chapterList, String chapter, int cardX, int y, int cardW, int listH, int rowStep) {
         if (y < listH && y + TabletUiFactory.CHAPTER_CARD_H > 0) {
-            renderChapterGhost(chapterList, group, cardX, y, cardW);
+            renderChapterGhost(chapterList, chapter, cardX, y, cardW);
         }
         return y + rowStep;
     }
 
     private static void addChapterLabel(WidgetGroup chapterList, String chapter, String rowLabel, int y, int cardX, int textW) {
-        int textColor = ClientQuestStateFacade.chapterTextColor(group);
-        String align = ClientQuestStateFacade.chapterTextAlign(group);
-        String textStyle = ClientQuestStateFacade.chapterTextStyle(group);
-        int textSize = ClientQuestStateFacade.chapterTextSize(group);
+        int textColor = ClientQuestStateFacade.chapterTextColor(chapter);
+        String align = ClientQuestStateFacade.chapterTextAlign(chapter);
+        String textStyle = ClientQuestStateFacade.chapterTextStyle(chapter);
+        int textSize = ClientQuestStateFacade.chapterTextSize(chapter);
         chapterList.addWidget(chapterStyledLabel(cardX + 24, chapterTextY(y, textSize), textW, chapterLabelHeight(textSize), rowLabel, textColor, textStyle, textSize, chapterTextType(align)));
     }
 
     private static void addCollapsedChapterRow(WidgetGroup chapterList, String chapter, String rowLabel, int y, ChapterListMetrics.Layout layout, boolean selected) {
-        String chapterIcon = ClientQuestStateFacade.chapterIcon(group);
+        String chapterIcon = ClientQuestStateFacade.chapterIcon(chapter);
         String initial = "";
         if (chapterIcon == null || chapterIcon.isBlank()) {
             initial = rowLabel == null || rowLabel.isBlank() ? "?" : rowLabel.substring(0, 1).toUpperCase();
@@ -148,43 +148,43 @@ final class ChapterRowRenderer {
     private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
         final int rowY = y;
         var menuHit = TabletUiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
-            if (!canOpenChapter(state, group)) {
+            if (!canOpenChapter(state, chapter)) {
                 return;
             }
-            selectChapter(state, group);
-            state.chapterPanel.chapterMenuTarget = group;
+            selectChapter(state, chapter);
+            state.chapterPanel.chapterMenuTarget = chapter;
             state.chapterPanel.chapterMenuX = 8;
             state.chapterPanel.chapterMenuY = Math.max(4, Math.min(rowY, chapterList.getSize().height - 72));
             TabletUiFactory.persistUiState(state);
             refresh.run();
         });
-        menuHit.setHoverTooltips(new Component[]{Component.literal(group)});
+        menuHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
         chapterList.addWidget(menuHit);
         var rowHit = TabletUiFactory.flatHitButton(layout.cardX(), collapsed ? collapsedTileY(y) : y, layout.cardW(), collapsed ? COLLAPSED_TILE_SIZE : TabletUiFactory.CHAPTER_CARD_H, click -> {
-            if (!canOpenChapter(state, group)) {
+            if (!canOpenChapter(state, chapter)) {
                 return;
             }
-            selectChapter(state, group);
+            selectChapter(state, chapter);
             TabletUiFactory.persistUiState(state);
             refresh.run();
         });
-        rowHit.setHoverTooltips(new Component[]{Component.literal(group)});
+        rowHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
         chapterList.addWidget(rowHit);
     }
 
     private static boolean canOpenChapter(TabletUiState state, String chapter) {
-        return state != null && (state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(group));
+        return state != null && (state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(chapter));
     }
 
     private static void selectChapter(TabletUiState state, String chapter) {
-        state.root.selectedChapter = group;
-        state.chapterPanel.chapterDraft = group;
-        state.chapterPanel.chapterDraftName = group;
+        state.root.selectedChapter = chapter;
+        state.chapterPanel.chapterDraft = chapter;
+        state.chapterPanel.chapterDraftName = chapter;
         state.canvas.pendingChapterRename = "";
         state.chapterPanel.chapterTextMenuOpen = false;
         state.chapterPanel.chapterTextMenuTarget = "";
         state.chapterPanel.chapterTextFontSizeFieldTarget = "";
-        ClientQuestStateFacade.clearChapterCompletionNotice(group);
+        ClientQuestStateFacade.clearChapterCompletionNotice(chapter);
     }
 
     private static WidgetGroup chapterStyledLabel(int x, int y, int width, int height, String text, int color, String style, int fontSize, TextTexture.TextType type) {
@@ -212,9 +212,9 @@ final class ChapterRowRenderer {
                 x,
                 y,
                 w,
-                TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(group)),
-                ClientQuestStateFacade.chapterIcon(group),
-                group
+                TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter)),
+                ClientQuestStateFacade.chapterIcon(chapter),
+                chapter
         );
     }
 
@@ -225,7 +225,7 @@ final class ChapterRowRenderer {
     }
 
     private static void addCompletionNotice(WidgetGroup chapterList, String chapter, int x, int y) {
-        if (!ClientQuestStateFacade.chapterHasCompletionNotice(group)) {
+        if (!ClientQuestStateFacade.chapterHasCompletionNotice(chapter)) {
             return;
         }
         chapterList.addWidget(new ChapterCompletionNoticeWidget(x, y, NOTICE_ICON_SIZE, NOTICE_ICON_SIZE));
@@ -280,15 +280,15 @@ final class ChapterRowRenderer {
             return;
         }
         EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {
-            selectChapter(state, group);
+            selectChapter(state, chapter);
             state.chapterPanel.chapterMenuOpen = false;
             state.chapterPanel.chapterDragPending = false;
             state.chapterPanel.chapterDragActive = false;
             state.chapterPanel.chapterDragName = "";
             state.chapterPanel.chapterDragTargetIndex = -1;
-            EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(group));
+            EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(chapter));
             TabletUiFactory.persistUiState(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", group);
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", chapter);
         });
     }
 

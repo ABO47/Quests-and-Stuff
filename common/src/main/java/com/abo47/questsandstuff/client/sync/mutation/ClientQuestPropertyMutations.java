@@ -22,7 +22,7 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void createChapterLocal(String chapter) {
-        ClientChapterMutator.createChapterLocal(group);
+        ClientChapterMutator.createChapterLocal(chapter);
     }
 
     public static void renameChapterLocal(String from, String to) {
@@ -30,47 +30,47 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void deleteChapterLocal(String chapter) {
-        ClientChapterMutator.deleteChapterLocal(group);
+        ClientChapterMutator.deleteChapterLocal(chapter);
     }
 
     public static void moveChapterLocal(String chapter, int offset) {
-        ClientChapterMutator.moveChapterLocal(group, offset);
+        ClientChapterMutator.moveChapterLocal(chapter, offset);
     }
 
     public static void moveChapterToIndexLocal(String chapter, int targetIndex) {
-        ClientChapterMutator.moveChapterToIndexLocal(group, targetIndex);
+        ClientChapterMutator.moveChapterToIndexLocal(chapter, targetIndex);
     }
 
     public static void setChapterIconLocal(String chapter, String icon) {
-        ClientChapterMutator.setChapterIconLocal(group, icon);
+        ClientChapterMutator.setChapterIconLocal(chapter, icon);
     }
 
     public static void setChapterBackgroundLocal(String chapter, String background) {
-        ClientChapterMutator.setChapterBackgroundLocal(group, background);
+        ClientChapterMutator.setChapterBackgroundLocal(chapter, background);
     }
 
     public static void setChapterCanvasBackgroundLocal(String chapter, String background) {
-        ClientChapterMutator.setChapterCanvasBackgroundLocal(group, background);
+        ClientChapterMutator.setChapterCanvasBackgroundLocal(chapter, background);
     }
 
     public static void setChapterTextAlignLocal(String chapter, String align) {
-        ClientChapterMutator.setChapterTextAlignLocal(group, align);
+        ClientChapterMutator.setChapterTextAlignLocal(chapter, align);
     }
 
     public static void setChapterTextColorLocal(String chapter, int color) {
-        ClientChapterMutator.setChapterTextColorLocal(group, color);
+        ClientChapterMutator.setChapterTextColorLocal(chapter, color);
     }
 
     public static void setChapterTextStyleLocal(String chapter, String style) {
-        ClientChapterMutator.setChapterTextStyleLocal(group, style);
+        ClientChapterMutator.setChapterTextStyleLocal(chapter, style);
     }
 
     public static void setChapterTextSizeLocal(String chapter, int size) {
-        ClientChapterMutator.setChapterTextSizeLocal(group, size);
+        ClientChapterMutator.setChapterTextSizeLocal(chapter, size);
     }
 
     public static void setChapterLockUntilUnlockedLocal(String chapter, boolean lockUntilUnlocked) {
-        String normalizedGroup = ClientChapterState.normalizeChapter(group);
+        String normalizedGroup = ClientChapterState.normalizeChapter(chapter);
         if (normalizedGroup.isBlank()) {
             return;
         }
@@ -84,35 +84,35 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void setChapterHideUntilUnlockedLocal(String chapter, boolean hideUntilUnlocked) {
-        ClientChapterMutator.setChapterHideUntilUnlockedLocal(group, hideUntilUnlocked);
+        ClientChapterMutator.setChapterHideUntilUnlockedLocal(chapter, hideUntilUnlocked);
     }
 
     public static void putCanvasImageLocal(String chapter, CanvasImageLayer image) {
-        ClientCanvasMutator.putCanvasImageLocal(group, image);
+        ClientCanvasMutator.putCanvasImageLocal(chapter, image);
     }
 
     public static void removeCanvasImageLocal(String chapter, String imageId) {
-        ClientCanvasMutator.removeCanvasImageLocal(group, imageId);
+        ClientCanvasMutator.removeCanvasImageLocal(chapter, imageId);
     }
 
     public static void putCanvasTextLocal(String chapter, CanvasTextLayer text) {
-        ClientCanvasMutator.putCanvasTextLocal(group, text);
+        ClientCanvasMutator.putCanvasTextLocal(chapter, text);
     }
 
     public static void removeCanvasTextLocal(String chapter, String textId) {
-        ClientCanvasMutator.removeCanvasTextLocal(group, textId);
+        ClientCanvasMutator.removeCanvasTextLocal(chapter, textId);
     }
 
     public static void putCanvasExclusiveChoiceLocal(String chapter, CanvasExclusiveChoice ec) {
-        ClientCanvasMutator.putCanvasExclusiveChoiceLocal(group, ec);
+        ClientCanvasMutator.putCanvasExclusiveChoiceLocal(chapter, ec);
     }
 
     public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
-        ClientCanvasMutator.removeCanvasExclusiveChoiceLocal(group, ecId);
+        ClientCanvasMutator.removeCanvasExclusiveChoiceLocal(chapter, ecId);
     }
 
     public static void setCanvasLayerOrderLocal(String chapter, List<String> order) {
-        ClientCanvasMutator.setCanvasLayerOrderLocal(group, order);
+        ClientCanvasMutator.setCanvasLayerOrderLocal(chapter, order);
     }
 
     public static int completedCount() {
@@ -300,7 +300,7 @@ public final class ClientQuestPropertyMutations {
 
     public static void createEditorQuestLocal(String questId, String chapter, int x, int y, String title) {
         String normalizedQuest = normalizeQuestId(questId);
-        String normalizedGroup = normalizeChapter(group);
+        String normalizedGroup = normalizeChapter(chapter);
         if (normalizedQuest.isBlank() || normalizedGroup.isBlank()) {
             return;
         }
@@ -313,11 +313,11 @@ public final class ClientQuestPropertyMutations {
     }
 
     public static void copyQuestLocal(String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestCopyMutator.copyQuestLocal(sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+        ClientQuestCopyMutator.copyQuestLocal(sourceQuestId, newQuestId, chapter, x, y, scale, copiedIds);
     }
 
     public static void copyQuestSnapshotLocal(CompoundTag sourceSnapshot, String sourceQuestId, String newQuestId, String chapter, int x, int y, float scale, Map<String, String> copiedIds) {
-        ClientQuestCopyMutator.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, group, x, y, scale, copiedIds);
+        ClientQuestCopyMutator.copyQuestSnapshotLocal(sourceSnapshot, sourceQuestId, newQuestId, chapter, x, y, scale, copiedIds);
     }
 
     public static void remapCopiedQuestPrerequisitesLocal(Map<String, String> copiedIds, Map<String, CompoundTag> snapshots) {
@@ -344,7 +344,7 @@ public final class ClientQuestPropertyMutations {
                     changed = true;
                 }
                 if (changed) {
-                    ClientCanvasLayerState.putExclusiveChoice(group, ec);
+                    ClientCanvasLayerState.putExclusiveChoice(chapter, ec);
                 }
             }
         }

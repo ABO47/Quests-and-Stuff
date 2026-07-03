@@ -32,14 +32,14 @@ public final class CanvasEntityPickerLauncher {
     public static boolean run(Player player, TabletUiState state, ModalTargetParser.Target target, String pickedItem) {
         String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(pickedItem);
         EntityTarget parsed = entityTarget(target);
-        if (parsed.group().isBlank() || entityId.isBlank()) {
+        if (parsed.chapter().isBlank() || entityId.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity pick ignored target={} item={} entity={}", target.raw(), pickedItem, entityId);
             return false;
         }
         if ("change".equals(parsed.action()) || "change_batch".equals(parsed.action())) {
             return changeEntity(state, pickedItem, entityId, parsed);
         }
-        addEntity(state, entityId, parsed.group());
+        addEntity(state, entityId, parsed.chapter());
         return true;
     }
 
@@ -51,15 +51,15 @@ public final class CanvasEntityPickerLauncher {
             targets.add(parsed.imageId());
         }
         String entityAsset = EntityPreviewRenderer.entityAsset(entityId);
-        String chapter = parsed.group();
+        String chapter = parsed.chapter();
         for (String imageId : targets) {
             if (imageId.isBlank()) continue;
-            CanvasImageLayer img = CanvasLayerMutations.findCanvasImage(state, group, imageId);
+            CanvasImageLayer img = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
             if (img == null) {
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity change skipped chapter={} image={} reason=missing", group, imageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity change skipped chapter={} image={} reason=missing", chapter, imageId);
                 continue;
             }
-            CanvasLayerMutations.putCanvasImage(state, group, img.withAsset(entityAsset));
+            CanvasLayerMutations.putCanvasImage(state, chapter, img.withAsset(entityAsset));
         }
         if (!targets.isEmpty()) {
             String firstId = targets.iterator().next();
@@ -72,12 +72,12 @@ public final class CanvasEntityPickerLauncher {
         }
         ContextMenuController.close(state);
         ContextMenuController.clearDeleteConfirm(state);
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed chapter={} images={} entity={}", group, targets.size(), entityId);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity changed chapter={} images={} entity={}", chapter, targets.size(), entityId);
         return !targets.isEmpty();
     }
 
     private static void addEntity(TabletUiState state, String entityId, String chapter) {
-        String id = StableIdAllocator.nextId("ent", canvasImageIds(state, group));
+        String id = StableIdAllocator.nextId("ent", canvasImageIds(state, chapter));
         int size = Math.max(48, CanvasGeometry.gridSize(state) * 4);
         int x = state.canvas.canvasImageLogicalX - size / 2;
         int y = state.canvas.canvasImageLogicalY - size / 2;
@@ -90,7 +90,7 @@ public final class CanvasEntityPickerLauncher {
         if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasLayerMutations.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, chapter, image);
         state.canvas.canvasSelection.setPrimaryImageId(id);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.setPrimaryTextId("");
@@ -102,12 +102,12 @@ public final class CanvasEntityPickerLauncher {
         state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
         ContextMenuController.close(state);
         ContextMenuController.clearDeleteConfirm(state);
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity added chapter={} id={} entity={} pos={},{} size={}x{}", group, id, entityId, clamped.x, clamped.y, size, size);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity added chapter={} id={} entity={} pos={},{} size={}x{}", chapter, id, entityId, clamped.x, clamped.y, size, size);
     }
 
     private static List<String> canvasImageIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());
         }
         return ids;

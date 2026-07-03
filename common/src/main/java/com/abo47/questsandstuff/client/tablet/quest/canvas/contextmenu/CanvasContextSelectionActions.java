@@ -327,10 +327,10 @@ final class CanvasContextSelectionActions {
         for (var connection : connections) {
             String prereq = connection.prerequisiteId();
             String quest = connection.questId();
-            boolean isEc = ConnectionRenderer.isEcId(state, group, prereq) || ConnectionRenderer.isEcId(state, group, quest);
+            boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq) || ConnectionRenderer.isEcId(state, chapter, quest);
             String texture = isEc
-                    ? ConnectionRenderer.ecConnectionTexture(state, group, prereq, quest)
-                    : ConnectionRenderer.connectionTexture(state, group, prereq, quest);
+                    ? ConnectionRenderer.ecConnectionTexture(state, chapter, prereq, quest)
+                    : ConnectionRenderer.connectionTexture(state, chapter, prereq, quest);
             if (!texture.isBlank()) return true;
         }
         return false;

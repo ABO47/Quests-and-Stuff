@@ -174,7 +174,7 @@ final class CanvasContextCanvasActions {
         int startCenterX = state.canvas.canvasImageLogicalX;
         int startCenterY = state.canvas.canvasImageLogicalY;
         List<String> existingIds = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             existingIds.add(image.id());
         }
         for (int i = 0; i < eggs.size(); i++) {
@@ -193,15 +193,15 @@ final class CanvasContextCanvasActions {
             }
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, image.x(), image.y(), image.w(), image.h());
             image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, image.w(), image.h(), 0, 205, 1);
-            CanvasLayerMutations.putCanvasImage(state, group, image);
+            CanvasLayerMutations.putCanvasImage(state, chapter, image);
         }
         canvasViewport.refresh();
-        QuestsAndStuffMod.debugLog("[QnS:UI] debug spawned {} entities chapter={}", eggs.size(), group);
+        QuestsAndStuffMod.debugLog("[QnS:UI] debug spawned {} entities chapter={}", eggs.size(), chapter);
     }
 
     private static List<String> canvasExclusiveChoiceIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(ec.id());
         }
         return ids;
@@ -209,7 +209,7 @@ final class CanvasContextCanvasActions {
 
     private static List<String> canvasTextIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             ids.add(text.id());
         }
         return ids;

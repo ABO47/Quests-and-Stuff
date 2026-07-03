@@ -37,13 +37,13 @@ public final class ClientEditorMutationApplier {
         CompoundTag groups = questTag.getCompound(SyncKeys.Quest.CHAPTERS);
         for (String rawGroup : groups.getAllKeys()) {
             String chapter = ClientChapterState.normalizeChapter(rawGroup);
-            if (group.isBlank()) {
+            if (chapter.isBlank()) {
                 continue;
             }
-            boolean missing = !ClientChapterState.containsChapter(group);
-            ClientQuestMutator.createChapterLocal(group);
-            if (missing && ClientChapterState.containsChapter(group)) {
-                QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} chapter={}", action, questId, group);
+            boolean missing = !ClientChapterState.containsChapter(chapter);
+            ClientQuestMutator.createChapterLocal(chapter);
+            if (missing && ClientChapterState.containsChapter(chapter)) {
+                QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} chapter={}", action, questId, chapter);
             }
         }
     }

@@ -19,7 +19,7 @@ public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(group == null ? "" : group);
+        buf.writeUtf(chapter == null ? "" : chapter);
         buf.writeUtf(questId == null ? "" : questId);
         buf.writeVarInt(x);
         buf.writeVarInt(y);
@@ -29,7 +29,7 @@ public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int
     public void handle(ModPacketContext context) {
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
-            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server).addQuest(player, group, questId, x, y, title));
+            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server).addQuest(player, chapter, questId, x, y, title));
         }
     }
 }

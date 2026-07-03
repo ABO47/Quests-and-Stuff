@@ -75,10 +75,10 @@ final class ChapterListRenderer {
                 continue;
             }
 
-            if (!state.canvas.pendingChapterRename.equals(group)) {
-                ChapterRowRenderer.addChapterRow(list, state, refresh, group, y, layout, collapsed);
+            if (!state.canvas.pendingChapterRename.equals(chapter)) {
+                ChapterRowRenderer.addChapterRow(list, state, refresh, chapter, y, layout, collapsed);
             } else {
-                ChapterRowRenderer.addRenameRow(list, state, player, refresh, group, y, layout);
+                ChapterRowRenderer.addRenameRow(list, state, player, refresh, chapter, y, layout);
             }
             y += rowStep;
         }

@@ -21,9 +21,9 @@ final class ChapterMetadataWriter {
             Set<Path> expected = new HashSet<>();
             for (int i = 0; i < state.chapterOrder.size(); i++) {
                 String chapter = state.chapterOrder.get(i);
-                Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(group) + ".json");
+                Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(chapter) + ".json");
                 expected.add(target.toAbsolutePath().normalize());
-                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, group, i)));
+                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, chapter, i)));
             }
             for (Path path : ChapterMetadataFiles.deleteStaleJsonFiles(chaptersDir, expected)) {
                 QuestsAndStuffMod.debugLog("[QnS:Store] deleted stale chapter metadata {}", path.getFileName());
@@ -40,15 +40,15 @@ final class ChapterMetadataWriter {
         try {
             Files.createDirectories(chaptersDir);
             for (String chapter : groups) {
-                if (group == null || group.isBlank()) {
+                if (chapter == null || chapter.isBlank()) {
                     continue;
                 }
-                int order = state.chapterOrder.indexOf(group);
+                int order = state.chapterOrder.indexOf(chapter);
                 if (order < 0) {
                     continue;
                 }
-                Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(group) + ".json");
-                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, group, order)));
+                Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(chapter) + ".json");
+                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, chapter, order)));
             }
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed to persist chapter metadata {}", chaptersDir, e);
@@ -58,21 +58,21 @@ final class ChapterMetadataWriter {
     private static JsonObject chapterJson(ChapterMetadataState state, String chapter, int order) {
         JsonObject json = new JsonObject();
         json.addProperty("schema_version", ChapterMetadataMigrator.CURRENT_SCHEMA);
-        json.addProperty("name", group);
+        json.addProperty("name", chapter);
         json.addProperty("order", order);
-        json.addProperty("icon", state.chapterIcon(group));
-        json.addProperty("background", state.chapterBackground(group));
-        json.addProperty("canvas_background", state.chapterCanvasBackground(group));
-        json.addProperty("text_align", state.chapterTextAlign(group));
-        json.addProperty("text_color", state.chapterTextColor(group));
-        json.addProperty("text_style", state.chapterTextStyle(group));
-        json.addProperty("text_size", state.chapterTextSize(group));
-        json.addProperty("lock_until_unlocked", state.chapterLockUntilUnlocked(group));
-        json.addProperty("hide_until_unlocked", state.chapterHideUntilUnlocked(group));
-        json.add("canvas_exclusive_choices", ChapterMetadataJsonCodec.writeCanvasExclusiveChoices(state.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())));
-        json.add("canvas_images", ChapterMetadataJsonCodec.writeCanvasImages(state.canvasImagesByChapter.getOrDefault(group, List.of())));
-        json.add("canvas_texts", ChapterMetadataJsonCodec.writeCanvasTexts(state.canvasTextsByChapter.getOrDefault(group, List.of())));
-        json.add("canvas_layer_order", ChapterMetadataJsonCodec.writeStringArray(state.canvasLayerOrderByChapter.getOrDefault(group, List.of())));
+        json.addProperty("icon", state.chapterIcon(chapter));
+        json.addProperty("background", state.chapterBackground(chapter));
+        json.addProperty("canvas_background", state.chapterCanvasBackground(chapter));
+        json.addProperty("text_align", state.chapterTextAlign(chapter));
+        json.addProperty("text_color", state.chapterTextColor(chapter));
+        json.addProperty("text_style", state.chapterTextStyle(chapter));
+        json.addProperty("text_size", state.chapterTextSize(chapter));
+        json.addProperty("lock_until_unlocked", state.chapterLockUntilUnlocked(chapter));
+        json.addProperty("hide_until_unlocked", state.chapterHideUntilUnlocked(chapter));
+        json.add("canvas_exclusive_choices", ChapterMetadataJsonCodec.writeCanvasExclusiveChoices(state.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())));
+        json.add("canvas_images", ChapterMetadataJsonCodec.writeCanvasImages(state.canvasImagesByChapter.getOrDefault(chapter, List.of())));
+        json.add("canvas_texts", ChapterMetadataJsonCodec.writeCanvasTexts(state.canvasTextsByChapter.getOrDefault(chapter, List.of())));
+        json.add("canvas_layer_order", ChapterMetadataJsonCodec.writeStringArray(state.canvasLayerOrderByChapter.getOrDefault(chapter, List.of())));
         return json;
     }
 }

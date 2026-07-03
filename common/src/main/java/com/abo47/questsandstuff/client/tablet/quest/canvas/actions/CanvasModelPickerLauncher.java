@@ -37,14 +37,14 @@ public final class CanvasModelPickerLauncher {
         }
         String asset = assetForPick(parsed, pickedValue);
         String chapter = parsed.part(1);
-        if (group.isBlank() || asset.isBlank()) {
+        if (chapter.isBlank() || asset.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas model pick ignored target={} value={} asset={}", parsed.raw(), pickedValue, asset);
             return false;
         }
         if (parsed.isCanvasItemChange() || parsed.isCanvasBlockChange()) {
             return changeModel(state, parsed, asset);
         }
-        addModel(state, parsed, group, asset);
+        addModel(state, parsed, chapter, asset);
         return true;
     }
 
@@ -61,19 +61,19 @@ public final class CanvasModelPickerLauncher {
     private static boolean changeModel(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
         String chapter = parsed.part(1);
         String imageId = parsed.part(2);
-        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, group, imageId);
+        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
         if (current == null) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas model change ignored chapter={} image={} reason=missing_image", group, imageId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas model change ignored chapter={} image={} reason=missing_image", chapter, imageId);
             return false;
         }
-        CanvasLayerMutations.putCanvasImage(state, group, current.withAsset(asset));
+        CanvasLayerMutations.putCanvasImage(state, chapter, current.withAsset(asset));
         selectOnlyImage(state, current.id());
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas model changed chapter={} image={} asset={}", group, current.id(), asset);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas model changed chapter={} image={} asset={}", chapter, current.id(), asset);
         return true;
     }
 
     private static void addModel(TabletUiState state, ModalTargetParser.Target parsed, String chapter, String asset) {
-        String id = StableIdAllocator.nextId(parsed.isCanvasBlockNew() ? "blk" : "itm", canvasImageIds(state, group));
+        String id = StableIdAllocator.nextId(parsed.isCanvasBlockNew() ? "blk" : "itm", canvasImageIds(state, chapter));
         int size = Math.max(MIN_MODEL_SIZE, CanvasGeometry.gridSize(state) * 3);
         int x = state.canvas.canvasImageLogicalX - size / 2;
         int y = state.canvas.canvasImageLogicalY - size / 2;
@@ -88,13 +88,13 @@ public final class CanvasModelPickerLauncher {
         if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasLayerMutations.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, chapter, image);
         selectOnlyImage(state, id);
         state.canvas.draggingCanvasImage = false;
         state.canvas.resizingCanvasImage = false;
         state.canvas.rotatingCanvasImage = false;
         state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas model added chapter={} id={} asset={} pos={},{} size={}x{}", group, id, asset, clamped.x, clamped.y, size, size);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas model added chapter={} id={} asset={} pos={},{} size={}x{}", chapter, id, asset, clamped.x, clamped.y, size, size);
     }
 
     private static void selectOnlyImage(TabletUiState state, String id) {
@@ -110,7 +110,7 @@ public final class CanvasModelPickerLauncher {
 
     private static List<String> canvasImageIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());
         }
         return ids;

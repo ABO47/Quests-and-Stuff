@@ -91,12 +91,12 @@ public final class TabletActiveState {
             return;
         }
         String chapter = payload == null ? "" : payload.getString("chapter").trim();
-        if (!group.isBlank()) {
-            ClientQuestStateFacade.createChapterLocal(group);
-            activeTabletState.root.selectedChapter = group;
-            activeTabletState.chapterPanel.chapterDraft = group;
-            activeTabletState.chapterPanel.chapterDraftName = group;
-            activeTabletState.chapterPanel.recentlyCreatedChapters.remove(group);
+        if (!chapter.isBlank()) {
+            ClientQuestStateFacade.createChapterLocal(chapter);
+            activeTabletState.root.selectedChapter = chapter;
+            activeTabletState.chapterPanel.chapterDraft = chapter;
+            activeTabletState.chapterPanel.chapterDraftName = chapter;
+            activeTabletState.chapterPanel.recentlyCreatedChapters.remove(chapter);
             TabletPersistence.persistUiState(activeTabletState);
         }
         activeTabletState.canvas.canvasSelection.questIds().clear();
@@ -141,7 +141,7 @@ public final class TabletActiveState {
             for (String oldId : allocatedIds.getAllKeys()) {
                 oldToNew.put(oldId, allocatedIds.getString(oldId));
             }
-            List<CanvasExclusiveChoice> existingEcs = activeTabletState.canvas.canvasExclusiveChoicesByChapter.get(group);
+            List<CanvasExclusiveChoice> existingEcs = activeTabletState.canvas.canvasExclusiveChoicesByChapter.get(chapter);
             List<CanvasExclusiveChoice> updatedEcs = new ArrayList<>();
             boolean anyUpdated = false;
             if (existingEcs != null) {
@@ -166,7 +166,7 @@ public final class TabletActiveState {
                 }
             }
             if (anyUpdated) {
-                activeTabletState.canvas.canvasExclusiveChoicesByChapter.put(group, updatedEcs);
+                activeTabletState.canvas.canvasExclusiveChoicesByChapter.put(chapter, updatedEcs);
             }
             activeTabletState.canvas.canvasSelection.ecIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedEcIds());
             String pendingEc = activeTabletState.clipboard.canvasClipboard.lastPendingPastedEcId();

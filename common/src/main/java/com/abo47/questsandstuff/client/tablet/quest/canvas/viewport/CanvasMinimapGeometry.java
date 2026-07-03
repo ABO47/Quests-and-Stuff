@@ -59,8 +59,8 @@ public final class CanvasMinimapGeometry {
             maxY = Math.max(maxY, card.logicalBottom());
         }
 
-        if (group != null && !group.isBlank()) {
-            for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        if (chapter != null && !chapter.isBlank()) {
+            for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
                 minX = Math.min(minX, ec.x());
                 minY = Math.min(minY, ec.y());
                 maxX = Math.max(maxX, ec.x() + ec.w());

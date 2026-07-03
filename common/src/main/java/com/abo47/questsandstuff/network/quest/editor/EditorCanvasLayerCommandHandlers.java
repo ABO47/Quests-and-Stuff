@@ -58,7 +58,7 @@ final class EditorCanvasLayerCommandHandlers {
         if (sourceId.isBlank() || targetId.isBlank()) {
             return;
         }
-        editor.ecConnectionHidden(player, group, sourceId, targetId, hidden);
+        editor.ecConnectionHidden(player, chapter, sourceId, targetId, hidden);
     }
 
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {

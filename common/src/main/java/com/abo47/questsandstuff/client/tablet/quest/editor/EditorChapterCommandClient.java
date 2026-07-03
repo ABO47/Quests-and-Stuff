@@ -128,7 +128,7 @@ public final class EditorChapterCommandClient {
 
     public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
         String op = action == null ? "" : action;
-        String from = sanitizeChapterName(group);
+        String from = sanitizeChapterName(chapter);
         String rawValue = value == null ? "" : value.trim();
         String to = switch (op) {
             case "create", "rename" -> sanitizeChapterName(value);
@@ -159,7 +159,7 @@ public final class EditorChapterCommandClient {
         IntegratedServerActions.run(
                 player,
                 integratedServerGroupAction(state, op, from, to, offset),
-                () -> EditorPreviewDeduplicator.dispatch("group:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
+                () -> EditorPreviewDeduplicator.dispatch("chapter:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
     }
 
     private static IntegratedServerActions.LocalAction integratedServerGroupAction(TabletUiState state, String op, String from, String to, int offset) {

@@ -23,7 +23,7 @@ public final class CanvasCameraController {
     }
 
     public static void afterCanvasLayout(TabletUiState state, String chapter) {
-        String normalizedGroup = normalizeChapter(group);
+        String normalizedGroup = normalizeChapter(chapter);
         state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         state.canvas.canvasLivePanX = 0;
         state.canvas.canvasLivePanY = 0;
@@ -50,11 +50,11 @@ public final class CanvasCameraController {
             return;
         }
         String chapter = normalizeChapter(state.canvas.canvasCameraGroup);
-        if (group.isBlank()) {
+        if (chapter.isBlank()) {
             return;
         }
-        state.canvas.canvasCameraCentersByGroup.put(group, currentCenter(state));
-        state.canvas.canvasCameraZoomsByGroup.put(group, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
+        state.canvas.canvasCameraCentersByGroup.put(chapter, currentCenter(state));
+        state.canvas.canvasCameraZoomsByGroup.put(chapter, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
     }
 
     public static CanvasPoint previewPanDelta(TabletUiState state, int requestedLivePanX, int requestedLivePanY) {
@@ -180,7 +180,7 @@ public final class CanvasCameraController {
     public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String chapter) {
         String questId = QuestIdentity.questId(state.canvas.pendingCameraQuestId);
         String pendingGroup = normalizeChapter(state.canvas.pendingCameraGroup);
-        String selectedChapter = normalizeChapter(group);
+        String selectedChapter = normalizeChapter(chapter);
         if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedChapter))) {
             return false;
         }
@@ -251,6 +251,6 @@ public final class CanvasCameraController {
     }
 
     private static String normalizeChapter(String chapter) {
-        return QuestIdentity.chapterName(group);
+        return QuestIdentity.chapterName(chapter);
     }
 }

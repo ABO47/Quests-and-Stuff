@@ -190,10 +190,10 @@ public final class EditorQuestCommandClient {
 
     public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
-        if (group.isBlank()) {
+        if (chapter.isBlank()) {
             return;
         }
-        int[] position = findNearestFreeCell(state, group, logicalX, logicalY);
+        int[] position = findNearestFreeCell(state, chapter, logicalX, logicalY);
         logicalX = position[0];
         logicalY = position[1];
         String predictedId = predictNextQuestId(state);
@@ -203,10 +203,10 @@ public final class EditorQuestCommandClient {
         int targetY = logicalY;
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).addQuest(serverPlayer, group, predictedId, targetX, targetY, normalizedTitle),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).addQuest(serverPlayer, chapter, predictedId, targetX, targetY, normalizedTitle),
                 () -> {
-                    ClientQuestStateFacade.createEditorQuestLocal(predictedId, group, targetX, targetY, normalizedTitle);
-                    ModNetwork.sendToServer(new C2SEditorAddQuestPacket(group, predictedId, targetX, targetY, normalizedTitle));
+                    ClientQuestStateFacade.createEditorQuestLocal(predictedId, chapter, targetX, targetY, normalizedTitle);
+                    ModNetwork.sendToServer(new C2SEditorAddQuestPacket(chapter, predictedId, targetX, targetY, normalizedTitle));
                 });
 
         state.canvas.canvasSelection.questIds().clear();
@@ -391,24 +391,24 @@ public final class EditorQuestCommandClient {
         int step = CanvasGeometry.gridSize(state);
         int x = TabletUiFactory.snapToGrid(state, startX);
         int y = TabletUiFactory.snapToGrid(state, startY);
-        if (!isOccupied(group, x, y)) {
+        if (!isOccupied(chapter, x, y)) {
             return new int[]{x, y};
         }
         for (int i = 1; i <= 64; i++) {
             int right = x + i * step;
-            if (!isOccupied(group, right, y)) {
+            if (!isOccupied(chapter, right, y)) {
                 return new int[]{right, y};
             }
             int down = y + i * step;
-            if (!isOccupied(group, x, down)) {
+            if (!isOccupied(chapter, x, down)) {
                 return new int[]{x, down};
             }
             int left = x - i * step;
-            if (!isOccupied(group, left, y)) {
+            if (!isOccupied(chapter, left, y)) {
                 return new int[]{left, y};
             }
             int up = y - i * step;
-            if (!isOccupied(group, x, up)) {
+            if (!isOccupied(chapter, x, up)) {
                 return new int[]{x, up};
             }
         }
@@ -419,10 +419,10 @@ public final class EditorQuestCommandClient {
         for (var entry : ClientQuestStateFacade.questEntries()) {
             CompoundTag quest = entry.getValue();
             CompoundTag groups = quest.getCompound("chapters");
-            if (!groups.contains(group)) {
+            if (!groups.contains(chapter)) {
                 continue;
             }
-            CompoundTag view = groups.getCompound(group);
+            CompoundTag view = groups.getCompound(chapter);
             if (view.getInt("x") == x && view.getInt("y") == y) {
                 return true;
             }

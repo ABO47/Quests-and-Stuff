@@ -196,16 +196,16 @@ final class CanvasViewportInputController {
 
         if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
-            CanvasLayerMutations.persistCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
+            CanvasLayerMutations.commitTransientCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
+            CanvasLayerMutations.persistCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
         if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
-            CanvasLayerMutations.persistCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
+            CanvasLayerMutations.commitTransientCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
+            CanvasLayerMutations.persistCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
@@ -213,8 +213,8 @@ final class CanvasViewportInputController {
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
@@ -232,16 +232,16 @@ final class CanvasViewportInputController {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, chapter);
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-                CanvasLayerMutations.persistCanvasImage(state, group, imageId);
+                CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
             }
             for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-                CanvasLayerMutations.persistCanvasText(state, group, textId);
+                CanvasLayerMutations.persistCanvasText(state, chapter, textId);
             }
             int movedEcs = state.canvas.transientCanvasExclusiveChoices.size();
             for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
             }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} ecs={} delta={},{}",
@@ -297,13 +297,13 @@ final class CanvasViewportInputController {
     private static void persistSelectedCanvasLayers(TabletUiState state) {
         String chapter = TabletStateQueries.selectedChapterName(state);
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-            CanvasLayerMutations.persistCanvasImage(state, group, imageId);
+            CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
         }
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-            CanvasLayerMutations.persistCanvasText(state, group, textId);
+            CanvasLayerMutations.persistCanvasText(state, chapter, textId);
         }
         for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
         }
     }
 

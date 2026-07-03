@@ -191,22 +191,22 @@ public final class TabletUiStatePersistence {
         }
         JsonObject cameras = root.getAsJsonObject("canvas_cameras");
         for (String chapter : cameras.keySet()) {
-            if (group == null || group.isBlank()) {
+            if (chapter == null || chapter.isBlank()) {
                 continue;
             }
             try {
-                JsonObject camera = cameras.getAsJsonObject(group);
+                JsonObject camera = cameras.getAsJsonObject(chapter);
                 double centerX = camera.has("center_x") ? camera.get("center_x").getAsDouble() : 0.0D;
                 double centerY = camera.has("center_y") ? camera.get("center_y").getAsDouble() : 0.0D;
                 float zoom = camera.has("zoom") ? camera.get("zoom").getAsFloat() : state.canvas.canvasZoom;
                 if (Double.isFinite(centerX) && Double.isFinite(centerY) && Float.isFinite(zoom)) {
-                    state.canvas.canvasCameraCentersByGroup.put(group, new com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint(centerX, centerY));
-                    state.canvas.canvasCameraZoomsByGroup.put(group, Math.max(0.5f, Math.min(3.0f, zoom)));
+                    state.canvas.canvasCameraCentersByGroup.put(chapter, new com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint(centerX, centerY));
+                    state.canvas.canvasCameraZoomsByGroup.put(chapter, Math.max(0.5f, Math.min(3.0f, zoom)));
                 }
             } catch (RuntimeException exception) {
                 QuestsAndStuffMod.LOGGER.warn(
-                        "[QnS:UI] Invalid persisted canvas camera group={} file={}",
-                        group,
+                        "[QnS:UI] Invalid persisted canvas camera chapter={} file={}",
+                        chapter,
                         UI_STATE_FILE,
                         exception
                 );
@@ -231,18 +231,18 @@ public final class TabletUiStatePersistence {
             return cameras;
         }
         for (String chapter : state.canvas.canvasCameraCentersByGroup.keySet()) {
-            if (group == null || group.isBlank()) {
+            if (chapter == null || chapter.isBlank()) {
                 continue;
             }
-            com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint center = state.canvas.canvasCameraCentersByGroup.get(group);
+            com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint center = state.canvas.canvasCameraCentersByGroup.get(chapter);
             if (center == null || !Double.isFinite(center.x()) || !Double.isFinite(center.y())) {
                 continue;
             }
             JsonObject camera = new JsonObject();
             camera.addProperty("center_x", center.x());
             camera.addProperty("center_y", center.y());
-            camera.addProperty("zoom", Math.max(0.5f, Math.min(3.0f, state.canvas.canvasCameraZoomsByGroup.getOrDefault(group, state.canvas.canvasZoom))));
-            cameras.add(group, camera);
+            camera.addProperty("zoom", Math.max(0.5f, Math.min(3.0f, state.canvas.canvasCameraZoomsByGroup.getOrDefault(chapter, state.canvas.canvasZoom))));
+            cameras.add(chapter, camera);
         }
         return cameras;
     }

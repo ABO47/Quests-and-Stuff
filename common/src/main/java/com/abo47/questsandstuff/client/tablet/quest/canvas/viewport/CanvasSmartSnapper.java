@@ -39,7 +39,7 @@ final class CanvasSmartSnapper {
             Set<String> movingImageIds,
             Set<String> movingTextIds
     ) {
-        return snap(state, moving, cards, group, movingQuestIds, movingImageIds, movingTextIds, Set.of());
+        return snap(state, moving, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, Set.of());
     }
 
     static CanvasSnapEngine.SnapResult snap(
@@ -60,7 +60,7 @@ final class CanvasSmartSnapper {
 
         CanvasSnapEngine.SnapResult result = CanvasSnapEngine.snap(new CanvasSnapEngine.SnapContext(
                 moving,
-                snapTargets(state, cards, group, movingQuestIds, movingImageIds, movingTextIds, movingEcIds),
+                snapTargets(state, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, movingEcIds),
                 new CanvasSnapEngine.SnapSettings(
                         state.canvas.centerSnapXEnabled,
                         state.canvas.centerSnapYEnabled,
@@ -92,17 +92,17 @@ final class CanvasSmartSnapper {
                 targets.add(CanvasSnapBounds.forQuestCard(card));
             }
         }
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!movingImageIds.contains(image.id())) {
                 targets.add(CanvasSnapBounds.forImage(image));
             }
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!movingTextIds.contains(text.id())) {
                 targets.add(CanvasSnapBounds.forText(text));
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!movingEcIds.contains(ec.id())) {
                 targets.add(CanvasSnapBounds.forExclusiveChoice(ec));
             }

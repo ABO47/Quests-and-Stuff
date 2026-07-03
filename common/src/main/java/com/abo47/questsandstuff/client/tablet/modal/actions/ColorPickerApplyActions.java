@@ -73,40 +73,40 @@ public final class ColorPickerApplyActions {
             String chapter = connection[0];
             String sourceId = connection[1];
             String targetId = connection[2];
-            boolean isEc = ConnectionRenderer.isEcId(state, group, sourceId)
-                    || ConnectionRenderer.isEcId(state, group, targetId);
+            boolean isEc = ConnectionRenderer.isEcId(state, chapter, sourceId)
+                    || ConnectionRenderer.isEcId(state, chapter, targetId);
             if (isEc) {
                 EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
             } else {
-                ConnectionRenderer.setConnectionColor(state, group, sourceId, targetId, color);
+                ConnectionRenderer.setConnectionColor(state, chapter, sourceId, targetId, color);
                 EditorCanvasCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
             }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked chapter={} source={} target={} color={}", group, sourceId, targetId, color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked chapter={} source={} target={} color={}", chapter, sourceId, targetId, color);
             return;
         }
         String connectionSelection = connectionSelectionColorTarget(target);
         if (connectionSelection != null) {
             String chapter = connectionSelection;
             int applied = 0;
-            for (var connectionRef : CanvasOverlayController.selectedConnections(state, group)) {
+            for (var connectionRef : CanvasOverlayController.selectedConnections(state, chapter)) {
                 String prereq = connectionRef.prerequisiteId();
                 String quest = connectionRef.questId();
-                boolean isEc = ConnectionRenderer.isEcId(state, group, prereq)
-                        || ConnectionRenderer.isEcId(state, group, quest);
+                boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq)
+                        || ConnectionRenderer.isEcId(state, chapter, quest);
                 if (isEc) {
-                    String ecId = ConnectionRenderer.isEcId(state, group, prereq) ? prereq : quest;
-                    String questId = ConnectionRenderer.isEcId(state, group, prereq) ? quest : prereq;
-                    ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color);
+                    String ecId = ConnectionRenderer.isEcId(state, chapter, prereq) ? prereq : quest;
+                    String questId = ConnectionRenderer.isEcId(state, chapter, prereq) ? quest : prereq;
+                    ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color);
                     EditorCanvasCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
                 } else {
-                    ConnectionRenderer.setConnectionColor(state, group, prereq, quest, color);
+                    ConnectionRenderer.setConnectionColor(state, chapter, prereq, quest, color);
                     EditorCanvasCommandClient.runConnectionColorAction(player, quest, prereq, color);
                 }
                 applied++;
             }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked chapter={} connections={} color={}", group, applied, color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked chapter={} connections={} color={}", chapter, applied, color);
             return;
         }
         String[] canvasText = canvasTextColorTarget(target);

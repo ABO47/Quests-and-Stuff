@@ -257,16 +257,16 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
         for (String chapter : ClientQuestStateFacade.chapterOrder()) {
-            if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+            if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
-            if (!state.root.canEdit && ClientQuestStateFacade.chapterHiddenPreview(group)) {
+            if (!state.root.canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {
                 continue;
             }
-            if (!SearchFilter.matches(query, group)) {
+            if (!SearchFilter.matches(query, chapter)) {
                 continue;
             }
-            visible.add(group);
+            visible.add(chapter);
         }
         return visible;
     }
@@ -304,25 +304,25 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     }
 
     private void selectChapterDirect(String chapter) {
-        if (group == null || group.isBlank()) {
+        if (chapter == null || chapter.isBlank()) {
             return;
         }
-        if (!canOpenChapter(group)) {
+        if (!canOpenChapter(chapter)) {
             return;
         }
-        state.root.selectedChapter = group;
-        state.chapterPanel.chapterDraft = group;
-        state.chapterPanel.chapterDraftName = group;
+        state.root.selectedChapter = chapter;
+        state.chapterPanel.chapterDraft = chapter;
+        state.chapterPanel.chapterDraftName = chapter;
         state.canvas.pendingChapterRename = "";
         state.chapterPanel.chapterTextMenuOpen = false;
         state.chapterPanel.chapterTextMenuTarget = "";
         state.chapterPanel.chapterTextFontSizeFieldTarget = "";
         state.chapterPanel.chapterSelectionJustChanged = true;
-        ClientQuestStateFacade.clearChapterCompletionNotice(group);
+        ClientQuestStateFacade.clearChapterCompletionNotice(chapter);
         persistUiState(state);
     }
 
     private boolean canOpenChapter(String chapter) {
-        return state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(group);
+        return state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(chapter);
     }
 }

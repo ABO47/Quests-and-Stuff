@@ -97,7 +97,7 @@ final class TabletAssets {
         TabletUiPerfProfiler.profile("ui.prewarm.chapterBackgrounds", () -> {
             Set<String> backgrounds = new HashSet<>();
             for (String chapter : ClientQuestStateFacade.chapterOrder()) {
-                String background = ClientQuestStateFacade.chapterBackground(group);
+                String background = ClientQuestStateFacade.chapterBackground(chapter);
                 if (background == null || background.isBlank() || "default".equals(background)) {
                     continue;
                 }

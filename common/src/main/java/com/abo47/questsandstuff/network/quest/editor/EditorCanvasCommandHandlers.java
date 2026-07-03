@@ -35,7 +35,7 @@ final class EditorCanvasCommandHandlers {
                     moveTag.getInt(EditorCommandPayloads.Y)
             });
         }
-        editor.moveQuestsInChapter(player, group, moves);
+        editor.moveQuestsInChapter(player, chapter, moves);
     }
 
     private static void scaleMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
@@ -50,6 +50,6 @@ final class EditorCanvasCommandHandlers {
             String questId = scaleTag.getString(EditorCommandPayloads.QUEST);
             scales.put(questId, scaleTag.getFloat(EditorCommandPayloads.SCALE));
         }
-        editor.scaleQuestsInChapter(player, group, scales);
+        editor.scaleQuestsInChapter(player, chapter, scales);
     }
 }

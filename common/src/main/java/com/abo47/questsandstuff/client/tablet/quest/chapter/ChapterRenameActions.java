@@ -19,11 +19,11 @@ final class ChapterRenameActions {
         if (raw.isBlank()) {
             raw = tr("ui.questsandstuff.chapter.default_name");
         }
-        String renamed = EditorChapterCommandClient.uniqueChapterName(raw, group);
-        if (!renamed.equals(group)) {
-            EditorChapterCommandClient.runChapterAction(player, state, "rename", group, renamed, 0);
-        } else if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
-            EditorChapterCommandClient.runChapterAction(player, state, "create", group, group, 0);
+        String renamed = EditorChapterCommandClient.uniqueChapterName(raw, chapter);
+        if (!renamed.equals(chapter)) {
+            EditorChapterCommandClient.runChapterAction(player, state, "rename", chapter, renamed, 0);
+        } else if (TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
+            EditorChapterCommandClient.runChapterAction(player, state, "create", chapter, chapter, 0);
         }
         state.canvas.pendingChapterRename = "";
         state.root.selectedChapter = renamed;

@@ -26,14 +26,14 @@ final class EditorClipboardCommandHandlers {
         if (EditorCommandPayloads.exceedsLimit(questTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
             return;
         }
-        editor.copyQuestsToClipboard(player, group, EditorCommandPayloads.questIds(payload));
+        editor.copyQuestsToClipboard(player, chapter, EditorCommandPayloads.questIds(payload));
     }
 
     private static void pasteClipboard(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         String chapter = EditorCommandPayloads.chapter(payload);
         int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
         int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
-        editor.pasteClipboardInChapter(player, group, x, y);
+        editor.pasteClipboardInChapter(player, chapter, x, y);
     }
 
     private static void pasteBlueprint(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
@@ -44,6 +44,6 @@ final class EditorClipboardCommandHandlers {
         if (blueprint.isEmpty()) {
             return;
         }
-        editor.pasteBlueprintInChapter(player, group, x, y, blueprint);
+        editor.pasteBlueprintInChapter(player, chapter, x, y, blueprint);
     }
 }

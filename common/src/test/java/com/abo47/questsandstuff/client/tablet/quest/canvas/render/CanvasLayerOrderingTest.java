@@ -23,7 +23,7 @@ class CanvasLayerOrderingTest {
         CanvasTextLayer text = text("text_a");
         String connection = CanvasLayerOrdering.connectionKey("quest_a->quest_b");
 
-        state.canvas.canvasLayerOrderByChapter.put(group, List.of(
+        state.canvas.canvasLayerOrderByChapter.put(chapter, List.of(
                 CanvasLayerOrdering.questKey("quest_a"),
                 CanvasLayerOrdering.imageKey("image_a"),
                 CanvasLayerOrdering.textKey("text_a"),
@@ -32,7 +32,7 @@ class CanvasLayerOrderingTest {
 
         CanvasLayerOrder order = CanvasLayerOrdering.normalizedOrder(
                 state,
-                group,
+                chapter,
                 List.of(quest),
                 List.of(image),
                 List.of(text),

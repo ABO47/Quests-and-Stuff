@@ -150,9 +150,9 @@ final class CanvasSceneRenderer {
             BiConsumer<String, WidgetGroup> questCardLayerSink
     ) {
         String chapter = selectedChapterName(state);
-        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
         if (exclusiveChoices.isEmpty() && images.isEmpty() && texts.isEmpty() && visibleCards.isEmpty()) {
             return;
         }
@@ -180,7 +180,7 @@ final class CanvasSceneRenderer {
             connectionsByKey.put(key, connection);
             connectionKeys.add(key);
         }
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, group, visibleCards, images, texts, connectionKeys, exclusiveChoices);
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, chapter, visibleCards, images, texts, connectionKeys, exclusiveChoices);
         for (String key : layerOrder) {
             if (key.startsWith(CanvasLayerOrdering.CONNECTION_PREFIX)) {
                 ConnectionLine connection = connectionsByKey.get(key);
@@ -328,7 +328,7 @@ final class CanvasSceneRenderer {
             return;
         }
         String chapter = selectedChapterName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (drawEc.connectionQuestIds().contains(card.questId()) && !drawEc.prerequisiteQuestIds().isEmpty()) {
                 addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));

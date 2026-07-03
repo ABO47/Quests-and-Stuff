@@ -39,7 +39,7 @@ public final class CanvasContextMenuController {
     }
 
     public static List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
-        return CanvasConnectionSelection.selectedConnections(state, group);
+        return CanvasConnectionSelection.selectedConnections(state, chapter);
     }
 
     public record ConnectionRef(String prerequisiteId, String questId) {

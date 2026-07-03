@@ -54,7 +54,7 @@ public final class CanvasInlineTextEditor {
             return false;
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }
@@ -246,7 +246,7 @@ public final class CanvasInlineTextEditor {
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
         String id = state.canvas.canvasTextEditTarget;
-        CanvasLayerMutations.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
+        CanvasLayerMutations.updateCanvasText(state, chapter, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvas.canvasTextEditDraft.length(), state.canvas.canvasTextEditCursor);
         return true;
     }

@@ -38,7 +38,7 @@ record PrerequisiteConnectionModel(
         CompoundTag safeQuestTag = questTag == null ? new CompoundTag() : questTag.copy();
         String title = questTitle(safeQuestId, safeQuestTag);
         List<PrerequisiteConnectionRow> all = connectionRows(safeQuestId, safeQuestTag, title);
-        List<PrerequisiteConnectionRow> mode = rowsForMode(all, group, externalMode);
+        List<PrerequisiteConnectionRow> mode = rowsForMode(all, chapter, externalMode);
         List<PrerequisiteConnectionRow> visible = filteredRows(mode, query);
         return new PrerequisiteConnectionModel(
                 safeQuestId,
@@ -213,7 +213,7 @@ record PrerequisiteConnectionModel(
                 filtered.add(row);
                 continue;
             }
-            boolean local = isLocalConnection(row, group);
+            boolean local = isLocalConnection(row, chapter);
             if ((externalMode && !local) || (!externalMode && local)) {
                 filtered.add(row);
             }
@@ -222,18 +222,18 @@ record PrerequisiteConnectionModel(
     }
 
     static boolean isLocalConnection(PrerequisiteConnectionRow row, String chapter) {
-        if (group == null || group.isBlank()) {
+        if (chapter == null || chapter.isBlank()) {
             return true;
         }
-        return questInGroup(row.sourceId(), group) && questInGroup(row.targetId(), group);
+        return questInGroup(row.sourceId(), chapter) && questInGroup(row.targetId(), chapter);
     }
 
     private static boolean questInGroup(String questId, String chapter) {
         CompoundTag questTag = ClientQuestStateFacade.quest(questId);
-        if (questTag == null || questTag.isEmpty() || group == null || group.isBlank()) {
+        if (questTag == null || questTag.isEmpty() || chapter == null || chapter.isBlank()) {
             return false;
         }
-        return questTag.getCompound("chapters").contains(group, Tag.TAG_COMPOUND);
+        return questTag.getCompound("chapters").contains(chapter, Tag.TAG_COMPOUND);
     }
 
     static String questTitle(String questId, CompoundTag questTag) {

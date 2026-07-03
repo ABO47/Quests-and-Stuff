@@ -138,15 +138,15 @@ public final class CanvasRenderer {
     }
 
     public static int connectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.connectionColor(state, group, sourceQuestId, targetQuestId);
+        return ConnectionRenderer.connectionColor(state, chapter, sourceQuestId, targetQuestId);
     }
 
     public static boolean isConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
+        return ConnectionRenderer.isConnectionHidden(state, chapter, sourceQuestId, targetQuestId);
     }
 
     public static boolean isConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.isConnectionDirect(state, group, sourceQuestId, targetQuestId);
+        return ConnectionRenderer.isConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
     }
 
     public static int snapToGrid(TabletUiState state, int value) {

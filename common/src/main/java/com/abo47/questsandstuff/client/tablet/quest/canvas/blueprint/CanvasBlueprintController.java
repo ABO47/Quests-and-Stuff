@@ -128,23 +128,23 @@ public final class CanvasBlueprintController {
             return CanvasBlueprint.empty();
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        if (group.isBlank()) {
+        if (chapter.isBlank()) {
             return CanvasBlueprint.empty();
         }
         CanvasSelectionSet selection = CanvasSelectionSet.current(state);
         if (selection.size() == 0) {
             return CanvasBlueprint.empty();
         }
-        List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), group);
-        List<CanvasImageLayer> images = selectedImages(state, group, selection.imageIds());
-        List<CanvasTextLayer> texts = selectedTexts(state, group, selection.textIds());
-        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, group, selection.ecIds());
+        List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), chapter);
+        List<CanvasImageLayer> images = selectedImages(state, chapter, selection.imageIds());
+        List<CanvasTextLayer> texts = selectedTexts(state, chapter, selection.textIds());
+        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, chapter, selection.ecIds());
         if (quests.isEmpty() && images.isEmpty() && texts.isEmpty() && ecs.isEmpty()) {
             return CanvasBlueprint.empty();
         }
         CanvasPoint origin = origin(state, quests, images, texts, ecs);
-        String name = preferredName(group, quests, images, texts);
-        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, group, selection), ecs);
+        String name = preferredName(chapter, quests, images, texts);
+        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, chapter, selection), ecs);
     }
 
     private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String chapter) {
@@ -158,11 +158,11 @@ public final class CanvasBlueprintController {
             if (definition == null) {
                 continue;
             }
-            ChapterDef view = definition.display().chapters().get(group);
+            ChapterDef view = definition.display().chapters().get(chapter);
             if (view == null) {
                 continue;
             }
-            quests.add(new CanvasBlueprint.QuestEntry(questId, group, view.x(), view.y(), view.scale(), definition));
+            quests.add(new CanvasBlueprint.QuestEntry(questId, chapter, view.x(), view.y(), view.scale(), definition));
         }
         return quests;
     }
@@ -172,7 +172,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasImageLayer> images = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (imageIds.contains(image.id())) {
                 images.add(image);
             }
@@ -185,7 +185,7 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasTextLayer> texts = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (textIds.contains(text.id())) {
                 texts.add(text);
             }
@@ -198,10 +198,10 @@ public final class CanvasBlueprintController {
             return List.of();
         }
         List<CanvasBlueprint.ExclusiveChoiceEntry> entries = new ArrayList<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (ecIds.contains(ec.id())) {
                 entries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
-                        ec.id(), group, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
+                        ec.id(), chapter, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
                         ec.background(), ec.connectionQuestIds(), Set.copyOf(ec.prerequisiteQuestIds()),
                         ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(),
                         ec.connectionTextureSpacings(), ec.hiddenConnections()));
@@ -238,7 +238,7 @@ public final class CanvasBlueprintController {
     private static List<String> selectedLayerOrder(TabletUiState state, String chapter, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
-        for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(group, List.of())) {
+        for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of())) {
             if (selected.remove(key)) {
                 order.add(key);
             }
@@ -255,7 +255,7 @@ public final class CanvasBlueprintController {
             }
         }
         int count = quests.size() + images.size() + texts.size();
-        return (group == null || group.isBlank() ? "blueprint" : group) + "_" + count;
+        return (chapter == null || chapter.isBlank() ? "blueprint" : chapter) + "_" + count;
     }
 
     public record PlacementAnchor(int x, int y) {

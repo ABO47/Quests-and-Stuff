@@ -25,7 +25,7 @@ public final class TabletStateQueries {
             return selected;
         }
         for (String chapter : ClientQuestStateFacade.selectableChapterOrder(false)) {
-            String sanitized = sanitizeChapterName(group);
+            String sanitized = sanitizeChapterName(chapter);
             if (!sanitized.isBlank()) {
                 return sanitized;
             }

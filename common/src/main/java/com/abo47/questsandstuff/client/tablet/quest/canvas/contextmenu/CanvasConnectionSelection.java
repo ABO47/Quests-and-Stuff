@@ -19,7 +19,7 @@ public final class CanvasConnectionSelection {
     }
 
     public static List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
-        if (state == null || group == null || group.isBlank() || state.canvas.canvasSelection.questIds().isEmpty()) {
+        if (state == null || chapter == null || chapter.isBlank() || state.canvas.canvasSelection.questIds().isEmpty()) {
             return List.of();
         }
         java.util.Set<String> selected = new java.util.LinkedHashSet<>(state.canvas.canvasSelection.questIds());
@@ -27,7 +27,7 @@ public final class CanvasConnectionSelection {
         for (Map.Entry<String, CompoundTag> entry : ClientQuestStateFacade.questEntries()) {
             String questId = entry.getKey();
             CompoundTag quest = entry.getValue();
-            if (quest == null || !quest.getCompound("chapters").contains(group)) {
+            if (quest == null || !quest.getCompound("chapters").contains(chapter)) {
                 continue;
             }
             ListTag prerequisites = quest.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING);
@@ -38,7 +38,7 @@ public final class CanvasConnectionSelection {
                 }
             }
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             for (String connectedQuestId : ec.connectionQuestIds()) {
                 if (selected.contains(connectedQuestId)) {
                     connections.add(new ConnectionRef(ec.id(), connectedQuestId));

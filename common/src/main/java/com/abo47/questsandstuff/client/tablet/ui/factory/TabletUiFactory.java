@@ -173,7 +173,7 @@ public final class TabletUiFactory {
     }
 
     public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
-        EditorChapterCommandClient.runChapterAction(player, state, action, group, value, offset);
+        EditorChapterCommandClient.runChapterAction(player, state, action, chapter, value, offset);
     }
 
     public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {

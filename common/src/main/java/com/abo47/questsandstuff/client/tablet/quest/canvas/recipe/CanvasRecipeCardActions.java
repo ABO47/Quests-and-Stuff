@@ -50,30 +50,30 @@ public final class CanvasRecipeCardActions {
             return false;
         }
         String chapter = parsed.part(1);
-        if (group.isBlank()) {
+        if (chapter.isBlank()) {
             return false;
         }
-        addRecipeCard(state, group, asset);
+        addRecipeCard(state, chapter, asset);
         state.questDetails.questDetailsPickTarget = "";
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked chapter={} recipe={}", group, recipe.trim());
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card picked chapter={} recipe={}", chapter, recipe.trim());
         return true;
     }
 
     private static boolean changeRecipe(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
         String chapter = parsed.part(1);
         String imageId = parsed.part(2);
-        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, group, imageId);
+        CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
         if (current == null) {
             return false;
         }
-        CanvasLayerMutations.putCanvasImage(state, group, current.withAsset(asset));
+        CanvasLayerMutations.putCanvasImage(state, chapter, current.withAsset(asset));
         selectOnlyImage(state, imageId);
-        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card changed chapter={} image={} asset={}", group, imageId, asset);
+        QuestsAndStuffMod.debugLog("[QnS:UI] canvas recipe card changed chapter={} image={} asset={}", chapter, imageId, asset);
         return true;
     }
 
     private static void addRecipeCard(TabletUiState state, String chapter, String asset) {
-        String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, group));
+        String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, chapter));
         int x = state.canvas.canvasImageLogicalX - CARD_W / 2;
         int y = state.canvas.canvasImageLogicalY - CARD_H / 2;
         if (!state.canvas.gridSnapLocked) {
@@ -85,7 +85,7 @@ public final class CanvasRecipeCardActions {
         if (state.canvas.gridSnapLocked) {
             image = CanvasGridFitController.fittedImage(state, image);
         }
-        CanvasLayerMutations.putCanvasImage(state, group, image);
+        CanvasLayerMutations.putCanvasImage(state, chapter, image);
         selectOnlyImage(state, id);
         state.canvas.draggingCanvasImage = false;
         state.canvas.resizingCanvasImage = false;
@@ -106,7 +106,7 @@ public final class CanvasRecipeCardActions {
 
     private static List<String> canvasImageIds(TabletUiState state, String chapter) {
         List<String> ids = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());
         }
         return ids;

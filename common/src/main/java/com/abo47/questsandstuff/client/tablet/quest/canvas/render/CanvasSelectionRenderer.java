@@ -94,7 +94,7 @@ public final class CanvasSelectionRenderer {
             maxX = Math.max(maxX, card.x() + card.width());
             maxY = Math.max(maxY, card.y() + card.height());
         }
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
@@ -106,7 +106,7 @@ public final class CanvasSelectionRenderer {
             maxX = Math.max(maxX, bounds[2]);
             maxY = Math.max(maxY, bounds[3]);
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
             if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
@@ -118,7 +118,7 @@ public final class CanvasSelectionRenderer {
             maxX = Math.max(maxX, bounds[2]);
             maxY = Math.max(maxY, bounds[3]);
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                 continue;
@@ -256,7 +256,7 @@ public final class CanvasSelectionRenderer {
             );
         }
         String chapter = selectedChapterName(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             CanvasImageLayer drawImage = CanvasLayerMutations.effectiveCanvasImage(state, image);
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
@@ -276,7 +276,7 @@ public final class CanvasSelectionRenderer {
                     border
             );
         }
-        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             CanvasTextLayer drawText = CanvasLayerMutations.effectiveCanvasText(state, text);
             if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
@@ -296,7 +296,7 @@ public final class CanvasSelectionRenderer {
                     border
             );
         }
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                 continue;

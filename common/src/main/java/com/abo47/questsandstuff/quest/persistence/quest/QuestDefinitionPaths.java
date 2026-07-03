@@ -17,13 +17,13 @@ final class QuestDefinitionPaths {
     static Path questPath(Path questsDir, QuestDefinition definition) throws IOException {
         String canonicalId = normalizeQuestId(definition.id());
         String chapter = primaryChapter(definition);
-        String managedFileName = QuestNaming.managedQuestFileName(canonicalId, group);
+        String managedFileName = QuestNaming.managedQuestFileName(canonicalId, chapter);
         Path relative;
         if (!managedFileName.isBlank()) {
-            relative = Path.of(QuestNaming.chapterFolderName(group)).resolve(managedFileName);
+            relative = Path.of(QuestNaming.chapterFolderName(chapter)).resolve(managedFileName);
         } else {
             String slug = canonicalId.replace('/', '_');
-            relative = Path.of(chapterFolderName(group)).resolve(slug + ".json");
+            relative = Path.of(chapterFolderName(chapter)).resolve(slug + ".json");
         }
         if (relative.isAbsolute()) {
             throw new IOException("Quest id cannot resolve to an absolute path: " + definition.id());

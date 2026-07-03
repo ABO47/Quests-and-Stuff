@@ -60,9 +60,9 @@ public final class CanvasLayoutService {
         if (selected == null) {
             return false;
         }
-        state.root.selectedChapter = selected.group();
+        state.root.selectedChapter = selected.chapter();
         state.chapterPanel.lastJumpQuest = selected.questId();
-        state.canvas.pendingCameraGroup = selected.group();
+        state.canvas.pendingCameraGroup = selected.chapter();
         state.canvas.pendingCameraQuestId = selected.questId();
         persistUiState(state);
         return true;

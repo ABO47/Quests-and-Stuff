@@ -25,16 +25,16 @@ final class ChapterListMetrics {
         String chapterQuery = SearchFilter.normalize(queryText);
         List<String> chapterList = new ArrayList<>();
         for (String chapter : groups) {
-            if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+            if (TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
-            if (!canEdit && ClientQuestStateFacade.chapterHiddenPreview(group)) {
+            if (!canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {
                 continue;
             }
-            if (!SearchFilter.matches(chapterQuery, group)) {
+            if (!SearchFilter.matches(chapterQuery, chapter)) {
                 continue;
             }
-            chapterList.add(group);
+            chapterList.add(chapter);
         }
         return chapterList;
     }

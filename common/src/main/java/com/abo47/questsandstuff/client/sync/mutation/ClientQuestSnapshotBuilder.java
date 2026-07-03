@@ -18,7 +18,7 @@ final class ClientQuestSnapshotBuilder {
     }
 
     static CompoundTag newEditorQuest(String title, String chapter, int x, int y, QuestVisibilityMode hiddenMode) {
-        QuestDisplay display = QuestDisplay.forNewQuest(title, Map.of(group, new ChapterDef(true, x, y, 1.0f)));
+        QuestDisplay display = QuestDisplay.forNewQuest(title, Map.of(chapter, new ChapterDef(true, x, y, 1.0f)));
         CompoundTag quest = emptyEditorQuest(display, hiddenMode);
         setProgressDefaults(quest, true);
         return quest;
@@ -31,7 +31,7 @@ final class ClientQuestSnapshotBuilder {
         ensureDisplayDefaults(quest);
         ensureDefinitionBuckets(quest);
         setProgressDefaults(quest, false);
-        replaceSingleGroup(quest, group, x, y, scale);
+        replaceSingleGroup(quest, chapter, x, y, scale);
     }
 
     private static CompoundTag emptyEditorQuest(QuestDisplay display, QuestVisibilityMode hiddenMode) {
@@ -161,7 +161,7 @@ final class ClientQuestSnapshotBuilder {
         groupTag.putInt(SyncKeys.ChapterView.Y, y);
         float normalizedScale = Float.isNaN(scale) || Float.isInfinite(scale) ? 1.0f : scale;
         groupTag.putFloat(SyncKeys.ChapterView.SCALE, Math.max(0.5f, normalizedScale));
-        groups.put(group, groupTag);
+        groups.put(chapter, groupTag);
         quest.put(SyncKeys.Quest.CHAPTERS, groups);
     }
 

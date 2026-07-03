@@ -34,7 +34,7 @@ final class EntityMotionTargets {
     static void openImage(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, CanvasImageLayer image) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
-        state.questDetails.entityMotionEditorGroup = group == null ? "" : group;
+        state.questDetails.entityMotionEditorGroup = chapter == null ? "" : chapter;
         state.questDetails.entityMotionEditorQuestId = questId == null ? "" : questId;
         state.questDetails.entityMotionEditorImageId = imageId == null ? "" : imageId;
         state.questDetails.entityMotionEditorX = x;
@@ -47,7 +47,7 @@ final class EntityMotionTargets {
     static void openIcon(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, EntityIconMotion icon) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
-        state.questDetails.entityMotionEditorGroup = group == null ? "" : group;
+        state.questDetails.entityMotionEditorGroup = chapter == null ? "" : chapter;
         state.questDetails.entityMotionEditorQuestId = questId == null ? "" : questId;
         state.questDetails.entityMotionEditorImageId = imageId == null ? "" : imageId;
         state.questDetails.entityMotionEditorX = x;

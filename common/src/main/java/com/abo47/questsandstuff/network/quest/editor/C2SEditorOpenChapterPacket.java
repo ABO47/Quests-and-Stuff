@@ -13,13 +13,13 @@ public record C2SEditorOpenChapterPacket(String chapter) {
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(group == null ? "" : group);
+        buf.writeUtf(chapter == null ? "" : chapter);
     }
 
     public void handle(ModPacketContext context) {
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
-            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server).openChapter(player, group));
+            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server).openChapter(player, chapter));
         }
     }
 }

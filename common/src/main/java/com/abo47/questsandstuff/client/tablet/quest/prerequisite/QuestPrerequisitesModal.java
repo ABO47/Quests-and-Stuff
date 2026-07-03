@@ -63,17 +63,17 @@ public final class QuestPrerequisitesModal {
         String chapter = TabletStateQueries.selectedChapterName(state);
         PrerequisiteConnectionModel model;
         if (state.modal.prerequisitesManagerEcMode) {
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
-            model = PrerequisiteConnectionModel.buildForEc(ec, group, state.modal.prerequisitesManagerSearch);
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.modal.prerequisitesManagerQuestId);
+            model = PrerequisiteConnectionModel.buildForEc(ec, chapter, state.modal.prerequisitesManagerSearch);
         } else {
             String questId = safe(state.modal.prerequisitesManagerQuestId);
             CompoundTag questTag = ClientQuestStateFacade.quest(questId);
-            model = PrerequisiteConnectionModel.build(questId, questTag, group, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
+            model = PrerequisiteConnectionModel.build(questId, questTag, chapter, state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerExternalMode);
         }
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
 
         PrerequisiteRowsPanel.add(modal, state, refresh, layout, w, h, model.questId(), model.rows());
-        addPreview(modal, state, model, layout, group, state.modal.prerequisitesManagerEcMode ? false : state.modal.prerequisitesManagerExternalMode);
+        addPreview(modal, state, model, layout, chapter, state.modal.prerequisitesManagerEcMode ? false : state.modal.prerequisitesManagerExternalMode);
 
         if (state.modal.prerequisitesManagerContextOpen && !state.modal.prerequisitesManagerContextPrerequisiteId.isBlank()) {
             addContextDismissLayer(modal, state, refresh, w, h);
@@ -130,7 +130,7 @@ public final class QuestPrerequisitesModal {
             preview.addWidget(label(8, 32, TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_CONNECTION_COUNT, model.rows().size()), TabletColors.TEXT_MUTED));
         }
 
-        CanvasBlueprint blueprint = PrerequisitePreviewBuilder.build(group, model, externalMode);
+        CanvasBlueprint blueprint = PrerequisitePreviewBuilder.build(chapter, model, externalMode);
         int previewY = state.modal.prerequisitesManagerSearch.isBlank() ? 42 : 54;
         preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(
                 8,
@@ -168,7 +168,7 @@ public final class QuestPrerequisitesModal {
         String sourceId = row.sourceId();
         String targetId = row.targetId();
         if (!row.exclusiveChoice()) {
-            boolean direct = CanvasRenderer.isConnectionDirect(state, group, sourceId, targetId);
+            boolean direct = CanvasRenderer.isConnectionDirect(state, chapter, sourceId, targetId);
             actions.add(new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
@@ -178,7 +178,7 @@ public final class QuestPrerequisitesModal {
                 refresh.run();
             }));
         } else {
-            boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, group, sourceId, targetId);
+            boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, chapter, sourceId, targetId);
             actions.add(new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
@@ -188,11 +188,11 @@ public final class QuestPrerequisitesModal {
                 refresh.run();
             }));
         }
-        int connectionColor = CanvasRenderer.connectionColor(state, group, sourceId, targetId);
+        int connectionColor = CanvasRenderer.connectionColor(state, chapter, sourceId, targetId);
         actions.add(new ContextAction(
                 I18n.get("ui.questsandstuff.context.connection_color"),
                 "style_color", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openColorPicker(state, ModalTargets.connection(group, sourceId, targetId), connectionColor);
+            ModalOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
             refresh.run();
@@ -232,21 +232,21 @@ public final class QuestPrerequisitesModal {
         } else {
             EditorCanvasCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
         }
-        ConnectionRenderer.removeConnectionTransientState(state, group, row.sourceId(), row.targetId());
+        ConnectionRenderer.removeConnectionTransientState(state, chapter, row.sourceId(), row.targetId());
         PrerequisiteConnectionRemover.clearAfterRemove(state, row);
         QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager action=remove_connection source={} target={}", row.sourceId(), row.targetId());
     }
 
     private static void removeEcConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
         String chapter = TabletStateQueries.selectedChapterName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.modal.prerequisitesManagerQuestId);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.modal.prerequisitesManagerQuestId);
         if (ec == null) {
             return;
         }
         String removeId = row.kind() == PrerequisiteConnectionKind.INCOMING ? row.sourceId() : row.targetId();
         CanvasExclusiveChoice updated = ec.removeAllEdgeState(removeId);
         if (!updated.equals(ec)) {
-            CanvasElementStore.putCanvasExclusiveChoice(state, group, updated, true);
+            CanvasElementStore.putCanvasExclusiveChoice(state, chapter, updated, true);
         }
     }
 

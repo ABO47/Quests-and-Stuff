@@ -91,11 +91,11 @@ final class CanvasConnectionClickActions {
 
     private static boolean connectEcToQuest(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.quickConnectEcId);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.quickConnectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, hit.questId(), state.canvas.quickConnectEcId);
         }
         state.canvas.canvasSelection.selectOnlyQuest(hit.questId());
@@ -108,11 +108,11 @@ final class CanvasConnectionClickActions {
     private static boolean connectQuestToEc(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
         if (!state.canvas.quickConnectSourceQuestId.isBlank()) {
             String chapter = EditorChapterCommandClient.selectedChapterName(state);
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecHit.id());
             if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.quickConnectSourceQuestId)) {
                 CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.quickConnectSourceQuestId);
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
                 CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.quickConnectSourceQuestId);
             }
             state.canvas.quickConnectEcId = ecHit.id();
@@ -162,11 +162,11 @@ final class CanvasConnectionClickActions {
             return true;
         }
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.connectEcId);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.connectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, hit.questId(), state.canvas.connectEcId);
         }
         state.canvas.connectEcId = "";
@@ -179,11 +179,11 @@ final class CanvasConnectionClickActions {
 
     private static boolean handlePendingEcPrerequisite(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecHit.id());
         if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.connectSourceQuestId)) {
             CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.connectSourceQuestId);
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.connectSourceQuestId);
         }
         state.canvas.connectSourceQuestId = "";

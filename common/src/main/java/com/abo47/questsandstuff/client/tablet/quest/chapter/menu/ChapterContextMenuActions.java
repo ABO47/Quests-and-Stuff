@@ -207,7 +207,7 @@ public final class ChapterContextMenuActions {
             for (int i = 0; i < prereqs.size(); i++) {
                 String prereqId = prereqs.getString(i);
                 EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prereqId, "");
-                ConnectionRenderer.setConnectionTexture(state, group, prereqId, questId, "");
+                ConnectionRenderer.setConnectionTexture(state, chapter, prereqId, questId, "");
             }
         }
         for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {

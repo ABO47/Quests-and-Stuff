@@ -60,7 +60,7 @@ class QuestDefinitionStoreTest {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                display(id, group),
+                display(id, chapter),
                 QuestSettings.DEFAULT,
                 Set.of("quest/a", "quest/b", "quest/missing"),
                 Map.of("quest/a", 0x33AAFF, "quest/missing", 0xFFAA33),
@@ -75,7 +75,7 @@ class QuestDefinitionStoreTest {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                display(id, group),
+                display(id, chapter),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),
@@ -96,6 +96,6 @@ class QuestDefinitionStoreTest {
     }
 
     private static QuestDisplay display(String title, String chapter) {
-        return QuestDisplay.forNewQuest(title, Map.of(group, ChapterDef.DEFAULT));
+        return QuestDisplay.forNewQuest(title, Map.of(chapter, ChapterDef.DEFAULT));
     }
 }

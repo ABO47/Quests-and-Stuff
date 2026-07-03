@@ -109,7 +109,7 @@ public final class QuestCrudHandler {
             removedReferences++;
         }
         for (String chapter : service.definitionStore().chapterOrder()) {
-            for (CanvasExclusiveChoice ec : new ArrayList<>(service.definitionStore().canvasExclusiveChoices(group))) {
+            for (CanvasExclusiveChoice ec : new ArrayList<>(service.definitionStore().canvasExclusiveChoices(chapter))) {
                 boolean changed = false;
                 if (ec.connectionQuestIds().contains(removedQuestId)) {
                     ec = ec.removeConnection(removedQuestId);
@@ -120,7 +120,7 @@ public final class QuestCrudHandler {
                     changed = true;
                 }
                 if (changed) {
-                    service.definitionStore().putCanvasExclusiveChoice(group, ec);
+                    service.definitionStore().putCanvasExclusiveChoice(chapter, ec);
                     removedReferences++;
                 }
             }

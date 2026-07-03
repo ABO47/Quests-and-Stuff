@@ -114,7 +114,7 @@ class EditorSessionStateTest {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(id, Map.of(group, ChapterDef.DEFAULT)),
+                QuestDisplay.forNewQuest(id, Map.of(chapter, ChapterDef.DEFAULT)),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),

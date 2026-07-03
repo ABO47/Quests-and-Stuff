@@ -60,7 +60,7 @@ final class ConnectionLayout {
                     continue;
                 }
 
-                ConnectionRenderStyle style = ConnectionStyleResolver.style(state, group, prerequisiteId, quest.questId(), questTag);
+                ConnectionRenderStyle style = ConnectionStyleResolver.style(state, chapter, prerequisiteId, quest.questId(), questTag);
                 if (!rendered.add(style.connectionId())) {
                     continue;
                 }
@@ -71,7 +71,7 @@ final class ConnectionLayout {
                 lines.add(lineFromStyle(style, prerequisite, quest, false));
             }
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
@@ -96,11 +96,11 @@ final class ConnectionLayout {
                         && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, ec.id(), connectedQuestId);
-                int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, ec.id(), connectedQuestId);
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, ec.id(), connectedQuestId);
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, ec.id(), connectedQuestId);
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, ec.id(), connectedQuestId);
+                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, ec.id(), connectedQuestId);
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, ec.id(), connectedQuestId);
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, ec.id(), connectedQuestId);
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, ec.id(), connectedQuestId);
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
                         connectionId, ec.id(), connectedQuestId,
@@ -124,11 +124,11 @@ final class ConnectionLayout {
                         && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, prerequisiteQuestId, ec.id());
-                int color = ConnectionStyleResolver.ecConnectionColor(state, group, prerequisiteQuestId, ec.id());
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, prerequisiteQuestId, ec.id());
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, prerequisiteQuestId, ec.id());
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, prerequisiteQuestId, ec.id());
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, prerequisiteQuestId, ec.id());
+                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, prerequisiteQuestId, ec.id());
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, prerequisiteQuestId, ec.id());
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, prerequisiteQuestId, ec.id());
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, prerequisiteQuestId, ec.id());
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
                         connectionId, prerequisiteQuestId, ec.id(),
