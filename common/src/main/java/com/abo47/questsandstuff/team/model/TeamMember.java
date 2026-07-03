@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.quest.model.team;
+package com.abo47.questsandstuff.team.model;
 
 import java.util.UUID;
 

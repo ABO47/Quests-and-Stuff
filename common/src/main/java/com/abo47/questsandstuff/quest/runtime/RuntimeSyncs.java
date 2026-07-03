@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-final class RuntimeSyncs {
+public final class RuntimeSyncs {
     private RuntimeSyncs() {
     }
 
@@ -21,7 +21,7 @@ final class RuntimeSyncs {
         actor.server.getPlayerList().getPlayers().forEach(player -> syncService.syncDelta(player, changedQuestIds));
     }
 
-    static void syncChangedToOnlineMembers(ServerLevel level, Collection<UUID> members, QuestProgressSavedData progressData, SyncService syncService, Set<String> changedQuestIds) {
+    public static void syncChangedToOnlineMembers(ServerLevel level, Collection<UUID> members, QuestProgressSavedData progressData, SyncService syncService, Set<String> changedQuestIds) {
         if (level == null || members == null || members.isEmpty() || progressData == null || syncService == null || changedQuestIds == null || changedQuestIds.isEmpty()) {
             return;
         }

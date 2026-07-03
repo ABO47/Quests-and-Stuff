@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.gametest;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
 import com.abo47.questsandstuff.quest.sync.SyncService;
-import com.abo47.questsandstuff.quest.team.TeamManager;
+import com.abo47.questsandstuff.team.TeamManager;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;

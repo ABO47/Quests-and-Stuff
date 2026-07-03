@@ -1,7 +1,7 @@
-package com.abo47.questsandstuff.quest.team;
+package com.abo47.questsandstuff.team;
 
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
+import com.abo47.questsandstuff.team.model.TeamData;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

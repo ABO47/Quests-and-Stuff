@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.quest.runtime.team;
+package com.abo47.questsandstuff.team.runtime;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import net.minecraft.resources.ResourceLocation;

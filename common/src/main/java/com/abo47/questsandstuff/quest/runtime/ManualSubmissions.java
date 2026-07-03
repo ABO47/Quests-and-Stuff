@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 import com.abo47.questsandstuff.quest.sync.SyncService;
 import net.minecraft.server.level.ServerPlayer;
 

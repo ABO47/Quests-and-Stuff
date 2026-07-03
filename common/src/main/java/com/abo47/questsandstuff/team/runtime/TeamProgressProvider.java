@@ -1,4 +1,4 @@
-package com.abo47.questsandstuff.quest.runtime.team;
+package com.abo47.questsandstuff.team.runtime;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

@@ -1,8 +1,8 @@
-package com.abo47.questsandstuff.quest.team;
+package com.abo47.questsandstuff.team;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
+import com.abo47.questsandstuff.team.model.TeamData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

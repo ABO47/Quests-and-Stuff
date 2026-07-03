@@ -2,7 +2,7 @@ package com.abo47.questsandstuff;
 
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.platform.Services;
-import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;

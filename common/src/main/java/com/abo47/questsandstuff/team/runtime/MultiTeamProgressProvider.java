@@ -1,9 +1,9 @@
-package com.abo47.questsandstuff.quest.runtime.team;
+package com.abo47.questsandstuff.team.runtime;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
-import com.abo47.questsandstuff.quest.team.TeamSavedData;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
+import com.abo47.questsandstuff.team.TeamSavedData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 
