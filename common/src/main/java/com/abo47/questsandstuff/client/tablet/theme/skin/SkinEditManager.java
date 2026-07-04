@@ -166,7 +166,6 @@ public final class SkinEditManager {
                 modeActions));
 
         if (rawOverride != null && !rawOverride.isBlank()) {
-            String removalTarget = resolvedTarget;
             actions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     "delete",

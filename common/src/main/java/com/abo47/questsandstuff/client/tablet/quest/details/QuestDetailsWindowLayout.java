@@ -55,7 +55,7 @@ final class QuestDetailsWindowLayout {
         boolean fillsLayer = frame.fills(layer);
         rememberFrame(layer, state, frame);
 
-        QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight(), state);
+        QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
         layer.addWidget(rootWidget);
 
         boolean hasDetailsOverride = SkinFillOverride.parse(SkinOverrideKey.resolveOverride(state, "quest_details_root")) != null;

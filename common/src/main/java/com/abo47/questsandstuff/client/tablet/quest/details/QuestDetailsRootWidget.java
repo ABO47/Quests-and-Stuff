@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -10,11 +9,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import javax.annotation.Nonnull;
 
 public final class QuestDetailsRootWidget extends WidgetGroup {
-    private final TabletUiState state;
-
-    public QuestDetailsRootWidget(int x, int y, int width, int height, TabletUiState state) {
+    public QuestDetailsRootWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.state = state;
     }
 
     @Override

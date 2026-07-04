@@ -11,7 +11,6 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
