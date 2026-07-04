@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandCl
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
@@ -104,14 +105,13 @@ public final class AssetPickerApplyActions {
         }
         String skinFillTarget = state.modal.skinEditFillTarget;
         if (!skinFillTarget.isBlank()) {
-            String app = state.root.currentApp;
-            String entryKey = app.isBlank() ? skinFillTarget : app + ":" + skinFillTarget;
-            String existing = state.root.skinFillOverrides.get(entryKey);
-            if (existing == null) existing = state.root.skinFillOverrides.get(skinFillTarget);
+            String entryKey = SkinOverrideKey.overrideKey(state, skinFillTarget);
+            String existing = SkinOverrideKey.resolveOverride(state, skinFillTarget);
             SkinFillOverride existingOverride = SkinFillOverride.parse(existing);
             String mode = (existingOverride != null) ? existingOverride.mode() : "stretch";
             SkinFillOverride newOverride = new SkinFillOverride(mode, background);
             state.root.skinFillOverrides.put(entryKey, newOverride.encode());
+            state.root.activeSkinTargets.add(skinFillTarget);
             state.modal.skinEditFillTarget = "";
             state.pickers.assetBrowseDir = "";
             SkinFillOverride.clearCache();

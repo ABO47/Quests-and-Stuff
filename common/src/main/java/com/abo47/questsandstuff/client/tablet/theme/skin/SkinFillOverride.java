@@ -1,6 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
+import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import java.util.HashMap;
@@ -38,8 +41,8 @@ public record SkinFillOverride(String mode, String path) {
 
         IGuiTexture tex;
         if ("tile".equals(mode)) {
-            com.abo47.questsandstuff.QuestsAndStuffMod.LOGGER.info("[QnS:UI] Creating tile texture path={} root={}", path, com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR);
-            tex = AssetLibrary.preRenderedTileTexture(com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR, path);
+            QuestsAndStuffMod.LOGGER.info("[QnS:UI] Creating tile texture path={} root={}", path, TabletUiFactory.ASSETS_ROOT_DIR);
+            tex = AssetLibrary.preRenderedTileTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
         } else {
             tex = createFullTexture();
         }
@@ -49,10 +52,10 @@ public record SkinFillOverride(String mode, String path) {
     }
 
     private IGuiTexture createFullTexture() {
-        com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind kind = AssetLibrary.assetKind(path);
-        if (kind == com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind.GIF) {
-            return AssetLibrary.chapterBackgroundTexture(com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetKind kind = AssetLibrary.assetKind(path);
+        if (kind == AssetKind.GIF) {
+            return AssetLibrary.chapterBackgroundTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
         }
-        return AssetLibrary.assetThumbnailTexture(com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR, path);
+        return AssetLibrary.assetThumbnailTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
     }
 }

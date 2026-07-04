@@ -22,7 +22,9 @@ public final class QuestDetailsDescriptionPanel {
         int viewportH = fit[1] - 1;
         state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, state.questDetails.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
-        canvas.setBackground(SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
+        String bg = model.canvasBackground();
+        boolean hasBuiltinBg = bg != null && !bg.equals("default") && !bg.isBlank();
+        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.fill(TabletColors.SURFACE_PANEL) : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);

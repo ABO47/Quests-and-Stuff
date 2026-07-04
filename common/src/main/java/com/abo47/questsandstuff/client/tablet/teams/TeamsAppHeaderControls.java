@@ -105,6 +105,22 @@ final class TeamsAppHeaderControls {
         return new TeamsAppHeaderControls(searchField, leaveBtn, joinBtn, inviteBtn);
     }
 
+    TextFieldWidget searchField() {
+        return searchField;
+    }
+
+    ButtonWidget leaveBtn() {
+        return leaveBtn;
+    }
+
+    ButtonWidget joinBtn() {
+        return joinBtn;
+    }
+
+    ButtonWidget inviteBtn() {
+        return inviteBtn;
+    }
+
     void layout(int headerY, int bodyW) {
         int searchW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
         searchField.setSize(searchW, TOOL_SIZE);

@@ -67,7 +67,14 @@ final class QuestTaskActionWidgets {
         boolean locallyClaimed = state != null && questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         boolean claimed = quest.getBoolean("claimed") || locallyClaimed;
         boolean claimable = quest.getBoolean("completed") && !claimed;
-        section.addWidget(TabletUiFactory.panel(x, y, barW, h, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        boolean hasTasksOverride = state != null && hasTasksOverrideEntry(state);
+        if (hasTasksOverride) {
+            WidgetGroup fillPanel = new WidgetGroup(x, y, barW, h);
+            fillPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
+            section.addWidget(fillPanel);
+        } else {
+            section.addWidget(TabletUiFactory.panel(x, y, barW, h, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        }
         int fillColor = claimed ? TabletColors.TEXT_MUTED : (claimable ? TabletColors.WARNING : TabletColors.SUCCESS);
         String progressKey = ProgressAnimations.key("details", questId);
         ProgressTexture texture = new ProgressTexture(
@@ -104,5 +111,11 @@ final class QuestTaskActionWidgets {
             hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             section.addWidget(hit);
         }
+    }
+
+    private static boolean hasTasksOverrideEntry(TabletUiState state) {
+        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
+        return state.root.skinFillOverrides.containsKey(appPrefix + "quest_details_tasks")
+                || state.root.skinFillOverrides.containsKey("quest_details_tasks");
     }
 }

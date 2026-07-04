@@ -62,9 +62,6 @@ public final class TeamsAppComposer {
                 ? SurfaceFactory.transparent()
                 : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
 
-        WidgetGroup rootFill = new WidgetGroup(0, 0, initialRootW, initialRootH);
-        rootFill.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
-
         int bodyH = chapterHeight(state);
         int bodyW = initialRootW - ROOT_PAD_X * 2;
         WidgetGroup mainPanel = SplitPanelLayout.leftPanel(BODY_X, BODY_Y, bodyW, bodyH, state);
@@ -100,6 +97,7 @@ public final class TeamsAppComposer {
             int crw = rootWidth(state);
             int crh = rootHeight(state);
             root.setSize(crw, crh);
+            TabletRootWidget.refreshRootBackground(root, state);
 
             int cbw = crw - ROOT_PAD_X * 2;
             int cbh = chapterHeight(state);
@@ -108,6 +106,7 @@ public final class TeamsAppComposer {
             int hbx = crw - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
             int hby = ROOT_PAD_Y + ((crh - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
             homeBtn.setSelfPosition(hbx, hby);
+            homeBtn.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()));
 
             headers.layout(headerY, cbw);
 
@@ -134,7 +133,12 @@ memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE,
             ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             TeamsMemberCardRenderer.rebuildMemberList(memberListPanel, state, refresh[0]);
             SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.register("home_btn", homeBtn);
+            SkinAnchorRegistry.register("teams_main_panel", mainPanel);
             SkinAnchorRegistry.register("teams_member_list", memberListPanel);
+            SkinAnchorRegistry.register("teams_header_leave", headers.leaveBtn());
+            SkinAnchorRegistry.register("teams_header_join", headers.joinBtn());
+            SkinAnchorRegistry.register("teams_header_invite", headers.inviteBtn());
             SkinEditManager.reapplyOverrides(state, root);
         };
 
@@ -143,7 +147,7 @@ memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE,
         root.setRefresher(refresh[0]);
         root.setModalLayer(modalLayer);
 
-        root.addWidgets(rootFill, mainPanel);
+        root.addWidget(mainPanel);
         headers.addTo(mainPanel);
         mainPanel.addWidget(memberListPanel);
         root.addWidget(modalLayer);

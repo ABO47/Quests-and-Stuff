@@ -3,33 +3,37 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class SkinAnchorRegistry {
-    private static final Map<String, Widget> ANCHORS = new HashMap<>();
+    private static final Map<String, Widget> KEY_TO_WIDGET = new HashMap<>();
+    private static final IdentityHashMap<Widget, String> WIDGET_TO_KEY = new IdentityHashMap<>();
 
     private SkinAnchorRegistry() {
     }
 
     public static void clear() {
-        ANCHORS.clear();
+        KEY_TO_WIDGET.clear();
+        WIDGET_TO_KEY.clear();
     }
 
     public static void register(String key, Widget widget) {
-        if (key == null || key.isBlank()) return;
-        ANCHORS.put(key, widget);
+        if (key == null || key.isBlank() || widget == null) return;
+        Widget old = KEY_TO_WIDGET.put(key, widget);
+        if (old != null && old != widget) {
+            WIDGET_TO_KEY.remove(old);
+        }
+        WIDGET_TO_KEY.put(widget, key);
     }
 
     public static Widget findByKey(String key) {
         if (key == null || key.isBlank()) return null;
-        return ANCHORS.get(key);
+        return KEY_TO_WIDGET.get(key);
     }
 
     public static String keyFor(Widget widget) {
         if (widget == null) return null;
-        for (Map.Entry<String, Widget> entry : ANCHORS.entrySet()) {
-            if (entry.getValue() == widget) return entry.getKey();
-        }
-        return null;
+        return WIDGET_TO_KEY.get(widget);
     }
 }

@@ -34,6 +34,10 @@ public final class QuestDetailsDescriptionModel {
         return texts.get(id);
     }
 
+    public String canvasBackground() {
+        return canvasBackground;
+    }
+
     public CanvasImageLayer image(String id) {
         return images.get(id);
     }

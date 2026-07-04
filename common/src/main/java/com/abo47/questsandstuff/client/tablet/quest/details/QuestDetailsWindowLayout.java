@@ -8,9 +8,10 @@ import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
@@ -53,7 +54,12 @@ final class QuestDetailsWindowLayout {
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
         boolean fillsLayer = frame.fills(layer);
         rememberFrame(layer, state, frame);
-        if (!fillsLayer) {
+
+        QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight(), state);
+        layer.addWidget(rootWidget);
+
+        boolean hasDetailsOverride = SkinFillOverride.parse(SkinOverrideKey.resolveOverride(state, "quest_details_root")) != null;
+        if (!fillsLayer && !hasDetailsOverride) {
             addDimLayer(layer, state);
         }
 
@@ -62,7 +68,7 @@ final class QuestDetailsWindowLayout {
         int canvasX = SplitPanelLayout.rightPanelX(0, leftW);
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
-        WidgetGroup modal = addModal(layer, state, frame, fillsLayer);
+        WidgetGroup modal = addModal(rootWidget, state, frame, fillsLayer);
         WidgetGroup taskPanel = addTaskPanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
         SkinAnchorRegistry.register("quest_details_tasks", taskPanel);
         WidgetGroup questDetailsSplitter = new QuestDetailsSplitterWidget(splitterX, 0, frame.h(), state, refresh);
@@ -78,6 +84,7 @@ final class QuestDetailsWindowLayout {
         viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         canvasPanel.addWidget(viewportBg);
 
+        SkinAnchorRegistry.register("quest_details_root", rootWidget);
         SkinAnchorRegistry.register("quest_details_splitter", questDetailsSplitter);
         SkinAnchorRegistry.register("quest_details_modal", modal);
         SkinAnchorRegistry.register("quest_details_canvas_panel", canvasPanel);
@@ -134,9 +141,6 @@ final class QuestDetailsWindowLayout {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                if (!fillsLayer) {
-                    TabletPanelChrome.drawPanelOutline(graphics, this);
-                }
             }
         };
         modal.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));

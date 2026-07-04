@@ -55,7 +55,7 @@ public final class SplitPanelLayout {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawCanvasPanelChrome(graphics, this, viewportX, viewportY, viewportW, viewportH);
+                drawCanvasPanelChrome(graphics, this, viewportX, viewportY, viewportW, viewportH, state);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
                 drawCanvasPanelOutlines(graphics, this, state, viewportX, viewportY, viewportW, viewportH, canEdit, showGrid, gridOpacity, gridColor);
             }

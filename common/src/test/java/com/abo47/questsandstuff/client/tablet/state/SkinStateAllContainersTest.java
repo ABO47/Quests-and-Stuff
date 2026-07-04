@@ -17,14 +17,35 @@ class SkinStateAllContainersTest {
             "quests_splitter",
             "quests_canvas",
             "quests_canvas_background",
+            "quests_home_btn",
+            "quests_search",
+            "quests_chapter_search",
+            "quests_tools_btn",
+            "quests_settings_btn",
+            "quests_blueprint_btn",
+            "quests_claim_all_btn",
+            "quests_editor_btn",
+
             "quest_details_splitter",
             "quest_details_modal",
             "quest_details_description_canvas",
             "quest_details_canvas_panel",
             "quest_details_canvas_background",
             "quest_details_tasks",
+            "quests_task_cards",
+            "quests_reward_cards",
+
             "teams_member_list",
+            "teams_home_btn",
+            "teams_root_fill",
+            "teams_search",
+            "teams_leave_btn",
+            "teams_join_btn",
+            "teams_invite_btn",
+            
             "home_inner",
+            "home_close_btn",
+            "home_btn",
             "root"
     );
 

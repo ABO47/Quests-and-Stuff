@@ -49,6 +49,7 @@ public class TabletUiState {
         public String currentApp = "";
         public String skinEditSelectedTarget = "";
         public final Map<String, String> skinFillOverrides = new HashMap<>();
+        public final java.util.Set<String> activeSkinTargets = new java.util.LinkedHashSet<>();
     }
 
     public static final class ChapterPanelState {

@@ -84,7 +84,6 @@ public final class QuestAppComposer {
         WidgetGroup chapterPanel = null;
         WidgetGroup[] chapterPanelRef = new WidgetGroup[1];
         WidgetGroup canvasPanel = SplitPanelLayout.rightPanel(initialCanvasX, CANVAS_Y, initialCanvasW, initialCanvasH, state);
-        canvasPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
 
         final int contentInset = PANEL_INSET;
         final int topY = contentInset;
@@ -173,7 +172,6 @@ public final class QuestAppComposer {
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
             canvasPanel.setSize(canvasW, canvasH);
-            canvasPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
             if (viewportBgRef[0] != null) {
                 viewportBgRef[0].setSize(canvasW, canvasH);
                 viewportBgRef[0].setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
@@ -215,6 +213,7 @@ public final class QuestAppComposer {
             int homeBtnX = currentRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
             int homeBtnY = ROOT_PAD_Y + ((currentRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
             questHomeBtn.setSelfPosition(homeBtnX, homeBtnY);
+            questHomeBtn.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()));
 
             int headerX = viewportX;
             int headerW = viewportW;
@@ -225,6 +224,15 @@ public final class QuestAppComposer {
             TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
             refreshCanvas[0].run();
             SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.register("quests_home_btn", questHomeBtn);
+            SkinAnchorRegistry.register("home_btn", questHomeBtn);
+            SkinAnchorRegistry.register("quests_search", headers.searchField());
+            SkinAnchorRegistry.register("quests_chapter_search", headers.chapterSearchField());
+            SkinAnchorRegistry.register("quests_tools_btn", headers.toolsButton());
+            SkinAnchorRegistry.register("quests_settings_btn", headers.settingsButton());
+            SkinAnchorRegistry.register("quests_blueprint_btn", headers.blueprintButton());
+            SkinAnchorRegistry.register("quests_claim_all_btn", headers.claimAllButton());
+            SkinAnchorRegistry.register("quests_editor_btn", headers.editorButton());
             SkinAnchorRegistry.register("quests_chapter", chapterPanelRef[0]);
             SkinAnchorRegistry.register("quests_chapter_list", chapterList);
             SkinAnchorRegistry.register("quests_splitter", splitterRef[0]);
@@ -277,8 +285,6 @@ public final class QuestAppComposer {
     }
 
     private static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
-        root.setBackground(state != null && state.root.fullScreenMode
-                ? SurfaceFactory.transparent()
-                : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
+        TabletRootWidget.refreshRootBackground(root, state);
     }
 }

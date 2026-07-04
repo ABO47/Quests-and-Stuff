@@ -1,17 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import net.minecraft.client.gui.GuiGraphics;
 
 public final class SkinEditTargetResolver {
+    private static final Map<Class<?>, Boolean> CUSTOM_CHROME_CACHE = new HashMap<>();
+
     private SkinEditTargetResolver() {
     }
 
@@ -20,11 +24,13 @@ public final class SkinEditTargetResolver {
         if (qdl != null && qdl.isVisible() && qdl.isMouseOverElement(mouseX, mouseY) && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
             if (hit != null) return stableKeyFor(hit);
-            return null;
         }
         Widget hit = deepestAt(root, mouseX, mouseY);
-        if (hit == null) return null;
-        return stableKeyFor(hit);
+        if (hit != null) return stableKeyFor(hit);
+        if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
+            return "root";
+        }
+        return null;
     }
 
     private static Widget deepestAt(WidgetGroup group, int mouseX, int mouseY) {
@@ -75,85 +81,8 @@ public final class SkinEditTargetResolver {
     public static String stableKeyFor(Widget widget) {
         String registered = SkinAnchorRegistry.keyFor(widget);
         if (registered != null) return registered;
-
-        Class<?> cls = widget.getClass();
-        String simpleName = cls.getSimpleName();
-
-        if ("TabletScissoredWidgetGroup".equals(simpleName)) {
-            if (hasCustomChrome((WidgetGroup) widget)) return "quests_chapter_list";
-        }
-        if ("ChapterPanelInteractionWidget".equals(simpleName)) {
-            return "quests_chapter";
-        }
-        if ("ChapterSplitterWidget".equals(simpleName)) return "quests_splitter";
-        if ("QuestDetailsSplitterWidget".equals(simpleName)) return "quest_details_splitter";
-        if ("TabletHomeOverviewPanel".equals(simpleName)) return "home_inner";
-        if (widget instanceof WidgetGroup wg && hasCustomChrome(wg)) {
-            Widget p = widget.getParent();
-            if (p != null && "TabletHomeOverviewPanel".equals(p.getClass().getSimpleName())) {
-                return "home_inner";
-            }
-        }
-        if ("TabletRootWidget".equals(simpleName)) return "root";
-
-        if ("QuestDetailsDescriptionCanvas".equals(simpleName) && isInsideQuestDetailsLayer(widget)) {
-            return "quest_details_description_canvas";
-        }
-
-        if (!"SourceOriginRevealWidget".equals(simpleName) && widget instanceof WidgetGroup wg && hasCustomChrome(wg) && isInsideQuestDetailsLayer(widget) && !wg.widgets.isEmpty()) {
-            return "quest_details_modal";
-        }
-
-        if ("SplitPanelLayout".equals(simpleName) || cls.getName().contains("SplitPanelLayout")) {
-            if (isInsideQuestDetailsLayer(widget)) {
-                return widget.getSizeWidth() > 200 ? "quest_details_canvas_panel" : "quest_details_tasks";
-            }
-            return widget.getSizeWidth() > 200 ? "quests_canvas" : "teams_member_list";
-        }
-
-        if (widget instanceof WidgetGroup wg && containsCanvasViewport(wg)) {
-            Widget p = widget.getParent();
-            if (p != null && "quests_canvas".equals(stableKeyFor(p))) {
-                return "quests_canvas_background";
-            }
-        }
-
-        if (widget instanceof WidgetGroup wg && containsQuestDetailsCanvas(wg)) {
-            Widget p = widget.getParent();
-            if (p != null && "quest_details_canvas_panel".equals(stableKeyFor(p))) {
-                return "quest_details_canvas_background";
-            }
-        }
-
         return buildPathKey(widget);
     }
-
-    private static boolean containsCanvasViewport(WidgetGroup group) {
-        for (Widget child : group.widgets) {
-            if (child instanceof CanvasViewport) return true;
-            if (child instanceof WidgetGroup wg && containsCanvasViewport(wg)) return true;
-        }
-        return false;
-    }
-
-    private static boolean containsQuestDetailsCanvas(WidgetGroup group) {
-        for (Widget child : group.widgets) {
-            if ("QuestDetailsDescriptionCanvas".equals(child.getClass().getSimpleName())) return true;
-            if (child instanceof WidgetGroup wg && containsQuestDetailsCanvas(wg)) return true;
-        }
-        return false;
-    }
-
-    private static boolean isInsideQuestDetailsLayer(Widget widget) {
-        Widget cur = widget.getParent();
-        while (cur != null) {
-            if ("QuestDetailsLayerWidget".equals(cur.getClass().getSimpleName())) return true;
-            cur = cur.getParent();
-        }
-        return false;
-    }
-
-
 
     private static String buildPathKey(Widget widget) {
         List<Widget> path = new ArrayList<>();
@@ -192,35 +121,32 @@ public final class SkinEditTargetResolver {
     public static boolean isTargetable(Widget widget) {
         if (isSkinExcluded(widget)) return false;
         if (hasVisibleBackground(widget)) return true;
-        if (widget instanceof WidgetGroup wg && hasCustomChrome(wg)) return true;
+        if (SkinAnchorRegistry.keyFor(widget) != null) return true;
         return false;
     }
 
     private static boolean isSkinExcluded(Widget widget) {
-        if (widget instanceof CanvasViewport) return true;
-        if (widget instanceof ImageWidget) return true;
-        Class<?> cls = widget.getClass();
-        String simpleName = cls.getSimpleName();
+        Widget cur = widget;
+        while (cur != null) {
+            if (cur instanceof CanvasViewport) return true;
+            cur = cur.getParent();
+        }
+        String simpleName = widget.getClass().getSimpleName();
+        if ("ImageWidget".equals(simpleName)) return true;
         if ("DisplayIconWidget".equals(simpleName)) return true;
+        if ("QuestDetailsDescriptionCanvas".equals(simpleName)) return true;
+        if ("TabletHomeOverviewPanel".equals(simpleName)) return true;
         if ("CollapsedChapterTileWidget".equals(simpleName)) return true;
         if ("ChapterCompletionNoticeWidget".equals(simpleName)) return true;
-        if ("QuestDetailsDescriptionCanvas".equals(simpleName)) return true;
-        if (simpleName.contains("Canvas") && !"CanvasViewport".equals(simpleName) && !"QuestDetailsDescriptionCanvas".equals(simpleName)) {
-            Widget parent = widget.getParent();
-            while (parent != null) {
-                if (parent instanceof CanvasViewport) return true;
-                parent = parent.getParent();
-            }
-        }
-        if (widget instanceof WidgetGroup wg && isInsideQuestDetailsLayer(widget) && wg.widgets.isEmpty()) {
-            if (hasCustomChrome(wg)) return true;
-        }
-        if (widget.getClass().isAnonymousClass()) {
-            Widget cur = widget.getParent();
-            while (cur != null) {
-                if (cur instanceof CanvasViewport) return true;
-                cur = cur.getParent();
-            }
+        if (isInsideChapterCardArea(widget)) return true;
+        return false;
+    }
+
+    private static boolean isInsideChapterCardArea(Widget widget) {
+        Widget cur = widget.getParent();
+        while (cur != null) {
+            if ("TabletScissoredWidgetGroup".equals(cur.getClass().getSimpleName())) return true;
+            cur = cur.getParent();
         }
         return false;
     }
@@ -231,22 +157,25 @@ public final class SkinEditTargetResolver {
         return !bg.equals(IGuiTexture.EMPTY);
     }
 
-    public static boolean hasCustomChrome(WidgetGroup widget) {
-        try {
-            if (widget.getClass().getMethod("drawInBackground", GuiGraphics.class, int.class, int.class, float.class)
-                    .getDeclaringClass() != WidgetGroup.class) {
-                return true;
+    public static boolean hasCustomChrome(Widget widget) {
+        Class<?> cls = widget.getClass();
+        return CUSTOM_CHROME_CACHE.computeIfAbsent(cls, k -> {
+            try {
+                if (k.getMethod("drawInBackground", GuiGraphics.class, int.class, int.class, float.class)
+                        .getDeclaringClass() != WidgetGroup.class) {
+                    return true;
+                }
+            } catch (NoSuchMethodException e) {
             }
-        } catch (NoSuchMethodException e) {
-        }
-        try {
-            if (widget.getClass().getMethod("drawInForeground", GuiGraphics.class, int.class, int.class, float.class)
-                    .getDeclaringClass() != WidgetGroup.class) {
-                return true;
+            try {
+                if (k.getMethod("drawInForeground", GuiGraphics.class, int.class, int.class, float.class)
+                        .getDeclaringClass() != WidgetGroup.class) {
+                    return true;
+                }
+            } catch (NoSuchMethodException e) {
             }
-        } catch (NoSuchMethodException e) {
-        }
-        return false;
+            return false;
+        });
     }
 
     public static List<Rectangle> ancestorBounds(Widget widget, WidgetGroup stopAt) {
@@ -254,11 +183,11 @@ public final class SkinEditTargetResolver {
         Widget cur = widget.getParent();
         while (cur != null && cur != stopAt) {
             rects.add(new Rectangle(cur.getPositionX(), cur.getPositionY(),
-                cur.getSizeWidth(), cur.getSizeHeight()));
+                    cur.getSizeWidth(), cur.getSizeHeight()));
             cur = cur.getParent();
         }
         rects.add(new Rectangle(stopAt.getPositionX(), stopAt.getPositionY(),
-            stopAt.getSizeWidth(), stopAt.getSizeHeight()));
+                stopAt.getSizeWidth(), stopAt.getSizeHeight()));
         return rects;
     }
 }

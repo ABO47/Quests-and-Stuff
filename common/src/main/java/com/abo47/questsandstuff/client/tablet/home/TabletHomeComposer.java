@@ -11,7 +11,6 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
@@ -41,19 +40,24 @@ public final class TabletHomeComposer {
 
         Runnable[] refresh = new Runnable[1];
         WidgetGroup modalLayer = new ModalDismissGuard(0, 0, safeRootW, safeRootH, state, () -> refresh[0].run());
-        WidgetGroup homePanel = new TabletHomeOverviewPanel(0, 0, safeRootW, safeRootH);
+        TabletHomeOverviewPanel homePanel = new TabletHomeOverviewPanel(0, 0, safeRootW, safeRootH);
+        WidgetGroup innerContainer = homePanel.getInnerContainer();
 
         refresh[0] = () -> {
             SkinAnchorRegistry.clear();
             ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
-            Widget inner = SkinEditManager.findWidgetByKey(root, "home_inner");
-            if (inner != null) inner.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+            TabletRootWidget.refreshRootBackground(root, state);
+            homePanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+            innerContainer.setBackground((IGuiTexture) null);
             IGuiTexture rootOverrideTex = TabletRootWidget.resolveRootFill(state);
-            if (rootOverrideTex != null && inner != null) {
-                inner.setBackground(rootOverrideTex);
+            if (rootOverrideTex != null) {
+                homePanel.setBackground(rootOverrideTex);
             }
+            homePanel.getHomeBtn().setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()));
             SkinAnchorRegistry.register("root", root);
-            SkinAnchorRegistry.register("home_inner", homePanel);
+            SkinAnchorRegistry.register("home_close_btn", homePanel.getHomeBtn());
+            SkinAnchorRegistry.register("home_btn", homePanel.getHomeBtn());
+            SkinAnchorRegistry.register("home_inner", innerContainer);
             SkinEditManager.reapplyOverrides(state, root);
         };
         TabletUiFactory.setActiveTabletRefresh(refresh[0]);

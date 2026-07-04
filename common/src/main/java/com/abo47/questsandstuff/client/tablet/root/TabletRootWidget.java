@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -68,6 +69,10 @@ public final class TabletRootWidget extends WidgetGroup {
         this.homeBtn = btn;
     }
 
+    public ButtonWidget getHomeButton() {
+        return homeBtn;
+    }
+
     @Override
     public void setGui(ModularUI gui) {
         super.setGui(gui);
@@ -111,9 +116,19 @@ public final class TabletRootWidget extends WidgetGroup {
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         drawFullscreenBackdrop(graphics);
-        drawRootFill(graphics);
-        TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
-                TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
+        boolean hasOverride = hasRootOverride();
+        if (hasOverride) {
+            IGuiTexture saved = getBackgroundTexture();
+            setBackground(IGuiTexture.EMPTY);
+            drawRootFill(graphics);
+            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+                    TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
+            setBackground(saved);
+        } else {
+            drawRootFill(graphics);
+            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+                    TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
+        }
         if (homeBtn != null) {
             homeBtn.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         }
@@ -150,19 +165,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
+        if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseDragged(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b, dx, dy) -> super.mouseDragged(x, y, b, dx, dy), mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
+        if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseReleased(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseReleased(x, y, b), mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
-        if (state != null && state.root.skinEditMode && !ModalStateQueries.anyOpen(state)) return true;
+        if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseWheelMove(this, state, modalLayer, frontWindowLayer, (x, y, d) -> super.mouseWheelMove(x, y, d), mouseX, mouseY, wheelDelta);
     }
 
@@ -217,10 +232,7 @@ public final class TabletRootWidget extends WidgetGroup {
 
     private void drawRootFill(GuiGraphics graphics) {
         if (state == null) return;
-        String app = state.root.currentApp;
-        String rootKey = app.isBlank() ? "root" : app + ":root";
-        String raw = state.root.skinFillOverrides.get(rootKey);
-        if (raw == null) raw = state.root.skinFillOverrides.get("root");
+        String raw = rootFillRaw(state);
         SkinFillOverride override = SkinFillOverride.parse(raw);
         if (override != null) {
             IGuiTexture tex = override.createTexture();
@@ -232,17 +244,48 @@ public final class TabletRootWidget extends WidgetGroup {
         SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
     }
 
+    private boolean hasRootOverride() {
+        if (state == null) return false;
+        String raw = rootFillRaw(state);
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        return override != null && override.createTexture() != null;
+    }
+
+    private static String rootFillRaw(TabletUiState state) {
+        if (state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return null;
+        String rootKey = SkinOverrideKey.resolveTargetKey(state, "root");
+        String qualified = SkinOverrideKey.overrideKey(state, "root");
+        String raw = state.root.skinFillOverrides.get(qualified);
+        if (raw == null && !qualified.equals(rootKey)) {
+            raw = state.root.skinFillOverrides.get(rootKey);
+        }
+        return raw;
+    }
+
     public static IGuiTexture resolveRootFill(TabletUiState state) {
         if (state == null) return null;
-        String app = state.root.currentApp;
-        String rootKey = app.isBlank() ? "root" : app + ":root";
-        String raw = state.root.skinFillOverrides.get(rootKey);
-        if (raw == null) raw = state.root.skinFillOverrides.get("root");
+        String raw = rootFillRaw(state);
         if (raw == null) return null;
         SkinFillOverride override = SkinFillOverride.parse(raw);
         if (override == null) return null;
         IGuiTexture tex = override.createTexture();
         if (tex instanceof com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture) return null;
         return tex;
+    }
+
+    public static boolean hasActiveRootOverride(TabletUiState state) {
+        if (state == null) return false;
+        String raw = rootFillRaw(state);
+        if (raw == null) return false;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return false;
+        return override.createTexture() != null;
+    }
+
+    public static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
+        boolean hasOverride = hasActiveRootOverride(state);
+        root.setBackground(state != null && (state.root.fullScreenMode || hasOverride)
+                ? SurfaceFactory.transparent()
+                : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
     }
 }

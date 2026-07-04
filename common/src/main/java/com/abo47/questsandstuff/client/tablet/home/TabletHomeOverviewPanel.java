@@ -22,6 +22,17 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 final class TabletHomeOverviewPanel extends WidgetGroup {
     private static final int HOME_BTN_SIZE = 10;
     private static final int APP_ICON_SIZE = 48;
+    private final WidgetGroup innerContainer;
+
+    private final ButtonWidget homeBtn;
+
+    WidgetGroup getInnerContainer() {
+        return innerContainer;
+    }
+
+    ButtonWidget getHomeBtn() {
+        return homeBtn;
+    }
 
     TabletHomeOverviewPanel(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -30,7 +41,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         int innerX = ROOT_PAD_X;
         int innerY = ROOT_PAD_Y;
 
-        WidgetGroup innerContainer = new WidgetGroup(innerX, innerY, innerW, innerH) {
+        innerContainer = new WidgetGroup(innerX, innerY, innerW, innerH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 TabletPanelChrome.drawPanelChrome(graphics, this);
@@ -43,7 +54,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         int gutterX = innerX + innerW;
         int btnX = gutterX + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
         int btnY = innerY + (innerH - HOME_BTN_SIZE) / 2;
-        ButtonWidget homeBtn = new ButtonWidget(btnX, btnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
+        homeBtn = new ButtonWidget(btnX, btnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.closeTabletUi(null, false, "home_button"));
         homeBtn.setClientSideWidget();

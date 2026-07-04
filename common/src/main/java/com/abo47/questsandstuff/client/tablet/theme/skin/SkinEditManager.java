@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public final class SkinEditManager {
     private SkinEditManager() {
@@ -43,14 +42,16 @@ public final class SkinEditManager {
             root.closeContextMenu();
         }
 
-        String hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+        Widget homeBtn = root.getHomeButton();
+        String hitKey;
+        if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
+            hitKey = "home_btn";
+        } else {
+            hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+        }
 
         if (button == 0) {
-            if (hitKey != null) {
-                state.root.skinEditSelectedTarget = hitKey;
-                return true;
-            }
-            state.root.skinEditSelectedTarget = "";
+            state.root.skinEditSelectedTarget = hitKey != null ? hitKey : "";
             return true;
         }
 
@@ -69,24 +70,47 @@ public final class SkinEditManager {
 
     public static void reapplyOverrides(TabletUiState state, WidgetGroup root) {
         if (state == null || root == null) return;
+        state.root.activeSkinTargets.clear();
         if (state.root.skinFillOverrides.isEmpty()) return;
-        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-        for (Map.Entry<String, String> entry : state.root.skinFillOverrides.entrySet()) {
-            String key = entry.getKey();
+        for (var entry : state.root.skinFillOverrides.entrySet()) {
+            String entryKey = entry.getKey();
 
-            if (key.contains(":") && !key.startsWith(appPrefix)) continue;
-
-            String targetKey = key.contains(":") ? key.substring(key.indexOf(':') + 1) : key;
+            String targetKey;
+            if (entryKey.contains(":")) {
+                String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
+                if (!entryKey.startsWith(appPrefix)) continue;
+                targetKey = entryKey.substring(entryKey.indexOf(':') + 1);
+            } else {
+                targetKey = entryKey;
+            }
 
             if ("root".equals(targetKey)) continue;
+            if (SkinOverrideKey.isSharedKey(targetKey) && !SkinOverrideKey.isSharedKey(entryKey)) continue;
 
             Widget w = SkinEditTargetResolver.widgetForKey(root, targetKey);
             if (w == null) continue;
             SkinFillOverride override = SkinFillOverride.parse(entry.getValue());
             if (override == null) continue;
             IGuiTexture tex = override.createTexture();
-            if (tex != null) {
+            if (tex == null) continue;
+
+            if (SkinOverrideKey.isSharedKey(targetKey) && w instanceof WidgetGroup wg) {
+                for (Widget child : wg.widgets) {
+                    if (!SkinEditTargetResolver.hasCustomChrome(child)) {
+                        child.setBackground(tex);
+                    }
+                }
+            } else {
                 w.setBackground(tex);
+            }
+            state.root.activeSkinTargets.add(targetKey);
+
+            if (SkinOverrideKey.hasCanvasBackground(targetKey)) {
+                String bgKey = SkinOverrideKey.viewportBackgroundKey(targetKey);
+                if (bgKey != null) {
+                    Widget bg = SkinAnchorRegistry.findByKey(bgKey);
+                    if (bg != null) bg.setBackground(IGuiTexture.EMPTY);
+                }
             }
         }
     }
@@ -99,15 +123,12 @@ public final class SkinEditManager {
         String targetKey = state.root.skinEditSelectedTarget;
         if (targetKey == null || targetKey.isBlank()) return;
 
-        String app = state.root.currentApp;
-        String overrideKey = app.isBlank() ? targetKey : app + ":" + targetKey;
-        String rawOverride = state.root.skinFillOverrides.get(overrideKey);
-        if (rawOverride == null) {
-            rawOverride = state.root.skinFillOverrides.get(targetKey);
-        }
+        String rawOverride = SkinOverrideKey.resolveOverride(state, targetKey);
         SkinFillOverride currentOverride = SkinFillOverride.parse(rawOverride);
         String currentMode = currentOverride != null ? currentOverride.mode() : "stretch";
         String currentAsset = currentOverride != null ? currentOverride.path() : "";
+
+        String resolvedTarget = SkinOverrideKey.resolveTargetKey(state, targetKey);
 
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActionFactory.action(
@@ -116,8 +137,8 @@ public final class SkinEditManager {
                 TabletColors.INTERACTIVE,
                 () -> {
                     root.closeContextMenu();
-                    state.modal.skinEditFillTarget = targetKey;
-                    ModalOpenActions.openAssetPicker(state, targetKey, currentAsset);
+                    state.modal.skinEditFillTarget = resolvedTarget;
+                    ModalOpenActions.openAssetPicker(state, resolvedTarget, currentAsset);
                     if (refresher != null) refresher.run();
                 }));
 
@@ -128,7 +149,7 @@ public final class SkinEditManager {
                 currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     root.closeContextMenu();
-                    setFillMode(state, targetKey, "stretch", currentAsset, root, refresher);
+                    setFillMode(state, resolvedTarget, "stretch", currentAsset, root, refresher);
                 }));
         modeActions.add(ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
@@ -136,7 +157,7 @@ public final class SkinEditManager {
                 currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     root.closeContextMenu();
-                    setFillMode(state, targetKey, "tile", currentAsset, root, refresher);
+                    setFillMode(state, resolvedTarget, "tile", currentAsset, root, refresher);
                 }));
         actions.add(ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
@@ -144,26 +165,21 @@ public final class SkinEditManager {
                 TabletColors.TEXT_PRIMARY,
                 modeActions));
 
-        String removeKey = overrideKey;
-        if (rawOverride == null || rawOverride.isBlank()) {
-            removeKey = targetKey;
-        }
         if (rawOverride != null && !rawOverride.isBlank()) {
-            final String removalTarget = removeKey;
+            String removalTarget = resolvedTarget;
             actions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     "delete",
                     TabletColors.ERROR,
                     () -> {
                         root.closeContextMenu();
-                        state.root.skinFillOverrides.remove(removalTarget);
-                        state.root.skinFillOverrides.remove(targetKey);
-                        reapplyOverrides(state, root);
-                        if (refresher != null) refresher.run();
-                        if (!"root".equals(targetKey)) {
-                            Widget w = SkinEditTargetResolver.widgetForKey(root, targetKey);
-                            if (w != null) w.setBackground((IGuiTexture) null);
+                        String qualified = SkinOverrideKey.overrideKey(state, targetKey);
+                        state.root.skinFillOverrides.remove(qualified);
+                        String bare = SkinOverrideKey.resolveTargetKey(state, targetKey);
+                        if (!bare.equals(qualified)) {
+                            state.root.skinFillOverrides.remove(bare);
                         }
+                        if (refresher != null) refresher.run();
                         TabletUiFactory.persistSkinState(state);
                     }));
         }
@@ -186,10 +202,10 @@ public final class SkinEditManager {
 
     private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, WidgetGroup root, Runnable refresher) {
         if (asset == null || asset.isBlank()) return;
-        String app = state.root.currentApp;
-        String entryKey = app.isBlank() ? targetKey : app + ":" + targetKey;
+        String entryKey = SkinOverrideKey.isSharedKey(targetKey) ? targetKey : (state.root.currentApp.isBlank() ? targetKey : state.root.currentApp + ":" + targetKey);
         SkinFillOverride override = new SkinFillOverride(mode, asset);
         state.root.skinFillOverrides.put(entryKey, override.encode());
+        state.root.activeSkinTargets.add(targetKey);
         reapplyOverrides(state, root);
         if (refresher != null) refresher.run();
         TabletUiFactory.persistSkinState(state);

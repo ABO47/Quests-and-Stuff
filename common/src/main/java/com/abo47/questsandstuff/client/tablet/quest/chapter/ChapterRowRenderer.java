@@ -50,11 +50,11 @@ final class ChapterRowRenderer {
             return;
         }
 
+        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter));
+        int border = bgTexture != null ? 0 : (selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE);
         int fill = TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(chapter), TabletColors.SURFACE_PANEL_ALT);
-        int border = selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
 
-        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter));
         if (bgTexture != null) {
             chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, bgTexture));
         }

@@ -94,14 +94,15 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         int height = getSizeHeight();
 
         IGuiTexture skinBg = getBackgroundTexture();
-        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+        boolean hasSkinOverride = skinBg != null && !skinBg.equals(IGuiTexture.EMPTY);
+        if (hasSkinOverride) {
             skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
         } else {
             IGuiTexture fill = hovered ? SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, hoverPulseAlpha())) : SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT);
             fill.draw(graphics, mouseX, mouseY, left, top, width, height);
+            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
+            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
         }
-        SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
-        SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }

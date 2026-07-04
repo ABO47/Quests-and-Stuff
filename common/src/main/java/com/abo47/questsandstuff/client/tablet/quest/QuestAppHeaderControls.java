@@ -29,7 +29,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;
     private final TextFieldWidget searchField;
-    private final WidgetGroup canvasHeaderSurface;
     private final TabletIconTextButton toolsButton;
     private final TabletIconTextButton settingsButton;
     private final TabletIconTextButton blueprintButton;
@@ -40,7 +39,6 @@ final class QuestAppHeaderControls {
     private QuestAppHeaderControls(
             TextFieldWidget chapterSearchField,
             TextFieldWidget searchField,
-            WidgetGroup canvasHeaderSurface,
             TabletIconTextButton toolsButton,
             TabletIconTextButton settingsButton,
             TabletIconTextButton blueprintButton,
@@ -49,7 +47,6 @@ final class QuestAppHeaderControls {
     ) {
         this.chapterSearchField = chapterSearchField;
         this.searchField = searchField;
-        this.canvasHeaderSurface = canvasHeaderSurface;
         this.toolsButton = toolsButton;
         this.settingsButton = settingsButton;
         this.blueprintButton = blueprintButton;
@@ -90,9 +87,6 @@ final class QuestAppHeaderControls {
                 focused -> state.root.searchFocused = focused
         );
 
-        WidgetGroup canvasHeaderSurface = new WidgetGroup(canvasHeaderX, topY, 60, headerH);
-        canvasHeaderSurface.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
-
         int toolsW = headerH;
         TabletIconTextButton toolsButton = headerButton(0, 0, toolsW, headerH, "tools", TabletColors.INTERACTIVE, click -> {
             ToolMenuAnimation.toggleMain(state);
@@ -131,11 +125,35 @@ final class QuestAppHeaderControls {
             refresh.run();
         });
 
-        return new QuestAppHeaderControls(chapterSearchField, searchField, canvasHeaderSurface, toolsButton, settingsButton, blueprintButton, claimAllButton, editorButton);
+        return new QuestAppHeaderControls(chapterSearchField, searchField, toolsButton, settingsButton, blueprintButton, claimAllButton, editorButton);
     }
 
     TextFieldWidget chapterSearchField() {
         return chapterSearchField;
+    }
+
+    TextFieldWidget searchField() {
+        return searchField;
+    }
+
+    TabletIconTextButton toolsButton() {
+        return toolsButton;
+    }
+
+    TabletIconTextButton settingsButton() {
+        return settingsButton;
+    }
+
+    TabletIconTextButton blueprintButton() {
+        return blueprintButton;
+    }
+
+    TabletIconTextButton claimAllButton() {
+        return claimAllButton;
+    }
+
+    TabletIconTextButton editorButton() {
+        return editorButton;
     }
 
     int toolsX() {
@@ -154,7 +172,6 @@ final class QuestAppHeaderControls {
     void refreshSurfaceFactory(TabletUiState state) {
         chapterSearchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
         searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
-        canvasHeaderSurface.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         toolsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         settingsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         blueprintButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
@@ -180,8 +197,6 @@ final class QuestAppHeaderControls {
         int searchX = headerX;
         int searchEnd = (showBlueprintButton ? blueprintX : settingsX) - topGap;
         int searchW = Math.max(60, searchEnd - searchX);
-        canvasHeaderSurface.setSelfPosition(headerX, topY);
-        canvasHeaderSurface.setSize(headerW, headerH);
         searchField.setSelfPosition(searchX, topY);
         searchField.setSize(searchW, headerH);
         layoutHeaderButton(editorButton, editorX, topY, toolsW, headerH, showEditorToggle, new Component[]{
@@ -209,7 +224,6 @@ final class QuestAppHeaderControls {
     }
 
     void addToCanvas(WidgetGroup canvasPanel) {
-        canvasPanel.addWidget(canvasHeaderSurface);
         canvasPanel.addWidget(searchField);
         canvasPanel.addWidget(settingsButton);
         canvasPanel.addWidget(blueprintButton);

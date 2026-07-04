@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditTargetResolver;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Rectangle;
@@ -16,18 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QuestDetailsDescriptionCanvas extends WidgetGroup {
-    QuestDetailsDescriptionCanvas(int x, int y, int w, int h) {
-        super(x, y, w, h);
-    }
-}
-
-class TabletHomeOverviewPanel extends WidgetGroup {
-    TabletHomeOverviewPanel(int x, int y, int w, int h) {
-        super(x, y, w, h);
-    }
-}
-
 class QuestDetailsLayerWidget extends WidgetGroup {
     QuestDetailsLayerWidget(int x, int y, int w, int h) {
         super(x, y, w, h);
@@ -36,11 +26,23 @@ class QuestDetailsLayerWidget extends WidgetGroup {
 
 class SkinEditTargetResolverTest {
 
+    @BeforeEach
+    void setUp() {
+        SkinAnchorRegistry.clear();
+    }
+
     @Test
-    void stableKeyForPlainWidgetGroupReturnsClassName() {
+    void stableKeyForPlainWidgetGroupReturnsPathKey() {
         WidgetGroup wg = new WidgetGroup(0, 0, 100, 100);
         String key = SkinEditTargetResolver.stableKeyFor(wg);
         assertEquals("WidgetGroup", key);
+    }
+
+    @Test
+    void stableKeyForRegisteredWidgetReturnsRegisteredKey() {
+        WidgetGroup wg = new WidgetGroup(0, 0, 100, 100);
+        SkinAnchorRegistry.register("test_key", wg);
+        assertEquals("test_key", SkinEditTargetResolver.stableKeyFor(wg));
     }
 
     @Test
@@ -79,13 +81,20 @@ class SkinEditTargetResolverTest {
     }
 
     @Test
-    void isTargetableWithCustomChromeIsTrueEvenWithoutBackground() {
+    void isTargetableWithCustomChromeAndNoBackgroundIsFalse() {
         WidgetGroup custom = new WidgetGroup(0, 0, 100, 100) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             }
         };
-        assertTrue(SkinEditTargetResolver.isTargetable(custom));
+        assertFalse(SkinEditTargetResolver.isTargetable(custom));
+    }
+
+    @Test
+    void isTargetableRegisteredWithoutBackgroundIsTrue() {
+        WidgetGroup wg = new WidgetGroup(0, 0, 100, 100);
+        SkinAnchorRegistry.register("registered_no_bg", wg);
+        assertTrue(SkinEditTargetResolver.isTargetable(wg));
     }
 
     @Test
@@ -115,6 +124,16 @@ class SkinEditTargetResolverTest {
     void widgetForKeyMissingKeyReturnsNull() {
         WidgetGroup root = new WidgetGroup(0, 0, 100, 100);
         assertNull(SkinEditTargetResolver.widgetForKey(root, "nonexistent"));
+    }
+
+    @Test
+    void widgetForKeyRegisteredKeyReturnsWidget() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        WidgetGroup child = new WidgetGroup(10, 10, 100, 100);
+        SkinAnchorRegistry.register("my_child", child);
+        root.addWidget(child);
+
+        assertEquals(child, SkinEditTargetResolver.widgetForKey(root, "my_child"));
     }
 
     @Test
@@ -187,17 +206,25 @@ class SkinEditTargetResolverTest {
     }
 
     @Test
-    void questDetailsDescriptionCanvasInsideLayerReturnsStableKey() {
-        QuestDetailsLayerWidget layer = new QuestDetailsLayerWidget(0, 0, 300, 300);
-        QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(10, 10, 280, 280);
-        layer.addWidget(canvas);
+    void registeredWidgetIsFoundByFindTargetKeyAt() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        WidgetGroup target = new WidgetGroup(10, 10, 100, 100);
+        SkinAnchorRegistry.register("registered_target", target);
+        root.addWidget(target);
 
-        String key = SkinEditTargetResolver.stableKeyFor(canvas);
-        assertEquals("quest_details_description_canvas", key);
+        String key = SkinEditTargetResolver.findTargetKeyAt(root, 15, 15);
+        assertEquals("registered_target", key);
     }
 
     @Test
-    void emptyCustomChromeWidgetInsideQuestDetailsLayerIsExcludedFromTargeting() {
+    void questDetailsDescriptionCanvasFallsBackToPathKey() {
+        WidgetGroup canvas = new WidgetGroup(10, 10, 100, 100);
+        String key = SkinEditTargetResolver.stableKeyFor(canvas);
+        assertEquals("WidgetGroup", key);
+    }
+
+    @Test
+    void customChromeWidgetInsideQuestDetailsLayerIsExcludedIfEmpty() {
         QuestDetailsLayerWidget layer = new QuestDetailsLayerWidget(0, 0, 300, 300);
         WidgetGroup dim = new WidgetGroup(0, 0, 300, 300) {
             @Override
@@ -210,21 +237,7 @@ class SkinEditTargetResolverTest {
     }
 
     @Test
-    void customChromeWidgetChildOfTabletHomeOverviewPanelResolvesToHomeInner() {
-        TabletHomeOverviewPanel panel = new TabletHomeOverviewPanel(0, 0, 300, 300);
-        WidgetGroup inner = new WidgetGroup(10, 10, 280, 280) {
-            @Override
-            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            }
-        };
-        panel.addWidget(inner);
-
-        String key = SkinEditTargetResolver.stableKeyFor(inner);
-        assertEquals("home_inner", key);
-    }
-
-    @Test
-    void nonEmptyCustomChromeWidgetInsideQuestDetailsLayerIsTargetable() {
+    void nonEmptyCustomChromeWidgetInsideQuestDetailsLayerIsNotTargetableWithoutBackground() {
         QuestDetailsLayerWidget layer = new QuestDetailsLayerWidget(0, 0, 300, 300);
         WidgetGroup modal = new WidgetGroup(10, 10, 280, 280) {
             @Override
@@ -234,13 +247,21 @@ class SkinEditTargetResolverTest {
         modal.addWidget(new WidgetGroup(0, 0, 100, 100));
         layer.addWidget(modal);
 
-        assertTrue(SkinEditTargetResolver.isTargetable(modal));
+        assertFalse(SkinEditTargetResolver.isTargetable(modal));
     }
 
     @Test
-    void questDetailsDescriptionCanvasOutsideLayerFallsBackToPathKey() {
-        QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(10, 10, 100, 100);
-        String key = SkinEditTargetResolver.stableKeyFor(canvas);
-        assertEquals("QuestDetailsDescriptionCanvas", key);
+    void registeredQuestDetailsModalIsTargetable() {
+        QuestDetailsLayerWidget layer = new QuestDetailsLayerWidget(0, 0, 300, 300);
+        WidgetGroup modal = new WidgetGroup(10, 10, 280, 280) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            }
+        };
+        modal.addWidget(new WidgetGroup(0, 0, 100, 100));
+        SkinAnchorRegistry.register("quest_details_modal", modal);
+        layer.addWidget(modal);
+
+        assertTrue(SkinEditTargetResolver.isTargetable(modal));
     }
 }

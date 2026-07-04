@@ -46,9 +46,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        TabletPanelChrome.drawPanelChrome(graphics, this);
+        TabletPanelChrome.drawPanelChrome(graphics, this, state);
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-        TabletPanelChrome.drawPanelOutline(graphics, this);
+        TabletPanelChrome.drawPanelOutline(graphics, this, state);
     }
 
     @Override
