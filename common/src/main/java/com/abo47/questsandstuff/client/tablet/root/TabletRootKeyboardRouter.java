@@ -62,12 +62,9 @@ final class TabletRootKeyboardRouter {
                     root.closeContextMenu();
                     return true;
                 }
-                if (!state.root.skinEditSelectedTarget.isEmpty()) {
-                    state.root.skinEditSelectedTarget = "";
-                    refresher.run();
-                    return true;
-                }
+                state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
+                root.closeContextMenu();
                 TabletUiFactory.persistSkinState(state);
                 refresher.run();
                 return true;
@@ -91,6 +88,8 @@ final class TabletRootKeyboardRouter {
         if (root.isFrontWindowOpen()) {
             if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
                 state.root.skinEditMode = !state.root.skinEditMode;
+                state.root.skinEditSelectedTarget = "";
+                root.closeContextMenu();
                 TabletUiFactory.persistSkinState(state);
                 refresher.run();
                 return true;
@@ -132,6 +131,8 @@ final class TabletRootKeyboardRouter {
         }
         if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode)) {
             state.root.skinEditMode = !state.root.skinEditMode;
+            state.root.skinEditSelectedTarget = "";
+            root.closeContextMenu();
             TabletUiFactory.persistSkinState(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
             refresher.run();
