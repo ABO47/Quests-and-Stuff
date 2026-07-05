@@ -256,7 +256,7 @@ final class CanvasSceneRenderer {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
-        canvasViewport.addWidget(CanvasGlowEffect.overlay(card.x(), card.y(), card.width(), card.height()));
+        cardLayer.addWidget(CanvasGlowEffect.overlay(0, 0, card.width(), card.height()));
         addQuestTooltipHit(cardLayer, localCard);
     }
 
