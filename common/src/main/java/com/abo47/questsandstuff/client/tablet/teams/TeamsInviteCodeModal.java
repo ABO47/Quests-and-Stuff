@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -43,11 +42,6 @@ final class TeamsInviteCodeModal {
         if (layerH <= 0) {
             layerH = state.root.tabletRootHeight > 0 ? state.root.tabletRootHeight : ROOT_H;
         }
-
-        modal.addWidget(flatHitButton(0, 0, layerW, layerH, click -> {
-            state.teams.inviteCodeModalOpen = false;
-            refresh.run();
-        }));
 
         int panelW = Math.min(300, Math.max(200, layerW - 32));
         int panelH = 120;

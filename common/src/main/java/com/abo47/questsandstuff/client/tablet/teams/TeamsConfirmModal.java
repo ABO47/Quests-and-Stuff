@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -41,11 +40,6 @@ final class TeamsConfirmModal {
         if (layerH <= 0) {
             layerH = state.root.tabletRootHeight > 0 ? state.root.tabletRootHeight : ROOT_H;
         }
-
-        layer.addWidget(flatHitButton(0, 0, layerW, layerH, click -> {
-            state.teams.confirmModalOpen = false;
-            refresh.run();
-        }));
 
         int w = 200;
         int h = 80;
