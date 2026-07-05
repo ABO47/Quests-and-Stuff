@@ -42,7 +42,6 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsClosing = false;
         state.questDetails.questDetailsOpen = true;
         state.questDetails.questDetailsQuestId = trimmedQuestId;
-        ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
