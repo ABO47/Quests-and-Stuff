@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.quest.hud;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
@@ -36,7 +37,12 @@ final class QuestHudAssetLibraryBridge {
                 refresh[0].run();
             }
         });
-        refresh[0] = () -> ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
+        refresh[0] = () -> {
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
+            if (!ModalStateQueries.anyOpen(state)) {
+                Minecraft.getInstance().setScreen(editScreen);
+            }
+        };
         root.addWidget(modalLayer);
         refresh[0].run();
 
