@@ -95,23 +95,44 @@ public final class PinnedQuestHudOverlay {
         int count = Math.max(1, quests.size());
         int gap = count > 1 ? Math.min(STACK_GAP, Math.max(0, (safeH - count) / Math.max(1, count - 1))) : 0;
         int itemSpace = Math.max(count, safeH - gap * (count - 1));
-        int baseItemSpace = 0;
-        for (CompoundTag quest : quests) {
-            baseItemSpace += heightForQuest(quest);
+
+        int[] natural = new int[quests.size()];
+        int totalNatural = 0;
+        for (int i = 0; i < quests.size(); i++) {
+            natural[i] = heightForQuest(quests.get(i));
+            totalNatural += natural[i];
+        }
+
+        int[] allocated = new int[quests.size()];
+        float[] remainders = new float[quests.size()];
+        int allocatedTotal = 0;
+        for (int i = 0; i < quests.size(); i++) {
+            float exact = natural[i] * (float) itemSpace / Math.max(1, totalNatural);
+            int floored = (int) Math.floor(exact);
+            allocated[i] = Math.max(0, floored);
+            remainders[i] = exact - floored;
+            allocatedTotal += allocated[i];
+        }
+
+        int leftover = itemSpace - allocatedTotal;
+        while (leftover > 0) {
+            int bestIdx = 0;
+            float bestRem = -1;
+            for (int i = 0; i < quests.size(); i++) {
+                if (remainders[i] > bestRem) {
+                    bestRem = remainders[i];
+                    bestIdx = i;
+                }
+            }
+            allocated[bestIdx]++;
+            remainders[bestIdx] = -1;
+            leftover--;
         }
 
         int rowY = y;
-        int usedItemSpace = 0;
         for (int i = 0; i < quests.size(); i++) {
-            CompoundTag quest = quests.get(i);
-            int questHeight;
-            if (i == quests.size() - 1) {
-                questHeight = Math.max(1, itemSpace - usedItemSpace);
-            } else {
-                questHeight = Math.max(1, Math.round(heightForQuest(quest) * itemSpace / (float) Math.max(1, baseItemSpace)));
-                usedItemSpace += questHeight;
-            }
-            drawPinnedQuest(graphics, quest, x, rowY, width, questHeight, selected);
+            int questHeight = Math.max(1, allocated[i]);
+            drawPinnedQuest(graphics, quests.get(i), x, rowY, width, questHeight, selected);
             rowY += questHeight + gap;
         }
     }

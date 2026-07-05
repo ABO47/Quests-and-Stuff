@@ -49,9 +49,11 @@ final class QuestHudBackgroundRenderer {
                 SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL, panelAlpha)).draw(graphics, 0, 0, x, y, width, height);
             }
         }
-        int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
-        if (borderAlpha > 0) {
-            drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? TabletColors.INTERACTIVE : TabletColors.BORDER_BASE, borderAlpha));
+        if (selected || QuestHudLayoutManager.showBorders(element)) {
+            int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
+            if (borderAlpha > 0) {
+                drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? TabletColors.INTERACTIVE : TabletColors.BORDER_BASE, borderAlpha));
+            }
         }
     }
 

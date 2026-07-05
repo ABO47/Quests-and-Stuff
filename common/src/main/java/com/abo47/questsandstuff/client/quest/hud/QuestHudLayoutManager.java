@@ -41,6 +41,8 @@ public final class QuestHudLayoutManager {
     private static String pinnedBackground = "";
     private static int completionOpacity = DEFAULT_OPACITY;
     private static int pinnedOpacity = DEFAULT_OPACITY;
+    private static boolean completionShowBorders = true;
+    private static boolean pinnedShowBorders = true;
     private static boolean snapToGrid = true;
 
     private QuestHudLayoutManager() {
@@ -138,6 +140,20 @@ public final class QuestHudLayoutManager {
         }
     }
 
+    public static synchronized boolean showBorders(Element element) {
+        load();
+        return element == Element.COMPLETION ? completionShowBorders : pinnedShowBorders;
+    }
+
+    public static synchronized void setShowBorders(Element element, boolean show) {
+        load();
+        if (element == Element.COMPLETION) {
+            completionShowBorders = show;
+        } else {
+            pinnedShowBorders = show;
+        }
+    }
+
     public static synchronized boolean snapToGrid() {
         load();
         return snapToGrid;
@@ -170,6 +186,8 @@ public final class QuestHudLayoutManager {
         pinnedBackground = "";
         completionOpacity = DEFAULT_OPACITY;
         pinnedOpacity = DEFAULT_OPACITY;
+        completionShowBorders = true;
+        pinnedShowBorders = true;
         snapToGrid = true;
     }
 
@@ -188,6 +206,8 @@ public final class QuestHudLayoutManager {
                 pinnedBackground,
                 completionOpacity,
                 pinnedOpacity,
+                completionShowBorders,
+                pinnedShowBorders,
                 snapToGrid
         );
     }
@@ -210,6 +230,8 @@ public final class QuestHudLayoutManager {
         pinnedBackground = snapshot.pinnedBackground();
         completionOpacity = snapshot.completionOpacity();
         pinnedOpacity = snapshot.pinnedOpacity();
+        completionShowBorders = snapshot.completionShowBorders();
+        pinnedShowBorders = snapshot.pinnedShowBorders();
         snapToGrid = snapshot.snapToGrid();
     }
 
@@ -223,6 +245,7 @@ public final class QuestHudLayoutManager {
         completion.addProperty("height_scale", completionHeightScale);
         completion.addProperty("background", completionBackground);
         completion.addProperty("opacity", completionOpacity);
+        completion.addProperty("show_borders", completionShowBorders);
         root.add("completion", completion);
 
         JsonObject pinned = new JsonObject();
@@ -232,6 +255,7 @@ public final class QuestHudLayoutManager {
         pinned.addProperty("height_scale", pinnedHeightScale);
         pinned.addProperty("background", pinnedBackground);
         pinned.addProperty("opacity", pinnedOpacity);
+        pinned.addProperty("show_borders", pinnedShowBorders);
         root.add("pinned", pinned);
         root.addProperty("snapToGrid", snapToGrid);
 
@@ -241,7 +265,9 @@ public final class QuestHudLayoutManager {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
+            Files.writeString(tmp, GSON.toJson(root), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.move(tmp, file, java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed writing Quests and Stuff HUD layout {}", file, e);
         }
@@ -269,6 +295,7 @@ public final class QuestHudLayoutManager {
             completionHeightScale = clamp(intValue(completion, "height_scale", completionScale), MIN_SCALE, MAX_SCALE);
             completionBackground = stringValue(completion, "background", completionBackground);
             completionOpacity = clamp(intValue(completion, "opacity", completionOpacity), 0, 100);
+            completionShowBorders = boolValue(completion, "show_borders", completionShowBorders);
             JsonObject pinned = object(root, "pinned");
             pinnedX = intValue(pinned, "x", pinnedX);
             pinnedY = intValue(pinned, "y", pinnedY);
@@ -276,6 +303,7 @@ public final class QuestHudLayoutManager {
             pinnedHeightScale = clamp(intValue(pinned, "height_scale", pinnedScale), MIN_SCALE, MAX_SCALE);
             pinnedBackground = stringValue(pinned, "background", pinnedBackground);
             pinnedOpacity = clamp(intValue(pinned, "opacity", pinnedOpacity), 0, 100);
+            pinnedShowBorders = boolValue(pinned, "show_borders", pinnedShowBorders);
             snapToGrid = boolValue(root, "snapToGrid", snapToGrid);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed reading Quests and Stuff HUD layout {}, keeping defaults", file, e);
@@ -380,6 +408,8 @@ public final class QuestHudLayoutManager {
             String pinnedBackground,
             int completionOpacity,
             int pinnedOpacity,
+            boolean completionShowBorders,
+            boolean pinnedShowBorders,
             boolean snapToGrid
     ) {
     }

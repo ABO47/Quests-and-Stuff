@@ -50,6 +50,8 @@
   "ui.questsandstuff.hud.pinned_preview": "Pinned Quest",
   "ui.questsandstuff.hud.quest_completed": "Quest completed",
   "ui.questsandstuff.hud.remove_background": "Remove Background",
+  "ui.questsandstuff.hud.hide_borders": "Hide Borders",
+  "ui.questsandstuff.hud.show_borders": "Show Borders",
   "ui.questsandstuff.icon_picker.mode.entities": "Entities",
   "ui.questsandstuff.icon_picker.mode.fluids": "Fluids",
   "ui.questsandstuff.icon_picker.mode.inventory": "Inventory",

@@ -8,14 +8,14 @@ import net.minecraft.network.chat.Component;
 
 public final class QuestHudLayoutDragHandler {
     private static final int GRID_STEP = 16;
-    private static final int GRID_VISUAL_MARGIN = 1;
     private static final int HANDLE_SIZE = 6;
+    private static final int SELECTION_PAD = 1;
 
     private final QuestHudLayoutManager.Snapshot original;
 
     private QuestHudLayoutManager.Element selected;
     private QuestHudLayoutManager.Element dragging;
-    private QuestHudLayoutManager.Element contextElement;
+    private int pinnedBaseHeightSnapshot;
     private DragMode dragMode = DragMode.NONE;
     private int dragOffsetX;
     private int dragOffsetY;
@@ -27,14 +27,13 @@ public final class QuestHudLayoutDragHandler {
     private int resizeStartSlotY;
     private int resizeStartWidth;
     private int resizeStartHeight;
-    private int contextX;
-    private int contextY;
     private boolean closed;
     private boolean openingChild;
     private Button snapButton;
 
     public QuestHudLayoutDragHandler() {
         this.original = QuestHudLayoutManager.snapshot();
+        this.pinnedBaseHeightSnapshot = PinnedQuestHudOverlay.currentStackHeight();
     }
 
     public QuestHudLayoutManager.Element selected() {
@@ -43,27 +42,6 @@ public final class QuestHudLayoutDragHandler {
 
     public void setSelected(QuestHudLayoutManager.Element element) {
         this.selected = element;
-    }
-
-    public QuestHudLayoutManager.Element contextElement() {
-        return contextElement;
-    }
-
-    public void setContextElement(QuestHudLayoutManager.Element element) {
-        this.contextElement = element;
-    }
-
-    public int contextX() {
-        return contextX;
-    }
-
-    public int contextY() {
-        return contextY;
-    }
-
-    public void setContextPosition(int x, int y) {
-        this.contextX = x;
-        this.contextY = y;
     }
 
     public boolean isClosed() {
@@ -101,16 +79,20 @@ public final class QuestHudLayoutDragHandler {
 
     private void snapElementToGrid(QuestHudLayoutManager.Element element, int screenWidth, int screenHeight) {
         QuestHudLayoutManager.HudBox raw = rawBoxFor(element, screenWidth, screenHeight);
-        QuestHudLayoutManager.HudBox slot = slotBox(raw);
-        QuestHudLayoutManager.HudBox visual = visualBoxInSlot(slot);
-        applySizeFromVisual(element, visual.width(), visual.height());
-        QuestHudLayoutManager.setPosition(element, visual.x(), visual.y(), screenWidth, screenHeight, visual.width(), visual.height());
+        int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(raw.width(), GRID_STEP, baseWidth(element));
+        int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(raw.height(), GRID_STEP, baseHeight(element));
+        applySizeFromVisual(element, snappedW, snappedH);
+        QuestHudLayoutManager.HudBox current = rawBoxFor(element, screenWidth, screenHeight);
+        int slotW = CanvasGeometry.slotSpanForVisualSize(current.width());
+        int slotH = CanvasGeometry.slotSpanForVisualSize(current.height());
+        int insetX = CanvasGeometry.visualInsetForSlot(slotW, current.width());
+        int insetY = CanvasGeometry.visualInsetForSlot(slotH, current.height());
+        int slotX = Math.max(0, Math.min(snapSlot(raw.x() - insetX), snapFloor(Math.max(0, screenWidth - slotW))));
+        int slotY = Math.max(0, Math.min(snapSlot(raw.y() - insetY), snapFloor(Math.max(0, screenHeight - slotH))));
+        QuestHudLayoutManager.setPosition(element, slotX + insetX, slotY + insetY, screenWidth, screenHeight, current.width(), current.height());
     }
 
     public void handleMouseClicked(double mouseX, double mouseY, int button, int screenWidth, int screenHeight) {
-        if (contextElement != null && !insideContext(mouseX, mouseY, screenWidth)) {
-            contextElement = null;
-        }
         QuestHudLayoutManager.Element target = elementAt(mouseX, mouseY, screenWidth, screenHeight);
         selected = target;
         if (target == null) {
@@ -151,14 +133,17 @@ public final class QuestHudLayoutDragHandler {
                     targetWidth = Math.max(1, Math.round(baseWidth * scale));
                     targetHeight = Math.max(1, Math.round(baseHeight * scale));
                 }
-                QuestHudLayoutManager.HudBox nextSlot = clampedSlot(resizeStartSlotX, resizeStartSlotY, targetWidth, targetHeight, screenWidth, screenHeight);
-                QuestHudLayoutManager.HudBox nextVisual = visualBoxInSlot(nextSlot);
-                applySizeFromVisual(dragging, nextVisual.width(), nextVisual.height());
+                int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(targetWidth, GRID_STEP, baseWidth);
+                int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(targetHeight, GRID_STEP, baseHeight);
+                applySizeFromVisual(dragging, snappedW, snappedH);
                 QuestHudLayoutManager.HudBox resized = rawBoxFor(dragging, screenWidth, screenHeight);
-                nextSlot = clampedSlot(resizeStartSlotX, resizeStartSlotY, resized.width(), resized.height(), screenWidth, screenHeight);
-                nextVisual = visualBoxInSlot(nextSlot);
-                applySizeFromVisual(dragging, nextVisual.width(), nextVisual.height());
-                QuestHudLayoutManager.setPosition(dragging, nextVisual.x(), nextVisual.y(), screenWidth, screenHeight, nextVisual.width(), nextVisual.height());
+                int slotW = CanvasGeometry.slotSpanForVisualSize(resized.width());
+                int slotH = CanvasGeometry.slotSpanForVisualSize(resized.height());
+                int insetX = CanvasGeometry.visualInsetForSlot(slotW, resized.width());
+                int insetY = CanvasGeometry.visualInsetForSlot(slotH, resized.height());
+                int slotX = Math.max(0, Math.min(resizeStartSlotX, snapFloor(Math.max(0, screenWidth - slotW))));
+                int slotY = Math.max(0, Math.min(resizeStartSlotY, snapFloor(Math.max(0, screenHeight - slotH))));
+                QuestHudLayoutManager.setPosition(dragging, slotX + insetX, slotY + insetY, screenWidth, screenHeight, resized.width(), resized.height());
                 return true;
             }
             if (Screen.hasShiftDown()) {
@@ -185,7 +170,7 @@ public final class QuestHudLayoutDragHandler {
         QuestHudLayoutManager.HudBox nextSlot = QuestHudLayoutManager.snapToGrid()
                 ? clampedSlot(nextX, nextY, raw.width(), raw.height(), screenWidth, screenHeight)
                 : new QuestHudLayoutManager.HudBox(nextX, nextY, raw.width(), raw.height());
-        QuestHudLayoutManager.HudBox nextVisual = QuestHudLayoutManager.snapToGrid() ? visualBoxInSlot(nextSlot) : nextSlot;
+        QuestHudLayoutManager.HudBox nextVisual = QuestHudLayoutManager.snapToGrid() ? visualBoxInSlot(nextSlot, dragging) : nextSlot;
         QuestHudLayoutManager.setPosition(dragging, nextVisual.x(), nextVisual.y(), screenWidth, screenHeight, nextVisual.width(), nextVisual.height());
         return true;
     }
@@ -222,13 +207,13 @@ public final class QuestHudLayoutDragHandler {
         if (!QuestHudLayoutManager.snapToGrid()) {
             return raw;
         }
-        QuestHudLayoutManager.HudBox slot = slotBox(raw);
-        return visualBoxInSlot(slot);
+        QuestHudLayoutManager.HudBox slot = slotBox(raw, screenWidth, screenHeight);
+        return visualBoxInSlot(slot, element);
     }
 
     public QuestHudLayoutManager.HudBox slotBoxFor(QuestHudLayoutManager.Element element, int screenWidth, int screenHeight) {
         QuestHudLayoutManager.HudBox raw = rawBoxFor(element, screenWidth, screenHeight);
-        return QuestHudLayoutManager.snapToGrid() ? slotBox(raw) : raw;
+        return QuestHudLayoutManager.snapToGrid() ? slotBox(raw, screenWidth, screenHeight) : raw;
     }
 
     public QuestHudLayoutManager.HudBox rawBoxFor(QuestHudLayoutManager.Element element, int screenWidth, int screenHeight) {
@@ -237,24 +222,25 @@ public final class QuestHudLayoutDragHandler {
                 : pinnedBox(screenWidth, screenHeight);
     }
 
-    public QuestHudLayoutManager.HudBox visualBoxInSlot(QuestHudLayoutManager.HudBox slot) {
+    public QuestHudLayoutManager.HudBox visualBoxInSlot(QuestHudLayoutManager.HudBox slot, QuestHudLayoutManager.Element element) {
+        int visualW = baseWidth(element) == 0 ? 0 : QuestHudLayoutManager.scaledSize(element, baseWidth(element));
+        int visualH = baseHeight(element) == 0 ? 0 : QuestHudLayoutManager.scaledHeight(element, baseHeight(element));
+        int insetX = CanvasGeometry.visualInsetForSlot(slot.width(), visualW);
+        int insetY = CanvasGeometry.visualInsetForSlot(slot.height(), visualH);
         return new QuestHudLayoutManager.HudBox(
-                slot.x() + GRID_VISUAL_MARGIN,
-                slot.y() + GRID_VISUAL_MARGIN,
-                slot.width() - GRID_VISUAL_MARGIN * 2,
-                slot.height() - GRID_VISUAL_MARGIN * 2
+                slot.x() + insetX,
+                slot.y() + insetY,
+                visualW,
+                visualH
         );
     }
 
     public static QuestHudLayoutManager.HudBox selectionBox(QuestHudLayoutManager.HudBox box) {
-        if (!QuestHudLayoutManager.snapToGrid()) {
-            return box;
-        }
         return new QuestHudLayoutManager.HudBox(
-                box.x() + GRID_VISUAL_MARGIN,
-                box.y() + GRID_VISUAL_MARGIN,
-                box.width() - GRID_VISUAL_MARGIN * 2,
-                box.height() - GRID_VISUAL_MARGIN * 2
+                box.x() - SELECTION_PAD,
+                box.y() - SELECTION_PAD,
+                box.width() + SELECTION_PAD * 2,
+                box.height() + SELECTION_PAD * 2
         );
     }
 
@@ -288,7 +274,7 @@ public final class QuestHudLayoutDragHandler {
                 screenWidth,
                 screenHeight,
                 QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, PinnedQuestHudOverlay.width()),
-                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, PinnedQuestHudOverlay.currentStackHeight())
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, pinnedBaseHeightSnapshot)
         );
     }
 
@@ -297,17 +283,21 @@ public final class QuestHudLayoutDragHandler {
     }
 
     private int baseHeight(QuestHudLayoutManager.Element element) {
-        return element == QuestHudLayoutManager.Element.COMPLETION ? QuestCompletionNotificationOverlay.height() : PinnedQuestHudOverlay.currentStackHeight();
+        return element == QuestHudLayoutManager.Element.COMPLETION ? QuestCompletionNotificationOverlay.height() : pinnedBaseHeightSnapshot;
     }
 
-    private QuestHudLayoutManager.HudBox slotBox(QuestHudLayoutManager.HudBox visual) {
+    private QuestHudLayoutManager.HudBox slotBox(QuestHudLayoutManager.HudBox visual, int screenWidth, int screenHeight) {
+        int slotW = CanvasGeometry.slotSpanForVisualSize(visual.width());
+        int slotH = CanvasGeometry.slotSpanForVisualSize(visual.height());
+        int insetX = CanvasGeometry.visualInsetForSlot(slotW, visual.width());
+        int insetY = CanvasGeometry.visualInsetForSlot(slotH, visual.height());
         return clampedSlot(
-                snapSlot(visual.x() - GRID_VISUAL_MARGIN),
-                snapSlot(visual.y() - GRID_VISUAL_MARGIN),
+                snapSlot(visual.x() - insetX),
+                snapSlot(visual.y() - insetY),
                 visual.width(),
                 visual.height(),
-                0,
-                0
+                screenWidth,
+                screenHeight
         );
     }
 
@@ -333,25 +323,6 @@ public final class QuestHudLayoutDragHandler {
         int widthPercent = Math.round(visualWidth * 100.0f / Math.max(1, baseW));
         int heightPercent = Math.round(visualHeight * 100.0f / Math.max(1, baseH));
         QuestHudLayoutManager.setSizePercent(element, widthPercent, heightPercent);
-    }
-
-    private boolean insideContext(double mouseX, double mouseY, int screenWidth) {
-        int menuW = contextMenuW();
-        return QuestHudLayoutEditScreen.inside(mouseX, mouseY, contextMenuX(screenWidth), contextMenuY(screenWidth), menuW, QuestHudLayoutEditScreen.contextMenuH());
-    }
-
-    private int contextMenuX(int screenWidth) {
-        int menuW = contextMenuW();
-        return Math.max(4, Math.min(contextX, screenWidth - menuW - 4));
-    }
-
-    private int contextMenuY(int screenHeight) {
-        int menuH = QuestHudLayoutEditScreen.contextMenuH();
-        return Math.max(4, Math.min(contextY, screenHeight - menuH - 4));
-    }
-
-    private static int contextMenuW() {
-        return 160;
     }
 
     enum DragMode {
