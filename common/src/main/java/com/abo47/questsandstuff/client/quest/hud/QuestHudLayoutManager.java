@@ -16,8 +16,7 @@ import java.nio.file.StandardOpenOption;
 public final class QuestHudLayoutManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final int UNSET = Integer.MIN_VALUE;
-    private static final int MIN_SCALE = 60;
-    private static final int MAX_SCALE = 2000;
+
     private static final int DEFAULT_OPACITY = 100;
     private static final int DEFAULT_COMPLETION_X = 225;
     private static final int DEFAULT_COMPLETION_Y = 241;
@@ -99,14 +98,12 @@ public final class QuestHudLayoutManager {
 
     public static synchronized void setSizePercent(Element element, int widthPercent, int heightPercent) {
         load();
-        int widthScale = clamp(widthPercent, MIN_SCALE, MAX_SCALE);
-        int heightScale = clamp(heightPercent, MIN_SCALE, MAX_SCALE);
         if (element == Element.COMPLETION) {
-            completionScale = widthScale;
-            completionHeightScale = heightScale;
+            completionScale = Math.max(1, widthPercent);
+            completionHeightScale = Math.max(1, heightPercent);
         } else {
-            pinnedScale = widthScale;
-            pinnedHeightScale = heightScale;
+            pinnedScale = Math.max(1, widthPercent);
+            pinnedHeightScale = Math.max(1, heightPercent);
         }
     }
 
@@ -291,16 +288,16 @@ public final class QuestHudLayoutManager {
             JsonObject completion = object(root, "completion");
             completionX = intValue(completion, "x", completionX);
             completionY = intValue(completion, "y", completionY);
-            completionScale = clamp(intValue(completion, "scale", completionScale), MIN_SCALE, MAX_SCALE);
-            completionHeightScale = clamp(intValue(completion, "height_scale", completionScale), MIN_SCALE, MAX_SCALE);
+            completionScale = Math.max(1, intValue(completion, "scale", completionScale));
+            completionHeightScale = Math.max(1, intValue(completion, "height_scale", completionScale));
             completionBackground = stringValue(completion, "background", completionBackground);
             completionOpacity = clamp(intValue(completion, "opacity", completionOpacity), 0, 100);
             completionShowBorders = boolValue(completion, "show_borders", completionShowBorders);
             JsonObject pinned = object(root, "pinned");
             pinnedX = intValue(pinned, "x", pinnedX);
             pinnedY = intValue(pinned, "y", pinnedY);
-            pinnedScale = clamp(intValue(pinned, "scale", pinnedScale), MIN_SCALE, MAX_SCALE);
-            pinnedHeightScale = clamp(intValue(pinned, "height_scale", pinnedScale), MIN_SCALE, MAX_SCALE);
+            pinnedScale = Math.max(1, intValue(pinned, "scale", pinnedScale));
+            pinnedHeightScale = Math.max(1, intValue(pinned, "height_scale", pinnedScale));
             pinnedBackground = stringValue(pinned, "background", pinnedBackground);
             pinnedOpacity = clamp(intValue(pinned, "opacity", pinnedOpacity), 0, 100);
             pinnedShowBorders = boolValue(pinned, "show_borders", pinnedShowBorders);
