@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
@@ -99,7 +100,7 @@ public final class TabletSettingsModal {
                 active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED
         ));
         ButtonWidget hit = flatHitButton(x, tabY, w, tabH, click -> selectTab(state, tab, refresh));
-        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, active ? 72 : 42), TabletColors.BORDER_ACCENT));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(Component.translatable(tab.labelKey()));
         modal.addWidget(hit);

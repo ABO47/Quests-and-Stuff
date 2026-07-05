@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class RecipePickerGridRenderer {
@@ -135,7 +136,7 @@ final class RecipePickerGridRenderer {
             }
         };
         hit.setHoverTooltips(entry.tooltip());
-        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);
@@ -159,7 +160,7 @@ final class RecipePickerGridRenderer {
             }
         };
         hit.setHoverTooltips(TabletModalPanel.iconTooltip(entry));
-        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);

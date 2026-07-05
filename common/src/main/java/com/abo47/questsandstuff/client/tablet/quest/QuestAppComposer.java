@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
@@ -126,7 +127,7 @@ public final class QuestAppComposer {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
-        questHomeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        questHomeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
         questHomeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(questHomeBtn);
         root.setHomeButton(questHomeBtn);

@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
@@ -240,7 +241,7 @@ public final class ToggleSwitchWidget extends SwitchWidget {
         public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
             int ix = Math.round(x);
             int iy = Math.round(y);
-            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 30)).draw(graphics, 0, 0, ix - 1, iy - 1, width + 2, height + 2);
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, ix - 1, iy - 1, width + 2, height + 2);
         }
     }
 

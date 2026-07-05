@@ -10,8 +10,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTas
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
@@ -25,7 +23,6 @@ import javax.annotation.Nonnull;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestDetailsWindowLayout {
     private QuestDetailsWindowLayout() {
@@ -57,11 +54,6 @@ final class QuestDetailsWindowLayout {
 
         QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
         layer.addWidget(rootWidget);
-
-        boolean hasDetailsOverride = SkinFillOverride.parse(SkinOverrideKey.resolveOverride(state, "quest_details_root")) != null;
-        if (!fillsLayer && !hasDetailsOverride) {
-            addDimLayer(layer, state);
-        }
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = SplitPanelLayout.splitterX(0, leftW);
@@ -111,28 +103,6 @@ final class QuestDetailsWindowLayout {
         state.questDetails.questDetailsW = frame.w();
         state.questDetails.questDetailsH = frame.h();
         syncScreenOrigin(layer, state);
-    }
-
-    private static void addDimLayer(WidgetGroup layer, TabletUiState state) {
-        WidgetGroup dim = new WidgetGroup(0, 0, layer.getSizeWidth(), layer.getSizeHeight()) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int alpha = dimAlpha(state);
-                if (alpha <= 0) {
-                    return;
-                }
-                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-            }
-        };
-        layer.addWidget(dim);
-    }
-
-    private static int dimAlpha(TabletUiState state) {
-        if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
-            return 120;
-        }
-        float amount = SourceOriginRevealWidget.windowOpenAmount(state.questDetails.questDetailsAnimationStartMs, !state.questDetails.questDetailsClosing);
-        return Math.round(120 * amount);
     }
 
     private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, boolean fillsLayer) {

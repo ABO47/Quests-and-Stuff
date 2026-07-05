@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletCycleButton {
@@ -42,7 +43,7 @@ public final class TabletCycleButton {
         parent.addWidget(icon);
         DirectionalCycleButton button = new DirectionalCycleButton(x, y, width, height, Math.max(1, range), indexSupplier, directionConsumer);
         button.setClientSideWidget();
-        button.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 66), TabletColors.BORDER_ACCENT));
+        button.setHoverTexture(GlowShaderHelper.hoverGlow());
         if (tooltip != null && tooltip.length > 0) {
             button.setHoverTooltips(tooltip);
         }

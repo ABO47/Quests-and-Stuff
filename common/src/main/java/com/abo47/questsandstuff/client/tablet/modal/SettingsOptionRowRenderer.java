@@ -14,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
@@ -47,7 +48,7 @@ final class SettingsOptionRowRenderer {
 
         Component[] tooltips = tooltips(option);
         ButtonWidget hit = flatHitButton(rowX, rowY, cardW, rowH, click -> toggle(option, refresh));
-        hit.setHoverTexture(SurfaceFactory.transparentBorder(TabletColors.BORDER_ACCENT));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)));
         hit.setHoverTooltips(tooltips);
 
@@ -86,7 +87,7 @@ final class SettingsOptionRowRenderer {
         int crop = Math.max(14, textW / 6);
         list.addWidget(label(rowX + 8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
         ButtonWidget hit = flatHitButton(rowX, rowY, cardW, rowH, click -> option.runAction());
-        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 58), TabletColors.BORDER_ACCENT));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(tooltips);
         list.addWidget(hit);

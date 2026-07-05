@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
@@ -211,7 +212,7 @@ public final class TabletIconPickerModal {
                     refresh.run();
                 });
                 hit.setHoverTooltips(TabletModalPanel.iconTooltip(previewIcon));
-                hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+                hit.setHoverTexture(GlowShaderHelper.hoverGlow());
                 hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
@@ -107,7 +108,7 @@ final class QuestTaskActionWidgets {
                 refresh.run();
             });
             hit.setHoverTooltips(new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.CLAIM_ALL_REWARDS)});
-            hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.SUCCESS, 45), TabletColors.BORDER_ACCENT));
+            hit.setHoverTexture(GlowShaderHelper.hoverGlow(TabletColors.SUCCESS));
             hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             section.addWidget(hit);
         }

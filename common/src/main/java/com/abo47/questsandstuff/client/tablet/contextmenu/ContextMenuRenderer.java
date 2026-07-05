@@ -6,6 +6,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 
 
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
@@ -69,7 +70,7 @@ public final class ContextMenuRenderer {
         }
 
         ButtonWidget hit = flatHitButton(4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
-        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 64), withAlpha(TabletColors.BORDER_ACCENT, 220)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
     }
@@ -100,8 +101,7 @@ public final class ContextMenuRenderer {
         int rowH = rowHeight();
         SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 84)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
         if (hovered) {
-            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
-            drawRectOutline(graphics, rowX, rowY, rowWidth, rowH, withAlpha(TabletColors.BORDER_ACCENT, 220));
+            GlowShaderHelper.drawGlow(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
         }
         drawVanillaIcon(graphics, menuX + ICON_X, centeredY(rowY, rowH, CONTEXT_ICON_SIZE), icon, iconColor);
         drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, TabletColors.TEXT_PRIMARY);

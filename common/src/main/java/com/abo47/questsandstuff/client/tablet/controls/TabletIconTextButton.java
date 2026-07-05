@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.controls;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -80,15 +81,17 @@ public final class TabletIconTextButton extends ButtonWidget {
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         boolean hovered = isMouseOverElement(mouseX, mouseY);
         boolean pressed = isClicked && hovered;
-        State state = pressed ? visuals.pressed() : (hovered ? visuals.hover() : visuals.idle());
+        State state = pressed ? visuals.pressed() : visuals.idle();
 
         IGuiTexture bgOverride = getBackgroundTexture();
         if (bgOverride != null && !bgOverride.equals(IGuiTexture.EMPTY)) {
             bgOverride.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
         } else {
-            SurfaceFactory.bordered(state.fillColor(), state.borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            SurfaceFactory.bordered(visuals.idle().fillColor(), visuals.idle().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             if (pressed) {
                 SurfaceFactory.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            } else if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         }
 

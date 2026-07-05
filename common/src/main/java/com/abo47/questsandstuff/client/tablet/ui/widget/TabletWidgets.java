@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -59,10 +60,7 @@ public final class TabletWidgets {
                 new TextTexture(text)
         );
         ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
-        button.setHoverTexture(SurfaceFactory.group(
-                SurfaceFactory.controlHover(activeColor),
-                new TextTexture(text)
-        ));
+        button.setHoverTexture(GlowShaderHelper.hoverGlow(activeColor));
         button.setClickedTexture(active);
         button.setClientSideWidget();
         return button;

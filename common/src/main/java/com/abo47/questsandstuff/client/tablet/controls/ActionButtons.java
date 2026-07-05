@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ACTION_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ActionButtons {
@@ -37,7 +38,7 @@ public final class ActionButtons {
         parent.addWidget(IconOnlyButton.icon(contentX, iconY, iconSize, icon, color));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
-        hit.setHoverTexture(SurfaceFactory.controlHover(color));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow(color));
         hit.setClickedTexture(SurfaceFactory.controlPressed(color));
         if (tooltips != null) {
             hit.setHoverTooltips(tooltips);

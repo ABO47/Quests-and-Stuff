@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
@@ -72,7 +73,7 @@ public final class TeamsAppComposer {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        homeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(homeBtn);
         root.setHomeButton(homeBtn);

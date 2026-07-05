@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -19,7 +19,6 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.clo
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class ResourceListPickerModal {
     private static final int ROW_H = 16;
@@ -64,7 +63,7 @@ final class ResourceListPickerModal {
             closeAll(state);
             refresh.run();
         });
-        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 54)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setHoverTooltips(PickerTooltips.nameAndId(options.displayName().value(entry), entry));
         list.addWidget(hit);
     }

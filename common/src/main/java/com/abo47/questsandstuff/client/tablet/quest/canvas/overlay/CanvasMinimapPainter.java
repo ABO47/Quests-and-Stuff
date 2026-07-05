@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -196,10 +197,11 @@ final class CanvasMinimapPainter {
 
     private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {
         boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-        int fill = hovered ? withAlpha(TabletColors.INTERACTIVE, 115) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 236);
-        int border = hovered ? withAlpha(TabletColors.BORDER_ACCENT, 235) : withAlpha(TabletColors.BORDER_BASE, 180);
-        SurfaceFactory.fill(fill).draw(graphics, 0, 0, x, y, w, h);
-        drawBorder(graphics, x, y, w, h, border);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        drawBorder(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, 180));
+        if (hovered) {
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
+        }
     }
 
     private static void drawMiniLineRouted(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {

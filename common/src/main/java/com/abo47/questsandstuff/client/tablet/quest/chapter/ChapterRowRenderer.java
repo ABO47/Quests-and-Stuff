@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -169,6 +170,7 @@ final class ChapterRowRenderer {
             refresh.run();
         });
         rowHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
+        if (!collapsed) rowHit.setHoverTexture(GlowShaderHelper.hoverGlow());
         chapterList.addWidget(rowHit);
     }
 
@@ -310,9 +312,10 @@ final class ChapterRowRenderer {
             int w = getSizeWidth();
             int h = getSizeHeight();
             boolean hovered = isMouseOverElement(mouseX, mouseY);
-            if (selected || hovered) {
-                int fill = selected ? withAlpha(TabletColors.INTERACTIVE, 108) : withAlpha(TabletColors.INTERACTIVE, 44);
-                SurfaceFactory.fill(fill).draw(graphics, 0, 0, x, y, w, h);
+            if (selected) {
+                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 108)).draw(graphics, 0, 0, x, y, w, h);
+            } else if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
             }
         }
     }

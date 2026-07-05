@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletItemInventoryPickerModal {
@@ -105,7 +106,7 @@ public final class TabletItemInventoryPickerModal {
                 }
             }
         };
-        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 66)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setHoverTooltips(tooltip(stack));
         hit.setClientSideWidget();

@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -117,7 +118,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(SurfaceFactory.bordered(withAlpha(theme.accent(), 54), theme.accent()));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow(theme.accent()));
         list.addWidget(hit);
     }
 
@@ -149,7 +150,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(SurfaceFactory.transparentBorder(theme.accent()));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow(theme.accent()));
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(theme.accent(), 64)));
         list.addWidget(hit);
     }

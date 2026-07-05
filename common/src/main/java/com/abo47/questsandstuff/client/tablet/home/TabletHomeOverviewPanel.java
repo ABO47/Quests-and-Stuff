@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -58,7 +59,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.closeTabletUi(null, false, "home_button"));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(SurfaceFactory.bordered(TabletColors.elevatedSurface(), TabletColors.focusBorder()));
+        homeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
@@ -77,7 +78,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                     tex,
                     cd -> TabletLifecycle.openApp(app.id()));
             appBtn.setClientSideWidget();
-            appBtn.setHoverTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.hoverFill(TabletColors.INTERACTIVE))));
+            appBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
             appBtn.setClickedTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.pressedFill(TabletColors.INTERACTIVE))));
             addWidget(appBtn);
             col++;

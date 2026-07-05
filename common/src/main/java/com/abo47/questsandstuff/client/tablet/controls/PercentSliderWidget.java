@@ -9,6 +9,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class PercentSliderWidget extends SliderWidget {
@@ -45,9 +46,9 @@ final class PercentSliderWidget extends SliderWidget {
         valueStep = 100;
         handleSize = 6;
         setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 130), withAlpha(TabletColors.BORDER_BASE, 180)));
-        setHoverTexture(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 42), withAlpha(TabletColors.BORDER_ACCENT, 200)));
+        setHoverTexture(GlowShaderHelper.hoverGlow());
         handleTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 180), withAlpha(TabletColors.INTERACTIVE, 235));
-        handleHoverTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 230), TabletColors.focusBorder());
+        handleHoverTexture = GlowShaderHelper.hoverGlow();
         setOverlay(null);
         setValue(this.currentValue / 100.0f);
         setSliderCallback(this::setValueFromSlider);

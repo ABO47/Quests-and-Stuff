@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
@@ -86,10 +87,13 @@ final class PrerequisiteRowsPanel {
         boolean selected = row.key().equals(state.modal.prerequisitesManagerSelectedConnectionKey);
         boolean hovered = row.key().equals(state.modal.prerequisitesManagerHoveredConnectionKey);
         WidgetGroup card = new WidgetGroup(x, y, cellW, cellH);
-        card.setBackground(SurfaceFactory.bordered(
-                selected || hovered ? withAlpha(TabletColors.INTERACTIVE, selected ? 64 : 44) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 106),
-                selected || hovered ? TabletColors.BORDER_ACCENT : withAlpha(TabletColors.BORDER_BASE, 120)
-        ));
+        if (hovered) {
+            card.setBackground(GlowShaderHelper.hoverGlow());
+        } else if (selected) {
+            card.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 64), TabletColors.BORDER_ACCENT));
+        } else {
+            card.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 106), withAlpha(TabletColors.BORDER_BASE, 120)));
+        }
         if (row.exclusiveChoice()) {
             card.addWidget(new DisplayIconWidget(5, 7, 16, 16, "minecraft:ender_pearl"));
         } else {
@@ -122,7 +126,7 @@ final class PrerequisiteRowsPanel {
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager row_click quest={} connection={} button={}", questId, row.key(), click.button);
             refresh.run();
         });
-        hit.setHoverTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 38)));
+        hit.setHoverTexture(SurfaceFactory.transparentFill());
         surface.addWidget(hit);
     }
 

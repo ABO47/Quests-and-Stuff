@@ -23,22 +23,14 @@ public final class ChromeFactory {
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
         };
 
-        IGuiTexture hoverTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
-            SurfaceFactory.fill(TabletColors.hoverFill(activeColor)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
-            drawBorder(graphics, (int) x0, (int) y0, width, height, TabletColors.focusBorder());
-            drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
-        };
-
-        IGuiTexture clickedTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
+        ButtonWidget btn = new ButtonWidget(x, y, w, h, iconTexture, callback);
+        btn.setClientSideWidget();
+        btn.setHoverTexture(GlowShaderHelper.hoverGlow(activeColor));
+        btn.setClickedTexture((graphics, mouseX, mouseY, x0, y0, width, height) -> {
             SurfaceFactory.fill(TabletColors.pressedFill(activeColor)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
             drawBorder(graphics, (int) x0, (int) y0, width, height, activeColor);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
-        };
-
-        ButtonWidget btn = new ButtonWidget(x, y, w, h, SurfaceFactory.group(iconTexture), callback);
-        btn.setClientSideWidget();
-        btn.setHoverTexture(SurfaceFactory.group(hoverTexture));
-        btn.setClickedTexture(SurfaceFactory.group(clickedTexture));
+        });
         return btn;
     }
 
