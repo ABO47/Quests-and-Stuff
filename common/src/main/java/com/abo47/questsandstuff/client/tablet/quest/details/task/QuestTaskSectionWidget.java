@@ -1,19 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -28,6 +34,7 @@ final class QuestTaskSectionWidget {
         List<QuestDetailsTaskEntry> tasks = QuestTaskEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "tasks", tasks, QuestDetailsTasksPanel.TITLE_H, 4, false);
         section.addWidget(label(8, 6, QuestTranslationKeys.tasks(), TabletColors.TEXT_PRIMARY));
+        addChangeIconButton(section, state, refresh, questId, "tasks", w);
         renderCards(section, state, player, refresh, questId, tasks, w, h, QuestDetailsTasksPanel.TITLE_H, true);
         modal.addWidget(section);
     }
@@ -38,6 +45,7 @@ final class QuestTaskSectionWidget {
         boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestDetailsTasksPanel.TITLE_H, 4, rewardsClaimed);
         section.addWidget(label(8, 6, QuestTranslationKeys.rewards(), TabletColors.TEXT_PRIMARY));
+        addChangeIconButton(section, state, refresh, questId, "rewards", w);
         renderCards(section, state, player, refresh, questId, displayRewards, w, h, QuestDetailsTasksPanel.TITLE_H, false, rewardsClaimed);
         modal.addWidget(section);
     }
@@ -247,6 +255,29 @@ final class QuestTaskSectionWidget {
                 return mouseX >= left && mouseX < left + getSizeWidth() && mouseY >= top && mouseY < top + getSizeHeight();
             }
         };
+    }
+
+    private static void addChangeIconButton(WidgetGroup section, TabletUiState state, Runnable refresh, String questId, String kind, int w) {
+        if (!QuestDetailsEditController.canEdit(state)) return;
+        String selectedKind = state.questDetails.questDetailsSelectedTaskKind;
+        String selectedId = state.questDetails.questDetailsSelectedTaskId;
+        if (!kind.equals(selectedKind) || selectedId == null || selectedId.isBlank()) return;
+        boolean task = "tasks".equals(kind);
+        String target = task ? ModalTargets.taskIcon(questId, selectedId) : ModalTargets.rewardIcon(questId, selectedId);
+        var btn = IconOnlyButton.create(
+                w - QuestDetailsTasksPanel.HEADER_H,
+                1,
+                QuestDetailsTasksPanel.HEADER_H - 2,
+                "icon",
+                TabletColors.INTERACTIVE,
+                click -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsWindow.openIconPicker(state, target);
+                    refresh.run();
+                }
+        );
+        btn.tooltips(new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.CONTEXT_CHANGE_ICON)});
+        section.addWidget(btn);
     }
 
     static int scrollMax(List<QuestDetailsTaskEntry> entries, int visibleH) {

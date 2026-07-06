@@ -53,7 +53,6 @@ final class QuestDetailsWindowLayout {
         rememberFrame(layer, state, frame);
 
         QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
-        layer.addWidget(rootWidget);
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = SplitPanelLayout.splitterX(0, leftW);
@@ -75,6 +74,17 @@ final class QuestDetailsWindowLayout {
         WidgetGroup viewportBg = new WidgetGroup(viewport[0], viewport[1], viewport[2], viewport[3]);
         viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
         canvasPanel.addWidget(viewportBg);
+
+        if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
+                    rootWidget,
+                    () -> state.questDetails.questDetailsAnimationStartMs,
+                    () -> !state.questDetails.questDetailsClosing,
+                    () -> sourceRect(state)
+            ));
+        } else {
+            layer.addWidget(rootWidget);
+        }
 
         SkinAnchorRegistry.register("quest_details_root", rootWidget);
         SkinAnchorRegistry.register("quest_details_splitter", questDetailsSplitter);
@@ -114,17 +124,7 @@ final class QuestDetailsWindowLayout {
             }
         };
         modal.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
-        
-        if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
-            layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
-                    modal,
-                    () -> state.questDetails.questDetailsAnimationStartMs,
-                    () -> !state.questDetails.questDetailsClosing,
-                    () -> sourceRect(state)
-            ));
-        } else {
-            layer.addWidget(modal);
-        }
+        layer.addWidget(modal);
         return modal;
     }
 

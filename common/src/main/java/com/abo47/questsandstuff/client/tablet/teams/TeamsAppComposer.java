@@ -126,12 +126,11 @@ memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE,
                 }
             }
 
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             if (!ModalStateQueries.anyOpen(state) && !state.modal.modalWindowClosing) {
-                modalLayer.clearAllWidgets();
                 TeamsInviteCodeModal.rebuild(modalLayer, state, refresh[0], crw, crh);
                 TeamsConfirmModal.rebuild(modalLayer, state, refresh[0], crw, crh);
             }
-            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             TeamsMemberCardRenderer.rebuildMemberList(memberListPanel, state, refresh[0]);
             SkinAnchorRegistry.register("root", root);
             SkinAnchorRegistry.register("home_btn", homeBtn);

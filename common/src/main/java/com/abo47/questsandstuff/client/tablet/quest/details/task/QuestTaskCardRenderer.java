@@ -11,10 +11,15 @@ import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.google.gson.JsonObject;
+import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -178,7 +183,33 @@ final class QuestTaskCardRenderer {
         boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
         int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING) : TabletColors.INTERACTIVE;
-        card.setBackground(SurfaceFactory.card(selected || selectableReward, accent, claimedReward));
+
+        card.setBackground(SurfaceFactory.fill(TabletColors.elevatedSurface()));
+
+        String skinKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
+        String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
+        if (rawOverride == null) {
+            rawOverride = fallbackOverride(state, skinKey);
+        }
+        if (rawOverride != null) {
+            SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+            if (parsed != null) {
+                IGuiTexture tex = parsed.createTexture();
+                if (tex != null) {
+                    card.addWidget(new ImageWidget(0, 0, w, QuestDetailsTasksPanel.CARD_H, tex));
+                }
+            }
+        }
+
+        if (claimedReward) {
+            addCardFill(card, w, withAlpha(TabletColors.TEXT_MUTED, 34));
+        } else if (selected || selectableReward) {
+            addCardFill(card, w, withAlpha(accent, 82));
+        }
+
+        int borderColor = claimedReward ? TabletColors.subtleBorder() : (selected ? accent : TabletColors.subtleBorder());
+        card.addWidget(borderQuad(w, borderColor));
+
         int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {
             WidgetGroup fill = new WidgetGroup(1, 1, Math.max(1, fillW), QuestDetailsTasksPanel.CARD_H - 2);
@@ -186,6 +217,28 @@ final class QuestTaskCardRenderer {
             card.addWidget(fill);
         }
         return card;
+    }
+
+    private static String fallbackOverride(TabletUiState state, String skinKey) {
+        for (var entry : state.root.skinFillOverrides.entrySet()) {
+            String entryKey = entry.getKey();
+            if (skinKey.equals(entryKey)) return entry.getValue();
+            String effective = entryKey.contains(":") ? entryKey.substring(entryKey.indexOf(':') + 1) : entryKey;
+            if (skinKey.equals(effective)) return entry.getValue();
+        }
+        return null;
+    }
+
+    private static void addCardFill(WidgetGroup card, int w, int fill) {
+        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
+        g.setBackground(SurfaceFactory.fill(fill));
+        card.addWidget(g);
+    }
+
+    private static WidgetGroup borderQuad(int w, int color) {
+        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
+        g.setBackground(new ColorBorderTexture(1, color));
+        return g;
     }
 
     private static Component[] iconTooltip(JsonObject json, String icon) {

@@ -95,9 +95,13 @@ public final class SkinEditManager {
             if (tex == null) continue;
 
             if (SkinOverrideKey.isSharedKey(targetKey) && w instanceof WidgetGroup wg) {
-                for (Widget child : wg.widgets) {
-                    if (!SkinEditTargetResolver.hasCustomChrome(child)) {
-                        child.setBackground(tex);
+                if (SkinOverrideKey.isRootKey(targetKey)) {
+                    wg.setBackground(tex);
+                } else if (!SkinOverrideKey.isCardKey(targetKey)) {
+                    for (Widget child : wg.widgets) {
+                        if (!SkinEditTargetResolver.hasCustomChrome(child)) {
+                            child.setBackground(tex);
+                        }
                     }
                 }
             } else {
@@ -119,16 +123,28 @@ public final class SkinEditManager {
         return SkinEditTargetResolver.widgetForKey(root, targetKey);
     }
 
+    private static String resolveSkinTarget(TabletUiState state, TabletRootWidget root, String targetKey) {
+        String resolved = SkinOverrideKey.resolveTargetKey(state, targetKey);
+        if (!SkinOverrideKey.isSharedKey(resolved)) {
+            Widget targetWidget = SkinEditTargetResolver.widgetForKey(root, targetKey);
+            if (targetWidget != null) {
+                String containerKey = SkinEditTargetResolver.resolveSharedKey(targetWidget);
+                if (containerKey != null) resolved = containerKey;
+            }
+        }
+        return resolved;
+    }
+
     private static void buildContextMenu(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY) {
         String targetKey = state.root.skinEditSelectedTarget;
         if (targetKey == null || targetKey.isBlank()) return;
 
-        String rawOverride = SkinOverrideKey.resolveOverride(state, targetKey);
+        String resolvedTarget = resolveSkinTarget(state, root, targetKey);
+
+        String rawOverride = SkinOverrideKey.resolveOverride(state, resolvedTarget);
         SkinFillOverride currentOverride = SkinFillOverride.parse(rawOverride);
         String currentMode = currentOverride != null ? currentOverride.mode() : "stretch";
         String currentAsset = currentOverride != null ? currentOverride.path() : "";
-
-        String resolvedTarget = SkinOverrideKey.resolveTargetKey(state, targetKey);
 
         List<ContextAction> actions = new ArrayList<>();
         actions.add(ContextActionFactory.action(
@@ -172,9 +188,9 @@ public final class SkinEditManager {
                     TabletColors.ERROR,
                     () -> {
                         root.closeContextMenu();
-                        String qualified = SkinOverrideKey.overrideKey(state, targetKey);
+                        String qualified = SkinOverrideKey.overrideKey(state, resolvedTarget);
                         state.root.skinFillOverrides.remove(qualified);
-                        String bare = SkinOverrideKey.resolveTargetKey(state, targetKey);
+                        String bare = SkinOverrideKey.resolveTargetKey(state, resolvedTarget);
                         if (!bare.equals(qualified)) {
                             state.root.skinFillOverrides.remove(bare);
                         }

@@ -48,7 +48,7 @@ final class QuestTaskMenuActions {
             ContextMenuController.clearDeleteConfirm(state);
             EditorQuestCommandClient.moveQuestTask(player, questId, contextId, 1);
         });
-        actions.add(QuestTaskMenuSupport.visualsSubmenu(state, questId, contextId, true));
+        QuestTaskMenuSupport.addVisualActions(actions, state, questId, contextId, true);
         String deleteKey = "quest_details_task:" + questId + ":" + contextId;
         actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
             EditorQuestCommandClient.removeQuestTask(player, questId, contextId);

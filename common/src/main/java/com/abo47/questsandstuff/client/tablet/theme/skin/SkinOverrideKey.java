@@ -7,7 +7,13 @@ import java.util.Set;
 
 public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(
-            "home_btn", "quests_task_cards", "quests_reward_cards"
+            "home_btn", "quest_details_root", "quests_task_cards", "quests_reward_cards"
+    );
+    private static final Set<String> CARD_KEYS = Set.of(
+            "quests_task_cards", "quests_reward_cards"
+    );
+    private static final Set<String> ROOT_KEYS = Set.of(
+            "quest_details_root"
     );
     private static final Set<String> CANVAS_PANEL_KEYS = Set.of(
             "quests_canvas", "quest_details_canvas_panel"
@@ -22,6 +28,14 @@ public final class SkinOverrideKey {
 
     public static boolean isSharedKey(String targetKey) {
         return targetKey != null && SHARED_KEYS.contains(targetKey);
+    }
+
+    public static boolean isCardKey(String targetKey) {
+        return targetKey != null && CARD_KEYS.contains(targetKey);
+    }
+
+    public static boolean isRootKey(String targetKey) {
+        return targetKey != null && ROOT_KEYS.contains(targetKey);
     }
 
     public static String overrideKey(TabletUiState state, String targetKey) {

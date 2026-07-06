@@ -15,7 +15,6 @@ import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 final class QuestTaskMenuSupport {
@@ -31,14 +30,12 @@ final class QuestTaskMenuSupport {
         actions.add(ContextActionFactory.moveDown(moveDown));
     }
 
-    static ContextAction visualsSubmenu(TabletUiState state, String questId, String taskId, boolean task) {
-        List<ContextAction> visualActions = new ArrayList<>();
-        visualActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", TabletColors.INTERACTIVE, () -> {
+    static void addVisualActions(List<ContextAction> actions, TabletUiState state, String questId, String taskId, boolean task) {
+        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, taskId) : ModalTargets.rewardIcon(questId, taskId));
         }));
-        addEntityIconActions(visualActions, state, questId, taskId, task);
-        return ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISUALS), "style", TabletColors.INTERACTIVE, visualActions);
+        addEntityIconActions(actions, state, questId, taskId, task);
     }
 
     static JsonObject parseTaskJson(String value) {
@@ -52,7 +49,7 @@ final class QuestTaskMenuSupport {
         return result.value();
     }
 
-    private static void addEntityIconActions(List<ContextAction> actions, TabletUiState state, String questId, String taskId, boolean task) {
+    static void addEntityIconActions(List<ContextAction> actions, TabletUiState state, String questId, String taskId, boolean task) {
         String icon = QuestTaskEditActions.taskIcon(questId, taskId, task);
         EntityIconControls.addEntityVariantAndMotionActions(
                 actions,

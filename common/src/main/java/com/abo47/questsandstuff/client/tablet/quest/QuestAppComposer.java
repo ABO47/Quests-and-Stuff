@@ -223,7 +223,9 @@ public final class QuestAppComposer {
             TabletUiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
             refreshChapterViews[0].run();
             TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
-            refreshCanvas[0].run();
+            if (!QuestDetailsWindow.isVisible(state)) {
+                refreshCanvas[0].run();
+            }
             SkinAnchorRegistry.register("root", root);
             SkinAnchorRegistry.register("quests_home_btn", questHomeBtn);
             SkinAnchorRegistry.register("home_btn", questHomeBtn);

@@ -23,15 +23,13 @@ public final class SkinEditRenderer {
     private SkinEditRenderer() {
     }
 
-    public static void draw(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, int mouseX, int mouseY, boolean frontWindowOpen) {
+    public static void draw(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, int mouseX, int mouseY) {
         if (ModalStateQueries.anyOpen(state)) return;
         Minecraft mc = Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
-        if (!frontWindowOpen) {
-            DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
-        }
+        DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
 
         String selectedKey = state.root.skinEditSelectedTarget;
         if (!selectedKey.isBlank()) {

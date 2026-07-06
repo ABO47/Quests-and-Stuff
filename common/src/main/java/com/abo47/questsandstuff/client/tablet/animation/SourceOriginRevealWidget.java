@@ -15,7 +15,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 public final class SourceOriginRevealWidget extends WidgetGroup {
-    private static final long WINDOW_OPEN_MS = 190L;
+    public static final long WINDOW_OPEN_MS = 190L;
     private static final float FALLBACK_SCALE = 0.96f;
     private static final float MIN_SOURCE_SCALE = 0.18f;
     private static final float MAX_SOURCE_SCALE = 0.90f;

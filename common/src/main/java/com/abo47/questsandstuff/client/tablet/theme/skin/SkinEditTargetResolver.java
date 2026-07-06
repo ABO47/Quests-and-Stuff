@@ -21,12 +21,12 @@ public final class SkinEditTargetResolver {
 
     public static String findTargetKeyAt(WidgetGroup root, int mouseX, int mouseY) {
         Widget qdl = SkinAnchorRegistry.findByKey("quest_details_layer");
-        if (qdl != null && qdl.isVisible() && qdl.isMouseOverElement(mouseX, mouseY) && qdl instanceof WidgetGroup qdlGroup) {
+        if (qdl != null && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
-            if (hit != null) return stableKeyFor(hit);
+            if (hit != null && hit != qdl) return stableKeyFor(hit);
         }
         Widget hit = deepestAt(root, mouseX, mouseY);
-        if (hit != null) return stableKeyFor(hit);
+        if (hit != null && hit != root) return stableKeyFor(hit);
         if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
             return "root";
         }
@@ -132,6 +132,7 @@ public final class SkinEditTargetResolver {
             cur = cur.getParent();
         }
         String simpleName = widget.getClass().getSimpleName();
+        if ("SourceOriginRevealWidget".equals(simpleName)) return true;
         if ("ImageWidget".equals(simpleName)) return true;
         if ("DisplayIconWidget".equals(simpleName)) return true;
         if ("QuestDetailsDescriptionCanvas".equals(simpleName)) return true;
@@ -155,6 +156,20 @@ public final class SkinEditTargetResolver {
         IGuiTexture bg = widget.getBackgroundTexture();
         if (bg == null) return false;
         return !bg.equals(IGuiTexture.EMPTY);
+    }
+
+    public static String resolveSharedKey(Widget widget) {
+        String selfKey = SkinAnchorRegistry.keyFor(widget);
+        if (selfKey != null && !SkinOverrideKey.isSharedKey(selfKey)) return null;
+        Widget cur = widget;
+        while (cur != null) {
+            String registeredKey = SkinAnchorRegistry.keyFor(cur);
+            if (registeredKey != null && SkinOverrideKey.isSharedKey(registeredKey)) {
+                return registeredKey;
+            }
+            cur = cur.getParent();
+        }
+        return null;
     }
 
     public static boolean hasCustomChrome(Widget widget) {
