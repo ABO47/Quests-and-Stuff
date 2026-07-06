@@ -60,6 +60,11 @@ public final class SkinOverrideKey {
     }
 
     public static String resolveTargetKey(TabletUiState state, String targetKey) {
+        if (targetKey == null) return null;
+        int colon = targetKey.indexOf(':');
+        if (colon > 0 && targetKey.length() > colon + 1) {
+            return targetKey.substring(colon + 1);
+        }
         return targetKey;
     }
 

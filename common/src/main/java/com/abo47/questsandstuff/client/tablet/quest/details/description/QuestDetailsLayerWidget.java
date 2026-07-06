@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import org.lwjgl.glfw.GLFW;
 
 public final class QuestDetailsLayerWidget extends WidgetGroup {
     private final TabletUiState state;
@@ -169,6 +170,11 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            QuestDetailsWindow.close(state);
+            refresh.run();
+            return true;
         }
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;

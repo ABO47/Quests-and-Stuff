@@ -128,6 +128,8 @@ public final class SkinEditManager {
         if (!SkinOverrideKey.isSharedKey(resolved)) {
             Widget targetWidget = SkinEditTargetResolver.widgetForKey(root, targetKey);
             if (targetWidget != null) {
+                String selfKey = SkinAnchorRegistry.keyFor(targetWidget);
+                if (selfKey == null) return resolved;
                 String containerKey = SkinEditTargetResolver.resolveSharedKey(targetWidget);
                 if (containerKey != null) resolved = containerKey;
             }

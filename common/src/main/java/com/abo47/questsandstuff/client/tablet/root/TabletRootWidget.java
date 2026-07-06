@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -242,13 +241,7 @@ public final class TabletRootWidget extends WidgetGroup {
                 return;
             }
         }
-        int bgOpacity = state.canvas != null ? state.canvas.canvasBgOpacityPercent : 100;
-        if (bgOpacity > 0) {
-            int fill = CanvasBackgroundOpacity.color(TabletColors.SURFACE_BASE, bgOpacity);
-            if ((fill >>> 24) > 0) {
-                SurfaceFactory.fill(fill).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-            }
-        }
+        SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
     }
 
     private boolean hasRootOverride() {
