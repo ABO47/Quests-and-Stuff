@@ -18,8 +18,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
-
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
@@ -49,7 +47,6 @@ final class QuestDetailsWindowLayout {
         }
 
         QuestDetailsWindowFrame frame = QuestDetailsWindowFrame.centered(layer);
-        boolean fillsLayer = frame.fills(layer);
         rememberFrame(layer, state, frame);
 
         QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
@@ -57,9 +54,9 @@ final class QuestDetailsWindowLayout {
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = SplitPanelLayout.splitterX(0, leftW);
         int canvasX = SplitPanelLayout.rightPanelX(0, leftW);
-        int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
-        int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
-        WidgetGroup modal = addModal(rootWidget, state, frame, fillsLayer);
+        int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frame.w());
+        int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frame.h());
+        WidgetGroup modal = addModal(rootWidget, frame, canvasX, viewport);
         WidgetGroup taskPanel = addTaskPanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
         SkinAnchorRegistry.register("quest_details_tasks", taskPanel);
         WidgetGroup questDetailsSplitter = new QuestDetailsSplitterWidget(splitterX, 0, frame.h(), state, refresh);
@@ -115,10 +112,10 @@ final class QuestDetailsWindowLayout {
         syncScreenOrigin(layer, state);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, boolean fillsLayer) {
+    private static WidgetGroup addModal(WidgetGroup layer, QuestDetailsWindowFrame frame, int canvasX, int[] viewport) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }
@@ -178,13 +175,6 @@ final class QuestDetailsWindowLayout {
             int x = Math.max(0, (layer.getSizeWidth() - w) / 2);
             int y = Math.max(0, (layer.getSizeHeight() - h) / 2);
             return new QuestDetailsWindowFrame(x, y, w, h);
-        }
-
-        boolean fills(WidgetGroup layer) {
-            return x <= 0
-                    && y <= 0
-                    && w >= layer.getSizeWidth()
-                    && h >= layer.getSizeHeight();
         }
     }
 }

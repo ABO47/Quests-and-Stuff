@@ -232,16 +232,17 @@ public final class TabletRootWidget extends WidgetGroup {
 
     private void drawRootFill(GuiGraphics graphics) {
         if (state == null) return;
+        int rx = getPositionX(), ry = getPositionY(), rw = getSizeWidth(), rh = getSizeHeight();
         String raw = rootFillRaw(state);
         SkinFillOverride override = SkinFillOverride.parse(raw);
         if (override != null) {
             IGuiTexture tex = override.createTexture();
             if (tex != null) {
-                tex.draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                tex.draw(graphics, 0, 0, rx, ry, rw, rh);
                 return;
             }
         }
-        SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, 0, 0, rx, ry, rw, rh);
     }
 
     private boolean hasRootOverride() {

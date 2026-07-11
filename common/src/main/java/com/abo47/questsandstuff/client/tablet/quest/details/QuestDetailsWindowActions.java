@@ -253,7 +253,9 @@ final class QuestDetailsWindowActions {
 
     private static int[] viewport(TabletUiState state) {
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
-        int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
-        return QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
+        int frameW = state.questDetails.questDetailsW > 0 ? state.questDetails.questDetailsW : QuestDetailsWindow.WINDOW_W;
+        int frameH = state.questDetails.questDetailsH > 0 ? state.questDetails.questDetailsH : QuestDetailsWindow.WINDOW_H;
+        int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frameW);
+        return QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frameH);
     }
 }

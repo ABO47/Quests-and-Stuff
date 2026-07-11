@@ -218,12 +218,12 @@ public final class QuestDetailsWindow {
         return QuestDetailsWindowGeometry.descriptionContentWidth(state);
     }
 
-    static int canvasPanelWidth(int leftW) {
-        return QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
+    static int canvasPanelWidth(int leftW, int frameW) {
+        return QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frameW);
     }
 
-    static int[] mainCanvasViewport(TabletUiState state, int canvasW) {
-        return QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
+    static int[] mainCanvasViewport(int canvasW, int frameH) {
+        return QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frameH);
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {

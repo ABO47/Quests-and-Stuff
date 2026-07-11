@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
@@ -116,6 +117,10 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                boolean portal = WorldPortalCapture.shouldCapture(state) && WorldPortalCapture.hasTexture();
+                if (portal) {
+                    WorldPortalCapture.drawInto(graphics, canvasViewport, state);
+                }
                 int percent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
                 if (percent == 0) {
                     return;
@@ -126,6 +131,13 @@ final class CanvasSceneRenderer {
                 }
                 int originX = getPositionX();
                 int originY = getPositionY();
+                if (portal) {
+                    SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY, viewportW, viewportH);
+                    if (canvasBackground != null) {
+                        CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
+                    }
+                    return;
+                }
                 SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY, viewportW, contentY);
                 SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY + contentY + paintH, viewportW, viewportH - contentY - paintH);
                 SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY + contentY, contentX, paintH);
