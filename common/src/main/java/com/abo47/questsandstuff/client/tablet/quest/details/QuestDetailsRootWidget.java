@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +17,7 @@ public final class QuestDetailsRootWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        WorldPortalCapture.captureMainCanvas(TabletActiveState.getActiveTabletState());
         int rx = getPositionX(), ry = getPositionY(), rw = getSizeWidth(), rh = getSizeHeight();
         IGuiTexture bg = getBackgroundTexture();
         if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {

@@ -11,12 +11,17 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+
+import javax.annotation.Nonnull;
 
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
@@ -68,8 +73,24 @@ final class QuestDetailsWindowLayout {
         state.questDetails.questDetailsViewportOriginX = canvasX + viewport[0];
         state.questDetails.questDetailsViewportOriginY = viewport[1];
 
-        WidgetGroup viewportBg = new WidgetGroup(viewport[0], viewport[1], viewport[2], viewport[3]);
-        viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
+        WidgetGroup viewportBg = new WidgetGroup(viewport[0], viewport[1], viewport[2], viewport[3]) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                IGuiTexture bg = getBackgroundTexture();
+                if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
+                    bg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                } else if (WorldPortalCapture.shouldCaptureDetails(state) && WorldPortalCapture.hasUiTexture()) {
+                    WorldPortalCapture.drawUiInto(graphics, this, state);
+                    int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
+                    if (percent > 0) {
+                        CanvasBackgroundOpacity.drawFill(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), TabletColors.SURFACE_PANEL, percent);
+                    }
+                } else {
+                    SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                }
+                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+            }
+        };
         canvasPanel.addWidget(viewportBg);
 
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {

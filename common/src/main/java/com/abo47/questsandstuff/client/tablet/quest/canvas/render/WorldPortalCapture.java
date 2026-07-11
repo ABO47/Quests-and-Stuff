@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -25,6 +26,10 @@ public final class WorldPortalCapture {
     private static int targetW;
     private static int targetH;
 
+    private static TextureTarget uiTarget;
+    private static int uiTargetW;
+    private static int uiTargetH;
+
     public static boolean shouldCapture(TabletUiState state) {
         if (state == null || state.root == null || state.canvas == null) {
             return false;
@@ -40,6 +45,21 @@ public final class WorldPortalCapture {
         return target != null;
     }
 
+    public static boolean shouldCaptureDetails(TabletUiState state) {
+        if (state == null || state.root == null || state.questDetails == null) {
+            return false;
+        }
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return false;
+        }
+        int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
+        return percent < 100;
+    }
+
+    public static boolean hasUiTexture() {
+        return uiTarget != null;
+    }
+
     public static void capture(TabletUiState state) {
         if (!shouldCapture(state)) {
             return;
@@ -48,18 +68,38 @@ public final class WorldPortalCapture {
         if (minecraft == null || minecraft.getWindow() == null || minecraft.getMainRenderTarget() == null) {
             return;
         }
-        RenderTarget mainTarget = minecraft.getMainRenderTarget();
-        int w = mainTarget.width;
-        int h = mainTarget.height;
+        int w = minecraft.getMainRenderTarget().width;
+        int h = minecraft.getMainRenderTarget().height;
         if (w <= 0 || h <= 0) {
             return;
         }
         ensureTarget(w, h);
-        TextureTarget writeTarget = target;
-        if (writeTarget == null) {
+        if (target != null) {
+            blitMainToTarget(target, w, h, minecraft);
+        }
+    }
+
+    public static void captureMainCanvas(TabletUiState state) {
+        if (!shouldCaptureDetails(state)) {
             return;
         }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft == null || minecraft.getWindow() == null || minecraft.getMainRenderTarget() == null) {
+            return;
+        }
+        int w = minecraft.getMainRenderTarget().width;
+        int h = minecraft.getMainRenderTarget().height;
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        ensureUiTarget(w, h);
+        if (uiTarget != null) {
+            blitMainToTarget(uiTarget, w, h, minecraft);
+        }
+    }
 
+    private static void blitMainToTarget(TextureTarget writeTarget, int w, int h, Minecraft minecraft) {
+        RenderTarget mainTarget = minecraft.getMainRenderTarget();
         PoseStack modelView = RenderSystem.getModelViewStack();
         Matrix4f previousProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
         ScissorState previousScissor = ScissorState.capture();
@@ -113,7 +153,15 @@ public final class WorldPortalCapture {
     }
 
     public static void drawInto(GuiGraphics graphics, WidgetGroup viewport, TabletUiState state) {
-        if (target == null) {
+        drawTargetInto(graphics, viewport, target);
+    }
+
+    public static void drawUiInto(GuiGraphics graphics, WidgetGroup viewport, TabletUiState state) {
+        drawTargetInto(graphics, viewport, uiTarget);
+    }
+
+    private static void drawTargetInto(GuiGraphics graphics, WidgetGroup viewport, TextureTarget src) {
+        if (src == null) {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
@@ -138,7 +186,7 @@ public final class WorldPortalCapture {
         float vBot = (gy0 + vh) / (float) screenH;
         Matrix4f pose = graphics.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, target.getColorTextureId());
+        RenderSystem.setShaderTexture(0, src.getColorTextureId());
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
         RenderSystem.disableCull();
@@ -163,6 +211,12 @@ public final class WorldPortalCapture {
             targetW = 0;
             targetH = 0;
         }
+        if (uiTarget != null) {
+            uiTarget.destroyBuffers();
+            uiTarget = null;
+            uiTargetW = 0;
+            uiTargetH = 0;
+        }
     }
 
     private static void ensureTarget(int w, int h) {
@@ -177,6 +231,20 @@ public final class WorldPortalCapture {
         target.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         targetW = w;
         targetH = h;
+    }
+
+    private static void ensureUiTarget(int w, int h) {
+        if (uiTarget != null && uiTargetW == w && uiTargetH == h) {
+            return;
+        }
+        if (uiTarget != null) {
+            uiTarget.destroyBuffers();
+            uiTarget = null;
+        }
+        uiTarget = new TextureTarget(w, h, true, Minecraft.ON_OSX);
+        uiTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        uiTargetW = w;
+        uiTargetH = h;
     }
 
     private record ScissorState(boolean enabled, int x, int y, int width, int height) {
