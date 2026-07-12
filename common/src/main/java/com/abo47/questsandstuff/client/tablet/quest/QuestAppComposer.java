@@ -23,11 +23,16 @@ import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
+
+import javax.annotation.Nonnull;
+
 
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
@@ -112,8 +117,15 @@ public final class QuestAppComposer {
         int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);
         CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
 
-        WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH);
-        viewportBg.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
+        WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
+                    SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                }
+                drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+            }
+        };
         viewportBgRef[0] = viewportBg;
 
         QuestAppHeaderControls headers = QuestAppHeaderControls.create(player, state, () -> refresh[0].run(), chapterSideInset, chapterTopY, chapterHeaderH, initialChapterW, initialViewport[0], topY, headerH);
@@ -175,7 +187,6 @@ public final class QuestAppComposer {
             canvasPanel.setSize(canvasW, canvasH);
             if (viewportBgRef[0] != null) {
                 viewportBgRef[0].setSize(canvasW, canvasH);
-                viewportBgRef[0].setBackground(SurfaceFactory.fill(TabletColors.SURFACE_PANEL));
             }
             chapterMenuOverlay.setSize(currentRootW, currentRootH);
             toolsMenu.setSize(currentRootW, currentRootH);

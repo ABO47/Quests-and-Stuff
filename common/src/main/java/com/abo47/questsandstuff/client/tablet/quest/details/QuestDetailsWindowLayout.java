@@ -5,6 +5,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -61,7 +62,7 @@ final class QuestDetailsWindowLayout {
         int canvasX = SplitPanelLayout.rightPanelX(0, leftW);
         int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frame.w());
         int[] viewport = QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frame.h());
-        WidgetGroup modal = addModal(rootWidget, frame, canvasX, viewport);
+        WidgetGroup modal = addModal(rootWidget, state, frame, canvasX, viewport);
         WidgetGroup taskPanel = addTaskPanel(modal, state, player, refresh, questId, quest, leftW, frame.h());
         SkinAnchorRegistry.register("quest_details_tasks", taskPanel);
         WidgetGroup questDetailsSplitter = new QuestDetailsSplitterWidget(splitterX, 0, frame.h(), state, refresh);
@@ -82,10 +83,10 @@ final class QuestDetailsWindowLayout {
                 } else if (WorldPortalCapture.shouldCaptureDetails(state) && WorldPortalCapture.hasUiTexture()) {
                     WorldPortalCapture.drawUiInto(graphics, this, state);
                     int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
-                    if (percent > 0) {
+                    if (percent > 0 && !TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
                         CanvasBackgroundOpacity.drawFill(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), TabletColors.SURFACE_PANEL, percent);
                     }
-                } else {
+                } else if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
                     SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
@@ -133,15 +134,17 @@ final class QuestDetailsWindowLayout {
         syncScreenOrigin(layer, state);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, QuestDetailsWindowFrame frame, int canvasX, int[] viewport) {
+    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int canvasX, int[] viewport) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                SurfaceFactory.fill(TabletColors.SURFACE_BASE).draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
+                IGuiTexture bg = getBackgroundTexture();
+                if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
+                    bg.draw(graphics, mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
+                }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
-        modal.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
         layer.addWidget(modal);
         return modal;
     }

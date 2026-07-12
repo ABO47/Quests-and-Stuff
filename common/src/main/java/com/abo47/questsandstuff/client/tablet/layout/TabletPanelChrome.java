@@ -51,10 +51,15 @@ public final class TabletPanelChrome {
         int y = panel.getPositionY();
         int w = panel.getSize().width;
         int h = panel.getSize().height;
-        IGuiTexture fill = resolveFill(panel);
+        boolean panelSkinned = hasSkinOverride(panel);
         if (hasPanelOverride(panel, state)) {
-            fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            if (panelSkinned) {
+                IGuiTexture fill = resolveFill(panel);
+                fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            }
+            
         } else {
+            IGuiTexture fill = SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
             int innerLeft = x + 1;
             int innerTop = y + 1;
             int innerRight = x + Math.max(1, w - 1);
@@ -129,18 +134,19 @@ public final class TabletPanelChrome {
             }
         }
         
-        String panelKey = SkinAnchorRegistry.keyFor(panel);
-        if (panelKey != null) {
-            String bgKey = SkinOverrideKey.viewportBackgroundKey(panelKey);
-            if (bgKey != null) {
-                String bgAppKey = appPrefix + bgKey;
-                if (state.root.skinFillOverrides.containsKey(bgKey)
-                        || state.root.skinFillOverrides.containsKey(bgAppKey)) {
-                    return true;
-                }
-            }
-        }
+        if (isBackgroundKeySkinned(panel, state)) return true;
         return false;
+    }
+
+    private static boolean isBackgroundKeySkinned(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
+        if (state == null || state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return false;
+        String panelKey = SkinAnchorRegistry.keyFor(panel);
+        if (panelKey == null) return false;
+        String bgKey = SkinOverrideKey.viewportBackgroundKey(panelKey);
+        if (bgKey == null) return false;
+        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
+        return state.root.skinFillOverrides.containsKey(bgKey)
+                || state.root.skinFillOverrides.containsKey(appPrefix + bgKey);
     }
 
     private static boolean hasBuiltinCanvasBackground(@javax.annotation.Nullable TabletUiState state) {
@@ -210,7 +216,6 @@ public final class TabletPanelChrome {
 
     public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
         if (hasPanelOverride(panel, state)) return;
-        if (hasSkinOverride(panel)) return;
         drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, TabletColors.BORDER_BASE);
     }
 
@@ -242,8 +247,9 @@ public final class TabletPanelChrome {
         return !(bg instanceof ColorRectTexture) && !(bg instanceof GuiTextureGroup);
     }
 
-    static boolean hasPanelOverride(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
+    public static boolean hasPanelOverride(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
         if (hasSkinOverride(panel)) return true;
+        if (state != null && isBackgroundKeySkinned(panel, state)) return true;
         if (state == null) return false;
         String panelKey = SkinAnchorRegistry.keyFor(panel);
         if (panelKey != null && state.root.activeSkinTargets.contains(panelKey)) return true;

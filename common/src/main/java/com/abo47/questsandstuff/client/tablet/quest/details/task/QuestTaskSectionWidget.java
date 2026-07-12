@@ -127,7 +127,10 @@ final class QuestTaskSectionWidget {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        section.setBackground(SurfaceFactory.insetPanel());
+        String cardKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
+        boolean sectionSkinned = state.root.activeSkinTargets.contains("quest_details_tasks")
+                || state.root.activeSkinTargets.contains(cardKey);
+        section.setBackground(sectionSkinned ? SurfaceFactory.transparent() : SurfaceFactory.insetPanel());
         return section;
     }
 

@@ -108,14 +108,6 @@ public final class SkinEditManager {
                 w.setBackground(tex);
             }
             state.root.activeSkinTargets.add(targetKey);
-
-            if (SkinOverrideKey.hasCanvasBackground(targetKey)) {
-                String bgKey = SkinOverrideKey.viewportBackgroundKey(targetKey);
-                if (bgKey != null) {
-                    Widget bg = SkinAnchorRegistry.findByKey(bgKey);
-                    if (bg != null) bg.setBackground(IGuiTexture.EMPTY);
-                }
-            }
         }
     }
 
