@@ -115,7 +115,6 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawFullscreenBackdrop(graphics);
         boolean hasOverride = hasRootOverride();
         if (hasOverride) {
             IGuiTexture saved = getBackgroundTexture();
@@ -207,27 +206,6 @@ public final class TabletRootWidget extends WidgetGroup {
 
     boolean isFrontWindowOpen() {
         return QuestDetailsWindow.isVisible(state) && frontWindowLayer != null;
-    }
-
-    private void drawFullscreenBackdrop(GuiGraphics graphics) {
-        if (state == null || !state.root.fullScreenMode) {
-            return;
-        }
-        Minecraft minecraft = Minecraft.getInstance();
-        int screenW = minecraft.getWindow().getGuiScaledWidth();
-        int screenH = minecraft.getWindow().getGuiScaledHeight();
-        if (screenW <= 0 || screenH <= 0) {
-            return;
-        }
-        int rootX = getPosition().x;
-        int rootY = getPosition().y;
-        int rootW = getSize().width;
-        int rootH = getSize().height;
-        int fill = TabletColors.SURFACE_BASE;
-        SurfaceFactory.fill(fill).draw(graphics, 0, 0, 0, 0, rootX, screenH);
-        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX + rootW, 0, screenW - (rootX + rootW), screenH);
-        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX, 0, rootW, rootY);
-        SurfaceFactory.fill(fill).draw(graphics, 0, 0, rootX, rootY + rootH, rootW, screenH - (rootY + rootH));
     }
 
     private void drawRootFill(GuiGraphics graphics) {

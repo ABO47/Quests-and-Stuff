@@ -8,10 +8,6 @@ import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import net.minecraft.client.Minecraft;
 
 public final class TabletScreenManager {
-    private static final int FULLSCREEN_GRID_CELL_SIZE = 16;
-    private static final int FULLSCREEN_ROOT_WIDTH_REMAINDER = Math.floorMod(TabletUiFactory.ROOT_W, FULLSCREEN_GRID_CELL_SIZE);
-    private static final int FULLSCREEN_ROOT_HEIGHT_REMAINDER = Math.floorMod(TabletUiFactory.ROOT_H, FULLSCREEN_GRID_CELL_SIZE);
-
     private TabletScreenManager() {
     }
 
@@ -34,20 +30,13 @@ public final class TabletScreenManager {
         if (!fullScreen || minecraft == null) {
             return TabletUiFactory.ROOT_W;
         }
-        return quantizeFullscreenRootSize(minecraft.getWindow().getGuiScaledWidth(), FULLSCREEN_ROOT_WIDTH_REMAINDER);
+        return minecraft.getWindow().getGuiScaledWidth();
     }
 
     public static int targetRootHeight(Minecraft minecraft, boolean fullScreen) {
         if (!fullScreen || minecraft == null) {
             return TabletUiFactory.ROOT_H;
         }
-        return quantizeFullscreenRootSize(minecraft.getWindow().getGuiScaledHeight(), FULLSCREEN_ROOT_HEIGHT_REMAINDER);
-    }
-
-    private static int quantizeFullscreenRootSize(int screenSize, int remainder) {
-        int safeSize = Math.max(1, screenSize);
-        int delta = Math.floorMod(safeSize - remainder, FULLSCREEN_GRID_CELL_SIZE);
-        int quantizedSize = safeSize - delta;
-        return quantizedSize > 0 ? quantizedSize : safeSize;
+        return minecraft.getWindow().getGuiScaledHeight();
     }
 }

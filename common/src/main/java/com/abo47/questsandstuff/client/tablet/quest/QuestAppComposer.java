@@ -25,6 +25,7 @@ import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -120,7 +121,10 @@ public final class QuestAppComposer {
         WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
+                IGuiTexture bg = getBackgroundTexture();
+                if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
+                    bg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                } else if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
                     SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);

@@ -311,7 +311,6 @@ public final class TabletUiStatePersistence {
         try {
             if (!Files.exists(SKIN_STATE_FILE)) return;
             JsonObject root = JsonParser.parseString(Files.readString(SKIN_STATE_FILE, StandardCharsets.UTF_8)).getAsJsonObject();
-            state.root.skinEditMode = readBoolean(root, "skin_edit_mode", state.root.skinEditMode);
             state.root.skinEditSelectedTarget = readString(root, "skin_edit_selected_target", state.root.skinEditSelectedTarget);
             readSkinFillOverrides(root, state);
         } catch (Exception exception) {
@@ -324,7 +323,6 @@ public final class TabletUiStatePersistence {
         try {
             Files.createDirectories(SKIN_STATE_FILE.getParent());
             JsonObject root = new JsonObject();
-            root.addProperty("skin_edit_mode", state.root.skinEditMode);
             root.addProperty("skin_edit_selected_target", state.root.skinEditSelectedTarget == null ? "" : state.root.skinEditSelectedTarget);
             writeSkinFillOverrides(root, state);
             Files.writeString(SKIN_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);

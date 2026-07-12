@@ -7,7 +7,7 @@ import java.util.Set;
 
 public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(
-            "home_btn", "quest_details_root", "quests_task_cards", "quests_reward_cards"
+            "quest_details_root", "quests_task_cards", "quests_reward_cards"
     );
     private static final Set<String> CARD_KEYS = Set.of(
             "quests_task_cards", "quests_reward_cards"
