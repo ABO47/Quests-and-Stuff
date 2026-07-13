@@ -40,17 +40,27 @@ public final class UiThemeDefaults {
         JsonObject colorJson = root.getAsJsonObject("colors");
         boolean customScrollTrack = false;
         boolean customScrollThumb = false;
+        boolean customIconScrollTrack = false;
+        boolean customIconScrollThumb = false;
         for (String[] color : colors) {
             if (color.length >= 2) {
                 colorJson.addProperty(color[0], color[1]);
-                customScrollTrack |= UiThemeManager.ROLE_ICON_SCROLL_TRACK.equals(color[0]);
-                customScrollThumb |= UiThemeManager.ROLE_ICON_SCROLL_THUMB.equals(color[0]);
+                customScrollTrack |= UiThemeManager.UI_SCROLL_TRACK.equals(color[0]);
+                customScrollThumb |= UiThemeManager.UI_SCROLL_THUMB.equals(color[0]);
+                customIconScrollTrack |= UiThemeManager.ROLE_ICON_SCROLL_TRACK.equals(color[0]);
+                customIconScrollThumb |= UiThemeManager.ROLE_ICON_SCROLL_THUMB.equals(color[0]);
             }
         }
         if (!customScrollTrack && colorJson.has(UiThemeManager.UI_BORDER_BASE)) {
+            colorJson.addProperty(UiThemeManager.UI_SCROLL_TRACK, colorJson.get(UiThemeManager.UI_BORDER_BASE).getAsString());
+        }
+        if (!customScrollThumb && colorJson.has(UiThemeManager.UI_BORDER_ACCENT)) {
+            colorJson.addProperty(UiThemeManager.UI_SCROLL_THUMB, colorJson.get(UiThemeManager.UI_BORDER_ACCENT).getAsString());
+        }
+        if (!customIconScrollTrack && colorJson.has(UiThemeManager.UI_BORDER_BASE)) {
             colorJson.addProperty(UiThemeManager.ROLE_ICON_SCROLL_TRACK, colorJson.get(UiThemeManager.UI_BORDER_BASE).getAsString());
         }
-        if (!customScrollThumb && colorJson.has(UiThemeManager.UI_INTERACTIVE)) {
+        if (!customIconScrollThumb && colorJson.has(UiThemeManager.UI_INTERACTIVE)) {
             colorJson.addProperty(UiThemeManager.ROLE_ICON_SCROLL_THUMB, colorJson.get(UiThemeManager.UI_INTERACTIVE).getAsString());
         }
         return root;

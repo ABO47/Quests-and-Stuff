@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBr
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
@@ -62,6 +63,10 @@ public final class TabletAssetPickerModal {
     private static final int HEADER_BUTTON_Y = 1;
     private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
     private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
+    private static final int ASSET_TILE_GAP = 8;
+    private static final int ASSET_TILE_PAD = 8;
+    private static final int ASSET_TILE_MIN = 44;
+    private static final int ASSET_TILE_MAX = 96;
 
     private TabletAssetPickerModal() {
     }
@@ -191,18 +196,21 @@ public final class TabletAssetPickerModal {
 
         int listY = libraryLayout.bodyY();
         int listH = libraryLayout.bodyH();
-        PickerTileMetrics.Metrics tileMetrics = PickerTileMetrics.calculate(rightW, listH, assets.size());
+        int assetGridW = Math.max(1, rightW - ASSET_TILE_PAD * 2 - DragScrollBarWidget.RESERVED_WIDTH - ASSET_TILE_GAP);
+        int assetCols = Math.max(3, (assetGridW + ASSET_TILE_GAP) / (ASSET_TILE_MIN + ASSET_TILE_GAP));
+        int assetTile = Math.max(ASSET_TILE_MIN, (assetGridW - (assetCols - 1) * ASSET_TILE_GAP) / assetCols);
+        assetTile = Math.min(ASSET_TILE_MAX, assetTile);
         TiledPickerPanel.add(
                 modal,
                 rightX,
                 listY,
                 rightW,
                 listH,
-                tileMetrics.tileW(),
-                tileMetrics.tileH(),
-                tileMetrics.gap(),
-                tileMetrics.pad(),
-                tileMetrics.pad(),
+                assetTile,
+                assetTile,
+                ASSET_TILE_GAP,
+                ASSET_TILE_PAD,
+                ASSET_TILE_PAD,
                 assets,
                 "No assets",
                 ScrollState.bind(

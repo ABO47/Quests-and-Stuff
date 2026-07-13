@@ -18,11 +18,19 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 public final class SkinEditManager {
     private SkinEditManager() {
     }
+
+    private record CapturedOriginal(String targetKey, IGuiTexture original) {
+    }
+
+    private static final IdentityHashMap<Widget, CapturedOriginal> ORIGINAL_BACKGROUNDS = new IdentityHashMap<>();
 
     public static boolean handleClick(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY, int button) {
         if (state == null || !state.root.skinEditMode) return false;
@@ -71,19 +79,21 @@ public final class SkinEditManager {
     public static void reapplyOverrides(TabletUiState state, WidgetGroup root) {
         if (state == null || root == null) return;
         state.root.activeSkinTargets.clear();
-        if (state.root.skinFillOverrides.isEmpty()) return;
+        if (state.root.skinFillOverrides.isEmpty()) {
+            resetAllCaptured();
+            return;
+        }
+        Set<String> activeTargets = new HashSet<>();
+        for (var entry : state.root.skinFillOverrides.entrySet()) {
+            String targetKey = bareTargetFor(state, entry.getKey());
+            if (targetKey != null) activeTargets.add(targetKey);
+        }
+        resetRemovedTargets(activeTargets);
         for (var entry : state.root.skinFillOverrides.entrySet()) {
             String entryKey = entry.getKey();
 
-            String targetKey;
-            if (entryKey.contains(":")) {
-                String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-                if (!entryKey.startsWith(appPrefix)) continue;
-                targetKey = entryKey.substring(entryKey.indexOf(':') + 1);
-            } else {
-                targetKey = entryKey;
-            }
-
+            String targetKey = bareTargetFor(state, entryKey);
+            if (targetKey == null) continue;
             if ("root".equals(targetKey)) continue;
             if (SkinOverrideKey.isSharedKey(targetKey) && !SkinOverrideKey.isSharedKey(entryKey)) continue;
 
@@ -96,19 +106,72 @@ public final class SkinEditManager {
 
             if (SkinOverrideKey.isSharedKey(targetKey) && w instanceof WidgetGroup wg) {
                 if (SkinOverrideKey.isRootKey(targetKey)) {
-                    wg.setBackground(tex);
+                    applyToWidget(w, targetKey, tex);
                 } else if (!SkinOverrideKey.isCardKey(targetKey)) {
                     for (Widget child : wg.widgets) {
                         if (!SkinEditTargetResolver.hasCustomChrome(child)) {
-                            child.setBackground(tex);
+                            applyToWidget(child, targetKey, tex);
                         }
                     }
                 }
             } else {
-                w.setBackground(tex);
+                applyToWidget(w, targetKey, tex);
             }
             state.root.activeSkinTargets.add(targetKey);
         }
+    }
+
+    private static String bareTargetFor(TabletUiState state, String entryKey) {
+        if (entryKey.contains(":")) {
+            String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
+            if (!entryKey.startsWith(appPrefix)) return null;
+            return entryKey.substring(entryKey.indexOf(':') + 1);
+        }
+        return entryKey;
+    }
+
+    private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
+        ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
+        w.setBackground(tex);
+    }
+
+    private static void resetRemovedTargets(Set<String> activeTargets) {
+        ORIGINAL_BACKGROUNDS.entrySet().removeIf(entry -> {
+            if (!activeTargets.contains(entry.getValue().targetKey())) {
+                Widget w = entry.getKey();
+                if (w != null) {
+                    w.setBackground(entry.getValue().original());
+                }
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private static void resetAllCaptured() {
+        for (var entry : ORIGINAL_BACKGROUNDS.entrySet()) {
+            Widget w = entry.getKey();
+            if (w != null) {
+                w.setBackground(entry.getValue().original());
+            }
+        }
+        ORIGINAL_BACKGROUNDS.clear();
+    }
+
+    public static void restoreOverride(TabletUiState state, WidgetGroup root, String targetKey) {
+        if (targetKey == null) return;
+        String bare = SkinOverrideKey.resolveTargetKey(state, targetKey);
+        ORIGINAL_BACKGROUNDS.entrySet().removeIf(entry -> {
+            if (entry.getValue().targetKey().equals(bare)) {
+                Widget w = entry.getKey();
+                if (w != null) {
+                    w.setBackground(entry.getValue().original());
+                }
+                return true;
+            }
+            return false;
+        });
+        reapplyOverrides(state, root);
     }
 
     public static Widget findWidgetByKey(WidgetGroup root, String targetKey) {
@@ -121,9 +184,10 @@ public final class SkinEditManager {
             Widget targetWidget = SkinEditTargetResolver.widgetForKey(root, targetKey);
             if (targetWidget != null) {
                 String selfKey = SkinAnchorRegistry.keyFor(targetWidget);
-                if (selfKey == null) return resolved;
-                String containerKey = SkinEditTargetResolver.resolveSharedKey(targetWidget);
-                if (containerKey != null) resolved = containerKey;
+                if (selfKey == null) {
+                    String containerKey = SkinEditTargetResolver.resolveSharedKey(targetWidget);
+                    if (containerKey != null) resolved = containerKey;
+                }
             }
         }
         return resolved;
@@ -188,6 +252,7 @@ public final class SkinEditManager {
                         if (!bare.equals(qualified)) {
                             state.root.skinFillOverrides.remove(bare);
                         }
+                        restoreOverride(state, root, resolvedTarget);
                         if (refresher != null) refresher.run();
                         TabletUiFactory.persistSkinState(state);
                     }));

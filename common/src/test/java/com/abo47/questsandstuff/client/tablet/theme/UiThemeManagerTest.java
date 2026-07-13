@@ -120,8 +120,10 @@ class UiThemeManagerTest {
                     "warning": "#FF919293",
                     "error": "#FFA1A2A3",
                     "interactive": "#FFB1B2B3",
-                    "icon_scroll_track": "#FFC1C2C3",
-                    "icon_scroll_thumb": "#FFD1D2D3"
+                    "scroll_track": "#FFC1C2C3",
+                    "scroll_thumb": "#FFD1D2D3",
+                    "icon_scroll_track": "#FFE1E2E3",
+                    "icon_scroll_thumb": "#FFF1F2F3"
                   }
                 }
                 """;

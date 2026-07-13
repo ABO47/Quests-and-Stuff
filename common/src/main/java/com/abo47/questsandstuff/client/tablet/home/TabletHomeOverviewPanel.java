@@ -13,6 +13,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
+import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
@@ -60,15 +62,18 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
-        java.util.Map<String, AppDescriptor> apps = TabletAppRegistry.all();
-        int appCount = (int) apps.values().stream().filter(a -> !"home".equals(a.id())).count();
+        List<AppDescriptor> apps = TabletAppRegistry.all().values().stream()
+                .filter(a -> !"home".equals(a.id()))
+                .sorted(Comparator.comparingInt(TabletHomeOverviewPanel::appAnchorOrder)
+                        .thenComparing(AppDescriptor::id))
+                .toList();
+        int appCount = apps.size();
         int iconPairW = APP_ICON_SIZE * appCount + Math.max(0, appCount - 1) * 16;
         int iconsStartX = innerX + (innerW - iconPairW) / 2;
         int iconY = innerY + (innerH - APP_ICON_SIZE) / 2;
 
         int col = 0;
-        for (AppDescriptor app : apps.values()) {
-            if ("home".equals(app.id())) continue;
+        for (AppDescriptor app : apps) {
             int ix = iconsStartX + col * (APP_ICON_SIZE + 16);
             ResourceTexture tex = new ResourceTexture(app.iconTexture());
             ButtonWidget appBtn = new ButtonWidget(ix, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
@@ -80,6 +85,12 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
             addWidget(appBtn);
             col++;
         }
+    }
+
+    private static int appAnchorOrder(AppDescriptor app) {
+        if ("QUESTS".equals(app.id())) return 0;
+        if ("TEAMS".equals(app.id())) return Integer.MAX_VALUE;
+        return 1;
     }
 
     @Override

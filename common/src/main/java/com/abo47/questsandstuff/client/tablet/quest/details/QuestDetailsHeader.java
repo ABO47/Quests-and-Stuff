@@ -19,8 +19,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-
 final class QuestDetailsHeader {
     private QuestDetailsHeader() {
     }
@@ -170,11 +168,12 @@ final class QuestDetailsHeader {
     }
 
     static ButtonWidget addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        int fill = active ? withAlpha(color, 38) : TabletColors.SURFACE_PANEL_ALT;
+        int fill = TabletColors.SURFACE_PANEL_ALT;
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
                 TabletIconTextButton.State.of(fill, active ? color : TabletColors.BORDER_BASE, color),
-                TabletIconTextButton.State.of(withAlpha(color, 66), TabletColors.BORDER_ACCENT, color),
-                TabletIconTextButton.State.of(withAlpha(color, 90), color, TabletColors.TEXT_PRIMARY)
+                TabletIconTextButton.State.of(TabletColors.hoverFill(color), TabletColors.BORDER_ACCENT, color),
+                TabletIconTextButton.State.of(TabletColors.pressedFill(color), color, TabletColors.TEXT_PRIMARY),
+                active ? color : -1
         );
         ButtonWidget btn = TabletIconTextButton.icon(x, y, w, h, icon, visuals, callback);
         parent.addWidget(btn);

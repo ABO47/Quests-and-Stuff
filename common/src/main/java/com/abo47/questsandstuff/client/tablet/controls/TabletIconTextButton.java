@@ -82,16 +82,26 @@ public final class TabletIconTextButton extends ButtonWidget {
         boolean hovered = isMouseOverElement(mouseX, mouseY);
         boolean pressed = isClicked && hovered;
         State state = pressed ? visuals.pressed() : visuals.idle();
+        int selectedGlow = visuals.selectedGlow();
 
         IGuiTexture bgOverride = getBackgroundTexture();
         if (bgOverride != null && !bgOverride.equals(IGuiTexture.EMPTY)) {
             bgOverride.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            if (!pressed) {
+                if (hovered) {
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                } else if (selectedGlow >= 0) {
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), selectedGlow);
+                }
+            }
         } else {
             SurfaceFactory.bordered(visuals.idle().fillColor(), visuals.idle().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             if (pressed) {
                 SurfaceFactory.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             } else if (hovered) {
                 GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            } else if (selectedGlow >= 0) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), selectedGlow);
             }
         }
 
@@ -160,7 +170,11 @@ public final class TabletIconTextButton extends ButtonWidget {
         }
     }
 
-    public record Visuals(State idle, State hover, State pressed) {
+    public record Visuals(State idle, State hover, State pressed, int selectedGlow) {
+        public Visuals(State idle, State hover, State pressed) {
+            this(idle, hover, pressed, -1);
+        }
+
         public static Visuals defaultControl(int accentColor, int iconColor) {
             return new Visuals(
                     State.of(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, iconColor),

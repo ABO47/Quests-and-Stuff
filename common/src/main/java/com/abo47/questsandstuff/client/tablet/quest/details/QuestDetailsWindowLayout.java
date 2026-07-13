@@ -5,7 +5,6 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -81,14 +80,15 @@ final class QuestDetailsWindowLayout {
                 IGuiTexture bg = getBackgroundTexture();
                 if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
                     bg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-                } else if (WorldPortalCapture.shouldCaptureDetails(state) && WorldPortalCapture.hasUiTexture()) {
-                    WorldPortalCapture.drawUiInto(graphics, this, state);
+                } else {
+                    boolean portal = WorldPortalCapture.shouldCaptureDetails(state) && WorldPortalCapture.hasUiTexture();
+                    if (portal) {
+                        WorldPortalCapture.drawUiInto(graphics, this, state);
+                    }
                     int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
-                    if (percent > 0 && !TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
+                    if (percent > 0) {
                         CanvasBackgroundOpacity.drawFill(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), TabletColors.SURFACE_PANEL, percent);
                     }
-                } else if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
-                    SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }

@@ -176,7 +176,7 @@ final class QuestAppHeaderControls {
         settingsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         blueprintButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         claimAllButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
-        editorButton.visuals(headerVisuals(withAlpha(state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR, 38), state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR, state.root.editMode ? TabletColors.SUCCESS : TabletColors.ERROR));
+        editorButton.visuals(editorVisuals(state.root.editMode));
     }
 
     void layoutChapter(boolean chapterCollapsed, int dynamicListX, int dynamicListW, int chapterTopY, int chapterHeaderH) {
@@ -261,6 +261,16 @@ final class QuestAppHeaderControls {
                 TabletIconTextButton.State.of(fill, border, accentColor),
                 TabletIconTextButton.State.of(withAlpha(accentColor, 66), TabletColors.BORDER_ACCENT, accentColor),
                 TabletIconTextButton.State.of(withAlpha(accentColor, 90), accentColor, TabletColors.TEXT_PRIMARY)
+        );
+    }
+
+    private static TabletIconTextButton.Visuals editorVisuals(boolean editMode) {
+        int accent = editMode ? TabletColors.SUCCESS : TabletColors.ERROR;
+        return new TabletIconTextButton.Visuals(
+                TabletIconTextButton.State.of(TabletColors.SURFACE_PANEL_ALT, accent, accent),
+                TabletIconTextButton.State.of(TabletColors.hoverFill(accent), TabletColors.BORDER_ACCENT, accent),
+                TabletIconTextButton.State.of(TabletColors.pressedFill(accent), accent, TabletColors.TEXT_PRIMARY),
+                editMode ? TabletColors.SUCCESS : -1
         );
     }
 

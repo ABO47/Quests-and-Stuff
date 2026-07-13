@@ -7,13 +7,15 @@ import java.util.Set;
 
 public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(
-            "quest_details_root", "quests_task_cards", "quests_reward_cards"
+            "quest_details_root", "quest_details_tasks",
+            "quest_details_task_section", "quest_details_reward_section",
+            "quests_task_cards", "quests_reward_cards"
     );
     private static final Set<String> CARD_KEYS = Set.of(
             "quests_task_cards", "quests_reward_cards"
     );
     private static final Set<String> ROOT_KEYS = Set.of(
-            "quest_details_root"
+            "quest_details_root", "quest_details_tasks", "quest_details_task_section", "quest_details_reward_section"
     );
     private static final Set<String> CANVAS_PANEL_KEYS = Set.of(
             "quests_canvas", "quest_details_canvas_panel"

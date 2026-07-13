@@ -191,7 +191,8 @@ final class QuestTaskCardRenderer {
         if (rawOverride == null) {
             rawOverride = fallbackOverride(state, skinKey);
         }
-        if (rawOverride != null) {
+        boolean skinned = rawOverride != null;
+        if (skinned) {
             SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
             if (parsed != null) {
                 IGuiTexture tex = parsed.createTexture();
@@ -208,7 +209,9 @@ final class QuestTaskCardRenderer {
         }
 
         int borderColor = claimedReward ? TabletColors.subtleBorder() : (selected ? accent : TabletColors.subtleBorder());
-        card.addWidget(borderQuad(w, borderColor));
+        if (!skinned) {
+            card.addWidget(borderQuad(w, borderColor));
+        }
 
         int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {

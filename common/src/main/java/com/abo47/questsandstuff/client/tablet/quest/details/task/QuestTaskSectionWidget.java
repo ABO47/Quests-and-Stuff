@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
@@ -127,10 +128,9 @@ final class QuestTaskSectionWidget {
                 return super.mouseReleased(mouseX, mouseY, button);
             }
         };
-        String cardKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
-        boolean sectionSkinned = state.root.activeSkinTargets.contains("quest_details_tasks")
-                || state.root.activeSkinTargets.contains(cardKey);
-        section.setBackground(sectionSkinned ? SurfaceFactory.transparent() : SurfaceFactory.insetPanel());
+        String sectionKey = "tasks".equals(kind) ? "quest_details_task_section" : "quest_details_reward_section";
+        SkinAnchorRegistry.register(sectionKey, section);
+        section.setBackground(SurfaceFactory.insetPanel());
         return section;
     }
 

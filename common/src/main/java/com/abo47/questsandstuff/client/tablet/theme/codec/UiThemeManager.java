@@ -42,6 +42,8 @@ public final class UiThemeManager {
     public static final String UI_WARNING = "warning";
     public static final String UI_ERROR = "error";
     public static final String UI_INTERACTIVE = "interactive";
+    public static final String UI_SCROLL_TRACK = "scroll_track";
+    public static final String UI_SCROLL_THUMB = "scroll_thumb";
 
     private static UiThemeState state = UiThemeState.defaults();
     private static boolean initialized = false;
@@ -189,16 +191,8 @@ public final class UiThemeManager {
         TabletColors.WARNING = uiColors.getOrDefault(UI_WARNING, TabletColors.DEFAULT_WARNING);
         TabletColors.ERROR = uiColors.getOrDefault(UI_ERROR, TabletColors.DEFAULT_ERROR);
         TabletColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
-        int scrollTrack = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
-        int scrollThumb = state.roleColors.getOrDefault(ROLE_ICON_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
-        if (scrollTrack == TabletColors.DEFAULT_SCROLL_TRACK && TabletColors.BORDER_BASE != TabletColors.DEFAULT_BORDER_BASE) {
-            scrollTrack = TabletColors.BORDER_BASE;
-        }
-        if (scrollThumb == TabletColors.DEFAULT_SCROLL_THUMB && TabletColors.INTERACTIVE != TabletColors.DEFAULT_INTERACTIVE) {
-            scrollThumb = TabletColors.INTERACTIVE;
-        }
-        TabletColors.SCROLL_TRACK = scrollTrack;
-        TabletColors.SCROLL_THUMB = scrollThumb;
+        TabletColors.SCROLL_TRACK = uiColors.getOrDefault(UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
+        TabletColors.SCROLL_THUMB = uiColors.getOrDefault(UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
     }
 
     public record ThemeInfo(String id, String label, int panel, int panelAlt, int accent, int success, int text) {

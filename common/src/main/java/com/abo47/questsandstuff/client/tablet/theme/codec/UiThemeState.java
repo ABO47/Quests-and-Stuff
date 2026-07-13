@@ -60,6 +60,8 @@ public final class UiThemeState {
         uiColors.put(UiThemeManager.UI_WARNING, TabletColors.DEFAULT_WARNING);
         uiColors.put(UiThemeManager.UI_ERROR, TabletColors.DEFAULT_ERROR);
         uiColors.put(UiThemeManager.UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
+        uiColors.put(UiThemeManager.UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
+        uiColors.put(UiThemeManager.UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
         return uiColors;
     }
 
