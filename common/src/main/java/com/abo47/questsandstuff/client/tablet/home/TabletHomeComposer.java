@@ -34,9 +34,12 @@ public final class TabletHomeComposer {
         TabletUiFactory.setActiveTabletState(state);
         int safeRootW = Math.max(1, rootWidth);
         int safeRootH = Math.max(1, rootHeight);
+        TabletUiFactory.applyRootSize(state, safeRootW, safeRootH, fullScreenMode);
 
         TabletRootWidget root = new TabletRootWidget(0, 0, safeRootW, safeRootH, state);
-        root.setBackground(SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
+        root.setBackground(fullScreenMode
+                ? SurfaceFactory.transparent()
+                : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
         WidgetGroup modalLayer = new ModalDismissGuard(0, 0, safeRootW, safeRootH, state, () -> refresh[0].run());

@@ -109,10 +109,9 @@ public final class TabletLifecycle {
             return;
         }
         saveLastApp("home".equals(appId) ? "" : appId);
-        boolean isHome = "home".equals(appId);
-        boolean fullScreen = !isHome && QuestsAndStuffConfig.fullScreenModeEnabled();
-        int rootW = isHome ? TabletUiFactory.ROOT_W : TabletScreenManager.targetRootWidth(minecraft, fullScreen);
-        int rootH = isHome ? TabletUiFactory.ROOT_H : TabletScreenManager.targetRootHeight(minecraft, fullScreen);
+        boolean fullScreen = QuestsAndStuffConfig.fullScreenModeEnabled();
+        int rootW = TabletScreenManager.targetRootWidth(minecraft, fullScreen);
+        int rootH = TabletScreenManager.targetRootHeight(minecraft, fullScreen);
         WidgetGroup content = app.composer().create(player, rootW, rootH, fullScreen);
         ModularUI uiTemplate = new ModularUI(content, IUIHolder.EMPTY, player);
         uiTemplate.initWidgets();

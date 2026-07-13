@@ -27,8 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_WIDTH;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PAD;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -36,6 +45,9 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 public final class CanvasRenderer {
     public static final float MIN_CANVAS_ZOOM = 0.5f;
     public static final float MAX_CANVAS_ZOOM = 3.0f;
+
+    private static final int WINDOWED_CANVAS_PANEL_W = ROOT_W - PAD * 2 - CHAPTER_W - GAP;
+    private static final int WINDOWED_CANVAS_PANEL_H = ROOT_H - BODY_Y - PAD_Y;
 
     private CanvasRenderer() {
     }
@@ -52,20 +64,35 @@ public final class CanvasRenderer {
         int viewportH = canvasViewport.getSize().height;
         int usableW = Math.max(1, viewportW - 1);
         int usableH = Math.max(1, viewportH - 1);
-        if (state.canvas.canvasLimitEnabled) {
-            usableW = Math.min(usableW, CANVAS_LIMIT_WIDTH[state.canvas.canvasLimitIndex]);
-            usableH = Math.min(usableH, CANVAS_LIMIT_HEIGHT[state.canvas.canvasLimitIndex]);
+        if (state.canvas.canvasLimitEnabled && !state.root.fullScreenMode) {
+            double scaleX = (double) canvasPanelWidth(state) / WINDOWED_CANVAS_PANEL_W;
+            double scaleY = (double) canvasHeight(state) / WINDOWED_CANVAS_PANEL_H;
+            int limitW = (int) Math.round(CANVAS_LIMIT_WIDTH[state.canvas.canvasLimitIndex] * scaleX);
+            int limitH = (int) Math.round(CANVAS_LIMIT_HEIGHT[state.canvas.canvasLimitIndex] * scaleY);
+            usableW = Math.min(usableW, limitW);
+            usableH = Math.min(usableH, limitH);
         }
         int cell = CanvasGeometry.gridSize(state);
-        int contentW = CanvasSceneRenderer.snapCanvasContentSize(usableW, cell);
-        int contentH = CanvasSceneRenderer.snapCanvasContentSize(usableH, cell);
-        int contentX = Math.max(0, (usableW - contentW) / 2);
-        int contentY = Math.max(0, (usableH - contentH) / 2);
+        int contentW;
+        int contentH;
+        int contentX;
+        int contentY;
+        if (state.root.fullScreenMode) {
+            contentX = 0;
+            contentY = 0;
+            contentW = ((usableW + cell - 1) / cell) * cell;
+            contentH = ((usableH + cell - 1) / cell) * cell;
+        } else {
+            contentW = CanvasSceneRenderer.snapCanvasContentSize(usableW, cell);
+            contentH = CanvasSceneRenderer.snapCanvasContentSize(usableH, cell);
+            contentX = Math.max(0, (usableW - contentW) / 2);
+            contentY = Math.max(0, (usableH - contentH) / 2);
+        }
         CanvasRenderStateController.setContentBounds(state, contentX, contentY, contentW, contentH);
         CanvasCameraController.afterCanvasLayout(state, selectedChapter);
         CanvasSceneRenderer.renderCanvasSurfaceFactory(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
-        if (state.canvas.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
+        if (state.canvas.canvasLimitEnabled && !state.root.fullScreenMode && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
             WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(TabletColors.SURFACE_PANEL_ALT, 36), TabletColors.BORDER_ACCENT);
             canvasViewport.addWidget(bounds);
         }

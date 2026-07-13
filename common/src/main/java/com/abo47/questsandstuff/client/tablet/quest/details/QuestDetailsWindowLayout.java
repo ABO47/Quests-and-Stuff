@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import javax.annotation.Nonnull;
 
 
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
 
@@ -94,6 +95,19 @@ final class QuestDetailsWindowLayout {
         };
         canvasPanel.addWidget(viewportBg);
 
+        WidgetGroup dim = new WidgetGroup(0, 0, layer.getSizeWidth(), layer.getSizeHeight()) {
+            @Override
+            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int alpha = dimAlpha(state);
+                if (alpha <= 0) {
+                    return;
+                }
+                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha))
+                        .draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            }
+        };
+        layer.addWidget(dim);
+
         if (QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             layer.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     rootWidget,
@@ -147,6 +161,15 @@ final class QuestDetailsWindowLayout {
         };
         layer.addWidget(modal);
         return modal;
+    }
+
+    private static int dimAlpha(TabletUiState state) {
+        if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
+            return 140;
+        }
+        float amount = SourceOriginRevealWidget.windowOpenAmount(
+                state.questDetails.questDetailsAnimationStartMs, !state.questDetails.questDetailsClosing);
+        return Math.round(140 * amount);
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {

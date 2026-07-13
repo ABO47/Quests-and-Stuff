@@ -14,9 +14,6 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PANEL_GAP;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 
@@ -37,8 +34,8 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
 
     TabletHomeOverviewPanel(int x, int y, int width, int height) {
         super(x, y, width, height);
-        int innerW = CHAPTER_W + PANEL_GAP + CANVAS_W;
-        int innerH = height - ROOT_PAD_Y * 2;
+        int innerW = Math.max(1, width - ROOT_PAD_X * 2);
+        int innerH = Math.max(1, height - ROOT_PAD_Y * 2);
         int innerX = ROOT_PAD_X;
         int innerY = ROOT_PAD_Y;
 
