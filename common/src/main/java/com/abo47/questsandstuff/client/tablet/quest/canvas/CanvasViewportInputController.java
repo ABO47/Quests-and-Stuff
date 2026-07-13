@@ -82,8 +82,8 @@ final class CanvasViewportInputController {
             if (viewport.previewCanvasPan(dx, dy)) {
                 if (viewport.panPreviewNeedsRefresh()) {
                     viewport.commitCanvasPan();
+                    viewport.queueCanvasRefresh();
                 }
-                viewport.queueCanvasRefresh();
             } else {
                 CanvasCameraController.panByScreen(state, dx, dy, true);
                 viewport.queueCanvasRefresh();

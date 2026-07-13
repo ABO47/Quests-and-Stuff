@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -29,7 +30,9 @@ public final class SkinEditRenderer {
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
-        DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
+        if (!QuestDetailsWindow.isVisible(state)) {
+            DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
+        }
 
         String selectedKey = state.root.skinEditSelectedTarget;
         if (!selectedKey.isBlank()) {

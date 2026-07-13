@@ -165,11 +165,11 @@ final class QuestDetailsWindowLayout {
 
     private static int dimAlpha(TabletUiState state) {
         if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
-            return 140;
+            return 70;
         }
         float amount = SourceOriginRevealWidget.windowOpenAmount(
                 state.questDetails.questDetailsAnimationStartMs, !state.questDetails.questDetailsClosing);
-        return Math.round(140 * amount);
+        return Math.round(70 * amount);
     }
 
     private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
