@@ -223,8 +223,8 @@ public class ChunkMapWidget extends Widget {
         int cell = ChunkMapGeometry.cellSize(w, h, gw, gh);
         int ox = ChunkMapGeometry.gridOriginX(w, cell, gw);
         int oy = ChunkMapGeometry.gridOriginY(h, cell, gh);
-        int centerX = baseX + w / 2;
-        int centerY = baseY + h / 2;
+        int centerX = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, 0) + cell / 2;
+        int centerY = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, 0) + cell / 2;
 
         if (terrainTexLoc != null) {
             graphics.blit(terrainTexLoc, baseX, baseY, w, h, 0, 0, texW, texH, texW, texH);
@@ -264,8 +264,8 @@ public class ChunkMapWidget extends Widget {
                 if (s == 0) {
                     continue;
                 }
-                int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx - gw / 2);
-                int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz - gh / 2);
+                int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
+                int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 graphics.fill(px, py, px + cell + 1, py + cell + 1, s == 2 ? FORCE_FILL : CLAIMED_FILL);
             }
         }
@@ -276,8 +276,8 @@ public class ChunkMapWidget extends Widget {
                 if (s == 0) {
                     continue;
                 }
-                int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx - gw / 2);
-                int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz - gh / 2);
+                int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
+                int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 int edge = s == 2 ? FORCE_EDGE : CLAIMED_EDGE;
                 if (states.getOrDefault(key(dx - 1, dz), 0) != s) {
                     graphics.fill(px, py, px + 1, py + cell + 1, edge);
@@ -297,13 +297,12 @@ public class ChunkMapWidget extends Widget {
         if (isMouseOverElement(mouseX, mouseY)) {
             int lmx = (int) mouseX - baseX;
             int lmy = (int) mouseY - baseY;
-            int dx = (int) Math.round((lmx - w / 2) / (double) cell);
-            int dz = (int) Math.round((lmy - h / 2) / (double) cell);
-            int hpxLocal = (int) (w / 2 + (dx - 0.5) * cell);
-            int hpyLocal = (int) (h / 2 + (dz - 0.5) * cell);
-            var m = graphics.pose().last().pose();
-            int fx = hpxLocal + cell / 2 + (int) m.m03();
-            int fy = hpyLocal + cell / 2 + (int) m.m13();
+            int dx = (int) Math.floor((lmx - ox) / (double) cell) - gw / 2;
+            int dz = (int) Math.floor((lmy - oy) / (double) cell) - gh / 2;
+            int hpxLocal = ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
+            int hpyLocal = ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
+            int fx = baseX + hpxLocal + cell / 2;
+            int fy = baseY + hpyLocal + cell / 2;
             com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.drawGlow(
                     graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell, cell, TabletColors.BORDER_ACCENT);
         }
@@ -343,9 +342,11 @@ public class ChunkMapWidget extends Widget {
         int localY = (int) mouseY - getPositionY();
         int w = getSizeWidth();
         int h = getSizeHeight();
-        int cell = Math.max(1, w / gridW);
-        int dx = (int) Math.round((localX - w / 2) / (double) cell);
-        int dz = (int) Math.round((localY - h / 2) / (double) cell);
+        int cell = ChunkMapGeometry.cellSize(w, h, gridW, gridH);
+        int ox = ChunkMapGeometry.gridOriginX(w, cell, gridW);
+        int oy = ChunkMapGeometry.gridOriginY(h, cell, gridH);
+        int dx = (int) Math.floor((localX - ox) / (double) cell) - gridW / 2;
+        int dz = (int) Math.floor((localY - oy) / (double) cell) - gridH / 2;
 
         int chunkX = playerChunkX() + dx;
         int chunkZ = playerChunkZ() + dz;
