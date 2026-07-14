@@ -29,6 +29,9 @@ import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
 import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
 import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
 import com.abo47.questsandstuff.network.team.S2CTeamJoinResultPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
+import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.platform.Services;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -127,7 +130,10 @@ public final class ModNetwork {
         packets.add(type(id++, C2STeamJoinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamJoinPacket::encode, C2STeamJoinPacket::decode, C2STeamJoinPacket::handle));
         packets.add(type(id++, C2STeamActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamActionPacket::encode, C2STeamActionPacket::decode, C2STeamActionPacket::handle));
         packets.add(type(id++, C2STeamInviteCodePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamInviteCodePacket::encode, C2STeamInviteCodePacket::decode, C2STeamInviteCodePacket::handle));
-        packets.add(type(id, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
+        packets.add(type(id++, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
+        packets.add(type(id++, S2CChunkClaimSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CChunkClaimSyncPacket::encode, S2CChunkClaimSyncPacket::decode, S2CChunkClaimSyncPacket::handle));
+        packets.add(type(id++, C2SChunkClaimActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimActionPacket::encode, C2SChunkClaimActionPacket::decode, C2SChunkClaimActionPacket::handle));
+        packets.add(type(id, C2SChunkClaimConfigPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimConfigPacket::encode, C2SChunkClaimConfigPacket::decode, C2SChunkClaimConfigPacket::handle));
         return List.copyOf(packets);
     }
 

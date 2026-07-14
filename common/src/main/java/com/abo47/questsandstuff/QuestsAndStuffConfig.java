@@ -25,6 +25,7 @@ public final class QuestsAndStuffConfig {
     private static final QuestsAndStuffConfigSections.Rewards REWARDS = new QuestsAndStuffConfigSections.Rewards();
     private static final QuestsAndStuffConfigSections.Hud HUD = new QuestsAndStuffConfigSections.Hud();
     private static final QuestsAndStuffConfigSections.Security SECURITY = new QuestsAndStuffConfigSections.Security();
+    private static final QuestsAndStuffConfigSections.ChunkClaims CHUNK_CLAIMS = new QuestsAndStuffConfigSections.ChunkClaims();
 
     private QuestsAndStuffConfig() {
     }
@@ -348,6 +349,129 @@ public final class QuestsAndStuffConfig {
         return QuestsAndStuffConfigSections.Hud.normalizeDurationMs(durationMs);
     }
 
+    public static boolean chunkClaimProtectBreakPlace() {
+        load();
+        return CHUNK_CLAIMS.protectBreakPlace;
+    }
+
+    public static boolean chunkClaimProtectInteraction() {
+        load();
+        return CHUNK_CLAIMS.protectInteraction;
+    }
+
+    public static boolean chunkClaimProtectExplosions() {
+        load();
+        return CHUNK_CLAIMS.protectExplosions;
+    }
+
+    public static boolean chunkClaimProtectMobGriefing() {
+        load();
+        return CHUNK_CLAIMS.protectMobGriefing;
+    }
+
+    public static boolean chunkClaimProtectPvp() {
+        load();
+        return CHUNK_CLAIMS.protectPvp;
+    }
+
+    public static int chunkClaimMaxClaimedChunks() {
+        load();
+        return CHUNK_CLAIMS.maxClaimedChunks;
+    }
+
+    public static int chunkClaimMaxForceLoadedChunks() {
+        load();
+        return CHUNK_CLAIMS.maxForceLoadedChunks;
+    }
+
+    public static int minChunkClaimCap() {
+        return QuestsAndStuffConfigSections.ChunkClaims.MIN_CAP;
+    }
+
+    public static int maxChunkClaimCap() {
+        return QuestsAndStuffConfigSections.ChunkClaims.MAX_CAP;
+    }
+
+    public static boolean setChunkClaimProtectBreakPlace(boolean value) {
+        load();
+        if (CHUNK_CLAIMS.protectBreakPlace != value) {
+            CHUNK_CLAIMS.protectBreakPlace = value;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimProtectInteraction(boolean value) {
+        load();
+        if (CHUNK_CLAIMS.protectInteraction != value) {
+            CHUNK_CLAIMS.protectInteraction = value;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimProtectExplosions(boolean value) {
+        load();
+        if (CHUNK_CLAIMS.protectExplosions != value) {
+            CHUNK_CLAIMS.protectExplosions = value;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimProtectMobGriefing(boolean value) {
+        load();
+        if (CHUNK_CLAIMS.protectMobGriefing != value) {
+            CHUNK_CLAIMS.protectMobGriefing = value;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimProtectPvp(boolean value) {
+        load();
+        if (CHUNK_CLAIMS.protectPvp != value) {
+            CHUNK_CLAIMS.protectPvp = value;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimMaxClaimedChunks(int value) {
+        load();
+        int normalized = QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(value);
+        if (CHUNK_CLAIMS.maxClaimedChunks != normalized) {
+            CHUNK_CLAIMS.maxClaimedChunks = normalized;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean setChunkClaimMaxForceLoadedChunks(int value) {
+        load();
+        int normalized = QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(value);
+        if (CHUNK_CLAIMS.maxForceLoadedChunks != normalized) {
+            CHUNK_CLAIMS.maxForceLoadedChunks = normalized;
+            save();
+        }
+        return true;
+    }
+
+    public static boolean updateChunkClaims(boolean protectBreakPlace, boolean protectInteraction,
+                                            boolean protectExplosions, boolean protectMobGriefing, boolean protectPvp,
+                                            int maxClaimedChunks, int maxForceLoadedChunks) {
+        load();
+        CHUNK_CLAIMS.protectBreakPlace = protectBreakPlace;
+        CHUNK_CLAIMS.protectInteraction = protectInteraction;
+        CHUNK_CLAIMS.protectExplosions = protectExplosions;
+        CHUNK_CLAIMS.protectMobGriefing = protectMobGriefing;
+        CHUNK_CLAIMS.protectPvp = protectPvp;
+        CHUNK_CLAIMS.maxClaimedChunks = QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(maxClaimedChunks);
+        CHUNK_CLAIMS.maxForceLoadedChunks = QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(maxForceLoadedChunks);
+        save();
+        return true;
+    }
+
     private static void read(JsonObject root) {
         DEBUG.read(QuestsAndStuffConfigSections.object(root, "debug"));
         ANIMATIONS.read(QuestsAndStuffConfigSections.object(root, "animations"));
@@ -355,6 +479,7 @@ public final class QuestsAndStuffConfig {
         REWARDS.read(QuestsAndStuffConfigSections.object(root, "rewards"));
         HUD.read(QuestsAndStuffConfigSections.object(root, "hud"));
         SECURITY.read(QuestsAndStuffConfigSections.object(root, "security"));
+        CHUNK_CLAIMS.read(QuestsAndStuffConfigSections.object(root, "chunkClaims"));
     }
 
     private static synchronized void save() {
@@ -365,6 +490,7 @@ public final class QuestsAndStuffConfig {
         root.add("rewards", REWARDS.write());
         root.add("hud", HUD.write());
         root.add("security", SECURITY.write());
+        root.add("chunkClaims", CHUNK_CLAIMS.write());
 
         Path file = configFile();
         try {

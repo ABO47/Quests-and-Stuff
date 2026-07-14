@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.forge.runtime.signal;
 
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -7,17 +8,24 @@ import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -156,6 +164,61 @@ public final class ForgeQuestEventBridge {
         if (event.getEntity() instanceof ServerPlayer player) {
             inventorySnapshots.remove(player.getUUID());
             statSnapshots.remove(player.getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getLevel() instanceof ServerLevel level && event.getPlayer() instanceof ServerPlayer player) {
+            if (!ChunkClaimProtection.allowedBreakPlace(player, level, event.getPos())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && event.getLevel() instanceof ServerLevel level) {
+            if (!ChunkClaimProtection.allowedBreakPlace(player, level, event.getPos())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockInteractCancel(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getEntity() instanceof ServerPlayer player && event.getLevel() instanceof ServerLevel level) {
+            if (!ChunkClaimProtection.allowedInteract(player, level, event.getPos())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onExplosion(ExplosionEvent.Detonate event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            event.getAffectedBlocks().removeIf(pos -> ChunkClaimProtection.isProtectedChunk(level, new ChunkPos(pos), true));
+        }
+    }
+
+    @SubscribeEvent
+    public void onMobGrief(EntityMobGriefingEvent event) {
+        if (event.getEntity() instanceof net.minecraft.world.entity.LivingEntity living
+                && living.level() instanceof ServerLevel level) {
+            if (ChunkClaimProtection.isProtectedChunk(level, new ChunkPos(living.blockPosition()), false, true)) {
+                event.setResult(Event.Result.DENY);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerAttack(AttackEntityEvent event) {
+        if (event.getEntity() instanceof ServerPlayer attacker
+                && event.getTarget() instanceof ServerPlayer target
+                && attacker.level() instanceof ServerLevel level) {
+            if (!ChunkClaimProtection.allowedPvp(attacker, target, level, target.blockPosition())) {
+                event.setCanceled(true);
+            }
         }
     }
 

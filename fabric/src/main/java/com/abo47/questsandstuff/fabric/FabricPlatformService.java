@@ -3,8 +3,10 @@ package com.abo47.questsandstuff.fabric;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.platform.PlatformService;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -56,6 +58,13 @@ public final class FabricPlatformService implements PlatformService {
             method.invoke(null, player);
         } catch (ReflectiveOperationException e) {
             QuestsAndStuffMod.LOGGER.warn("Failed to open tablet UI on Fabric", e);
+        }
+    }
+
+    @Override
+    public void setForceChunk(ServerLevel level, ChunkPos pos, boolean forced) {
+        if (level != null) {
+            level.setChunkForced(pos.x, pos.z, forced);
         }
     }
 }

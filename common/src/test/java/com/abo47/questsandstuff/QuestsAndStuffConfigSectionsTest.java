@@ -68,6 +68,33 @@ class QuestsAndStuffConfigSectionsTest {
     }
 
     @Test
+    void chunkClaimsSectionOwnsProtectionFlagsAndCaps() {
+        QuestsAndStuffConfigSections.ChunkClaims chunkClaims = new QuestsAndStuffConfigSections.ChunkClaims();
+        JsonObject source = new JsonObject();
+        source.addProperty("protectBreakPlace", false);
+        source.addProperty("protectInteraction", false);
+        source.addProperty("protectExplosions", false);
+        source.addProperty("protectMobGriefing", false);
+        source.addProperty("protectPvp", false);
+        source.addProperty("maxClaimedChunks", 10);
+        source.addProperty("maxForceLoadedChunks", 3);
+
+        chunkClaims.read(source);
+        JsonObject written = chunkClaims.write();
+
+        assertFalse(written.get("protectBreakPlace").getAsBoolean());
+        assertFalse(written.get("protectInteraction").getAsBoolean());
+        assertFalse(written.get("protectExplosions").getAsBoolean());
+        assertFalse(written.get("protectMobGriefing").getAsBoolean());
+        assertFalse(written.get("protectPvp").getAsBoolean());
+        assertEquals(10, written.get("maxClaimedChunks").getAsInt());
+        assertEquals(3, written.get("maxForceLoadedChunks").getAsInt());
+        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_CLAIMED, 64);
+        assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(-5));
+        assertEquals(100000, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(999999));
+    }
+
+    @Test
     void hudSectionClampsDuration() {
         QuestsAndStuffConfigSections.Hud hud = new QuestsAndStuffConfigSections.Hud();
         JsonObject source = new JsonObject();

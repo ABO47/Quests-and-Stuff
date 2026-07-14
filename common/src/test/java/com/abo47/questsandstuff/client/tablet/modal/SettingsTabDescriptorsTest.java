@@ -15,7 +15,7 @@ class SettingsTabDescriptorsTest {
     @Test
     void tabRegistryOwnsSettingsSectionsInOrder() {
         assertIterableEquals(
-                List.of("themes", "canvas", "hud", "animations", "debug", "skin"),
+                List.of("themes", "canvas", "hud", "animations", "debug", "skin", "chunkClaims"),
                 SettingsTabDescriptors.all().stream()
                         .map(SettingsTabDescriptor::logName)
                         .toList()
@@ -64,6 +64,32 @@ class SettingsTabDescriptorsTest {
                 List.of("debugLogging"),
                 optionIds(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.DEBUG).options(state))
         );
+    }
+
+    @Test
+    void chunkClaimsTabExposesProtectionAndCapOptions() {
+        TabletUiState state = new TabletUiState();
+
+        assertIterableEquals(
+                List.of(
+                        "protectBreakPlace",
+                        "protectInteraction",
+                        "protectExplosions",
+                        "protectMobGriefing",
+                        "protectPvp",
+                        "maxClaimedChunks",
+                        "maxForceLoadedChunks"
+                ),
+                optionIds(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.CHUNK_CLAIMS).options(state))
+        );
+
+        SettingsOptionDescriptor maxClaimed = option(SettingsTabDescriptors.CHUNK_CLAIMS, state, "maxClaimedChunks");
+        assertTrue(maxClaimed.number());
+        assertEquals(QuestsAndStuffConfig.minChunkClaimCap(), maxClaimed.min());
+        assertEquals(QuestsAndStuffConfig.maxChunkClaimCap(), maxClaimed.max());
+
+        SettingsOptionDescriptor protect = option(SettingsTabDescriptors.CHUNK_CLAIMS, state, "protectBreakPlace");
+        assertEquals(SettingsOptionKind.TOGGLE, protect.kind());
     }
 
     @Test

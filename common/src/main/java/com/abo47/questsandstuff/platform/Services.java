@@ -57,5 +57,9 @@ public final class Services {
         @Override
         public void openTabletUi(Player player) {
         }
+
+        @Override
+        public void setForceChunk(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.ChunkPos pos, boolean forced) {
+        }
     }
 }

@@ -1,20 +1,25 @@
 package com.abo47.questsandstuff.fabric;
 
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -64,18 +69,43 @@ public final class FabricQuestEventBridge {
             return InteractionResultHolder.pass(stack);
         });
 
+        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (player instanceof ServerPlayer serverPlayer && world instanceof ServerLevel level) {
+                return ChunkClaimProtection.allowedBreakPlace(serverPlayer, level, pos);
+            }
+            return true;
+        });
+
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player instanceof ServerPlayer serverPlayer) {
-                ResourceLocation id = BuiltInRegistries.BLOCK.getKey(world.getBlockState(hitResult.getBlockPos()).getBlock());
+            if (player instanceof ServerPlayer serverPlayer && world instanceof ServerLevel level) {
+                BlockPos pos = hitResult.getBlockPos();
+                if (!ChunkClaimProtection.allowedInteract(serverPlayer, level, pos)) {
+                    return InteractionResult.FAIL;
+                }
+                ResourceLocation id = BuiltInRegistries.BLOCK.getKey(world.getBlockState(pos).getBlock());
                 send(serverPlayer, QuestSignalType.BLOCK_INTERACT, id.toString(), 1);
             }
             return InteractionResult.PASS;
         });
 
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (player instanceof ServerPlayer serverPlayer && world instanceof ServerLevel level) {
+                if (!ChunkClaimProtection.allowedInteract(serverPlayer, level, entity.blockPosition())) {
+                    return InteractionResult.FAIL;
+                }
                 ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
                 send(serverPlayer, QuestSignalType.ENTITY_INTERACT, id.toString(), 1);
+            }
+            return InteractionResult.PASS;
+        });
+
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (player instanceof ServerPlayer attacker
+                    && entity instanceof ServerPlayer target
+                    && world instanceof ServerLevel level) {
+                if (!ChunkClaimProtection.allowedPvp(attacker, target, level, target.blockPosition())) {
+                    return InteractionResult.FAIL;
+                }
             }
             return InteractionResult.PASS;
         });

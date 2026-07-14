@@ -33,6 +33,7 @@ public class TabletUiState {
     public final TabletContextMenuState contextMenu = new TabletContextMenuState();
     public final ClipboardState clipboard = new ClipboardState();
     public final TeamsState teams = new TeamsState();
+    public final ChunkClaimerState chunkClaimer = new ChunkClaimerState();
 
     public static final class RootState {
         public boolean fullScreenMode;
@@ -717,6 +718,16 @@ public class TabletUiState {
         public String confirmAction = "";
         public String confirmTargetUuid = "";
         public long confirmAnimationStartMs;
+    }
+
+    public static final class ChunkClaimerState {
+        public String search = "";
+        public boolean searchFocused;
+        public boolean forceLoadArmed;
+        public boolean claimArmed;
+        public String statusMessage = "";
+        public boolean statusSuccess;
+        public long statusAnimationStartMs;
     }
 
 }

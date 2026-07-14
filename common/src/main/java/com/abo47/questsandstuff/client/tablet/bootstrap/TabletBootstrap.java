@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
 import com.abo47.questsandstuff.client.tablet.quest.QuestAppComposer;
 import com.abo47.questsandstuff.client.tablet.teams.TeamsAppComposer;
+import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -54,6 +55,10 @@ public final class TabletBootstrap {
                 "ui.questsandstuff.app.teams",
                 new ResourceLocation("questsandstuff", "textures/gui/teams.png"),
                 TeamsAppComposer::create));
+        TabletAppRegistry.register(new AppDescriptor("CHUNKCLAIMER",
+                "ui.questsandstuff.app.chunkclaimer",
+                new ResourceLocation("questsandstuff", "textures/gui/chunk_claimer.png"),
+                ChunkClaimerAppComposer::create));
     }
 
     public static TabletUiState prepare(Player player) {

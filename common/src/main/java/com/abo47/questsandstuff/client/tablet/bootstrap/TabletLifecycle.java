@@ -159,6 +159,8 @@ public final class TabletLifecycle {
                 saveLastApp("QUESTS");
             } else if ("teams".equals(app)) {
                 saveLastApp("TEAMS");
+            } else if ("chunkclaimer".equals(app)) {
+                saveLastApp("CHUNKCLAIMER");
             } else if ("home".equals(app)) {
                 saveLastApp("");
             }
@@ -194,6 +196,8 @@ public final class TabletLifecycle {
             openApp("TEAMS");
         } else if ("QUESTS".equals(lastApp)) {
             openApp("QUESTS");
+        } else if ("CHUNKCLAIMER".equals(lastApp)) {
+            openApp("CHUNKCLAIMER");
         } else {
             openApp("home");
         }

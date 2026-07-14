@@ -7,6 +7,7 @@ import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
 import com.abo47.questsandstuff.quest.sync.SyncService;
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimService;
 import net.minecraft.server.MinecraftServer;
 import com.abo47.questsandstuff.platform.Services;
 
@@ -33,8 +34,11 @@ public final class QuestServiceRegistry {
         RuntimeEngine runtimeEngine = new RuntimeEngine(definitionStore, progressData, syncService, performanceTracker);
         syncService.setVisibilityFilter(runtimeEngine::isVisibleFor);
         EditorSessionService editorService = new EditorSessionService(definitionStore, runtimeEngine, syncService);
+        ChunkClaimService chunkClaimService = new ChunkClaimService(server);
 
-        SERVICES.put(server, new Bundle(definitionStore, progressData, syncService, runtimeEngine, editorService, performanceTracker));
+        SERVICES.put(server, new Bundle(definitionStore, progressData, syncService, runtimeEngine, editorService, performanceTracker, chunkClaimService));
+
+        chunkClaimService.applyAllForceLoads();
     }
 
     public static void stop(MinecraftServer server) {
@@ -65,6 +69,10 @@ public final class QuestServiceRegistry {
         return bundle(server).performanceTracker();
     }
 
+    public static ChunkClaimService chunkClaims(MinecraftServer server) {
+        return bundle(server).chunkClaimService();
+    }
+
     private static Bundle bundle(MinecraftServer server) {
         Bundle bundle = SERVICES.get(server);
         if (bundle == null) {
@@ -79,7 +87,8 @@ public final class QuestServiceRegistry {
             SyncService syncService,
             RuntimeEngine runtimeEngine,
             EditorSessionService editorService,
-            PerformanceTracker performanceTracker
+            PerformanceTracker performanceTracker,
+            ChunkClaimService chunkClaimService
     ) {
     }
 }
