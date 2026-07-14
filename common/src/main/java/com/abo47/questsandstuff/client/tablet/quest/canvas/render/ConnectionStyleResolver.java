@@ -123,65 +123,109 @@ final class ConnectionStyleResolver {
         return findEc(state, chapter, id) != null;
     }
 
-    static int ecConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+    private static final class EcEndpoint {
+        final CanvasExclusiveChoice ec;
+        final String other;
+
+        EcEndpoint(CanvasExclusiveChoice ec, String other) {
+            this.ec = ec;
+            this.other = other;
+        }
+    }
+
+    private static EcEndpoint ecEndpoint(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
         CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
         if (ec != null) {
-            return ec.connectionColors().getOrDefault(targetQuestId, TabletColors.TEXT_SECONDARY);
+            return new EcEndpoint(ec, targetQuestId);
         }
         ec = findEc(state, chapter, targetQuestId);
-        if (ec != null) {
-            return ec.connectionColors().getOrDefault(sourceQuestId, TabletColors.TEXT_SECONDARY);
+        return ec != null ? new EcEndpoint(ec, sourceQuestId) : new EcEndpoint(null, null);
+    }
+
+    static int ecConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+        if (e.ec != null) {
+            Integer color = e.ec.connectionColors().get(e.other);
+            if (color != null) return color;
         }
-        return TabletColors.TEXT_SECONDARY;
+        return genericColor(state, chapter, sourceQuestId, targetQuestId);
     }
 
     static boolean ecIsConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
-        if (ec != null) {
-            String mode = ec.connectionModes().get(targetQuestId);
-            return mode == null || QuestConnectionMode.fromSerializedName(mode) == QuestConnectionMode.DIRECT;
+        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+        if (e.ec != null) {
+            String mode = e.ec.connectionModes().get(e.other);
+            if (mode != null) {
+                return QuestConnectionMode.fromSerializedName(mode) == QuestConnectionMode.DIRECT;
+            }
         }
-        ec = findEc(state, chapter, targetQuestId);
-        if (ec != null) {
-            String mode = ec.connectionModes().get(sourceQuestId);
-            return mode == null || QuestConnectionMode.fromSerializedName(mode) == QuestConnectionMode.DIRECT;
-        }
-        return true;
+        return genericGrid(state, chapter, sourceQuestId, targetQuestId);
     }
 
     static boolean ecIsConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
-        if (ec != null) {
-            return ec.hiddenConnections().contains(targetQuestId);
+        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+        if (e.ec != null && e.ec.hiddenConnections().contains(e.other)) {
+            return true;
         }
-        ec = findEc(state, chapter, targetQuestId);
-        if (ec != null) {
-            return ec.hiddenConnections().contains(sourceQuestId);
-        }
-        return false;
+        return genericHidden(state, chapter, sourceQuestId, targetQuestId);
     }
 
     static String ecConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
-        if (ec != null) {
-            return ec.connectionTextures().getOrDefault(targetQuestId, "");
+        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+        if (e.ec != null) {
+            String texture = e.ec.connectionTextures().get(e.other);
+            if (texture != null) return texture;
         }
-        ec = findEc(state, chapter, targetQuestId);
-        if (ec != null) {
-            return ec.connectionTextures().getOrDefault(sourceQuestId, "");
-        }
-        return "";
+        return genericTexture(state, chapter, sourceQuestId, targetQuestId);
     }
 
     static int ecConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
-        if (ec != null) {
-            return ec.connectionTextureSpacings().getOrDefault(targetQuestId, 5);
+        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+        if (e.ec != null) {
+            Integer spacing = e.ec.connectionTextureSpacings().get(e.other);
+            if (spacing != null) return spacing;
         }
-        ec = findEc(state, chapter, targetQuestId);
-        if (ec != null) {
-            return ec.connectionTextureSpacings().getOrDefault(sourceQuestId, 5);
-        }
-        return 5;
+        return genericSpacing(state, chapter, sourceQuestId, targetQuestId);
+    }
+
+    private static boolean genericGrid(TabletUiState state, String chapter, String a, String b) {
+        Set<String> grid = state.canvas.gridConnectionsByGroup.get(chapter);
+        if (grid == null) return true;
+        return !grid.contains(QuestConnectionMetadata.connectionKey(a, b))
+                && !grid.contains(QuestConnectionMetadata.connectionKey(b, a));
+    }
+
+    private static int genericColor(TabletUiState state, String chapter, String a, String b) {
+        Map<String, Integer> colors = state.canvas.connectionColorsByGroup.get(chapter);
+        if (colors == null) return TabletColors.TEXT_SECONDARY;
+        Integer v = colors.get(QuestConnectionMetadata.connectionKey(a, b));
+        if (v != null) return v;
+        v = colors.get(QuestConnectionMetadata.connectionKey(b, a));
+        return v != null ? v : TabletColors.TEXT_SECONDARY;
+    }
+
+    private static String genericTexture(TabletUiState state, String chapter, String a, String b) {
+        Map<String, String> textures = state.canvas.connectionTexturesByGroup.get(chapter);
+        if (textures == null) return "";
+        String v = textures.get(QuestConnectionMetadata.connectionKey(a, b));
+        if (v != null) return v;
+        v = textures.get(QuestConnectionMetadata.connectionKey(b, a));
+        return v != null ? v : "";
+    }
+
+    private static int genericSpacing(TabletUiState state, String chapter, String a, String b) {
+        Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.get(chapter);
+        if (spacings == null) return 5;
+        Integer v = spacings.get(QuestConnectionMetadata.connectionKey(a, b));
+        if (v != null) return v;
+        v = spacings.get(QuestConnectionMetadata.connectionKey(b, a));
+        return v != null ? v : 5;
+    }
+
+    private static boolean genericHidden(TabletUiState state, String chapter, String a, String b) {
+        Set<String> hidden = state.canvas.hiddenConnectionsByGroup.get(chapter);
+        if (hidden == null) return false;
+        return hidden.contains(QuestConnectionMetadata.connectionKey(a, b))
+                || hidden.contains(QuestConnectionMetadata.connectionKey(b, a));
     }
 }

@@ -81,8 +81,11 @@ final class ConnectionLayout {
             int ecBoxBottom = (int) Math.ceil(ecBox.centerY() + ecBox.bottom());
             int ecScreenW = Math.max(1, ecBoxRight - ecBoxLeft);
             int ecScreenH = Math.max(1, ecBoxBottom - ecBoxTop);
-            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
-            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
+            double ecRot = Math.toRadians(drawEc.rotation());
+            double ecCos = Math.cos(ecRot);
+            double ecSin = Math.sin(ecRot);
+            int ecCenterX = (int) (ecBox.centerX() + ecBox.width() / 2.0 * ecCos - ecBox.height() / 2.0 * ecSin);
+            int ecCenterY = (int) (ecBox.centerY() + ecBox.width() / 2.0 * ecSin + ecBox.height() / 2.0 * ecCos);
             for (String connectedQuestId : drawEc.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
