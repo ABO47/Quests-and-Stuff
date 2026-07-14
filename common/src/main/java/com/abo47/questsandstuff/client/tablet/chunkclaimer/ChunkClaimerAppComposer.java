@@ -114,6 +114,7 @@ public final class ChunkClaimerAppComposer {
             mainPanel.setBackground((IGuiTexture) null);
 
             headers.layout(headerY, rcbw);
+            headers.updateCount();
 
             int rListY = headerY + HEADER_H + HEADER_LIST_GAP;
             int rListH = Math.max(1, rcbh - rListY - GUTTER);

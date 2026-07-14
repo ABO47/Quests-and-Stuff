@@ -21,16 +21,18 @@ final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = 4;
     private static final int HEADER_INSET = 9;
-    private static final int BUTTON_COUNT = 2;
+    private static final int BUTTON_COUNT = 3;
 
     private final LabelWidget countLabel;
     private final ButtonWidget claimBtn;
     private final ButtonWidget forceBtn;
+    private final ButtonWidget gridBtn;
 
-    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn) {
+    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn, ButtonWidget gridBtn) {
         this.countLabel = countLabel;
         this.claimBtn = claimBtn;
         this.forceBtn = forceBtn;
+        this.gridBtn = gridBtn;
     }
 
     static ChunkClaimerHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
@@ -43,6 +45,7 @@ final class ChunkClaimerHeaderControls {
         int btnAreaStartX = HEADER_INSET + countW;
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
+        int gridX = forceX + TOOL_SIZE + HEADER_GAP;
 
         ButtonWidget claimBtn = toggleButton(claimX, headerY, "claim_all",
                 ChunkClaimTranslationKeys.ACTION_CLAIM, state, refresh,
@@ -52,7 +55,11 @@ final class ChunkClaimerHeaderControls {
                 ChunkClaimTranslationKeys.ACTION_FORCE, state, refresh,
                 () -> state.chunkClaimer.forceLoadArmed, v -> state.chunkClaimer.forceLoadArmed = v);
 
-        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn);
+        ButtonWidget gridBtn = toggleButton(gridX, headerY, "grid",
+                ChunkClaimTranslationKeys.ACTION_GRID, state, refresh,
+                () -> state.chunkClaimer.showGrid, v -> state.chunkClaimer.showGrid = v);
+
+        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn);
     }
 
     private static String countText() {
@@ -74,6 +81,10 @@ final class ChunkClaimerHeaderControls {
         return countLabel;
     }
 
+    void updateCount() {
+        countLabel.setText(countText());
+    }
+
     ButtonWidget claimBtn() {
         return claimBtn;
     }
@@ -87,17 +98,20 @@ final class ChunkClaimerHeaderControls {
         int btnAreaStartX = HEADER_INSET + countW;
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
+        int gridX = forceX + TOOL_SIZE + HEADER_GAP;
 
         countLabel.setSelfPosition(HEADER_INSET, headerY + (HEADER_H - 12) / 2);
         countLabel.setSize(countW, 12);
         claimBtn.setSelfPosition(claimX, headerY);
         forceBtn.setSelfPosition(forceX, headerY);
+        gridBtn.setSelfPosition(gridX, headerY);
     }
 
     void addTo(WidgetGroup mainPanel) {
         mainPanel.addWidget(countLabel);
         mainPanel.addWidget(claimBtn);
         mainPanel.addWidget(forceBtn);
+        mainPanel.addWidget(gridBtn);
     }
 
     private static ButtonWidget toggleButton(int x, int y, String icon, String tooltipKey,

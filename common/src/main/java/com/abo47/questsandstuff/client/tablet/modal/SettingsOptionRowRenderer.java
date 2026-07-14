@@ -139,7 +139,7 @@ final class SettingsOptionRowRenderer {
         field.setHoverTooltips(tooltips);
         fieldRef[0] = field;
         list.addWidget(field);
-        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, TabletModalPanel.tr("ui.questsandstuff.settings.duration_unit_ms"), TabletColors.TEXT_MUTED));
+        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, TabletModalPanel.tr(option.unitKey()), TabletColors.TEXT_MUTED));
     }
 
     private static void toggle(SettingsOptionDescriptor option, Runnable refresh) {

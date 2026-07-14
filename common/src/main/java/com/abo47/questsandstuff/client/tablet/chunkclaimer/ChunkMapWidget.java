@@ -6,13 +6,17 @@ import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
@@ -29,15 +33,16 @@ public class ChunkMapWidget extends Widget {
     private static final int CLAIMED_EDGE = 0xFF6FA8FF;
     private static final int FORCE_EDGE = 0xFF66D38D;
     private static final int GRID_COLOR = 0x33546770;
-    private static final int HOVER_FILL = 0x55EAF1F4;
-    private static final int HOVER_EDGE = 0xFF65B7C8;
 
     private final TabletUiState state;
 
-    private int[][] terrain;
+    private DynamicTexture terrainTex;
+    private ResourceLocation terrainTexLoc;
+    private int texW = -1;
+    private int texH = -1;
     private int gridW = -1;
     private int gridH = -1;
-    private int sub = 4;
+    private int sub = 16;
     private int cachedCx = Integer.MAX_VALUE;
     private int cachedCz = Integer.MAX_VALUE;
     private long lastSample = 0;
@@ -74,10 +79,11 @@ public class ChunkMapWidget extends Widget {
 
     private void ensureTerrain(ClientLevel level, int w, int h, int cx, int cz) {
         int gw = Math.max(3, w / TARGET_CELL);
-        int gh = Math.max(3, h / TARGET_CELL);
-        int s = Math.max(1, Math.min(8, 180 / Math.max(gw, gh)));
+        int cell = Math.max(1, w / gw);
+        int gh = Math.max(3, h / cell);
+        int s = Math.max(1, Math.min(16, (int) Math.sqrt(160000.0 / (gw * gh))));
         long now = System.currentTimeMillis();
-        boolean needs = terrain == null || gw != gridW || gh != gridH || s != sub
+        boolean needs = terrainTex == null || gw != gridW || gh != gridH || s != sub
                 || cx != cachedCx || cz != cachedCz
                 || (now - lastSample) > RESAMPLE_MS;
         if (!needs) {
@@ -89,39 +95,88 @@ public class ChunkMapWidget extends Widget {
         cachedCx = cx;
         cachedCz = cz;
         lastSample = now;
+
         int totalW = gw * sub;
         int totalH = gh * sub;
-        terrain = new int[totalW][totalH];
+        if (terrainTex == null || texW != totalW || texH != totalH) {
+            if (terrainTex != null) {
+                terrainTex.close();
+            }
+            if (terrainTexLoc != null) {
+                Minecraft.getInstance().getTextureManager().release(terrainTexLoc);
+            }
+            terrainTex = new DynamicTexture(totalW, totalH, false);
+            terrainTex.setFilter(false, false);
+            texW = totalW;
+            texH = totalH;
+            ResourceLocation terrainLoc = new ResourceLocation("questsandstuff", "chunkmap_terrain");
+            Minecraft.getInstance().getTextureManager().register(terrainLoc, terrainTex);
+            terrainTexLoc = terrainLoc;
+        }
+
+        int halfGw = gw / 2;
+        int halfGh = gh / 2;
+        NativeImage img = terrainTex.getPixels();
+        int[][] heights = new int[totalW][totalH];
         for (int tx = 0; tx < totalW; tx++) {
-            int chunkDX = tx / sub;
-            int subX = tx % sub;
-            int worldChunkX = cx + (chunkDX - gw / 2);
-            int blockX = worldChunkX * 16 + (int) ((subX + 0.5) * (16.0 / sub));
+            int worldChunkX = cx + (tx / sub - halfGw);
             for (int tz = 0; tz < totalH; tz++) {
-                int chunkDZ = tz / sub;
-                int subZ = tz % sub;
-                int worldChunkZ = cz + (chunkDZ - gh / 2);
-                int blockZ = worldChunkZ * 16 + (int) ((subZ + 0.5) * (16.0 / sub));
-                terrain[tx][tz] = sampleColor(level, blockX, blockZ);
+                int worldChunkZ = cz + (tz / sub - halfGh);
+                int blockX = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
+                int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
+                heights[tx][tz] = level.getHeight(Heightmap.Types.WORLD_SURFACE, blockX, blockZ);
             }
         }
+        int maxY = level.getMaxBuildHeight();
+        int sea = level.getSeaLevel();
+        for (int tx = 0; tx < totalW; tx++) {
+            int worldChunkX = cx + (tx / sub - halfGw);
+            for (int tz = 0; tz < totalH; tz++) {
+                int worldChunkZ = cz + (tz / sub - halfGh);
+                int blockX = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
+                int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
+                int hC = heights[tx][tz];
+                int hW = tx > 0 ? heights[tx - 1][tz] : hC;
+                int hN = tz > 0 ? heights[tx][tz - 1] : hC;
+                int reliefH = (hC - hW) + (hC - hN);
+                int rgb = sampleColor(level, blockX, blockZ, hC, reliefH, sea, maxY);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                img.setPixelRGBA(tx, tz, (0xFF << 24) | (b << 16) | (g << 8) | r);
+            }
+        }
+        terrainTex.upload();
     }
 
-    private int sampleColor(ClientLevel level, int worldX, int worldZ) {
-        int topY = level.getHeight(Heightmap.Types.WORLD_SURFACE, worldX, worldZ);
-        BlockPos pos = new BlockPos(worldX, Mth.clamp(topY - 1, 1, level.getMaxBuildHeight() - 1), worldZ);
-        BlockState block = level.getBlockState(pos);
+    private int sampleColor(ClientLevel level, int worldX, int worldZ, int topY, int reliefH, int sea, int maxY) {
+        BlockPos pos = new BlockPos(worldX, Mth.clamp(topY - 1, 1, maxY - 1), worldZ);
         FluidState fluid = level.getFluidState(pos);
 
         int rgb;
         if (!fluid.isEmpty()) {
-            rgb = fluid.createLegacyBlock().getMapColor(level, pos).col;
+            int water = level.getBiome(pos).value().getWaterColor();
+            int depth = Mth.clamp(sea - topY, 0, 30);
+            rgb = shade(water, 1f - depth * 0.012f);
         } else {
-            MapColor mapColor = block.getMapColor(level, pos);
-            rgb = mapColor != null ? mapColor.col : 0x6E6E6E;
+            BlockState bs = level.getBlockState(pos);
+            if (bs.is(Blocks.SNOW) || bs.is(Blocks.SNOW_BLOCK)) {
+                rgb = 0xE9F1F6;
+            } else if (bs.is(Blocks.ICE) || bs.is(Blocks.PACKED_ICE) || bs.is(Blocks.FROSTED_ICE)) {
+                rgb = 0x9FD6E8;
+            } else if (bs.is(Blocks.SAND) || bs.is(Blocks.SANDSTONE) || bs.is(Blocks.RED_SAND)) {
+                rgb = 0xD8C79A;
+            } else if (bs.is(Blocks.GRASS_BLOCK) || bs.is(Blocks.TALL_GRASS) || bs.is(Blocks.FERN)
+                    || bs.getBlock() instanceof LeavesBlock) {
+                int grass = level.getBiome(pos).value().getGrassColor(worldX, worldZ);
+                rgb = bs.getBlock() instanceof LeavesBlock ? shade(grass, 0.85f) : grass;
+            } else {
+                MapColor mapColor = bs.getMapColor(level, pos);
+                rgb = mapColor != null ? mapColor.col : 0x6E6E6E;
+            }
         }
 
-        float relief = Mth.clamp(0.78f + (topY - 64) / 110f, 0.6f, 1.25f);
+        float relief = Mth.clamp(1f + reliefH * 0.05f, 0.68f, 1.32f);
         return shade(rgb, relief);
     }
 
@@ -168,42 +223,44 @@ public class ChunkMapWidget extends Widget {
         int cell = ChunkMapGeometry.cellSize(w, h, gw, gh);
         int ox = ChunkMapGeometry.gridOriginX(w, cell, gw);
         int oy = ChunkMapGeometry.gridOriginY(h, cell, gh);
+        int centerX = baseX + w / 2;
+        int centerY = baseY + h / 2;
 
-        int totalW = gw * sub;
-        int totalH = gh * sub;
-        for (int tx = 0; tx < totalW; tx++) {
-            int px = baseX + ox + (tx * cell) / sub;
-            int px2 = baseX + ox + ((tx + 1) * cell) / sub;
-            for (int tz = 0; tz < totalH; tz++) {
-                int py = baseY + oy + (tz * cell) / sub;
-                int py2 = baseY + oy + ((tz + 1) * cell) / sub;
-                graphics.fill(px, py, px2, py2, terrain[tx][tz]);
+        if (terrainTexLoc != null) {
+            graphics.blit(terrainTexLoc, baseX, baseY, w, h, 0, 0, texW, texH, texW, texH);
+            graphics.blit(terrainTexLoc, baseX + ox, baseY + oy, gw * cell, gh * cell,
+                    0, 0, texW, texH, texW, texH);
+        }
+
+        if (state.chunkClaimer.showGrid) {
+            int endX = baseX + ox + gw * cell;
+            int endY = baseY + oy + gh * cell;
+            for (int i = 0; i <= gw; i++) {
+                int gx = baseX + ox + i * cell;
+                graphics.fill(gx, baseY + oy, gx + 1, endY, GRID_COLOR);
+            }
+            for (int j = 0; j <= gh; j++) {
+                int gy = baseY + oy + j * cell;
+                graphics.fill(baseX + ox, gy, endX, gy + 1, GRID_COLOR);
+            }
+            graphics.fill(baseX + w - 1, baseY, baseX + w, baseY + h, GRID_COLOR);
+            graphics.fill(baseX, baseY + h - 1, baseX + w, baseY + h, GRID_COLOR);
+        }
+
+        int dxMin = -(gw / 2 + 2);
+        int dxMax = gw / 2 + 2;
+        int dzMin = -(gridH / 2 + 2);
+        int dzMax = gridH / 2 + 2;
+        var states = new java.util.HashMap<Long, Integer>();
+        for (int dx = dxMin; dx <= dxMax; dx++) {
+            for (int dz = dzMin; dz <= dzMax; dz++) {
+                states.put(key(dx, dz), stateOf(ClientChunkClaimCache.INSTANCE, dim, cx + dx, cz + dz));
             }
         }
 
-        int gridEndX = baseX + ox + gw * cell;
-        int gridEndY = baseY + oy + gh * cell;
-        for (int i = 0; i <= gw; i++) {
-            int gx = baseX + ox + i * cell;
-            graphics.fill(gx, baseY + oy, gx + 1, gridEndY, GRID_COLOR);
-        }
-        for (int j = 0; j <= gh; j++) {
-            int gy = baseY + oy + j * cell;
-            graphics.fill(baseX + ox, gy, gridEndX, gy + 1, GRID_COLOR);
-        }
-
-        int[][] states = new int[gw][gh];
-        for (int dx = 0; dx < gw; dx++) {
-            for (int dz = 0; dz < gh; dz++) {
-                int chunkX = cx + (dx - gw / 2);
-                int chunkZ = cz + (dz - gh / 2);
-                states[dx][dz] = stateOf(ClientChunkClaimCache.INSTANCE, dim, chunkX, chunkZ);
-            }
-        }
-
-        for (int dx = 0; dx < gw; dx++) {
-            for (int dz = 0; dz < gh; dz++) {
-                int s = states[dx][dz];
+        for (int dx = dxMin; dx <= dxMax; dx++) {
+            for (int dz = dzMin; dz <= dzMax; dz++) {
+                int s = states.getOrDefault(key(dx, dz), 0);
                 if (s == 0) {
                     continue;
                 }
@@ -213,50 +270,49 @@ public class ChunkMapWidget extends Widget {
             }
         }
 
-        for (int dx = 0; dx < gw; dx++) {
-            for (int dz = 0; dz < gh; dz++) {
-                int s = states[dx][dz];
+        for (int dx = dxMin; dx <= dxMax; dx++) {
+            for (int dz = dzMin; dz <= dzMax; dz++) {
+                int s = states.getOrDefault(key(dx, dz), 0);
                 if (s == 0) {
                     continue;
                 }
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx - gw / 2);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz - gh / 2);
                 int edge = s == 2 ? FORCE_EDGE : CLAIMED_EDGE;
-                if (dx == 0 || states[dx - 1][dz] != s) {
-                    graphics.fill(px, py, px + 2, py + cell + 1, edge);
+                if (states.getOrDefault(key(dx - 1, dz), 0) != s) {
+                    graphics.fill(px, py, px + 1, py + cell + 1, edge);
                 }
-                if (dx == gw - 1 || states[dx + 1][dz] != s) {
-                    graphics.fill(px + cell - 1, py, px + cell + 1, py + cell + 1, edge);
+                if (states.getOrDefault(key(dx + 1, dz), 0) != s) {
+                    graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, edge);
                 }
-                if (dz == 0 || states[dx][dz - 1] != s) {
-                    graphics.fill(px, py, px + cell + 1, py + 2, edge);
+                if (states.getOrDefault(key(dx, dz - 1), 0) != s) {
+                    graphics.fill(px, py, px + cell + 1, py + 1, edge);
                 }
-                if (dz == gh - 1 || states[dx][dz + 1] != s) {
-                    graphics.fill(px, py + cell - 1, px + cell + 1, py + cell + 1, edge);
+                if (states.getOrDefault(key(dx, dz + 1), 0) != s) {
+                    graphics.fill(px, py + cell, px + cell + 1, py + cell + 1, edge);
                 }
             }
         }
 
-        int hoverDx = ChunkMapGeometry.deltaX((int) mouseX - baseX, ox, cell, gw);
-        int hoverDz = ChunkMapGeometry.deltaZ((int) mouseY - baseY, oy, cell, gh);
-        if (ChunkMapGeometry.inGridX(hoverDx, gw) && ChunkMapGeometry.inGridZ(hoverDz, gh)
-                && isMouseOverElement(mouseX, mouseY)) {
-            int hpx = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, hoverDx - gw / 2);
-            int hpy = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, hoverDz - gh / 2);
-            graphics.fill(hpx, hpy, hpx + cell + 1, hpy + cell + 1, HOVER_FILL);
-            graphics.fill(hpx, hpy, hpx + cell + 1, hpy + 1, HOVER_EDGE);
-            graphics.fill(hpx, hpy + cell, hpx + cell + 1, hpy + cell + 1, HOVER_EDGE);
-            graphics.fill(hpx, hpy, hpx + 1, hpy + cell + 1, HOVER_EDGE);
-            graphics.fill(hpx + cell, hpy, hpx + cell + 1, hpy + cell + 1, HOVER_EDGE);
+        if (isMouseOverElement(mouseX, mouseY)) {
+            int lmx = (int) mouseX - baseX;
+            int lmy = (int) mouseY - baseY;
+            int dx = (int) Math.round((lmx - w / 2) / (double) cell);
+            int dz = (int) Math.round((lmy - h / 2) / (double) cell);
+            int hpxLocal = (int) (w / 2 + (dx - 0.5) * cell);
+            int hpyLocal = (int) (h / 2 + (dz - 0.5) * cell);
+            var m = graphics.pose().last().pose();
+            int fx = hpxLocal + cell / 2 + (int) m.m03();
+            int fy = hpyLocal + cell / 2 + (int) m.m13();
+            com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.drawGlow(
+                    graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell, cell, TabletColors.BORDER_ACCENT);
         }
 
-        drawPlayer(graphics, baseX + ox, baseY + oy, cell, gw, gh);
+        drawPlayer(graphics, centerX, centerY, cell);
     }
 
-    private void drawPlayer(GuiGraphics graphics, int ox, int oy, int cell, int gw, int gh) {
-        int cx = ox + (gw / 2) * cell + cell / 2;
-        int cy = oy + (gh / 2) * cell + cell / 2;
-        int size = Mth.clamp(cell + 6, 12, 30);
+    private void drawPlayer(GuiGraphics graphics, int cx, int cy, int cell) {
+        int size = Math.max(8, cell / 2);
         var player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -267,6 +323,10 @@ public class ChunkMapWidget extends Widget {
         graphics.renderOutline(left - 1, top - 1, size + 2, size + 2, TabletColors.BORDER_ACCENT);
         new PlayerFaceTexture(player.getGameProfile().getId(), player.getGameProfile().getName())
                 .draw(graphics, 0, 0, left, top, size, size);
+    }
+
+    private static long key(int dx, int dz) {
+        return ((long) (dx + 2048) << 32) | (dz + 2048);
     }
 
     @Override
@@ -283,14 +343,9 @@ public class ChunkMapWidget extends Widget {
         int localY = (int) mouseY - getPositionY();
         int w = getSizeWidth();
         int h = getSizeHeight();
-        int cell = ChunkMapGeometry.cellSize(w, h, gridW, gridH);
-        int ox = ChunkMapGeometry.gridOriginX(w, cell, gridW);
-        int oy = ChunkMapGeometry.gridOriginY(h, cell, gridH);
-        int dx = ChunkMapGeometry.deltaX(localX, ox, cell, gridW);
-        int dz = ChunkMapGeometry.deltaZ(localY, oy, cell, gridH);
-        if (!ChunkMapGeometry.inGridX(dx, gridW) || !ChunkMapGeometry.inGridZ(dz, gridH)) {
-            return false;
-        }
+        int cell = Math.max(1, w / gridW);
+        int dx = (int) Math.round((localX - w / 2) / (double) cell);
+        int dz = (int) Math.round((localY - h / 2) / (double) cell);
 
         int chunkX = playerChunkX() + dx;
         int chunkZ = playerChunkZ() + dz;
@@ -310,6 +365,8 @@ public class ChunkMapWidget extends Widget {
         if (shift) {
             if (!claimed) {
                 send(dim, C2SChunkClaimActionPacket.Action.CLAIM, chunkX, chunkZ);
+            } else if (!force) {
+                send(dim, C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, chunkX, chunkZ);
             }
             return true;
         }

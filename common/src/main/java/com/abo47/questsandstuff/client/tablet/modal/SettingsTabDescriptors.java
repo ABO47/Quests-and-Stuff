@@ -152,7 +152,8 @@ final class SettingsTabDescriptors {
                         QuestsAndStuffConfig.MIN_COMPLETION_HUD_DURATION_MS,
                         QuestsAndStuffConfig.MAX_COMPLETION_HUD_DURATION_MS,
                         5,
-                        false
+                        false,
+                        "ui.questsandstuff.settings.duration_unit_ms"
                 )
         );
     }
@@ -333,7 +334,8 @@ final class SettingsTabDescriptors {
                         capMin,
                         capMax,
                         6,
-                        false
+                        false,
+                        "ui.questsandstuff.settings.chunk_unit"
                 ),
                 new SettingsOptionDescriptor(
                         "maxForceLoadedChunks",
@@ -347,7 +349,8 @@ final class SettingsTabDescriptors {
                         capMin,
                         capMax,
                         6,
-                        false
+                        false,
+                        "ui.questsandstuff.settings.chunk_unit"
                 )
         );
     }
