@@ -32,9 +32,10 @@ final class PrerequisitePreviewBuilder {
         }
 
         boolean ecMode = model.isExclusiveChoice();
+        Set<String> ecIds = ecMode ? Set.of(model.questId()) : ecIdsFromRows(model.rows(), model.questId());
         Map<String, QuestDefinition> definitions = definitionsForPreview(model.questId(), focus, model.rows());
         Map<String, QuestPlacement> placements = placementsForPreview(chapter, model.questId(), definitions, model.rows(), externalMode);
-        Map<String, Set<String>> prerequisitesByTarget = prerequisitesByTarget(model.rows());
+        Map<String, Set<String>> prerequisitesByTarget = prerequisitesByTarget(model.rows(), ecIds);
         List<CanvasBlueprint.QuestEntry> entries = new ArrayList<>();
         List<CanvasBlueprint.ExclusiveChoiceEntry> ecEntries = new ArrayList<>();
         List<String> order = new ArrayList<>();
@@ -71,7 +72,6 @@ final class PrerequisitePreviewBuilder {
             }
             order.add(CanvasLayerOrdering.exclusiveChoiceKey(model.questId()));
         } else {
-            Set<String> ecIds = ecIdsFromRows(model.rows(), model.questId());
             for (String ecId : ecIds) {
                 CanvasExclusiveChoice ec = findEcById(ecId, chapter);
                 if (ec == null) {
@@ -174,9 +174,12 @@ final class PrerequisitePreviewBuilder {
         return new QuestPlacement(preferredGroup, 0, 0, 1.0f);
     }
 
-    private static Map<String, Set<String>> prerequisitesByTarget(List<PrerequisiteConnectionRow> rows) {
+    private static Map<String, Set<String>> prerequisitesByTarget(List<PrerequisiteConnectionRow> rows, Set<String> ecIds) {
         Map<String, Set<String>> prerequisites = new LinkedHashMap<>();
         for (PrerequisiteConnectionRow row : rows) {
+            if (row.exclusiveChoice() && !ecIds.contains(row.targetId())) {
+                continue;
+            }
             prerequisites.computeIfAbsent(row.targetId(), ignored -> new LinkedHashSet<>()).add(row.sourceId());
         }
         return prerequisites;

@@ -210,7 +210,9 @@ record PrerequisiteConnectionModel(
         List<PrerequisiteConnectionRow> filtered = new ArrayList<>();
         for (PrerequisiteConnectionRow row : rows) {
             if (row.exclusiveChoice()) {
-                filtered.add(row);
+                if (!externalMode) {
+                    filtered.add(row);
+                }
                 continue;
             }
             boolean local = isLocalConnection(row, chapter);
