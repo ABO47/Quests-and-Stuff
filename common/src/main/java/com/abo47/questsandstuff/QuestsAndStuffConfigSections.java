@@ -151,6 +151,7 @@ final class QuestsAndStuffConfigSections {
         boolean protectExplosions = true;
         boolean protectMobGriefing = true;
         boolean protectPvp = true;
+        boolean protectFire = true;
         int maxClaimedChunks = DEFAULT_MAX_CLAIMED;
         int maxForceLoadedChunks = DEFAULT_MAX_FORCE_LOADED;
 
@@ -160,6 +161,7 @@ final class QuestsAndStuffConfigSections {
             protectExplosions = bool(root, "protectExplosions", protectExplosions);
             protectMobGriefing = bool(root, "protectMobGriefing", protectMobGriefing);
             protectPvp = bool(root, "protectPvp", protectPvp);
+            protectFire = bool(root, "protectFire", protectFire);
             maxClaimedChunks = normalizeCap(intValue(root, "maxClaimedChunks", maxClaimedChunks));
             maxForceLoadedChunks = normalizeCap(intValue(root, "maxForceLoadedChunks", maxForceLoadedChunks));
         }
@@ -171,6 +173,7 @@ final class QuestsAndStuffConfigSections {
             root.addProperty("protectExplosions", protectExplosions);
             root.addProperty("protectMobGriefing", protectMobGriefing);
             root.addProperty("protectPvp", protectPvp);
+            root.addProperty("protectFire", protectFire);
             root.addProperty("maxClaimedChunks", maxClaimedChunks);
             root.addProperty("maxForceLoadedChunks", maxForceLoadedChunks);
             return root;

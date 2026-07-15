@@ -3,10 +3,12 @@ package com.abo47.questsandstuff.chunkclaim;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.platform.Services;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.UUID;
 
@@ -79,6 +81,31 @@ public class ChunkClaimService {
 
     public void applyAllForceLoads() {
         data().forEachForceChunk((teamId, chunk) -> applyForceLoad(teamId, chunk.dimension(), chunk.x(), chunk.z(), true));
+    }
+
+    public void suppressFire() {
+        if (!QuestsAndStuffConfig.chunkClaimProtectFire()) {
+            return;
+        }
+        data().forEachClaimed((teamId, chunk) -> {
+            ServerLevel level = levelFor(chunk.dimension());
+            if (level == null) {
+                return;
+            }
+            int baseX = chunk.x() << 4;
+            int baseZ = chunk.z() << 4;
+            BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+            for (int lx = 0; lx < 16; lx++) {
+                for (int lz = 0; lz < 16; lz++) {
+                    for (int y = level.getMinBuildHeight(); y < level.getMaxBuildHeight(); y++) {
+                        mutable.set(baseX + lx, y, baseZ + lz);
+                        if (level.getBlockState(mutable).getBlock() == Blocks.FIRE) {
+                            level.removeBlock(mutable, false);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public TeamChunkData claims(UUID teamId) {

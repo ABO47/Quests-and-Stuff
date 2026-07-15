@@ -222,6 +222,17 @@ public final class ForgeQuestEventBridge {
         }
     }
 
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        if (event.getServer().getTickCount() % 20 != 0) {
+            return;
+        }
+        QuestServiceRegistry.chunkClaims(event.getServer()).suppressFire();
+    }
+
     private void send(ServerPlayer player, QuestSignalType type, String key, int amount) {
         QuestServiceRegistry.engine(player.server).onSignal(QuestSignal.of(type, player, key, amount, player.blockPosition()));
     }

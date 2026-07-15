@@ -11,11 +11,13 @@ public record C2SChunkClaimConfigPacket(
         boolean protectExplosions,
         boolean protectMobGriefing,
         boolean protectPvp,
+        boolean protectFire,
         int maxClaimedChunks,
         int maxForceLoadedChunks
 ) {
     public static C2SChunkClaimConfigPacket decode(FriendlyByteBuf buf) {
         return new C2SChunkClaimConfigPacket(
+                buf.readBoolean(),
                 buf.readBoolean(),
                 buf.readBoolean(),
                 buf.readBoolean(),
@@ -32,6 +34,7 @@ public record C2SChunkClaimConfigPacket(
         buf.writeBoolean(protectExplosions);
         buf.writeBoolean(protectMobGriefing);
         buf.writeBoolean(protectPvp);
+        buf.writeBoolean(protectFire);
         buf.writeInt(maxClaimedChunks);
         buf.writeInt(maxForceLoadedChunks);
     }
@@ -47,6 +50,7 @@ public record C2SChunkClaimConfigPacket(
                 protectExplosions,
                 protectMobGriefing,
                 protectPvp,
+                protectFire,
                 maxClaimedChunks,
                 maxForceLoadedChunks
         );

@@ -201,6 +201,14 @@ public class ChunkClaimSavedData extends SavedData {
         }
     }
 
+    public synchronized void forEachClaimed(java.util.function.BiConsumer<UUID, ClaimedChunk> consumer) {
+        for (Map.Entry<UUID, List<ClaimedChunk>> entry : byTeam.entrySet()) {
+            for (ClaimedChunk chunk : entry.getValue()) {
+                consumer.accept(entry.getKey(), chunk);
+            }
+        }
+    }
+
     public synchronized boolean removeTeam(UUID teamId) {
         List<ClaimedChunk> removed = byTeam.remove(teamId);
         if (removed != null) {

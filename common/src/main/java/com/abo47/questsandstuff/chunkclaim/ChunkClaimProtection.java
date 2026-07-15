@@ -97,4 +97,12 @@ public final class ChunkClaimProtection {
         }
         return false;
     }
+
+    public static boolean isFireProtected(ServerLevel level, ChunkPos pos) {
+        if (!QuestsAndStuffConfig.chunkClaimProtectFire()) {
+            return false;
+        }
+        return QuestServiceRegistry.chunkClaims(level.getServer())
+                .ownerTeamIdOf(level.dimension().location(), pos.x, pos.z) != null;
+    }
 }

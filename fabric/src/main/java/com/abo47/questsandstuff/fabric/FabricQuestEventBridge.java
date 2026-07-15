@@ -58,6 +58,7 @@ public final class FabricQuestEventBridge {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                 onPlayerTick(player);
             }
+            QuestServiceRegistry.chunkClaims(server).suppressFire();
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {

@@ -323,6 +323,18 @@ final class SettingsTabDescriptors {
                         false
                 ),
                 new SettingsOptionDescriptor(
+                        "protectFire",
+                        ChunkClaimTranslationKeys.SETTING_PROTECT_FIRE,
+                        ChunkClaimTranslationKeys.SETTING_PROTECT_FIRE + "_desc",
+                        QuestsAndStuffConfig::chunkClaimProtectFire,
+                        enabled -> {
+                            QuestsAndStuffConfig.setChunkClaimProtectFire(enabled);
+                            sendChunkClaimsConfig();
+                        },
+                        false,
+                        false
+                ),
+                new SettingsOptionDescriptor(
                         "maxClaimedChunks",
                         ChunkClaimTranslationKeys.SETTING_MAX_CLAIMED,
                         ChunkClaimTranslationKeys.SETTING_MAX_CLAIMED + "_desc",
@@ -362,6 +374,7 @@ final class SettingsTabDescriptors {
                 QuestsAndStuffConfig.chunkClaimProtectExplosions(),
                 QuestsAndStuffConfig.chunkClaimProtectMobGriefing(),
                 QuestsAndStuffConfig.chunkClaimProtectPvp(),
+                QuestsAndStuffConfig.chunkClaimProtectFire(),
                 QuestsAndStuffConfig.chunkClaimMaxClaimedChunks(),
                 QuestsAndStuffConfig.chunkClaimMaxForceLoadedChunks()
         ));

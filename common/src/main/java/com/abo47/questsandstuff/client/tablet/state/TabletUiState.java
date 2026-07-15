@@ -726,6 +726,7 @@ public class TabletUiState {
         public boolean forceLoadArmed;
         public boolean claimArmed;
         public boolean showGrid = true;
+        public boolean surfaceScan;
         public String statusMessage = "";
         public boolean statusSuccess;
         public long statusAnimationStartMs;

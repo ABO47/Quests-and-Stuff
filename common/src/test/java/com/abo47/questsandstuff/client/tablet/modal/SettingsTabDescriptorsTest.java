@@ -77,6 +77,7 @@ class SettingsTabDescriptorsTest {
                         "protectExplosions",
                         "protectMobGriefing",
                         "protectPvp",
+                        "protectFire",
                         "maxClaimedChunks",
                         "maxForceLoadedChunks"
                 ),

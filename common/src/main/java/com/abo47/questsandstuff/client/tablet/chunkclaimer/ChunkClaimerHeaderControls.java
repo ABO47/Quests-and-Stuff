@@ -21,18 +21,20 @@ final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = 4;
     private static final int HEADER_INSET = 9;
-    private static final int BUTTON_COUNT = 3;
+    private static final int BUTTON_COUNT = 4;
 
     private final LabelWidget countLabel;
     private final ButtonWidget claimBtn;
     private final ButtonWidget forceBtn;
     private final ButtonWidget gridBtn;
+    private final ButtonWidget scanBtn;
 
-    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn, ButtonWidget gridBtn) {
+    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn, ButtonWidget gridBtn, ButtonWidget scanBtn) {
         this.countLabel = countLabel;
         this.claimBtn = claimBtn;
         this.forceBtn = forceBtn;
         this.gridBtn = gridBtn;
+        this.scanBtn = scanBtn;
     }
 
     static ChunkClaimerHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
@@ -46,20 +48,27 @@ final class ChunkClaimerHeaderControls {
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
         int gridX = forceX + TOOL_SIZE + HEADER_GAP;
+        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
 
         ButtonWidget claimBtn = toggleButton(claimX, headerY, "claim_all",
-                ChunkClaimTranslationKeys.ACTION_CLAIM, state, refresh,
+                ChunkClaimTranslationKeys.ACTION_CLAIM, ChunkClaimTranslationKeys.ACTION_CLAIM_TOOLTIP,
+                state, refresh,
                 () -> state.chunkClaimer.claimArmed, v -> state.chunkClaimer.claimArmed = v);
 
         ButtonWidget forceBtn = toggleButton(forceX, headerY, "lock",
-                ChunkClaimTranslationKeys.ACTION_FORCE, state, refresh,
+                ChunkClaimTranslationKeys.ACTION_FORCE, ChunkClaimTranslationKeys.ACTION_FORCE_TOOLTIP,
+                state, refresh,
                 () -> state.chunkClaimer.forceLoadArmed, v -> state.chunkClaimer.forceLoadArmed = v);
 
         ButtonWidget gridBtn = toggleButton(gridX, headerY, "grid",
-                ChunkClaimTranslationKeys.ACTION_GRID, state, refresh,
+                ChunkClaimTranslationKeys.ACTION_GRID, "", state, refresh,
                 () -> state.chunkClaimer.showGrid, v -> state.chunkClaimer.showGrid = v);
 
-        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn);
+        ButtonWidget scanBtn = toggleButton(scanX, headerY, "minimap",
+                ChunkClaimTranslationKeys.ACTION_SCAN, "", state, refresh,
+                () -> state.chunkClaimer.surfaceScan, v -> state.chunkClaimer.surfaceScan = v);
+
+        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn);
     }
 
     private static String countText() {
@@ -99,12 +108,14 @@ final class ChunkClaimerHeaderControls {
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
         int gridX = forceX + TOOL_SIZE + HEADER_GAP;
+        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
 
         countLabel.setSelfPosition(HEADER_INSET, headerY + (HEADER_H - 12) / 2);
         countLabel.setSize(countW, 12);
         claimBtn.setSelfPosition(claimX, headerY);
         forceBtn.setSelfPosition(forceX, headerY);
         gridBtn.setSelfPosition(gridX, headerY);
+        scanBtn.setSelfPosition(scanX, headerY);
     }
 
     void addTo(WidgetGroup mainPanel) {
@@ -112,9 +123,10 @@ final class ChunkClaimerHeaderControls {
         mainPanel.addWidget(claimBtn);
         mainPanel.addWidget(forceBtn);
         mainPanel.addWidget(gridBtn);
+        mainPanel.addWidget(scanBtn);
     }
 
-    private static ButtonWidget toggleButton(int x, int y, String icon, String tooltipKey,
+    private static ButtonWidget toggleButton(int x, int y, String icon, String tooltipKey, String shiftKey,
                                              TabletUiState state, Runnable refresh,
                                              BooleanSupplier armed, Consumer<Boolean> setArmed) {
         TabletIconTextButton.Visuals visuals = visualsFor(armed.getAsBoolean());
@@ -125,7 +137,11 @@ final class ChunkClaimerHeaderControls {
                     ref[0].visuals(visualsFor(armed.getAsBoolean()));
                     refresh.run();
                 });
-        ref[0].setHoverTooltips(Component.translatable(tooltipKey));
+        if (shiftKey != null && !shiftKey.isEmpty()) {
+            ref[0].setHoverTooltips(Component.translatable(tooltipKey), Component.translatable(shiftKey));
+        } else {
+            ref[0].setHoverTooltips(Component.translatable(tooltipKey));
+        }
         ref[0].visuals(visualsFor(armed.getAsBoolean()));
         return ref[0];
     }

@@ -133,13 +133,14 @@ public final class ChunkClaimGameTests {
         assertEqual(-4, decodedAction.z(), "Action z mismatch");
 
         C2SChunkClaimConfigPacket config = new C2SChunkClaimConfigPacket(
-                true, false, true, false, true, 64, 8);
+                true, false, true, false, true, false, 64, 8);
         C2SChunkClaimConfigPacket decodedConfig = roundtrip(config);
         assertTrue(decodedConfig.protectBreakPlace(), "config protectBreakPlace mismatch");
         assertTrue(!decodedConfig.protectInteraction(), "config protectInteraction mismatch");
         assertTrue(decodedConfig.protectExplosions(), "config protectExplosions mismatch");
         assertTrue(!decodedConfig.protectMobGriefing(), "config protectMobGriefing mismatch");
         assertTrue(decodedConfig.protectPvp(), "config protectPvp mismatch");
+        assertTrue(!decodedConfig.protectFire(), "config protectFire mismatch");
         assertEqual(64, decodedConfig.maxClaimedChunks(), "config maxClaimed mismatch");
         assertEqual(8, decodedConfig.maxForceLoadedChunks(), "config maxForceLoaded mismatch");
 
