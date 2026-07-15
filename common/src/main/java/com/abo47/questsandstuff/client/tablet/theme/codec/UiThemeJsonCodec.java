@@ -28,6 +28,7 @@ public final class UiThemeJsonCodec {
             Map<String, String> iconRoles = new LinkedHashMap<>(defaults.iconRoles);
             Map<String, Integer> uiColors = new LinkedHashMap<>(defaults.uiColors);
 
+            boolean hasSelection = false;
             JsonObject colorsJson = objectOrNull(root.get("colors"));
             if (colorsJson != null) {
                 for (Map.Entry<String, JsonElement> entry : colorsJson.entrySet()) {
@@ -38,7 +39,13 @@ public final class UiThemeJsonCodec {
                     if (uiColors.containsKey(uiKey)) {
                         uiColors.put(uiKey, parseColor(entry.getValue(), uiColors.get(uiKey), themePath, "colors." + entry.getKey()));
                     }
+                    if (UiThemeManager.UI_SELECTION.equals(uiKey)) {
+                        hasSelection = true;
+                    }
                 }
+            }
+            if (!hasSelection) {
+                uiColors.put(UiThemeManager.UI_SELECTION, uiColors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_SELECTION));
             }
 
             JsonObject iconRolesJson = objectOrNull(root.get("icon_roles"));

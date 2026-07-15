@@ -301,6 +301,10 @@ public final class CanvasHitTester {
         return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
     }
 
+    public static boolean isCanvasQuestResizeHandleHit(TabletUiState state, QuestCardLayout card, int x, int y) {
+        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, card.visualLogicalX(), card.visualLogicalY(), card.logicalWidth(), card.logicalHeight(), 0, 0, 0, x, y);
+    }
+
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
         double dx = x - box.centerX();

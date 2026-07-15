@@ -30,6 +30,7 @@ public final class UiThemeFiles {
             writeThemeIfMissing(gson, DEFAULT_THEME_NAME, UiThemeDefaults.defaultThemeJson());
             for (UiThemeCatalog.BuiltInTheme theme : UiThemeCatalog.builtIns()) {
                 writeThemeIfMissing(gson, theme.id(), UiThemeDefaults.themedJson(theme.name(), theme.colors()));
+                upgradeBuiltInTheme(gson, theme);
             }
             if (!Files.exists(ACTIVE_THEME_FILE)) {
                 JsonObject active = new JsonObject();
@@ -124,6 +125,32 @@ public final class UiThemeFiles {
         Path file = THEMES_DIR.resolve(id + ".json");
         if (!Files.exists(file)) {
             writeString(file, gson.toJson(theme));
+        }
+    }
+
+    private static void upgradeBuiltInTheme(Gson gson, UiThemeCatalog.BuiltInTheme theme) {
+        Path file = THEMES_DIR.resolve(theme.id() + ".json");
+        if (!Files.exists(file)) {
+            return;
+        }
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (!root.has("colors") || !root.get("colors").isJsonObject()) {
+                return;
+            }
+            JsonObject colors = root.getAsJsonObject("colors");
+            boolean changed = false;
+            for (String[] color : theme.colors()) {
+                if (color.length >= 2 && !colors.has(color[0])) {
+                    colors.addProperty(color[0], color[1]);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                writeString(file, gson.toJson(root));
+            }
+        } catch (Exception e) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed upgrading built-in theme {}", theme.id(), e);
         }
     }
 }

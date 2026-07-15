@@ -41,10 +41,10 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
-            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SUCCESS, 185));
+            SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SELECTION, 185));
             SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SUCCESS);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
             graphics.pose().popPose();
         }
     }
@@ -54,11 +54,17 @@ public final class CanvasElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
-            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
-            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SUCCESS, 185));
+            drawBoxFillAndOutline(graphics, box);
             drawHandles(graphics, box);
             graphics.pose().popPose();
         }
+    }
+
+    private static void drawBoxFillAndOutline(GuiGraphics graphics, CanvasElementGeometry.Box box) {
+        int w = Math.max(1, box.right() - box.left());
+        int h = Math.max(1, box.bottom() - box.top());
+        SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), w, h);
+        drawRectOutline(graphics, box.left(), box.top(), w, h, withAlpha(TabletColors.SELECTION, 185));
     }
 
     public static boolean resizeHandleHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
@@ -85,13 +91,92 @@ public final class CanvasElementSelectionSlot {
 
     private static void drawHandles(GuiGraphics graphics, CanvasElementGeometry.Box box) {
         SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SUCCESS);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
         SurfaceFactory.fill(withAlpha(TabletColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
         drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
     }
 
     private static int normalize(int rotationDegrees) {
         return ((rotationDegrees % 360) + 360) % 360;
+    }
+
+    public static void drawCombinedBounds(
+            GuiGraphics graphics,
+            int originX,
+            int originY,
+            int maxW,
+            int maxH,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            boolean showRotate
+    ) {
+        int width = Math.max(1, right - left);
+        int height = Math.max(1, bottom - top);
+        drawClippedFill(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(TabletColors.SELECTION, 26));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(TabletColors.SELECTION, 214));
+        int resizeX = right - HANDLE_SIZE;
+        int resizeY = bottom - HANDLE_SIZE;
+        drawClippedFill(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.SURFACE_BASE, 230));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+        if (showRotate) {
+            int rotateX = right - HANDLE_SIZE;
+            int rotateY = top;
+            drawClippedFill(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.WARNING, 210));
+            drawClippedOutline(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
+        }
+    }
+
+    public static void drawBoxSelection(
+            GuiGraphics graphics,
+            int originX,
+            int originY,
+            int maxW,
+            int maxH,
+            int startX,
+            int startY,
+            int currentX,
+            int currentY
+    ) {
+        int minX = Math.min(startX, currentX);
+        int minY = Math.min(startY, currentY);
+        int boxW = Math.max(1, Math.abs(currentX - startX));
+        int boxH = Math.max(1, Math.abs(currentY - startY));
+        drawClippedFill(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, withAlpha(TabletColors.SELECTION, 48));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, TabletColors.SELECTION);
+    }
+
+    private static void drawClippedFill(GuiGraphics graphics, int originX, int originY, int maxW, int maxH, int x, int y, int width, int height, int color) {
+        if ((color >>> 24) == 0) {
+            return;
+        }
+        int left = Math.max(0, x);
+        int top = Math.max(0, y);
+        int right = Math.min(maxW, x + Math.max(1, width));
+        int bottom = Math.min(maxH, y + Math.max(1, height));
+        if (right <= left || bottom <= top) {
+            return;
+        }
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, originX + left, originY + top, right - left, bottom - top);
+    }
+
+    private static void drawClippedOutline(GuiGraphics graphics, int originX, int originY, int maxW, int maxH, int x, int y, int width, int height, int color) {
+        drawClippedLine(graphics, originX, originY, maxW, maxH, x, y, x + width, y + 1, color);
+        drawClippedLine(graphics, originX, originY, maxW, maxH, x, y + height - 1, x + width, y + height, color);
+        drawClippedLine(graphics, originX, originY, maxW, maxH, x, y, x + 1, y + height, color);
+        drawClippedLine(graphics, originX, originY, maxW, maxH, x + width - 1, y, x + width, y + height, color);
+    }
+
+    private static void drawClippedLine(GuiGraphics graphics, int originX, int originY, int maxW, int maxH, int left, int top, int right, int bottom, int color) {
+        int clippedLeft = Math.max(0, left);
+        int clippedTop = Math.max(0, top);
+        int clippedRight = Math.min(maxW, right);
+        int clippedBottom = Math.min(maxH, bottom);
+        if (clippedRight <= clippedLeft || clippedBottom <= clippedTop) {
+            return;
+        }
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, originX + clippedLeft, originY + clippedTop, clippedRight - clippedLeft, clippedBottom - clippedTop);
     }
 
 }

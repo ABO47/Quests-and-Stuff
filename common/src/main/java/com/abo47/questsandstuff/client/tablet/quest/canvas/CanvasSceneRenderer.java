@@ -261,6 +261,25 @@ final class CanvasSceneRenderer {
         renderHiddenEditState(cardLayer, state, localCard);
         CanvasQuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
+        if (state.root.canEdit
+                && !card.questId().equals(state.questDetails.pendingQuestTitleChangeId)
+                && state.canvas.canvasSelection.questIds().contains(card.questId())
+                && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
+            canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+                @Override
+                public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                    int originX = getPositionX();
+                    int originY = getPositionY();
+                    if (state.canvas.draggingSelection && state.canvas.canvasSelection.questIds().contains(card.questId())) {
+                        originX += CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+                        originY += CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+                    }
+                    CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, card.visualLogicalX(), card.visualLogicalY(), card.logicalWidth(), card.logicalHeight(), 0, 0, 0);
+                }
+            });
+        }
         if (questCardLayerSink != null) {
             questCardLayerSink.accept(card.questId(), cardLayer);
         }

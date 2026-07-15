@@ -43,6 +43,7 @@ public final class UiThemeManager {
     public static final String UI_WARNING = "warning";
     public static final String UI_ERROR = "error";
     public static final String UI_INTERACTIVE = "interactive";
+    public static final String UI_SELECTION = "selection";
     public static final String UI_SCROLL_TRACK = "scroll_track";
     public static final String UI_SCROLL_THUMB = "scroll_thumb";
 
@@ -192,6 +193,7 @@ public final class UiThemeManager {
         TabletColors.WARNING = uiColors.getOrDefault(UI_WARNING, TabletColors.DEFAULT_WARNING);
         TabletColors.ERROR = uiColors.getOrDefault(UI_ERROR, TabletColors.DEFAULT_ERROR);
         TabletColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
+        TabletColors.SELECTION = uiColors.getOrDefault(UI_SELECTION, TabletColors.DEFAULT_SELECTION);
         TabletColors.SCROLL_TRACK = uiColors.getOrDefault(UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
         TabletColors.SCROLL_THUMB = uiColors.getOrDefault(UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
     }

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -150,11 +151,13 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        boolean questResizeTransform = !state.canvas.canvasSelection.questIds().isEmpty();
-        if (questResizeTransform && CanvasRenderer.isSelectionResizeHandleHit(state, localX, localY)) {
-            selectionTransforms.beginResize(localX, localY, byQuestId);
-            refresher.run();
-            return true;
+        if (state.canvas.canvasSelection.questIds().size() == 1) {
+            QuestCardLayout questCard = byQuestId.get(state.canvas.canvasSelection.questIds().iterator().next());
+            if (questCard != null && CanvasHitTester.isCanvasQuestResizeHandleHit(state, questCard, localX, localY)) {
+                selectionTransforms.beginResize(localX, localY, byQuestId);
+                refresher.run();
+                return true;
+            }
         }
         if (textHit != null) {
             if (canvasViewport.ctrlDown()) {
