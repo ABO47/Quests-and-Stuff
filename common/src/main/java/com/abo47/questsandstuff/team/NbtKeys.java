@@ -25,6 +25,7 @@ public final class NbtKeys {
     public static final String Z = "z";
     public static final String Y = "y";
     public static final String FORCE = "force";
+    public static final String PLAYER = "player";
     public static final String CHUNKS = "chunks";
 
     private NbtKeys() {}

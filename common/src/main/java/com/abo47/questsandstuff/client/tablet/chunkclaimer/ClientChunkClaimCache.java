@@ -1,33 +1,39 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
 import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
+import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public enum ClientChunkClaimCache {
     INSTANCE;
 
-    private volatile UUID teamId;
-    private volatile List<ClaimedChunk> claims = List.of();
+    private volatile Map<String, ChunkClaimPacketHelper.ClaimEntry> claims = Map.of();
 
-    public void set(UUID teamId, List<ClaimedChunk> claims) {
-        this.teamId = teamId;
-        this.claims = List.copyOf(claims);
+    public void setAll(List<ChunkClaimPacketHelper.ClaimEntry> entries) {
+        Map<String, ChunkClaimPacketHelper.ClaimEntry> map = new HashMap<>();
+        for (ChunkClaimPacketHelper.ClaimEntry e : entries) {
+            map.put(key(e.dim(), e.x(), e.z()), e);
+        }
+        this.claims = map;
     }
 
     public void clear() {
-        this.teamId = null;
-        this.claims = List.of();
+        this.claims = Map.of();
     }
 
-    public UUID teamId() {
-        return teamId;
+    private static String key(ResourceLocation dim, int x, int z) {
+        return dim + "|" + x + "," + z;
     }
 
-    public List<ClaimedChunk> snapshot() {
-        return claims;
+    private ChunkClaimPacketHelper.ClaimEntry find(ResourceLocation dim, int x, int z) {
+        return claims.get(key(dim, x, z));
     }
 
     public boolean isClaimed(ResourceLocation dim, int x, int z) {
@@ -35,16 +41,32 @@ public enum ClientChunkClaimCache {
     }
 
     public boolean isForceLoaded(ResourceLocation dim, int x, int z) {
-        ClaimedChunk chunk = find(dim, x, z);
-        return chunk != null && chunk.forceLoaded();
+        ChunkClaimPacketHelper.ClaimEntry e = find(dim, x, z);
+        return e != null && e.forceLoaded();
     }
 
-    private ClaimedChunk find(ResourceLocation dim, int x, int z) {
-        for (ClaimedChunk chunk : claims) {
-            if (chunk.x() == x && chunk.z() == z && chunk.dimension().equals(dim)) {
-                return chunk;
+    public String ownerName(ResourceLocation dim, int x, int z) {
+        ChunkClaimPacketHelper.ClaimEntry e = find(dim, x, z);
+        return e == null ? "" : e.claimedByName();
+    }
+
+    public UUID teamIdOf(ResourceLocation dim, int x, int z) {
+        ChunkClaimPacketHelper.ClaimEntry e = find(dim, x, z);
+        return e == null ? null : e.teamId();
+    }
+
+    public List<ClaimedChunk> snapshot() {
+        UUID localTeam = ClientTeamCache.INSTANCE.getTeam() != null
+                ? ClientTeamCache.INSTANCE.getTeam().teamId() : null;
+        String localName = net.minecraft.client.Minecraft.getInstance().getUser().getName();
+        List<ClaimedChunk> result = new ArrayList<>();
+        for (ChunkClaimPacketHelper.ClaimEntry e : claims.values()) {
+            if (localTeam != null && localTeam.equals(e.teamId())) {
+                result.add(new ClaimedChunk(e.dim(), e.x(), e.z(), e.forceLoaded(), e.claimedByName()));
+            } else if (localTeam == null && e.claimedByName().equals(localName)) {
+                result.add(new ClaimedChunk(e.dim(), e.x(), e.z(), e.forceLoaded(), e.claimedByName()));
             }
         }
-        return null;
+        return result;
     }
 }

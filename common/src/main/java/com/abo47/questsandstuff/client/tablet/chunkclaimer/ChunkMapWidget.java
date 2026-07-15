@@ -29,14 +29,11 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 public class ChunkMapWidget extends Widget {
     private static final long RESAMPLE_MS = TabletAnimationTimings.CHUNK_MAP_RESAMPLE_MS;
 
-    private static final int CLAIMED_FILL = TabletColors.DEFAULT_CLAIMED_FILL;
-    private static final int FORCE_FILL = TabletColors.DEFAULT_FORCE_FILL;
-    private static final int CLAIMED_EDGE = TabletColors.DEFAULT_CLAIMED_EDGE;
-    private static final int FORCE_EDGE = TabletColors.DEFAULT_FORCE_EDGE;
     private static final int GRID_COLOR = TabletColors.DEFAULT_GRID_COLOR;
 
     private final TabletUiState state;
@@ -317,6 +314,12 @@ public class ChunkMapWidget extends Widget {
         return 0;
     }
 
+    private static int teamColor(UUID teamId, int state) {
+        if (teamId == null) return 0x4F8DF7;
+        float hue = ((float)(teamId.hashCode() & 0xFFFF)) / 65536f;
+        return java.awt.Color.HSBtoRGB(hue, 0.5f, 0.85f);
+    }
+
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int w = getSizeWidth();
@@ -353,20 +356,6 @@ public class ChunkMapWidget extends Widget {
             tex.draw(graphics, mouseX, mouseY, baseX + ox - cell, baseY + oy - cell, (gw + 2) * cell, (gh + 2) * cell);
         }
 
-        if (state.chunkClaimer.showGrid) {
-            int opacityPct = Math.max(0, Math.min(100, state.chunkClaimer.gridOpacityPercent));
-            int alpha = Math.max(20, Math.min(220, (255 * opacityPct) / 100));
-            int gridCol = (alpha << 24) | (GRID_COLOR & 0x00FFFFFF);
-            for (int i = 0; i <= gw; i++) {
-                int gx = baseX + ox + i * cell;
-                graphics.fill(gx, baseY, gx + 1, baseY + h, gridCol);
-            }
-            for (int j = 0; j <= gh; j++) {
-                int gy = baseY + oy + j * cell;
-                graphics.fill(baseX, gy, baseX + w, gy + 1, gridCol);
-            }
-        }
-
         int halfWA = gw / 2;
         int halfHA = gh / 2;
         int dxMin = -halfWA;
@@ -374,45 +363,96 @@ public class ChunkMapWidget extends Widget {
         int dzMin = -halfHA;
         int dzMax = gh - halfHA - 1;
         var states = new java.util.HashMap<Long, Integer>();
+        var teamCells = new java.util.HashMap<Long, UUID>();
+        var claimKeys = new java.util.HashMap<Long, String>();
         for (int dx = dxMin; dx <= dxMax; dx++) {
             for (int dz = dzMin; dz <= dzMax; dz++) {
-                states.put(key(dx, dz), stateOf(ClientChunkClaimCache.INSTANCE, dim, cx + dx, cz + dz));
+                long k = key(dx, dz);
+                int cwX = cx + dx;
+                int cwZ = cz + dz;
+                states.put(k, stateOf(ClientChunkClaimCache.INSTANCE, dim, cwX, cwZ));
+                UUID t = ClientChunkClaimCache.INSTANCE.teamIdOf(dim, cwX, cwZ);
+                if (t != null) teamCells.put(k, t);
+                int s = states.get(k);
+                claimKeys.put(k, s == 0 ? "0" : s + ":" + (t != null ? t.toString() : ""));
             }
         }
 
         for (int dx = dxMin; dx <= dxMax; dx++) {
             for (int dz = dzMin; dz <= dzMax; dz++) {
-                int s = states.getOrDefault(key(dx, dz), 0);
-                if (s == 0) {
-                    continue;
-                }
+                long k = key(dx, dz);
+                int s = states.getOrDefault(k, 0);
+                if (s == 0) continue;
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                graphics.fill(px, py, px + cell + 1, py + cell + 1, s == 2 ? FORCE_FILL : CLAIMED_FILL);
+                int cellColor = teamColor(teamCells.get(k), s);
+                int fillColor = (0x99000000) | (cellColor & 0x00FFFFFF);
+                graphics.fill(px, py, px + cell, py + cell, fillColor);
+            }
+        }
+
+        if (state.chunkClaimer.showGrid) {
+            int opacityPct = Math.max(0, Math.min(100, state.chunkClaimer.gridOpacityPercent));
+            int alpha = Math.max(20, Math.min(220, (255 * opacityPct) / 100));
+            int gridCol = (alpha << 24) | (GRID_COLOR & 0x00FFFFFF);
+            for (int dx = dxMin; dx <= dxMax; dx++) {
+                for (int dz = dzMin; dz <= dzMax; dz++) {
+                    long k = key(dx, dz);
+                    if (states.getOrDefault(k, 0) != 0) continue;
+                    int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
+                    int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
+                    if (dx == dxMin || states.getOrDefault(key(dx - 1, dz), 0) == 0) {
+                        graphics.fill(px, py, px + 1, py + cell, gridCol);
+                    }
+                    if (dx == dxMax || states.getOrDefault(key(dx + 1, dz), 0) == 0) {
+                        graphics.fill(px + cell, py, px + cell + 1, py + cell, gridCol);
+                    }
+                    if (dz == dzMin || states.getOrDefault(key(dx, dz - 1), 0) == 0) {
+                        graphics.fill(px, py, px + cell, py + 1, gridCol);
+                    }
+                    if (dz == dzMax || states.getOrDefault(key(dx, dz + 1), 0) == 0) {
+                        graphics.fill(px, py + cell, px + cell, py + cell + 1, gridCol);
+                    }
+                }
             }
         }
 
         for (int dx = dxMin; dx <= dxMax; dx++) {
             for (int dz = dzMin; dz <= dzMax; dz++) {
-                int s = states.getOrDefault(key(dx, dz), 0);
-                if (s == 0) {
-                    continue;
-                }
+                long k = key(dx, dz);
+                int s = states.getOrDefault(k, 0);
+                if (s == 0) continue;
+                String ck = claimKeys.get(k);
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                int edge = withAlpha(s == 2 ? FORCE_EDGE : CLAIMED_EDGE, 170);
-                if (states.getOrDefault(key(dx - 1, dz), 0) != s) {
-                    graphics.fill(px, py, px + 1, py + cell + 1, edge);
-                }
-                if (states.getOrDefault(key(dx + 1, dz), 0) != s) {
-                    graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, edge);
-                }
-                if (states.getOrDefault(key(dx, dz - 1), 0) != s) {
-                    graphics.fill(px, py, px + cell + 1, py + 1, edge);
-                }
-                if (states.getOrDefault(key(dx, dz + 1), 0) != s) {
-                    graphics.fill(px, py + cell, px + cell + 1, py + cell + 1, edge);
-                }
+                int edge = teamColor(teamCells.get(k), s);
+                boolean left = dx == dxMin || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = dx == dxMax || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = dz == dzMin || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = dz == dzMax || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                if (left) graphics.fill(px, py, px + 1, py + cell + 1, edge);
+                if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, edge);
+                if (up) graphics.fill(px, py, px + cell + 1, py + 1, edge);
+                if (down) graphics.fill(px, py + cell, px + cell + 1, py + cell + 1, edge);
+            }
+        }
+
+        int forceInner = 0xFFE06F73;
+        for (int dx = dxMin; dx <= dxMax; dx++) {
+            for (int dz = dzMin; dz <= dzMax; dz++) {
+                long k = key(dx, dz);
+                if (states.getOrDefault(k, 0) != 2) continue;
+                String ck = claimKeys.get(k);
+                int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
+                int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
+                boolean left = dx == dxMin || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = dx == dxMax || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = dz == dzMin || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = dz == dzMax || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                if (left) graphics.fill(px, py, px + 1, py + cell + 1, forceInner);
+                if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, forceInner);
+                if (up) graphics.fill(px, py, px + cell + 1, py + 1, forceInner);
+                if (down) graphics.fill(px, py + cell, px + cell + 1, py + cell + 1, forceInner);
             }
         }
 
@@ -432,6 +472,19 @@ public class ChunkMapWidget extends Widget {
                 int fy = baseY + hpyLocal + (cell + 1) / 2;
                 com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.drawGlow(
                         graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell + 1, cell + 1, TabletColors.BORDER_ACCENT);
+                int chunkX = cx + dx;
+                int chunkZ = cz + dz;
+                boolean claimedHere = ClientChunkClaimCache.INSTANCE.isClaimed(dim, chunkX, chunkZ);
+                if (claimedHere) {
+                    String name = ClientChunkClaimCache.INSTANCE.ownerName(dim, chunkX, chunkZ);
+                    if (name.isEmpty()) {
+                        name = "Claimed";
+                    }
+                    var font = Minecraft.getInstance().font;
+                    int textX = baseX + hpxLocal;
+                    int textY = baseY + hpyLocal + cell + 3;
+                    graphics.drawString(font, name, textX, textY, 0xFFEAF1F4, true);
+                }
             } else {
                 lastHoverDx = Integer.MAX_VALUE;
                 lastHoverDz = Integer.MAX_VALUE;

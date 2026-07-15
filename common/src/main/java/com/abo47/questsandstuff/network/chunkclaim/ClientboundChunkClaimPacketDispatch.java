@@ -10,8 +10,7 @@ final class ClientboundChunkClaimPacketDispatch {
     }
 
     static void handle(CompoundTag payload) {
-        ChunkClaimPacketHelper.ChunkClaimSnapshot snapshot = ChunkClaimPacketHelper.fromPayload(payload);
-        ClientChunkClaimCache.INSTANCE.set(snapshot.teamId(), snapshot.chunks());
+        ClientChunkClaimCache.INSTANCE.setAll(ChunkClaimPacketHelper.decodeClaims(payload));
         TabletUiFactory.refreshActiveTablet();
     }
 }

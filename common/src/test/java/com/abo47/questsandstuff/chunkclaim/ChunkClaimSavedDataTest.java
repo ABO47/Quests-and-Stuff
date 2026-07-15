@@ -22,9 +22,9 @@ class ChunkClaimSavedDataTest {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
         UUID team = UUID.randomUUID();
 
-        assertTrue(data.claim(team, OVERWORLD, 3, 4), "First claim succeeds");
+        assertTrue(data.claim(team, OVERWORLD, 3, 4, "test"), "First claim succeeds");
         assertTrue(data.isClaimed(team, OVERWORLD, 3, 4), "Chunk is claimed");
-        assertFalse(data.claim(team, OVERWORLD, 3, 4), "Duplicate claim rejected");
+        assertFalse(data.claim(team, OVERWORLD, 3, 4, "test"), "Duplicate claim rejected");
         assertEquals(team, data.ownerTeamIdOf(OVERWORLD, 3, 4), "Owner matches");
         assertEquals(1, data.countClaimed(team));
     }
@@ -34,7 +34,7 @@ class ChunkClaimSavedDataTest {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
         UUID team = UUID.randomUUID();
 
-        data.claim(team, OVERWORLD, 1, 1);
+        data.claim(team, OVERWORLD, 1, 1, "test");
         assertFalse(data.isForceLoaded(team, OVERWORLD, 1, 1), "Not force loaded initially");
         assertTrue(data.setForce(team, OVERWORLD, 1, 1, true), "Force arming succeeds");
         assertTrue(data.isForceLoaded(team, OVERWORLD, 1, 1), "Force loaded after arming");
@@ -46,7 +46,7 @@ class ChunkClaimSavedDataTest {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
         UUID team = UUID.randomUUID();
 
-        data.claim(team, OVERWORLD, 5, 5);
+        data.claim(team, OVERWORLD, 5, 5, "test");
         assertTrue(data.unclaim(team, OVERWORLD, 5, 5), "Unclaim succeeds");
         assertFalse(data.isClaimed(team, OVERWORLD, 5, 5), "Chunk no longer claimed");
         assertNull(data.ownerTeamIdOf(OVERWORLD, 5, 5), "No owner after unclaim");
@@ -56,8 +56,8 @@ class ChunkClaimSavedDataTest {
     void saveAndLoadRoundTripsClaims() {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
         UUID team = UUID.randomUUID();
-        data.claim(team, OVERWORLD, 0, 0);
-        data.claim(team, OVERWORLD, 1, 2);
+        data.claim(team, OVERWORLD, 0, 0, "alice");
+        data.claim(team, OVERWORLD, 1, 2, "bob");
         data.setForce(team, OVERWORLD, 1, 2, true);
 
         CompoundTag tag = data.save(new CompoundTag());
@@ -73,7 +73,7 @@ class ChunkClaimSavedDataTest {
     void removeTeamClearsAllChunks() {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
         UUID team = UUID.randomUUID();
-        data.claim(team, OVERWORLD, 7, 8);
+        data.claim(team, OVERWORLD, 7, 8, "test");
 
         assertTrue(data.removeTeam(team), "Remove team succeeds");
         assertFalse(data.isClaimed(team, OVERWORLD, 7, 8), "Chunks cleared after remove");

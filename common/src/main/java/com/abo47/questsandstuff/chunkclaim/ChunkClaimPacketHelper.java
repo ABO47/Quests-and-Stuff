@@ -1,14 +1,11 @@
 package com.abo47.questsandstuff.chunkclaim;
 
-import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
 import com.abo47.questsandstuff.team.NbtKeys;
-import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.team.model.TeamMember;
 import com.abo47.questsandstuff.team.TeamManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,7 +22,7 @@ public final class ChunkClaimPacketHelper {
     private ChunkClaimPacketHelper() {
     }
 
-    public record ChunkClaimSnapshot(UUID teamId, List<ClaimedChunk> chunks) {
+    public record ClaimEntry(UUID teamId, ResourceLocation dim, int x, int z, boolean forceLoaded, String claimedByName) {
     }
 
     public static void applyAction(ServerPlayer player, TeamManager manager,
@@ -40,65 +37,56 @@ public final class ChunkClaimPacketHelper {
         ChunkClaimService service = QuestServiceRegistry.chunkClaims(player.server);
         UUID teamId = team.teamId();
         switch (action) {
-            case CLAIM -> service.claim(teamId, dim, x, z);
+            case CLAIM -> service.claim(teamId, player.getGameProfile().getName(), dim, x, z);
             case UNCLAIM -> service.unclaim(teamId, dim, x, z);
             case TOGGLE_FORCE -> service.setForceLoaded(teamId, dim, x, z, !service.isForceLoaded(teamId, dim, x, z));
-            case REQUEST -> {
-            }
+            case REQUEST -> {}
         }
-        if (action == C2SChunkClaimActionPacket.Action.REQUEST) {
-            send(player, encode(teamId, service.claims(teamId)));
-        } else {
-            broadcastToTeam(player.serverLevel(), team);
-        }
+        broadcastAll(player.serverLevel());
     }
 
-    static void broadcastToTeam(ServerLevel level, TeamData team) {
+    static void broadcastAll(ServerLevel level) {
         ChunkClaimService service = QuestServiceRegistry.chunkClaims(level.getServer());
-        CompoundTag payload = encode(team.teamId(), service.claims(team.teamId()));
-        for (TeamMember member : team.members()) {
-            ServerPlayer player = level.getServer().getPlayerList().getPlayer(member.uuid());
-            if (player != null) {
-                send(player, payload);
-            }
+        CompoundTag payload = encodeAll(service);
+        for (ServerPlayer p : level.getServer().getPlayerList().getPlayers()) {
+            ModNetwork.sendToPlayer(new S2CChunkClaimSyncPacket(payload), p);
         }
     }
 
-    static void send(ServerPlayer player, CompoundTag payload) {
-        ModNetwork.sendToPlayer(new S2CChunkClaimSyncPacket(payload), player);
-    }
-
-    public static CompoundTag encode(UUID teamId, TeamChunkData data) {
+    public static CompoundTag encodeAll(ChunkClaimService service) {
         CompoundTag tag = new CompoundTag();
-        tag.putUUID(NbtKeys.TEAM, teamId);
-        ListTag chunks = new ListTag();
-        for (ClaimedChunk chunk : data.chunks()) {
+        ListTag claims = new ListTag();
+        service.forEachClaim((teamId, chunk) -> {
             CompoundTag entry = new CompoundTag();
+            entry.putUUID(NbtKeys.TEAM, teamId);
             entry.putString(NbtKeys.DIM, chunk.dimension().toString());
             entry.putInt(NbtKeys.X, chunk.x());
             entry.putInt(NbtKeys.Z, chunk.z());
             entry.putBoolean(NbtKeys.FORCE, chunk.forceLoaded());
-            chunks.add(entry);
-        }
-        tag.put(NbtKeys.CHUNKS, chunks);
+            if (!chunk.claimedByName().isEmpty()) {
+                entry.putString(NbtKeys.PLAYER, chunk.claimedByName());
+            }
+            claims.add(entry);
+        });
+        tag.put(NbtKeys.CLAIMS, claims);
         return tag;
     }
 
-    public static ChunkClaimSnapshot fromPayload(CompoundTag tag) {
-        if (tag == null) {
-            return new ChunkClaimSnapshot(null, List.of());
-        }
-        UUID teamId = tag.hasUUID(NbtKeys.TEAM) ? tag.getUUID(NbtKeys.TEAM) : null;
-        ListTag chunks = tag.getList(NbtKeys.CHUNKS, Tag.TAG_COMPOUND);
-        List<ClaimedChunk> list = new ArrayList<>();
-        for (int i = 0; i < chunks.size(); i++) {
-            CompoundTag entry = chunks.getCompound(i);
+    public static List<ClaimEntry> decodeClaims(CompoundTag tag) {
+        if (tag == null) return List.of();
+        ListTag claims = tag.getList(NbtKeys.CLAIMS, Tag.TAG_COMPOUND);
+        List<ClaimEntry> list = new ArrayList<>();
+        for (int i = 0; i < claims.size(); i++) {
+            CompoundTag entry = claims.getCompound(i);
+            UUID teamId = entry.getUUID(NbtKeys.TEAM);
             ResourceLocation dim = ResourceLocation.tryParse(entry.getString(NbtKeys.DIM));
-            if (dim == null) {
-                continue;
-            }
-            list.add(new ClaimedChunk(dim, entry.getInt(NbtKeys.X), entry.getInt(NbtKeys.Z), entry.getBoolean(NbtKeys.FORCE)));
+            if (dim == null) continue;
+            int x = entry.getInt(NbtKeys.X);
+            int z = entry.getInt(NbtKeys.Z);
+            boolean force = entry.getBoolean(NbtKeys.FORCE);
+            String player = entry.contains(NbtKeys.PLAYER) ? entry.getString(NbtKeys.PLAYER) : "";
+            list.add(new ClaimEntry(teamId, dim, x, z, force, player));
         }
-        return new ChunkClaimSnapshot(teamId, list);
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.chunkclaim;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
 import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -32,14 +33,18 @@ public class ChunkClaimService {
         NOT_CLAIMED
     }
 
-    public ClaimResult claim(UUID teamId, ResourceLocation dim, int x, int z) {
-        if (data().isClaimed(teamId, dim, x, z)) {
-            return ClaimResult.ALREADY_CLAIMED;
+    public ClaimResult claim(UUID teamId, String claimedByName, ResourceLocation dim, int x, int z) {
+        UUID owner = data().ownerTeamIdOf(dim, x, z);
+        if (owner != null) {
+            if (owner.equals(teamId)) {
+                return ClaimResult.ALREADY_CLAIMED;
+            }
+            return ClaimResult.NOT_CLAIMED;
         }
         if (data().countClaimed(teamId) >= QuestsAndStuffConfig.chunkClaimMaxClaimedChunks()) {
             return ClaimResult.LIMIT_REACHED;
         }
-        if (data().claim(teamId, dim, x, z)) {
+        if (data().claim(teamId, dim, x, z, claimedByName)) {
             return ClaimResult.OK;
         }
         return ClaimResult.ALREADY_CLAIMED;
@@ -146,6 +151,10 @@ public class ChunkClaimService {
 
     public boolean removeTeam(UUID teamId) {
         return data().removeTeam(teamId);
+    }
+
+    public void forEachClaim(java.util.function.BiConsumer<UUID, ClaimedChunk> consumer) {
+        data().forEachClaimed(consumer);
     }
 
     private ServerLevel levelFor(ResourceLocation dim) {

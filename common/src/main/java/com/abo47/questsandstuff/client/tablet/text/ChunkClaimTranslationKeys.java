@@ -17,6 +17,7 @@ public final class ChunkClaimTranslationKeys {
     public static final String STATUS_CLAIMED = "ui.questsandstuff.chunk_claimer.status.claimed";
     public static final String STATUS_FORCE_LOADED = "ui.questsandstuff.chunk_claimer.status.force_loaded";
     public static final String STATUS_OWNED = "ui.questsandstuff.chunk_claimer.status.owned";
+    public static final String STATUS_UNCLAIMED = "ui.questsandstuff.chunk_claimer.status.unclaimed";
     public static final String STATUS_LIMIT = "ui.questsandstuff.chunk_claimer.status.limit";
 
     public static final String SETTINGS_TAB = "ui.questsandstuff.settings.tab.chunk_claims";

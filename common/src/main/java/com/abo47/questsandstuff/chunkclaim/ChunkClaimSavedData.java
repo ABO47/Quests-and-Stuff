@@ -51,7 +51,8 @@ public class ChunkClaimSavedData extends SavedData {
             int x = entry.getInt(NbtKeys.X);
             int z = entry.getInt(NbtKeys.Z);
             boolean force = entry.getBoolean(NbtKeys.FORCE);
-            data.byTeam.computeIfAbsent(team, k -> new ArrayList<>()).add(new ClaimedChunk(dim, x, z, force));
+            String playerName = entry.contains(NbtKeys.PLAYER) ? entry.getString(NbtKeys.PLAYER) : "";
+            data.byTeam.computeIfAbsent(team, k -> new ArrayList<>()).add(new ClaimedChunk(dim, x, z, force, playerName));
         }
         return data;
     }
@@ -67,6 +68,9 @@ public class ChunkClaimSavedData extends SavedData {
                 c.putInt(NbtKeys.X, chunk.x());
                 c.putInt(NbtKeys.Z, chunk.z());
                 c.putBoolean(NbtKeys.FORCE, chunk.forceLoaded());
+                if (!chunk.claimedByName().isEmpty()) {
+                    c.putString(NbtKeys.PLAYER, chunk.claimedByName());
+                }
                 claims.add(c);
             }
         }
@@ -74,14 +78,14 @@ public class ChunkClaimSavedData extends SavedData {
         return tag;
     }
 
-    public synchronized boolean claim(UUID teamId, ResourceLocation dim, int x, int z) {
+    public synchronized boolean claim(UUID teamId, ResourceLocation dim, int x, int z, String claimedByName) {
         List<ClaimedChunk> chunks = byTeam.computeIfAbsent(teamId, k -> new ArrayList<>());
         for (ClaimedChunk chunk : chunks) {
             if (sameChunk(chunk, dim, x, z)) {
                 return false;
             }
         }
-        chunks.add(new ClaimedChunk(dim, x, z, false));
+        chunks.add(new ClaimedChunk(dim, x, z, false, claimedByName == null ? "" : claimedByName));
         setDirty();
         return true;
     }
@@ -110,7 +114,7 @@ public class ChunkClaimSavedData extends SavedData {
         for (int i = 0; i < chunks.size(); i++) {
             ClaimedChunk chunk = chunks.get(i);
             if (sameChunk(chunk, dim, x, z)) {
-                chunks.set(i, new ClaimedChunk(dim, x, z, force));
+                chunks.set(i, new ClaimedChunk(dim, x, z, force, chunk.claimedByName()));
                 found = true;
                 break;
             }

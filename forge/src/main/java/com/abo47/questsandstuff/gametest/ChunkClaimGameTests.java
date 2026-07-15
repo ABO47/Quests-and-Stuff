@@ -4,7 +4,6 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimService;
-import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
@@ -49,11 +48,11 @@ public final class ChunkClaimGameTests {
             ChunkClaimService service = new ChunkClaimService(helper.getLevel().getServer());
 
             assertEqual(ChunkClaimService.ClaimResult.OK,
-                    service.claim(team.teamId(), dim, 4, 7), "First claim should succeed");
+                    service.claim(team.teamId(), "claimer", dim, 4, 7), "First claim should succeed");
             assertTrue(service.isClaimed(team.teamId(), dim, 4, 7), "Chunk should be claimed");
             assertEqual(team.teamId(), service.ownerTeamIdOf(dim, 4, 7), "Owning team should match");
             assertEqual(ChunkClaimService.ClaimResult.ALREADY_CLAIMED,
-                    service.claim(team.teamId(), dim, 4, 7), "Duplicate claim should be rejected");
+                    service.claim(team.teamId(), "claimer", dim, 4, 7), "Duplicate claim should be rejected");
             assertEqual(ChunkClaimService.ClaimResult.OK,
                     service.unclaim(team.teamId(), dim, 4, 7), "Unclaim should succeed");
             assertEqual(ChunkClaimService.ClaimResult.NOT_CLAIMED,
@@ -76,7 +75,7 @@ public final class ChunkClaimGameTests {
             ChunkClaimService service = new ChunkClaimService(helper.getLevel().getServer());
             ChunkPos pos = new ChunkPos(2, 3);
 
-            service.claim(team.teamId(), dim, pos.x, pos.z);
+            service.claim(team.teamId(), "forcer", dim, pos.x, pos.z);
             assertEqual(ChunkClaimService.ClaimResult.OK,
                     service.setForceLoaded(team.teamId(), dim, pos.x, pos.z, true),
                     "Arming force load should succeed");
@@ -106,10 +105,10 @@ public final class ChunkClaimGameTests {
             int previous = QuestsAndStuffConfig.chunkClaimMaxClaimedChunks();
             QuestsAndStuffConfig.setChunkClaimMaxClaimedChunks(2);
             try {
-                assertEqual(ChunkClaimService.ClaimResult.OK, service.claim(team.teamId(), dim, 0, 0), "First claim ok");
-                assertEqual(ChunkClaimService.ClaimResult.OK, service.claim(team.teamId(), dim, 0, 1), "Second claim ok");
+                assertEqual(ChunkClaimService.ClaimResult.OK, service.claim(team.teamId(), "cap", dim, 0, 0), "First claim ok");
+                assertEqual(ChunkClaimService.ClaimResult.OK, service.claim(team.teamId(), "cap", dim, 0, 1), "Second claim ok");
                 assertEqual(ChunkClaimService.ClaimResult.LIMIT_REACHED,
-                        service.claim(team.teamId(), dim, 0, 2), "Third claim should hit cap");
+                        service.claim(team.teamId(), "cap", dim, 0, 2), "Third claim should hit cap");
                 assertEqual(2, service.countClaimed(team.teamId()), "Only two chunks claimed");
             } finally {
                 QuestsAndStuffConfig.setChunkClaimMaxClaimedChunks(previous);
@@ -144,7 +143,8 @@ public final class ChunkClaimGameTests {
         assertEqual(64, decodedConfig.maxClaimedChunks(), "config maxClaimed mismatch");
         assertEqual(8, decodedConfig.maxForceLoadedChunks(), "config maxForceLoaded mismatch");
 
-        CompoundTag payload = ChunkClaimPacketHelper.encode(UUID.randomUUID(), new TeamChunkData(java.util.List.of()));
+        ChunkClaimService emptyService = new ChunkClaimService(helper.getLevel().getServer());
+        CompoundTag payload = ChunkClaimPacketHelper.encodeAll(emptyService);
         S2CChunkClaimSyncPacket sync = new S2CChunkClaimSyncPacket(payload);
         S2CChunkClaimSyncPacket decodedSync = roundtrip(sync);
         assertEqual(payload, decodedSync.payload(), "sync payload mismatch");
