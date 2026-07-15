@@ -154,6 +154,7 @@ public final class TabletLifecycle {
     public static void closeTabletUi(TabletUiState state, boolean suppressOpenClick, String reason) {
         rememberActiveWindow(state);
         if (state != null) {
+            TabletUiFactory.persistUiState(state);
             String app = state.root.currentApp;
             if ("quest".equals(app)) {
                 saveLastApp("QUESTS");

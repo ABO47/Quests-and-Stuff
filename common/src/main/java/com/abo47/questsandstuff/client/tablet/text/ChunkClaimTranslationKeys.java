@@ -11,6 +11,7 @@ public final class ChunkClaimTranslationKeys {
     public static final String ACTION_FORCE_ON = "ui.questsandstuff.chunk_claimer.action.force.on";
     public static final String ACTION_FORCE_OFF = "ui.questsandstuff.chunk_claimer.action.force.off";
     public static final String ACTION_GRID = "ui.questsandstuff.chunk_claimer.action.grid";
+    public static final String ACTION_GRID_OPACITY = "ui.questsandstuff.chunk_claimer.action.grid_opacity";
     public static final String ACTION_SCAN = "ui.questsandstuff.chunk_claimer.action.scan";
     public static final String STATUS_SUMMARY = "ui.questsandstuff.chunk_claimer.status.summary";
     public static final String STATUS_CLAIMED = "ui.questsandstuff.chunk_claimer.status.claimed";

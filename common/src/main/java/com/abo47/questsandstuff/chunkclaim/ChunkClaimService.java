@@ -9,6 +9,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.UUID;
 
@@ -100,7 +102,17 @@ public class ChunkClaimService {
                     for (int y = level.getMinBuildHeight(); y < level.getMaxBuildHeight(); y++) {
                         mutable.set(baseX + lx, y, baseZ + lz);
                         if (level.getBlockState(mutable).getBlock() == Blocks.FIRE) {
-                            level.removeBlock(mutable, false);
+                            BlockState below = level.getBlockState(mutable.below());
+                            try {
+                                java.lang.reflect.Method m = FireBlock.class.getDeclaredMethod("getIgniteOdds", BlockState.class);
+                                m.setAccessible(true);
+                                int odds = (int) m.invoke(Blocks.FIRE, below);
+                                if (odds > 0) {
+                                    level.removeBlock(mutable, false);
+                                }
+                            } catch (Exception igniteError) {
+                                level.removeBlock(mutable, false);
+                            }
                         }
                     }
                 }

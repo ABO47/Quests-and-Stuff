@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.dynamicLabel;
@@ -23,20 +25,22 @@ final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = GRID_4;
     private static final int HEADER_INSET = GRID_9;
-    private static final int BUTTON_COUNT = 4;
+    private static final int BUTTON_COUNT = 5;
 
     private final LabelWidget countLabel;
     private final ButtonWidget claimBtn;
     private final ButtonWidget forceBtn;
     private final ButtonWidget gridBtn;
     private final ButtonWidget scanBtn;
+    private final ButtonWidget opacityBtn;
 
-    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn, ButtonWidget gridBtn, ButtonWidget scanBtn) {
+    private ChunkClaimerHeaderControls(LabelWidget countLabel, ButtonWidget claimBtn, ButtonWidget forceBtn, ButtonWidget gridBtn, ButtonWidget scanBtn, ButtonWidget opacityBtn) {
         this.countLabel = countLabel;
         this.claimBtn = claimBtn;
         this.forceBtn = forceBtn;
         this.gridBtn = gridBtn;
         this.scanBtn = scanBtn;
+        this.opacityBtn = opacityBtn;
     }
 
     static ChunkClaimerHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
@@ -49,28 +53,42 @@ final class ChunkClaimerHeaderControls {
         int btnAreaStartX = HEADER_INSET + countW;
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
-        int gridX = forceX + TOOL_SIZE + HEADER_GAP;
-        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
+        int scanX = forceX + TOOL_SIZE + HEADER_GAP;
+        int gridX = scanX + TOOL_SIZE + HEADER_GAP;
+        int opacityX = gridX + TOOL_SIZE + HEADER_GAP;
 
-        ButtonWidget claimBtn = toggleButton(claimX, headerY, "claim_all",
+        ButtonWidget claimBtn = toggleButton(claimX, headerY, "land-plot",
                 ChunkClaimTranslationKeys.ACTION_CLAIM, ChunkClaimTranslationKeys.ACTION_CLAIM_TOOLTIP,
                 state, refresh,
                 () -> state.chunkClaimer.claimArmed, v -> state.chunkClaimer.claimArmed = v);
 
-        ButtonWidget forceBtn = toggleButton(forceX, headerY, "lock",
+        ButtonWidget forceBtn = toggleButton(forceX, headerY, "anchor",
                 ChunkClaimTranslationKeys.ACTION_FORCE, ChunkClaimTranslationKeys.ACTION_FORCE_TOOLTIP,
                 state, refresh,
                 () -> state.chunkClaimer.forceLoadArmed, v -> state.chunkClaimer.forceLoadArmed = v);
+
+        ButtonWidget scanBtn = toggleButton(scanX, headerY, "layers",
+                ChunkClaimTranslationKeys.ACTION_SCAN, "", state, refresh,
+                () -> state.chunkClaimer.surfaceScan, v -> state.chunkClaimer.surfaceScan = v);
 
         ButtonWidget gridBtn = toggleButton(gridX, headerY, "grid",
                 ChunkClaimTranslationKeys.ACTION_GRID, "", state, refresh,
                 () -> state.chunkClaimer.showGrid, v -> state.chunkClaimer.showGrid = v);
 
-        ButtonWidget scanBtn = toggleButton(scanX, headerY, "minimap",
-                ChunkClaimTranslationKeys.ACTION_SCAN, "", state, refresh,
-                () -> state.chunkClaimer.surfaceScan, v -> state.chunkClaimer.surfaceScan = v);
+        TabletIconTextButton.Visuals opacityVisuals = visualsFor(true);
+        TabletIconTextButton[] opacityRef = new TabletIconTextButton[1];
+        opacityRef[0] = TabletIconTextButton.icon(opacityX, headerY, TOOL_SIZE, TOOL_SIZE, "opacity", opacityVisuals,
+                click -> {
+                    int next = cyclePercent(state.chunkClaimer.gridOpacityPercent, toolPercentStep(), click.button == 1);
+                    state.chunkClaimer.gridOpacityPercent = next;
+                    opacityRef[0].setHoverTooltips(
+                            Component.translatable(ChunkClaimTranslationKeys.ACTION_GRID_OPACITY, next));
+                    refresh.run();
+                });
+        opacityRef[0].setHoverTooltips(
+                Component.translatable(ChunkClaimTranslationKeys.ACTION_GRID_OPACITY, state.chunkClaimer.gridOpacityPercent));
 
-        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn);
+        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn, opacityRef[0]);
     }
 
     private static String countText() {
@@ -104,20 +122,34 @@ final class ChunkClaimerHeaderControls {
         return forceBtn;
     }
 
+    ButtonWidget gridBtn() {
+        return gridBtn;
+    }
+
+    ButtonWidget scanBtn() {
+        return scanBtn;
+    }
+
+    ButtonWidget opacityBtn() {
+        return opacityBtn;
+    }
+
     void layout(int headerY, int bodyW) {
         int countW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * BUTTON_COUNT);
         int btnAreaStartX = HEADER_INSET + countW;
         int claimX = btnAreaStartX + HEADER_GAP;
         int forceX = claimX + TOOL_SIZE + HEADER_GAP;
-        int gridX = forceX + TOOL_SIZE + HEADER_GAP;
-        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
+        int scanX = forceX + TOOL_SIZE + HEADER_GAP;
+        int gridX = scanX + TOOL_SIZE + HEADER_GAP;
+        int opacityX = gridX + TOOL_SIZE + HEADER_GAP;
 
         countLabel.setSelfPosition(HEADER_INSET, headerY + (HEADER_H - 12) / 2);
         countLabel.setSize(countW, 12);
         claimBtn.setSelfPosition(claimX, headerY);
         forceBtn.setSelfPosition(forceX, headerY);
-        gridBtn.setSelfPosition(gridX, headerY);
         scanBtn.setSelfPosition(scanX, headerY);
+        gridBtn.setSelfPosition(gridX, headerY);
+        opacityBtn.setSelfPosition(opacityX, headerY);
     }
 
     void addTo(WidgetGroup mainPanel) {
@@ -126,6 +158,7 @@ final class ChunkClaimerHeaderControls {
         mainPanel.addWidget(forceBtn);
         mainPanel.addWidget(gridBtn);
         mainPanel.addWidget(scanBtn);
+        mainPanel.addWidget(opacityBtn);
     }
 
     private static ButtonWidget toggleButton(int x, int y, String icon, String tooltipKey, String shiftKey,

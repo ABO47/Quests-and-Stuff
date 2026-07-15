@@ -156,6 +156,9 @@ public final class IconRegistry {
         preloadedRole("themes", UiThemeManager.ROLE_ICON_INTERACTIVE);
         preloadedRole("auto_claim", UiThemeManager.ROLE_ICON_SUCCESS);
         preloadedRole("claim_all", UiThemeManager.ROLE_ICON_SUCCESS);
+        preloadedRole("land-plot", UiThemeManager.ROLE_ICON_SUCCESS);
+        preloadedRole("anchor", UiThemeManager.ROLE_ICON_WARNING);
+        preloaded("layers");
         preloadedRole("xp", UiThemeManager.ROLE_ICON_SUCCESS);
         preloadedRole("send-horizontal", UiThemeManager.ROLE_ICON_SUCCESS);
         preloadedRole("eye", UiThemeManager.ROLE_ICON_INTERACTIVE);

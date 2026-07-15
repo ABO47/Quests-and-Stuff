@@ -6,10 +6,12 @@ import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -125,7 +127,16 @@ public final class ChunkClaimerAppComposer {
 
             SkinAnchorRegistry.register("root", root);
             SkinAnchorRegistry.register("home_btn", homeBtn);
+            SkinAnchorRegistry.register("chunkclaimer_main_panel", mainPanel);
+            SkinAnchorRegistry.register("chunkclaimer_claim_btn", headers.claimBtn());
+            SkinAnchorRegistry.register("chunkclaimer_force_btn", headers.forceBtn());
+            SkinAnchorRegistry.register("chunkclaimer_grid_btn", headers.gridBtn());
+            SkinAnchorRegistry.register("chunkclaimer_scan_btn", headers.scanBtn());
+            SkinAnchorRegistry.register("chunkclaimer_opacity_btn", headers.opacityBtn());
+            SkinAnchorRegistry.register("chunkclaimer_count_label", headers.countLabel());
             SkinAnchorRegistry.register("chunkclaimer_map", mapPanel);
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
+            SkinEditManager.reapplyOverrides(state, root);
         };
 
         setActiveTabletState(state);

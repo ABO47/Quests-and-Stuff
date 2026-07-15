@@ -735,6 +735,7 @@ public class TabletUiState {
         public boolean claimArmed;
         public boolean showGrid = true;
         public boolean surfaceScan;
+        public int gridOpacityPercent = 100;
         public String statusMessage = "";
         public boolean statusSuccess;
         public long statusAnimationStartMs;

@@ -426,6 +426,7 @@
   "ui.questsandstuff.chunk_claimer.action.force.on": "Force Load: On",
   "ui.questsandstuff.chunk_claimer.action.force.off": "Force Load: Off",
   "ui.questsandstuff.chunk_claimer.action.grid": "Toggle Grid",
+  "ui.questsandstuff.chunk_claimer.action.grid_opacity": "Grid Opacity: %s%%",
   "ui.questsandstuff.chunk_claimer.action.scan": "Surface Scan",
  "ui.questsandstuff.chunk_claimer.status.claimed": "Claimed: %d",
  "ui.questsandstuff.chunk_claimer.status.force_loaded": "Force Loaded: %d",

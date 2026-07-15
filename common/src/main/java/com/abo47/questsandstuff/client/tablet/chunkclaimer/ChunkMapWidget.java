@@ -12,6 +12,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
+import org.joml.Vector4f;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -50,6 +51,8 @@ public class ChunkMapWidget extends Widget {
     private int cachedCx = Integer.MAX_VALUE;
     private int cachedCz = Integer.MAX_VALUE;
     private long lastSample = 0;
+    private int lastHoverDx = Integer.MAX_VALUE;
+    private int lastHoverDz = Integer.MAX_VALUE;
 
     public ChunkMapWidget(int x, int y, int w, int h, TabletUiState state) {
         super(x, y, w, h);
@@ -100,8 +103,8 @@ public class ChunkMapWidget extends Widget {
         cachedCz = cz;
         lastSample = now;
 
-        int totalW = gw * sub;
-        int totalH = gh * sub;
+        int totalW = (gw + 2) * sub;
+        int totalH = (gh + 2) * sub;
         if (terrainTex == null || texW != totalW || texH != totalH) {
             if (terrainTex != null) {
                 terrainTex.close();
@@ -120,26 +123,29 @@ public class ChunkMapWidget extends Widget {
 
         int halfGw = gw / 2;
         int halfGh = gh / 2;
+        int bias = -1;
         var player = Minecraft.getInstance().player;
         int playerY = player != null ? player.blockPosition().getY() : level.getSeaLevel();
         NativeImage img = terrainTex.getPixels();
         int[][] surfaceY = new int[totalW][totalH];
         for (int tx = 0; tx < totalW; tx++) {
-            int worldChunkX = cx + (tx / sub - halfGw);
+            int worldChunkX = cx + (tx / sub + bias - halfGw);
             for (int tz = 0; tz < totalH; tz++) {
-                int worldChunkZ = cz + (tz / sub - halfGh);
+                int worldChunkZ = cz + (tz / sub + bias - halfGh);
                 int blockX = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
                 int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
                 surfaceY[tx][tz] = findSurfaceY(level, blockX, blockZ, playerY);
             }
         }
-        int[][] lightGrid = new int[gw][gh];
-        for (int cgx = 0; cgx < gw; cgx++) {
-            for (int cgz = 0; cgz < gh; cgz++) {
+        int egw = gw + 2;
+        int egh = gh + 2;
+        int[][] lightGrid = new int[egw][egh];
+        for (int cgx = 0; cgx < egw; cgx++) {
+            for (int cgz = 0; cgz < egh; cgz++) {
                 int txc = cgx * sub + sub / 2;
                 int tzc = cgz * sub + sub / 2;
-                int worldChunkX = cx + (cgx - halfGw);
-                int worldChunkZ = cz + (cgz - halfGh);
+                int worldChunkX = cx + (cgx + bias - halfGw);
+                int worldChunkZ = cz + (cgz + bias - halfGh);
                 int bx = worldChunkX * 16 + 8;
                 int bz = worldChunkZ * 16 + 8;
                 int by = Mth.clamp(surfaceY[txc][tzc] + 1, level.getMinBuildHeight(), level.getMaxBuildHeight() - 1);
@@ -150,10 +156,10 @@ public class ChunkMapWidget extends Widget {
 
         int maxY = level.getMaxBuildHeight();
         for (int tx = 0; tx < totalW; tx++) {
-            int worldChunkX = cx + (tx / sub - halfGw);
+            int worldChunkX = cx + (tx / sub + bias - halfGw);
             int cgx = tx / sub;
             for (int tz = 0; tz < totalH; tz++) {
-                int worldChunkZ = cz + (tz / sub - halfGh);
+                int worldChunkZ = cz + (tz / sub + bias - halfGh);
                 int cgz = tz / sub;
                 int blockB = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
                 int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
@@ -163,7 +169,15 @@ public class ChunkMapWidget extends Widget {
                 int hN = tz > 0 ? surfaceY[tx][tz - 1] : hC;
                 float slope = (hC - hW) + (hC - hN);
                 float direct = Mth.clamp(slope * 0.04f, -0.4f, 0.4f);
-                int rawLight = lightGrid[cgx][cgz];
+                int sgx0 = Math.max(0, cgx);
+                int sgx1 = Math.min(egw - 1, cgx + 1);
+                int sgz0 = Math.max(0, cgz);
+                int sgz1 = Math.min(egh - 1, cgz + 1);
+                float fx = (tx % sub) / (float) sub;
+                float fz = (tz % sub) / (float) sub;
+                float lX0 = lightGrid[sgx0][sgz0] + (lightGrid[sgx1][sgz0] - lightGrid[sgx0][sgz0]) * fx;
+                float lX1 = lightGrid[sgx0][sgz1] + (lightGrid[sgx1][sgz1] - lightGrid[sgx0][sgz1]) * fx;
+                float rawLight = lX0 + (lX1 - lX0) * fz;
                 float brightness = (9f + rawLight) / 24f;
                 float heightTerm = Mth.clamp(0.92f + (hC - 64) / 320f, 0.82f, 1.08f);
                 float whiteLight = 0.5f + direct;
@@ -311,6 +325,11 @@ public class ChunkMapWidget extends Widget {
         int baseY = getPositionY();
         graphics.fill(baseX, baseY, baseX + w, baseY + h, TabletColors.SURFACE_BASE);
 
+        var pose = graphics.pose().last().pose();
+        var scissorMin = pose.transform(new Vector4f(baseX, baseY, 0, 1));
+        var scissorMax = pose.transform(new Vector4f(baseX + w, baseY + h, 0, 1));
+        graphics.enableScissor((int) scissorMin.x, (int) scissorMin.y, (int) scissorMax.x, (int) scissorMax.y);
+
         ResourceLocation dim = currentDimension();
         var level = Minecraft.getInstance().level;
         if (dim == null || level == null) {
@@ -331,24 +350,21 @@ public class ChunkMapWidget extends Widget {
 
         if (terrainTexLoc != null) {
             ResourceTexture tex = new ResourceTexture(terrainTexLoc);
-            tex.draw(graphics, mouseX, mouseY, baseX, baseY, w, h);
-            tex.draw(graphics, mouseX, mouseY, baseX + ox, baseY + oy, gw * cell, gh * cell);
+            tex.draw(graphics, mouseX, mouseY, baseX + ox - cell, baseY + oy - cell, (gw + 2) * cell, (gh + 2) * cell);
         }
 
         if (state.chunkClaimer.showGrid) {
-            int subtleGrid = withAlpha(GRID_COLOR, 18);
-            int endX = baseX + ox + gw * cell;
-            int endY = baseY + oy + gh * cell;
+            int opacityPct = Math.max(0, Math.min(100, state.chunkClaimer.gridOpacityPercent));
+            int alpha = Math.max(20, Math.min(220, (255 * opacityPct) / 100));
+            int gridCol = (alpha << 24) | (GRID_COLOR & 0x00FFFFFF);
             for (int i = 0; i <= gw; i++) {
                 int gx = baseX + ox + i * cell;
-                graphics.fill(gx, baseY + oy, gx + 1, endY, subtleGrid);
+                graphics.fill(gx, baseY, gx + 1, baseY + h, gridCol);
             }
             for (int j = 0; j <= gh; j++) {
                 int gy = baseY + oy + j * cell;
-                graphics.fill(baseX + ox, gy, endX, gy + 1, subtleGrid);
+                graphics.fill(baseX, gy, baseX + w, gy + 1, gridCol);
             }
-            graphics.fill(baseX + w - 1, baseY, baseX + w, baseY + h, subtleGrid);
-            graphics.fill(baseX, baseY + h - 1, baseX + w, baseY + h, subtleGrid);
         }
 
         int halfWA = gw / 2;
@@ -406,16 +422,27 @@ public class ChunkMapWidget extends Widget {
             int dx = (int) Math.floor((lmx - ox) / (double) cell) - gw / 2;
             int dz = (int) Math.floor((lmy - oy) / (double) cell) - gh / 2;
             if (dx >= -halfWA && dx <= gw - halfWA - 1 && dz >= -halfHA && dz <= gh - halfHA - 1) {
+                if (dx != lastHoverDx || dz != lastHoverDz) {
+                    lastHoverDx = dx;
+                    lastHoverDz = dz;
+                }
                 int hpxLocal = ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int hpyLocal = ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 int fx = baseX + hpxLocal + (cell + 1) / 2;
                 int fy = baseY + hpyLocal + (cell + 1) / 2;
                 com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.drawGlow(
                         graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell + 1, cell + 1, TabletColors.BORDER_ACCENT);
+            } else {
+                lastHoverDx = Integer.MAX_VALUE;
+                lastHoverDz = Integer.MAX_VALUE;
             }
+        } else {
+            lastHoverDx = Integer.MAX_VALUE;
+            lastHoverDz = Integer.MAX_VALUE;
         }
 
         drawPlayer(graphics, centerX, centerY, cell);
+        graphics.disableScissor();
     }
 
     private void drawPlayer(GuiGraphics graphics, int cx, int cy, int cell) {

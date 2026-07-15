@@ -71,6 +71,7 @@ public final class TabletUiStatePersistence {
             state.chunkClaimer.showGrid = readBoolean(root, "chunk_claimer_show_grid", state.chunkClaimer.showGrid);
             state.chunkClaimer.claimArmed = readBoolean(root, "chunk_claimer_claim_armed", state.chunkClaimer.claimArmed);
             state.chunkClaimer.forceLoadArmed = readBoolean(root, "chunk_claimer_force_armed", state.chunkClaimer.forceLoadArmed);
+            state.chunkClaimer.gridOpacityPercent = readInt(root, "chunk_claimer_grid_opacity", state.chunkClaimer.gridOpacityPercent);
             readColorPalette(root, state);
         } catch (Exception exception) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading UI state from {}, keeping defaults", UI_STATE_FILE, exception);
@@ -127,6 +128,7 @@ public final class TabletUiStatePersistence {
             root.addProperty("chunk_claimer_show_grid", state.chunkClaimer.showGrid);
             root.addProperty("chunk_claimer_claim_armed", state.chunkClaimer.claimArmed);
             root.addProperty("chunk_claimer_force_armed", state.chunkClaimer.forceLoadArmed);
+            root.addProperty("chunk_claimer_grid_opacity", state.chunkClaimer.gridOpacityPercent);
             writeColorPalette(root, state);
             Files.writeString(UI_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {
