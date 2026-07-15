@@ -51,44 +51,49 @@ final class ChunkClaimerHeaderControls {
         countLabel.setSize(countW, 12);
 
         int btnAreaStartX = HEADER_INSET + countW;
-        int claimX = btnAreaStartX + HEADER_GAP;
-        int forceX = claimX + TOOL_SIZE + HEADER_GAP;
-        int scanX = forceX + TOOL_SIZE + HEADER_GAP;
-        int gridX = scanX + TOOL_SIZE + HEADER_GAP;
-        int opacityX = gridX + TOOL_SIZE + HEADER_GAP;
+        int opacityX = btnAreaStartX + HEADER_GAP;
+        int gridX = opacityX + TOOL_SIZE + HEADER_GAP;
+        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
+        int forceX = scanX + TOOL_SIZE + HEADER_GAP;
+        int claimX = forceX + TOOL_SIZE + HEADER_GAP;
 
-        ButtonWidget claimBtn = toggleButton(claimX, headerY, "land-plot",
-                ChunkClaimTranslationKeys.ACTION_CLAIM, ChunkClaimTranslationKeys.ACTION_CLAIM_TOOLTIP,
-                state, refresh,
-                () -> state.chunkClaimer.claimArmed, v -> state.chunkClaimer.claimArmed = v);
+        ButtonWidget opacityBtn = createOpacityButton(opacityX, headerY, state, refresh);
+
+        ButtonWidget gridBtn = toggleButton(gridX, headerY, "grid",
+                ChunkClaimTranslationKeys.ACTION_GRID, "", state, refresh,
+                () -> state.chunkClaimer.showGrid, v -> state.chunkClaimer.showGrid = v);
+
+        ButtonWidget scanBtn = toggleButton(scanX, headerY, "layers",
+                ChunkClaimTranslationKeys.ACTION_SCAN, "", state, refresh,
+                () -> state.chunkClaimer.surfaceScan, v -> state.chunkClaimer.surfaceScan = v);
 
         ButtonWidget forceBtn = toggleButton(forceX, headerY, "anchor",
                 ChunkClaimTranslationKeys.ACTION_FORCE, ChunkClaimTranslationKeys.ACTION_FORCE_TOOLTIP,
                 state, refresh,
                 () -> state.chunkClaimer.forceLoadArmed, v -> state.chunkClaimer.forceLoadArmed = v);
 
-        ButtonWidget scanBtn = toggleButton(scanX, headerY, "layers",
-                ChunkClaimTranslationKeys.ACTION_SCAN, "", state, refresh,
-                () -> state.chunkClaimer.surfaceScan, v -> state.chunkClaimer.surfaceScan = v);
+        ButtonWidget claimBtn = toggleButton(claimX, headerY, "land-plot",
+                ChunkClaimTranslationKeys.ACTION_CLAIM, ChunkClaimTranslationKeys.ACTION_CLAIM_TOOLTIP,
+                state, refresh,
+                () -> state.chunkClaimer.claimArmed, v -> state.chunkClaimer.claimArmed = v);
 
-        ButtonWidget gridBtn = toggleButton(gridX, headerY, "grid",
-                ChunkClaimTranslationKeys.ACTION_GRID, "", state, refresh,
-                () -> state.chunkClaimer.showGrid, v -> state.chunkClaimer.showGrid = v);
+        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn, opacityBtn);
+    }
 
-        TabletIconTextButton.Visuals opacityVisuals = visualsFor(true);
-        TabletIconTextButton[] opacityRef = new TabletIconTextButton[1];
-        opacityRef[0] = TabletIconTextButton.icon(opacityX, headerY, TOOL_SIZE, TOOL_SIZE, "opacity", opacityVisuals,
+    private static ButtonWidget createOpacityButton(int x, int y, TabletUiState state, Runnable refresh) {
+        TabletIconTextButton.Visuals visuals = visualsFor(true);
+        TabletIconTextButton[] ref = new TabletIconTextButton[1];
+        ref[0] = TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, "opacity", visuals,
                 click -> {
                     int next = cyclePercent(state.chunkClaimer.gridOpacityPercent, toolPercentStep(), click.button == 1);
                     state.chunkClaimer.gridOpacityPercent = next;
-                    opacityRef[0].setHoverTooltips(
+                    ref[0].setHoverTooltips(
                             Component.translatable(ChunkClaimTranslationKeys.ACTION_GRID_OPACITY, next));
                     refresh.run();
                 });
-        opacityRef[0].setHoverTooltips(
+        ref[0].setHoverTooltips(
                 Component.translatable(ChunkClaimTranslationKeys.ACTION_GRID_OPACITY, state.chunkClaimer.gridOpacityPercent));
-
-        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn, opacityRef[0]);
+        return ref[0];
     }
 
     private static String countText() {
@@ -137,19 +142,19 @@ final class ChunkClaimerHeaderControls {
     void layout(int headerY, int bodyW) {
         int countW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * BUTTON_COUNT);
         int btnAreaStartX = HEADER_INSET + countW;
-        int claimX = btnAreaStartX + HEADER_GAP;
-        int forceX = claimX + TOOL_SIZE + HEADER_GAP;
-        int scanX = forceX + TOOL_SIZE + HEADER_GAP;
-        int gridX = scanX + TOOL_SIZE + HEADER_GAP;
-        int opacityX = gridX + TOOL_SIZE + HEADER_GAP;
+        int opacityX = btnAreaStartX + HEADER_GAP;
+        int gridX = opacityX + TOOL_SIZE + HEADER_GAP;
+        int scanX = gridX + TOOL_SIZE + HEADER_GAP;
+        int forceX = scanX + TOOL_SIZE + HEADER_GAP;
+        int claimX = forceX + TOOL_SIZE + HEADER_GAP;
 
         countLabel.setSelfPosition(HEADER_INSET, headerY + (HEADER_H - 12) / 2);
         countLabel.setSize(countW, 12);
-        claimBtn.setSelfPosition(claimX, headerY);
-        forceBtn.setSelfPosition(forceX, headerY);
-        scanBtn.setSelfPosition(scanX, headerY);
-        gridBtn.setSelfPosition(gridX, headerY);
         opacityBtn.setSelfPosition(opacityX, headerY);
+        gridBtn.setSelfPosition(gridX, headerY);
+        scanBtn.setSelfPosition(scanX, headerY);
+        forceBtn.setSelfPosition(forceX, headerY);
+        claimBtn.setSelfPosition(claimX, headerY);
     }
 
     void addTo(WidgetGroup mainPanel) {
