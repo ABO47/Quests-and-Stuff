@@ -141,8 +141,8 @@ final class QuestsAndStuffConfigSections {
     }
 
     static final class ChunkClaims {
-        static final int DEFAULT_MAX_CLAIMED = 64;
-        static final int DEFAULT_MAX_FORCE_LOADED = 8;
+        static final int DEFAULT_MAX_CLAIMED = 100;
+        static final int DEFAULT_MAX_FORCE_LOADED = 100;
         static final int MIN_CAP = 0;
         static final int MAX_CAP = 100000;
 

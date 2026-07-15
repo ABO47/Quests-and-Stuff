@@ -89,7 +89,8 @@ class QuestsAndStuffConfigSectionsTest {
         assertFalse(written.get("protectPvp").getAsBoolean());
         assertEquals(10, written.get("maxClaimedChunks").getAsInt());
         assertEquals(3, written.get("maxForceLoadedChunks").getAsInt());
-        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_CLAIMED, 64);
+        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_CLAIMED, 100);
+        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_FORCE_LOADED, 100);
         assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(-5));
         assertEquals(100000, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(999999));
     }
