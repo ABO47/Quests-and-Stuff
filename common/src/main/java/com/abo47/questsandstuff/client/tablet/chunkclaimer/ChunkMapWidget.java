@@ -271,7 +271,7 @@ public class ChunkMapWidget extends Widget {
                 break;
             }
             p.setY(yy);
-            if (level.getBlockState(p).isSolid()) {
+            if (!level.getBlockState(p).getCollisionShape(level, p).isEmpty()) {
                 break;
             }
             if (!level.getFluidState(p).isEmpty()) {
