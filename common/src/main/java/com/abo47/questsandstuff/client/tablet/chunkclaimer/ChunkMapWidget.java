@@ -187,7 +187,6 @@ public class ChunkMapWidget extends Widget {
                 img.setPixelRGBA(tx, tz, (0xFF << 24) | (b << 16) | (g << 8) | r);
             }
         }
-        blur(img, totalW, totalH);
         terrainTex.upload();
     }
 
@@ -609,31 +608,4 @@ public class ChunkMapWidget extends Widget {
         ModNetwork.sendToServer(new C2SChunkClaimActionPacket(action, dim, x, z));
     }
 
-    private static void blur(NativeImage img, int w, int h) {
-        int[] src = new int[w * h];
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                src[y * w + x] = img.getPixelRGBA(x, y);
-            }
-        }
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int r = 0, g = 0, b = 0, n = 0;
-                for (int dy = -1; dy <= 1; dy++) {
-                    int ny = y + dy;
-                    if (ny < 0 || ny >= h) continue;
-                    for (int dx = -1; dx <= 1; dx++) {
-                        int nx = x + dx;
-                        if (nx < 0 || nx >= w) continue;
-                        int p = src[ny * w + nx];
-                        r += (p >> 16) & 0xFF;
-                        g += (p >> 8) & 0xFF;
-                        b += p & 0xFF;
-                        n++;
-                    }
-                }
-                img.setPixelRGBA(x, y, (0xFF << 24) | (((r / n) & 0xFF) << 16) | (((g / n) & 0xFF) << 8) | ((b / n) & 0xFF));
-            }
-        }
-    }
 }
