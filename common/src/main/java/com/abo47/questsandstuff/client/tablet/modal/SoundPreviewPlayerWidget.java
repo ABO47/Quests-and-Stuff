@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -11,8 +13,8 @@ import javax.annotation.Nonnull;
 import java.util.function.IntSupplier;
 
 final class SoundPreviewPlayerWidget extends WidgetGroup {
-    private static final int MIN_ICON_SIZE = 22;
-    private static final int ICON_PAD = 8;
+    private static final int MIN_ICON_SIZE = ICON_22;
+    private static final int ICON_PAD = GRID_8;
 
     private final String soundId;
     private final IntSupplier volumePercent;

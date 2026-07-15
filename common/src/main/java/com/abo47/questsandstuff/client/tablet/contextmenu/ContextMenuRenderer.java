@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -32,13 +33,13 @@ import java.util.function.Consumer;
 
 public final class ContextMenuRenderer {
     public static final int CONTEXT_MENU_WIDTH = 108;
-    static final int OUTER_PAD = 4;
-    private static final int ICON_X = 8;
+    static final int OUTER_PAD = GRID_4;
+    private static final int ICON_X = GRID_8;
     private static final int TEXT_X = 22;
-    private static final int SUBMENU_PAD = 5;
-    private static final int CONTEXT_ICON_SIZE = 10;
-    private static final int FALLBACK_ICON_H = 8;
-    private static final int TEXT_LINE_H = 9;
+    private static final int SUBMENU_PAD = GRID_5;
+    private static final int CONTEXT_ICON_SIZE = ICON_10;
+    private static final int FALLBACK_ICON_H = GRID_8;
+    private static final int TEXT_LINE_H = GRID_9;
     private static final float TEXT_SCALE = 0.82f;
 
     private ContextMenuRenderer() {
@@ -53,7 +54,7 @@ public final class ContextMenuRenderer {
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        WidgetGroup rowBg = new WidgetGroup(4, y, width, UiThemeTokens.CONTEXT_ROW_H);
+        WidgetGroup rowBg = new WidgetGroup(GRID_4, y, width, UiThemeTokens.CONTEXT_ROW_H);
         rowBg.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 84)));
         menu.addWidget(rowBg);
 
@@ -66,10 +67,10 @@ public final class ContextMenuRenderer {
         addContextText(menu, y, width, text, rightReserve);
 
         if (submenu) {
-            addContextIcon(menu, 4 + width - CONTEXT_ICON_SIZE - SUBMENU_PAD, iconY, "chevron-right", iconColor);
+            addContextIcon(menu, GRID_4 + width - CONTEXT_ICON_SIZE - SUBMENU_PAD, iconY, "chevron-right", iconColor);
         }
 
-        ButtonWidget hit = flatHitButton(4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
+        ButtonWidget hit = flatHitButton(GRID_4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
         hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
@@ -118,7 +119,7 @@ public final class ContextMenuRenderer {
     }
 
     public static void addSeparator(WidgetGroup menu, int y, int width) {
-        WidgetGroup sep = new WidgetGroup(4, y + 1, width, 1);
+        WidgetGroup sep = new WidgetGroup(GRID_4, y + GRID_1, width, 1);
         sep.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 120)));
         menu.addWidget(sep);
     }
@@ -169,7 +170,7 @@ public final class ContextMenuRenderer {
             return;
         }
         int centerY = y + CONTEXT_ICON_SIZE / 2;
-        SurfaceFactory.fill(iconColor).draw(graphics, 0, 0, x + 2, centerY, CONTEXT_ICON_SIZE - 4, 1);
+        SurfaceFactory.fill(iconColor).draw(graphics, 0, 0, x + 2, centerY, CONTEXT_ICON_SIZE - GRID_4, 1);
     }
 
     private static void addContextText(WidgetGroup menu, int rowY, int rowWidth, String text, int rightReserve) {

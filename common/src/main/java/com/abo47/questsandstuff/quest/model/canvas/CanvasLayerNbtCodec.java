@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.canvas;
 
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -107,7 +108,7 @@ public final class CanvasLayerNbtCodec {
                     spanTag.getInt("start"),
                     spanTag.getInt("end"),
                     spanTag.getString("style"),
-                    spanTag.contains("color", Tag.TAG_INT) ? spanTag.getInt("color") : 0xFFFFFFFF
+                    spanTag.contains("color", Tag.TAG_INT) ? spanTag.getInt("color") : TabletColors.WHITE
             ));
         }
         return new CanvasTextLayer(
@@ -120,7 +121,7 @@ public final class CanvasLayerNbtCodec {
                 tag.getInt("rotation"),
                 tag.getString("align"),
                 tag.getString("style"),
-                tag.contains("color", Tag.TAG_INT) ? tag.getInt("color") : 0xFFFFFFFF,
+                tag.contains("color", Tag.TAG_INT) ? tag.getInt("color") : TabletColors.WHITE,
                 tag.contains("font_size", Tag.TAG_INT) ? tag.getInt("font_size") : CanvasTextLayer.DEFAULT_FONT_SIZE,
                 spans
         );

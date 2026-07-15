@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.sync.state;
 
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
@@ -89,7 +90,7 @@ public final class ClientChapterState {
         CHAPTER_BACKGROUNDS.putIfAbsent(normalized, "default");
         CHAPTER_CANVAS_BACKGROUNDS.putIfAbsent(normalized, "default");
         CHAPTER_TEXT_ALIGN.putIfAbsent(normalized, "center");
-        CHAPTER_TEXT_COLOR.putIfAbsent(normalized, 0xFFFFFFFF);
+        CHAPTER_TEXT_COLOR.putIfAbsent(normalized, TabletColors.WHITE);
         CHAPTER_TEXT_STYLE.putIfAbsent(normalized, "normal");
         CHAPTER_TEXT_SIZE.putIfAbsent(normalized, CanvasTextLayer.DEFAULT_FONT_SIZE);
         CHAPTER_LOCK_UNTIL_UNLOCKED.putIfAbsent(normalized, false);
@@ -114,7 +115,7 @@ public final class ClientChapterState {
         moveStringProp(CHAPTER_TEXT_ALIGN, source, target, "center");
         moveStringProp(CHAPTER_TEXT_STYLE, source, target, "normal");
         Integer color = CHAPTER_TEXT_COLOR.remove(source);
-        CHAPTER_TEXT_COLOR.put(target, color == null ? 0xFFFFFFFF : color);
+        CHAPTER_TEXT_COLOR.put(target, color == null ? TabletColors.WHITE : color);
         Integer textSize = CHAPTER_TEXT_SIZE.remove(source);
         CHAPTER_TEXT_SIZE.put(target, textSize == null ? CanvasTextLayer.DEFAULT_FONT_SIZE : textSize);
         Boolean lockUntilUnlocked = CHAPTER_LOCK_UNTIL_UNLOCKED.remove(source);
@@ -184,7 +185,7 @@ public final class ClientChapterState {
     }
 
     public static int chapterTextColor(String chapter) {
-        return CHAPTER_TEXT_COLOR.getOrDefault(normalizeChapter(chapter), 0xFFFFFFFF);
+        return CHAPTER_TEXT_COLOR.getOrDefault(normalizeChapter(chapter), TabletColors.WHITE);
     }
 
     public static String chapterTextStyle(String chapter) {
@@ -320,7 +321,7 @@ public final class ClientChapterState {
         CHAPTER_BACKGROUNDS.putIfAbsent(chapter, "default");
         CHAPTER_CANVAS_BACKGROUNDS.putIfAbsent(chapter, "default");
         CHAPTER_TEXT_ALIGN.putIfAbsent(chapter, "center");
-        CHAPTER_TEXT_COLOR.putIfAbsent(chapter, 0xFFFFFFFF);
+        CHAPTER_TEXT_COLOR.putIfAbsent(chapter, TabletColors.WHITE);
         CHAPTER_TEXT_STYLE.putIfAbsent(chapter, "normal");
         CHAPTER_TEXT_SIZE.putIfAbsent(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
         CHAPTER_LOCK_UNTIL_UNLOCKED.putIfAbsent(chapter, false);

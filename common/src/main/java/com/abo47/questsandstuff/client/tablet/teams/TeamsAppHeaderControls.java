@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
@@ -20,7 +22,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 final class TeamsAppHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = 4;
-    private static final int HEADER_INSET = 9;
+    private static final int HEADER_INSET = GRID_9;
 
     private final TextFieldWidget searchField;
     private final ButtonWidget leaveBtn;

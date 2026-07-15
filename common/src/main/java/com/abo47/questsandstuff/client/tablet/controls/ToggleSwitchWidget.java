@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -18,9 +21,9 @@ import java.util.function.Consumer;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ToggleSwitchWidget extends SwitchWidget {
-    public static final int DEFAULT_WIDTH = 34;
-    public static final int DEFAULT_HEIGHT = 16;
-    private static final long ANIMATION_MS = 170L;
+    public static final int DEFAULT_WIDTH = GRID_34;
+    public static final int DEFAULT_HEIGHT = GRID_16;
+    private static final long ANIMATION_MS = TabletAnimationTimings.TOGGLE_SWITCH_MS;
     private static final Map<String, Motion> MOTIONS = new HashMap<>();
 
     private final String animationKey;
@@ -226,9 +229,9 @@ public final class ToggleSwitchWidget extends SwitchWidget {
                 SurfaceFactory.fill(activeTrack).draw(graphics, 0, 0, ix + 1, iy + 1, activeW, Math.max(2, height - 1) - 1);
             }
 
-            int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
-            int knobTravel = Math.max(0, width - knobSize - 4);
-            int knobX = ix + 2 + Math.round(knobTravel * amount);
+            int knobSize = Math.max(8, height - GRID_4 + Math.round(pulse * 2.0f));
+            int knobTravel = Math.max(0, width - knobSize - GRID_4);
+            int knobX = ix + GRID_2 + Math.round(knobTravel * amount);
             int knobY = iy + Math.max(2, (height - knobSize) / 2);
             SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 100)).draw(graphics, 0, 0, knobX + 1, knobY + 1, knobSize, knobSize);
             SurfaceFactory.fill(knob).draw(graphics, 0, 0, knobX, knobY, knobSize, knobSize);
@@ -241,7 +244,7 @@ public final class ToggleSwitchWidget extends SwitchWidget {
         public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
             int ix = Math.round(x);
             int iy = Math.round(y);
-            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, ix - 1, iy - 1, width + 2, height + 2);
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, ix - 1, iy - 1, width + GRID_2, height + GRID_2);
         }
     }
 

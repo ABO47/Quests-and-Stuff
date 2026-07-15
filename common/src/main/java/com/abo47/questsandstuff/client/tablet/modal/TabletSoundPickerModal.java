@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -34,8 +36,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletSoundPickerModal {
-    private static final int ROW_H = 16;
-    private static final int HEADER_GAP = 3;
+    private static final int ROW_H = ROW_H_16;
+    private static final int HEADER_GAP = GRID_3;
     private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
     private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
 

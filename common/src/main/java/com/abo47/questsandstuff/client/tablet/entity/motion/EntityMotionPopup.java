@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -18,9 +20,9 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 final class EntityMotionPopup {
     private static final int W = 188;
     private static final int H = 56;
-    private static final int PAD = 8;
-    private static final int FIELD_W = 34;
-    private static final int FIELD_H = 14;
+    private static final int PAD = GRID_8;
+    private static final int FIELD_W = GRID_34;
+    private static final int FIELD_H = GRID_14;
 
     private EntityMotionPopup() {
     }
@@ -53,12 +55,12 @@ final class EntityMotionPopup {
             draft = Integer.toString(value);
             state.questDetails.entityMotionSpinDraft = draft;
         }
-        parent.addWidget(label(PAD, y + 4, "Spin", TabletColors.TEXT_SECONDARY));
+        parent.addWidget(label(PAD, y + GRID_4, "Spin", TabletColors.TEXT_SECONDARY));
         parent.addWidget(new EntityMotionSliderWidget(
                 56,
-                y + 1,
+                y + GRID_1,
                 80,
-                16,
+                GRID_16,
                 0,
                 max,
                 value,
@@ -76,7 +78,7 @@ final class EntityMotionPopup {
                 () -> state.questDetails.entityMotionSpinSliderDragging,
                 dragging -> state.questDetails.entityMotionSpinSliderDragging = dragging
         ));
-        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + 2, FIELD_W, FIELD_H, max);
+        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + GRID_2, FIELD_W, FIELD_H, max);
         parent.addWidget(field);
         return field;
     }

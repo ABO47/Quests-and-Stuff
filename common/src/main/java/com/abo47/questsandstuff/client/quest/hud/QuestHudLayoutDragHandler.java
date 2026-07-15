@@ -7,9 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public final class QuestHudLayoutDragHandler {
-    private static final int GRID_STEP = 16;
-    private static final int HANDLE_SIZE = 6;
-    private static final int SELECTION_PAD = 1;
+
 
     private final QuestHudLayoutManager.Snapshot original;
 
@@ -79,8 +77,8 @@ public final class QuestHudLayoutDragHandler {
 
     private void snapElementToGrid(QuestHudLayoutManager.Element element, int screenWidth, int screenHeight) {
         QuestHudLayoutManager.HudBox raw = rawBoxFor(element, screenWidth, screenHeight);
-        int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(raw.width(), GRID_STEP, baseWidth(element));
-        int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(raw.height(), GRID_STEP, baseHeight(element));
+        int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(raw.width(), HudConstants.DRAG_GRID_STEP, baseWidth(element));
+        int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(raw.height(), HudConstants.DRAG_GRID_STEP, baseHeight(element));
         applySizeFromVisual(element, snappedW, snappedH);
         QuestHudLayoutManager.HudBox current = rawBoxFor(element, screenWidth, screenHeight);
         int slotW = CanvasGeometry.slotSpanForVisualSize(current.width());
@@ -133,8 +131,8 @@ public final class QuestHudLayoutDragHandler {
                     targetWidth = Math.max(1, Math.round(baseWidth * scale));
                     targetHeight = Math.max(1, Math.round(baseHeight * scale));
                 }
-                int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(targetWidth, GRID_STEP, baseWidth);
-                int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(targetHeight, GRID_STEP, baseHeight);
+                int snappedW = CanvasGeometry.snapVisualSpanToGridSlot(targetWidth, HudConstants.DRAG_GRID_STEP, baseWidth);
+                int snappedH = CanvasGeometry.snapVisualSpanToGridSlot(targetHeight, HudConstants.DRAG_GRID_STEP, baseHeight);
                 applySizeFromVisual(dragging, snappedW, snappedH);
                 QuestHudLayoutManager.HudBox resized = rawBoxFor(dragging, screenWidth, screenHeight);
                 int slotW = CanvasGeometry.slotSpanForVisualSize(resized.width());
@@ -237,15 +235,15 @@ public final class QuestHudLayoutDragHandler {
 
     public static QuestHudLayoutManager.HudBox selectionBox(QuestHudLayoutManager.HudBox box) {
         return new QuestHudLayoutManager.HudBox(
-                box.x() - SELECTION_PAD,
-                box.y() - SELECTION_PAD,
-                box.width() + SELECTION_PAD * 2,
-                box.height() + SELECTION_PAD * 2
+                box.x() - HudConstants.DRAG_SELECTION_PAD,
+                box.y() - HudConstants.DRAG_SELECTION_PAD,
+                box.width() + HudConstants.DRAG_SELECTION_PAD * 2,
+                box.height() + HudConstants.DRAG_SELECTION_PAD * 2
         );
     }
 
     public QuestHudLayoutManager.HudBox resizeHandle(QuestHudLayoutManager.HudBox box) {
-        return new QuestHudLayoutManager.HudBox(box.x() + box.width() - HANDLE_SIZE, box.y() + box.height() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+        return new QuestHudLayoutManager.HudBox(box.x() + box.width() - HudConstants.DRAG_HANDLE_SIZE, box.y() + box.height() - HudConstants.DRAG_HANDLE_SIZE, HudConstants.DRAG_HANDLE_SIZE, HudConstants.DRAG_HANDLE_SIZE);
     }
 
     public Component snapLabel() {
@@ -310,11 +308,11 @@ public final class QuestHudLayoutDragHandler {
     }
 
     private static int snapSlot(int value) {
-        return CanvasGeometry.snapValueToGrid(value, GRID_STEP);
+        return CanvasGeometry.snapValueToGrid(value, HudConstants.DRAG_GRID_STEP);
     }
 
     private static int snapFloor(int value) {
-        return Math.max(0, (value / GRID_STEP) * GRID_STEP);
+        return Math.max(0, (value / HudConstants.DRAG_GRID_STEP) * HudConstants.DRAG_GRID_STEP);
     }
 
     private void applySizeFromVisual(QuestHudLayoutManager.Element element, int visualWidth, int visualHeight) {

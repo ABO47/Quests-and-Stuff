@@ -5,13 +5,14 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_6;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public final class PercentSliderControls {
     private static final int FIELD_W = 34;
-    private static final int GAP = 6;
+    private static final int GAP = GRID_6;
 
     private PercentSliderControls() {
     }

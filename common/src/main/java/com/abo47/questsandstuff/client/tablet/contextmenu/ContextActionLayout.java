@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 
 final class ContextActionLayout {
     static final int PROMOTED_BAR_H = 18;
-    static final int PROMOTED_BUTTON = 16;
+    static final int PROMOTED_BUTTON = GRID_16;
     static final int OUTER_PAD = 4;
 
     private ContextActionLayout() {

@@ -134,7 +134,7 @@ public final class QuestCardBackgroundRenderer {
         if (tag != null && tag.getBoolean(SyncKeys.Quest.COMPLETED)) {
             return scaledAlpha(TabletColors.SUCCESS, 82, alpha);
         }
-        return 0x00000000;
+        return TabletColors.TRANSPARENT;
     }
 
     public static float questProgress(CompoundTag tag) {

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.home;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
@@ -20,8 +22,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 
 final class TabletHomeOverviewPanel extends WidgetGroup {
-    private static final int HOME_BTN_SIZE = 10;
-    private static final int APP_ICON_SIZE = 48;
+    private static final int HOME_BTN_SIZE = GRID_10;
+    private static final int APP_ICON_SIZE = GRID_48;
     private final WidgetGroup innerContainer;
 
     private final ButtonWidget homeBtn;
@@ -68,13 +70,13 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                         .thenComparing(AppDescriptor::id))
                 .toList();
         int appCount = apps.size();
-        int iconPairW = APP_ICON_SIZE * appCount + Math.max(0, appCount - 1) * 16;
+        int iconPairW = APP_ICON_SIZE * appCount + Math.max(0, appCount - 1) * GRID_16;
         int iconsStartX = innerX + (innerW - iconPairW) / 2;
         int iconY = innerY + (innerH - APP_ICON_SIZE) / 2;
 
         int col = 0;
         for (AppDescriptor app : apps) {
-            int ix = iconsStartX + col * (APP_ICON_SIZE + 16);
+            int ix = iconsStartX + col * (APP_ICON_SIZE + GRID_16);
             ResourceTexture tex = new ResourceTexture(app.iconTexture());
             ButtonWidget appBtn = new ButtonWidget(ix, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
                     tex,

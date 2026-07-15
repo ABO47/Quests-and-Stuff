@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -19,8 +21,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 
 final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
-    private static final int HEADER_GAP = 4;
-    private static final int HEADER_INSET = 9;
+    private static final int HEADER_GAP = GRID_4;
+    private static final int HEADER_INSET = GRID_9;
     private static final int BUTTON_COUNT = 4;
 
     private final LabelWidget countLabel;

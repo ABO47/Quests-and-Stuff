@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
@@ -25,7 +27,7 @@ import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class RecipePickerGridRenderer {
-    private static final int TILE = 18;
+    private static final int TILE = GRID_18;
 
     private RecipePickerGridRenderer() {
     }
@@ -117,11 +119,11 @@ final class RecipePickerGridRenderer {
     private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, RecipeChoiceIndex.RecipeChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
-            surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry.tag() ? "name_tag" : "recipe"));
+            surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry.tag() ? "name_tag" : "recipe"));
         } else {
-            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
+            surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, SurfaceFactory.transparentFill(), click -> {
+        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (!entry.value().isBlank()) {
                 RecipePickerApplyActions.applyRecipePick(player, state, entry.value(), refresh);
             }
@@ -144,8 +146,8 @@ final class RecipePickerGridRenderer {
 
     private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
-        surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, SurfaceFactory.transparentFill(), click -> {
+        surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry));
+        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (entry != null && !entry.isBlank()) {
                 RecipePickerApplyActions.applyRecipePick(player, state, entry, refresh);
             }

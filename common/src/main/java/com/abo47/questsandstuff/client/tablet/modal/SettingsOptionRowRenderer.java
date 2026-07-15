@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
@@ -21,10 +23,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 final class SettingsOptionRowRenderer {
-    static final int ROW_H = 26;
+    static final int ROW_H = ROW_H_26;
 
-    private static final int ROW_INSET = 4;
-    private static final int SWITCH_GAP = 8;
+    private static final int ROW_INSET = GRID_4;
+    private static final int SWITCH_GAP = GRID_8;
 
     private SettingsOptionRowRenderer() {
     }
@@ -124,7 +126,7 @@ final class SettingsOptionRowRenderer {
                 fieldX,
                 rowY + 4,
                 fieldW,
-                14,
+                GRID_14,
                 option.intValue(),
                 option.min(),
                 option.max(),

@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ProgressAnimations {
-    private static final long FILL_ANIMATION_MS = 360L;
+    private static final long FILL_ANIMATION_MS = TabletAnimationTimings.PROGRESS_FILL_MS;
     private static final int MAX_ANIMATIONS = 512;
     private static final Map<String, ProgressMotion> ANIMATIONS = new LinkedHashMap<>();
 

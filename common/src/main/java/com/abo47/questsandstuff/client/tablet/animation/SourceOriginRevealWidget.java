@@ -15,7 +15,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 public final class SourceOriginRevealWidget extends WidgetGroup {
-    public static final long WINDOW_OPEN_MS = 190L;
+    public static final long WINDOW_OPEN_MS = TabletAnimationTimings.WINDOW_OPEN_MS;
     private static final float FALLBACK_SCALE = 0.96f;
     private static final float MIN_SOURCE_SCALE = 0.18f;
     private static final float MAX_SOURCE_SCALE = 0.90f;

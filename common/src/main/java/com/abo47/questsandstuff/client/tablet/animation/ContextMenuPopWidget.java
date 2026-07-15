@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import java.util.function.LongSupplier;
 
 public final class ContextMenuPopWidget extends WidgetGroup {
-    private static final long MENU_MS = 95L;
+    private static final long MENU_MS = TabletAnimationTimings.CONTEXT_MENU_POP_MS;
     private static final float START_SCALE = 0.97f;
     private static final float MENU_Z = 240.0f;
     private static final int SHADOW_ALPHA = 58;

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -89,10 +91,10 @@ public final class QuestMiniCardRenderer {
 
     public static void drawHighlightBorder(GuiGraphics graphics, int x, int y, int width, int height, int alpha) {
         int color = highlightColor(alpha);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y - 2, width + 4, 2);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y + height, width + 4, 2);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - 2, y, 2, height);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, x + width, y, 2, height);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - GRID_2, y - GRID_2, width + GRID_4, GRID_2);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - GRID_2, y + height, width + GRID_4, GRID_2);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x - GRID_2, y, GRID_2, height);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x + width, y, GRID_2, height);
     }
 
     public record IconRect(int x, int y, int size) {

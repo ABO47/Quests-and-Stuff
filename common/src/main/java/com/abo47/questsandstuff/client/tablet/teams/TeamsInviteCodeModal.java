@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -23,8 +27,8 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 
 final class TeamsInviteCodeModal {
     private static final int PAD = 8;
-    private static final int BTN_SIZE = 18;
-    private static final int GAP = 3;
+    private static final int BTN_SIZE = BUTTON_18;
+    private static final int GAP = GRID_3;
     private static final int CODE_Y = 32;
     private static final int CODE_H = 44;
 
@@ -46,7 +50,7 @@ final class TeamsInviteCodeModal {
         int panelW = Math.min(300, Math.max(200, layerW - 32));
         int panelH = 120;
         int px = Math.max(8, (layerW - panelW) / 2);
-        int py = Math.max(24, (layerH - panelH) / 2);
+        int py = Math.max(GRID_24, (layerH - panelH) / 2);
 
         WidgetGroup panel = SurfaceFactory.panel(px, py, panelW, panelH,
                 withAlpha(TabletColors.elevatedSurface(), 245), TabletColors.BORDER_ACCENT);

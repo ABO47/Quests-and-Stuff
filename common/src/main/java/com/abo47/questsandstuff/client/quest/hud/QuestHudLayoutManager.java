@@ -17,29 +17,21 @@ public final class QuestHudLayoutManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final int UNSET = Integer.MIN_VALUE;
 
-    private static final int DEFAULT_OPACITY = 100;
-    private static final int DEFAULT_COMPLETION_X = 225;
-    private static final int DEFAULT_COMPLETION_Y = 241;
-    private static final int DEFAULT_PINNED_X = 1;
-    private static final int DEFAULT_PINNED_Y = 1;
-    private static final int DEFAULT_COMPLETION_SCALE = 149;
-    private static final int DEFAULT_COMPLETION_HEIGHT_SCALE = 147;
-    private static final int DEFAULT_PINNED_SCALE = 104;
-    private static final int DEFAULT_PINNED_HEIGHT_SCALE = 115;
+
 
     private static boolean loaded;
-    private static int completionX = DEFAULT_COMPLETION_X;
-    private static int completionY = DEFAULT_COMPLETION_Y;
-    private static int pinnedX = DEFAULT_PINNED_X;
-    private static int pinnedY = DEFAULT_PINNED_Y;
-    private static int completionScale = DEFAULT_COMPLETION_SCALE;
-    private static int completionHeightScale = DEFAULT_COMPLETION_HEIGHT_SCALE;
-    private static int pinnedScale = DEFAULT_PINNED_SCALE;
-    private static int pinnedHeightScale = DEFAULT_PINNED_HEIGHT_SCALE;
+    private static int completionX = HudConstants.DEFAULT_COMPLETION_X;
+    private static int completionY = HudConstants.DEFAULT_COMPLETION_Y;
+    private static int pinnedX = HudConstants.DEFAULT_PINNED_X;
+    private static int pinnedY = HudConstants.DEFAULT_PINNED_Y;
+    private static int completionScale = HudConstants.DEFAULT_COMPLETION_SCALE;
+    private static int completionHeightScale = HudConstants.DEFAULT_COMPLETION_HEIGHT_SCALE;
+    private static int pinnedScale = HudConstants.DEFAULT_PINNED_SCALE;
+    private static int pinnedHeightScale = HudConstants.DEFAULT_PINNED_HEIGHT_SCALE;
     private static String completionBackground = "";
     private static String pinnedBackground = "";
-    private static int completionOpacity = DEFAULT_OPACITY;
-    private static int pinnedOpacity = DEFAULT_OPACITY;
+    private static int completionOpacity = HudConstants.DEFAULT_OPACITY;
+    private static int pinnedOpacity = HudConstants.DEFAULT_OPACITY;
     private static boolean completionShowBorders = true;
     private static boolean pinnedShowBorders = true;
     private static boolean snapToGrid = true;
@@ -171,18 +163,18 @@ public final class QuestHudLayoutManager {
 
     public static synchronized void resetToDefaults() {
         load();
-        completionX = DEFAULT_COMPLETION_X;
-        completionY = DEFAULT_COMPLETION_Y;
-        pinnedX = DEFAULT_PINNED_X;
-        pinnedY = DEFAULT_PINNED_Y;
-        completionScale = DEFAULT_COMPLETION_SCALE;
-        completionHeightScale = DEFAULT_COMPLETION_HEIGHT_SCALE;
-        pinnedScale = DEFAULT_PINNED_SCALE;
-        pinnedHeightScale = DEFAULT_PINNED_HEIGHT_SCALE;
+        completionX = HudConstants.DEFAULT_COMPLETION_X;
+        completionY = HudConstants.DEFAULT_COMPLETION_Y;
+        pinnedX = HudConstants.DEFAULT_PINNED_X;
+        pinnedY = HudConstants.DEFAULT_PINNED_Y;
+        completionScale = HudConstants.DEFAULT_COMPLETION_SCALE;
+        completionHeightScale = HudConstants.DEFAULT_COMPLETION_HEIGHT_SCALE;
+        pinnedScale = HudConstants.DEFAULT_PINNED_SCALE;
+        pinnedHeightScale = HudConstants.DEFAULT_PINNED_HEIGHT_SCALE;
         completionBackground = "";
         pinnedBackground = "";
-        completionOpacity = DEFAULT_OPACITY;
-        pinnedOpacity = DEFAULT_OPACITY;
+        completionOpacity = HudConstants.DEFAULT_OPACITY;
+        pinnedOpacity = HudConstants.DEFAULT_OPACITY;
         completionShowBorders = true;
         pinnedShowBorders = true;
         snapToGrid = true;

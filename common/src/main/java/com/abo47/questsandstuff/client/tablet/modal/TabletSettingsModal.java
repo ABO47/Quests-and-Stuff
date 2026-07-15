@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -18,10 +20,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 public final class TabletSettingsModal {
-    private static final int PAD = 8;
+    private static final int PAD = GRID_8;
     private static final int TAB_Y = 22;
-    private static final int TAB_H = 20;
-    private static final int TAB_GAP = 4;
+    private static final int TAB_H = GRID_20;
+    private static final int TAB_GAP = GRID_4;
     private static final int LIST_Y = 50;
 
     private TabletSettingsModal() {

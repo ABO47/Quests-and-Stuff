@@ -16,7 +16,7 @@ import java.awt.Rectangle;
 import java.util.List;
 
 public final class SkinEditRenderer {
-    private static final int DIM_COLOR = 0x60000000;
+    private static final int DIM_COLOR = TabletColors.DIM_OVERLAY;
     private static final ColorRectTexture DIM_BG = new ColorRectTexture(DIM_COLOR);
     private static final int GLOW_COLOR = TabletColors.INTERACTIVE;
     private static final int SELECTED_GLOW_COLOR = TabletColors.SUCCESS;

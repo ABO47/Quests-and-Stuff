@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
@@ -24,7 +26,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 final class TeamsConfirmModal {
     private static final int PAD = 8;
     private static final int BUTTON_W = 82;
-    private static final int BUTTON_H = 16;
+    private static final int BUTTON_H = BUTTON_16;
     private static final int BUTTON_Y = 56;
 
     private TeamsConfirmModal() {

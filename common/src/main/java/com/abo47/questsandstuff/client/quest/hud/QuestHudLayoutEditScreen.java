@@ -29,9 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class QuestHudLayoutEditScreen extends Screen {
-    private static final int BUTTON_W = 64;
-    private static final int BUTTON_H = 20;
-    private static final int BUTTON_GAP = 8;
+
 
     private final QuestHudLayoutDragHandler dragHandler;
     private WidgetGroup contextMenuWidget;
@@ -53,13 +51,13 @@ public final class QuestHudLayoutEditScreen extends Screen {
         if (QuestHudLayoutManager.snapToGrid()) {
             dragHandler.snapAllElementsToGrid(width, height);
         }
-        int totalW = BUTTON_W * 4 + BUTTON_GAP * 3;
+        int totalW = HudConstants.EDIT_BUTTON_W * 4 + HudConstants.EDIT_BUTTON_GAP * 3;
         int startX = width / 2 - totalW / 2;
         int y = Math.max(8, height - 44);
-        addRenderableWidget(new ThemedButton(startX, y, BUTTON_W, BUTTON_H,
+        addRenderableWidget(new ThemedButton(startX, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.common.save"),
                 "save", TabletColors.SUCCESS, button -> dragHandler.saveAndClose()));
-        addRenderableWidget(new ThemedButton(startX + BUTTON_W + BUTTON_GAP, y, BUTTON_W, BUTTON_H,
+        addRenderableWidget(new ThemedButton(startX + HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.hud.layout.reset"),
                 "refresh", TabletColors.WARNING, button -> {
             QuestHudLayoutManager.resetToDefaults();
@@ -68,10 +66,10 @@ public final class QuestHudLayoutEditScreen extends Screen {
             closeContextMenu();
             updateSnapButtonLabel();
         }));
-        addRenderableWidget(new ThemedButton(startX + (BUTTON_W + BUTTON_GAP) * 2, y, BUTTON_W, BUTTON_H,
+        addRenderableWidget(new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 2, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.common.cancel"),
                 "close", TabletColors.ERROR, button -> dragHandler.cancelAndClose()));
-        snapButton = new ThemedButton(startX + (BUTTON_W + BUTTON_GAP) * 3, y, BUTTON_W, BUTTON_H,
+        snapButton = new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 3, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 snapLabel(), "grid", TabletColors.INTERACTIVE, button -> {
             boolean enabled = !QuestHudLayoutManager.snapToGrid();
             QuestHudLayoutManager.setSnapToGrid(enabled);

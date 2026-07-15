@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
@@ -94,7 +95,7 @@ public final class TabletColorPickerModal {
                 int color = state.pickers.textColorPalette.get(i);
                 int px = 4 + layout.tileX(visibleIndex);
                 int py = paletteTop + layout.tileY(visibleIndex);
-                ButtonWidget hit = flatHitButton(px, py, 16, 16, click -> {
+                ButtonWidget hit = flatHitButton(px, py, GRID_16, GRID_16, click -> {
                     if (click.button == 1) {
                         state.pickers.colorPaletteContextOpen = true;
                         Minecraft mc = Minecraft.getInstance();
@@ -120,7 +121,7 @@ public final class TabletColorPickerModal {
         }
         if (layout.showScroll()) {
             right.addWidget(new DragScrollBarWidget(
-                    4 + layout.scrollBarX() + 1, paletteTop + layout.scrollBarY(),
+                    4 + layout.scrollBarX() + GRID_1, paletteTop + layout.scrollBarY(),
                     DragScrollBarWidget.RESERVED_WIDTH, layout.scrollBarH(),
                     scroll::value, layout::maxStart, layout::knobH,
                     value -> scroll.setValue(value),

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -69,7 +71,7 @@ public final class PickerListPanel {
             int barH = Math.max(1, rows * rowH);
             int knobH = Math.max(12, Math.round((float) rows / (float) entries.size() * barH));
             int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH - 1;
-            int barY = y + 4;
+            int barY = y + GRID_4;
             modal.addWidget(new DragScrollBarWidget(
                     barX + 1,
                     barY,

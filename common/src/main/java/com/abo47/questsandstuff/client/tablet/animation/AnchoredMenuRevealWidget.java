@@ -14,7 +14,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
 public final class AnchoredMenuRevealWidget extends WidgetGroup {
-    private static final long MENU_MS = 165L;
+    private static final long MENU_MS = TabletAnimationTimings.MENU_MS;
     private static final int SLIDE_PX = 4;
     private static final int SHADOW_ALPHA = 72;
     private static final int SOFT_SHADOW_ALPHA = 34;

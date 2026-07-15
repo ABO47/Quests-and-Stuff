@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -24,10 +26,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasSelectionRenderer {
-    private static final int SELECTION_PAD = 4;
-    private static final int SINGLE_SELECTION_PAD = 1;
-    private static final int HANDLE_SIZE = 5;
-    private static final int ROTATED_SELECTION_THICKNESS = 2;
+    private static final int SELECTION_PAD = GRID_4;
+    private static final int SINGLE_SELECTION_PAD = GRID_1;
+    private static final int HANDLE_SIZE = GRID_5;
+    private static final int ROTATED_SELECTION_THICKNESS = GRID_2;
 
     private CanvasSelectionRenderer() {
     }

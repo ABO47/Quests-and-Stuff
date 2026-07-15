@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -23,13 +24,13 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletThemePickerModal {
-    private static final int PAD = 8;
-    private static final int HEADER_H = 18;
-    private static final int ROW_H = 26;
-    private static final int ROW_GAP = 4;
-    private static final int ROW_PAD = 4;
-    private static final int SETTINGS_ROW_H = 34;
-    private static final int SETTINGS_ROW_INSET = 4;
+    private static final int PAD = GRID_8;
+    private static final int HEADER_H = GRID_18;
+    private static final int ROW_H = ROW_H_26;
+    private static final int ROW_GAP = GRID_4;
+    private static final int ROW_PAD = GRID_4;
+    private static final int SETTINGS_ROW_H = GRID_34;
+    private static final int SETTINGS_ROW_INSET = GRID_4;
 
     private TabletThemePickerModal() {
     }
@@ -101,13 +102,13 @@ public final class TabletThemePickerModal {
         int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, ROW_H, fill, border));
 
-        int swatchX = x + 6;
-        addSwatch(list, swatchX, y + 6, theme.panel());
-        addSwatch(list, swatchX + 12, y + 6, theme.panelAlt());
-        addSwatch(list, swatchX + 24, y + 6, theme.accent());
-        addSwatch(list, swatchX + 36, y + 6, theme.success());
+        int swatchX = x + GRID_6;
+        addSwatch(list, swatchX, y + GRID_6, theme.panel());
+        addSwatch(list, swatchX + GRID_12, y + GRID_6, theme.panelAlt());
+        addSwatch(list, swatchX + GRID_24, y + GRID_6, theme.accent());
+        addSwatch(list, swatchX + 36, y + GRID_6, theme.success());
 
-        LabelWidget name = new LabelWidget(x + 54, y + 8, theme.label());
+        LabelWidget name = new LabelWidget(x + 54, y + GRID_8, theme.label());
         name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
@@ -130,16 +131,16 @@ public final class TabletThemePickerModal {
         int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, h, fill, border));
 
-        int swatchX = x + 8;
-        int swatchY = y + 8;
+        int swatchX = x + GRID_8;
+        int swatchY = y + GRID_8;
         addSwatch(list, swatchX, swatchY, theme.panel());
-        addSwatch(list, swatchX + 12, swatchY, theme.panelAlt());
-        addSwatch(list, swatchX + 24, swatchY, theme.accent());
+        addSwatch(list, swatchX + GRID_12, swatchY, theme.panelAlt());
+        addSwatch(list, swatchX + GRID_24, swatchY, theme.accent());
         addSwatch(list, swatchX + 36, swatchY, theme.success());
 
         int labelX = x + 58;
         int labelW = Math.max(16, w - 70);
-        LabelWidget name = new LabelWidget(labelX, y + 10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
+        LabelWidget name = new LabelWidget(labelX, y + GRID_10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
         name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 

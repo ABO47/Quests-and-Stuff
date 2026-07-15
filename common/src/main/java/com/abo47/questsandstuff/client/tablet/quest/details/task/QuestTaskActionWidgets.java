@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -33,7 +34,7 @@ final class QuestTaskActionWidgets {
     static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, boolean done) {
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
-        int iconY = y - 1;
+        int iconY = y - GRID_1;
         if (done) {
             parent.addWidget(IconOnlyButton.icon(iconX, iconY, iconSize, "send-horizontal", TabletColors.TEXT_MUTED));
             return;
@@ -50,7 +51,7 @@ final class QuestTaskActionWidgets {
         boolean done = count >= amount;
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
-        int iconY = y - 1;
+        int iconY = y - GRID_1;
         if (done) {
             parent.addWidget(IconOnlyButton.icon(iconX, iconY, iconSize, "send-horizontal", TabletColors.TEXT_MUTED));
             return;
@@ -82,7 +83,7 @@ final class QuestTaskActionWidgets {
                 IGuiTexture.EMPTY,
                 SurfaceFactory.fill(withAlpha(fillColor, claimed ? 95 : 180))
         ).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT);
-        ProgressWidget progressFill = new ProgressWidget(() -> ProgressAnimations.value(progressKey, progressValue), x + 1, y + 1, Math.max(1, barW - 2), Math.max(1, h - 2), texture);
+        ProgressWidget progressFill = new ProgressWidget(() -> ProgressAnimations.value(progressKey, progressValue), x + GRID_1, y + GRID_1, Math.max(1, barW - GRID_2), Math.max(1, h - GRID_2), texture);
         progressFill.setClientSideWidget();
         section.addWidget(progressFill);
         String label = claimable

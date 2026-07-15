@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -36,7 +38,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
 
 public final class TeamsAppComposer {
-    private static final int HOME_BTN_SIZE = 10;
+    private static final int HOME_BTN_SIZE = GRID_10;
     private static final int CONTENT_INSET = 6;
     private static final int LIST_INSET = 9;
     private static final int GUTTER = 6;

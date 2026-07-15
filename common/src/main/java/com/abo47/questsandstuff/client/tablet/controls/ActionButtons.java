@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
@@ -20,7 +22,7 @@ public final class ActionButtons {
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, String icon, String text, int color, Consumer<ClickData> callback) {
-        iconAction(parent, x, y, width, 16, icon, text, color, null, callback);
+        iconAction(parent, x, y, width, GRID_16, icon, text, color, null, callback);
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, int height, String icon, String text, int color, Component[] tooltips, Consumer<ClickData> callback) {

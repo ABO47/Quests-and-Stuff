@@ -10,7 +10,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
 public final class VerticalRevealWidget extends WidgetGroup {
-    private static final long SHEET_OPEN_MS = 180L;
+    private static final long SHEET_OPEN_MS = TabletAnimationTimings.SHEET_OPEN_MS;
 
     private final long fallbackStartMs = System.currentTimeMillis();
     private final LongSupplier startMsSupplier;

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -25,7 +26,7 @@ public final class TabletGridControls {
     }
 
     public static int snapExpandedChapterWidth(int width) {
-        int grid = GRID_SIZES.length == 0 ? 16 : Math.max(1, GRID_SIZES[clampGridSizeIndex(0)]);
+        int grid = GRID_SIZES.length == 0 ? GRID_16 : Math.max(1, GRID_SIZES[clampGridSizeIndex(0)]);
         int snapped = CHAPTER_W + Math.round((float) (width - CHAPTER_W) / (float) grid) * grid;
         return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, snapped));
     }

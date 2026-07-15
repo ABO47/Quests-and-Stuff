@@ -22,19 +22,13 @@ import java.util.List;
 import java.util.Set;
 
 public final class PinnedQuestHudOverlay {
-    private static final int WIDTH = 168;
-    private static final int HEADER_HEIGHT = 25;
-    private static final int ROW_HEIGHT = 12;
-    private static final int PAD = 6;
-    private static final int STACK_GAP = 4;
-    private static final int MAX_QUESTS = 3;
-    private static final int MAX_TASK_ROWS = 4;
+
 
     private PinnedQuestHudOverlay() {
     }
 
     public static int width() {
-        return WIDTH;
+        return HudConstants.PINNED_WIDTH;
     }
 
     public static int currentStackHeight() {
@@ -46,7 +40,7 @@ public final class PinnedQuestHudOverlay {
     }
 
     public static int previewHeight() {
-        return HEADER_HEIGHT + PAD + ROW_HEIGHT * 2;
+        return HudConstants.PINNED_HEADER_HEIGHT + HudConstants.PINNED_PAD + HudConstants.PINNED_ROW_HEIGHT * 2;
     }
 
     public static void render(GuiGraphics graphics) {
@@ -64,7 +58,7 @@ public final class PinnedQuestHudOverlay {
         QuestHudLayoutManager.HudBox box = QuestHudLayoutManager.pinnedBox(
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
-                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, WIDTH),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, HudConstants.PINNED_WIDTH),
                 QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, stackHeight)
         );
         drawPinnedStack(graphics, quests, box.x(), box.y(), box.width(), box.height(), false);
@@ -75,7 +69,7 @@ public final class PinnedQuestHudOverlay {
                 graphics,
                 x,
                 y,
-                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, WIDTH),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.PINNED, HudConstants.PINNED_WIDTH),
                 QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.PINNED, currentStackHeight()),
                 selected
         );
@@ -93,7 +87,7 @@ public final class PinnedQuestHudOverlay {
     private static void drawPinnedStack(GuiGraphics graphics, List<CompoundTag> quests, int x, int y, int width, int height, boolean selected) {
         int safeH = Math.max(1, height);
         int count = Math.max(1, quests.size());
-        int gap = count > 1 ? Math.min(STACK_GAP, Math.max(0, (safeH - count) / Math.max(1, count - 1))) : 0;
+        int gap = count > 1 ? Math.min(HudConstants.PINNED_STACK_GAP, Math.max(0, (safeH - count) / Math.max(1, count - 1))) : 0;
         int itemSpace = Math.max(count, safeH - gap * (count - 1));
 
         int[] natural = new int[quests.size()];
@@ -147,7 +141,7 @@ public final class PinnedQuestHudOverlay {
         int muted = withAlpha(TabletColors.TEXT_MUTED, 154);
 
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.PINNED, x, y, safeW, safeH, selected);
-        if (safeW < PAD * 2 + 8 || safeH < 12) {
+        if (safeW < HudConstants.PINNED_PAD * 2 + 8 || safeH < 12) {
             return;
         }
 
@@ -155,47 +149,47 @@ public final class PinnedQuestHudOverlay {
         int progressPercent = Math.max(0, Math.min(100, Math.round(progressValue * 100.0f)));
         String percent = progressPercent + "%";
         int percentW = font.width(percent);
-        int contentW = safeW - PAD * 2;
+        int contentW = safeW - HudConstants.PINNED_PAD * 2;
         boolean showPercent = contentW > percentW + 16;
         String title = cropToWidth(font, questTitle(quest), contentW - (showPercent ? percentW + 7 : 0));
-        graphics.drawString(font, title, x + PAD, y + 5, titleColor, false);
+        graphics.drawString(font, title, x + HudConstants.PINNED_PAD, y + 5, titleColor, false);
         if (showPercent) {
-            graphics.drawString(font, percent, x + safeW - PAD - percentW, y + 5, secondary, false);
+            graphics.drawString(font, percent, x + safeW - HudConstants.PINNED_PAD - percentW, y + 5, secondary, false);
         }
 
-        int barX = x + PAD;
-        int barY = y + Math.min(HEADER_HEIGHT - 8, Math.max(10, safeH - 9));
-        int barW = safeW - PAD * 2;
+        int barX = x + HudConstants.PINNED_PAD;
+        int barY = y + Math.min(HudConstants.PINNED_HEADER_HEIGHT - 8, Math.max(10, safeH - 9));
+        int barW = safeW - HudConstants.PINNED_PAD * 2;
         if (safeH >= 22) {
             String progressKey = ProgressAnimations.key("pinned_hud", quest.getString("_hud_id"));
             QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), TabletColors.SUCCESS, 230);
         }
 
         List<TaskLine> lines = taskLines(quest);
-        int maxRowsByHeight = Math.max(0, (y + safeH - 2 - (y + HEADER_HEIGHT + 2)) / ROW_HEIGHT);
-        int shown = Math.min(Math.min(MAX_TASK_ROWS, lines.size()), maxRowsByHeight);
+        int maxRowsByHeight = Math.max(0, (y + safeH - 2 - (y + HudConstants.PINNED_HEADER_HEIGHT + 2)) / HudConstants.PINNED_ROW_HEIGHT);
+        int shown = Math.min(Math.min(HudConstants.PINNED_MAX_TASK_ROWS, lines.size()), maxRowsByHeight);
         int more = Math.max(0, lines.size() - shown);
-        int lineY = y + HEADER_HEIGHT + 2;
+        int lineY = y + HudConstants.PINNED_HEADER_HEIGHT + 2;
         if (lines.isEmpty() && maxRowsByHeight > 0) {
-            graphics.drawString(font, Component.translatable("ui.questsandstuff.hud.no_tasks").getString(), x + PAD, lineY, muted, false);
+            graphics.drawString(font, Component.translatable("ui.questsandstuff.hud.no_tasks").getString(), x + HudConstants.PINNED_PAD, lineY, muted, false);
             return;
         }
         for (int i = 0; i < shown; i++) {
             TaskLine line = lines.get(i);
             String progress = line.progress();
             int progressW = progress.isBlank() ? 0 : font.width(progress);
-            int titleW = safeW - PAD * 2 - 13 - progressW - 5;
+            int titleW = safeW - HudConstants.PINNED_PAD * 2 - 13 - progressW - 5;
             int color = line.complete() ? muted : secondary;
-            QuestHudIconRenderer.draw(graphics, line.icon(), x + PAD, lineY - 1, 9, line.complete() ? 132 : 220);
-            graphics.drawString(font, cropToWidth(font, line.title(), titleW), x + PAD + 13, lineY, color, false);
+            QuestHudIconRenderer.draw(graphics, line.icon(), x + HudConstants.PINNED_PAD, lineY - 1, 9, line.complete() ? 132 : 220);
+            graphics.drawString(font, cropToWidth(font, line.title(), titleW), x + HudConstants.PINNED_PAD + 13, lineY, color, false);
             if (!progress.isBlank()) {
-                graphics.drawString(font, progress, x + safeW - PAD - progressW, lineY, color, false);
+                graphics.drawString(font, progress, x + safeW - HudConstants.PINNED_PAD - progressW, lineY, color, false);
             }
-            lineY += ROW_HEIGHT;
+            lineY += HudConstants.PINNED_ROW_HEIGHT;
         }
         if (more > 0 && lineY + 8 <= y + safeH - 2) {
             String moreText = Component.translatable("ui.questsandstuff.hud.more_tasks", more).getString();
-            graphics.drawString(font, cropToWidth(font, moreText, contentW), x + PAD, lineY, muted, false);
+            graphics.drawString(font, cropToWidth(font, moreText, contentW), x + HudConstants.PINNED_PAD, lineY, muted, false);
         }
     }
 
@@ -204,21 +198,21 @@ public final class PinnedQuestHudOverlay {
         Font font = minecraft.font;
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
-        int contentW = Math.max(0, safeW - PAD * 2);
+        int contentW = Math.max(0, safeW - HudConstants.PINNED_PAD * 2);
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.PINNED, x, y, safeW, safeH, selected);
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + PAD, y + 5, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + HudConstants.PINNED_PAD, y + 5, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
         if (safeH >= 28) {
-            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + PAD, y + HEADER_HEIGHT + 2, withAlpha(TabletColors.TEXT_MUTED, 170), false);
+            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + HudConstants.PINNED_PAD, y + HudConstants.PINNED_HEADER_HEIGHT + 2, withAlpha(TabletColors.TEXT_MUTED, 170), false);
         }
     }
 
     private static List<CompoundTag> pinnedQuestTags() {
         List<CompoundTag> quests = new ArrayList<>();
         for (String questId : ClientQuestStateFacade.pinned()) {
-            if (quests.size() >= MAX_QUESTS) {
+            if (quests.size() >= HudConstants.PINNED_MAX_QUESTS) {
                 break;
             }
             CompoundTag quest = ClientQuestStateFacade.quest(questId);
@@ -234,7 +228,7 @@ public final class PinnedQuestHudOverlay {
         int total = 0;
         for (CompoundTag quest : quests) {
             if (total > 0) {
-                total += STACK_GAP;
+                total += HudConstants.PINNED_STACK_GAP;
             }
             total += heightForQuest(quest);
         }
@@ -243,11 +237,11 @@ public final class PinnedQuestHudOverlay {
 
     private static int heightForQuest(CompoundTag quest) {
         List<TaskLine> lines = taskLines(quest);
-        int rows = Math.max(1, Math.min(MAX_TASK_ROWS, lines.size()));
+        int rows = Math.max(1, Math.min(HudConstants.PINNED_MAX_TASK_ROWS, lines.size()));
         if (lines.size() > rows) {
             rows++;
         }
-        return HEADER_HEIGHT + PAD + rows * ROW_HEIGHT + 1;
+        return HudConstants.PINNED_HEADER_HEIGHT + HudConstants.PINNED_PAD + rows * HudConstants.PINNED_ROW_HEIGHT + 1;
     }
 
     private static List<TaskLine> taskLines(CompoundTag quest) {

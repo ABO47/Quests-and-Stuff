@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -11,10 +13,10 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 public final class DragScrollBarWidget extends WidgetGroup {
-    public static final int WIDTH = 6;
-    public static final int RESERVED_WIDTH = 10;
+    public static final int WIDTH = GRID_6;
+    public static final int RESERVED_WIDTH = GRID_10;
     private static final int RAIL_WIDTH = 2;
-    private static final int MIN_KNOB_HEIGHT = 14;
+    private static final int MIN_KNOB_HEIGHT = GRID_14;
 
     private final IntSupplier valueSupplier;
     private final IntSupplier maxSupplier;
@@ -142,7 +144,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
             return true;
         }
         int current = ScrollMath.clamp(valueSupplier.getAsInt(), max);
-        int step = Math.max(1, Math.min(24, Math.max(1, max / 8)));
+        int step = Math.max(1, Math.min(GRID_24, Math.max(1, max / GRID_8)));
         int next = ScrollMath.wheel(current, max, step, wheelDelta);
         if (next != current) {
             valueConsumer.accept(next);

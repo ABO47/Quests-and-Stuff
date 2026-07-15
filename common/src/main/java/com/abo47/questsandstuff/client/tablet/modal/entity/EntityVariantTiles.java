@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -34,12 +36,12 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.clo
 
 final class EntityVariantTiles {
     static final int RIGHT_X = 166;
-    private static final int PAD = 8;
+    private static final int PAD = GRID_8;
     private static final int LEFT_W = 150;
     private static final int TILE_COLUMNS = 3;
     private static final int TILE_ROWS = 3;
-    private static final int TILE_GAP = 6;
-    private static final int TILE_PAD = 8;
+    private static final int TILE_GAP = GRID_6;
+    private static final int TILE_PAD = GRID_8;
     private static final int ENTITY_FRONT_YAW = EntityPreviewRenderer.FRONT_ENTITY_YAW;
     private static final int PREVIEW_SPIN_SPEED = 36;
 

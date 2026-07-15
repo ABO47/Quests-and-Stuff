@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
@@ -34,8 +35,8 @@ public final class TabletPanelChrome {
         }
         int soft = withAlpha(TabletColors.SURFACE_BASE, 82);
         int hard = withAlpha(TabletColors.SURFACE_BASE, 120);
-        SurfaceFactory.fill(soft).draw(graphics, 0, 0, x + 4, y + 5, w, h);
-        SurfaceFactory.fill(hard).draw(graphics, 0, 0, x + 2, y + 3, w, h);
+        SurfaceFactory.fill(soft).draw(graphics, 0, 0, x + GRID_4, y + GRID_5, w, h);
+        SurfaceFactory.fill(hard).draw(graphics, 0, 0, x + GRID_2, y + GRID_3, w, h);
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {
@@ -60,8 +61,8 @@ public final class TabletPanelChrome {
             
         } else {
             IGuiTexture fill = SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
-            int innerLeft = x + 1;
-            int innerTop = y + 1;
+            int innerLeft = x + GRID_1;
+            int innerTop = y + GRID_1;
             int innerRight = x + Math.max(1, w - 1);
             int innerBottom = y + Math.max(1, h - 1);
             fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
@@ -205,7 +206,7 @@ public final class TabletPanelChrome {
         } else {
             int right = x + Math.max(1, w - 1);
             int bottom = y + Math.max(1, h - 1);
-            fillPanelRect(fill, graphics, x + 1, y + 1, right, bottom);
+            fillPanelRect(fill, graphics, x + GRID_1, y + GRID_1, right, bottom);
         }
     }
 
@@ -224,10 +225,10 @@ public final class TabletPanelChrome {
             return;
         }
         IGuiTexture fill = SurfaceFactory.fill(color);
-        fill.draw(graphics, 0, 0, x, y, w, 1);
-        fill.draw(graphics, 0, 0, x, y + h - 1, w, 1);
-        fill.draw(graphics, 0, 0, x, y + 1, 1, Math.max(0, h - 2));
-        fill.draw(graphics, 0, 0, x + w - 1, y + 1, 1, Math.max(0, h - 2));
+        fill.draw(graphics, 0, 0, x, y, w, GRID_1);
+        fill.draw(graphics, 0, 0, x, y + h - 1, w, GRID_1);
+        fill.draw(graphics, 0, 0, x, y + GRID_1, GRID_1, Math.max(0, h - 2));
+        fill.draw(graphics, 0, 0, x + w - GRID_1, y + GRID_1, GRID_1, Math.max(0, h - 2));
     }
 
     static IGuiTexture resolveFill(WidgetGroup panel) {

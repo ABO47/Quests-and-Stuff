@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -147,7 +149,7 @@ final class CanvasMinimapPainter {
             return;
         }
         SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 255)).draw(graphics, 0, 0, x, y, w, h);
-        SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x + 1, y + 1, w - 2, h - 2);
+        SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x + GRID_1, y + GRID_1, w - GRID_2, h - GRID_2);
     }
 
     private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {

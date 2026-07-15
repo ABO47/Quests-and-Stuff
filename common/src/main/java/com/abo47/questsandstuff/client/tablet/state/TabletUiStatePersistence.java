@@ -67,6 +67,10 @@ public final class TabletUiStatePersistence {
             state.questDetails.questDetailsCanvasLocked = readBoolean(root, "quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
             state.questDetails.questDetailsGridOpacityPercent = readInt(root, "quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
             state.questDetails.questDetailsCanvasBgOpacityPercent = readInt(root, "quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            state.chunkClaimer.surfaceScan = readBoolean(root, "chunk_claimer_surface_scan", state.chunkClaimer.surfaceScan);
+            state.chunkClaimer.showGrid = readBoolean(root, "chunk_claimer_show_grid", state.chunkClaimer.showGrid);
+            state.chunkClaimer.claimArmed = readBoolean(root, "chunk_claimer_claim_armed", state.chunkClaimer.claimArmed);
+            state.chunkClaimer.forceLoadArmed = readBoolean(root, "chunk_claimer_force_armed", state.chunkClaimer.forceLoadArmed);
             readColorPalette(root, state);
         } catch (Exception exception) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading UI state from {}, keeping defaults", UI_STATE_FILE, exception);
@@ -119,6 +123,10 @@ public final class TabletUiStatePersistence {
             root.addProperty("quest_details_canvas_locked", state.questDetails.questDetailsCanvasLocked);
             root.addProperty("quest_details_grid_opacity_percent", state.questDetails.questDetailsGridOpacityPercent);
             root.addProperty("quest_details_canvas_bg_opacity_percent", state.questDetails.questDetailsCanvasBgOpacityPercent);
+            root.addProperty("chunk_claimer_surface_scan", state.chunkClaimer.surfaceScan);
+            root.addProperty("chunk_claimer_show_grid", state.chunkClaimer.showGrid);
+            root.addProperty("chunk_claimer_claim_armed", state.chunkClaimer.claimArmed);
+            root.addProperty("chunk_claimer_force_armed", state.chunkClaimer.forceLoadArmed);
             writeColorPalette(root, state);
             Files.writeString(UI_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {

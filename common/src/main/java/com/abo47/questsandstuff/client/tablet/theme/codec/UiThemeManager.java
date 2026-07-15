@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +21,7 @@ import java.util.Map;
 public final class UiThemeManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Object LOCK = new Object();
-    private static final long RELOAD_CHECK_MS = 1500L;
+    private static final long RELOAD_CHECK_MS = TabletAnimationTimings.THEME_RELOAD_CHECK_MS;
 
     public static final String ROLE_ICON_DEFAULT = "icon_default";
     public static final String ROLE_ICON_INTERACTIVE = "icon_interactive";

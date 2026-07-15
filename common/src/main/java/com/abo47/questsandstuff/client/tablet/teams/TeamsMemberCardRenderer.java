@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -22,9 +24,9 @@ import java.util.stream.Collectors;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class TeamsMemberCardRenderer {
-    private static final int CARD_H = 32;
+    private static final int CARD_H = ROW_H_32;
     private static final int CARD_GAP = 8;
-    private static final int CONTENT_INSET = 6;
+    private static final int CONTENT_INSET = GRID_6;
 
     private TeamsMemberCardRenderer() {
     }
@@ -91,7 +93,7 @@ final class TeamsMemberCardRenderer {
         if (isOwner && !isOwnerMember) {
             UUID localUuid = Minecraft.getInstance().player.getUUID();
             if (!member.uuid().equals(localUuid)) {
-                int btnSize = 12;
+                int btnSize = ICON_12;
                 int btnY = (CARD_H - btnSize) / 2;
                 int kickX = cardW - btnSize - 4;
                 int transferX = kickX - btnSize - 2;

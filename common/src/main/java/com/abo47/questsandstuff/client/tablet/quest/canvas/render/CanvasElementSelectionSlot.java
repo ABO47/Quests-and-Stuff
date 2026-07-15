@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -10,7 +12,7 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.dr
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasElementSelectionSlot {
-    private static final int HANDLE_SIZE = 6;
+    private static final int HANDLE_SIZE = GRID_6;
 
     private CanvasElementSelectionSlot() {
     }
@@ -66,8 +68,8 @@ public final class CanvasElementSelectionSlot {
     public static boolean resizeHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
-        return point.x() >= box.right() - HANDLE_SIZE - 1 && point.x() <= box.right() + 1
-                && point.y() >= box.bottom() - HANDLE_SIZE - 1 && point.y() <= box.bottom() + 1;
+        return point.x() >= box.right() - HANDLE_SIZE - GRID_1 && point.x() <= box.right() + GRID_1
+                && point.y() >= box.bottom() - HANDLE_SIZE - GRID_1 && point.y() <= box.bottom() + GRID_1;
     }
 
     public static boolean rotateHandleHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
@@ -77,8 +79,8 @@ public final class CanvasElementSelectionSlot {
     public static boolean rotateHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
-        return point.x() >= box.right() - HANDLE_SIZE - 1 && point.x() <= box.right() + 1
-                && point.y() >= box.top() - 1 && point.y() <= box.top() + HANDLE_SIZE + 1;
+        return point.x() >= box.right() - HANDLE_SIZE - GRID_1 && point.x() <= box.right() + GRID_1
+                && point.y() >= box.top() - GRID_1 && point.y() <= box.top() + HANDLE_SIZE + GRID_1;
     }
 
     private static void drawHandles(GuiGraphics graphics, CanvasElementGeometry.Box box) {

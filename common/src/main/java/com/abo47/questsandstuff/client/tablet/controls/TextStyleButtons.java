@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -16,11 +17,11 @@ public final class TextStyleButtons {
     public static final int TOOL_COUNT = 8;
     public static final int TEXTBOX_FRAME_GAP = 2;
     public static final int CHAPTER_FRAME_GAP = 3;
-    public static final int BUTTON_SIZE = 18;
+    public static final int BUTTON_SIZE = GRID_18;
     public static final int BUTTON_H = BUTTON_SIZE;
 
-    private static final int PAD = 2;
-    private static final int GAP = 2;
+    private static final int PAD = GRID_2;
+    private static final int GAP = GRID_2;
     private static final int COMPACT_COLUMNS = 4;
     private static final int WIDE_COLUMNS = TOOL_COUNT;
 

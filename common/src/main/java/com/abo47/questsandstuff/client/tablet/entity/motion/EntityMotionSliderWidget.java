@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -15,8 +17,8 @@ import java.util.function.IntConsumer;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class EntityMotionSliderWidget extends WidgetGroup {
-    private static final int TRACK_PAD_X = 6;
-    private static final int KNOB_W = 5;
+    private static final int TRACK_PAD_X = GRID_6;
+    private static final int KNOB_W = GRID_5;
 
     private final int minValue;
     private final int maxValue;

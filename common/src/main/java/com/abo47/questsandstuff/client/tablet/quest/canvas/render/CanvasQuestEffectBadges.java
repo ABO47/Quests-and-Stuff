@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
@@ -101,7 +103,7 @@ public final class CanvasQuestEffectBadges {
         WidgetGroup badge = new WidgetGroup(x, y, boxSize, boxSize);
         badge.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 190)));
         parent.addWidget(badge);
-        parent.addWidget(new DisplayIconWidget(x + 1, y + 1, iconSize, iconSize, icon));
+        parent.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, iconSize, iconSize, icon));
     }
 
     private record Badge(String icon) {

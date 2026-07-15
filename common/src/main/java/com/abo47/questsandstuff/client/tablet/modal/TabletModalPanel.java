@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
@@ -32,8 +34,8 @@ public final class TabletModalPanel {
     }
 
     public static void addModalClose(WidgetGroup modal, int x, int y, int size, TabletUiState state, Runnable refresh) {
-        int closeX = x + 1;
-        int closeY = Math.max(0, y - 3);
+        int closeX = x + GRID_1;
+        int closeY = Math.max(0, y - GRID_3);
         Runnable close = () -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] modal close click");
             state.pickers.iconSearchFocused = false;

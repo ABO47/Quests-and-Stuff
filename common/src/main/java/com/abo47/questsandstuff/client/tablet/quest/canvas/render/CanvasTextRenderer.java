@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -169,7 +171,7 @@ public final class CanvasTextRenderer {
         graphics.pose().scale(scale, scale, 1.0f);
         for (TextGlyph glyph : layout.glyphs()) {
             if (selectionStart < selectionEnd && glyph.index() >= selectionStart && glyph.index() < selectionEnd) {
-                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - 1, Math.max(1, glyph.width()), font.lineHeight + 2);
+                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - GRID_1, Math.max(1, glyph.width()), font.lineHeight + 2);
             }
             String style = text.styleAt(glyph.index());
             int color = text.colorAt(glyph.index());
@@ -230,7 +232,7 @@ public final class CanvasTextRenderer {
         int y = point.y();
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 1.0f);
-        SurfaceFactory.fill(text.color()).draw(graphics, 0, 0, x, y - 1, 1, font.lineHeight + 2);
+        SurfaceFactory.fill(text.color()).draw(graphics, 0, 0, x, y - GRID_1, GRID_1, font.lineHeight + 2);
         graphics.pose().popPose();
     }
 

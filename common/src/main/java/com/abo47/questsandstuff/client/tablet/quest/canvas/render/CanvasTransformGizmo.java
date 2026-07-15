@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -18,11 +20,11 @@ import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.dr
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasTransformGizmo {
-    private static final int HANDLE = 7;
-    private static final int HIT_PAD = 7;
-    private static final int MOVE_HANDLE = 7;
-    private static final int RING_STEP = 7;
-    private static final int RING_THICKNESS = 3;
+    private static final int HANDLE = GRID_7;
+    private static final int HIT_PAD = GRID_7;
+    private static final int MOVE_HANDLE = GRID_7;
+    private static final int RING_STEP = GRID_7;
+    private static final int RING_THICKNESS = GRID_3;
     private static final int RING_ALPHA_IDLE = 155;
     private static final int RING_ALPHA_ACTIVE = 255;
     private static final int RING_SEGMENTS = 256;
@@ -341,8 +343,8 @@ public final class CanvasTransformGizmo {
         var font = Minecraft.getInstance().font;
         int width = font.width(text) + 6;
         int height = font.lineHeight + 4;
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - 3, y - 2, width, height);
-        drawRectOutline(graphics, x - 3, y - 2, width, height, withAlpha(color, 210));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - GRID_3, y - GRID_2, width, height);
+        drawRectOutline(graphics, x - GRID_3, y - GRID_2, width, height, withAlpha(color, 210));
         graphics.drawString(font, text, x, y, TabletColors.TEXT_PRIMARY, false);
     }
 
@@ -511,7 +513,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static RotateAxes rotateAxes(int radius, int rotationDegrees, int yawDegrees, int pitchDegrees) {
-        int pitchRadius = Math.max(12, radius - RING_STEP * 2);
+        int pitchRadius = Math.max(GRID_12, radius - RING_STEP * 2);
         int yawRadius = Math.max(pitchRadius + RING_STEP, radius - RING_STEP);
         int rollRadius = Math.max(yawRadius + RING_STEP, radius);
         double pitchHandleR = Math.max(0, pitchRadius - RING_THICKNESS / 2.0);
@@ -539,11 +541,11 @@ public final class CanvasTransformGizmo {
     }
 
     private static int moveAxis(int width, int height) {
-        return Math.max(18, Math.min(46, Math.min(width, height) / 2 + 10));
+        return Math.max(GRID_18, Math.min(46, Math.min(width, height) / 2 + 10));
     }
 
     private static int rotationRadius(int width, int height) {
-        return Math.max(24, Math.min(70, Math.max(width, height) / 2 + 12));
+        return Math.max(GRID_24, Math.min(70, Math.max(width, height) / 2 + GRID_12));
     }
 
     private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {

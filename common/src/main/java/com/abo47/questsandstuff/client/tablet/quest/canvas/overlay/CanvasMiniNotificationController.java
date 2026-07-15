@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -14,7 +15,7 @@ import net.minecraft.client.resources.language.I18n;
 import javax.annotation.Nonnull;
 
 public final class CanvasMiniNotificationController {
-    private static final long DURATION_MS = 900L;
+    private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;
     private static final long FADE_MS = 260L;
     private static final int CURSOR_GAP = 2;
 

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.ui.state;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
@@ -8,11 +10,12 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class TabletModalState {
-    private static final int POINTER_SOURCE_SIZE = 16;
-    private static final long POINTER_SOURCE_MAX_AGE_MS = 800L;
+    private static final int POINTER_SOURCE_SIZE = GRID_16;
+    private static final long POINTER_SOURCE_MAX_AGE_MS = TabletAnimationTimings.POINTER_SOURCE_MAX_AGE_MS;
 
     private TabletModalState() {
     }

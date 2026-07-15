@@ -26,14 +26,17 @@ import java.util.List;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_30;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_4;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_6;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class PrerequisiteRowsPanel {
     private static final String CONTEXT_ANIMATION_KEY = "prerequisites_manager";
-    private static final int ROW_H = 30;
-    private static final int ROW_GAP = 4;
-    private static final int PAD = 6;
+    private static final int ROW_H = GRID_30;
+    private static final int ROW_GAP = GRID_4;
+    private static final int PAD = GRID_6;
 
     private PrerequisiteRowsPanel() {
     }

@@ -25,23 +25,23 @@ public final class GlowShaderHelper {
         return shader;
     }
 
-    /** IGuiTexture that draws the glow shader in the default INTERACTIVE color. */
+    // IGuiTexture that draws the glow shader in the default INTERACTIVE color.
     public static IGuiTexture hoverGlow() {
         return hoverGlow(TabletColors.INTERACTIVE);
     }
 
-    /** IGuiTexture that draws the glow shader in a custom ARGB color. */
+    // IGuiTexture that draws the glow shader in a custom ARGB color.
     public static IGuiTexture hoverGlow(int glowColor) {
         return (graphics, mouseX, mouseY, x, y, w, h) ->
                 drawGlow(graphics, mouseX, mouseY, (int) x, (int) y, w, h, glowColor);
     }
 
-    /** Draw the glow shader over the given area in the default INTERACTIVE color. */
+    // Draw the glow shader over the given area in the default INTERACTIVE color.
     public static void drawGlow(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h) {
         drawGlow(graphics, mouseX, mouseY, x, y, w, h, TabletColors.INTERACTIVE);
     }
 
-    /** Draw the glow shader over the given area in a custom ARGB color. */
+    // Draw the glow shader over the given area in a custom ARGB color.
     public static void drawGlow(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h, int glowColor) {
         ShaderTexture s = shader();
         if (s == null) return;

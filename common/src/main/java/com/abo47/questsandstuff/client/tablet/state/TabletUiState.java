@@ -1,5 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.state;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_LIGHT;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_MUTED;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_ERROR;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_INTERACTIVE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SUCCESS;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SURFACE_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_WARNING;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
@@ -262,8 +270,8 @@ public class TabletUiState {
         public int colorPaletteScroll;
         public boolean colorPaletteScrollDragging;
         public final List<Integer> textColorPalette = new ArrayList<>(List.of(
-                0xFFE8F4FF, 0xFFB7CFDF, 0xFF8EA5B7, 0xFF63D187,
-                0xFFE7B84B, 0xFFE06D6D, 0xFF53A6E8, 0xFF1D2730
+                PALETTE_BG_LIGHT, PALETTE_BG_MUTED, PALETTE_BG_DARK, PALETTE_SUCCESS,
+                PALETTE_WARNING, PALETTE_ERROR, PALETTE_INTERACTIVE, PALETTE_SURFACE_DARK
         ));
 
         public void saveBrowseDirForMode() {

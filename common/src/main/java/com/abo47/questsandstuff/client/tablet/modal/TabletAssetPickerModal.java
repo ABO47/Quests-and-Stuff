@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
@@ -58,15 +60,15 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletAssetPickerModal {
-    private static final int HEADER_BUTTON_SIZE = 18;
-    private static final int HEADER_GAP = 3;
-    private static final int HEADER_BUTTON_Y = 1;
+    private static final int HEADER_BUTTON_SIZE = BUTTON_18;
+    private static final int HEADER_GAP = GRID_3;
+    private static final int HEADER_BUTTON_Y = GRID_1;
     private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
     private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
-    private static final int ASSET_TILE_GAP = 8;
-    private static final int ASSET_TILE_PAD = 8;
+    private static final int ASSET_TILE_GAP = GRID_8;
+    private static final int ASSET_TILE_PAD = GRID_8;
     private static final int ASSET_TILE_MIN = 44;
-    private static final int ASSET_TILE_MAX = 96;
+    private static final int ASSET_TILE_MAX = GRID_96;
 
     private TabletAssetPickerModal() {
     }

@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -14,7 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public final class CanvasConnectionAnimation {
-    private static final long DURATION_MS = 160L;
+    private static final long DURATION_MS = TabletAnimationTimings.CONNECTION_ANIM_MS;
     private static final AnimationState STOPPED = new AnimationState(false, 1.0f);
 
     private CanvasConnectionAnimation() {

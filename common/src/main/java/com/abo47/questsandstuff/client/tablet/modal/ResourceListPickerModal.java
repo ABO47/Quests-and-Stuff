@@ -15,13 +15,14 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.ROW_H_16;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class ResourceListPickerModal {
-    private static final int ROW_H = 16;
+    private static final int ROW_H = ROW_H_16;
 
     private ResourceListPickerModal() {
     }

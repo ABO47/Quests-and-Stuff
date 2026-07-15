@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -104,7 +105,7 @@ final class ChapterMetadataState {
     }
 
     int chapterTextColor(String chapter) {
-        return chapterTextColor.getOrDefault(chapter, 0xFFFFFFFF);
+        return chapterTextColor.getOrDefault(chapter, TabletColors.WHITE);
     }
 
     String chapterTextStyle(String chapter) {
@@ -149,7 +150,7 @@ final class ChapterMetadataState {
             chapterBackgrounds.putIfAbsent(chapter, "default");
             chapterCanvasBackgrounds.putIfAbsent(chapter, "default");
             chapterTextAlign.putIfAbsent(chapter, "center");
-            chapterTextColor.putIfAbsent(chapter, 0xFFFFFFFF);
+            chapterTextColor.putIfAbsent(chapter, TabletColors.WHITE);
             chapterTextStyle.putIfAbsent(chapter, "normal");
             chapterTextSize.putIfAbsent(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
             chapterLockUntilUnlocked.putIfAbsent(chapter, false);

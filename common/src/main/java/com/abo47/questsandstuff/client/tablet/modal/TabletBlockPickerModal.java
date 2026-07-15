@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -127,11 +129,11 @@ public final class TabletBlockPickerModal {
     private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, BlockChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
-            surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, "box"));
+            surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, "box"));
         } else {
-            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
+            surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
+        ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, GRID_16, GRID_16, click -> {
             if (!entry.value().isBlank()) {
                 String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
                 if (!canvasModelTarget.isBlank()) {

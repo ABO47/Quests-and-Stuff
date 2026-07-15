@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
@@ -38,11 +40,11 @@ import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
 
 public final class ChunkClaimerAppComposer {
-    private static final int HOME_BTN_SIZE = 10;
-    private static final int CONTENT_INSET = 6;
-    private static final int LIST_INSET = 9;
-    private static final int GUTTER = 6;
-    private static final int HEADER_LIST_GAP = 5;
+    private static final int HOME_BTN_SIZE = GRID_10;
+    private static final int CONTENT_INSET = GRID_6;
+    private static final int LIST_INSET = GRID_9;
+    private static final int GUTTER = GRID_6;
+    private static final int HEADER_LIST_GAP = GRID_5;
 
     private ChunkClaimerAppComposer() {
     }

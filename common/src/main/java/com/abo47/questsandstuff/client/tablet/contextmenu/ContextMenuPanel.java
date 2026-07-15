@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
@@ -24,7 +26,7 @@ public final class ContextMenuPanel {
     public static final int PROMOTED_BAR_H = ContextActionLayout.PROMOTED_BAR_H;
     public static final int PROMOTED_BUTTON = ContextActionLayout.PROMOTED_BUTTON;
     private static final int OUTER_PAD = ContextActionLayout.OUTER_PAD;
-    private static final int SCROLLBAR_EXTRA_W = 14;
+    private static final int SCROLLBAR_EXTRA_W = GRID_14;
     private static final int ROW_EXTRA_W = 8;
 
     private ContextMenuPanel() {
@@ -314,7 +316,7 @@ public final class ContextMenuPanel {
             return;
         }
         int childVisibleRows = safeVisibleRows(childRows, childRows);
-        int childW = Math.min(CONTEXT_MENU_WIDTH, Math.max(48, maxW - 8));
+        int childW = Math.min(CONTEXT_MENU_WIDTH, Math.max(GRID_48, maxW - GRID_8));
         int childH = heightFor(children, childVisibleRows);
         int childX = submenuX(parentAbsoluteX, parentMenuW, childW, maxW);
         int desiredY = rowY - OUTER_PAD;

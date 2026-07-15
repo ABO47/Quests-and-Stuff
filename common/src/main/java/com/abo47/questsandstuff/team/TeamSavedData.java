@@ -19,20 +19,6 @@ import java.util.UUID;
 
 public class TeamSavedData extends SavedData {
     private static final String DATA_NAME = QuestsAndStuffMod.MODID + "_teams";
-    private static final String TAG_TEAMS = "teams";
-    private static final String TAG_TEAM_ID = "team_id";
-    private static final String TAG_OWNER = "owner";
-    private static final String TAG_MEMBERS = "members";
-    private static final String TAG_UUID = "uuid";
-    private static final String TAG_NAME = "name";
-    private static final String TAG_ROLE = "role";
-    private static final String TAG_INVITE_CODE = "invite_code";
-    private static final String TAG_INVITE_EXPIRY = "invite_expiry";
-    private static final String TAG_INVITE_CODES = "invite_codes";
-    private static final String TAG_INVITE_CODE_STR = "code";
-    private static final String TAG_INVITE_CODE_PLAYER = "invite_player";
-    private static final String TAG_INVITE_CODE_TEAM = "invite_team";
-
     private final Map<UUID, TeamData> teamsByPlayer = new HashMap<>();
     private final Map<String, PlayerInviteCode> inviteCodes = new HashMap<>();
 
@@ -52,20 +38,20 @@ public class TeamSavedData extends SavedData {
 
     public static TeamSavedData load(CompoundTag tag) {
         TeamSavedData data = new TeamSavedData();
-        ListTag teamsList = tag.getList(TAG_TEAMS, Tag.TAG_COMPOUND);
+        ListTag teamsList = tag.getList(NbtKeys.TEAMS, Tag.TAG_COMPOUND);
         for (int i = 0; i < teamsList.size(); i++) {
             CompoundTag teamTag = teamsList.getCompound(i);
-            UUID teamId = teamTag.getUUID(TAG_TEAM_ID);
-            UUID owner = teamTag.getUUID(TAG_OWNER);
-            String inviteCode = teamTag.getString(TAG_INVITE_CODE);
-            long inviteExpiry = teamTag.getLong(TAG_INVITE_EXPIRY);
-            ListTag membersList = teamTag.getList(TAG_MEMBERS, Tag.TAG_COMPOUND);
+            UUID teamId = teamTag.getUUID(NbtKeys.TEAM_ID);
+            UUID owner = teamTag.getUUID(NbtKeys.OWNER);
+            String inviteCode = teamTag.getString(NbtKeys.INVITE_CODE);
+            long inviteExpiry = teamTag.getLong(NbtKeys.INVITE_EXPIRY);
+            ListTag membersList = teamTag.getList(NbtKeys.MEMBERS, Tag.TAG_COMPOUND);
             List<TeamMember> members = new ArrayList<>();
             for (int j = 0; j < membersList.size(); j++) {
                 CompoundTag memberTag = membersList.getCompound(j);
-                UUID uuid = memberTag.getUUID(TAG_UUID);
-                String name = memberTag.getString(TAG_NAME);
-                String roleStr = memberTag.getString(TAG_ROLE);
+                UUID uuid = memberTag.getUUID(NbtKeys.UUID);
+                String name = memberTag.getString(NbtKeys.NAME);
+                String roleStr = memberTag.getString(NbtKeys.ROLE);
                 TeamMember.Role role = "OWNER".equals(roleStr) ? TeamMember.Role.OWNER : TeamMember.Role.MEMBER;
                 members.add(new TeamMember(uuid, name, role));
             }
@@ -74,13 +60,13 @@ public class TeamSavedData extends SavedData {
                 data.teamsByPlayer.put(m.uuid(), team);
             }
         }
-        ListTag codesList = tag.getList(TAG_INVITE_CODES, Tag.TAG_COMPOUND);
+        ListTag codesList = tag.getList(NbtKeys.INVITE_CODES, Tag.TAG_COMPOUND);
         for (int i = 0; i < codesList.size(); i++) {
             CompoundTag codeTag = codesList.getCompound(i);
-            String code = codeTag.getString(TAG_INVITE_CODE_STR);
-            UUID playerUuid = codeTag.getUUID(TAG_INVITE_CODE_PLAYER);
-            UUID teamId = codeTag.getUUID(TAG_INVITE_CODE_TEAM);
-            long expiryMs = codeTag.getLong(TAG_INVITE_EXPIRY);
+            String code = codeTag.getString(NbtKeys.CODE);
+            UUID playerUuid = codeTag.getUUID(NbtKeys.INVITE_PLAYER);
+            UUID teamId = codeTag.getUUID(NbtKeys.INVITE_TEAM);
+            long expiryMs = codeTag.getLong(NbtKeys.INVITE_EXPIRY);
             if (!code.isBlank()) {
                 data.inviteCodes.put(code, new PlayerInviteCode(playerUuid, teamId, expiryMs));
             }
@@ -97,32 +83,32 @@ public class TeamSavedData extends SavedData {
         }
         for (TeamData team : uniqueTeams.values()) {
             CompoundTag teamTag = new CompoundTag();
-            teamTag.putUUID(TAG_TEAM_ID, team.teamId());
-            teamTag.putUUID(TAG_OWNER, team.owner());
-            teamTag.putString(TAG_INVITE_CODE, team.inviteCode());
-            teamTag.putLong(TAG_INVITE_EXPIRY, team.inviteExpiryMs());
+            teamTag.putUUID(NbtKeys.TEAM_ID, team.teamId());
+            teamTag.putUUID(NbtKeys.OWNER, team.owner());
+            teamTag.putString(NbtKeys.INVITE_CODE, team.inviteCode());
+            teamTag.putLong(NbtKeys.INVITE_EXPIRY, team.inviteExpiryMs());
             ListTag membersList = new ListTag();
             for (TeamMember m : team.members()) {
                 CompoundTag memberTag = new CompoundTag();
-                memberTag.putUUID(TAG_UUID, m.uuid());
-                memberTag.putString(TAG_NAME, m.name());
-                memberTag.putString(TAG_ROLE, m.role().name());
+                memberTag.putUUID(NbtKeys.UUID, m.uuid());
+                memberTag.putString(NbtKeys.NAME, m.name());
+                memberTag.putString(NbtKeys.ROLE, m.role().name());
                 membersList.add(memberTag);
             }
-            teamTag.put(TAG_MEMBERS, membersList);
+            teamTag.put(NbtKeys.MEMBERS, membersList);
             teamsList.add(teamTag);
         }
-        tag.put(TAG_TEAMS, teamsList);
+        tag.put(NbtKeys.TEAMS, teamsList);
         ListTag codesList = new ListTag();
         for (Map.Entry<String, PlayerInviteCode> entry : inviteCodes.entrySet()) {
             CompoundTag codeTag = new CompoundTag();
-            codeTag.putString(TAG_INVITE_CODE_STR, entry.getKey());
-            codeTag.putUUID(TAG_INVITE_CODE_PLAYER, entry.getValue().playerUuid());
-            codeTag.putUUID(TAG_INVITE_CODE_TEAM, entry.getValue().teamId());
-            codeTag.putLong(TAG_INVITE_EXPIRY, entry.getValue().expiryMs());
+            codeTag.putString(NbtKeys.CODE, entry.getKey());
+            codeTag.putUUID(NbtKeys.INVITE_PLAYER, entry.getValue().playerUuid());
+            codeTag.putUUID(NbtKeys.INVITE_TEAM, entry.getValue().teamId());
+            codeTag.putLong(NbtKeys.INVITE_EXPIRY, entry.getValue().expiryMs());
             codesList.add(codeTag);
         }
-        tag.put(TAG_INVITE_CODES, codesList);
+        tag.put(NbtKeys.INVITE_CODES, codesList);
         return tag;
     }
 

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -179,8 +180,8 @@ public final class TabletIconPickerModal {
                 String pickedIcon = pickingEntityIcons ? pickedEntityIcon(entry) : entry;
                 String previewIcon = pickedIcon.isBlank() ? entry : pickedIcon;
                 surface.addWidget(new ImageWidget(x, y, 18, 18, SlotWidget.ITEM_SLOT_TEXTURE));
-                surface.addWidget(new DisplayIconWidget(x + 1, y + 1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, previewIcon));
-                ButtonWidget hit = flatHitButton(x + 1, y + 1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
+                surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, previewIcon));
+                ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
                     boolean doubleClick = click.button == 0
                             && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("icon", chapterTarget, questTarget, previewIcon));
                     if (!canvasModelTarget.isBlank()) {

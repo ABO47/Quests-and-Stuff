@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.chunkclaim;
 
 import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
+import com.abo47.questsandstuff.team.NbtKeys;
 import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
@@ -21,13 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 public final class ChunkClaimPacketHelper {
-    private static final String TAG_TEAM = "team";
-    private static final String TAG_CHUNKS = "chunks";
-    private static final String TAG_DIM = "dim";
-    private static final String TAG_X = "x";
-    private static final String TAG_Z = "z";
-    private static final String TAG_FORCE = "force";
-
     private ChunkClaimPacketHelper() {
     }
 
@@ -76,17 +70,17 @@ public final class ChunkClaimPacketHelper {
 
     public static CompoundTag encode(UUID teamId, TeamChunkData data) {
         CompoundTag tag = new CompoundTag();
-        tag.putUUID(TAG_TEAM, teamId);
+        tag.putUUID(NbtKeys.TEAM, teamId);
         ListTag chunks = new ListTag();
         for (ClaimedChunk chunk : data.chunks()) {
             CompoundTag entry = new CompoundTag();
-            entry.putString(TAG_DIM, chunk.dimension().toString());
-            entry.putInt(TAG_X, chunk.x());
-            entry.putInt(TAG_Z, chunk.z());
-            entry.putBoolean(TAG_FORCE, chunk.forceLoaded());
+            entry.putString(NbtKeys.DIM, chunk.dimension().toString());
+            entry.putInt(NbtKeys.X, chunk.x());
+            entry.putInt(NbtKeys.Z, chunk.z());
+            entry.putBoolean(NbtKeys.FORCE, chunk.forceLoaded());
             chunks.add(entry);
         }
-        tag.put(TAG_CHUNKS, chunks);
+        tag.put(NbtKeys.CHUNKS, chunks);
         return tag;
     }
 
@@ -94,16 +88,16 @@ public final class ChunkClaimPacketHelper {
         if (tag == null) {
             return new ChunkClaimSnapshot(null, List.of());
         }
-        UUID teamId = tag.hasUUID(TAG_TEAM) ? tag.getUUID(TAG_TEAM) : null;
-        ListTag chunks = tag.getList(TAG_CHUNKS, Tag.TAG_COMPOUND);
+        UUID teamId = tag.hasUUID(NbtKeys.TEAM) ? tag.getUUID(NbtKeys.TEAM) : null;
+        ListTag chunks = tag.getList(NbtKeys.CHUNKS, Tag.TAG_COMPOUND);
         List<ClaimedChunk> list = new ArrayList<>();
         for (int i = 0; i < chunks.size(); i++) {
             CompoundTag entry = chunks.getCompound(i);
-            ResourceLocation dim = ResourceLocation.tryParse(entry.getString(TAG_DIM));
+            ResourceLocation dim = ResourceLocation.tryParse(entry.getString(NbtKeys.DIM));
             if (dim == null) {
                 continue;
             }
-            list.add(new ClaimedChunk(dim, entry.getInt(TAG_X), entry.getInt(TAG_Z), entry.getBoolean(TAG_FORCE)));
+            list.add(new ClaimedChunk(dim, entry.getInt(NbtKeys.X), entry.getInt(NbtKeys.Z), entry.getBoolean(NbtKeys.FORCE)));
         }
         return new ChunkClaimSnapshot(teamId, list);
     }

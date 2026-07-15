@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.chunkclaim;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.team.NbtKeys;
 import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
 import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import net.minecraft.nbt.CompoundTag;
@@ -20,13 +21,6 @@ import java.util.UUID;
 
 public class ChunkClaimSavedData extends SavedData {
     private static final String DATA_NAME = QuestsAndStuffMod.MODID + "_chunk_claims";
-    private static final String TAG_CLAIMS = "claims";
-    private static final String TAG_TEAM = "team";
-    private static final String TAG_DIM = "dim";
-    private static final String TAG_X = "x";
-    private static final String TAG_Z = "z";
-    private static final String TAG_FORCE = "force";
-
     private final Map<UUID, List<ClaimedChunk>> byTeam = new HashMap<>();
 
     public ChunkClaimSavedData() {
@@ -46,17 +40,17 @@ public class ChunkClaimSavedData extends SavedData {
 
     public static ChunkClaimSavedData load(CompoundTag tag) {
         ChunkClaimSavedData data = new ChunkClaimSavedData();
-        ListTag claims = tag.getList(TAG_CLAIMS, Tag.TAG_COMPOUND);
+        ListTag claims = tag.getList(NbtKeys.CLAIMS, Tag.TAG_COMPOUND);
         for (int i = 0; i < claims.size(); i++) {
             CompoundTag entry = claims.getCompound(i);
-            UUID team = entry.getUUID(TAG_TEAM);
-            ResourceLocation dim = ResourceLocation.tryParse(entry.getString(TAG_DIM));
+            UUID team = entry.getUUID(NbtKeys.TEAM);
+            ResourceLocation dim = ResourceLocation.tryParse(entry.getString(NbtKeys.DIM));
             if (dim == null) {
                 continue;
             }
-            int x = entry.getInt(TAG_X);
-            int z = entry.getInt(TAG_Z);
-            boolean force = entry.getBoolean(TAG_FORCE);
+            int x = entry.getInt(NbtKeys.X);
+            int z = entry.getInt(NbtKeys.Z);
+            boolean force = entry.getBoolean(NbtKeys.FORCE);
             data.byTeam.computeIfAbsent(team, k -> new ArrayList<>()).add(new ClaimedChunk(dim, x, z, force));
         }
         return data;
@@ -68,15 +62,15 @@ public class ChunkClaimSavedData extends SavedData {
         for (Map.Entry<UUID, List<ClaimedChunk>> entry : byTeam.entrySet()) {
             for (ClaimedChunk chunk : entry.getValue()) {
                 CompoundTag c = new CompoundTag();
-                c.putUUID(TAG_TEAM, entry.getKey());
-                c.putString(TAG_DIM, chunk.dimension().toString());
-                c.putInt(TAG_X, chunk.x());
-                c.putInt(TAG_Z, chunk.z());
-                c.putBoolean(TAG_FORCE, chunk.forceLoaded());
+                c.putUUID(NbtKeys.TEAM, entry.getKey());
+                c.putString(NbtKeys.DIM, chunk.dimension().toString());
+                c.putInt(NbtKeys.X, chunk.x());
+                c.putInt(NbtKeys.Z, chunk.z());
+                c.putBoolean(NbtKeys.FORCE, chunk.forceLoaded());
                 claims.add(c);
             }
         }
-        tag.put(TAG_CLAIMS, claims);
+        tag.put(NbtKeys.CLAIMS, claims);
         return tag;
     }
 

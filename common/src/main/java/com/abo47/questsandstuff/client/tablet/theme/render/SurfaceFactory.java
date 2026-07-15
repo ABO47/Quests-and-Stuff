@@ -17,7 +17,7 @@ public final class SurfaceFactory {
     }
 
     public static ColorRectTexture transparentFill() {
-        return fill(0x00000000);
+        return fill(TabletColors.TRANSPARENT);
     }
 
     public static int withAlpha(int color, int alpha) {
@@ -37,7 +37,7 @@ public final class SurfaceFactory {
     }
 
     public static GuiTextureGroup transparentBorder(int borderColor) {
-        return bordered(0x00000000, borderColor);
+        return bordered(TabletColors.TRANSPARENT, borderColor);
     }
 
     public static GuiTextureGroup panel() {

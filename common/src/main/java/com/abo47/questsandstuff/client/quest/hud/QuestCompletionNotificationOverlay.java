@@ -19,10 +19,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public final class QuestCompletionNotificationOverlay {
-    private static final int WIDTH = 128;
-    private static final int HEIGHT = 32;
-    private static final int MAX_NOTIFICATIONS = 3;
-    private static final int MIN_FONT_ALPHA = 4;
+
     private static final Deque<PendingNotification> PENDING = new ArrayDeque<>();
     private static ActiveNotification activeNotification;
     private static SoundInstance activeSound;
@@ -31,11 +28,11 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     public static int width() {
-        return WIDTH;
+        return HudConstants.NOTIFICATION_WIDTH;
     }
 
     public static int height() {
-        return HEIGHT;
+        return HudConstants.NOTIFICATION_HEIGHT;
     }
 
     public static void push(String questId) {
@@ -82,11 +79,11 @@ public final class QuestCompletionNotificationOverlay {
         QuestHudLayoutManager.HudBox box = QuestHudLayoutManager.completionBox(
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
-                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, WIDTH),
-                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HEIGHT)
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_HEIGHT)
         );
         int x = box.x();
-        float slideDistance = 12.0f * heightScale;
+        float slideDistance = HudConstants.NOTIFICATION_SLIDE_DISTANCE * heightScale;
         int y = notificationY(box.y(), slideDistance, age);
         int alpha = notificationAlpha(age);
         drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
@@ -97,8 +94,8 @@ public final class QuestCompletionNotificationOverlay {
                 graphics,
                 x,
                 y,
-                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, WIDTH),
-                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HEIGHT),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_HEIGHT),
                 selected
         );
     }
@@ -134,7 +131,7 @@ public final class QuestCompletionNotificationOverlay {
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        if (alpha < MIN_FONT_ALPHA) {
+        if (alpha < HudConstants.MIN_FONT_ALPHA) {
             return;
         }
 
@@ -238,7 +235,7 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     private static void trimPendingNotifications() {
-        while (PENDING.size() + (activeNotification == null ? 0 : 1) > MAX_NOTIFICATIONS) {
+        while (PENDING.size() + (activeNotification == null ? 0 : 1) > HudConstants.MAX_NOTIFICATIONS) {
             PENDING.removeFirst();
         }
     }

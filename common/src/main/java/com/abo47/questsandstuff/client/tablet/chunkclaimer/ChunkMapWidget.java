@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
@@ -27,14 +30,13 @@ import net.minecraft.world.level.material.MapColor;
 import javax.annotation.Nonnull;
 
 public class ChunkMapWidget extends Widget {
-    private static final int TARGET_CELL = 16;
-    private static final long RESAMPLE_MS = 800;
+    private static final long RESAMPLE_MS = TabletAnimationTimings.CHUNK_MAP_RESAMPLE_MS;
 
-    private static final int CLAIMED_FILL = 0x994F8DF7;
-    private static final int FORCE_FILL = 0x9966D38D;
-    private static final int CLAIMED_EDGE = 0xFF6FA8FF;
-    private static final int FORCE_EDGE = 0xFF66D38D;
-    private static final int GRID_COLOR = 0x33546770;
+    private static final int CLAIMED_FILL = TabletColors.DEFAULT_CLAIMED_FILL;
+    private static final int FORCE_FILL = TabletColors.DEFAULT_FORCE_FILL;
+    private static final int CLAIMED_EDGE = TabletColors.DEFAULT_CLAIMED_EDGE;
+    private static final int FORCE_EDGE = TabletColors.DEFAULT_FORCE_EDGE;
+    private static final int GRID_COLOR = TabletColors.DEFAULT_GRID_COLOR;
 
     private final TabletUiState state;
 
@@ -44,7 +46,7 @@ public class ChunkMapWidget extends Widget {
     private int texH = -1;
     private int gridW = -1;
     private int gridH = -1;
-    private int sub = 16;
+    private int sub = GRID_16;
     private int cachedCx = Integer.MAX_VALUE;
     private int cachedCz = Integer.MAX_VALUE;
     private long lastSample = 0;
@@ -80,7 +82,7 @@ public class ChunkMapWidget extends Widget {
     }
 
     private void ensureTerrain(ClientLevel level, int w, int h, int cx, int cz) {
-        int gw = Math.max(3, w / TARGET_CELL);
+        int gw = Math.max(3, w / GRID_16);
         int cell = Math.max(1, w / gw);
         int gh = Math.max(3, h / cell);
         int s = Math.max(1, Math.min(32, (int) Math.sqrt(640000.0 / (gw * gh))));
@@ -108,7 +110,7 @@ public class ChunkMapWidget extends Widget {
                 Minecraft.getInstance().getTextureManager().release(terrainTexLoc);
             }
             terrainTex = new DynamicTexture(totalW, totalH, false);
-            terrainTex.setFilter(false, false);
+            terrainTex.setFilter(true, true);
             texW = totalW;
             texH = totalH;
             ResourceLocation terrainLoc = new ResourceLocation("questsandstuff", "chunkmap_terrain");
@@ -131,22 +133,61 @@ public class ChunkMapWidget extends Widget {
                 surfaceY[tx][tz] = findSurfaceY(level, blockX, blockZ, playerY);
             }
         }
+        int[][] lightGrid = new int[gw][gh];
+        for (int cgx = 0; cgx < gw; cgx++) {
+            for (int cgz = 0; cgz < gh; cgz++) {
+                int txc = cgx * sub + sub / 2;
+                int tzc = cgz * sub + sub / 2;
+                int worldChunkX = cx + (cgx - halfGw);
+                int worldChunkZ = cz + (cgz - halfGh);
+                int bx = worldChunkX * 16 + 8;
+                int bz = worldChunkZ * 16 + 8;
+                int by = Mth.clamp(surfaceY[txc][tzc] + 1, level.getMinBuildHeight(), level.getMaxBuildHeight() - 1);
+                lightGrid[cgx][cgz] = level.getMaxLocalRawBrightness(new BlockPos(bx, by, bz));
+            }
+        }
+        float[] shadow = dimensionShadow(level.dimension().location());
+
         int maxY = level.getMaxBuildHeight();
         for (int tx = 0; tx < totalW; tx++) {
             int worldChunkX = cx + (tx / sub - halfGw);
+            int cgx = tx / sub;
             for (int tz = 0; tz < totalH; tz++) {
                 int worldChunkZ = cz + (tz / sub - halfGh);
-                int blockX = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
+                int cgz = tz / sub;
+                int blockB = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
                 int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
                 int hC = surfaceY[tx][tz];
-                int rgb = sampleColorAt(level, blockX, blockZ, hC, maxY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
+                int rgb = sampleColorAt(level, blockB, blockZ, hC, maxY);
+                int hW = tx > 0 ? surfaceY[tx - 1][tz] : hC;
+                int hN = tz > 0 ? surfaceY[tx][tz - 1] : hC;
+                float slope = (hC - hW) + (hC - hN);
+                float direct = Mth.clamp(slope * 0.04f, -0.4f, 0.4f);
+                int rawLight = lightGrid[cgx][cgz];
+                float brightness = (9f + rawLight) / 24f;
+                float heightTerm = Mth.clamp(0.92f + (hC - 64) / 320f, 0.82f, 1.08f);
+                float whiteLight = 0.5f + direct;
+                float mR = (shadow[0] * 0.2f + whiteLight) * brightness * heightTerm;
+                float mG = (shadow[1] * 0.2f + whiteLight) * brightness * heightTerm;
+                float mB = (shadow[2] * 0.2f + whiteLight) * brightness * heightTerm;
+                int r = (int) Mth.clamp(((rgb >> 16) & 0xFF) * mR, 0, 255);
+                int g = (int) Mth.clamp(((rgb >> 8) & 0xFF) * mG, 0, 255);
+                int b = (int) Mth.clamp((rgb & 0xFF) * mB, 0, 255);
                 img.setPixelRGBA(tx, tz, (0xFF << 24) | (b << 16) | (g << 8) | r);
             }
         }
         terrainTex.upload();
+    }
+
+    private static float[] dimensionShadow(ResourceLocation dim) {
+        String ns = dim.toString();
+        if (ns.contains("nether")) {
+            return new float[]{1.0f, 0.25f, 0.2f};
+        }
+        if (ns.contains("end")) {
+            return new float[]{0.7f, 0.55f, 1.0f};
+        }
+        return new float[]{0.518f, 0.678f, 1.0f};
     }
 
     private int findSurfaceY(ClientLevel level, int worldX, int worldZ, int playerY) {
@@ -193,30 +234,53 @@ public class ChunkMapWidget extends Widget {
         int rgb;
         if (!fluid.isEmpty()) {
             if (fluid.getType() == Fluids.LAVA) {
-                rgb = 0xC65F1A;
+                rgb = TabletColors.TERRAIN_LAVA;
             } else {
                 rgb = level.getBiome(pos).value().getWaterColor();
+                int depth = waterDepth(level, worldX, worldZ, y);
+                rgb = shade(rgb, 1f - Mth.clamp(depth / 12f, 0f, 1f) * 0.5f);
             }
         } else {
             BlockState bs = level.getBlockState(pos);
             if (bs.is(Blocks.SNOW) || bs.is(Blocks.SNOW_BLOCK)) {
-                rgb = 0xE9F1F6;
+                rgb = TabletColors.TERRAIN_SNOW;
             } else if (bs.is(Blocks.ICE) || bs.is(Blocks.PACKED_ICE) || bs.is(Blocks.FROSTED_ICE)) {
-                rgb = 0x9FD6E8;
+                rgb = TabletColors.TERRAIN_ICE;
             } else if (bs.is(Blocks.SAND) || bs.is(Blocks.SANDSTONE) || bs.is(Blocks.RED_SAND)) {
-                rgb = 0xD8C79A;
-            } else if (bs.is(Blocks.GRASS_BLOCK) || bs.is(Blocks.TALL_GRASS) || bs.is(Blocks.FERN)
-                    || bs.getBlock() instanceof LeavesBlock) {
-                int grass = level.getBiome(pos).value().getGrassColor(worldX, worldZ);
-                rgb = bs.getBlock() instanceof LeavesBlock ? shade(grass, 0.85f) : grass;
+                rgb = TabletColors.TERRAIN_SAND;
+            } else if (bs.is(Blocks.GRASS_BLOCK) || bs.is(Blocks.TALL_GRASS) || bs.is(Blocks.FERN)) {
+                rgb = level.getBiome(pos).value().getGrassColor(worldX, worldZ);
+            } else if (bs.getBlock() instanceof LeavesBlock) {
+                rgb = level.getBiome(pos).value().getFoliageColor();
             } else {
                 MapColor mapColor = bs.getMapColor(level, pos);
-                rgb = mapColor != null ? mapColor.col : 0x6E6E6E;
+                rgb = mapColor != null ? mapColor.col : TabletColors.TERRAIN_DEFAULT_FALLBACK;
             }
         }
 
-        float relief = Mth.clamp(0.78f + (y - 64) / 110f, 0.6f, 1.25f);
-        return shade(rgb, relief);
+        return rgb;
+    }
+
+    private int waterDepth(ClientLevel level, int worldX, int worldZ, int surfaceY) {
+        int depth = 0;
+        int minY = level.getMinBuildHeight();
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos(worldX, 0, worldZ);
+        for (int dy = 1; dy <= 14; dy++) {
+            int yy = surfaceY - dy;
+            if (yy < minY) {
+                break;
+            }
+            p.setY(yy);
+            if (level.getBlockState(p).isSolid()) {
+                break;
+            }
+            if (!level.getFluidState(p).isEmpty()) {
+                depth++;
+            } else {
+                break;
+            }
+        }
+        return depth;
     }
 
     private static int shade(int rgb, float factor) {
@@ -272,18 +336,19 @@ public class ChunkMapWidget extends Widget {
         }
 
         if (state.chunkClaimer.showGrid) {
+            int subtleGrid = withAlpha(GRID_COLOR, 18);
             int endX = baseX + ox + gw * cell;
             int endY = baseY + oy + gh * cell;
             for (int i = 0; i <= gw; i++) {
                 int gx = baseX + ox + i * cell;
-                graphics.fill(gx, baseY + oy, gx + 1, endY, GRID_COLOR);
+                graphics.fill(gx, baseY + oy, gx + 1, endY, subtleGrid);
             }
             for (int j = 0; j <= gh; j++) {
                 int gy = baseY + oy + j * cell;
-                graphics.fill(baseX + ox, gy, endX, gy + 1, GRID_COLOR);
+                graphics.fill(baseX + ox, gy, endX, gy + 1, subtleGrid);
             }
-            graphics.fill(baseX + w - 1, baseY, baseX + w, baseY + h, GRID_COLOR);
-            graphics.fill(baseX, baseY + h - 1, baseX + w, baseY + h, GRID_COLOR);
+            graphics.fill(baseX + w - 1, baseY, baseX + w, baseY + h, subtleGrid);
+            graphics.fill(baseX, baseY + h - 1, baseX + w, baseY + h, subtleGrid);
         }
 
         int halfWA = gw / 2;
@@ -319,7 +384,7 @@ public class ChunkMapWidget extends Widget {
                 }
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                int edge = s == 2 ? FORCE_EDGE : CLAIMED_EDGE;
+                int edge = withAlpha(s == 2 ? FORCE_EDGE : CLAIMED_EDGE, 170);
                 if (states.getOrDefault(key(dx - 1, dz), 0) != s) {
                     graphics.fill(px, py, px + 1, py + cell + 1, edge);
                 }
@@ -359,12 +424,12 @@ public class ChunkMapWidget extends Widget {
         if (player == null) {
             return;
         }
-        int left = cx - size / 2 + 1;
-        int top = cy - size / 2 + 1;
+        int left = cx - size / 2;
+        int top = cy - size / 2;
         graphics.fill(left - 1, top - 1, left + size + 1, top + size + 1, TabletColors.SURFACE_BASE);
         graphics.renderOutline(left - 1, top - 1, size + 2, size + 2, TabletColors.BORDER_ACCENT);
         new PlayerFaceTexture(player.getGameProfile().getId(), player.getGameProfile().getName())
-                .draw(graphics, 0, 0, left, top, size, size);
+                .draw(graphics, 0, 0, left + 1, top + 1, size - 2, size - 2);
     }
 
     private static long key(int dx, int dz) {

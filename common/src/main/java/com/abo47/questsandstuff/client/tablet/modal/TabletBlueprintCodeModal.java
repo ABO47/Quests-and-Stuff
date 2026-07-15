@@ -20,13 +20,16 @@ import java.util.List;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.BUTTON_18;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.PAD_8;
 
 final class TabletBlueprintCodeModal {
     private static final int PANEL_W = 360;
     private static final int PANEL_H = 122;
-    private static final int PAD = 8;
-    private static final int BTN = 18;
-    private static final int GAP = 3;
+    private static final int PAD = PAD_8;
+    private static final int BTN = BUTTON_18;
+    private static final int GAP = GRID_3;
     private static final int CODE_Y = 32;
     private static final int CODE_H = 44;
 
