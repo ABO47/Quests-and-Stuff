@@ -18,14 +18,16 @@ import java.util.function.Consumer;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.dynamicLabel;
 
-final class ChunkClaimerHeaderControls {
+public final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = GRID_4;
     private static final int HEADER_INSET = GRID_9;
     private static final int BUTTON_COUNT = 5;
+    private static ChunkClaimerHeaderControls current;
 
     private final LabelWidget countLabel;
     private final ButtonWidget claimBtn;
@@ -77,7 +79,8 @@ final class ChunkClaimerHeaderControls {
                 state, refresh,
                 () -> state.chunkClaimer.claimArmed, v -> state.chunkClaimer.claimArmed = v);
 
-        return new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn, opacityBtn);
+        current = new ChunkClaimerHeaderControls(countLabel, claimBtn, forceBtn, gridBtn, scanBtn, opacityBtn);
+        return current;
     }
 
     private static ButtonWidget createOpacityButton(int x, int y, TabletUiState state, Runnable refresh) {
@@ -117,6 +120,14 @@ final class ChunkClaimerHeaderControls {
 
     void updateCount() {
         countLabel.setText(countText());
+    }
+
+    public static void onSync() {
+        if (current == null) return;
+        var state = TabletUiFactory.getActiveTabletState();
+        if (state != null && "chunkclaimer".equals(state.root.currentApp)) {
+            current.updateCount();
+        }
     }
 
     ButtonWidget claimBtn() {

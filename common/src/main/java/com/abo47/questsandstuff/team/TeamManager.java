@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.team;
 
 import com.abo47.questsandstuff.team.model.TeamMember;
 import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,12 +66,22 @@ public final class TeamManager {
 
     public TeamData joinTeam(ServerPlayer player, String inviteCode) {
         TeamData existing = data().getTeamByPlayer(player.getUUID());
-        if (existing != null && existing.members().size() <= 1) {
-            data().removeTeam(existing.teamId());
-        }
         TeamData team = data().getTeamByInviteCode(inviteCode);
         if (team == null) {
             return null;
+        }
+        if (existing != null && existing.members().size() <= 1) {
+            String ownerName = "";
+            for (TeamMember m : team.members()) {
+                if (m.uuid().equals(team.owner())) {
+                    ownerName = m.name();
+                    break;
+                }
+            }
+            QuestServiceRegistry.chunkClaims(level.getServer())
+                    .transferClaims(existing.teamId(), team.teamId(), ownerName);
+            data().removeTeam(existing.teamId());
+            ChunkClaimPacketHelper.broadcastAll(level);
         }
         List<TeamMember> newMembers = new ArrayList<>(team.members());
         newMembers.add(new TeamMember(player.getUUID(), player.getScoreboardName(), TeamMember.Role.MEMBER));

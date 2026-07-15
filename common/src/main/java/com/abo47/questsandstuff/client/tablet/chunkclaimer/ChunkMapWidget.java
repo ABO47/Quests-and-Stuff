@@ -85,7 +85,7 @@ public class ChunkMapWidget extends Widget {
         int gw = Math.max(3, w / GRID_16);
         int cell = Math.max(1, w / gw);
         int gh = Math.max(3, h / cell);
-        int s = Math.max(1, Math.min(32, (int) Math.sqrt(640000.0 / (gw * gh))));
+        int s = Math.max(1, Math.min(16, (int) Math.sqrt(640000.0 / (gw * gh))));
         long now = System.currentTimeMillis();
         boolean needs = terrainTex == null || gw != gridW || gh != gridH || s != sub
                 || cx != cachedCx || cz != cachedCz
@@ -187,6 +187,7 @@ public class ChunkMapWidget extends Widget {
                 img.setPixelRGBA(tx, tz, (0xFF << 24) | (b << 16) | (g << 8) | r);
             }
         }
+        blur(img, totalW, totalH);
         terrainTex.upload();
     }
 
@@ -356,17 +357,18 @@ public class ChunkMapWidget extends Widget {
             tex.draw(graphics, mouseX, mouseY, baseX + ox - cell, baseY + oy - cell, (gw + 2) * cell, (gh + 2) * cell);
         }
 
-        int halfWA = gw / 2;
-        int halfHA = gh / 2;
-        int dxMin = -halfWA;
-        int dxMax = gw - halfWA - 1;
-        int dzMin = -halfHA;
-        int dzMax = gh - halfHA - 1;
+        int iLo = (int) Math.floor((0 - ox) / (double) cell);
+        int iHi = (int) Math.floor((w - ox) / (double) cell);
+        int jLo = (int) Math.floor((0 - oy) / (double) cell);
+        int jHi = (int) Math.floor((h - oy) / (double) cell);
+
         var states = new java.util.HashMap<Long, Integer>();
         var teamCells = new java.util.HashMap<Long, UUID>();
         var claimKeys = new java.util.HashMap<Long, String>();
-        for (int dx = dxMin; dx <= dxMax; dx++) {
-            for (int dz = dzMin; dz <= dzMax; dz++) {
+        for (int i = iLo; i <= iHi; i++) {
+            int dx = i - gw / 2;
+            for (int j = jLo; j <= jHi; j++) {
+                int dz = j - gh / 2;
                 long k = key(dx, dz);
                 int cwX = cx + dx;
                 int cwZ = cz + dz;
@@ -378,8 +380,10 @@ public class ChunkMapWidget extends Widget {
             }
         }
 
-        for (int dx = dxMin; dx <= dxMax; dx++) {
-            for (int dz = dzMin; dz <= dzMax; dz++) {
+        for (int i = iLo; i <= iHi; i++) {
+            int dx = i - gw / 2;
+            for (int j = jLo; j <= jHi; j++) {
+                int dz = j - gh / 2;
                 long k = key(dx, dz);
                 int s = states.getOrDefault(k, 0);
                 if (s == 0) continue;
@@ -395,30 +399,34 @@ public class ChunkMapWidget extends Widget {
             int opacityPct = Math.max(0, Math.min(100, state.chunkClaimer.gridOpacityPercent));
             int alpha = Math.max(20, Math.min(220, (255 * opacityPct) / 100));
             int gridCol = (alpha << 24) | (GRID_COLOR & 0x00FFFFFF);
-            for (int dx = dxMin; dx <= dxMax; dx++) {
-                for (int dz = dzMin; dz <= dzMax; dz++) {
+            for (int i = iLo; i <= iHi; i++) {
+                int dx = i - gw / 2;
+                for (int j = jLo; j <= jHi; j++) {
+                    int dz = j - gh / 2;
                     long k = key(dx, dz);
                     if (states.getOrDefault(k, 0) != 0) continue;
                     int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                     int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                    if (dx == dxMin || states.getOrDefault(key(dx - 1, dz), 0) == 0) {
+                    if (i == iLo || states.getOrDefault(key(dx - 1, dz), 0) == 0) {
                         graphics.fill(px, py, px + 1, py + cell, gridCol);
                     }
-                    if (dx == dxMax || states.getOrDefault(key(dx + 1, dz), 0) == 0) {
+                    if (i == iHi || states.getOrDefault(key(dx + 1, dz), 0) == 0) {
                         graphics.fill(px + cell, py, px + cell + 1, py + cell, gridCol);
                     }
-                    if (dz == dzMin || states.getOrDefault(key(dx, dz - 1), 0) == 0) {
+                    if (j == jLo || states.getOrDefault(key(dx, dz - 1), 0) == 0) {
                         graphics.fill(px, py, px + cell, py + 1, gridCol);
                     }
-                    if (dz == dzMax || states.getOrDefault(key(dx, dz + 1), 0) == 0) {
+                    if (j == jHi || states.getOrDefault(key(dx, dz + 1), 0) == 0) {
                         graphics.fill(px, py + cell, px + cell, py + cell + 1, gridCol);
                     }
                 }
             }
         }
 
-        for (int dx = dxMin; dx <= dxMax; dx++) {
-            for (int dz = dzMin; dz <= dzMax; dz++) {
+        for (int i = iLo; i <= iHi; i++) {
+            int dx = i - gw / 2;
+            for (int j = jLo; j <= jHi; j++) {
+                int dz = j - gh / 2;
                 long k = key(dx, dz);
                 int s = states.getOrDefault(k, 0);
                 if (s == 0) continue;
@@ -426,10 +434,10 @@ public class ChunkMapWidget extends Widget {
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 int edge = teamColor(teamCells.get(k), s);
-                boolean left = dx == dxMin || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
-                boolean right = dx == dxMax || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
-                boolean up = dz == dzMin || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
-                boolean down = dz == dzMax || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                boolean left = i == iLo || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = i == iHi || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = j == jLo || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = j == jHi || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
                 if (left) graphics.fill(px, py, px + 1, py + cell + 1, edge);
                 if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, edge);
                 if (up) graphics.fill(px, py, px + cell + 1, py + 1, edge);
@@ -438,17 +446,19 @@ public class ChunkMapWidget extends Widget {
         }
 
         int forceInner = 0xFFE06F73;
-        for (int dx = dxMin; dx <= dxMax; dx++) {
-            for (int dz = dzMin; dz <= dzMax; dz++) {
+        for (int i = iLo; i <= iHi; i++) {
+            int dx = i - gw / 2;
+            for (int j = jLo; j <= jHi; j++) {
+                int dz = j - gh / 2;
                 long k = key(dx, dz);
                 if (states.getOrDefault(k, 0) != 2) continue;
                 String ck = claimKeys.get(k);
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                boolean left = dx == dxMin || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
-                boolean right = dx == dxMax || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
-                boolean up = dz == dzMin || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
-                boolean down = dz == dzMax || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                boolean left = i == iLo || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = i == iHi || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = j == jLo || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = j == jHi || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
                 if (left) graphics.fill(px, py, px + 1, py + cell + 1, forceInner);
                 if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, forceInner);
                 if (up) graphics.fill(px, py, px + cell + 1, py + 1, forceInner);
@@ -461,7 +471,9 @@ public class ChunkMapWidget extends Widget {
             int lmy = (int) mouseY - baseY;
             int dx = (int) Math.floor((lmx - ox) / (double) cell) - gw / 2;
             int dz = (int) Math.floor((lmy - oy) / (double) cell) - gh / 2;
-            if (dx >= -halfWA && dx <= gw - halfWA - 1 && dz >= -halfHA && dz <= gh - halfHA - 1) {
+            int iHov = dx + gw / 2;
+            int jHov = dz + gh / 2;
+            if (iHov >= iLo && iHov <= iHi && jHov >= jLo && jHov <= jHi) {
                 if (dx != lastHoverDx || dz != lastHoverDz) {
                     lastHoverDx = dx;
                     lastHoverDz = dz;
@@ -535,9 +547,13 @@ public class ChunkMapWidget extends Widget {
         int oy = ChunkMapGeometry.gridOriginY(h, cell, gridH);
         int dx = (int) Math.floor((localX - ox) / (double) cell) - gridW / 2;
         int dz = (int) Math.floor((localY - oy) / (double) cell) - gridH / 2;
-        int halfWA = gridW / 2;
-        int halfHA = gridH / 2;
-        if (dx < -halfWA || dx > gridW - halfWA - 1 || dz < -halfHA || dz > gridH - halfHA - 1) {
+        int i = dx + gridW / 2;
+        int j = dz + gridH / 2;
+        int clickILo = (int) Math.floor((0 - ox) / (double) cell);
+        int clickIHi = (int) Math.floor((w - ox) / (double) cell);
+        int clickJLo = (int) Math.floor((0 - oy) / (double) cell);
+        int clickJHi = (int) Math.floor((h - oy) / (double) cell);
+        if (i < clickILo || i > clickIHi || j < clickJLo || j > clickJHi) {
             return false;
         }
 
@@ -591,5 +607,33 @@ public class ChunkMapWidget extends Widget {
 
     private void send(ResourceLocation dim, C2SChunkClaimActionPacket.Action action, int x, int z) {
         ModNetwork.sendToServer(new C2SChunkClaimActionPacket(action, dim, x, z));
+    }
+
+    private static void blur(NativeImage img, int w, int h) {
+        int[] src = new int[w * h];
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                src[y * w + x] = img.getPixelRGBA(x, y);
+            }
+        }
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int r = 0, g = 0, b = 0, n = 0;
+                for (int dy = -1; dy <= 1; dy++) {
+                    int ny = y + dy;
+                    if (ny < 0 || ny >= h) continue;
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int nx = x + dx;
+                        if (nx < 0 || nx >= w) continue;
+                        int p = src[ny * w + nx];
+                        r += (p >> 16) & 0xFF;
+                        g += (p >> 8) & 0xFF;
+                        b += p & 0xFF;
+                        n++;
+                    }
+                }
+                img.setPixelRGBA(x, y, (0xFF << 24) | (((r / n) & 0xFF) << 16) | (((g / n) & 0xFF) << 8) | ((b / n) & 0xFF));
+            }
+        }
     }
 }

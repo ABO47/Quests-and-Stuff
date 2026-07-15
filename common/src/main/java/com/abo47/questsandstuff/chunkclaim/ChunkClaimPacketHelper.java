@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 import com.abo47.questsandstuff.team.TeamManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,10 +35,17 @@ public final class ChunkClaimPacketHelper {
         if (team == null) {
             return;
         }
+        String claimedBy = "";
+        for (TeamMember m : team.members()) {
+            if (m.uuid().equals(team.owner())) {
+                claimedBy = m.name();
+                break;
+            }
+        }
         ChunkClaimService service = QuestServiceRegistry.chunkClaims(player.server);
         UUID teamId = team.teamId();
         switch (action) {
-            case CLAIM -> service.claim(teamId, player.getGameProfile().getName(), dim, x, z);
+            case CLAIM -> service.claim(teamId, claimedBy, dim, x, z);
             case UNCLAIM -> service.unclaim(teamId, dim, x, z);
             case TOGGLE_FORCE -> service.setForceLoaded(teamId, dim, x, z, !service.isForceLoaded(teamId, dim, x, z));
             case REQUEST -> {}
@@ -45,7 +53,7 @@ public final class ChunkClaimPacketHelper {
         broadcastAll(player.serverLevel());
     }
 
-    static void broadcastAll(ServerLevel level) {
+    public static void broadcastAll(ServerLevel level) {
         ChunkClaimService service = QuestServiceRegistry.chunkClaims(level.getServer());
         CompoundTag payload = encodeAll(service);
         for (ServerPlayer p : level.getServer().getPlayerList().getPlayers()) {

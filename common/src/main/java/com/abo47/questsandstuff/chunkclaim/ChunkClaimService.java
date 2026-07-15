@@ -153,6 +153,19 @@ public class ChunkClaimService {
         return data().removeTeam(teamId);
     }
 
+    /**
+     * Moves every claim owned by {@code fromTeam} onto {@code toTeam}. Used when a player joins
+     * another team: their solo claims become part of the target team (owned by its leader). The
+     * claim name is rewritten to the target team's owner so the map attribution follows the leader.
+     */
+    public void transferClaims(UUID fromTeam, UUID toTeam, String ownerName) {
+        var d = data();
+        for (ClaimedChunk c : d.claims(fromTeam).chunks()) {
+            d.claim(toTeam, c.dimension(), c.x(), c.z(), ownerName);
+        }
+        d.removeTeam(fromTeam);
+    }
+
     public void forEachClaim(java.util.function.BiConsumer<UUID, ClaimedChunk> consumer) {
         data().forEachClaimed(consumer);
     }
