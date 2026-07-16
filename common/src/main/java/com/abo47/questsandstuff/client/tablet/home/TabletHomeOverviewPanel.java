@@ -91,6 +91,8 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
 
     private static int appAnchorOrder(AppDescriptor app) {
         if ("QUESTS".equals(app.id())) return 0;
+        if ("CHUNKCLAIMER".equals(app.id())) return 0;
+        if ("SETTINGS".equals(app.id())) return 0;
         if ("TEAMS".equals(app.id())) return Integer.MAX_VALUE;
         return 1;
     }

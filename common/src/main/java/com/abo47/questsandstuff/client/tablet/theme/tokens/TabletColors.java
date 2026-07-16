@@ -23,6 +23,7 @@ public final class TabletColors {
     public static final int DEFAULT_WARNING = 0xFFE5B44A;
     public static final int DEFAULT_ERROR = 0xFFE06F73;
     public static final int DEFAULT_INTERACTIVE = 0xFF64C3D2;
+    public static final int DEFAULT_GLOW = 0xFF64C3D2;
     public static final int DEFAULT_SELECTION = 0xFF6BA8FF;
     public static final int DEFAULT_SCROLL_TRACK = DEFAULT_BORDER_BASE;
     public static final int DEFAULT_SCROLL_THUMB = DEFAULT_INTERACTIVE;
@@ -72,6 +73,7 @@ public final class TabletColors {
     public static volatile int WARNING = DEFAULT_WARNING;
     public static volatile int ERROR = DEFAULT_ERROR;
     public static volatile int INTERACTIVE = DEFAULT_INTERACTIVE;
+    public static volatile int GLOW = DEFAULT_GLOW;
     public static volatile int SELECTION = DEFAULT_SELECTION;
     public static volatile int SCROLL_TRACK = DEFAULT_SCROLL_TRACK;
     public static volatile int SCROLL_THUMB = DEFAULT_SCROLL_THUMB;

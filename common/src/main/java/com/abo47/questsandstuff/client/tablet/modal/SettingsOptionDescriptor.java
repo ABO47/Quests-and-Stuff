@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-record SettingsOptionDescriptor(
+public record SettingsOptionDescriptor(
         String id,
         String labelKey,
         String descriptionKey,

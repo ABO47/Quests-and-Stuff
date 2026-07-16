@@ -247,7 +247,7 @@ public final class QuestAppComposer {
             SkinAnchorRegistry.register("quests_search", headers.searchField());
             SkinAnchorRegistry.register("quests_chapter_search", headers.chapterSearchField());
             SkinAnchorRegistry.register("quests_tools_btn", headers.toolsButton());
-            SkinAnchorRegistry.register("quests_settings_btn", headers.settingsButton());
+
             SkinAnchorRegistry.register("quests_blueprint_btn", headers.blueprintButton());
             SkinAnchorRegistry.register("quests_claim_all_btn", headers.claimAllButton());
             SkinAnchorRegistry.register("quests_editor_btn", headers.editorButton());

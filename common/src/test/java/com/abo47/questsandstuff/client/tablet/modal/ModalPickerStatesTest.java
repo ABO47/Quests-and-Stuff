@@ -69,7 +69,7 @@ class ModalPickerStatesTest {
         TabletUiState state = new TabletUiState();
 
         assertThrows(IllegalArgumentException.class,
-                () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.SETTINGS_PANEL));
+                () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.THEME_PICKER));
     }
 
     @Test

@@ -198,7 +198,6 @@ public final class TabletModalState {
         state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
         state.pickers.colorPaletteScrollDragging = false;
         state.modal.themeScrollDragging = false;
-        state.modal.settingsScrollDragging = false;
         clearAnimationState(state);
     }
 
@@ -246,7 +245,6 @@ public final class TabletModalState {
         state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
         state.pickers.colorPaletteScrollDragging = false;
         state.modal.themeScrollDragging = false;
-        state.modal.settingsScrollDragging = false;
     }
 
     private static void clearPrerequisitesManagerState(TabletUiState state) {

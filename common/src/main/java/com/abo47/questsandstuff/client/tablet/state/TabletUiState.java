@@ -42,6 +42,7 @@ public class TabletUiState {
     public final ClipboardState clipboard = new ClipboardState();
     public final TeamsState teams = new TeamsState();
     public final ChunkClaimerState chunkClaimer = new ChunkClaimerState();
+    public final SettingsState settings = new SettingsState();
 
     public static final class RootState {
         public boolean fullScreenMode;
@@ -127,9 +128,6 @@ public class TabletUiState {
         public long modalWindowLastPointerAtMs;
         public int themeScroll;
         public boolean themeScrollDragging;
-        public int settingsTab;
-        public int settingsScroll;
-        public boolean settingsScrollDragging;
         public String modalChapterTarget = "";
         public String modalQuestTarget = "";
         public String modalCanvasBackgroundTarget = "";
@@ -739,6 +737,14 @@ public class TabletUiState {
         public String statusMessage = "";
         public boolean statusSuccess;
         public long statusAnimationStartMs;
+    }
+
+    public static final class SettingsState {
+        public int currentTab = 0;
+        public String search = "";
+        public int scroll;
+        public boolean scrollDragging;
+        public long tabAnimationStartMs;
     }
 
 }

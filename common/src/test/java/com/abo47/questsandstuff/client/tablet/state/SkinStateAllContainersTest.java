@@ -21,7 +21,6 @@ class SkinStateAllContainersTest {
             "quests_search",
             "quests_chapter_search",
             "quests_tools_btn",
-            "quests_settings_btn",
             "quests_blueprint_btn",
             "quests_claim_all_btn",
             "quests_editor_btn",

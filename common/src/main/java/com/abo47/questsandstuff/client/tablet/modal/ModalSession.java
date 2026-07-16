@@ -139,7 +139,6 @@ public final class ModalSession {
             case PREREQUISITES_MANAGER -> capturePicker(state.modal.prerequisitesManagerSearch, state.modal.prerequisitesManagerSearchFocused, state.modal.prerequisitesManagerScroll, state.modal.prerequisitesManagerScrollDragging, "", state.modal.prerequisitesManagerExternalMode ? "EXTERNAL" : "LOCAL");
             case COLOR_PICKER -> capturePicker("", false, state.pickers.colorPaletteScroll, state.pickers.colorPaletteScrollDragging, Integer.toString(state.pickers.colorDraft), "");
             case THEME_PICKER -> capturePicker("", false, state.modal.themeScroll, state.modal.themeScrollDragging, "", "");
-            case SETTINGS_PANEL -> capturePicker("", false, state.modal.settingsScroll, state.modal.settingsScrollDragging, "", Integer.toString(state.modal.settingsTab));
             case NONE -> capturePicker("", false, 0, false, "", "");
         }
     }

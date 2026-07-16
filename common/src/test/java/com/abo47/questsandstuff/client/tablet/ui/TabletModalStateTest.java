@@ -232,7 +232,6 @@ class TabletModalStateTest {
         assertEquals(Integer.MIN_VALUE, state.pickers.colorPaletteContextValue);
         assertFalse(state.pickers.colorPaletteScrollDragging);
         assertFalse(state.modal.themeScrollDragging);
-        assertFalse(state.modal.settingsScrollDragging);
         assertEquals("", state.modal.prerequisitesManagerQuestId);
         assertEquals("", state.modal.prerequisitesManagerSearch);
         assertFalse(state.modal.prerequisitesManagerExternalMode);
@@ -301,7 +300,6 @@ class TabletModalStateTest {
         state.pickers.colorPaletteContextValue = 0xFF00FF00;
         state.pickers.colorPaletteScrollDragging = true;
         state.modal.themeScrollDragging = true;
-        state.modal.settingsScrollDragging = true;
         state.modal.prerequisitesManagerQuestId = "quest";
         state.modal.prerequisitesManagerSearch = "query";
         state.modal.prerequisitesManagerExternalMode = true;

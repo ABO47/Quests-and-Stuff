@@ -1,12 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
-
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -24,6 +18,7 @@ import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = GRID_4;
@@ -244,16 +239,6 @@ public final class CanvasSelectionRenderer {
                 state.canvas.boxCurrentX,
                 state.canvas.boxCurrentY
         );
-    }
-
-    private static int selectionDragScreenX(TabletUiState state) {
-        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
-    }
-
-    private static int selectionDragScreenY(TabletUiState state) {
-        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
     }
 
     private static void drawSelectionBounds(

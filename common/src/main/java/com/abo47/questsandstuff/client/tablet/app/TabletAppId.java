@@ -7,5 +7,6 @@ package com.abo47.questsandstuff.client.tablet.app;
 public enum TabletAppId {
     QUESTS,
     TEAMS,
-    CHUNKCLAIMER
+    CHUNKCLAIMER,
+    SETTINGS
 }

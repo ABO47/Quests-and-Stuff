@@ -18,7 +18,6 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerMod
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletRecipePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.TabletSettingsModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStructurePickerModal;
@@ -59,11 +58,7 @@ public final class ModalPanelRouter {
                 return null;
             }, state -> false),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, TabletEntityVariantModal::rebuild, state -> state.pickers.entityVariantSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.SETTINGS_PANEL, (modal, state, player, refresh, w, h) -> {
-                TabletSettingsModal.rebuild(modal, state, refresh, w, h);
-                return null;
-            }, state -> false)
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused)
     );
 
     private ModalPanelRouter() {

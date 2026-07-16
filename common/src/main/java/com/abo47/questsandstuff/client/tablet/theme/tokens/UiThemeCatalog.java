@@ -23,6 +23,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE7C15F"},
                         {UiThemeManager.UI_ERROR, "#FFE06D72"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF55BFE8"},
+                        {UiThemeManager.UI_GLOW, "#FF55BFE8"},
                         {UiThemeManager.UI_SELECTION, "#FF5AB0FF"}
                 }),
                 new BuiltInTheme("ember", "Ember", new String[][]{
@@ -38,6 +39,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE0A24A"},
                         {UiThemeManager.UI_ERROR, "#FFE06B5C"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF68A9D8"},
+                        {UiThemeManager.UI_GLOW, "#FF68A9D8"},
                         {UiThemeManager.UI_SELECTION, "#FFFF8A3D"}
                 }),
                 new BuiltInTheme("verdant", "Verdant", new String[][]{
@@ -53,6 +55,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE3C765"},
                         {UiThemeManager.UI_ERROR, "#FFDF7068"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF6BBAD8"},
+                        {UiThemeManager.UI_GLOW, "#FF6BBAD8"},
                         {UiThemeManager.UI_SELECTION, "#FFB6E85A"}
                 }),
                 new BuiltInTheme("roseglass", "Roseglass", new String[][]{
@@ -68,6 +71,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE1BE64"},
                         {UiThemeManager.UI_ERROR, "#FFE46E80"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF75C6E6"},
+                        {UiThemeManager.UI_GLOW, "#FF75C6E6"},
                         {UiThemeManager.UI_SELECTION, "#FFFF7FC4"}
                 }),
                 new BuiltInTheme("celestial_mint", "Celestial Mint", new String[][]{
@@ -83,6 +87,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE3C45D"},
                         {UiThemeManager.UI_ERROR, "#FFE06B7D"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF7AB7FF"},
+                        {UiThemeManager.UI_GLOW, "#FF7AB7FF"},
                         {UiThemeManager.UI_SELECTION, "#FF4FE0D0"}
                 }),
                 new BuiltInTheme("tidepool", "Tidepool", new String[][]{
@@ -98,6 +103,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE7B85C"},
                         {UiThemeManager.UI_ERROR, "#FFE56B72"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF62A8EA"},
+                        {UiThemeManager.UI_GLOW, "#FF62A8EA"},
                         {UiThemeManager.UI_SELECTION, "#FF3FD6E8"}
                 }),
                 new BuiltInTheme("sakura_grove", "Sakura Grove", new String[][]{
@@ -113,6 +119,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE0C260"},
                         {UiThemeManager.UI_ERROR, "#FFE56B82"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF77BDE8"},
+                        {UiThemeManager.UI_GLOW, "#FF77BDE8"},
                         {UiThemeManager.UI_SELECTION, "#FFFF7FA8"}
                 }),
                 new BuiltInTheme("copper_circuit", "Copper Circuit", new String[][]{
@@ -128,6 +135,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE1AE5C"},
                         {UiThemeManager.UI_ERROR, "#FFE06A63"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF65C8CB"},
+                        {UiThemeManager.UI_GLOW, "#FF65C8CB"},
                         {UiThemeManager.UI_SELECTION, "#FFE89A5F"}
                 }),
                 new BuiltInTheme("prism_slate", "Prism Slate", new String[][]{
@@ -143,6 +151,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE7C25D"},
                         {UiThemeManager.UI_ERROR, "#FFE06D70"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF8EBAFF"},
+                        {UiThemeManager.UI_GLOW, "#FF8EBAFF"},
                         {UiThemeManager.UI_SELECTION, "#FF8AC6FF"}
                 }),
                 new BuiltInTheme("solar_ink", "Solar Ink", new String[][]{
@@ -158,6 +167,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFFFC857"},
                         {UiThemeManager.UI_ERROR, "#FFE66B6B"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF63C7E6"},
+                        {UiThemeManager.UI_GLOW, "#FF63C7E6"},
                         {UiThemeManager.UI_SELECTION, "#FFFFD23F"}
                 }),
                 new BuiltInTheme("harbor_ember", "Harbor Ember", new String[][]{
@@ -173,6 +183,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFFFB85C"},
                         {UiThemeManager.UI_ERROR, "#FFE46D68"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF64C6DA"},
+                        {UiThemeManager.UI_GLOW, "#FF64C6DA"},
                         {UiThemeManager.UI_SELECTION, "#FFFF9040"}
                 }),
                 new BuiltInTheme("wisteria_dawn", "Wisteria Dawn", new String[][]{
@@ -188,6 +199,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE3C765"},
                         {UiThemeManager.UI_ERROR, "#FFE46D7D"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF75C7D8"},
+                        {UiThemeManager.UI_GLOW, "#FF75C7D8"},
                         {UiThemeManager.UI_SELECTION, "#FFC29CFF"}
                 }),
                 new BuiltInTheme("pine_frost", "Pine Frost", new String[][]{
@@ -203,6 +215,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE6C45F"},
                         {UiThemeManager.UI_ERROR, "#FFE06D76"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF61C1E8"},
+                        {UiThemeManager.UI_GLOW, "#FF61C1E8"},
                         {UiThemeManager.UI_SELECTION, "#FF6FD0E0"}
                 }),
                 new BuiltInTheme("ruby_graphite", "Ruby Graphite", new String[][]{
@@ -218,6 +231,7 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_WARNING, "#FFE4BD5C"},
                         {UiThemeManager.UI_ERROR, "#FFE85D75"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF71C8E8"},
+                        {UiThemeManager.UI_GLOW, "#FF71C8E8"},
                         {UiThemeManager.UI_SELECTION, "#FFFF6B8A"}
                 })
         );

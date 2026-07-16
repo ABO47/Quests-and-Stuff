@@ -4,15 +4,18 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 
+import java.util.ArrayList;
 import java.util.List;
 
-final class SettingsTabDescriptors {
+public final class SettingsTabDescriptors {
     static final int THEMES = 0;
     static final int CANVAS = 1;
     static final int HUD = 2;
@@ -34,25 +37,53 @@ final class SettingsTabDescriptors {
     private SettingsTabDescriptors() {
     }
 
-    static List<SettingsTabDescriptor> all() {
+    public static List<SettingsTabDescriptor> all() {
         return TABS;
     }
 
-    static int activeTab(int tab) {
+    public static int activeTab(int tab) {
         return descriptor(tab).id();
     }
 
     static SettingsTabDescriptor active(TabletUiState state) {
-        return descriptor(state.modal.settingsTab);
+        return descriptor(state.settings.currentTab);
     }
 
-    static SettingsTabDescriptor descriptor(int tab) {
+    public static SettingsTabDescriptor descriptor(int tab) {
         for (SettingsTabDescriptor descriptor : TABS) {
             if (descriptor.id() == tab) {
                 return descriptor;
             }
         }
         return TABS.get(0);
+    }
+
+    public static List<SettingsOptionDescriptor> search(TabletUiState state, String query) {
+        String q = SearchFilter.normalizeUserInput(query);
+        List<SettingsOptionDescriptor> matches = new ArrayList<>();
+        for (SettingsTabDescriptor tab : TABS) {
+            if (tab.themePicker()) {
+                continue;
+            }
+            for (SettingsOptionDescriptor option : tab.options(state)) {
+                if (optionMatches(option, q)) {
+                    matches.add(option);
+                }
+            }
+        }
+        return matches;
+    }
+
+    private static boolean optionMatches(SettingsOptionDescriptor option, String q) {
+        if (q.isBlank()) {
+            return true;
+        }
+        String label = SearchFilter.normalizeUserInput(I18n.get(option.labelKey()));
+        if (label.contains(q)) {
+            return true;
+        }
+        String description = SearchFilter.normalizeUserInput(I18n.get(option.descriptionKey()));
+        return description.contains(q);
     }
 
     private static List<SettingsOptionDescriptor> canvasOptions(TabletUiState state) {

@@ -97,15 +97,6 @@ public final class ModalOpenActions {
         });
     }
 
-    public static void openSettingsPanel(TabletUiState state) {
-        openPickerModal(state, ModalWindowManager.ModalType.SETTINGS_PANEL, () -> {
-            state.modal.settingsTab = 0;
-            state.modal.settingsScroll = 0;
-            state.modal.settingsScrollDragging = false;
-            ContextMenuController.clearDeleteConfirm(state);
-        });
-    }
-
     public static void openPrerequisitesManager(TabletUiState state, String questId) {
         openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
             state.modal.prerequisitesManagerQuestId = clean(questId).trim();
