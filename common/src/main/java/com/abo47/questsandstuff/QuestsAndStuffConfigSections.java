@@ -144,7 +144,7 @@ final class QuestsAndStuffConfigSections {
         static final int DEFAULT_MAX_CLAIMED = 100;
         static final int DEFAULT_MAX_FORCE_LOADED = 100;
         static final int MIN_CAP = 0;
-        static final int MAX_CAP = 100000;
+        static final int MAX_CAP = Integer.MAX_VALUE;
 
         boolean protectBreakPlace = true;
         boolean protectInteraction = true;

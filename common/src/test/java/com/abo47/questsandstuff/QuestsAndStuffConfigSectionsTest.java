@@ -92,7 +92,9 @@ class QuestsAndStuffConfigSectionsTest {
         assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_CLAIMED, 100);
         assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_FORCE_LOADED, 100);
         assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(-5));
-        assertEquals(100000, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(999999));
+        assertEquals(999999, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(999999));
+        assertEquals(Integer.MAX_VALUE, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(Integer.MAX_VALUE));
+        assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(Integer.MIN_VALUE));
     }
 
     @Test

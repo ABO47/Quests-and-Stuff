@@ -376,7 +376,7 @@ public final class SettingsTabDescriptors {
                         },
                         capMin,
                         capMax,
-                        6,
+                        10,
                         false,
                         "ui.questsandstuff.settings.chunk_unit"
                 ),
@@ -391,7 +391,7 @@ public final class SettingsTabDescriptors {
                         },
                         capMin,
                         capMax,
-                        6,
+                        10,
                         false,
                         "ui.questsandstuff.settings.chunk_unit"
                 )
