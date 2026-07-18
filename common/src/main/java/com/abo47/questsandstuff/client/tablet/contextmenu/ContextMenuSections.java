@@ -46,9 +46,15 @@ public final class ContextMenuSections {
             if (actions == null || actions.isEmpty()) {
                 continue;
             }
-            if (!skipHeaders) {
-                ContextAction header = ContextAction.sectionHeader(section);
-                result.add(header);
+            boolean allPromoted = true;
+            for (ContextAction a : actions) {
+                if (!a.promoted()) {
+                    allPromoted = false;
+                    break;
+                }
+            }
+            if (!skipHeaders && !allPromoted) {
+                result.add(ContextAction.sectionHeader(section));
             }
             result.addAll(actions);
         }

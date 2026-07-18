@@ -58,9 +58,27 @@ class ContextMenuSectionsTest {
         }));
         sections.add(ContextMenuSection.DANGER, row("Remove"));
 
-        ContextAction header = sections.build().get(0);
-        assertTrue(header.isSection());
-        assertFalse(header.promoted());
+        List<ContextAction> built = sections.build();
+        assertEquals(3, built.size());
+        assertFalse(built.get(0).isSection());
+        assertTrue(built.get(1).isSection());
+        assertFalse(built.get(1).promoted());
+        assertEquals(ContextMenuSection.DANGER, built.get(1).section());
+    }
+
+    @Test
+    void allPromotedSectionSuppressesHeader() {
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.promoted("Copy", "copy", ActionTone.PRIMARY, () -> {
+        }));
+        sections.add(ContextMenuSection.DANGER, row("Delete"));
+
+        List<ContextAction> built = sections.build();
+        // CLIPBOARD all-promoted → header suppressed. DANGER non-promoted → header shown.
+        assertEquals(3, built.size());
+        assertFalse(built.get(0).isSection());
+        assertTrue(built.get(1).isSection());
+        assertEquals(ContextMenuSection.DANGER, built.get(1).section());
     }
 
     private static ContextAction row(String label) {
