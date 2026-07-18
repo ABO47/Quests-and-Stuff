@@ -85,9 +85,7 @@ public final class CanvasElementSelectionSlot {
     }
 
     private static CanvasElementGeometry.Box screenRectBox(int left, int top, int width, int height) {
-        double centerX = left + width / 2.0;
-        double centerY = top + height / 2.0;
-        return new CanvasElementGeometry.Box(centerX, centerY, width, height, -width / 2, -height / 2, width / 2, height / 2);
+        return new CanvasElementGeometry.Box(left, top, width, height, 0, 0, width, height);
     }
 
     private static void drawBoxFillAndOutline(GuiGraphics graphics, CanvasElementGeometry.Box box) {
