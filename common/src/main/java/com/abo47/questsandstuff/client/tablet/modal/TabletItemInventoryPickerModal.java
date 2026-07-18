@@ -1,37 +1,38 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletItemInventoryPickerModal {
     private static final int TILE = 18;

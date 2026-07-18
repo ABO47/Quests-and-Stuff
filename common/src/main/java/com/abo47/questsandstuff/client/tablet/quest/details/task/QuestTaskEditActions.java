@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestTaskEditActions {
     private QuestTaskEditActions() {

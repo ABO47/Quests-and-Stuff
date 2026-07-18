@@ -1,12 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
@@ -14,16 +18,13 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementS
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
@@ -302,7 +303,7 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasQuestResizeHandleHit(TabletUiState state, QuestCardLayout card, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, card.visualLogicalX(), card.visualLogicalY(), card.logicalWidth(), card.logicalHeight(), 0, 0, 0, x, y);
+        return CanvasElementSelectionSlot.resizeHandleHitAtScreenRect(card.x(), card.y(), card.width(), card.height(), x, y);
     }
 
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {

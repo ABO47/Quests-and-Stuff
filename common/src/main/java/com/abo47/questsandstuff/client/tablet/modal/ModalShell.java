@@ -1,16 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import java.util.function.Consumer;
 
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import java.util.function.Consumer;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 public final class ModalShell {

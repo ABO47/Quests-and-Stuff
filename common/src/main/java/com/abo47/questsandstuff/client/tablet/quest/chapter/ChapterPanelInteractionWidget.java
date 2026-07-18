@@ -1,22 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;

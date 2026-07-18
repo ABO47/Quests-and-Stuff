@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.forge;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.ModPacketType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;

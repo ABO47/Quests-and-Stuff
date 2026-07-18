@@ -1,13 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +9,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 

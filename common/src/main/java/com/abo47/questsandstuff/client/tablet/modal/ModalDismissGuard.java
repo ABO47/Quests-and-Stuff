@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class ModalDismissGuard extends WidgetGroup {
     private final TabletUiState state;

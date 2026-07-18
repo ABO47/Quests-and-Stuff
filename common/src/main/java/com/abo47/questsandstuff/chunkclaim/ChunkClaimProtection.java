@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.chunkclaim;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.team.TeamManager;
+import java.util.UUID;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 
-import java.util.UUID;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.team.TeamManager;
+import com.abo47.questsandstuff.team.model.TeamData;
 
 public final class ChunkClaimProtection {
     private ChunkClaimProtection() {

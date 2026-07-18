@@ -1,15 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
+
+import com.mojang.serialization.JsonOps;
+
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+
+import com.google.gson.JsonObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

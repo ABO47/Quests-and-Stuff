@@ -1,13 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
-import com.google.gson.JsonObject;
+import java.util.Locale;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -15,7 +9,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.Locale;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskDisplayText {
     private QuestTaskDisplayText() {

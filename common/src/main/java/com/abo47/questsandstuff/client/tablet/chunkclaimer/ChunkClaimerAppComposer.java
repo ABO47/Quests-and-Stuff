@@ -1,6 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
@@ -14,18 +20,13 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.BORDER_ACCENT;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.BORDER_BASE;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.SURFACE_PANEL_ALT;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.SURFACE_BASE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.SURFACE_PANEL_ALT;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.subtleBorder;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;

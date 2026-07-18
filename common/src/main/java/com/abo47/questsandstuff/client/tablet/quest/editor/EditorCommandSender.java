@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 
 final class EditorCommandSender {
     private EditorCommandSender() {

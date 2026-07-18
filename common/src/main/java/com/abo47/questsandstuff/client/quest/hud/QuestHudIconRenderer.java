@@ -1,12 +1,14 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 
 final class QuestHudIconRenderer {
     private QuestHudIconRenderer() {

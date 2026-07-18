@@ -1,6 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -12,19 +20,12 @@ import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class RecipePickerGridRenderer {
     private static final int TILE = GRID_18;

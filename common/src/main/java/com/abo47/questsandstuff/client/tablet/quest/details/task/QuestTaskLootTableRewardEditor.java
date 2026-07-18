@@ -1,15 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.google.gson.JsonObject;
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskLootTableRewardEditor {
     private QuestTaskLootTableRewardEditor() {

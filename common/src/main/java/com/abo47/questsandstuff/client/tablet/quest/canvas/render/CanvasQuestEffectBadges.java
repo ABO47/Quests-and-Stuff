@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.nbt.CompoundTag;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasQuestEffectBadges {
     private static final int MAX_BADGES = 6;

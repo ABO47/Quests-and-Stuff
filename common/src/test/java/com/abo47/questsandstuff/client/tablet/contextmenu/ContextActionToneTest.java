@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

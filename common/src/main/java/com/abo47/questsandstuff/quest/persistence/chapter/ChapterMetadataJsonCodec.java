@@ -1,15 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.util.naming.SafeNames;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +7,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
+import com.abo47.questsandstuff.util.naming.SafeNames;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 final class ChapterMetadataJsonCodec {
     private ChapterMetadataJsonCodec() {

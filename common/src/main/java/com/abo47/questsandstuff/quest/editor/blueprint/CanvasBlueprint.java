@@ -1,28 +1,31 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public record CanvasBlueprint(
         int schema,

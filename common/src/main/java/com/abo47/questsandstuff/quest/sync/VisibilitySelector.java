@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 final class VisibilitySelector {
     private final QuestDefinitionStore definitionStore;

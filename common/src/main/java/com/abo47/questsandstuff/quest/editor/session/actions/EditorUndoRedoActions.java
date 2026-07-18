@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.SyncService;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class EditorUndoRedoActions {
     private static final int MAX_HISTORY = 24;

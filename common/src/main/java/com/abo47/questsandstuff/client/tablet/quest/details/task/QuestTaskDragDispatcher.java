@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import java.util.List;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestTaskDragDispatcher {
     private static final int SECTION_GAP = TabletUiFactory.PANEL_INSET;

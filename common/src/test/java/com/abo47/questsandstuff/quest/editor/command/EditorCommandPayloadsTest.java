@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.quest.editor.command;
 
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import org.junit.jupiter.api.Test;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

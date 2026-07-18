@@ -1,22 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.ui.state;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 public final class TabletActiveState {
     private static Runnable activeTabletRefresh = () -> {

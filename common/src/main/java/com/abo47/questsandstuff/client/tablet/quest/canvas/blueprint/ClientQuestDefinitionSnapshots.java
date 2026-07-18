@@ -1,5 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -7,18 +20,8 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.google.gson.JsonParser;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.JsonParser;
 
 public final class ClientQuestDefinitionSnapshots {
     private ClientQuestDefinitionSnapshots() {

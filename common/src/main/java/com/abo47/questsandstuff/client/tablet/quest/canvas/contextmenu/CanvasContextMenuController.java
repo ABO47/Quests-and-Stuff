@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import java.util.List;
+
 import net.minecraft.client.resources.language.I18n;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
@@ -19,19 +20,19 @@ public final class CanvasContextMenuController {
     }
 
     public static List<ContextAction> buildContextActions(CanvasViewport canvasViewport, TabletUiState state) {
-        List<ContextAction> actions = new ArrayList<>();
+        ContextMenuSections sections = new ContextMenuSections();
         String selectedChapter = selectedChapterName(state);
-        CanvasContextCanvasActions.addCanvasEmptyActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
-        CanvasContextSelectionActions.addSelectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
-        CanvasContextQuestActions.addQuestActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
-        CanvasContextElementActions.addImageActions(actions, canvasViewport, state, selectedChapter);
-        CanvasContextElementActions.addTextActions(actions, canvasViewport, state, selectedChapter);
-        CanvasContextElementActions.addExclusiveChoiceActions(actions, canvasViewport, state, selectedChapter);
-        CanvasContextConnectionActions.addConnectionActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextCanvasActions.addCanvasEmptyActions(sections, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextSelectionActions.addSelectionActions(sections, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextQuestActions.addQuestActions(sections, canvasViewport, state, canvasViewport.player(), selectedChapter);
+        CanvasContextElementActions.addImageActions(sections, canvasViewport, state, selectedChapter);
+        CanvasContextElementActions.addTextActions(sections, canvasViewport, state, selectedChapter);
+        CanvasContextElementActions.addExclusiveChoiceActions(sections, canvasViewport, state, selectedChapter);
+        CanvasContextConnectionActions.addConnectionActions(sections, canvasViewport, state, canvasViewport.player(), selectedChapter);
         if (!exclusiveSubmenuOpen(state)) {
-            CanvasContextGlobalActions.addGlobalActions(actions, canvasViewport, state, canvasViewport.player(), selectedChapter);
+            CanvasContextGlobalActions.addGlobalActions(sections, canvasViewport, state, canvasViewport.player(), selectedChapter);
         }
-        return actions;
+        return sections.build();
     }
 
     private static boolean exclusiveSubmenuOpen(TabletUiState state) {

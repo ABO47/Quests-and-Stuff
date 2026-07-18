@@ -1,19 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import java.util.function.IntSupplier;
+
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.function.IntSupplier;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;

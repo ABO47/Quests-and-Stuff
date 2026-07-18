@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
@@ -17,11 +19,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 public final class RecipeChoiceIndex {
     private static final PickerCache<RecipeOwner, RecipeChoices, RecipeQuery, List<RecipeChoice>> CACHE = new PickerCache<>();

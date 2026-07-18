@@ -1,21 +1,23 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

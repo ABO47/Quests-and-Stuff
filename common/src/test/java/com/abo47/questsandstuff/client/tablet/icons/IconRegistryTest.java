@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

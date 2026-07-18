@@ -1,13 +1,12 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer.rei;
 
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,12 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 
 public final class ReiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String ENTRY_STACK = "me.shedaniel.rei.api.common.entry.EntryStack";

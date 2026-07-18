@@ -1,8 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;

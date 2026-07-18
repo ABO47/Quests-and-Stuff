@@ -1,16 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.minecraft.SharedConstants;
-import com.abo47.questsandstuff.platform.Services;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -20,6 +9,19 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+
+import net.minecraft.SharedConstants;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.platform.Services;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Maintains the questline share manifest.

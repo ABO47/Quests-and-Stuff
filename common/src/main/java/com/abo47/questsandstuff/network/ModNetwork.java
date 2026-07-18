@@ -1,45 +1,46 @@
 package com.abo47.questsandstuff.network;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
+import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorRemoveQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorUpdateQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimAllRewardsPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimRewardPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualItemSubmitPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
-import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
-import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
 import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
+import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
 import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
-import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
+import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
 import com.abo47.questsandstuff.network.team.S2CTeamJoinResultPacket;
-import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
-import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
-import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
+import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
 import com.abo47.questsandstuff.platform.Services;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 public final class ModNetwork {
     public static final String PROTOCOL = "1";

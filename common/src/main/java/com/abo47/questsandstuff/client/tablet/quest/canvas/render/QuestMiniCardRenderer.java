@@ -1,16 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class QuestMiniCardRenderer {
     private QuestMiniCardRenderer() {

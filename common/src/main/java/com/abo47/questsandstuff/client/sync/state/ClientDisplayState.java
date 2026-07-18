@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class ClientDisplayState {
     private static final Map<String, String> ADVANCEMENT_DISPLAYS = new HashMap<>();

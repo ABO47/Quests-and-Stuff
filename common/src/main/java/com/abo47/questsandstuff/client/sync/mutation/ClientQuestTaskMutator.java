@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public final class ClientQuestTaskMutator {
     private ClientQuestTaskMutator() {

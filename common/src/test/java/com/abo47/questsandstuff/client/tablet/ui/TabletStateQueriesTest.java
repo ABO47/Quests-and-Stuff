@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

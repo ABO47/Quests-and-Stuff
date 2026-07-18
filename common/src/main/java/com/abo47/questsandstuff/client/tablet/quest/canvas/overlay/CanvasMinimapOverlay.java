@@ -1,5 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
@@ -14,19 +29,6 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 

@@ -1,6 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.List;
+
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -8,20 +14,15 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.List;
-
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletThemePickerModal {
     private static final int PAD = GRID_8;

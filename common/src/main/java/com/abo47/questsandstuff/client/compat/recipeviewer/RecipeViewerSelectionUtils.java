@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 
 public final class RecipeViewerSelectionUtils {
     private RecipeViewerSelectionUtils() {

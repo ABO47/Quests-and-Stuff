@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
@@ -7,12 +14,6 @@ import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.Iterator;
-import java.util.Map;
 
 public final class CanvasConnectionAnimation {
     private static final long DURATION_MS = TabletAnimationTimings.CONNECTION_ANIM_MS;

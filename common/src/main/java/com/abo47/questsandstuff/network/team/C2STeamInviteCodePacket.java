@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.team.TeamManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.team.TeamManager;
+import com.abo47.questsandstuff.team.model.TeamData;
 
 public record C2STeamInviteCodePacket() {
     public static C2STeamInviteCodePacket decode(FriendlyByteBuf buf) {

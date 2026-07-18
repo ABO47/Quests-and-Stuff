@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.quest.sound;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestCompletionSoundPlayer {
     public static final String DEFAULT_SOUND = "minecraft:ui.toast.challenge_complete";

@@ -1,20 +1,21 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
-import com.abo47.questsandstuff.client.sync.mutation.ClientQuestMutator;
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
-import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
+import com.abo47.questsandstuff.client.sync.mutation.ClientQuestMutator;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncPayloadApplier;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncUiBridge;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class ClientQuestStateFacade {
     private ClientQuestStateFacade() {

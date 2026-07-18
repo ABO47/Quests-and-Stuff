@@ -1,6 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.ui.factory;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
@@ -13,20 +28,8 @@ import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class TabletAssets {
     private TabletAssets() {

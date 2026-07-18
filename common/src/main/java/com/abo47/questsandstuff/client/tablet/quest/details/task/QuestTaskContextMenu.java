@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
@@ -9,11 +16,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final class QuestTaskContextMenu {
     private QuestTaskContextMenu() {

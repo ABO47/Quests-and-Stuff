@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class QuestSettingsEditService {
     private final EditorSessionService service;

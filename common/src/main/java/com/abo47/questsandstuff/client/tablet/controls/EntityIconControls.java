@@ -1,21 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
-import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class EntityIconControls {
     private EntityIconControls() {
@@ -40,7 +38,8 @@ public final class EntityIconControls {
     }
 
     public static void addEntityVariantAndMotionActions(
-            List<ContextAction> actions,
+            ContextMenuSections sections,
+            ContextMenuSection section,
             TabletUiState state,
             String icon,
             String variantTarget,
@@ -53,14 +52,14 @@ public final class EntityIconControls {
         }
         String entityId = EntityPreviewRenderer.entityId(icon);
         if (EntityVariantCatalog.hasVariants(entityId)) {
-            actions.add(ContextActionFactory.changeVariant(() -> {
+            sections.add(section, ContextActionFactory.changeVariant(() -> {
                 openVariantPicker(state, variantTarget, icon);
                 closeOwner.run();
                 QuestsAndStuffMod.debugLog("[QnS:UI] entity icon variant picker open target={} entity={}", variantTarget, entityId);
                 refresh.run();
             }));
         }
-        actions.add(ContextActionFactory.editMotion(() -> {
+        sections.add(section, ContextActionFactory.editMotion(() -> {
             ContextMenuController.clearDeleteConfirm(state);
             openMotion.run();
             closeOwner.run();

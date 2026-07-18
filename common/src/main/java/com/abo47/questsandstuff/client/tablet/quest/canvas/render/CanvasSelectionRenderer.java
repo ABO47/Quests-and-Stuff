@@ -1,24 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import org.joml.Quaternionf;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = GRID_4;

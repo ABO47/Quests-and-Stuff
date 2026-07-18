@@ -1,17 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import java.util.function.IntSupplier;
+
+import net.minecraft.client.gui.GuiGraphics;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.client.gui.GuiGraphics;
-
-import java.util.function.IntSupplier;
 
 public final class QuestDetailsDescriptionSelection {
     private static final int SELECTION_PAD = 4;

@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.team.runtime;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.team.model.TeamMember;
-import com.abo47.questsandstuff.team.TeamSavedData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.team.TeamSavedData;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 public final class MultiTeamProgressProvider implements TeamProgressProvider {
     public static final MultiTeamProgressProvider INSTANCE = new MultiTeamProgressProvider();

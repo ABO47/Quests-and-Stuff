@@ -1,5 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
@@ -10,18 +22,8 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class SkinEditManager {
     private SkinEditManager() {

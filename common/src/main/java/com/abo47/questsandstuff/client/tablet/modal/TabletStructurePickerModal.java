@@ -1,22 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 public final class TabletStructurePickerModal {
     private TabletStructurePickerModal() {

@@ -1,34 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.sync.SyncService;
-import com.abo47.questsandstuff.team.runtime.TeamProgressProvider;
-import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +9,38 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProvider;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestRewardAndTeamGameTests {

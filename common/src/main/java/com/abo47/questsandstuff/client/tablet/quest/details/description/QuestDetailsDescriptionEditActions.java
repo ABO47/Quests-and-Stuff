@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final class QuestDetailsDescriptionEditActions {
     private static final int RECIPE_CARD_W = 136;

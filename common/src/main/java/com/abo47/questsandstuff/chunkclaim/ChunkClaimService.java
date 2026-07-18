@@ -1,9 +1,7 @@
 package com.abo47.questsandstuff.chunkclaim;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
-import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
-import com.abo47.questsandstuff.platform.Services;
+import java.util.UUID;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -13,7 +11,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
+import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
+import com.abo47.questsandstuff.platform.Services;
 
 public class ChunkClaimService {
     private final MinecraftServer server;

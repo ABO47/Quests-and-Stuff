@@ -1,13 +1,10 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,8 +12,13 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestCompletionNotificationOverlay {
 

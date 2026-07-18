@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
+import net.minecraft.world.item.ItemStack;
+
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import net.minecraft.world.item.ItemStack;
 
 enum RecipeViewerSelectionMode {
     OUTPUT {

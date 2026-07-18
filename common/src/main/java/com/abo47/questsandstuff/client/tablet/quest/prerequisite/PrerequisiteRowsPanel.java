@@ -1,9 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
@@ -14,16 +21,10 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_30;

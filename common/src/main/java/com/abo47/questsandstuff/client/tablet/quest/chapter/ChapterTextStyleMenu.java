@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 
 final class ChapterTextStyleMenu {
     private ChapterTextStyleMenu() {

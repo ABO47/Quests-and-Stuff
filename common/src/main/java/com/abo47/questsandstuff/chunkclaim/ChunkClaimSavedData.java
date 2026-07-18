@@ -1,9 +1,13 @@
 package com.abo47.questsandstuff.chunkclaim;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.team.NbtKeys;
-import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
-import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -11,13 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
+import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
+import com.abo47.questsandstuff.team.NbtKeys;
 
 public class ChunkClaimSavedData extends SavedData {
     private static final String DATA_NAME = QuestsAndStuffMod.MODID + "_chunk_claims";

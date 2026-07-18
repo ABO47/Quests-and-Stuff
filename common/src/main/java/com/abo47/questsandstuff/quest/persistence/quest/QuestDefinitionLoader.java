@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeQuestId;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.withId;

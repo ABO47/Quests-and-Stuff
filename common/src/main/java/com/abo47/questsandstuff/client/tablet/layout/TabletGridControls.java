@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.client.Minecraft;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_BG_OPACITY;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;

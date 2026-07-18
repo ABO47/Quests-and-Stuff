@@ -1,25 +1,26 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.actions;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class CanvasEntityPickerLauncher {
     private CanvasEntityPickerLauncher() {

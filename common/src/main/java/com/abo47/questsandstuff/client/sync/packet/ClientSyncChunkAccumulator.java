@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class ClientSyncChunkAccumulator {
     private final int expected;

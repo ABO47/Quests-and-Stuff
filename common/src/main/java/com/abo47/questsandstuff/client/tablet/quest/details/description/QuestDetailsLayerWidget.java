@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import org.lwjgl.glfw.GLFW;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import org.lwjgl.glfw.GLFW;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestDetailsLayerWidget extends WidgetGroup {
     private final TabletUiState state;

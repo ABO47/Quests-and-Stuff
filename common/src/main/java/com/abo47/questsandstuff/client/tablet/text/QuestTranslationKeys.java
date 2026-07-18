@@ -89,10 +89,11 @@ public final class QuestTranslationKeys {
     public static final String CONTEXT_ALIGN = "ui.questsandstuff.context.align";
     public static final String CONTEXT_ALIGN_HORIZONTAL_CENTER = "ui.questsandstuff.context.align_horizontal_center";
     public static final String CONTEXT_ALIGN_VERTICAL_CENTER = "ui.questsandstuff.context.align_vertical_center";
-    public static final String CONTEXT_BACKGROUND = "ui.questsandstuff.context.background";
     public static final String CONTEXT_BRING_TO_FRONT = "ui.questsandstuff.context.bring_to_front";
     public static final String CONTEXT_CENTER_PIVOT = "ui.questsandstuff.context.center_pivot";
     public static final String CONTEXT_CHANGE_BACKGROUND = "ui.questsandstuff.context.change_background";
+    public static final String CONTEXT_CHANGE_CHAPTER_TEXTURE = "ui.questsandstuff.context.change_chapter_texture";
+    public static final String CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE = "ui.questsandstuff.context.change_exclusive_choice_texture";
     public static final String CONTEXT_CHANGE_ENTITY = "ui.questsandstuff.context.change_entity";
     public static final String CONTEXT_CHANGE_ITEM = "ui.questsandstuff.context.change_item";
     public static final String CONTEXT_CHANGE_BLOCK = "ui.questsandstuff.context.change_block";
@@ -105,7 +106,6 @@ public final class QuestTranslationKeys {
     public static final String CONTEXT_CHANGE_VARIANT = "ui.questsandstuff.context.change_variant";
     public static final String CONTEXT_CHANGE_COMPLETION_SOUND = "ui.questsandstuff.context.change_completion_sound";
     public static final String CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.change_completion_hud_background";
-    public static final String CONTEXT_COMPLETION_SOUND = "ui.questsandstuff.context.completion_sound";
     public static final String CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.remove_completion_hud_background";
     public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
     public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
@@ -136,6 +136,9 @@ public final class QuestTranslationKeys {
     public static final String CONTEXT_PREREQUISITES_MANAGER = "ui.questsandstuff.context.prerequisites_manager";
     public static final String CONTEXT_PROGRESS_TYPES = "ui.questsandstuff.context.progress_types";
     public static final String CONTEXT_REMOVE_BACKGROUND = "ui.questsandstuff.context.remove_background";
+    public static final String CONTEXT_REMOVE_QUEST_TEXTURE = "ui.questsandstuff.context.remove_quest_texture";
+    public static final String CONTEXT_REMOVE_CHAPTER_TEXTURE = "ui.questsandstuff.context.remove_chapter_texture";
+    public static final String CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE = "ui.questsandstuff.context.remove_exclusive_choice_texture";
     public static final String CONTEXT_REMOVE_PREREQUISITE = "ui.questsandstuff.context.remove_prerequisite";
     public static final String CONTEXT_MAKE_QUEST_REPEATABLE = "ui.questsandstuff.context.make_quest_repeatable";
     public static final String CONTEXT_MAKE_QUEST_NOT_REPEATABLE = "ui.questsandstuff.context.make_quest_not_repeatable";

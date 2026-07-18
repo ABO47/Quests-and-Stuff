@@ -1,28 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.bootstrap;
 
+import java.util.List;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
+import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
 import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
 import com.abo47.questsandstuff.client.tablet.quest.QuestAppComposer;
-import com.abo47.questsandstuff.client.tablet.teams.TeamsAppComposer;
-import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
-import com.abo47.questsandstuff.client.tablet.settings.SettingsAppComposer;
-import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.settings.SettingsAppComposer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.teams.TeamsAppComposer;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyCanvasBgOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.defaultGridOpacityPercent;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
@@ -30,10 +31,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ensureAssetsDirs;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedSkinState;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.syncCanvasStateFromCache;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class TabletBootstrap {
     private static boolean appsRegistered;

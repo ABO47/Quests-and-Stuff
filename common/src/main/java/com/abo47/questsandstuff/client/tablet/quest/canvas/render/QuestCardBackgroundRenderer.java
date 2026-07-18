@@ -1,21 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;

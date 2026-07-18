@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.ClientQuestDefinitionSnapshots;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
@@ -7,13 +14,6 @@ import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 final class PrerequisitePreviewBuilder {
     private static final int COMPACT_X_OFFSET = 128;

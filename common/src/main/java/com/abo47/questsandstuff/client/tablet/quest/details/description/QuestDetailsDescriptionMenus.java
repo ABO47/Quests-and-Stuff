@@ -1,12 +1,31 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasTextStyleMenu;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
@@ -14,32 +33,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public final class QuestDetailsDescriptionMenus {
     private QuestDetailsDescriptionMenus() {
@@ -266,8 +268,9 @@ public final class QuestDetailsDescriptionMenus {
         if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
                 && descriptionSelectionCount(state) == 1
                 && QuestDetailsDescriptionSelectionState.selectedImageIds(state).contains(contextImage.id())) {
-            CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
-            CanvasTransformGizmoMenus.addCenterPivotAction(actions, state, () -> {
+            ContextMenuSections gizmoSections = new ContextMenuSections();
+            CanvasTransformGizmoMenus.addModeActions(gizmoSections, ContextMenuSection.ARRANGE, state, refresh);
+            CanvasTransformGizmoMenus.addCenterPivotAction(gizmoSections, ContextMenuSection.ARRANGE, state, () -> {
                 CanvasImageLayer image = model.image(state.questDetails.questDetailsContextId);
                 if (image != null) {
                     model.putImage(image.withCenteredPivot());
@@ -279,6 +282,7 @@ public final class QuestDetailsDescriptionMenus {
                     state.questDetails.questDetailsDescriptionSelection.textIds().clear();
                 }
             }, refresh);
+            actions.addAll(gizmoSections.build());
         }
         actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
@@ -338,7 +342,9 @@ public final class QuestDetailsDescriptionMenus {
 
     private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, Runnable refresh) {
         if (selectionSupportsGizmo(state, model)) {
-            CanvasTransformGizmoMenus.addModeActions(actions, state, refresh);
+            ContextMenuSections gizmoSections = new ContextMenuSections();
+            CanvasTransformGizmoMenus.addModeActions(gizmoSections, ContextMenuSection.ARRANGE, state, refresh);
+            actions.addAll(gizmoSections.build());
         }
         addBatchDescElementActions(actions, state, questId, model);
         actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", TabletColors.INTERACTIVE, List.of(

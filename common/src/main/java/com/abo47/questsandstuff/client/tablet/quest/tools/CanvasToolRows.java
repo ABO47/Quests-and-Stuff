@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import java.util.function.Consumer;
+
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 final class CanvasToolRows {
     private CanvasToolRows() {

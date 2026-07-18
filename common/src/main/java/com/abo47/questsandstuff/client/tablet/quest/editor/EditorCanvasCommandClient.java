@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 
 public final class EditorCanvasCommandClient {
     private EditorCanvasCommandClient() {

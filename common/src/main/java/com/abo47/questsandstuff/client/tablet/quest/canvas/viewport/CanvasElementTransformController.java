@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.List;
+import java.util.Set;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -15,14 +16,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-
-import java.util.List;
-import java.util.Set;
 
 public final class CanvasElementTransformController {
     private final TabletUiState state;

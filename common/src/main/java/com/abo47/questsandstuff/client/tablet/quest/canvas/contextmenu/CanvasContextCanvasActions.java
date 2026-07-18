@@ -1,37 +1,38 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.addQuestAt;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
@@ -41,11 +42,11 @@ final class CanvasContextCanvasActions {
     private CanvasContextCanvasActions() {
     }
 
-    static void addCanvasEmptyActions(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
+    static void addCanvasEmptyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.CANVAS || selectedChapter.isBlank()) {
             return;
         }
-        actions.add(ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.quick_add_quest"), "add", TabletColors.SUCCESS, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.quick_add_quest"), "add", TabletColors.SUCCESS, () -> {
             int logicalX = snapToGrid(state, state.contextMenu.contextLogicalX);
             int logicalY = snapToGrid(state, state.contextMenu.contextLogicalY);
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
@@ -134,14 +135,14 @@ final class CanvasContextCanvasActions {
                 canvasViewport.refresh();
             }));
         }
-        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
 
-        actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, () -> {
             ModalOpenActions.openCanvasBackgroundPicker(state, selectedChapter, ClientQuestStateFacade.chapterCanvasBackground(selectedChapter));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg chapter={}", selectedChapter);
             canvasViewport.refresh();
         }));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = TabletGridControls.defaultGridColor(state);
             ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_grid_color color={}", color);
@@ -149,7 +150,7 @@ final class CanvasContextCanvasActions {
         }));
         if (!ClientQuestStateFacade.chapterCanvasBackground(selectedChapter).isBlank()
                 && !"default".equals(ClientQuestStateFacade.chapterCanvasBackground(selectedChapter))) {
-            actions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", TabletColors.WARNING, () -> {
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), "delete", TabletColors.WARNING, () -> {
                 runChapterAction(player, state, "set_canvas_background", selectedChapter, "default", 0);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_canvas_bg chapter={}", selectedChapter);
                 canvasViewport.refresh();
@@ -160,7 +161,7 @@ final class CanvasContextCanvasActions {
         debugActions.add(ContextActionFactory.action(
                 CanvasContextMenuController.tr("ui.questsandstuff.context.debug_spawn_all_entities"),
                 "entity", TabletColors.INTERACTIVE, () -> spawnAllEntities(state, selectedChapter, canvasViewport)));
-        actions.add(ContextActionFactory.submenu(
+        sections.add(ContextMenuSection.DEBUG, ContextActionFactory.submenu(
                 CanvasContextMenuController.tr("ui.questsandstuff.context.debug"),
                 "debug", TabletColors.INTERACTIVE, debugActions));
     }

@@ -1,18 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class EntityVariantApplyActions {
     private EntityVariantApplyActions() {

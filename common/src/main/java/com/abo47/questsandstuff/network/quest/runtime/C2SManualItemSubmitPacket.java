@@ -1,11 +1,10 @@
 package com.abo47.questsandstuff.network.quest.runtime;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SManualItemSubmitPacket(String questId, String taskId) {
     public static C2SManualItemSubmitPacket decode(FriendlyByteBuf buf) {

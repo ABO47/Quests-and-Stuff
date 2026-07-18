@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

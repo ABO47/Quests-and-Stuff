@@ -1,25 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import org.joml.Vector4f;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
 
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
-import org.joml.Vector4f;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletPanelChrome {
     private TabletPanelChrome() {

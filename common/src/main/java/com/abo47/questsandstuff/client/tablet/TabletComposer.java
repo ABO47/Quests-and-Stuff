@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet;
 
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRouter;
 import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
 public final class TabletComposer {
     private TabletComposer() {

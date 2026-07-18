@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.quest.editor.clipboard;
 
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 
 public final class ClipboardDefinitionCopier {
     private ClipboardDefinitionCopier() {

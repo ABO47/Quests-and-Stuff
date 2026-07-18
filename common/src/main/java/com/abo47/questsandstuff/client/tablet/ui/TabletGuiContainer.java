@@ -1,17 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
 
 public final class TabletGuiContainer extends ModularUIGuiContainer {
     public TabletGuiContainer(ModularUI modularUI, int windowId) {

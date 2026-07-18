@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class QuestDetailsDescriptionModel {
     public static final String ORDER_TEXT = "text:";

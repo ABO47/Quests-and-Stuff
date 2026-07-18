@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.ui.widget;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class TabletWidgets {
     private TabletWidgets() {

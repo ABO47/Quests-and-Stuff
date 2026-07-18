@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.loot.LootDataType;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
 
 final class DisplayCacheSyncer {
     void sync(ServerPlayer player, long sequence) {

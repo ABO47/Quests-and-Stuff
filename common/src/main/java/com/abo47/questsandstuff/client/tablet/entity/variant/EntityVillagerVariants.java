@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.entity.variant;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerDataHolder;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public final class EntityVillagerVariants {
     private static final String DEFAULT_TYPE = "plains";

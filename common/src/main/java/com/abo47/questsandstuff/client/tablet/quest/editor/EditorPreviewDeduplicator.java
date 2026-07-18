@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class EditorPreviewDeduplicator {
     private static final Map<String, Long> LAST_MUTATION_NS = new HashMap<>();

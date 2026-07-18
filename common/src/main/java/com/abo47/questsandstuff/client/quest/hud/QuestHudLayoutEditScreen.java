@@ -1,6 +1,21 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ActionTone;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
@@ -11,22 +26,10 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import org.lwjgl.opengl.GL11;
-
-import java.util.ArrayList;
-import java.util.List;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestHudLayoutEditScreen extends Screen {
 

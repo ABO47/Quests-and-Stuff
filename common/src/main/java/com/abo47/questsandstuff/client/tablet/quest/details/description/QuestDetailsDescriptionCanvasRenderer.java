@@ -1,10 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import org.joml.Quaternionf;
 
+import net.minecraft.client.gui.GuiGraphics;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
@@ -14,18 +18,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import net.minecraft.client.gui.GuiGraphics;
-import org.joml.Quaternionf;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_IMAGE;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_TEXT;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
 
 public final class QuestDetailsDescriptionCanvasRenderer {
     private QuestDetailsDescriptionCanvasRenderer() {

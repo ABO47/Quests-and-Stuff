@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskEntries {
     private QuestTaskEntries() {

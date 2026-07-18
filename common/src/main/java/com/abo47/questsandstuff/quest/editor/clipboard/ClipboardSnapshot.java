@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.quest.editor.clipboard;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
 
 public record ClipboardSnapshot(List<Entry> entries) {
     public ClipboardSnapshot {

@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

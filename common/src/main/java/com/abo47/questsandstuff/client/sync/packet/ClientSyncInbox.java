@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.nbt.CompoundTag;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 
 public final class ClientSyncInbox {
     private static final Map<Long, ClientSyncChunkAccumulator> PENDING_FULL = new HashMap<>();

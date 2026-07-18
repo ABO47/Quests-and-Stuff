@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.text;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.junit.jupiter.api.Test;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

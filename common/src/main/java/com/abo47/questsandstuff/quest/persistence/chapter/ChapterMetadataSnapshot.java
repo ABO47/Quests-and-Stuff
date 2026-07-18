@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
+import java.util.List;
+import java.util.Map;
+
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 public record ChapterMetadataSnapshot(
         List<String> chapterOrder,

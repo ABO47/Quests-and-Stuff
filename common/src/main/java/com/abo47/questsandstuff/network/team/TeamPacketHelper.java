@@ -1,18 +1,19 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.team.NbtKeys;
-import com.abo47.questsandstuff.team.model.TeamMember;
-import com.abo47.questsandstuff.team.model.TeamData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.team.NbtKeys;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 public final class TeamPacketHelper {
     private TeamPacketHelper() {

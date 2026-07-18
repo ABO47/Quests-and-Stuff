@@ -1,8 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
@@ -12,20 +18,16 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class QuestTaskActionWidgets {
     private QuestTaskActionWidgets() {

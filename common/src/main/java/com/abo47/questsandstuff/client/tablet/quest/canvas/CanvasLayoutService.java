@@ -1,27 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestMatch;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestMatch;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;

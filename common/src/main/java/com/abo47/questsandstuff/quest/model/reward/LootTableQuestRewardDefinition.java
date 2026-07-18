@@ -1,8 +1,11 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
-import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardDelivery;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -11,8 +14,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardDelivery;
 
 public record LootTableQuestRewardDefinition(
         String id,

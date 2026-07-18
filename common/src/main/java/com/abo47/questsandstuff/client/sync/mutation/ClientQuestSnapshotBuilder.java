@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 final class ClientQuestSnapshotBuilder {
     private ClientQuestSnapshotBuilder() {

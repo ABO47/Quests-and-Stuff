@@ -1,18 +1,19 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public final class ChapterMetadataStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();

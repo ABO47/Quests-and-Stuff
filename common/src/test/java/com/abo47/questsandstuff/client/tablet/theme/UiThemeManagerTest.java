@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -7,11 +12,6 @@ import org.junit.jupiter.api.io.TempDir;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeJsonCodec;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

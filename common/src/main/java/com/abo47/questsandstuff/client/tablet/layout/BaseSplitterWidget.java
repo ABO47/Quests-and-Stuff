@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 

@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
+
+import com.google.gson.JsonObject;
 
 record QuestDetailsTaskEntry(String id, CompoundTag tag, JsonObject json) {
     String type() {

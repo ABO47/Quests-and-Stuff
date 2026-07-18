@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

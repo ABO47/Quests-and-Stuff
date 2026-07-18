@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.function.Consumer;
+
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class ToolMenuRows {
     private final WidgetGroup menu;

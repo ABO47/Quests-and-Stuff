@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -8,9 +12,6 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandC
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 final class CanvasConnectionClickActions {
     private CanvasConnectionClickActions() {

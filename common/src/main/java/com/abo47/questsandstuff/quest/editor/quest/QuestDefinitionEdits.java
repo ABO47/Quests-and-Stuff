@@ -1,5 +1,14 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -9,15 +18,8 @@ import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.JsonElement;
 
 public final class QuestDefinitionEdits {
     private QuestDefinitionEdits() {

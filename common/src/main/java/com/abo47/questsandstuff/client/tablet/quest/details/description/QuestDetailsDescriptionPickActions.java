@@ -1,20 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionPickActions {
     private static final int MODEL_SIZE = 48;

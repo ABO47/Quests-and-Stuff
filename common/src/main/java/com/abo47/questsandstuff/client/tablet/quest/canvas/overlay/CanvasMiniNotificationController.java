@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
 
-import javax.annotation.Nonnull;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasMiniNotificationController {
     private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;

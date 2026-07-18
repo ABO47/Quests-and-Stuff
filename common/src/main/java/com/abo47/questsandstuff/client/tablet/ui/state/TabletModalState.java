@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.ui.state;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletModalState {
     private static final int POINTER_SOURCE_SIZE = GRID_16;

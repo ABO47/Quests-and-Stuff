@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Locale;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.util.naming.SafeNames;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Locale;
 
 public final class CanvasBlueprintStore {
     public static final String BLUEPRINTS_DIR = "blueprints";

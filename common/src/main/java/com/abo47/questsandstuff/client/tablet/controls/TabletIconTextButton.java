@@ -1,20 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class TabletIconTextButton extends ButtonWidget {
     private static final int MIN_ICON_SIZE = 8;

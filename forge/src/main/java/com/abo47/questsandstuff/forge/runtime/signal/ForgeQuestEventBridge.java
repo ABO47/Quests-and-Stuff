@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.forge.runtime.signal;
 
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import it.unimi.dsi.fastutil.longs.LongSet;
+
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +13,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.Structure;
+
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -28,10 +35,6 @@ import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public final class ForgeQuestEventBridge {
     private final Map<UUID, Map<String, Integer>> inventorySnapshots = new HashMap<>();

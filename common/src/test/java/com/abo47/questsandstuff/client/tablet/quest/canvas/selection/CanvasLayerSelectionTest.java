@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,22 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.HashSet;
-import java.util.Set;
 
 final class EntityMotionTargets {
     static final String SCOPE_CANVAS = "canvas";

@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff;
 
-import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

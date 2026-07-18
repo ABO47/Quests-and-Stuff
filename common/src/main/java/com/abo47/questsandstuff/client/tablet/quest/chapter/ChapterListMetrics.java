@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final class ChapterListMetrics {
     private static final int COLLAPSED_TILE_W = 28;

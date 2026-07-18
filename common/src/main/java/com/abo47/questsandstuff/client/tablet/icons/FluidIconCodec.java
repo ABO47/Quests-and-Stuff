@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -11,6 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 public final class FluidIconCodec {
     private static final String PREFIX = "fluid|";

@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import org.junit.jupiter.api.Test;
+
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,16 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
@@ -20,6 +9,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 final class AssetTextureCache {
     private static final Map<String, IGuiTexture> TEXTURE_CACHE = new HashMap<>();

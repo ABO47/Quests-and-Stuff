@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class ModalContextMenuPlacement {
     private static final int MARGIN = GRID_4;

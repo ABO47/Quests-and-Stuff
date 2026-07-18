@@ -1,26 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class CanvasViewport extends WidgetGroup {
     private final TabletUiState state;

@@ -1,42 +1,45 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
-import com.abo47.questsandstuff.quest.model.reward.CommandQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.reward.ItemQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.reward.LootTableQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
-import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTasks;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.player.XpMode;
-import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.mojang.serialization.JsonOps;
+
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.reward.CommandQuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.reward.ItemQuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.reward.LootTableQuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
+import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTasks;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
+import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.player.XpMode;
+import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.util.naming.StableIdAllocator;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
-import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestSchemaGameTests {

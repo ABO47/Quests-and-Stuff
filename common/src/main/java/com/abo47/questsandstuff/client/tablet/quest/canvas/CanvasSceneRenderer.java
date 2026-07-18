@@ -1,55 +1,56 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasGlowEffect;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionLine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-import org.joml.Quaternionf;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class CanvasSceneRenderer {
     private static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE;
@@ -276,7 +277,7 @@ final class CanvasSceneRenderer {
                         originY += CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
                                 - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
                     }
-                    CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, card.visualLogicalX(), card.visualLogicalY(), card.logicalWidth(), card.logicalHeight(), 0, 0, 0);
+                    CanvasElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
                 }
             });
         }

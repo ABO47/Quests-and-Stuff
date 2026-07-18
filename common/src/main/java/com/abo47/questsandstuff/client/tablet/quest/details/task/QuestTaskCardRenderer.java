@@ -1,26 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.google.gson.JsonObject;
-import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,12 +13,31 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import com.google.gson.JsonObject;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 
 final class QuestTaskCardRenderer {
     private QuestTaskCardRenderer() {

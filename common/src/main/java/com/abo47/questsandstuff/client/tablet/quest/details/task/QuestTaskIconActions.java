@@ -1,9 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +7,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskIconActions {
     private QuestTaskIconActions() {

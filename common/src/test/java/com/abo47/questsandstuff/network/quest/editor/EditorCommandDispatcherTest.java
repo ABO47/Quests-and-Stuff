@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import org.junit.jupiter.api.Test;
-
 import java.util.EnumMap;
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

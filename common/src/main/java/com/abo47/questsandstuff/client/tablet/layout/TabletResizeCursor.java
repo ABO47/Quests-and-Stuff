@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.client.Minecraft;
 
 public final class TabletResizeCursor {
     private static long handle;

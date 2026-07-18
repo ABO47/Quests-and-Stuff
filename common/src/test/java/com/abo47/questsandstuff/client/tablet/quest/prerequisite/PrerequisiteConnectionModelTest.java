@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,27 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.world.entity.player.Player;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;

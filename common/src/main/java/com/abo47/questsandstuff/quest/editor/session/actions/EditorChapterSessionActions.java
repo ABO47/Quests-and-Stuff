@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
-import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 
 public final class EditorChapterSessionActions {
     private final ChapterEditService chapterEdits;

@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController.ConnectionRef;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class CanvasOverlayController {

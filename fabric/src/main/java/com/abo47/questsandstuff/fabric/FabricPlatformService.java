@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.platform.PlatformService;
-import net.fabricmc.loader.api.FabricLoader;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 
-import java.lang.reflect.Method;
-import java.nio.file.Path;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.platform.PlatformService;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class FabricPlatformService implements PlatformService {
     @Override

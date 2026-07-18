@@ -1,30 +1,34 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;

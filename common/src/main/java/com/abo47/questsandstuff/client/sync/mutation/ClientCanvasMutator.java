@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
 
 public final class ClientCanvasMutator {
     private ClientCanvasMutator() {

@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;

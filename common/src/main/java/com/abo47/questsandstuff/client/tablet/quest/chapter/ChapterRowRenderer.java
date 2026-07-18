@@ -1,31 +1,33 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
+import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class ChapterRowRenderer {
     private static final int COLLAPSED_TILE_SIZE = 28;

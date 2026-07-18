@@ -1,16 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 final class QuestTaskListInteractions {
     private QuestTaskListInteractions() {

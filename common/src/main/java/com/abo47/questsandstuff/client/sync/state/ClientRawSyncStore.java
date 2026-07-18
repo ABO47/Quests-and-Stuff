@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
+
+import net.minecraft.nbt.CompoundTag;
 
 public final class ClientRawSyncStore {
     private static final CompoundTag RAW = new CompoundTag();

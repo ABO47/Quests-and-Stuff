@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+
 import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
@@ -10,12 +17,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-
-import java.util.List;
-import java.util.Map;
 
 public final class ClientQuestPropertyMutator {
     private ClientQuestPropertyMutator() {

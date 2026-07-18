@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -7,12 +14,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.Map;
-import java.util.Set;
 
 import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURES;
 import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;

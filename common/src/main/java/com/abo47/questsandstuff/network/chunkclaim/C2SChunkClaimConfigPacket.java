@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.network.chunkclaim;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record C2SChunkClaimConfigPacket(
         boolean protectBreakPlace,

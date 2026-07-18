@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+
+import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 
 final class QuestHudAssetLibraryBridge {
     private QuestHudAssetLibraryBridge() {

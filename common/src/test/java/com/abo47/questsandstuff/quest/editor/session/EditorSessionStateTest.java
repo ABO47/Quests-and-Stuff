@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

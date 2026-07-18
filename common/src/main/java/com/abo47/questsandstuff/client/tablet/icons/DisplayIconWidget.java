@@ -1,18 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;

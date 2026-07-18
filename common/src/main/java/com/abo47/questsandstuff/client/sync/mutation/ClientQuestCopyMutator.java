@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 
 public final class ClientQuestCopyMutator {
     private ClientQuestCopyMutator() {

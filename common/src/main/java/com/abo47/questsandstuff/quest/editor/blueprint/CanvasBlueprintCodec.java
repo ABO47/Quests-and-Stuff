@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class CanvasBlueprintCodec {
     public static final String PREFIX = "qnsbp1:";

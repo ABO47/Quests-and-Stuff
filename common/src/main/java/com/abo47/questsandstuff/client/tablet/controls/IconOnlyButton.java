@@ -1,20 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.utils.Position;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
-import java.util.function.Consumer;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 
 public final class IconOnlyButton extends ButtonWidget {
     private final ResourceTexture iconTexture;

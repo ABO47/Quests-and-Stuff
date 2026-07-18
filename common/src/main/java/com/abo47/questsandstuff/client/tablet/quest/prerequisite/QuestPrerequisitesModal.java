@@ -1,43 +1,44 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.List;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import net.minecraft.client.resources.language.I18n;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;

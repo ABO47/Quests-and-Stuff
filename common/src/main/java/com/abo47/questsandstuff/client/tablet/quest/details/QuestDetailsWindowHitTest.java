@@ -1,17 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_W;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_H;
-
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
 
 final class QuestDetailsWindowHitTest {
     private QuestDetailsWindowHitTest() {

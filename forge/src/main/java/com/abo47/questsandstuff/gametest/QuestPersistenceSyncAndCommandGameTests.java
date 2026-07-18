@@ -1,44 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.command.QuestCommands;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.sync.SyncService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +11,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
+import com.abo47.questsandstuff.command.QuestCommands;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPersistenceSyncAndCommandGameTests {

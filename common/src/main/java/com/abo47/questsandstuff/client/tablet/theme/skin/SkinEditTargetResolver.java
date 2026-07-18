@@ -6,12 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import net.minecraft.client.gui.GuiGraphics;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 
 public final class SkinEditTargetResolver {
     private static final Map<Class<?>, Boolean> CUSTOM_CHROME_CACHE = new HashMap<>();

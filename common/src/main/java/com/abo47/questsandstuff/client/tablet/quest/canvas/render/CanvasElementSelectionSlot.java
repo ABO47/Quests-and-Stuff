@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.GuiGraphics;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import net.minecraft.client.gui.GuiGraphics;
-import org.joml.Quaternionf;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasElementSelectionSlot {
     private static final int HANDLE_SIZE = GRID_6;
@@ -58,6 +59,35 @@ public final class CanvasElementSelectionSlot {
             drawHandles(graphics, box);
             graphics.pose().popPose();
         }
+    }
+
+    public static void drawScreenRectResizeOnly(GuiGraphics graphics, int originX, int originY, int left, int top, int width, int height) {
+        int w = Math.max(1, width);
+        int h = Math.max(1, height);
+        CanvasElementGeometry.Box box = screenRectBox(left, top, w, h);
+        if (box.right() > box.left() && box.bottom() > box.top()) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
+            drawBoxFillAndOutline(graphics, box);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+            graphics.pose().popPose();
+        }
+    }
+
+    public static boolean resizeHandleHitAtScreenRect(int left, int top, int width, int height, int hitX, int hitY) {
+        int w = Math.max(1, width);
+        int h = Math.max(1, height);
+        CanvasElementGeometry.Box box = screenRectBox(left, top, w, h);
+        CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, 0, hitX, hitY);
+        return point.x() >= box.right() - HANDLE_SIZE - GRID_1 && point.x() <= box.right() + GRID_1
+                && point.y() >= box.bottom() - HANDLE_SIZE - GRID_1 && point.y() <= box.bottom() + GRID_1;
+    }
+
+    private static CanvasElementGeometry.Box screenRectBox(int left, int top, int width, int height) {
+        double centerX = left + width / 2.0;
+        double centerY = top + height / 2.0;
+        return new CanvasElementGeometry.Box(centerX, centerY, width, height, -width / 2, -height / 2, width / 2, height / 2);
     }
 
     private static void drawBoxFillAndOutline(GuiGraphics graphics, CanvasElementGeometry.Box box) {

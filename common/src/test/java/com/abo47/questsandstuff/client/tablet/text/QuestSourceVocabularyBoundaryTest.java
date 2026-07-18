@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.text;
 
-import org.junit.jupiter.api.Test;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
@@ -9,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

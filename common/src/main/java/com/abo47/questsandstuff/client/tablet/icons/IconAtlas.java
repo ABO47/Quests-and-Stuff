@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 public final class IconAtlas {
     private static final String BASE = "textures/gui/icons/";

@@ -1,18 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector4f;
-
-import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class SourceOriginRevealWidget extends WidgetGroup {
     public static final long WINDOW_OPEN_MS = TabletAnimationTimings.WINDOW_OPEN_MS;

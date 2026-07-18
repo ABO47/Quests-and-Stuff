@@ -1,10 +1,9 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public final class S2CDeltaSyncPacket extends ChunkedSyncPacket {
     public S2CDeltaSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {

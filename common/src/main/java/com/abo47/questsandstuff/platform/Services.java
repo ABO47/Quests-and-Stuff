@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.platform;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public final class Services {
     private static volatile PlatformService platform = new FallbackPlatformService();

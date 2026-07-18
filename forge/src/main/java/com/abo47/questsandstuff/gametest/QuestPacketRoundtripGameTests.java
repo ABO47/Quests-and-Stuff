@@ -1,5 +1,20 @@
 package com.abo47.questsandstuff.gametest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
@@ -17,22 +32,10 @@ import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import com.mojang.authlib.GameProfile;
+
 import io.netty.buffer.Unpooled;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPacketRoundtripGameTests {

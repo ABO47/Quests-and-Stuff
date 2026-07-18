@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURES;
 import static com.abo47.questsandstuff.quest.sync.SyncKeys.Quest.CONNECTION_TEXTURE_SPACINGS;

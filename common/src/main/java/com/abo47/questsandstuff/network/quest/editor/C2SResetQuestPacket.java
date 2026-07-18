@@ -1,12 +1,11 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 
 public record C2SResetQuestPacket(String questId) {
     public static C2SResetQuestPacket decode(FriendlyByteBuf buf) {

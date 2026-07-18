@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.theme.render;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 public final class TiledTexture implements IGuiTexture {
     private final IGuiTexture source;

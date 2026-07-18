@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
 
 final class ContextActionLayout {

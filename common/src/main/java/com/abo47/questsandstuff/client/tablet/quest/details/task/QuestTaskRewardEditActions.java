@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -7,9 +10,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestTaskRewardEditActions {
     private QuestTaskRewardEditActions() {

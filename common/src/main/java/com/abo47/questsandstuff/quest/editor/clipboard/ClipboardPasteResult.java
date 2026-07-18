@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.quest.editor.clipboard;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-
 import java.util.List;
 import java.util.Map;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
 
 public record ClipboardPasteResult(
         List<QuestDefinition> createdQuests,

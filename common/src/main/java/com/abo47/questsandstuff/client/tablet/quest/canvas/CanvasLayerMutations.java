@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.List;
+import java.util.function.UnaryOperator;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
@@ -8,9 +11,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
-
-import java.util.List;
-import java.util.function.UnaryOperator;
 
 public final class CanvasLayerMutations {
     private CanvasLayerMutations() {

@@ -1,18 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * Owns the process-global tablet theme. Existing render code reads `TabletColors`

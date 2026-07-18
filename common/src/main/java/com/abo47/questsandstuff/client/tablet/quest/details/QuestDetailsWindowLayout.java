@@ -1,28 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;

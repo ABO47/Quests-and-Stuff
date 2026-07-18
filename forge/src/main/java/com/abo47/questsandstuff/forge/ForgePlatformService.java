@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.forge;
 
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
-import com.abo47.questsandstuff.platform.PlatformService;
+import java.nio.file.Path;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.platform.PlatformService;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.versions.forge.ForgeVersion;
-
-import java.nio.file.Path;
 
 public final class ForgePlatformService implements PlatformService {
     @Override

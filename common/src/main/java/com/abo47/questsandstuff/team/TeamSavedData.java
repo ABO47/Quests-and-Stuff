@@ -1,21 +1,23 @@
 package com.abo47.questsandstuff.team;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.team.model.TeamMember;
-import com.abo47.questsandstuff.team.model.TeamData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 public class TeamSavedData extends SavedData {
     private static final String DATA_NAME = QuestsAndStuffMod.MODID + "_teams";

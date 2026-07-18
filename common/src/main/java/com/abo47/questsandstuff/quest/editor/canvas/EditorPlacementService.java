@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.quest.editor.canvas;
 
+import java.util.Map;
+
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-
-import java.util.Map;
 
 public final class EditorPlacementService {
     private EditorPlacementService() {

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -9,8 +11,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
-
-import java.util.List;
 
 public final class CanvasCameraController {
     private static final float[] ZOOM_STOPS = {0.5f, 0.67f, 0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f};

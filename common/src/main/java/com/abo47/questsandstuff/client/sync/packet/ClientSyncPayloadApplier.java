@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.sync.state.ClientCanvasLayerState;
 import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.state.ClientRawSyncStore;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.List;
 
 public final class ClientSyncPayloadApplier {
     private ClientSyncPayloadApplier() {

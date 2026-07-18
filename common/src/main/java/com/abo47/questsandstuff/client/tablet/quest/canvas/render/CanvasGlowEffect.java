@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 
 public final class CanvasGlowEffect {
     public static WidgetGroup overlay(int x, int y, int w, int h) {

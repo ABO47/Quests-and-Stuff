@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.ModPacketContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CTeamJoinResultPacket(String messageKey, boolean success) {
     public static S2CTeamJoinResultPacket decode(FriendlyByteBuf buf) {

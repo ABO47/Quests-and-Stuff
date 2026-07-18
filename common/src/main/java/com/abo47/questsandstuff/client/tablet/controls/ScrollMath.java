@@ -28,4 +28,11 @@ public final class ScrollMath {
         float t = (float) target / (float) span;
         return Math.round(t * maxValue);
     }
+
+    public static int listRows(int innerHeight, int rowHeight, int lastRowSlack) {
+        if (rowHeight <= 0) {
+            return 1;
+        }
+        return Math.max(1, (innerHeight + Math.max(0, lastRowSlack)) / rowHeight);
+    }
 }

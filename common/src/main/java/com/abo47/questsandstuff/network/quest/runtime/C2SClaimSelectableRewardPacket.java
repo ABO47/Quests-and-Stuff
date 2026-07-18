@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.network.quest.runtime;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SClaimSelectableRewardPacket(String questId, String rewardId, List<String> selectedRewardIds) {
     private static final int MAX_SELECTED_REWARDS = 64;

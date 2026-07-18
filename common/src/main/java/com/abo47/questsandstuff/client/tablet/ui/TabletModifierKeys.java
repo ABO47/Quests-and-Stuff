@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 public final class TabletModifierKeys {
     private TabletModifierKeys() {

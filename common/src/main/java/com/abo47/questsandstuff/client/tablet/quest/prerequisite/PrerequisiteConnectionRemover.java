@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 final class PrerequisiteConnectionRemover {

@@ -1,18 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController.ConnectionRef;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 public final class CanvasConnectionSelection {
     private CanvasConnectionSelection() {

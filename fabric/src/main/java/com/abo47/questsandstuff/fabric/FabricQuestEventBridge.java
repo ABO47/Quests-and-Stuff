@@ -1,18 +1,11 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,9 +23,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 public final class FabricQuestEventBridge {
     private static final Map<UUID, Map<String, Integer>> INVENTORY_SNAPSHOTS = new HashMap<>();

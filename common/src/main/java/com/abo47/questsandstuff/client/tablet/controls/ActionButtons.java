@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.function.Consumer;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ACTION_ICON_SIZE;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ActionButtons {
     private ActionButtons() {

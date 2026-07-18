@@ -1,28 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyCanvasBgOpacityPercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyGridOpacityPercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class MainCanvasToolsMenu {
     private MainCanvasToolsMenu() {

@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
@@ -7,9 +10,6 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final class QuestTaskCreateMenuActions {
     private QuestTaskCreateMenuActions() {

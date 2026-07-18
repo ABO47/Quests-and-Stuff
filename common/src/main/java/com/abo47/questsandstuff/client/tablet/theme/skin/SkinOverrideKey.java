@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(

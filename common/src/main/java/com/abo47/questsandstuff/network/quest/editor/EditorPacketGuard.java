@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 
 final class EditorPacketGuard {
     private EditorPacketGuard() {

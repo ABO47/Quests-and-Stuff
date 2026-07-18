@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.quest.model.storage;
 
+import java.util.Map;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-
-import java.util.Map;
 
 public final class CompositeTaskStorage implements TaskStorage<CompoundTag, CompoundTag> {
     public static final CompositeTaskStorage EMPTY = new CompositeTaskStorage(Map.of());

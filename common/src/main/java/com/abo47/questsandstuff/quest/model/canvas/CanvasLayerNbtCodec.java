@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.quest.model.canvas;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class CanvasLayerNbtCodec {
     private CanvasLayerNbtCodec() {

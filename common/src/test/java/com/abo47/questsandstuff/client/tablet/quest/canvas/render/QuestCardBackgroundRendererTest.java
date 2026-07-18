@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import org.junit.jupiter.api.Test;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
 
 final class QuestTaskGhostCards {
     private QuestTaskGhostCards() {

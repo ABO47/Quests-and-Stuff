@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionEventRouter {
     private final TabletUiState state;

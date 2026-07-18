@@ -1,5 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.Set;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
@@ -9,12 +17,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.Set;
 
 final class SoundVolumeControls {
     private SoundVolumeControls() {

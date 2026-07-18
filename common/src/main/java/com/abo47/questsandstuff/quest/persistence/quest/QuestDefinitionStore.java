@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -7,15 +14,9 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizePrerequisites;

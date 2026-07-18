@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CPinnedSyncPacket(long sequence, List<String> pinned) {
     public static S2CPinnedSyncPacket decode(FriendlyByteBuf buf) {

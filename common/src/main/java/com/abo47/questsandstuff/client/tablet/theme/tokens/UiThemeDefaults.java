@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.theme.tokens;
 
+import java.util.Locale;
+import java.util.Map;
+
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeFiles;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeState;
-import com.google.gson.JsonObject;
 
-import java.util.Locale;
-import java.util.Map;
+import com.google.gson.JsonObject;
 
 public final class UiThemeDefaults {
     private UiThemeDefaults() {

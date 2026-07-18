@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import java.util.function.IntSupplier;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -7,8 +9,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.function.IntSupplier;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 

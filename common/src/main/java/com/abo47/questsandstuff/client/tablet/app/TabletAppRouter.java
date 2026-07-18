@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.app;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class TabletAppRouter {
     private TabletAppRouter() {

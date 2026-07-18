@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestDetailsTaskMenus {
     private QuestDetailsTaskMenus() {

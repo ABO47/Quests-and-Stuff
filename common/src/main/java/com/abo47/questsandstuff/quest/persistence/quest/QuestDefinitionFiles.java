@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.util.io.JsonFileTree;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 final class QuestDefinitionFiles {
     private QuestDefinitionFiles() {

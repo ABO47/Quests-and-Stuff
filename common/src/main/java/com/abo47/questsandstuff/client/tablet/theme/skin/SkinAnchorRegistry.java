@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 public final class SkinAnchorRegistry {
     private static final Map<String, Widget> KEY_TO_WIDGET = new HashMap<>();
@@ -25,6 +25,14 @@ public final class SkinAnchorRegistry {
             WIDGET_TO_KEY.remove(old);
         }
         WIDGET_TO_KEY.put(widget, key);
+    }
+
+    public static void unregister(String key) {
+        if (key == null || key.isBlank()) return;
+        Widget old = KEY_TO_WIDGET.remove(key);
+        if (old != null) {
+            WIDGET_TO_KEY.remove(old);
+        }
     }
 
     public static Widget findByKey(String key) {

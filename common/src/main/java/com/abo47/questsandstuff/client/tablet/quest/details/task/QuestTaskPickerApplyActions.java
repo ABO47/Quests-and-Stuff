@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
@@ -11,11 +16,8 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+
 import com.google.gson.JsonObject;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 final class QuestTaskPickerApplyActions {
     private QuestTaskPickerApplyActions() {

@@ -1,13 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.state;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_DARK;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_LIGHT;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_MUTED;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_ERROR;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_INTERACTIVE;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SUCCESS;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SURFACE_DARK;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_WARNING;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
@@ -25,11 +22,14 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_LIGHT;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_MUTED;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_ERROR;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_INTERACTIVE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SUCCESS;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SURFACE_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_WARNING;
 
 public class TabletUiState {
     public final RootState root = new RootState();

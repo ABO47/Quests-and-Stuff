@@ -1,16 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditTargetResolver;
-import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
+import java.awt.Rectangle;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Rectangle;
-import java.util.List;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditTargetResolver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

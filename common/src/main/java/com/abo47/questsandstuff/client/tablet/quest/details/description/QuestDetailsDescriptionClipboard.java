@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -7,7 +9,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
 
 public final class QuestDetailsDescriptionClipboard {
     private QuestDetailsDescriptionClipboard() {

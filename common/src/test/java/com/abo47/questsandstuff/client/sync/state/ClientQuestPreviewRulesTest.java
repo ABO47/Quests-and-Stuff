@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

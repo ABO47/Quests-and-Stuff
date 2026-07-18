@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import java.util.List;
 
-public record ContextAction(String label, String icon, ActionTone tone, int accentColor, boolean closeAfterClick, boolean promoted, Runnable action, List<ContextAction> children) {
+public record ContextAction(String label, String icon, ActionTone tone, int accentColor, boolean closeAfterClick, boolean promoted, Runnable action, List<ContextAction> children, ContextMenuSection section) {
     public ContextAction {
         label = label == null ? "" : label;
         icon = icon == null ? "style" : icon;
@@ -11,42 +11,58 @@ public record ContextAction(String label, String icon, ActionTone tone, int acce
         action = action == null ? () -> {
         } : action;
         children = children == null ? List.of() : List.copyOf(children);
+        if (section != null) {
+            tone = ActionTone.NEUTRAL;
+            promoted = false;
+            action = () -> {
+            };
+            closeAfterClick = false;
+        }
     }
 
     public ContextAction(String label, String icon, ActionTone tone, Runnable action) {
-        this(label, icon, tone, defaultAccentColor(tone), true, false, action, List.of());
+        this(label, icon, tone, defaultAccentColor(tone), true, false, action, List.of(), null);
     }
 
     public ContextAction(String label, String icon, ActionTone tone, boolean closeAfterClick, Runnable action) {
-        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, false, action, List.of());
+        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, false, action, List.of(), null);
     }
 
     public ContextAction(String label, String icon, ActionTone tone, boolean closeAfterClick, boolean promoted, Runnable action) {
-        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, promoted, action, List.of());
+        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, promoted, action, List.of(), null);
     }
 
     public ContextAction(String label, String icon, ActionTone tone, boolean closeAfterClick, boolean promoted, Runnable action, List<ContextAction> children) {
-        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, promoted, action, children);
+        this(label, icon, tone, defaultAccentColor(tone), closeAfterClick, promoted, action, children, null);
     }
 
     public ContextAction(String label, String icon, int accentColor, Runnable action) {
-        this(label, icon, accentColor, true, false, action);
+        this(label, icon, accentColor, true, false, action, null);
     }
 
     public ContextAction(String label, String icon, int accentColor, boolean closeAfterClick, Runnable action) {
-        this(label, icon, accentColor, closeAfterClick, false, action);
+        this(label, icon, accentColor, closeAfterClick, false, action, null);
     }
 
     public ContextAction(String label, String icon, int accentColor, boolean closeAfterClick, boolean promoted, Runnable action) {
-        this(label, icon, accentColor, closeAfterClick, promoted, action, List.of());
+        this(label, icon, accentColor, closeAfterClick, promoted, action, null);
     }
 
     public ContextAction(String label, String icon, int accentColor, boolean closeAfterClick, boolean promoted, Runnable action, List<ContextAction> children) {
-        this(label, icon, ActionTone.fromLegacyColor(accentColor), accentColor, closeAfterClick, promoted, action, children);
+        this(label, icon, ActionTone.fromLegacyColor(accentColor), accentColor, closeAfterClick, promoted, action, children, null);
     }
 
     public boolean hasSubmenu() {
         return !children.isEmpty();
+    }
+
+    public boolean isSection() {
+        return section != null;
+    }
+
+    public static ContextAction sectionHeader(ContextMenuSection section) {
+        return new ContextAction(section.titleKey(), "section", ActionTone.NEUTRAL, 0, false, false, () -> {
+        }, List.of(), section);
     }
 
     private static int defaultAccentColor(ActionTone tone) {

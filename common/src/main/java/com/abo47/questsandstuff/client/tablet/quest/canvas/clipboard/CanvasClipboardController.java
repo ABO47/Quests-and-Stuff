@@ -1,34 +1,32 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
 public final class CanvasClipboardController {
     private CanvasClipboardController() {

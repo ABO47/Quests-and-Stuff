@@ -1,8 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.blaze3d.platform.Window;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
@@ -13,16 +25,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.platform.Window;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
-import org.lwjgl.glfw.GLFW;
 
 final class TabletRootKeyboardRouter {
     private TabletRootKeyboardRouter() {

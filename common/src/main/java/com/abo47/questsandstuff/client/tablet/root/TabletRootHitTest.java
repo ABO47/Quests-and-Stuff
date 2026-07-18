@@ -1,14 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class TabletRootHitTest {

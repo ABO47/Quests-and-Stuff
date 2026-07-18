@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
+import java.util.function.BooleanSupplier;
+import java.util.function.LongSupplier;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
-import javax.annotation.Nonnull;
-import java.util.function.BooleanSupplier;
-import java.util.function.LongSupplier;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class VerticalRevealWidget extends WidgetGroup {
     private static final long SHEET_OPEN_MS = TabletAnimationTimings.SHEET_OPEN_MS;

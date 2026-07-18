@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
-import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardDelivery;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardDelivery;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
 
 public record ItemQuestRewardDefinition(
         String id,

@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public final class CanvasSelectionResize {
     public static final int UNBOUNDED = Integer.MIN_VALUE;

@@ -1,22 +1,23 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
-import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 
 public final class SyncService {
     private final QuestProgressSavedData progressData;

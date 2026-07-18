@@ -1,28 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerLauncher;
-import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.entity.player.Player;
+import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerLauncher;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
 
 public final class TabletModalPanel {

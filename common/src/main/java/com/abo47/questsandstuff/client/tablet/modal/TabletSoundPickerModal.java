@@ -1,39 +1,40 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
-import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
-import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
-import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class TabletSoundPickerModal {
     private static final int ROW_H = ROW_H_16;

@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 public class InlineRenameField extends TextFieldWidget {
     private final Runnable onCommit;

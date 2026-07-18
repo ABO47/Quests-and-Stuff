@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.quest.editor.clipboard;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class QuestClipboardDebugLog {
     public static final String FILE_NAME = "copy_paste_debug.log";

@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import net.minecraft.nbt.CompoundTag;
 
 public final class ClientSyncUiBridge {
     private static Runnable activeTabletRefresh = () -> {

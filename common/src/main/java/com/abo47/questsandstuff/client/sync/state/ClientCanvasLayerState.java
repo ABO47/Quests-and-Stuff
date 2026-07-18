@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.sync.state;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class ClientCanvasLayerState {
     private static final Map<String, List<CanvasExclusiveChoice>> CHAPTER_CANVAS_EXCLUSIVE_CHOICES = new HashMap<>();

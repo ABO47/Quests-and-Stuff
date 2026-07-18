@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.util.naming.QuestNaming;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
 
 final class EditorSessionState {
     private final QuestDefinitionStore definitionStore;

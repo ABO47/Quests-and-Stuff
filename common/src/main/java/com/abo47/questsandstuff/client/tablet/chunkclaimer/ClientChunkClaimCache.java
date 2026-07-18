@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
-import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
-import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
+import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
+import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 
 public enum ClientChunkClaimCache {
     INSTANCE;

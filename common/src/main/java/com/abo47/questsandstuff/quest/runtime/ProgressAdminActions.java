@@ -1,5 +1,11 @@
 package com.abo47.questsandstuff.quest.runtime;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -7,11 +13,6 @@ import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.sync.SyncService;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 final class ProgressAdminActions {
     private final QuestDefinitionStore definitionStore;

@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 final class ChapterListRenderer {
     private ChapterListRenderer() {

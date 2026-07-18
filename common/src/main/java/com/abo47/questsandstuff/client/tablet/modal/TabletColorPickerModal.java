@@ -1,34 +1,35 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
-import com.abo47.questsandstuff.client.tablet.controls.SearchNormalizer;
-import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.HsbColorWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchNormalizer;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeColorPicker;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.COLOR_PICKER;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class TabletColorPickerModal {
     private TabletColorPickerModal() {

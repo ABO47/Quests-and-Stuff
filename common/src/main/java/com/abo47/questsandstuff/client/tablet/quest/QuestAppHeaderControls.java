@@ -1,8 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
@@ -12,15 +17,11 @@ import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;

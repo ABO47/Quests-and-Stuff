@@ -1,6 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.Locale;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
@@ -13,26 +21,19 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-import java.util.Locale;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 
 final class EntityVariantTiles {
     static final int RIGHT_X = 166;

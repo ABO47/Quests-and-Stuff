@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.network.team;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.team.model.TeamData;
 import com.abo47.questsandstuff.team.model.TeamMember;
-import net.minecraft.nbt.CompoundTag;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.resources.language.I18n;
 
 final class ClientboundTeamPacketDispatch {
     private ClientboundTeamPacketDispatch() {

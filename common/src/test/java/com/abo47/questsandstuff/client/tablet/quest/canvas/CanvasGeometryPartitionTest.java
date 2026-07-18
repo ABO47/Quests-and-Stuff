@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.nbt.CompoundTag;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;

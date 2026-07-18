@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 final class ChapterMetadataWriter {
     private ChapterMetadataWriter() {

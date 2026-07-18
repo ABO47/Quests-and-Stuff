@@ -1,10 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
@@ -16,13 +24,6 @@ import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.util.naming.QuestNaming;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class EditorQuestCommandClient {
     private static final int MAX_DESCRIPTION_LINES = 256;

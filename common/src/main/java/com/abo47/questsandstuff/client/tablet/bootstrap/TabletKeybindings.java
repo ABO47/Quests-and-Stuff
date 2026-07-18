@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.bootstrap;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
+import java.util.function.Consumer;
+
 import org.lwjgl.glfw.GLFW;
 
-import java.util.function.Consumer;
+import com.mojang.blaze3d.platform.InputConstants;
+
+import net.minecraft.client.KeyMapping;
 
 public final class TabletKeybindings {
     private static final String CATEGORY = "key.categories.questsandstuff";

@@ -1,12 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.entity;
 
-import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -19,18 +28,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.lwjgl.opengl.GL11;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 public final class EntityPreviewRenderer {
     public static final String ENTITY_ASSET_PREFIX = "entity:";

@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;

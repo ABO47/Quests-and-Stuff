@@ -1,31 +1,33 @@
 package com.abo47.questsandstuff.client.tablet.ui.factory;
 
-import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgets;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.TabletComposer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.entity.player.Player;
 
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.client.tablet.TabletComposer;
+import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletPersistence;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgets;
 
 public final class TabletUiFactory {
     public static final int ROOT_W = TabletLayout.ROOT_W;

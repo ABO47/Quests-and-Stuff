@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 final class QuestDetailsDescriptionSelectionState {
     private QuestDetailsDescriptionSelectionState() {

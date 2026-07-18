@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.bootstrap;
 
+import net.minecraft.client.Minecraft;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import net.minecraft.client.Minecraft;
 
 public final class TabletScreenManager {
     private TabletScreenManager() {

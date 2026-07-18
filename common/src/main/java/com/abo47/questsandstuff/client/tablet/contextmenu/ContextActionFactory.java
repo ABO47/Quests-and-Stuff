@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-
-import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.confirmDeleteClick;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.pendingDeleteLabel;

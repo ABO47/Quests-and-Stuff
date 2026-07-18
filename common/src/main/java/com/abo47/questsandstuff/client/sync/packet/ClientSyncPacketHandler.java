@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestCompletionNotificationOverlay;
@@ -7,10 +12,6 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimAllRewardsPacket;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-
-import java.util.List;
 
 public final class ClientSyncPacketHandler {
     private ClientSyncPacketHandler() {

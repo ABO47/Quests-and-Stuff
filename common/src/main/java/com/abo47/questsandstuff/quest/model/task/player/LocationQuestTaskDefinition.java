@@ -1,16 +1,19 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
+import java.util.Set;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+
 import com.abo47.questsandstuff.quest.model.storage.BooleanTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Set;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 
 public record LocationQuestTaskDefinition(
         String id,

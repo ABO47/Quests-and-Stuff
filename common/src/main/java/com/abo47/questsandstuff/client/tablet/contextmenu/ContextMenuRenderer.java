@@ -1,35 +1,36 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-
-
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiActionColors;
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiActionColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class ContextMenuRenderer {
     public static final int CONTEXT_MENU_WIDTH = 108;
@@ -122,6 +123,21 @@ public final class ContextMenuRenderer {
         WidgetGroup sep = new WidgetGroup(GRID_4, y + GRID_1, width, 1);
         sep.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 120)));
         menu.addWidget(sep);
+    }
+
+    public static void addSectionHeader(WidgetGroup menu, int y, int width, ContextMenuSection section) {
+        String title = TabletTranslationKeys.text(section.titleKey());
+        int pad = GRID_8;
+        int headerH = UiThemeTokens.CONTEXT_ROW_H;
+        int availableVisualW = Math.max(1, width - pad - GRID_4);
+        int textureW = Math.max(1, Math.round(availableVisualW / TEXT_SCALE));
+        int textureY = y + Math.max(0, (headerH - TEXT_LINE_H) / 2);
+        TextTextureWidget textWidget = TabletTextTextures.literal(pad, textureY, textureW, TEXT_LINE_H, title, TabletColors.TEXT_MUTED, TextTexture.TextType.LEFT_HIDE);
+        patchTextLines(textWidget.getTextTexture(), title, textureW);
+        float xCompensation = -((1.0f - TEXT_SCALE) * textureW) / 2.0f;
+        float yCompensation = (y + UiThemeTokens.CONTEXT_ROW_H / 2.0f) - (textureY + TEXT_LINE_H / 2.0f);
+        textWidget.textureStyle(texture -> texture.scale(TEXT_SCALE).transform(xCompensation, yCompensation));
+        menu.addWidget(textWidget);
     }
 
     public static String iconForLabel(String label) {

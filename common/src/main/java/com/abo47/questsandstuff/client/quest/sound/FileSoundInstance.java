@@ -1,6 +1,18 @@
 package com.abo47.questsandstuff.client.quest.sound;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+
 import com.mojang.blaze3d.audio.OggAudioStream;
+
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -12,17 +24,6 @@ import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.valueproviders.ConstantFloat;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 public final class FileSoundInstance extends AbstractSoundInstance implements TickableSoundInstance, FadeableQuestSound {
     private final Path path;

@@ -1,23 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.google.gson.JsonObject;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-import org.lwjgl.glfw.GLFW;
+
+import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+
+import com.google.gson.JsonObject;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 

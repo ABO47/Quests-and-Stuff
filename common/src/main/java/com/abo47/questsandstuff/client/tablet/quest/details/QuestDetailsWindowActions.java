@@ -1,19 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
 
 final class QuestDetailsWindowActions {
     private QuestDetailsWindowActions() {

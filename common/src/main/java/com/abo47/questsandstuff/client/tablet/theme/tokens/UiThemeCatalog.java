@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.theme.tokens;
 
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-
 import java.util.List;
+
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 public final class UiThemeCatalog {
     private UiThemeCatalog() {

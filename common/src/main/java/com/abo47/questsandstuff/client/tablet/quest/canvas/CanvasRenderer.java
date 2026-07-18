@@ -1,5 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
@@ -10,23 +22,14 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterS
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_WIDTH;
@@ -40,7 +43,6 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasRenderer {
     public static final float MIN_CANVAS_ZOOM = 0.5f;

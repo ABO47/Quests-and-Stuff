@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 
 final class EditorCommandDispatcher {
     private static final Map<EditorCommandType, EditorCommandDescriptor> DESCRIPTORS = descriptors();

@@ -1,6 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.settings;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
@@ -13,11 +17,8 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
@@ -40,9 +41,9 @@ public final class SettingsAppComposer {
     private static final int TAB_GAP = GRID_4;
     private static final int TAB_ENLARGE = GRID_4;
     private static final int HEADER_LIST_GAP = 5;
-    private static final int LIST_INSET = 9;
+    private static final int SEARCH_INSET = GRID_9;
+    private static final int LIST_INSET = GRID_9;
     private static final int LIST_INNER_PAD = GRID_8;
-    private static final int GUTTER = 6;
 
     private SettingsAppComposer() {
     }
@@ -85,8 +86,8 @@ public final class SettingsAppComposer {
 
         int searchY = headerTop + TAB_H + TAB_ENLARGE + TAB_GAP;
         int listY = searchY + HEADER_H + HEADER_LIST_GAP;
-        int listH = Math.max(1, bodyH - listY - GUTTER);
-        WidgetGroup optionsPanel = new WidgetGroup(LIST_INSET, listY, bodyW - LIST_INSET * 2, listH);
+        int listH = Math.max(1, bodyH - listY - LIST_INSET);
+        WidgetGroup optionsPanel = new WidgetGroup(SEARCH_INSET, listY, bodyW - SEARCH_INSET * 2, listH);
         optionsPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
 
         Runnable[] refresh = new Runnable[1];
@@ -110,8 +111,8 @@ public final class SettingsAppComposer {
 
             int cSearchY = CONTENT_INSET + TAB_H + TAB_ENLARGE + TAB_GAP;
             int cListY = cSearchY + HEADER_H + HEADER_LIST_GAP;
-            int cListH = Math.max(1, cbh - cListY - GUTTER);
-            optionsPanel.setSize(cbw - LIST_INSET * 2, cListH);
+            int cListH = Math.max(1, cbh - cListY - LIST_INSET);
+            optionsPanel.setSize(cbw - SEARCH_INSET * 2, cListH);
             optionsPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
             mainPanel.setBackground(IGuiTexture.EMPTY);
 

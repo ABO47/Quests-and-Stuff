@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.quest.runtime.progress;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 
 public final class CompletableQuestEvaluator {
     public Set<String> progressableQuestIds(PlayerQuestState state, Map<String, QuestDefinition> quests) {

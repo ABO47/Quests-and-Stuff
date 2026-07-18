@@ -1,14 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public final class ScopedItemStackTexture extends ItemStackTexture {
     private int index;

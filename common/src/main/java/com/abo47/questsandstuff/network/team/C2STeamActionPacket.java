@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.team.model.TeamMember;
-import com.abo47.questsandstuff.team.TeamManager;
+import java.util.UUID;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.UUID;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.team.TeamManager;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 public record C2STeamActionPacket(Action action, UUID targetUuid) {
     public enum Action {

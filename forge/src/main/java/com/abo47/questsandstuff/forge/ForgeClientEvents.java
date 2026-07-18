@@ -3,8 +3,9 @@ package com.abo47.questsandstuff.forge;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;

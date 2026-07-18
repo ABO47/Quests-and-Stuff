@@ -1,30 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import org.joml.Quaternionf;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.joml.Quaternionf;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasTextRenderer {
     private CanvasTextRenderer() {

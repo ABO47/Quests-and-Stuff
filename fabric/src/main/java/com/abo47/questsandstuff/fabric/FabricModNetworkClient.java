@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.network.ModPacketType;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.ModPacketType;
+
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public final class FabricModNetworkClient {
     private static boolean registered;

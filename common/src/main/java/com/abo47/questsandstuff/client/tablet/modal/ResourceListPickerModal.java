@@ -1,23 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.ROW_H_16;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.ROW_H_16;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 

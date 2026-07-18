@@ -1,27 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.UUID;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
 
-import java.util.UUID;
-
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class TeamsConfirmModal {
     private static final int PAD = 8;

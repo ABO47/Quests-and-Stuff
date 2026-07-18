@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 public final class QuestDisplayEditService {
     private static final int MAX_DESCRIPTION_LINES = 256;

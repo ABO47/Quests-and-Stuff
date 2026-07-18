@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.ui.state;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
-
-import java.util.List;
 
 public final class TabletStateQueries {
     private TabletStateQueries() {

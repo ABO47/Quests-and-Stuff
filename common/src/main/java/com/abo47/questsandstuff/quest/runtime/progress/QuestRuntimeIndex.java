@@ -1,10 +1,5 @@
 package com.abo47.questsandstuff.quest.runtime.progress;
 
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.player.StatQuestTaskDefinition;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -12,6 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.player.StatQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
 public final class QuestRuntimeIndex {
     public record TaskBinding(String questId, String taskId, QuestTaskDefinition task) {}

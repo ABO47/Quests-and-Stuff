@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import org.lwjgl.glfw.GLFW;
 
 final class CanvasViewportKeyboardController {
     private CanvasViewportKeyboardController() {

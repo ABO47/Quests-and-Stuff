@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
-import net.minecraft.network.chat.Component;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
+
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class PercentSliderWidget extends SliderWidget {

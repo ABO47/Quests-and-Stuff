@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 
 public final class ChapterContextMenu {
     private ChapterContextMenu() {

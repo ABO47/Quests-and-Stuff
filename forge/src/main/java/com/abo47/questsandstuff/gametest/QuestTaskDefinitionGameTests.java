@@ -1,16 +1,11 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
-import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTasks;
-import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -23,12 +18,20 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTasks;
+import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
+import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestItemMatcher;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
+
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestTaskDefinitionGameTests {

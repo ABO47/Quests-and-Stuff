@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public final class EditorCanvasSessionActions {
     private final CanvasEditService canvasEdits;

@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.quest.runtime;
 
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.sync.SyncService;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 
 public final class RuntimeSyncs {
     private RuntimeSyncs() {

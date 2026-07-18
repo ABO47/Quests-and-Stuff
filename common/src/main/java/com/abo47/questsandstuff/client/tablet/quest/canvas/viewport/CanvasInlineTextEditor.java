@@ -1,9 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
@@ -11,10 +17,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;

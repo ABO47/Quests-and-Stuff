@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
 
 final class QuestDefinitionFileCleanup {
     private QuestDefinitionFileCleanup() {

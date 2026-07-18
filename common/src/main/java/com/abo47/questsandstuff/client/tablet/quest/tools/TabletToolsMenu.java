@@ -1,8 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class TabletToolsMenu {
     private TabletToolsMenu() {

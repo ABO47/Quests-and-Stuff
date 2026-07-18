@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.quest.model.task.fallback;
 
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.Map;
-import java.util.Set;
 
 public record UnsupportedQuestTaskDefinition(
         String id,

@@ -1,6 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.phys.Vec2;
+
+import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
@@ -11,22 +23,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardR
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.phys.Vec2;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class CanvasMinimapPainter {
     static final float BODY_REVEAL_START = 0.48f;

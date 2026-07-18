@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.function.IntSupplier;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nonnull;
-import java.util.function.IntSupplier;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class SoundPreviewPlayerWidget extends WidgetGroup {
     private static final int MIN_ICON_SIZE = ICON_22;

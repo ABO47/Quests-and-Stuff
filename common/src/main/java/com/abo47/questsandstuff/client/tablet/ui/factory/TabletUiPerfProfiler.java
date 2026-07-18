@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.ui.factory;
 
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-
 import java.util.function.Supplier;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class TabletUiPerfProfiler {
     private static final long WARN_THRESHOLD_NS = 3_000_000L;

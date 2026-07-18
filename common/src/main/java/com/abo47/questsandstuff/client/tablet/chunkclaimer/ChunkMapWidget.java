@@ -1,18 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.UUID;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.Minecraft;
 import org.joml.Vector4f;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -28,8 +23,17 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 
-import javax.annotation.Nonnull;
-import java.util.UUID;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public class ChunkMapWidget extends Widget {
     private static final long RESAMPLE_MS = TabletAnimationTimings.CHUNK_MAP_RESAMPLE_MS;

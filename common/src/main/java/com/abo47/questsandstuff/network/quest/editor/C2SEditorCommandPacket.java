@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 
 public record C2SEditorCommandPacket(EditorCommand command) {
     public static final String PREREQUISITE_FIELD = EditorCommandPayloads.PREREQUISITE;

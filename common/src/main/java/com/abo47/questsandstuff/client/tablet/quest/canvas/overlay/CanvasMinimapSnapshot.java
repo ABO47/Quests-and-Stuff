@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
+import java.util.List;
+
 import net.minecraft.nbt.CompoundTag;
 
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 
 record CanvasMinimapSnapshot(
         List<CanvasMinimapRect> quests,

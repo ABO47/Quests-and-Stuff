@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.ContextMenuPopWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class ContextMenuAnimationBridge {
     public static final String DEFAULT_KEY = "context";

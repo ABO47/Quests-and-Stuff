@@ -1,5 +1,17 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -7,16 +19,6 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

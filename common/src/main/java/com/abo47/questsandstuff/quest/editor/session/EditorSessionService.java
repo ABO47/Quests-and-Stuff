@@ -1,14 +1,26 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.ClipboardEditService;
-import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.canvas.CanvasEditService;
 import com.abo47.questsandstuff.quest.editor.canvas.PrerequisiteEditService;
+import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
+import com.abo47.questsandstuff.quest.editor.clipboard.QuestClipboardDebugLog;
 import com.abo47.questsandstuff.quest.editor.quest.QuestContentEditService;
-import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestCrudHandler;
+import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestSettingsEditService;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorCanvasSessionActions;
 import com.abo47.questsandstuff.quest.editor.session.actions.EditorChapterSessionActions;
@@ -21,17 +33,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.SyncService;
-import com.abo47.questsandstuff.quest.editor.clipboard.QuestClipboardDebugLog;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 public final class EditorSessionService {
     private final QuestDefinitionStore definitionStore;

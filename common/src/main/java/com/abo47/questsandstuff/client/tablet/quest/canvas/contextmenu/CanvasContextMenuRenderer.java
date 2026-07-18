@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import java.util.List;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
-import java.util.List;
 
 final class CanvasContextMenuRenderer {
     private CanvasContextMenuRenderer() {

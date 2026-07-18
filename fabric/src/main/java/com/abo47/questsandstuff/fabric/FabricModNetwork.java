@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.network.ModPacketType;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import java.lang.reflect.Method;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.lang.reflect.Method;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.ModPacketType;
+
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public final class FabricModNetwork {
     static final ResourceLocation CHANNEL = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "network");

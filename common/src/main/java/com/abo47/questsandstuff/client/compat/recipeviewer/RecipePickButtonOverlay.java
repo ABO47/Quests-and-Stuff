@@ -1,18 +1,21 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 
 public final class RecipePickButtonOverlay {
     public static final int BUTTON_SIZE = 11;

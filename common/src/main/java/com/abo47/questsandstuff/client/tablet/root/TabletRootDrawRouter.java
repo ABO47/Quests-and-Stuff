@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 final class TabletRootDrawRouter {
     private static final int OFFSCREEN_MOUSE = Integer.MIN_VALUE / 4;

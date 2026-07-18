@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 final class ChapterMetadataReader {
     private ChapterMetadataReader() {

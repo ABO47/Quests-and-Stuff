@@ -1,22 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import net.minecraft.nbt.CompoundTag;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 final class QuestDetailsWindowLifecycle {
     private QuestDetailsWindowLifecycle() {

@@ -1,5 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
@@ -7,14 +16,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.google.gson.JsonObject;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+import com.google.gson.JsonObject;
 
 public final class QuestDetailsTasksPanel {
     static final int HEADER_SECTION_GAP = TabletUiFactory.PANEL_INSET - 1;

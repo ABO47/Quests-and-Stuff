@@ -1,15 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.theme.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
+import java.awt.Rectangle;
+import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 
-import java.awt.Rectangle;
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
+
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class GlowShaderHelper {
     private static final ResourceLocation GLOW_SHADER = new ResourceLocation("questsandstuff", "glow");

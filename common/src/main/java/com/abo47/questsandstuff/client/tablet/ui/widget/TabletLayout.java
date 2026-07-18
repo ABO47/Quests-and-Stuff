@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.ui.widget;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class TabletLayout {
     public static final int ROOT_W = 563;

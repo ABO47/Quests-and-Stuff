@@ -1,22 +1,23 @@
 package com.abo47.questsandstuff.quest.editor.command;
 
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class EditorCommandPayloads {
     private EditorCommandPayloads() {

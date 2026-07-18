@@ -1,5 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
@@ -13,13 +21,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.google.gson.JsonObject;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.JsonObject;
 
 final class QuestTaskXpEditor {
     private static final String XP_TYPE = TaskJsonFactory.MOD + "xp";

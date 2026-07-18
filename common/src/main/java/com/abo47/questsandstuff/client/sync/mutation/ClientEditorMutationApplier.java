@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
+import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class ClientEditorMutationApplier {
     private ClientEditorMutationApplier() {

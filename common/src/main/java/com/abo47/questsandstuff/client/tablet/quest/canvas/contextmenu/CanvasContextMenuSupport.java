@@ -1,29 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
 

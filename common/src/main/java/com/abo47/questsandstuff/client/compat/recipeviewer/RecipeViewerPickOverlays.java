@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import com.abo47.questsandstuff.client.compat.recipeviewer.emi.EmiRecipePickOverlay;
 import com.abo47.questsandstuff.client.compat.recipeviewer.jei.JeiRecipePickOverlay;
 import com.abo47.questsandstuff.client.compat.recipeviewer.rei.ReiRecipePickOverlay;
-import net.minecraft.client.gui.GuiGraphics;
 
 public final class RecipeViewerPickOverlays {
     private RecipeViewerPickOverlays() {

@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class ModalPickerStates {
     private ModalPickerStates() {

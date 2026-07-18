@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.concurrent.atomic.AtomicLong;
+
+import net.minecraft.nbt.CompoundTag;
 
 public final class PerformanceTracker {
     private final AtomicLong signalCount = new AtomicLong();

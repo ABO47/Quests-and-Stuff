@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.text;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

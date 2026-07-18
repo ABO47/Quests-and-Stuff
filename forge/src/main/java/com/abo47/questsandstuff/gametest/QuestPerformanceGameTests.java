@@ -1,28 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.sync.SyncService;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +8,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPerformanceGameTests {

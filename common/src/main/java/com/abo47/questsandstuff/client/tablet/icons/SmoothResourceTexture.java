@@ -1,10 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 public final class SmoothResourceTexture extends ResourceTexture {
     public SmoothResourceTexture(ResourceLocation imageLocation) {

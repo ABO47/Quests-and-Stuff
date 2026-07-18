@@ -1,9 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.hasAnyGroup;

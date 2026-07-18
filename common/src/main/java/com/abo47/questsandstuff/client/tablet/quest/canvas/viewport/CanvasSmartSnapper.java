@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -9,10 +13,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 final class CanvasSmartSnapper {
     private CanvasSmartSnapper() {

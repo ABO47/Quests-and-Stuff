@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.quest.model.storage;
 
-import net.minecraft.nbt.Tag;
-
 import java.util.Objects;
+
+import net.minecraft.nbt.Tag;
 
 public interface TaskStorage<T, S extends Tag> {
     S createDefault();

@@ -1,19 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import java.awt.Rectangle;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-
-import java.awt.Rectangle;
-import java.util.List;
 
 public final class SkinEditRenderer {
     private static final int DIM_COLOR = TabletColors.DIM_OVERLAY;

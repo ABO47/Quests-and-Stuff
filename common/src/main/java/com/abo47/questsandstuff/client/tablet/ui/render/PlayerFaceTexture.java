@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.ui.render;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import java.util.UUID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.UUID;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 public final class PlayerFaceTexture implements IGuiTexture {
     private static final float FACE_U = 8f / 64f;

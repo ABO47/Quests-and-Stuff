@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.google.gson.JsonObject;
-
 import java.util.List;
 import java.util.function.BiFunction;
+
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskTypeCatalog {
     private static final List<QuestDetailsTypeChoice> TASK_CHOICES = List.of(

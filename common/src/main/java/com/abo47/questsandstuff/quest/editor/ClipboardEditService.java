@@ -1,25 +1,5 @@
 package com.abo47.questsandstuff.quest.editor;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteRequest;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.util.naming.QuestNaming;
-import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -29,13 +9,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.deepCopyDefinition;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteRequest;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
+import com.abo47.questsandstuff.util.naming.StableIdAllocator;
+
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.clipboardSourceSummary;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedConnectionColors;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedStringMap;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedStrings;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.duplicateDefinition;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.normalizeScale;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.deepCopyDefinition;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
 
 public final class ClipboardEditService {

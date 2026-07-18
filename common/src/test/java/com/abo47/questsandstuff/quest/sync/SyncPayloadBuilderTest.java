@@ -1,8 +1,21 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncChunkAccumulator;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -11,21 +24,10 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
 import com.abo47.questsandstuff.quest.model.reward.XpQuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTasks;
-import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

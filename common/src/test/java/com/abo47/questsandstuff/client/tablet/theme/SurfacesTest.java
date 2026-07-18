@@ -1,8 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.theme;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import org.junit.jupiter.api.Test;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

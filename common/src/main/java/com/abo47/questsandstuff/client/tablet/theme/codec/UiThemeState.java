@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
-import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class UiThemeState {
     public final Map<String, Integer> roleColors;

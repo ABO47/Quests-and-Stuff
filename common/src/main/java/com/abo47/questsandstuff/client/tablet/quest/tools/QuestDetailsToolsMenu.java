@@ -1,22 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolButtons.addToggle;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolButtons.addToggle;
 
 final class QuestDetailsToolsMenu {
     private QuestDetailsToolsMenu() {

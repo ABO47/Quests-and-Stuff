@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
@@ -15,7 +17,6 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandCl
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import net.minecraft.world.entity.player.Player;
 
 public final class ColorPickerApplyActions {
     private ColorPickerApplyActions() {

@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.player.Player;
 
 final class ChapterRenameActions {
     private ChapterRenameActions() {

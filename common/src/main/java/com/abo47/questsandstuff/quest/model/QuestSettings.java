@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.quest.model;
 
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 
 public record QuestSettings(
         boolean individualProgress,

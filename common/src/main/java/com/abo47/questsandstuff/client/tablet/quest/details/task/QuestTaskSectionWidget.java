@@ -1,13 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.List;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -15,14 +25,6 @@ import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 

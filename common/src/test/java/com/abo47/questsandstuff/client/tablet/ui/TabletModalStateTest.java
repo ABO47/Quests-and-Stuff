@@ -1,19 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
-import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

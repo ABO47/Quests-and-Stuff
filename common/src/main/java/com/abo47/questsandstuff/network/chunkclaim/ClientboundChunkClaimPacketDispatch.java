@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.network.chunkclaim;
 
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
 import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerHeaderControls;
 import com.abo47.questsandstuff.client.tablet.chunkclaimer.ClientChunkClaimCache;
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
-import net.minecraft.nbt.CompoundTag;
 
 final class ClientboundChunkClaimPacketDispatch {
     private ClientboundChunkClaimPacketDispatch() {

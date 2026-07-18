@@ -1,9 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -17,13 +25,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.google.gson.JsonObject;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.JsonObject;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;

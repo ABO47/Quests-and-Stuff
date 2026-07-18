@@ -1,9 +1,9 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import net.minecraft.nbt.CompoundTag;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
 
 final class ClientboundSyncPacketDispatch {
     private static final String HANDLER_CLASS = "com.abo47.questsandstuff.client.sync.packet.ClientSyncPacketHandler";

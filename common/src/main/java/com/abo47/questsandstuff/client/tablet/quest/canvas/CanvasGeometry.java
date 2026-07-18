@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.nbt.CompoundTag;
 
 public final class CanvasGeometry {
     private CanvasGeometry() {

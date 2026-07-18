@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.quest.sync;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 
 final class SyncChunker {
     static final int MAX_QUESTS_PER_CHUNK = 128;

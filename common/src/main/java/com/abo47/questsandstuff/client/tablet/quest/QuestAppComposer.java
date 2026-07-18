@@ -1,41 +1,41 @@
 package com.abo47.questsandstuff.client.tablet.quest;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import javax.annotation.Nonnull;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
+import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanelInteractionWidget;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterSplitterWidget;
-import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsLayerWidget;
-import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
-
-
-import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_TOP_H_COMPACT;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_Y;
@@ -60,10 +60,10 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterHeight;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletRefresh;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletState;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
 
 public final class QuestAppComposer {
     private QuestAppComposer() {

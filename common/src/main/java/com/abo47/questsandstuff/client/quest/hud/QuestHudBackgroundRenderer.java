@@ -1,14 +1,17 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudBackgroundRenderer {
     private QuestHudBackgroundRenderer() {

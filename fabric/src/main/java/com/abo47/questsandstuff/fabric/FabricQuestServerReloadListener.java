@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestServerReloadListener;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestServerReloadListener;
+
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 
 public final class FabricQuestServerReloadListener implements IdentifiableResourceReloadListener {
     private final QuestServerReloadListener delegate = new QuestServerReloadListener();

@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import java.util.List;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class ChapterContextMenuActions {
     private ChapterContextMenuActions() {

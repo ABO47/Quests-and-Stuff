@@ -1,5 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.bootstrap;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
@@ -11,16 +19,10 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletBlockPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.ui.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
+import com.abo47.questsandstuff.client.tablet.ui.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Player;
 
 public final class TabletLifecycle {
     private static boolean uiPrewarmed;

@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
@@ -8,9 +12,6 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelect
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

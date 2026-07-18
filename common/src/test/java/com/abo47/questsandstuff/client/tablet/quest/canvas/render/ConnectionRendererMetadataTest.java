@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

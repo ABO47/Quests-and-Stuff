@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.List;
 
 final class EditorMutationSyncer {
     private final SyncPayloadBuilder payloads;

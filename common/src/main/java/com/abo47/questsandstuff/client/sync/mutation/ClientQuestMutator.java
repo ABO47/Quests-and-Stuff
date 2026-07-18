@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-
-import java.util.List;
-import java.util.Map;
 
 public final class ClientQuestMutator {
     private ClientQuestMutator() {

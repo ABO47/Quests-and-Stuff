@@ -1,28 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
-import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCodec;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget;
-import net.minecraft.client.Minecraft;
-
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCodec;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.BUTTON_18;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.PAD_8;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class TabletBlueprintCodeModal {
     private static final int PANEL_W = 360;

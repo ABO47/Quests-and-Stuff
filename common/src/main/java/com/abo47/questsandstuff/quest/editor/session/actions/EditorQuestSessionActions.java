@@ -1,19 +1,20 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.canvas.PrerequisiteEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestContentEditService;
-import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestCrudHandler;
+import com.abo47.questsandstuff.quest.editor.quest.QuestDisplayEditService;
 import com.abo47.questsandstuff.quest.editor.quest.QuestSettingsEditService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorMode;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public final class EditorQuestSessionActions {
     private final EditorSessionService service;

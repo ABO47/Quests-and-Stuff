@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.util.naming.SafeNames;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.util.naming.SafeNames;
 
 public final class StyledTextFields {
     private StyledTextFields() {

@@ -1,22 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditRenderer;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditRenderer;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class TabletRootWidget extends WidgetGroup {
     private final TabletUiState state;

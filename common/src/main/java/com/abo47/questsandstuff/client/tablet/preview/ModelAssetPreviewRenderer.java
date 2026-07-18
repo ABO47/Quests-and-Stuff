@@ -1,12 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.preview;
 
-import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
-import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,14 +26,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 public final class ModelAssetPreviewRenderer {
     public static final String ITEM_ASSET_PREFIX = "item:";

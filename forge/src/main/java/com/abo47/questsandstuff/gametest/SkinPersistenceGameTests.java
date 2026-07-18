@@ -1,19 +1,21 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class SkinPersistenceGameTests {

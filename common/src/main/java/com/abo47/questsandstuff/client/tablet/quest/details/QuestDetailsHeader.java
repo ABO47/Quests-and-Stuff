@@ -1,23 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsHeader {
     private QuestDetailsHeader() {

@@ -1,27 +1,26 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.List;
+import java.util.Map;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 final class CanvasSelectMoveClickActions {
     private CanvasSelectMoveClickActions() {

@@ -1,6 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.modal.panel;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
@@ -16,24 +23,18 @@ import com.abo47.questsandstuff.client.tablet.modal.TabletEntityVariantModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletIconPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletItemInventoryPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletLootTablePickerModal;
-import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletRecipePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletSoundPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStatPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletStructurePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletThemePickerModal;
+import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ModalPanelRouter {
     private static final List<ModalPanelDescriptor> MODAL_DESCRIPTORS = List.of(

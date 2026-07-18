@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 

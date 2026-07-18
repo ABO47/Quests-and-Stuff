@@ -1,24 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class TabletRootWindowController {
     private TabletRootWindowController() {

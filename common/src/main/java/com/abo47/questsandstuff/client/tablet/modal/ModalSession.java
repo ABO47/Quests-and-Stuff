@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class ModalSession {
     private static final ModalSession NONE = new ModalSession(ModalWindowManager.ModalType.NONE);

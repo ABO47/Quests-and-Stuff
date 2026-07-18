@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer.emi;
 
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapability;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerCapabilityProbe;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerProviderCapabilities;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerReflectionUtils;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSnapshotRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 
 public final class EmiRecipeViewerProvider implements RecipeViewerProvider {
     private static final String EMI_API = "dev.emi.emi.api.EmiApi";

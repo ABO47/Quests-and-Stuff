@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 

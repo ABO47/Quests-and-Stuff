@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
@@ -14,10 +19,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class CanvasRecipeCardActions {
     private static final int CARD_W = 136;

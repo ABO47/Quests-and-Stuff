@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionTransformApply {
     private QuestDetailsDescriptionTransformApply() {

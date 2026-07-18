@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.quest.runtime;
 
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.storage.BooleanTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.generic.CompositeQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import net.minecraft.nbt.Tag;
 
 final class CompletionRules {
     private CompletionRules() {

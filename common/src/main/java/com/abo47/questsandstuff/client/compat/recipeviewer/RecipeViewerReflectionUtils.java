@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 
 public final class RecipeViewerReflectionUtils {
     private RecipeViewerReflectionUtils() {

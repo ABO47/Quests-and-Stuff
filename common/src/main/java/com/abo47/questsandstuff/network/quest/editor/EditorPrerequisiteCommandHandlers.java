@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 final class EditorPrerequisiteCommandHandlers {
     private EditorPrerequisiteCommandHandlers() {

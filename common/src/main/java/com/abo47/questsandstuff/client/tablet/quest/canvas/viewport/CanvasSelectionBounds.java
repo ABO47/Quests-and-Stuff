@@ -1,9 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import java.util.Map;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
@@ -12,8 +13,6 @@ import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.Map;
 
 final class CanvasSelectionBounds {
     private CanvasSelectionBounds() {

@@ -1,9 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
 
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -14,13 +19,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 
 public final class DisplayIconProvider {
     private static final Map<String, ItemStackTexture> ICON_TEXTURE_CACHE = new HashMap<>();

@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.network.chunkclaim;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
-import com.abo47.questsandstuff.team.TeamManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.team.TeamManager;
 
 public record C2SChunkClaimActionPacket(Action action, ResourceLocation dimension, int x, int z) {
     public enum Action {

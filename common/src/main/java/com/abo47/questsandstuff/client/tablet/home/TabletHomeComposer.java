@@ -1,23 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.home;
 
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedSkinState;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedUiState;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedSkinState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.readPersistedUiState;
 
 public final class TabletHomeComposer {
     private TabletHomeComposer() {

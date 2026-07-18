@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final TabletUiState state;

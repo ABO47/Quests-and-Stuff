@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public record SkinFillOverride(String mode, String path) {
     private static final String SEP = "|";

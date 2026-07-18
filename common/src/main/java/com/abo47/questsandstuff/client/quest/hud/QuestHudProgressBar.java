@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
-import net.minecraft.client.gui.GuiGraphics;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudProgressBar {
     private QuestHudProgressBar() {

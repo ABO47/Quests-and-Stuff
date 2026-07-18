@@ -1,18 +1,21 @@
 package com.abo47.questsandstuff;
 
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.platform.Services;
-import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
-import com.mojang.logging.LogUtils;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import org.slf4j.Logger;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.platform.Services;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 
 public final class QuestsAndStuffMod {
     public static final String MODID = "questsandstuff";

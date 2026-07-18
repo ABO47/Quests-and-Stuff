@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+
+import com.google.gson.JsonObject;
 
 final class QuestTaskItemStacks {
     private QuestTaskItemStacks() {

@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import net.minecraft.network.chat.Component;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public enum RecipePickerMode {
     ITEMS("items", "mode_items"),

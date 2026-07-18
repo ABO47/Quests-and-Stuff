@@ -1,20 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenChapterPacket;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class EditorChapterCommandClient {
     private EditorChapterCommandClient() {

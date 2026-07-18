@@ -1,26 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.contextmenu;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.List;
+import java.util.function.Consumer;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import static com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer.CONTEXT_MENU_WIDTH;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 
-import java.util.List;
-import java.util.function.Consumer;
-
+import static com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer.CONTEXT_MENU_WIDTH;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.addWindowsContextRow;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ContextMenuPanel {
     public static final int PROMOTED_BAR_H = ContextActionLayout.PROMOTED_BAR_H;
@@ -152,6 +153,10 @@ public final class ContextMenuPanel {
         for (int i = safeStart; i < end; i++) {
             ContextAction action = rows.get(i);
             int rowY = rowTop + (i - safeStart) * CONTEXT_ROW_H;
+            if (action.isSection()) {
+                ContextMenuRenderer.addSectionHeader(menu, rowY, rowWidth, action.section());
+                continue;
+            }
             addWindowsContextRow(menu, rowY, rowWidth, action.label(), action.icon(), action.accentColor(), action.hasSubmenu(), action.hasSubmenu()
                     ? click -> {
                     }
@@ -258,6 +263,9 @@ public final class ContextMenuPanel {
         int actionIndex = safeStart + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
+            if (action.isSection()) {
+                return true;
+            }
             if (!action.hasSubmenu()) {
                 runAction(state, afterAction, action, animationKey);
             }

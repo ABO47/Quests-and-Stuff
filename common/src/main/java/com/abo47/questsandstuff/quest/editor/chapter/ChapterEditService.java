@@ -1,5 +1,13 @@
 package com.abo47.questsandstuff.quest.editor.chapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
@@ -7,13 +15,6 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withChapters;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;

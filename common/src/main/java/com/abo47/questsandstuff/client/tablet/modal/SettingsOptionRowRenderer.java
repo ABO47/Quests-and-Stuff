@@ -1,23 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
@@ -25,7 +27,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 public final class SettingsOptionRowRenderer {
     public static final int ROW_H = ROW_H_26;
 
-    private static final int ROW_INSET = GRID_4;
+    static final int ROW_INSET = GRID_4;
     private static final int SWITCH_GAP = GRID_8;
 
     private SettingsOptionRowRenderer() {
@@ -46,6 +48,7 @@ public final class SettingsOptionRowRenderer {
         int fill = enabled ? withAlpha(TabletColors.SUCCESS, 28) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
         int border = enabled ? withAlpha(TabletColors.SUCCESS, 170) : TabletColors.BORDER_BASE;
         list.addWidget(panel(0, rowY, cardW, rowH, fill, border));
+        list.addWidget(hoverFill(0, rowY, cardW, rowH));
 
         Component[] tooltips = tooltips(option);
         int switchX = Math.max(104, cardW - ToggleSwitchWidget.DEFAULT_WIDTH - SWITCH_GAP);
@@ -77,6 +80,7 @@ public final class SettingsOptionRowRenderer {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
         list.addWidget(panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE));
+        list.addWidget(hoverFill(0, rowY, cardW, rowH));
         Component[] tooltips = tooltips(option);
         int iconSize = 14;
         int iconX = cardW - iconSize - SWITCH_GAP;
@@ -201,5 +205,17 @@ public final class SettingsOptionRowRenderer {
                         ? "ui.questsandstuff.settings.restart_required"
                         : "ui.questsandstuff.settings.restart_not_required")
                 .withStyle(option.restartRequired() ? ChatFormatting.YELLOW : ChatFormatting.GREEN);
+    }
+
+    private static WidgetGroup hoverFill(int x, int y, int w, int h) {
+        WidgetGroup fill = new WidgetGroup(x, y, w, h) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                if (isMouseOverElement(mouseX, mouseY)) {
+                    SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 26)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                }
+            }
+        };
+        return fill;
     }
 }

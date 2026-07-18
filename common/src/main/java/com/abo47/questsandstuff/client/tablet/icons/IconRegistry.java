@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 
 public final class IconRegistry {
     private static final Map<String, Entry> ENTRIES = new LinkedHashMap<>();

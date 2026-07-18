@@ -1,6 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.settings;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -9,17 +17,11 @@ import com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptor;
 import com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptors;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
@@ -99,8 +101,10 @@ final class SettingsAppHeaderControls {
         int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
         WidgetGroup bg = active ? enlargedTabBg(w, fill, border) : panel(0, TAB_ENLARGE, w, h, fill, border);
-        LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), Math.max(8, (w - 16) / 6)), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
-        ButtonWidget hit = flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
+        LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
+        ButtonWidget hit = active
+                ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
+                : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
         hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(Component.translatable(tab.labelKey()));
@@ -135,5 +139,20 @@ final class SettingsAppHeaderControls {
         state.settings.tabAnimationStartMs = System.currentTimeMillis();
         QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
         refresh.run();
+    }
+
+    private static int fontWidth(String text, int maxWidth) {
+        if (text == null) {
+            return 0;
+        }
+        int width = Minecraft.getInstance().font.width(text);
+        if (width <= maxWidth) {
+            return text.length();
+        }
+        int fit = text.length();
+        while (fit > 0 && Minecraft.getInstance().font.width(text.substring(0, fit) + "...") > maxWidth) {
+            fit--;
+        }
+        return Math.max(1, fit);
     }
 }

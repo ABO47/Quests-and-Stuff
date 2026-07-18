@@ -1,23 +1,22 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-
-import com.abo47.questsandstuff.quest.editor.canvas.EditorPlacementService;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.ChapterDef;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.util.naming.QuestNaming;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.canvas.EditorPlacementService;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
 
 public final class QuestCrudHandler {
     private final EditorSessionService service;

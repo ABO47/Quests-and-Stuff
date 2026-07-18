@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.home;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.Comparator;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import javax.annotation.Nonnull;
-import java.util.Comparator;
-import java.util.List;
-
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 

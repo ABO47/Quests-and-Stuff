@@ -1,19 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 final class QuestTaskSelectableRewards {
     private static final String CHOICE_SEPARATOR = "\u001F";

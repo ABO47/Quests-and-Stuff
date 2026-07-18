@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

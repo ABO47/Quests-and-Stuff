@@ -1,17 +1,20 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
+import java.util.Set;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Set;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 
 public record StatQuestTaskDefinition(
         String id,

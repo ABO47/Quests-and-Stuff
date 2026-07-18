@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CTeamSyncPacket(CompoundTag payload) {
     public static S2CTeamSyncPacket decode(FriendlyByteBuf buf) {

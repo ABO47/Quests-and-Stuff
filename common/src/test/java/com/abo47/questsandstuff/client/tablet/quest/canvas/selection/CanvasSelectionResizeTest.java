@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

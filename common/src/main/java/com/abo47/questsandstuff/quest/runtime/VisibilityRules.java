@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.quest.runtime;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
+import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 
 final class VisibilityRules {
     private VisibilityRules() {

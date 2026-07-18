@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.quest.model;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import java.util.List;
 import java.util.Map;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record QuestDisplay(
         String title,

@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.chunkclaim;
 
-import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

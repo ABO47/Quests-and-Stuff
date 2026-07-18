@@ -1,9 +1,8 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
 import net.minecraft.network.FriendlyByteBuf;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CQuestEventPacket(long sequence, String eventType, String questId, String rewardId) {
     public static S2CQuestEventPacket decode(FriendlyByteBuf buf) {

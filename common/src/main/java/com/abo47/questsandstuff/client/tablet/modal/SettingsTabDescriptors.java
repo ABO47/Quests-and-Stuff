@@ -1,19 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class SettingsTabDescriptors {
     static final int THEMES = 0;

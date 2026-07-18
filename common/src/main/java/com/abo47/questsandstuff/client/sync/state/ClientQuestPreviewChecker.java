@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 final class ClientQuestPreviewChecker {
     private ClientQuestPreviewChecker() {

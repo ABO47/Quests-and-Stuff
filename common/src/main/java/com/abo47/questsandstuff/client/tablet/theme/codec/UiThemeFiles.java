@@ -1,20 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.theme.codec;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.util.naming.SafeNames;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeDefaults;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeCatalog;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.abo47.questsandstuff.platform.Services;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeCatalog;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeDefaults;
+import com.abo47.questsandstuff.platform.Services;
+import com.abo47.questsandstuff.util.naming.SafeNames;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public final class UiThemeFiles {
     public static final String DEFAULT_THEME_NAME = "default";

@@ -1,5 +1,17 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -11,17 +23,8 @@ import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.JsonElement;
 
 final class SyncPayloadBuilder {
     private final QuestDefinitionStore definitionStore;

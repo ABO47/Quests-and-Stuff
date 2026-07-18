@@ -1,9 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
@@ -13,9 +17,8 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.google.gson.JsonObject;
 
-import java.util.List;
+import com.google.gson.JsonObject;
 
 final class QuestTaskMenuSupport {
     private QuestTaskMenuSupport() {
@@ -51,8 +54,10 @@ final class QuestTaskMenuSupport {
 
     static void addEntityIconActions(List<ContextAction> actions, TabletUiState state, String questId, String taskId, boolean task) {
         String icon = QuestTaskEditActions.taskIcon(questId, taskId, task);
+        ContextMenuSections variantSections = new ContextMenuSections();
         EntityIconControls.addEntityVariantAndMotionActions(
-                actions,
+                variantSections,
+                ContextMenuSection.APPEARANCE,
                 state,
                 icon,
                 task ? ModalTargets.taskTask(questId, taskId) : ModalTargets.taskReward(questId, taskId),
@@ -61,5 +66,6 @@ final class QuestTaskMenuSupport {
                 () -> {
                 }
         );
+        actions.addAll(variantSections.build());
     }
 }

@@ -1,8 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManager;
-import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -10,17 +15,18 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
@@ -28,11 +34,6 @@ import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public final class AssetPickerApplyActions {
     private AssetPickerApplyActions() {

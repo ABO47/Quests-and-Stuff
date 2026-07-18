@@ -1,9 +1,19 @@
 package com.abo47.questsandstuff.quest.runtime;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewards;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
@@ -13,19 +23,10 @@ import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
 import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 import com.abo47.questsandstuff.team.runtime.TeamProgressReconciler;
-import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 public final class RuntimeEngine {
     private final QuestDefinitionStore definitionStore;

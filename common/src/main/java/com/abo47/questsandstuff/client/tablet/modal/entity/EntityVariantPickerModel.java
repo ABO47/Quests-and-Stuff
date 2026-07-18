@@ -1,23 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 record EntityVariantPickerModel(
         String target,

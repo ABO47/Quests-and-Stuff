@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.team.runtime;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
-import com.abo47.questsandstuff.quest.runtime.RuntimeSyncs;
-import com.abo47.questsandstuff.quest.sync.SyncService;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeSyncs;
+import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 
 public final class TeamProgressReconciler {
     private TeamProgressReconciler() {

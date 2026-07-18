@@ -1,24 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
-import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
+
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class ToggleSwitchWidget extends SwitchWidget {
     public static final int DEFAULT_WIDTH = GRID_34;

@@ -1,9 +1,5 @@
 package com.abo47.questsandstuff.client.sync.state;
 
-import com.abo47.questsandstuff.quest.sync.SyncKeys;
-import com.abo47.questsandstuff.util.naming.QuestIdentity;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +9,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public final class ClientQuestState {
     private static final Map<String, CompoundTag> QUESTS = new HashMap<>();

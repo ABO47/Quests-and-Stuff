@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.google.gson.JsonObject;
-
 import java.util.List;
 import java.util.function.Function;
+
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+
+import com.google.gson.JsonObject;
 
 record QuestDetailsTypeChoice(
         String labelKey,

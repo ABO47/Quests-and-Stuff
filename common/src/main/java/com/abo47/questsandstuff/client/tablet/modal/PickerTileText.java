@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class PickerTileText {
     private PickerTileText() {

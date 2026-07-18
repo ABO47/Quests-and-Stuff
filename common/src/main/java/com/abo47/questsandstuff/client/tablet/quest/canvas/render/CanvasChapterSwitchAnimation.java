@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class CanvasChapterSwitchAnimation {
     private CanvasChapterSwitchAnimation() {

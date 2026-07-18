@@ -1,11 +1,10 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SEditorChapterPacket(String action, String chapter, String value, int offset) {
     public static C2SEditorChapterPacket decode(FriendlyByteBuf buf) {

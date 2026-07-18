@@ -1,24 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.dynamicLabel;
 

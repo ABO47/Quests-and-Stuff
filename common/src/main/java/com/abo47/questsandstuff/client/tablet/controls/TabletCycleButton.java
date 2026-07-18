@@ -1,23 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
-import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+
+import net.minecraft.network.chat.Component;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.CycleButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
-import net.minecraft.network.chat.Component;
 
-import java.util.function.IntConsumer;
-import java.util.function.IntSupplier;
-
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletCycleButton {
     private static final int DEFAULT_ICON_SIZE = ICON_12;

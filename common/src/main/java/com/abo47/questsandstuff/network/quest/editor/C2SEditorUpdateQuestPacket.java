@@ -1,11 +1,10 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SEditorUpdateQuestPacket(String questId, String title, String subtitle) {
     public static C2SEditorUpdateQuestPacket decode(FriendlyByteBuf buf) {

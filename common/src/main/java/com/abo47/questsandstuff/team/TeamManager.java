@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.team;
 
-import com.abo47.questsandstuff.team.model.TeamMember;
-import com.abo47.questsandstuff.team.model.TeamData;
-import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 public final class TeamManager {
     private static final int INVITE_CODE_LENGTH = 8;

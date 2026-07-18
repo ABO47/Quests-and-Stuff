@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
+import java.util.List;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 public final class TiledPickerPanel {
     private TiledPickerPanel() {

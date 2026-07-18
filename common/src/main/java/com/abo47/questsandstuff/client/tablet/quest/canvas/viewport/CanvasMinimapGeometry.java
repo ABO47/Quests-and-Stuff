@@ -1,10 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-
-import java.util.List;
 
 public final class CanvasMinimapGeometry {
     public static final int MARGIN = 3;

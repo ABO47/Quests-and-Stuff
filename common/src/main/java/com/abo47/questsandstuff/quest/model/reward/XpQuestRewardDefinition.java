@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
-import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.model.task.player.XpMode;
 
 public record XpQuestRewardDefinition(
         String id,

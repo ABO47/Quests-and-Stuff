@@ -1,28 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.List;
+import java.util.Map;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 

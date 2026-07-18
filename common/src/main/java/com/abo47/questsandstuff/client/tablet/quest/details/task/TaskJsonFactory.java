@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.nbt.CompoundTag;
 
 final class TaskJsonFactory {
     static final String MOD = "questsandstuff:";

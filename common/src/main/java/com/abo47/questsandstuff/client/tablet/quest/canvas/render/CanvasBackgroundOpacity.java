@@ -1,11 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class CanvasBackgroundOpacity {
     private CanvasBackgroundOpacity() {

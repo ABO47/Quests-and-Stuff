@@ -1,10 +1,5 @@
 package com.abo47.questsandstuff.loot;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -13,6 +8,13 @@ import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 
 public record CompletedQuestLootCondition(String questId) implements LootItemCondition {
     public static final Serializer<CompletedQuestLootCondition> SERIALIZER = new Serializer<>() {
