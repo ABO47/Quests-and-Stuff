@@ -32,7 +32,7 @@ public final class PickerListPanel {
             Runnable refresh,
             RowRenderer<T> renderer
     ) {
-        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, GRID_8, GRID_8);
+        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, GRID_8, GRID_4);
     }
 
     public static <T> WidgetGroup add(
@@ -50,7 +50,7 @@ public final class PickerListPanel {
             RowRenderer<T> renderer,
             int rightPad
     ) {
-        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, rightPad, GRID_8);
+        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, rightPad, GRID_4);
     }
 
     public static <T> WidgetGroup add(
@@ -105,9 +105,9 @@ public final class PickerListPanel {
         }
 
         if (showScroll) {
-            int barH = Math.max(1, h - vPad * 2);
+            int barH = Math.max(1, rows * rowH);
             int knobH = Math.max(12, Math.round((float) rows / (float) entries.size() * barH));
-            int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH - rightPad;
+            int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH;
             int barY = y + vPad;
             modal.addWidget(new DragScrollBarWidget(
                     barX + 1,

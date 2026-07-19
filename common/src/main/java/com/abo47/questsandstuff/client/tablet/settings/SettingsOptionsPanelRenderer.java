@@ -34,7 +34,7 @@ public final class SettingsOptionsPanelRenderer {
     private static final int ROW_H = SettingsOptionRowRenderer.ROW_H;
     private static final int THEME_ROW_H = ROW_H;
     private static final int THEME_ROW_INSET = GRID_4;
-    private static final int LIST_V_PAD = GRID_8;
+    private static final int LIST_V_PAD = GRID_4;
 
     private SettingsOptionsPanelRenderer() {
     }
@@ -109,9 +109,9 @@ public final class SettingsOptionsPanelRenderer {
             rowY += rowH;
         }
         if (showScroll) {
-            int barH = Math.max(1, h - vPad * 2);
+            int barH = Math.max(1, rows * rowH);
             int knobH = Math.max(12, Math.round((float) rows / (float) entries.size() * barH));
-            int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH - GRID_8;
+            int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH;
             int barY = y + vPad;
             panel.addWidget(new DragScrollBarWidget(
                     barX + 1,

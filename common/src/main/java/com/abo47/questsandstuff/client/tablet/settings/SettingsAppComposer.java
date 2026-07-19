@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -42,8 +43,9 @@ public final class SettingsAppComposer {
     private static final int TAB_ENLARGE = GRID_4;
     private static final int HEADER_LIST_GAP = 5;
     private static final int SEARCH_INSET = GRID_9;
-    private static final int LIST_INSET = GRID_9;
-    private static final int LIST_INNER_PAD = GRID_8;
+    private static final int BOTTOM_GUTTER = GRID_6;
+    private static final int LIST_INNER_PAD = GRID_6;
+    private static final int LIST_V_PAD = GRID_4;
 
     private SettingsAppComposer() {
     }
@@ -86,7 +88,7 @@ public final class SettingsAppComposer {
 
         int searchY = headerTop + TAB_H + TAB_ENLARGE + TAB_GAP;
         int listY = searchY + HEADER_H + HEADER_LIST_GAP;
-        int listH = Math.max(1, bodyH - listY - LIST_INSET);
+        int listH = Math.max(1, bodyH - listY - BOTTOM_GUTTER);
         WidgetGroup optionsPanel = new WidgetGroup(SEARCH_INSET, listY, bodyW - SEARCH_INSET * 2, listH);
         optionsPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
 
@@ -95,6 +97,7 @@ public final class SettingsAppComposer {
 
         refresh[0] = () -> {
             SkinAnchorRegistry.clear();
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
             int crw = rootWidth(state);
             int crh = rootHeight(state);
             root.setSize(crw, crh);
@@ -111,13 +114,13 @@ public final class SettingsAppComposer {
 
             int cSearchY = CONTENT_INSET + TAB_H + TAB_ENLARGE + TAB_GAP;
             int cListY = cSearchY + HEADER_H + HEADER_LIST_GAP;
-            int cListH = Math.max(1, cbh - cListY - LIST_INSET);
+            int cListH = Math.max(1, cbh - cListY - BOTTOM_GUTTER);
             optionsPanel.setSize(cbw - SEARCH_INSET * 2, cListH);
             optionsPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
             mainPanel.setBackground(IGuiTexture.EMPTY);
 
             headers.layout(CONTENT_INSET, cbw);
-            SettingsOptionsPanelRenderer.rebuildOptions(optionsPanel, state, refresh[0], LIST_INNER_PAD, LIST_INNER_PAD, cbw - LIST_INSET * 2 - LIST_INNER_PAD * 2, cListH - LIST_INNER_PAD * 2);
+            SettingsOptionsPanelRenderer.rebuildOptions(optionsPanel, state, refresh[0], LIST_INNER_PAD, LIST_V_PAD, cbw - SEARCH_INSET * 2 - LIST_INNER_PAD * 2, cListH - LIST_V_PAD * 2);
 
             SkinAnchorRegistry.register("root", root);
             SkinAnchorRegistry.register("home_btn", homeBtn);
