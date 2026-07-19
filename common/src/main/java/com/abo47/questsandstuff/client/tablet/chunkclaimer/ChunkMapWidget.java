@@ -243,7 +243,7 @@ public class ChunkMapWidget extends Widget {
     }
 
     private int sampleColorAt(ClientLevel level, int worldX, int worldZ, int y, int maxY) {
-        BlockPos pos = new BlockPos(worldX, Mth.clamp(y, 0, maxY - 1), worldZ);
+        BlockPos pos = new BlockPos(worldX, Mth.clamp(y, level.getMinBuildHeight(), maxY - 1), worldZ);
         FluidState fluid = level.getFluidState(pos);
 
         int rgb;
