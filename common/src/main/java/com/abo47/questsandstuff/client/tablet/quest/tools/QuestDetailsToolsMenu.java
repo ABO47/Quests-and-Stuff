@@ -36,7 +36,7 @@ final class QuestDetailsToolsMenu {
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = buttonX - 1;
-        int menuY = buttonY + headerH + 6;
+        int menuY = buttonY + headerH + 4;
         int slotX = menuPad;
         int y = menuPad;
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);

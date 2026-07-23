@@ -49,7 +49,7 @@ final class MainCanvasToolsMenu {
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = canvasX + toolsX - 1;
-        int menuY = CANVAS_Y + topY + headerH + 6;
+        int menuY = CANVAS_Y + topY + headerH + 4;
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
         menu.setActive(ToolMenuAnimation.mainInteractive(state));
 
