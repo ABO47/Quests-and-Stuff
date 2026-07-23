@@ -19,8 +19,10 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsRootWidget;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -135,22 +137,40 @@ public final class SkinEditManager {
     }
 
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
-        ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
-        IGuiTexture original = w.getBackgroundTexture();
-        if (original instanceof GuiTextureGroup && !isChromeManagedPanel(w)) {
+        CapturedOriginal cap = ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
+        int[] offsets = skinExtendOffsets(w, cap.original());
+        if (offsets != null) {
             IGuiTexture inner = tex;
+            int dx = offsets[0];
+            int dy = offsets[1];
+            int dw = offsets[2];
+            int dh = offsets[3];
             tex = new TransformTexture() {
                 {
-                    xOffset = -1;
-                    yOffset = -1;
+                    xOffset = dx;
+                    yOffset = dy;
                 }
                 @Override
                 protected void drawInternal(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
-                    inner.draw(graphics, mouseX, mouseY, x, y, width + 2, height + 2);
+                    inner.draw(graphics, mouseX, mouseY, x, y, width + dw, height + dh);
                 }
             };
         }
         w.setBackground(tex);
+        w.setDrawBackgroundWhenHover(true);
+    }
+
+    private static int[] skinExtendOffsets(Widget w, IGuiTexture original) {
+        if (original instanceof GuiTextureGroup && !isChromeManagedPanel(w)) {
+            return new int[]{-1, -1, 2, 2};
+        }
+        if (original == null || original.equals(IGuiTexture.EMPTY)) {
+            Class<?> cls = w.getClass();
+            if (cls == TabletIconTextButton.class || cls == QuestDetailsRootWidget.class) {
+                return new int[]{-1, -1, 2, 2};
+            }
+        }
+        return null;
     }
 
     private static boolean isChromeManagedPanel(Widget w) {

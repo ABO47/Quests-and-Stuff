@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -71,22 +72,16 @@ final class QuestTaskActionWidgets {
         boolean locallyClaimed = state != null && questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         boolean claimed = quest.getBoolean("claimed") || locallyClaimed;
         boolean claimable = quest.getBoolean("completed") && !claimed;
-        boolean hasTasksOverride = state != null && hasTasksOverrideEntry(state);
-        if (hasTasksOverride) {
-            WidgetGroup fillPanel = new WidgetGroup(x, y, barW, h);
-            fillPanel.setBackground(SurfaceFactory.fill(TabletColors.SURFACE_BASE));
-            section.addWidget(fillPanel);
-        } else {
-            section.addWidget(TabletUiFactory.panel(x, y, barW, h, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
-        }
         int fillColor = claimed ? TabletColors.TEXT_MUTED : (claimable ? TabletColors.WARNING : TabletColors.SUCCESS);
         String progressKey = ProgressAnimations.key("details", questId);
         ProgressTexture texture = new ProgressTexture(
                 IGuiTexture.EMPTY,
                 SurfaceFactory.fill(withAlpha(fillColor, claimed ? 95 : 180))
         ).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT);
-        ProgressWidget progressFill = new ProgressWidget(() -> ProgressAnimations.value(progressKey, progressValue), x + GRID_1, y + GRID_1, Math.max(1, barW - GRID_2), Math.max(1, h - GRID_2), texture);
+        ProgressWidget progressFill = new ProgressWidget(() -> ProgressAnimations.value(progressKey, progressValue), x, y, Math.max(1, barW), Math.max(1, h), texture);
+        progressFill.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
         progressFill.setClientSideWidget();
+        SkinAnchorRegistry.register("quest_details_progress", progressFill);
         section.addWidget(progressFill);
         String label = claimable
                 ? TabletTranslationKeys.text(QuestTranslationKeys.CLAIM)
@@ -117,9 +112,5 @@ final class QuestTaskActionWidgets {
         }
     }
 
-    private static boolean hasTasksOverrideEntry(TabletUiState state) {
-        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-        return state.root.skinFillOverrides.containsKey(appPrefix + "quest_details_tasks")
-                || state.root.skinFillOverrides.containsKey("quest_details_tasks");
-    }
+
 }
