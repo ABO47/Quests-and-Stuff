@@ -26,7 +26,7 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
         String bg = model.canvasBackground();
         boolean hasBuiltinBg = bg != null && !bg.equals("default") && !bg.isBlank();
-        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.fill(TabletColors.SURFACE_PANEL) : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
+        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.transparentFill() : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
