@@ -140,6 +140,7 @@ public final class SkinEditTargetResolver {
         if ("TabletHomeOverviewPanel".equals(simpleName)) return true;
         if ("CollapsedChapterTileWidget".equals(simpleName)) return true;
         if ("ChapterCompletionNoticeWidget".equals(simpleName)) return true;
+        if ("InlineRenameField".equals(simpleName)) return true;
         if (isInsideChapterCardArea(widget)) return true;
         return false;
     }
