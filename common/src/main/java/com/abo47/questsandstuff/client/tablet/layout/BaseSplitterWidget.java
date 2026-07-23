@@ -94,11 +94,10 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         if (hasSkinOverride) {
             skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
         } else {
-            if (hovered) {
-            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, left, top, width, height);
-        } else {
             SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT).draw(graphics, mouseX, mouseY, left, top, width, height);
-        }
+            if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, left, top, width, height);
+            }
             SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
             SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
         }
