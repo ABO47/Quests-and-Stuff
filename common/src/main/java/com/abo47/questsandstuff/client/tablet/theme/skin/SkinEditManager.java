@@ -8,7 +8,9 @@ import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 
+import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TransformTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -134,6 +136,24 @@ public final class SkinEditManager {
 
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
         ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
+        IGuiTexture original = w.getBackgroundTexture();
+        if (original instanceof GuiTextureGroup) {
+            IGuiTexture inner = tex;
+            TransformTexture shifted = new TransformTexture() {
+                {
+                    xOffset = -1;
+                    yOffset = -1;
+                }
+                @Override
+                protected void drawInternal(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
+                    inner.draw(graphics, mouseX, mouseY, x, y, width, height);
+                }
+            };
+            GuiTextureGroup group = new GuiTextureGroup(shifted);
+            group.inflateWidth = 2;
+            group.inflateHeight = 2;
+            tex = group;
+        }
         w.setBackground(tex);
     }
 
