@@ -7,6 +7,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -75,7 +76,7 @@ public final class PickerListPanel {
         boolean showScroll = maxStart > 0;
         int rowW = showScroll ? w - DragScrollBarWidget.RESERVED_WIDTH - rightPad : w;
 
-        WidgetGroup list = new WidgetGroup(x, y, w, h) {
+        WidgetGroup list = new TabletScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
                 if (!isMouseOverElement(mouseX, mouseY) || maxStart <= 0) {
@@ -107,11 +108,9 @@ public final class PickerListPanel {
         if (showScroll) {
             int barH = Math.max(1, rows * rowH);
             int knobH = Math.max(12, Math.round((float) rows / (float) entries.size() * barH));
-            int barX = x + w - DragScrollBarWidget.RESERVED_WIDTH;
-            int barY = y + vPad;
-            modal.addWidget(new DragScrollBarWidget(
-                    barX + 1,
-                    barY,
+            list.addWidget(new DragScrollBarWidget(
+                    w - DragScrollBarWidget.RESERVED_WIDTH + 1,
+                    vPad,
                     DragScrollBarWidget.RESERVED_WIDTH,
                     barH,
                     scroll::value,

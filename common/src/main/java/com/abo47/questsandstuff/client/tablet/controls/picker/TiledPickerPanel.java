@@ -7,6 +7,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -38,7 +39,7 @@ public final class TiledPickerPanel {
     ) {
         TileGridLayout layout = TileGridLayout.calculate(w, h, tileW, tileH, gap, padX, padY, entries.size(), scroll.value());
         scroll.setValue(layout.scrollStart());
-        WidgetGroup surface = new WidgetGroup(x, y, w, h) {
+        WidgetGroup surface = new TabletScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
                 if (!isMouseOverElement(mouseX, mouseY) || layout.maxStart() <= 0) {
@@ -69,9 +70,9 @@ public final class TiledPickerPanel {
         }
 
         if (layout.showScroll()) {
-            parent.addWidget(new DragScrollBarWidget(
-                    x + layout.scrollBarX() + 1,
-                    y + layout.scrollBarY(),
+            surface.addWidget(new DragScrollBarWidget(
+                    layout.scrollBarX() + 1,
+                    layout.scrollBarY(),
                     DragScrollBarWidget.RESERVED_WIDTH,
                     layout.scrollBarH(),
                     scroll::value,

@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-public final class TabletScissoredWidgetGroup extends WidgetGroup {
+public class TabletScissoredWidgetGroup extends WidgetGroup {
     public TabletScissoredWidgetGroup(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
