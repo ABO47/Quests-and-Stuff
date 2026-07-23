@@ -130,11 +130,6 @@ public final class TabletPanelChrome {
             Widget w = SkinAnchorRegistry.findByKey(bareKey);
             if (w == null) continue;
             if (w == panel) return true;
-            Widget cur = w.getParent();
-            while (cur != null) {
-                if (cur == panel) return true;
-                cur = cur.getParent();
-            }
         }
         
         if (isBackgroundKeySkinned(panel, state)) return true;

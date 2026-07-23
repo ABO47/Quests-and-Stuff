@@ -137,24 +137,27 @@ public final class SkinEditManager {
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
         ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
         IGuiTexture original = w.getBackgroundTexture();
-        if (original instanceof GuiTextureGroup) {
+        if (original instanceof GuiTextureGroup && !isChromeManagedPanel(w)) {
             IGuiTexture inner = tex;
-            TransformTexture shifted = new TransformTexture() {
+            tex = new TransformTexture() {
                 {
                     xOffset = -1;
                     yOffset = -1;
                 }
                 @Override
                 protected void drawInternal(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
-                    inner.draw(graphics, mouseX, mouseY, x, y, width, height);
+                    inner.draw(graphics, mouseX, mouseY, x, y, width + 2, height + 2);
                 }
             };
-            GuiTextureGroup group = new GuiTextureGroup(shifted);
-            group.inflateWidth = 2;
-            group.inflateHeight = 2;
-            tex = group;
         }
         w.setBackground(tex);
+    }
+
+    private static boolean isChromeManagedPanel(Widget w) {
+        if (!(w instanceof WidgetGroup)) return false;
+        String key = SkinAnchorRegistry.keyFor(w);
+        return key != null && (SkinOverrideKey.isSharedKey(key)
+                || "quests_canvas".equals(key) || "quest_details_canvas_panel".equals(key));
     }
 
     private static void resetRemovedTargets(Set<String> activeTargets) {
