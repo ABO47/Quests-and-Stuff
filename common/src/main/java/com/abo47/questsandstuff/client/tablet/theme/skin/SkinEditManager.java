@@ -138,7 +138,7 @@ public final class SkinEditManager {
 
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
         CapturedOriginal cap = ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
-        int[] offsets = skinExtendOffsets(w, cap.original());
+        int[] offsets = skinExtendOffsets(w, targetKey, cap.original());
         if (offsets != null) {
             IGuiTexture inner = tex;
             int dx = offsets[0];
@@ -160,24 +160,20 @@ public final class SkinEditManager {
         w.setDrawBackgroundWhenHover(true);
     }
 
-    private static int[] skinExtendOffsets(Widget w, IGuiTexture original) {
-        if (original instanceof GuiTextureGroup && !isChromeManagedPanel(w)) {
+    private static int[] skinExtendOffsets(Widget w, String targetKey, IGuiTexture original) {
+        if (original instanceof GuiTextureGroup) {
             return new int[]{-1, -1, 2, 2};
         }
         if (original == null || original.equals(IGuiTexture.EMPTY)) {
+            if ("quests_task_cards".equals(targetKey) || "quests_reward_cards".equals(targetKey)) {
+                return new int[]{-1, -1, 2, 2};
+            }
             Class<?> cls = w.getClass();
             if (cls == TabletIconTextButton.class || cls == QuestDetailsRootWidget.class) {
                 return new int[]{-1, -1, 2, 2};
             }
         }
         return null;
-    }
-
-    private static boolean isChromeManagedPanel(Widget w) {
-        if (!(w instanceof WidgetGroup)) return false;
-        String key = SkinAnchorRegistry.keyFor(w);
-        return key != null && (SkinOverrideKey.isSharedKey(key)
-                || "quests_canvas".equals(key) || "quest_details_canvas_panel".equals(key));
     }
 
     private static void resetRemovedTargets(Set<String> activeTargets) {

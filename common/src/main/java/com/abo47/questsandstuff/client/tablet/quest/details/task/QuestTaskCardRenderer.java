@@ -199,7 +199,7 @@ final class QuestTaskCardRenderer {
             if (parsed != null) {
                 IGuiTexture tex = parsed.createTexture();
                 if (tex != null) {
-                    card.addWidget(new ImageWidget(0, 0, w, QuestDetailsTasksPanel.CARD_H, tex));
+                    card.addWidget(new ImageWidget(-1, -1, w + 2, QuestDetailsTasksPanel.CARD_H + 2, tex));
                 }
             }
         }
@@ -215,9 +215,9 @@ final class QuestTaskCardRenderer {
             card.addWidget(borderQuad(w, borderColor));
         }
 
-        int fillW = Math.round((w - 2) * Math.max(0.0f, Math.min(1.0f, progress)));
+        int fillW = Math.round(w * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {
-            WidgetGroup fill = new WidgetGroup(1, 1, Math.max(1, fillW), QuestDetailsTasksPanel.CARD_H - 2);
+            WidgetGroup fill = new WidgetGroup(0, 0, Math.max(1, fillW), QuestDetailsTasksPanel.CARD_H);
             fill.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             card.addWidget(fill);
         }
